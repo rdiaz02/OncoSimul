@@ -1,0 +1,3 @@
+useDynLib(OncoSimulT)
+## exportPattern("^[[:alpha:]]+")
+exportPattern("^[^\\.]") ## anything that does not start with a period so none of the YS

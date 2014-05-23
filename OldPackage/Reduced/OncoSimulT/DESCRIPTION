@@ -1,0 +1,13 @@
+Package: OncoSimulT
+Type: Package
+Title: Simulation and analysis of data from oncogenetic trees
+Version: 1.0.21
+Date: 2013-07-31 (with many things added later too!!)
+Author: Ramon Diaz-Uriarte. 
+Maintainer: Ramon Diaz-Uriarte <ramon.diaz@iib.uam.es>
+Description: More about what it does (maybe more than one line)
+License: GPL (>= 3)
+Depends: Rcpp (>= 0.9.14), rbenchmark, RcppGSL, igraph, RBGL, ggm,
+         parallel, Oncotree
+Suggests: doMC, alabama, gtools, bcbn, Rtreemix, Rgraphviz
+LinkingTo: Rcpp, RcppGSL

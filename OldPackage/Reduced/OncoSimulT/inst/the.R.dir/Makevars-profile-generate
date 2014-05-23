@@ -1,0 +1,6 @@
+#MYAMD="-march=bdver1 -Ofast -g -fpic -pipe"
+OPTIMFLAGS=-march=bdver1 -Ofast -ffunction-sections -fprofile-generate -fprofile-arcs -g -fpic -pipe
+CFLAGS=-march=bdver1 -Ofast -ffunction-sections  -fprofile-generate -fprofile-arcs  -g -fpic -pipe
+CXXFLAGS=-march=bdver1 -Ofast -ffunction-sections  -fprofile-generate -fprofile-arcs -g -fpic -pipe
+FFLAGS=-march=bdver1 -Ofast -ffunction-sections  -fprofile-generate -fprofile-arcs -g -fpic -pipe
+FCFLAGS=-march=bdver1 -Ofast -ffunction-sections  -fprofile-generate -fprofile-arcs -g -fpic -pipe
