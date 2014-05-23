@@ -1,0 +1,13 @@
+Package: OncoSimulR
+Type: Package
+Title: Simulation of cancer progresion with order restrictions
+Version: 0.99
+Date: 2014-05-22
+Author: Ramon Diaz-Uriarte. 
+Maintainer: Ramon Diaz-Uriarte <ramon.diaz@iib.uam.es>
+Description: Functions for simulating cancer progression data, including drivers and passengers, and allowing for order restrictions. 
+License: GPL (>= 3)
+Depends: Rcpp (>= 0.9.14), rbenchmark, RcppGSL, igraph, RBGL, ggm,
+         parallel, Oncotree
+Suggests: doMC, alabama, gtools, bcbn, Rtreemix, Rgraphviz
+LinkingTo: Rcpp, RcppGSL
