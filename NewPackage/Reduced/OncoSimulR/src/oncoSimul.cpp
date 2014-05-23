@@ -788,6 +788,7 @@ static void init_tmpP(spParamsP& tmpParam) {
   tmpParam.numMutablePos = -999999;
 }
 
+
 SEXP Algorithm5(SEXP restrictTable_,
 		SEXP numDrivers_,
 		SEXP numGenes_,
