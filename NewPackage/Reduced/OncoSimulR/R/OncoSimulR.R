@@ -1,3 +1,24 @@
+samplePop <- function(x) {
+}
+
+
+oncoSimulPop <- function(x, Nindiv ) {
+    ## do for all indivs
+    ## use mclapply
+
+}
+
+
+## pass either a poset or and adj matrix
+## internally, figure out what is
+
+oncoSimulIndiv <- function(x) {
+    while(!reachedCancer) {
+        oncoSimul.internal
+        reachCancer(oncoSimul.internal)
+    }
+}
+
 reachCancer <- function(x, ndr = 0, detectionSize = 0,
                         maxPopSize = 1e15) {
     return(
@@ -8,7 +29,70 @@ reachCancer <- function(x, ndr = 0, detectionSize = 0,
          ))
 }
 
-oncoSimul <- function(restrict.table,
+
+
+
+plotPopAndDrivers <- function(z, col = c(8, "orange", 6:1),
+                              log = "y",
+                              ltyPop = 2:6,
+                              lwdPop = 0.2,
+                              ltyDrivers = 1,
+                              lwdDrivers = 3,
+                              xlab = "Time units",
+                              ylab = "Number of cells",
+                              addtot = FALSE,
+                              addtotlwd = 0.5,
+                              yl = NULL,
+                              thinPops = TRUE,
+                              thinPops.keep = 0.1,
+                              thinPops.min = 2,
+                              ...
+                              ) {
+
+    ## uses both of plotPop and plotDrivers in a single plot.
+    if(thinPops)
+        z <- thin.pops(z, keep = thinPops.keep, min.keep = thinPops.min)
+    gc()
+    ndr <- apply(z$Genotypes[1:z$NumDrivers, , drop = FALSE], 2, sum)
+
+    if(is.null(yl))
+        yl <- c(1, max(apply(z$pops.by.time[, -1, drop = FALSE], 1, sum)))
+
+    plotPop(z,
+            ndr = ndr, 
+            xlab = xlab,
+            ylab = ylab,
+            lty = ltyPop,
+            col = col, 
+            ylim = yl,
+            lwd = lwdPop,
+            axes = FALSE,
+            log = log,
+            ...)
+    par(new = TRUE)
+    plotDrivers0(z,
+                 timescale = 1,
+                 trim.no.drivers = FALSE,
+                 xlab = "", ylab = "",
+                 lwd = lwdDrivers,
+                 lty = ltyDrivers,
+                 col = col, 
+                 addtot = addtot,
+                 addtotlwd = addtotlwd,
+                 log = log, ylim = yl,
+                 ...)
+}
+
+
+
+############# Do not documment anything below this line
+
+
+
+
+
+
+oncoSimul.internal <- function(restrict.table,
                       numGenes,
                       typeFitness,
                       typeCBN,
@@ -191,19 +275,6 @@ create.drivers.by.time <- function(tmp, numDrivers) {
 
 
 
-
-sampleZZ <- function(zz, seed = "auto"){
-  if(seed == "auto") {
-    ## paste as numeric(hostname()) y el segundo from time
-  }
-
-  fname <- paste(fileroot, randomstgring)
-  save(...., compress = FALSE)
-
-  
-}
-
-
 ## For plotting, this helps decrease huge file sizes, while still showing
 ## the start of each clone, if it was originally recorded.
 
@@ -218,56 +289,6 @@ thin.pops <- function(x, keep = 0.1, min.keep = 3) {
     return(x)
 }
 
-plotPopAndDrivers <- function(z, col = c(8, "orange", 6:1),
-                              log = "y",
-                              ltyPop = 2:6,
-                              lwdPop = 0.2,
-                              ltyDrivers = 1,
-                              lwdDrivers = 3,
-                              xlab = "Time units",
-                              ylab = "Number of cells",
-                              addtot = FALSE,
-                              addtotlwd = 0.5,
-                              yl = NULL,
-                              thinPops = TRUE,
-                              thinPops.keep = 0.1,
-                              thinPops.min = 2,
-                              ...
-                              ) {
-
-    ## uses both of plotPop and plotDrivers in a single plot.
-    if(thinPops)
-        z <- thin.pops(z, keep = thinPops.keep, min.keep = thinPops.min)
-    gc()
-    ndr <- apply(z$Genotypes[1:z$NumDrivers, , drop = FALSE], 2, sum)
-
-    if(is.null(yl))
-        yl <- c(1, max(apply(z$pops.by.time[, -1, drop = FALSE], 1, sum)))
-
-    plotPop(z,
-            ndr = ndr, 
-            xlab = xlab,
-            ylab = ylab,
-            lty = ltyPop,
-            col = col, 
-            ylim = yl,
-            lwd = lwdPop,
-            axes = FALSE,
-            log = log,
-            ...)
-    par(new = TRUE)
-    plotDrivers0(z,
-                 timescale = 1,
-                 trim.no.drivers = FALSE,
-                 xlab = "", ylab = "",
-                 lwd = lwdDrivers,
-                 lty = ltyDrivers,
-                 col = col, 
-                 addtot = addtot,
-                 addtotlwd = addtotlwd,
-                 log = log, ylim = yl,
-                 ...)
-}
 
 
 plotPop <- function(z, ndr = NULL, na.subs = TRUE,
@@ -331,55 +352,6 @@ plotDrivers0 <- function(x,
       tot <- rowSums(y, na.rm = TRUE)
       lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
   }
-  ## will need to add a legend
-  legend(x = "topleft",
-         title = "Number of drivers",
-         lty = lty, col = col, lwd = lwd,
-         legend = (1:ncol(y)) - 1)
-}
-
-
-
-
-
-
-## just for me; I assume everything starts with rt* and ends in RData
-## and the object is called tmp
-plotdriversdir0 <- function(...){
-  op <- par(ask = TRUE)
-  files <- dir(pattern = "^rt.*RData$")
-  for(fi in files) {
-    load(fi)
-    plotDrivers0(tmp, main = fi, ...)
-  }
-  par(op)
-}
-## using rds
-plotdriversdir <- function(...){
-  op <- par(ask = TRUE)
-  files <- dir(pattern = "^rt.*rds$")
-  for(fi in files) {
-    tmp <- readRDS(fi)
-    plotDrivers0(tmp, main = fi, ...)
-  }
-  par(op)
-}
-
-
-
-plotDrivers <- function(z, na.subs = TRUE, log = "y", type = "l",
-                        lty = 1:9, col = c(8, "orange", 6:1),
-                        lwd = 2, ...) {
-  ## we pass only the driver data frame
-  y <- z[, 2:ncol(z)]
-  if(na.subs){
-    y[y == 0] <- NA
-  }
-
-  matplot(x = z[, 1],
-          y = y,
-          type = type, log = log, lty = lty, col = col, lwd = lwd,
-          ...)
   ## will need to add a legend
   legend(x = "topleft",
          title = "Number of drivers",

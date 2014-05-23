@@ -1,3 +1,59 @@
+## just for me; I assume everything starts with rt* and ends in RData
+## and the object is called tmp
+plotdriversdir0 <- function(...){
+  op <- par(ask = TRUE)
+  files <- dir(pattern = "^rt.*RData$")
+  for(fi in files) {
+    load(fi)
+    plotDrivers0(tmp, main = fi, ...)
+  }
+  par(op)
+}
+## using rds
+plotdriversdir <- function(...){
+  op <- par(ask = TRUE)
+  files <- dir(pattern = "^rt.*rds$")
+  for(fi in files) {
+    tmp <- readRDS(fi)
+    plotDrivers0(tmp, main = fi, ...)
+  }
+  par(op)
+}
+
+
+plotDrivers <- function(z, na.subs = TRUE, log = "y", type = "l",
+                        lty = 1:9, col = c(8, "orange", 6:1),
+                        lwd = 2, ...) {
+  ## we pass only the driver data frame
+  y <- z[, 2:ncol(z)]
+  if(na.subs){
+    y[y == 0] <- NA
+  }
+
+  matplot(x = z[, 1],
+          y = y,
+          type = type, log = log, lty = lty, col = col, lwd = lwd,
+          ...)
+  ## will need to add a legend
+  legend(x = "topleft",
+         title = "Number of drivers",
+         lty = lty, col = col, lwd = lwd,
+         legend = (1:ncol(y)) - 1)
+}
+
+
+sampleZZ <- function(zz, seed = "auto"){
+  if(seed == "auto") {
+    ## paste as numeric(hostname()) y el segundo from time
+  }
+
+  fname <- paste(fileroot, randomstgring)
+  save(...., compress = FALSE)
+
+  
+}
+
+
 ## FIXME: rename as "selectJointFreq"
 selectSB <- function(x, threshold = 5, maxGenes = 12, weighted = TRUE,
                      plot = FALSE, returnData = TRUE) {
@@ -960,3 +1016,5 @@ simposet <- function(poset, p) {
     }
     return(genotype)
 }
+
+
