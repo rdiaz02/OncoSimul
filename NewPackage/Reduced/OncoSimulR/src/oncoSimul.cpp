@@ -70,7 +70,7 @@ static inline void R_f_st(spParamsP& spP) {
 }
 
 void print_spP(const spParamsP& spP) {
-  std::cout <<"\n this is spP\n" 
+  Rcpp::Rcout <<"\n this is spP\n" 
 	    <<"\n popSize = " << spP.popSize
 	    <<"\n birth = " << spP.birth
 	    <<"\n death = " << spP.death
@@ -209,7 +209,7 @@ static double Algo2_st(const spParamsP& spP,
   double retval; 
 
     if( (1.0 - pe/pm) > 1.0) {
-      std::cout << "\n ERROR: Algo 2: (1.0 - pe/pm) > 1.0\n"; 
+      Rcpp::Rcout << "\n ERROR: Algo 2: (1.0 - pe/pm) > 1.0\n"; 
       throw std::range_error("Algo 2:  1 - pe/pm > 1");
     }
 
@@ -229,7 +229,7 @@ static double Algo2_st(const spParamsP& spP,
 
   if( pe == pm ) {
     // Should never happen. Exact identity??
-    std::cout << "\n WARNING: Algo 2: pe == pm \n" ;
+    Rcpp::Rcout << "\n WARNING: Algo 2: pe == pm \n" ;
     return 0.0;
   }
 
@@ -241,7 +241,7 @@ static double Algo2_st(const spParamsP& spP,
   //   // we can get issues with rbinom and odd numbers > 1e15
   //   // see "example-binom-problems.cpp"
   //   // hack this, and issue a warning
-  //   std::cout << "\n\nWARNING: Using hack around rbinom NaN problem in Algo2\n";
+  //   Rcpp::Rcout << "\n\nWARNING: Using hack around rbinom NaN problem in Algo2\n";
   //   m = ::Rf_rbinom(spP.popSize + 1, 1.0 - (pe/pm));
   // }
   if(m <= 0.5) { // they are integers, so 0 or 1.
@@ -249,7 +249,7 @@ static double Algo2_st(const spParamsP& spP,
   } else {
     rnb = ::Rf_rnbinom(m, 1.0 - pb);
     // if(std::isnan(rnb)) {
-    //   std::cout << "\n\nWARNING: Using hack around rnbinom NaN problem in Algo2\n";
+    //   Rcpp::Rcout << "\n\nWARNING: Using hack around rnbinom NaN problem in Algo2\n";
     //   rnb = ::Rf_rnbinom(m + 1, 1.0 - pb);
     // }
     retval = m + rnb;
@@ -294,7 +294,7 @@ static double Algo3_st(const spParamsP& spP, const double& t){
   
   if( pe == pm ) {
     // Should never happen. Exact identity??
-    std::cout << "\n WARNING: Algo 3: pm == pe\n"; 
+    Rcpp::Rcout << "\n WARNING: Algo 3: pm == pe\n"; 
     return 0.0;
   }
 
@@ -305,12 +305,12 @@ static double Algo3_st(const spParamsP& spP, const double& t){
   //   // we can get issues with rbinom and odd numbers > 1e15
   //   // see "example-binom-problems.cpp"
   //   // hack this, and issue a warning
-  //   std::cout << "\n\nWARNING: Using hack around rbinom NaN problem in Algo3\n";
+  //   Rcpp::Rcout << "\n\nWARNING: Using hack around rbinom NaN problem in Algo3\n";
   //   m = ::Rf_rbinom(spP.popSize, 1.0 - (pe/pm));
   // }
   rnb = ::Rf_rnbinom(m + 2.0, 1.0 - pb);
   // if(std::isnan(rnb)) {
-  //   std::cout << "\n\nWARNING: Using hack around rnbinom NaN problem in Algo3\n";
+  //   Rcpp::Rcout << "\n\nWARNING: Using hack around rnbinom NaN problem in Algo3\n";
   //   rnb = ::Rf_rnbinom(m + 1.0, 1.0 - pb);
   // }
   retval = m + 1 + rnb;
@@ -626,7 +626,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   }
   
   if(totPopSize > (4.0 * 1e15))
-    std::cout << "\nWARNING: popSize > 4e15. Likely loss of precission\n";
+    Rcpp::Rcout << "\nWARNING: popSize > 4e15. Likely loss of precission\n";
 }
 
 static inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
@@ -768,12 +768,12 @@ static void precissionLoss(){
   e = static_cast<int>(a - b);
   f = static_cast<int>(c - d);
 
-  if( a == b) std::cout << "WARNING!!!! \n Precission loss: a == b\n";
-  if( !(a > b)) std::cout << "WARNING!!!! \n Precission loss: !(a > b)\n";
-  if(c == d) std::cout << "WARNING!!!! \n Precission loss: c == d\n";
-  if( !(c > d)) std::cout << "WARNING!!!! \n Precission loss: !(c > d)\n";
-  if( e != 1 ) std::cout << "WARNING!!!! \n Precission loss: e != 1\n";
-  if( f != 1 ) std::cout << "WARNING!!!! \n Precission loss: f != 1\n";
+  if( a == b) Rcpp::Rcout << "WARNING!!!! \n Precission loss: a == b\n";
+  if( !(a > b)) Rcpp::Rcout << "WARNING!!!! \n Precission loss: !(a > b)\n";
+  if(c == d) Rcpp::Rcout << "WARNING!!!! \n Precission loss: c == d\n";
+  if( !(c > d)) Rcpp::Rcout << "WARNING!!!! \n Precission loss: !(c > d)\n";
+  if( e != 1 ) Rcpp::Rcout << "WARNING!!!! \n Precission loss: e != 1\n";
+  if( f != 1 ) Rcpp::Rcout << "WARNING!!!! \n Precission loss: f != 1\n";
 }
 
 static void init_tmpP(spParamsP& tmpParam) {
@@ -1127,9 +1127,9 @@ SEXP Algorithm5(SEXP restrictTable_,
 	  else
 	    tmpParam.mutation = mu * tmpParam.numMutablePos;
 	  if (tmpParam.mutation > 1 )
-	    std::cout << "WARNING: mutation > 1\n";
+	    Rcpp::Rcout << "WARNING: mutation > 1\n";
 	  if (numMutablePosParent == 1) 
-	    std::cout << "Note: mutation = 0; no positions left for mutation\n";
+	    Rcpp::Rcout << "Note: mutation = 0; no positions left for mutation\n";
 	  W_f_st(tmpParam);
 	  R_f_st(tmpParam);
 	  tmpParam.timeLastUpdate = -99999.99999; 
@@ -1199,7 +1199,6 @@ SEXP Algorithm5(SEXP restrictTable_,
   // and do it incrementally? I'd have also a counter of total unique species
 
 
-
   // FIXME: all this is ugly and could be a single function
   // up to call to IntegerMatrix
   std::vector<unsigned long> genot_out_ulong(genot_out.size());
@@ -1212,14 +1211,14 @@ SEXP Algorithm5(SEXP restrictTable_,
 
   int outNS_r, outNS_c, create_outNS;
   if( ( (uniqueGenotypes.size() + 1) *  (outNS_i + 1) ) > ( pow(2, 31) - 1 ) ) {
-    std::cout << "\nWARNING: Return outNS object > 2^31 - 1. Not created.\n";
+    Rcpp::Rcout << "\nWARNING: Return outNS object > 2^31 - 1. Not created.\n";
     outNS_r = 1;
     outNS_c = 1;
     create_outNS = 0;
   } else if ( 
 	     static_cast<long>((uniqueGenotypes.size()+1) * (outNS_i+1)) * 8 > 
 	     (maxram * (1024*1024) ) ) {
-    std::cout << "\nWARNING: Return outNS object > maxram. Not created.\n";
+    Rcpp::Rcout << "\nWARNING: Return outNS object > maxram. Not created.\n";
     outNS_r = 1;
     outNS_c = 1;
     create_outNS = 0;
