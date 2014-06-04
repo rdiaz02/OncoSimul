@@ -1,7 +1,19 @@
-data(example_trees)
+library(OncoSimulR)
 
+data(example_trees)
 set.seed(40) ## algo2
 r1 <- oncoSimulIndiv(posetToAdjmat(p705))
+
+
+## maxmemory does work in Linux
+r2 <- oncoSimulIndiv(posetToAdjmat(p705), max.memory = 0.5)
+
+set.seed(1)
+r2 <- oncoSimulIndiv(posetToAdjmat(p705), max.memory = 0.7)
+
+set.seed(1)
+r2 <- oncoSimulIndiv(posetToAdjmat(p705), max.memory = 2)
+
 
 
 posetToAdjmat(p705)

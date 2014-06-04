@@ -249,6 +249,26 @@
 // test-speed-max-ram-with-limit.R test-speed-max-ram.R
 
 // Will this work under Windows? Probably not.
+// void setmemlimit(const long maxram){
+//   // try to prevent any overhead if not set
+//   if(maxram > 0) {
+//     struct rlimit memlimit;
+//     long bytes;
+    
+//     bytes = maxram * (1024*1024);
+//     memlimit.rlim_cur = bytes;
+//     memlimit.rlim_max = bytes;
+//     setrlimit(RLIMIT_AS, &memlimit);
+//   }
+// }
+
+
+#ifdef _WIN32
+void setmemlimit(const long maxram){
+}
+#endif
+#ifndef _WIN32
+// Will this work under Windows? Probably not. OK, I do not care much.
 void setmemlimit(const long maxram){
   // try to prevent any overhead if not set
   if(maxram > 0) {
@@ -261,6 +281,9 @@ void setmemlimit(const long maxram){
     setrlimit(RLIMIT_AS, &memlimit);
   }
 }
+#endif
+
+
 
 
 void here(std::string x) {
@@ -1671,7 +1694,11 @@ SEXP Algorithm5(SEXP restrictTable_,
   double lastStoredSample;
   const double genTime = 4.0; // should be a parameter. For Bozic only.
   // memory limits
+#ifndef _WIN32  
   if(maxram)  setmemlimit(maxram);
+#endif
+
+  // if(maxram)  setmemlimit(maxram);
 
   // time limits
   time_t start_time = time(NULL);

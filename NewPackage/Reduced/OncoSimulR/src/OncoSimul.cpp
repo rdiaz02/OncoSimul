@@ -42,11 +42,11 @@
 // }
 
 
-// #ifdef _WIN32
-// void setmemlimit(const long maxram){
-// }
-// #endif
-// #ifndef _WIN32
+#ifdef _WIN32
+void setmemlimit(const long maxram){
+}
+#endif
+#ifndef _WIN32
 // Will this work under Windows? Probably not. OK, I do not care much.
 void setmemlimit(const long maxram){
   // try to prevent any overhead if not set
@@ -60,7 +60,7 @@ void setmemlimit(const long maxram){
     setrlimit(RLIMIT_AS, &memlimit);
   }
 }
-// #endif
+#endif
 
 
 typedef int myT;
