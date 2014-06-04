@@ -1,5 +1,9 @@
 data(example_trees)
 
+set.seed(40) ## algo2
+r1 <- oncoSimulIndiv(posetToAdjmat(p705))
+
+
 posetToAdjmat(p705)
 
 

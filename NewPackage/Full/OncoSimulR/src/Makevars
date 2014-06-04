@@ -1,6 +1,8 @@
 # combine with standard arguments for R
-PKG_CPPFLAGS = -I../inst/include -Wall
-## PKG_CPPFLAGS = `${R_HOME}/bin/Rscript -e "RcppGSL:::CFlags()"` -I../inst/include -Wall
+PKG_CPPFLAGS = -I../inst/include 
+## PKG_CPPFLAGS = `${R_HOME}/bin/Rscript -e "RcppGSL:::CFlags()"` -I../inst/include 
+
+## -Wall -pedantic now are in my home .R/Makevars
 
 ## next is for valgrind, to avoid inlining
 ## PKG_CPPFLAGS = -fno-inline `${R_HOME}/bin/Rscript -e "RcppGSL:::CFlags()"` -I../inst/include -fno-inline -Wall
