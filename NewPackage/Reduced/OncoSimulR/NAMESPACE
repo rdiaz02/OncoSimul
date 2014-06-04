@@ -1,4 +1,4 @@
 useDynLib(OncoSimulR)
 ## exportPattern("^[[:alpha:]]+")
 exportPattern("^[^\\.]") ## anything that does not start with a period
-import(Rcpp)
+## import(Rcpp)
