@@ -9,25 +9,115 @@ oncoSimulPop <- function(x, Nindiv ) {
 }
 
 
-## pass either a poset or and adj matrix
-## internally, figure out what is
+## pass an adj matrix.
+## offer convert poset to adj matrix.
 
-oncoSimulIndiv <- function(x) {
-    while(!reachedCancer) {
-        oncoSimul.internal
-        reachCancer(oncoSimul.internal)
+oncoSimulIndiv <- function(adjm,
+                           model = "Bozic",
+                           numGenes = 30,
+                           mu = 5e-7,
+                           detectionSize = 1e9,
+                           detectionDrivers = 6,
+                           sampleEvery = 15,
+                           initSize = 2000,
+                           s = 0.1,
+                           sh = -1,
+                           K = 2000,
+                           keep.every = sampleEvery,
+                           finalTime = 0.25 * 25 * 365,
+                           max.memory = 2000,
+                           max.wall.time = 200,
+                           endTimeEvery = -9,
+                           silent = FALSE
+                           ) {
+    rt <- adjmat.to.restrictTable(adjm)
+
+
+
+    ## legacies from poor name choices
+    typeFitness <- switch(model,
+                          "Bozic" = "bozic1",
+                          "Exp" = "exp",
+                          "McFarland" = "mcfarlandlog",
+                          "McF" = "mcfarlandlog",
+                          stop("No valid value for model")
+                          )
+
+    if(typeFitness == "exp") {
+        death <- 1
+        mutatorGenotype <- 1
+    } else {
+        death <- -99
+        mutatorGenotype <- 0
     }
+    birth <- -99
+
+    if( (typeFitness == "mcfarlandlog") &&
+       (sampleEvery > 0.05)) {
+        warning("With the McFarland model you generally want smaller sampleEvery")
+    }
+    ## ## if(typeFitness == "mcfarlandlog") {
+    ## ##     endTimeEvery <- 10 * sampleEvery
+    ## ## } else {
+    ## ##     endTimeEvery <- -9
+    ## ## }
+    ## endTimeEvery <- -9
+    
+    reachedCancer <- FALSE
+    while(!reachedCancer) {
+        op <- try(oncoSimul.internal(restrict.table = rt,
+                                 numGenes = numGenes,
+                                 typeFitness = typeFitness,
+                                 typeCBN = "-99",
+                                 birth = birth,
+                                 s = s,
+                                 sh = sh,
+                                 death = death,  
+                                 mu =  mu,  
+                                 initSize =  initSize, 
+                                 sampleEvery =  sampleEvery,  
+                                 detectionSize =  detectionSize, 
+                                 mutatorGenotype = mutatorGenotype,  
+                                 finalTime = finalTime, 
+                                 initSize_species = 2000, 
+                                 initSize_iter = 500, 
+                                 seed_gsl = NULL, 
+                                 verbosity = 1, 
+                                 initMutant = -1, 
+                                 speciesFS = 40000,  
+                                 ratioForce = 2,  
+                                 max.memory = max.memory, 
+                                 max.wall.time = max.wall.time, 
+                                 keep.every = keep.every,  
+                                 alpha = 0.0015,  
+                                 K = K, 
+                                 endTimeEvery = endTimeEvery, 
+                                 finalDrivers = detectionDrivers, 
+                                 silent = silent ))
+
+        if(!inherits(op, "try-error")) {
+            if(!silent) {
+                cat("\n ... finished this run:")
+                cat("\n       TotalPopSize = ", op$TotalPopSize)
+                cat("\n       DriversLast = ", op$MaxDriversLast)
+                cat("\n       Final Time = ", op$FinalTime)
+                cat("\n       Numerical Issuses?", op$ti_dbl_min)
+                
+                cat("\n")
+            }
+            ## browser()
+            reachedCancer <- reachCancer(op, ndr = detectionDrivers,
+                                         detectionSize = detectionSize,
+                                         maxPopSize = 1e15)
+        } else {
+            if(!silent)
+                cat("\n Current simulation aborted because of numerical problems.",
+                    "Proceeding to next one.\n")
+        }
+    }
+    return(op)
 }
 
-reachCancer <- function(x, ndr = 0, detectionSize = 0,
-                        maxPopSize = 1e15) {
-    return(
-        ((x$TotalPopSize >= detectionSize) &&
-         (x$MaxDriversLast >= ndr) &&
-         (x$ti_dbl_min == 0) &&
-         (x$TotalPopSize < maxPopSize) ## numerical issues here
-         ))
-}
 
 
 
@@ -84,12 +174,45 @@ plotPopAndDrivers <- function(z, col = c(8, "orange", 6:1),
 }
 
 
+posetToAdjmat <- function(x) {
+    return(poset.to.graph(x, names = 1:max(x), addroot = FALSE,
+                          type = "adjmat"))
+}
+
+
 
 ############# Do not documment anything below this line
 
+reachCancer <- function(x, ndr = 0, detectionSize = 0,
+                        maxPopSize = 1e15) {
+    return(
+        ( ((x$TotalPopSize >= detectionSize) ||
+           (x$MaxDriversLast >= ndr)) &&
+         (x$ti_dbl_min == 0) &&
+         (x$TotalPopSize < maxPopSize) ## numerical issues here
+         ))
+}
 
 
+## adjM.or.poset.to.restrictTable <- function(x) {
+##     if(nrow(x) == 1) {
+##         is.poset <- TRUE 
+##     }
+##     if(nrow(x) == ncol(x))
+    
+##     if(all(colnames(x) == rownames(x)) ||
+##        (ncol(x) > 2) ) {
+##         if(any(! (x %in% c(0, 1) )))
+##             stop("This looks like an adjacency matrix, but entries are not 0 or 1")
+        
+##     }
+    
+##     if(ncol(x) == 2) {
+##         if(colnames(x) == c("Ancestor"))
 
+##     }
+
+## }
 
 
 oncoSimul.internal <- function(restrict.table,
@@ -125,6 +248,8 @@ oncoSimul.internal <- function(restrict.table,
   
   ## FIXME: check argument types for typeFitness 
 
+
+    
   if(initSize_species < 10) {
     warning("initSize_species too small?")
   }
@@ -384,20 +509,30 @@ convertRestrictTable <- function(x) {
 
 
 adjmat.to.restrictTable <- function(x) {
-  ## we have the zero
-  ## x <- x[-1, -1]
-  num.deps <- colSums(x)
-  max.n.deps <- max(num.deps)
-  rt <- matrix(-9, nrow = nrow(x),
-               ncol = max.n.deps + 2)
-  for(i in 1:ncol(x)) {
-    if( num.deps[ i ])
-      rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ], which(x[, i ] != 0))
-    else
-      rt[i , 1:2] <- c(i , 0)
-  }
-  return(rt)
+    ## we have the zero
+    ## x <- x[-1, -1]
+    if(!is.null(colnames(x))) {
+        oi <- order(colnames(x))
+        if(any(oi != (1:ncol(x)))) {
+            warning("Reordering adjacency matrix")
+            x <- x[oi, oi]
+        }
+    }
+    
+    num.deps <- colSums(x)
+    max.n.deps <- max(num.deps)
+    rt <- matrix(-9, nrow = nrow(x),
+                 ncol = max.n.deps + 2)
+    for(i in 1:ncol(x)) {
+        if( num.deps[ i ])
+            rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ], which(x[, i ] != 0))
+        else
+            rt[i , 1:2] <- c(i , 0)
+    }
+    return(rt)
 }
+
+
 
 poset.to.restrictTable <- function(x) {
   x1 <- poset.to.graph(x, names = 1:max(x), addroot = FALSE, type = "adjmat")
