@@ -7,6 +7,7 @@ Author: Ramon Diaz-Uriarte.
 Maintainer: Ramon Diaz-Uriarte <ramon.diaz@iib.uam.es>
 Description: Functions for simulating cancer progression data, including drivers and passengers, and allowing for order restrictions. Also some utilities for the analysis of oncogenetic trees, CBNs, and progression networks.
 License: GPL (>= 3)
-Depends: Rcpp (>= 0.9.14),  parallel
+Depends: Rcpp (>= 0.9.14), RcppGSL,  parallel
+Imports: graph
 Suggests: igraph, RBGL, Rtreemix, Rgraphviz,  Oncotree, ggm
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppGSL

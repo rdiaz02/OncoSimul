@@ -169,7 +169,7 @@
 // but I call R code for random number generator.
 
 
-#include "oncoSimul.h"
+#include "OncoSimul.h"
 #include <limits>
 #include <iostream>
 #include <gsl/gsl_rng.h> // here? in the .h
@@ -558,8 +558,10 @@ static double ti_nextTime_tmax_2_st(const spParamsP& spP,
 #endif
 	++ti_dbl_min;
 	ti = DBL_MIN;
-	// Beware of this!!
-	throw std::range_error("ti set to DBL_MIN");
+	// Beware of this!!  throw std::range_error("ti set to DBL_MIN");
+	// Do not exit. Record it. We check for it now in R code. Maybe
+	// abort simulation and go to a new one?  FIXME
+	Rcpp::Rcout << "ti set to DBL_MIN\n";
       }
       if(ti < 0.001) ++ti_e3;
       ti += currentTime;
@@ -1304,9 +1306,12 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   // Beware: this can lead to never stopping if
   // decreases in popSize or drivers
 
-  // Logic: if a period k you meet any condition,
-  // recheck again at k + endTimeEvery, and if conditions met
-  // exit.
+  // Logic: if a period k you meet any condition, recheck again at k +
+  // endTimeEvery, and if conditions met exit. Prevents exiting if you
+  // reach the cancer state almost by chance. But this is way too
+  // paranoid. The idea is of application mainly for McF and Beeren
+  // models, so we do not bail out as soon as just a single cell with one
+  // new driver. But this makes things very slow.
   if(endTimeEvery > 0) {
     if(done_at <= 0 ) {
       if( (totPopSize >= detectionSize) ||

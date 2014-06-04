@@ -1,7 +1,7 @@
-#ifndef _oncoSimul_H
-#define _oncoSimul_H
+#ifndef _OncoSimul_H
+#define _OncoSimul_H
 
-// #include <RcppGSL.h> 
+#include <RcppGSL.h> 
 
 
 RcppExport SEXP Algorithm5(SEXP restrictTable_,

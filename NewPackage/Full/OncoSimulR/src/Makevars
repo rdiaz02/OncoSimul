@@ -1,9 +1,12 @@
 # combine with standard arguments for R
+## PKG_CPPFLAGS = -I../inst/include -Wall
 PKG_CPPFLAGS = `${R_HOME}/bin/Rscript -e "RcppGSL:::CFlags()"` -I../inst/include -Wall
+
 ## next is for valgrind, to avoid inlining
 ## PKG_CPPFLAGS = -fno-inline `${R_HOME}/bin/Rscript -e "RcppGSL:::CFlags()"` -I../inst/include -fno-inline -Wall
 
 ## standard
+## PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` ` ${R_HOME}/bin/Rscript -e "RcppGSL:::LdFlags()"` $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 ## I am not using libgmp (multiprecission arithmetic) anymore
 ## PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` ` ${R_HOME}/bin/Rscript -e "RcppGSL:::LdFlags()"` $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -lgmpxx -lgmp
