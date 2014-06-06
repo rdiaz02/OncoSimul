@@ -119,7 +119,7 @@ oncoSimulIndiv <- function(adjm,
     }
     
     if(typeFitness == "mcfarlandlog") {
-        endTimeEvery <- 10 * sampleEvery
+        endTimeEvery <- 10 * keepEvery
     } else {
         endTimeEvery <- -9
     }

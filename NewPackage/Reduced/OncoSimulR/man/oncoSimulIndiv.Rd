@@ -234,10 +234,31 @@ evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
 \seealso{
   \code{\link{plot.oncosimul}}, \code{\link{print.oncosimul}},
   \code{\link{summary.oncosimul}},
-  \code{\link{oncoSimulPop}}
+  \code{\link{oncoSimulPop}}, \code{\link{examplePosets}},
+  \code{\link{poset2AdjMat}}
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+## use poset p701
+data(examplePosets)
+p701 <- examplePosets[["p701"]]
+
+## Bozic Model
+
+b1 <- oncoSimulIndiv(poset2AdjMat(p701), detectionSize = 1e6)
+
+## McFarland; need to modify sampleEvery, but use a reasonable keepEvery
+## Note that detectionSize is huge, but will play no role
+## finalTime is large, since this is a slower process
+
+m1 <- oncoSimulIndiv(poset2AdjMat(p701),
+                     model = "McFL",
+                     mu = 5e-7,
+                     sampleEvery = 0.05,
+                     finalTime = 15000,
+                     keepEvery = 15,
+                     detectionSize = 1e6) 
+
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
