@@ -1414,8 +1414,8 @@ static inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
 
   for(size_t i = 0; i < sampleTotPopSize.size(); ++i) {
     perSampleStats(i, 0) = sampleTotPopSize[i];
-    perSampleStats(i, 1) = sampleLargestPopSize[i];
-    perSampleStats(i, 2) = sampleLargestPopProp[i];
+    perSampleStats(i, 1) = sampleLargestPopSize[i]; // Never used in R FIXME: remove!!
+    perSampleStats(i, 2) = sampleLargestPopProp[i]; // Never used in R
     perSampleStats(i, 3) = static_cast<double>(sampleMaxNDr[i]);
     perSampleStats(i, 4) = static_cast<double>(sampleNDrLargestPop[i]);
   }
