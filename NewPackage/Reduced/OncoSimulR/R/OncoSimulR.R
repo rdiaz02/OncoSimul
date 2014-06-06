@@ -88,7 +88,7 @@ oncoSimulIndiv <- function(adjm,
                            onlyCancer = TRUE,
                            max.memory = 2000,
                            max.wall.time = 200,
-                           endTimeEvery = -9,
+##                           endTimeEvery = -9,
                            silent = FALSE
                            ) {
     rt <- adjmat.to.restrictTable(adjm)
@@ -99,8 +99,8 @@ oncoSimulIndiv <- function(adjm,
     typeFitness <- switch(model,
                           "Bozic" = "bozic1",
                           "Exp" = "exp",
-                          "McFarland" = "mcfarlandlog",
-                          "McF" = "mcfarlandlog",
+                          "McFarlandLog" = "mcfarlandlog",
+                          "McFL" = "mcfarlandlog",
                           stop("No valid value for model")
                           )
 
@@ -117,11 +117,12 @@ oncoSimulIndiv <- function(adjm,
        (sampleEvery > 0.05)) {
         warning("With the McFarland model you generally want smaller sampleEvery")
     }
-    ## ## if(typeFitness == "mcfarlandlog") {
-    ## ##     endTimeEvery <- 10 * sampleEvery
-    ## ## } else {
-    ## ##     endTimeEvery <- -9
-    ## ## }
+    
+    if(typeFitness == "mcfarlandlog") {
+        endTimeEvery <- 10 * sampleEvery
+    } else {
+        endTimeEvery <- -9
+    }
     ## endTimeEvery <- -9
 
 
@@ -201,7 +202,7 @@ oncoSimulIndiv <- function(adjm,
 summary.oncosimul <- function(x) {
     tmp <- x[c("NumClones", "TotalPopSize", "LargestClone",
                "MaxNumDrivers", "MaxDriversLast",
-               "NumDriversLargestPop",
+               "NumDriversLargestPop", "TotalPresentDrivers",
                "FinalTime", "NumIter", "HittedWallTime")]
     tmp$errorMF <- x$other$errorMF
     if(tmp$errorMF == -99) tmp$errorMF <- NA
@@ -334,10 +335,35 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
 }
 
 
-posetToAdj <- function(x) {
+poset2AdjMat <- function(x) {
     return(poset.to.graph(x, names = 1:max(x), addroot = FALSE,
                           type = "adjmat"))
 }
+
+
+## adjMatNoDeps <- function(ngenes = 11) {
+##     posetToAdj(cbind(ngenes, 0))
+## }
+
+## posetNoDeps <- function(ngenes = 11){
+##     cbind(0, ngenes)
+## }
+
+
+plotPoset <- function(x, names = NULL, addroot = FALSE,
+                       box = FALSE, ...) {
+  if(is.null(names)) {
+    if(addroot) names <- c("Root", 1:max(x))
+    else names <- 1:max(x)
+  }
+  plot(poset.to.graph(x, names, addroot), ...)
+  if(box)
+    box()
+}
+
+## plotAdjMat <- function(x) {
+##     plot(as(x, "graphNEL"))
+## }
 
 
 ############# The rest are internal functions

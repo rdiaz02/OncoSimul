@@ -1,11 +1,17 @@
+### Looks like not needed
+### Suggests: igraph, RBGL, Rgraphviz, Rtreemix, Oncotree
+
+
 library(OncoSimulR)
+data(examplePosets)
+plotPoset(examplePosets[["p1101"]])
+plotAdjMat(poset2AdjMat(examplePosets[["p1101"]]))
 
-data(example_trees)
+p705 <- examplePosets[["p705"]]
 
+r1 <- oncoSimulIndiv(poset2AdjMat(p705), detectionSize = 1e6)
 
-r1 <- oncoSimulIndiv(posetToAdj(p705), detectionSize = 1e6)
-
-p1 <- oncoSimulPop(20, posetToAdj(p705), detectionSize = 1e6,
+p1 <- oncoSimulPop(20, poset2AdjMat(p705), detectionSize = 1e6,
                    sampleEvery = 10, mc.cores = 4)
 
 

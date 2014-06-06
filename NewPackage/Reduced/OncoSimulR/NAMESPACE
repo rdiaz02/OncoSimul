@@ -5,7 +5,7 @@ exportPattern("^[^\\.]") ## anything that does not start with a period
 importFrom("data.table", rbindlist, .rbind.data.table) 
 ## import(data.table)
 import(Rcpp)
-
+import(graph)
 ## importFrom("parallel", clusterApplyLB, mclapply, stopCluster)
 importFrom("parallel", mclapply)
 
