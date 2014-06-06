@@ -91,9 +91,10 @@ oncoSimulIndiv <- function(adjm,
 ##                           endTimeEvery = -9,
                            silent = FALSE
                            ) {
-    rt <- adjmat.to.restrictTable(adjm)
-
     call <- match.call()
+    rt <- adjmat.to.restrictTable(adjm)
+    
+    
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -119,7 +120,7 @@ oncoSimulIndiv <- function(adjm,
     }
     
     if(typeFitness == "mcfarlandlog") {
-        endTimeEvery <- 10 * keepEvery
+        endTimeEvery <- keepEvery
     } else {
         endTimeEvery <- -9
     }
@@ -591,11 +592,10 @@ oncoSimul.internal <- function(restrict.table,
                  K,
                  endTimeEvery,
                  finalDrivers,
-               PACKAGE = "OncoSimulR")
-##           ,
+               PACKAGE = "OncoSimulR"),
 ##           call = call,
-##           NumDrivers = numDrivers,
-##           initMutant = initMutant
+           NumDrivers = numDrivers
+##         ,  initMutant = initMutant
            ))
 }
 
@@ -604,13 +604,13 @@ colnames.to.pops.by.time <- function(pops.by.time) {
   if(prod(dim(pops.by.time)) > 1) {  
     ## colnames(pops.by.time) <- rep("", ncol(pops.by.time))
     colnames(pops.by.time) <- c("Time",
-                                paste("Sp_", 1:tmp$NumSpecies, sep = ""))
+                                paste("Clone_", 1:tmp$NumClones, sep = ""))
   }
 }
 
 
 create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
-  if(tmp$NumSpecies > 1) {
+  if(tmp$NumClones > 1) {
     NumMutations <- apply(tmp$Genotypes, 2, sum)
     muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
                           t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
@@ -625,7 +625,7 @@ create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
 
 create.drivers.by.time <- function(tmp, numDrivers) {
   CountNumDrivers <- apply(tmp$Genotypes[1:numDrivers, ,drop = FALSE], 2, sum)
-  if(tmp$NumSpecies > 1) {
+  if(tmp$NumClones > 1) {
     if(length(unique(CountNumDrivers )) > 1) {
       drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
                                t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,

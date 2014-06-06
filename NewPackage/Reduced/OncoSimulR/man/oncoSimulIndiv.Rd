@@ -246,18 +246,22 @@ p701 <- examplePosets[["p701"]]
 ## Bozic Model
 
 b1 <- oncoSimulIndiv(poset2AdjMat(p701), detectionSize = 1e6)
-
+plot(b1)
 ## McFarland; need to modify sampleEvery, but use a reasonable keepEvery
 ## Note that detectionSize is huge, but will play no role
 ## finalTime is large, since this is a slower process
+## initSize is set to 4000 so the default K is larger and we are likely
+## to reach cancer. Alternatively, set K = 2000.
 
 m1 <- oncoSimulIndiv(poset2AdjMat(p701),
                      model = "McFL",
                      mu = 5e-7,
+                     initSize = 2000,
                      sampleEvery = 0.05,
                      finalTime = 15000,
-                     keepEvery = 15,
+                     keepEvery = 5,
                      detectionSize = 1e6) 
+plot(m1, addtot = TRUE, log = "")
 
 
 }
