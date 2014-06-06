@@ -2,12 +2,57 @@ samplePop <- function(x) {
 }
 
 
-oncoSimulPop <- function(x, Nindiv ) {
-    ## do for all indivs
-    ## use mclapply
+oncoSimulPop <- function(Nindiv,
+                         adjm,
+                         model = "Bozic",
+                         numGenes = 30,
+                         mu = 5e-7,
+                         detectionSize = 1e9,
+                         detectionDrivers = 6,
+                         sampleEvery = 10,
+                         initSize = 2000,
+                         s = 0.1,
+                         sh = -1,
+                         K = 2000,
+                         keepEvery = sampleEvery,
+                         finalTime = 0.25 * 25 * 365,
+                         max.memory = 2000,
+                         max.wall.time = 200,
+                         endTimeEvery = -9,
+                         silent = FALSE,
+                         mc.cores = detectCores()) {
 
+    if(.Platform$OS.type == "windows") {
+        if(mc.cores != 1)
+            message("You are running Windows. Setting mc.cores = 1")
+        mc.cores <- 1
+    }
+    pop <- mclapply(seq.int(Nindiv),
+                    function(x)
+                    oncoSimulIndiv(
+                        adjm = adjm,
+                        model = model,
+                        numGenes = numGenes,
+                        mu = mu,
+                        detectionSize = detectionSize,
+                        detectionDrivers = detectionDrivers,
+                        sampleEvery = sampleEvery,
+                        initSize = initSize,
+                        s = s,
+                        sh = sh,
+                        K = K,
+                        keepEvery = keepEvery,
+                        finalTime = finalTime,
+                        max.memory = max.memory,
+                        max.wall.time = max.wall.time,
+                        endTimeEvery = endTimeEvery,
+                        silent = silent),
+                    mc.cores = mc.cores
+                    )
+    return(pop)
 }
 
+## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
 
 ## pass an adj matrix.
 ## offer convert poset to adj matrix.
@@ -16,14 +61,14 @@ oncoSimulIndiv <- function(adjm,
                            model = "Bozic",
                            numGenes = 30,
                            mu = 5e-7,
-                           detectionSize = 1e9,
-                           detectionDrivers = 6,
+                           detectionSize = 1e6,
+                           detectionDrivers = 4,
                            sampleEvery = 15,
                            initSize = 2000,
                            s = 0.1,
                            sh = -1,
-                           K = 2000,
-                           keep.every = sampleEvery,
+                           K = initSize/(exp(1) - 1),
+                           keepEvery = sampleEvery,
                            finalTime = 0.25 * 25 * 365,
                            max.memory = 2000,
                            max.wall.time = 200,
@@ -88,33 +133,41 @@ oncoSimulIndiv <- function(adjm,
                                  ratioForce = 2,  
                                  max.memory = max.memory, 
                                  max.wall.time = max.wall.time, 
-                                 keep.every = keep.every,  
+                                 keepEvery = keepEvery,  
                                  alpha = 0.0015,  
                                  K = K, 
                                  endTimeEvery = endTimeEvery, 
                                  finalDrivers = detectionDrivers, 
-                                 silent = silent ))
+                                 silent = silent ),
+                  silent = silent)
 
         if(!inherits(op, "try-error")) {
             if(!silent) {
                 cat("\n ... finished this run:")
-                cat("\n       TotalPopSize = ", op$TotalPopSize)
-                cat("\n       DriversLast = ", op$MaxDriversLast)
+                cat("\n       Total Pop Size = ", op$TotalPopSize)
+                cat("\n       Drivers Last = ", op$MaxDriversLast)
                 cat("\n       Final Time = ", op$FinalTime)
-                cat("\n       Numerical Issuses?", op$ti_dbl_min)
+                ## cat("\n       Numerical Issuses?", op$ti_dbl_min)
                 
-                cat("\n")
+                ##cat("\n")
             }
             ## browser()
             reachedCancer <- reachCancer(op, ndr = detectionDrivers,
                                          detectionSize = detectionSize,
                                          maxPopSize = 1e15)
+            if(!silent) {
+                if(reachedCancer)
+                    cat("\n ... Keeping this one\n")
+                else
+                    cat("\n ... Cancer not reached\n")
+            }
         } else {
             if(!silent)
-                cat("\n Current simulation aborted because of numerical problems.",
+                cat("\n Simulation aborted because of numerical problems.",
                     "Proceeding to next one.\n")
         }
     }
+    class(op) <- "oSimuli"
     return(op)
 }
 
@@ -122,7 +175,7 @@ oncoSimulIndiv <- function(adjm,
 
 
 
-plotPopAndDrivers <- function(z, col = c(8, "orange", 6:1),
+plotClonesDrivers <- function(z, col = c(8, "orange", 6:1),
                               log = "y",
                               ltyPop = 2:6,
                               lwdPop = 0.2,
@@ -188,7 +241,7 @@ reachCancer <- function(x, ndr = 0, detectionSize = 0,
     return(
         ( ((x$TotalPopSize >= detectionSize) ||
            (x$MaxDriversLast >= ndr)) &&
-         (x$ti_dbl_min == 0) &&
+         (x$ti_dbl_min == 0) && ## silly, since now impossible
          (x$TotalPopSize < maxPopSize) ## numerical issues here
          ))
 }
@@ -238,7 +291,7 @@ oncoSimul.internal <- function(restrict.table,
                       ratioForce = 2,
                       max.memory = 20000,
                       max.wall.time = 3600,
-                      keep.every = 20,
+                      keepEvery = 20,
                       alpha = 0.0015,
                       K = 1000,
                       endTimeEvery = NULL,
@@ -256,8 +309,8 @@ oncoSimul.internal <- function(restrict.table,
   if(initSize_iter < 100) {
     warning("initSize_iter too small?")
   }
-  if(keep.every < sampleEvery)
-    warning("setting keep.every to sampleEvery")
+  if(keepEvery < sampleEvery)
+    warning("setting keepEvery to sampleEvery")
   if(is.null(seed_gsl)) {## passing a null creates a random seed
     seed_gsl <- as.integer(round(runif(1, min = 0, max = 2^16)))
     if(!silent)
@@ -296,9 +349,9 @@ oncoSimul.internal <- function(restrict.table,
                         "time to finish, or can hit the wall time limit. "))
       }
   if(is.null(endTimeEvery))
-    endTimeEvery <- keep.every
-  if( (endTimeEvery > 0) && (endTimeEvery %% keep.every) )
-    warning("!(endTimeEvery %% keep.every)")
+    endTimeEvery <- keepEvery
+  if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
+    warning("!(endTimeEvery %% keepEvery)")
   ## a sanity check in restricTable, so no neg. indices for the positive deps
   neg.deps <- function(x) {
     ## checks a row of restrict.table
@@ -342,7 +395,7 @@ oncoSimul.internal <- function(restrict.table,
                  mutatorGenotype,
                  initMutant,
                  max.wall.time,
-                 keep.every,
+                 keepEvery,
                  alpha,
                  sh,
                  K,

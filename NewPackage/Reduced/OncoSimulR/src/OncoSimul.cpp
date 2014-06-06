@@ -203,11 +203,9 @@ static double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	++ti_dbl_min;
 	ti = DBL_MIN;
 	// Beware of this!!
-	// throw std::range_error("ti set to DBL_MIN");
+	throw std::range_error("ti set to DBL_MIN");
 	// Do not exit. Record it. Maybe abort simulation and go to a new one?
-	// FIXME
-	Rcpp::Rcout << "ti set to DBL_MIN\n";
-	
+	// Rcpp::Rcout << "ti set to DBL_MIN\n";
       }
       if(ti < 0.001) ++ti_e3;
       ti += currentTime;
@@ -886,9 +884,11 @@ SEXP Algorithm5(SEXP restrictTable_,
   double lastStoredSample;
   const double genTime = 4.0; // should be a parameter. For Bozic only.
 
-#ifndef _WIN32  
-  if(maxram)  setmemlimit(maxram);
-#endif
+  // Nope, do not use as you need to exit R to restore
+// #ifndef _WIN32  
+//   if(maxram)  setmemlimit(maxram);
+// #endif
+
   time_t start_time = time(NULL);
   double runningWallTime = 0;
 

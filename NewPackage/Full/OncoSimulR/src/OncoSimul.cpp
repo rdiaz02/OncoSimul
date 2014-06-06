@@ -584,7 +584,9 @@ static double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// Beware of this!!  throw std::range_error("ti set to DBL_MIN");
 	// Do not exit. Record it. We check for it now in R code. Maybe
 	// abort simulation and go to a new one?  FIXME
-	Rcpp::Rcout << "ti set to DBL_MIN\n";
+	// Rcpp::Rcout << "ti set to DBL_MIN\n";
+	// Yes, abort because o.w. we can repeat it many, manu times
+	throw std::range_error("ti set to DBL_MIN");
       }
       if(ti < 0.001) ++ti_e3;
       ti += currentTime;
