@@ -79,7 +79,7 @@ oncoSimulIndiv <- function(adjm,
                            detectionSize = 1e7,
                            detectionDrivers = 4,
                            sampleEvery = 10,
-                           initSize = 2000,
+                           initSize = 1000,
                            s = 0.1,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
@@ -94,7 +94,12 @@ oncoSimulIndiv <- function(adjm,
     call <- match.call()
     rt <- adjmat.to.restrictTable(adjm)
     
-    
+    if(numGenes > 64)
+        stop("Largest possible number of genes is 64")
+
+    if(keepEvery < sampleEvery)
+        warning("setting keepEvery to sampleEvery")
+
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -189,8 +194,10 @@ oncoSimulIndiv <- function(adjm,
                     cat("\n ... Cancer not reached\n")
             }
         } else {
+            if(length(grep("BAIL OUT NOW", op)))
+                stop("Unrecoverable error")
             if(!silent)
-                cat("\n Simulation aborted because of numerical problems.",
+                cat("\n Simulation aborted because of numerical or other problems.",
                     "Proceeding to next one.\n")
         }
     }
@@ -493,7 +500,7 @@ oncoSimul.internal <- function(restrict.table,
   ## FIXME: check argument types for typeFitness 
 
     ## FIXME: keepEvery not a multiple of sampleEvery
-    
+
   if(initSize_species < 10) {
     warning("initSize_species too small?")
   }
@@ -510,15 +517,15 @@ oncoSimul.internal <- function(restrict.table,
 
   numDrivers <- nrow(restrict.table)
   if(length(unique(restrict.table[, 1])) != numDrivers)
-    stop("EH??!! length(unique(restrict.table[, 1])) != numDrivers)")
+    stop("BAIL OUT NOW: EH??!! length(unique(restrict.table[, 1])) != numDrivers)")
   ddr <- restrict.table[, 1]
   if(any(diff(ddr) != 1))
-    stop(" any(diff(ddr) != 1")
+    stop("BAIL OUT NOW:  any(diff(ddr) != 1")
   ## sanity checks
   if(max(restrict.table[, 1]) != numDrivers)
-    stop("max(restrict.table[, 1]) != numDrivers")
+    stop("BAIL OUT NOW: max(restrict.table[, 1]) != numDrivers")
   if(numDrivers > numGenes)
-    stop("numDrivers > numGenes")
+    stop("BAIL OUT NOW: numDrivers > numGenes")
   
   non.dep.drivers <- restrict.table[which(restrict.table[, 2] == 0), 1]
 
@@ -553,7 +560,7 @@ oncoSimul.internal <- function(restrict.table,
     } else FALSE
   }
   if(any(apply(restrict.table, 1, neg.deps)))
-    stop("Negative dependencies in restriction table")
+    stop("BAIL OUT NOW: Negative dependencies in restriction table")
 
   ## transpose the table
   rtC <- convertRestrictTable(restrict.table)
@@ -757,7 +764,9 @@ adjmat.to.restrictTable <- function(x) {
     ## we have the zero
     ## x <- x[-1, -1]
     if(!is.null(colnames(x))) {
-        oi <- order(colnames(x))
+        ## FIXME: this makes sense with numeric labels for columns, but
+        ## not ow.
+        oi <- order(as.numeric(colnames(x)))
         if(any(oi != (1:ncol(x)))) {
             warning("Reordering adjacency matrix")
             x <- x[oi, oi]

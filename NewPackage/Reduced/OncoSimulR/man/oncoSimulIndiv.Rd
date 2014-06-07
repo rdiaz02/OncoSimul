@@ -245,8 +245,11 @@ p701 <- examplePosets[["p701"]]
 
 ## Bozic Model
 
-b1 <- oncoSimulIndiv(poset2AdjMat(p701), detectionSize = 1e6)
-plot(b1)
+b1 <- oncoSimulIndiv(poset2AdjMat(p701), keepEvery = 5,
+                     sampleEvery = 5,
+                     detectionSize = 1e8)
+plot(b1, addtot = TRUE)
+
 ## McFarland; need to modify sampleEvery, but use a reasonable keepEvery
 ## Note that detectionSize is huge, but will play no role
 ## finalTime is large, since this is a slower process
@@ -256,12 +259,31 @@ plot(b1)
 m1 <- oncoSimulIndiv(poset2AdjMat(p701),
                      model = "McFL",
                      mu = 5e-7,
-                     initSize = 2000,
-                     sampleEvery = 0.05,
+                     initSize = 4000,
+                     sampleEvery = 0.025,
                      finalTime = 15000,
                      keepEvery = 5,
                      detectionSize = 1e6) 
 plot(m1, addtot = TRUE, log = "")
+
+
+
+
+## Now we do not care about passengers, but want a few more drivers
+## before exiting. And we allow it to run for longer
+m2 <- oncoSimulIndiv(poset2AdjMat(examplePosets[["p1101"]]),
+                     model = "McFL",
+                     numGenes = 11,
+                     detectionDrivers = 10,
+                     mu = 5e-7,
+                     initSize = 4000,
+                     sampleEvery = 0.025,
+                     finalTime = 25000,
+                     keepEvery = 5,
+                     detectionSize = 1e6) 
+plot(m2, addtot = TRUE, log = "")
+
+
 
 
 }
