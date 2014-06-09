@@ -9,9 +9,9 @@ plotAdjMat(poset2AdjMat(examplePosets[["p1101"]]))
 
 p705 <- examplePosets[["p705"]]
 
-r1 <- oncoSimulIndiv(poset2AdjMat(p705), detectionSize = 1e6)
+r1 <- oncoSimulIndiv(p705, detectionSize = 1e6)
 
-p1 <- oncoSimulPop(20, poset2AdjMat(p705), detectionSize = 1e6,
+p1 <- oncoSimulPop(20, p705, detectionSize = 1e6,
                    sampleEvery = 10, mc.cores = 4)
 
 

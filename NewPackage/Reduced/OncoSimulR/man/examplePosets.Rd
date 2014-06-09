@@ -46,6 +46,11 @@ List of 13
 \references{
 %%  ~~ possibly secondary sources and usages ~~
 }
+\seealso{
+  \code{\link{poset}}
+}
+
+
 \examples{
 data(examplePosets)
 

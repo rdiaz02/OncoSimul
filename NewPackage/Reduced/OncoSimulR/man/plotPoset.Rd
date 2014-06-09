@@ -15,7 +15,7 @@ plotPoset(x, names = NULL, addroot = FALSE, box = FALSE, ...)
     A poset. A matrix with two columns where, in each row, the first
     column is the ancestor and the second the descendant. Note that
     there might be multiple rows with the same ancestor, and multiple
-    rows with the same descendant. See \code{\link{poset2AdjMat}}.
+    rows with the same descendant. See \code{\link{poset}}.
   }
   \item{names}{
     If not NULL, a vector of names for the nodes, with the same length
@@ -59,7 +59,7 @@ plotPoset(x, names = NULL, addroot = FALSE, box = FALSE, ...)
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-  \code{\link{examplePosets}}, \code{\link{poset2AdjMat}}
+  \code{\link{examplePosets}}, \code{\link{poset}}
 }
 \examples{
 data(examplePosets)

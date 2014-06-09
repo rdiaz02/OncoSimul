@@ -1,14 +1,15 @@
-\name{poset2AdjMat}
+\name{poset}
+\alias{poset}
 \alias{poset2AdjMat}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Obtain an adjacency matrix from a poset.
+  Poset
 }
 \description{
-  Posets are probably simpler to prepare by hand than adjacency matrices, but
-  our simulation functions use, as input, adjacency matrices. 
+  Poset: explanation, plotting posets, and conversion to adjacency matrix.
 }
 \usage{
+plotPoset(x)
 poset2AdjMat(x)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -46,7 +47,7 @@ poset2AdjMat(x)
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-  An adjacency matrix (for a directed graph).
+  For poset2AdjMat: An adjacency matrix (for a directed graph).
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}

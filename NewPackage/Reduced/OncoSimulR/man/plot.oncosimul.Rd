@@ -1,69 +1,133 @@
 \name{plot.oncosimul}
 \alias{plot.oncosimul}
+\alias{plot.oncosimulpop}
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+  Plot simulated tumor progression data.
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Plots data generated from the simulations, either for a single
+  individual or for a population of individuals, with time units in the
+  x axis and nubmer of cells in the y axis. By default, all clones
+  with the same number of drivers are plotted using the same colour (but
+  different line types), and clones with different number of drivers are
+  plotted in different colours.
 }
 \usage{
-plot.oncosimul(x, col = c(8, "orange", 6:1), log = "y", ltyPop = 2:6, lwdPop = 0.2, ltyDrivers = 1, lwdDrivers = 3, xlab = "Time units", ylab = "Number of cells", plotClones = TRUE, plotDrivers = TRUE, addtot = FALSE, addtotlwd = 0.5, yl = NULL, thinPops = FALSE, thinPops.keep = 0.1, thinPops.min = 2, ...)
+
+    plot.oncosimul(x, col = c(8, "orange", 6:1), log = "y",
+                   ltyPop = 2:6, lwdPop = 0.2, ltyDrivers = 1,
+                   lwdDrivers = 3, xlab = "Time units",
+                   ylab = "Number of cells", plotClones = TRUE,
+                   plotDrivers = TRUE, addtot = FALSE,
+                   addtotlwd = 0.5, yl = NULL, thinData = FALSE,
+                   thinData.keep = 0.1, thinData.min = 2, ...)
+
+    plot.oncosimulpop(x, ask = TRUE, col = c(8, "orange", 6:1), log = "y",
+                      ltyPop = 2:6, lwdPop = 0.2, ltyDrivers = 1,
+                      lwdDrivers = 3, xlab = "Time units",
+                      ylab = "Number of cells", plotClones = TRUE,
+                      plotDrivers = TRUE, addtot = FALSE,
+                      addtotlwd = 0.5, yl = NULL, thinData = FALSE,
+                      thinData.keep = 0.1, thinData.min = 2, ...)
+
+
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
-%%     ~~Describe \code{x} here~~
-}
+    An object of class \code{oncosimul} (for \code{plot.oncosimul}) or
+    \code{oncosimulpop} (for \code{plot.oncosimulpop}). 
+  }
+
+  \item{ask}{Same meaning as in \code{\link{par}}.    
+  }
+  
   \item{col}{
-%%     ~~Describe \code{col} here~~
+    Colour of the lines, where each type of clone (where type is defined
+    by number of drivers) has a different color. If there are many
+    drivers, col is recycled, so you might want to increase the number
+    of possible colours.
 }
   \item{log}{
-%%     ~~Describe \code{log} here~~
-}
-  \item{ltyPop}{
-%%     ~~Describe \code{ltyPop} here~~
-}
-  \item{lwdPop}{
-%%     ~~Describe \code{lwdPop} here~~
+    See \code{log} in \code{\link{plot.default}}. The default, "y", will
+    make the y axis logarithmic.
+  }
+  
+  \item{ltyClone}{
+
+    Line type for each clone. Recycled as needed. You probably do not
+    want to use lty=1 for any clone, to differentiate from the clone
+    type, unless you change the setting for \code{ltyDrivers}.
+
+  }
+  
+  \item{lwdClone}{
+    Line width for clones.
+
 }
   \item{ltyDrivers}{
-%%     ~~Describe \code{ltyDrivers} here~~
+    Line type for the driver type.
+    %%     ~~Describe \code{ltyDrivers} here~~
 }
-  \item{lwdDrivers}{
+\item{lwdDrivers}{
+  Line width for the driver type.
 %%     ~~Describe \code{lwdDrivers} here~~
 }
   \item{xlab}{
-%%     ~~Describe \code{xlab} here~~
+    Same as \code{xlab} in \code{\link{plot.default}}.
+    %%     ~~Describe \code{xlab} here~~
 }
-  \item{ylab}{
+\item{ylab}{
+      Same as \code{ylab} in \code{\link{plot.default}}.
 %%     ~~Describe \code{ylab} here~~
 }
-  \item{plotClones}{
+\item{plotClones}{
+  Should clones be plotted?
 %%     ~~Describe \code{plotClones} here~~
 }
-  \item{plotDrivers}{
+\item{plotDrivers}{
+  Should clone types (which are defined by number of drivers), be plotted?
 %%     ~~Describe \code{plotDrivers} here~~
 }
-  \item{addtot}{
+\item{addtot}{
+  If TRUE, add a line with the total populatino size.
 %%     ~~Describe \code{addtot} here~~
 }
-  \item{addtotlwd}{
+\item{addtotlwd}{
+  Line width for total population size.
 %%     ~~Describe \code{addtotlwd} here~~
 }
-  \item{yl}{
+\item{yl}{
+  If non NULL, limits of the y axis. Same as in
+  \code{\link{plot.default}}. If NULL, the limits are calculated automatically.
 %%     ~~Describe \code{yl} here~~
 }
-  \item{thinPops}{
+\item{thinData}{
+  If TRUE, the data plotted is a subset of the original data. The
+  original data are "thinned" in such a way that the origin of each
+  clone is not among the non-shown data (i.e., so that we can see when
+  each clone/driver originates).
+
+  Thining is done to reduce the plot size and to speed up plotting..
 %%     ~~Describe \code{thinPops} here~~
 }
   \item{thinPops.keep}{
-%%     ~~Describe \code{thinPops.keep} here~~
+    The fraction of the data to keep (actually, a lower bound on the
+    fraction of data to keep).
+
+    %%     ~~Describe \code{thinPops.keep} here~~
 }
-  \item{thinPops.min}{
+\item{thinPops.min}{
+  Any time point for which a clone has a population size < thinPops.min
+  will be kept (i.e., will not be removed from) in the data.
+  
 %%     ~~Describe \code{thinPops.min} here~~
 }
-  \item{\dots}{
+\item{\dots}{
+  Other arguments passed to \code{plots}. For instance, \code{main}.
 %%     ~~Describe \code{\dots} here~~
 }
 }
@@ -71,7 +135,7 @@ plot.oncosimul(x, col = c(8, "orange", 6:1), log = "y", ltyPop = 2:6, lwdPop = 0
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
+  %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
@@ -81,7 +145,8 @@ plot.oncosimul(x, col = c(8, "orange", 6:1), log = "y", ltyPop = 2:6, lwdPop = 0
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+  Ramon Diaz-Uriarte
+  %%  ~~who you are~~
 }
 \note{
 %%  ~~further notes~~
@@ -90,43 +155,29 @@ plot.oncosimul(x, col = c(8, "orange", 6:1), log = "y", ltyPop = 2:6, lwdPop = 0
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{oncoSimulIndiv}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+data(examplePosets)
+p701 <- examplePosets[["p701"]]
 
-## The function is currently defined as
-function (x, col = c(8, "orange", 6:1), log = "y", ltyPop = 2:6, 
-    lwdPop = 0.2, ltyDrivers = 1, lwdDrivers = 3, xlab = "Time units", 
-    ylab = "Number of cells", plotClones = TRUE, plotDrivers = TRUE, 
-    addtot = FALSE, addtotlwd = 0.5, yl = NULL, thinPops = FALSE, 
-    thinPops.keep = 0.1, thinPops.min = 2, ...) 
-{
-    if (thinPops) 
-        x <- thin.pops(x, keep = thinPops.keep, min.keep = thinPops.min)
-    ndr <- apply(x$Genotypes[1:x$NumDrivers, , drop = FALSE], 
-        2, sum)
-    if (is.null(yl)) 
-        yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 
-            1, sum)))
-    if (plotClones) {
-        plotClones(x, ndr = ndr, xlab = xlab, ylab = ylab, lty = ltyPop, 
-            col = col, ylim = yl, lwd = lwdPop, axes = FALSE, 
-            log = log, ...)
-    }
-    if (plotClones && plotDrivers) 
-        par(new = TRUE)
-    if (plotDrivers) {
-        plotDrivers0(x, timescale = 1, trim.no.drivers = FALSE, 
-            xlab = "", ylab = "", lwd = lwdDrivers, lty = ltyDrivers, 
-            col = col, addtot = addtot, addtotlwd = addtotlwd, 
-            log = log, ylim = yl, ...)
-    }
-  }
+## simulate and plot a single individual
+b1 <- oncoSimulIndiv(p701, keepEvery = 5,
+                     sampleEvery = 5,
+                     detectionSize = 1e8)
+plot(b1, addtot = TRUE)
+
+
+## simulate and plot 9 individuals out of 20
+p1 <- oncoSimulPop(20, p701, detectionSize = 1e7,
+                   sampleEvery = 10, mc.cores = 4)
+
+par(mfrow = c(3, 3))
+plot(p1[1:9], ask = FALSE)
+
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{hplot}
+
+

@@ -1,11 +1,19 @@
 samplePop <- function(x, timeSample = "last", typeSample = "whole",
                       thresholdWhole = 0.5) {
-    z <- do.call(rbind,
-                 lapply(x,
-                        get.mut.vector,
-                        timeSample = timeSample,
-                        typeSample = typeSample,
-                        thresholdWhole = thresholdWhole))
+    if(inherits(x, "oncosimulpop"))
+        z <- do.call(rbind,
+                     lapply(x,
+                            get.mut.vector,
+                            timeSample = timeSample,
+                            typeSample = typeSample,
+                            thresholdWhole = thresholdWhole))
+    else {
+        z <- get.mut.vector(x,
+                            timeSample = timeSample,
+                            typeSample = typeSample,
+                            thresholdWhole = thresholdWhole)
+        dim(z) <- c(1, length(z))
+    }
     cat("\n Subjects by Genes matrix of ",
         nrow(z), " subjects and ",
         ncol(z), " genes:\n")
@@ -14,7 +22,7 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
 
 
 oncoSimulPop <- function(Nindiv,
-                         adjm,
+                         poset,
                          model = "Bozic",
                          numGenes = 30,
                          mu = 5e-7,
@@ -30,7 +38,7 @@ oncoSimulPop <- function(Nindiv,
                          onlyCancer = TRUE,
                          max.memory = 2000,
                          max.wall.time = 200,
-                         endTimeEvery = -9,
+#                         endTimeEvery = -9,
                          silent = FALSE,
                          mc.cores = detectCores()) {
 
@@ -42,7 +50,7 @@ oncoSimulPop <- function(Nindiv,
     pop <- mclapply(seq.int(Nindiv),
                     function(x)
                     oncoSimulIndiv(
-                        adjm = adjm,
+                        poset = poset,
                         model = model,
                         numGenes = numGenes,
                         mu = mu,
@@ -58,7 +66,7 @@ oncoSimulPop <- function(Nindiv,
                         onlyCancer = onlyCancer,
                         max.memory = max.memory,
                         max.wall.time = max.wall.time,
-                        endTimeEvery = endTimeEvery,
+##                        endTimeEvery = endTimeEvery,
                         silent = silent),
                     mc.cores = mc.cores
                     )
@@ -72,7 +80,7 @@ oncoSimulPop <- function(Nindiv,
 ## pass an adj matrix.
 ## offer convert poset to adj matrix.
 
-oncoSimulIndiv <- function(adjm,
+oncoSimulIndiv <- function(poset,
                            model = "Bozic",
                            numGenes = 30,
                            mu = 5e-7,
@@ -92,7 +100,7 @@ oncoSimulIndiv <- function(adjm,
                            silent = FALSE
                            ) {
     call <- match.call()
-    rt <- adjmat.to.restrictTable(adjm)
+    rt <- poset.to.restrictTable(poset)
     
     if(numGenes > 64)
         stop("Largest possible number of genes is 64")
@@ -242,8 +250,8 @@ print.oncosimulpop <- function(x) {
 plot.oncosimulpop <- function(x, ask = TRUE,
                               col = c(8, "orange", 6:1),
                               log = "y",
-                              ltyPop = 2:6,
-                              lwdPop = 0.2,
+                              ltyClone = 2:6,
+                              lwdClone = 0.2,
                               ltyDrivers = 1,
                               lwdDrivers = 3,
                               xlab = "Time units",
@@ -253,9 +261,9 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                               addtot = FALSE,
                               addtotlwd = 0.5,
                               yl = NULL,
-                              thinPops = FALSE,
-                              thinPops.keep = 0.1,
-                              thinPops.min = 2,
+                              thinData = FALSE,
+                              thinData.keep = 0.1,
+                              thinData.min = 2,
                               ...
                               ) {
     op <- par(ask = ask)
@@ -264,8 +272,8 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                    plot.oncosimul(z,
                           col = col,
                           log = log,
-                          ltyPop = ltyPop,
-                          lwdPop = lwdPop,
+                          ltyClone = ltyClone,
+                          lwdClone = lwdClone,
                           ltyDrivers = ltyDrivers,
                           lwdDrivers = lwdDrivers,
                           xlab = xlab,
@@ -275,9 +283,9 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                           addtot = addtot,
                           addtotlwd = addtotlwd,
                           yl = yl,
-                          thinPops = thinPops,
-                          thinPops.keep = thinPops.keep,
-                          thinPops.min = thinPops.min,
+                          thinData = thinData,
+                          thinData.keep = thinData.keep,
+                          thinData.min = thinData.min,
                           ...))
 }
                             
@@ -285,8 +293,8 @@ plot.oncosimulpop <- function(x, ask = TRUE,
 
 plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
                            log = "y",
-                           ltyPop = 2:6,
-                           lwdPop = 0.2,
+                           ltyClone = 2:6,
+                           lwdClone = 0.2,
                            ltyDrivers = 1,
                            lwdDrivers = 3,
                            xlab = "Time units",
@@ -296,29 +304,32 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
                            addtot = FALSE,
                            addtotlwd = 0.5,
                            yl = NULL,
-                           thinPops = FALSE,
-                           thinPops.keep = 0.1,
-                           thinPops.min = 2,
+                           thinData = FALSE,
+                           thinData.keep = 0.1,
+                           thinData.min = 2,
                            ...
                            ) {
 
-    if(thinPops)
-        x <- thin.pops(x, keep = thinPops.keep, min.keep = thinPops.min)
+    if(thinData)
+        x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
     
     ndr <- apply(x$Genotypes[1:x$NumDrivers, , drop = FALSE], 2, sum)
 
-    if(is.null(yl))
-        yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
-
+    if(is.null(yl)) {
+        if(log %in% c("y", "xy", "yx") )
+            yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+        else
+            yl <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+    }
     if(plotClones) {
         plotClones(x,
                    ndr = ndr, 
                    xlab = xlab,
                    ylab = ylab,
-                   lty = ltyPop,
+                   lty = ltyClone,
                    col = col, 
                    ylim = yl,
-                   lwd = lwdPop,
+                   lwd = lwdClone,
                    axes = FALSE,
                    log = log,
                    ...)
@@ -655,7 +666,7 @@ create.drivers.by.time <- function(tmp, numDrivers) {
 ## For plotting, this helps decrease huge file sizes, while still showing
 ## the start of each clone, if it was originally recorded.
 
-thin.pops <- function(x, keep = 0.1, min.keep = 3) {
+thin.pop.data <- function(x, keep = 0.1, min.keep = 3) {
     norig <- nrow(x$pops.by.time)
     keep1 <- round(seq.int(from = 1, to = norig,
                            length.out = round(norig * keep)))

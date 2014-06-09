@@ -1,8 +1,15 @@
 \name{oncoSimulIndiv}
 \alias{oncoSimulIndiv}
+\alias{oncoSimulPop}
+\alias{print.oncosimul}
+\alias{print.oncosimulpop}
+\alias{summary.oncosimul}
+\alias{summary.oncosimulpop}
+
+
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Simulate tumor progression.
+  Simulate tumor progression for one or more individuals.
 }
 \description{
   
@@ -10,17 +17,37 @@
   order of driver mutations. Optionally add passenger
   mutations. Simulation is done using the BNB algorithm of Mather et
   al., 2012.
+
+
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 
 }
 \usage{
- oncoSimulIndiv(adjm, model = "Bozic", numGenes = 30, mu = 5e-07, detectionSize = 1e+06, detectionDrivers = 4, sampleEvery = 15, initSize = 2000, s = 0.1, sh = -1, K = initSize/(exp(1) - 1), keepEvery = sampleEvery, finalTime = 0.25 * 25 * 365, onlyCancer = TRUE, max.memory = 2000, max.wall.time = 200, silent = FALSE)
+ oncoSimulIndiv(poset, model = "Bozic", numGenes = 30, mu = 5e-07,
+                detectionSize = 1e+06, detectionDrivers = 4,
+                sampleEvery = 15, initSize = 2000, s = 0.1, sh = -1,
+                K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
+                max.memory = 2000, max.wall.time = 200,
+                silent = FALSE)
+
+ oncoSimulPop(Nindiv, poset, model = "Bozic", numGenes = 30, mu = 5e-07,
+                detectionSize = 1e+06, detectionDrivers = 4,
+                sampleEvery = 15, initSize = 2000, s = 0.1, sh = -1,
+                K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
+                max.memory = 2000, max.wall.time = 200,
+                silent = FALSE, mc.cores = detectCores())
+
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{adjm}{
+  \item{Nindiv}{Number of individuals or number of different
+    trajectories to simulate.}
+  \item{poset}{
     
-    The adjacency matrix that specifies the order restrictions. See \code{\link{poset2AdjMat}}.
+    The poset that specifies the order restrictions. See \code{\link{poset}}.
 %%     ~~Describe \code{adjm} here~~
 }
 \item{model}{
@@ -118,6 +145,10 @@
   numerical problems.
 %%     ~~Describe \code{silent} here~~
 }
+
+\item{mc.cores}{Number of cores to use when simulating more than one
+  individual (i.e., when calling oncoSimulPop).}
+
 }
 \details{
 
@@ -131,11 +162,21 @@
   Supplementary Material. The model called "Bozic" is based on Bozic et
   al., 2010, and the model called "McFarland" in McFarland et al., 2013.
 
-  
-%%  ~~ If necessary, more details than the description above ~~
+
+  oncoSimulPop simply calls oncoSimulIndiv multiple times. When run on
+  POSIX systems, it can use multiple cores (via mclapply).
+
+
+  The \code{summary} methods for these classes return some of the return
+  values (see next) as a one-row (for class oncosimul) or multiple row
+  (for class oncosimulpop) data frame.  The \code{print} methods for
+  these classes simply print the summary.
+
 }
 \value{
-  A list, of class "oncosimul", with the following components:
+  
+  For \code{oncoSimulIndiv} a list, of class "oncosimul", with the
+  following components:
   
   \item{pops.by.time }{A matrix of the population sizes of the clones,
     with clones in columns and time in row. Not all clones are shown here,
@@ -193,6 +234,9 @@
     rates.}
   
 
+  For \code{oncoSimulPop} a list of length \code{Nindiv}, and of class
+  \code{"oncosimulpop"}, where each element of the list is itself a
+  list, of class \code{oncosimul}, with components as described above.
   
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -232,10 +276,13 @@ evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-  \code{\link{plot.oncosimul}}, \code{\link{print.oncosimul}},
-  \code{\link{summary.oncosimul}},
-  \code{\link{oncoSimulPop}}, \code{\link{examplePosets}},
-  \code{\link{poset2AdjMat}}
+  \code{\link{plot.oncosimul}},
+  %% \code{\link{print.oncosimul}},
+  %% \code{\link{summary.oncosimul}},
+  \code{\link{examplePosets}},
+  \code{\link{poset2AdjMat}},
+  \code{\link{samplePop}}
+  
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
@@ -245,9 +292,12 @@ p701 <- examplePosets[["p701"]]
 
 ## Bozic Model
 
-b1 <- oncoSimulIndiv(poset2AdjMat(p701), keepEvery = 5,
+b1 <- oncoSimulIndiv(p701, keepEvery = 5,
                      sampleEvery = 5,
                      detectionSize = 1e8)
+b1
+summary(b1)
+
 plot(b1, addtot = TRUE)
 
 ## McFarland; need to modify sampleEvery, but use a reasonable keepEvery
@@ -256,7 +306,7 @@ plot(b1, addtot = TRUE)
 ## initSize is set to 4000 so the default K is larger and we are likely
 ## to reach cancer. Alternatively, set K = 2000.
 
-m1 <- oncoSimulIndiv(poset2AdjMat(p701),
+m1 <- oncoSimulIndiv(p701,
                      model = "McFL",
                      mu = 5e-7,
                      initSize = 4000,
@@ -269,9 +319,10 @@ plot(m1, addtot = TRUE, log = "")
 
 
 
-## Now we do not care about passengers, but want a few more drivers
+## Now we do not care about passengers, but we want to use a different
+## graph, and we want a few more drivers
 ## before exiting. And we allow it to run for longer
-m2 <- oncoSimulIndiv(poset2AdjMat(examplePosets[["p1101"]]),
+m2 <- oncoSimulIndiv(examplePosets[["p1101"]],
                      model = "McFL",
                      numGenes = 11,
                      detectionDrivers = 10,
@@ -282,6 +333,12 @@ m2 <- oncoSimulIndiv(poset2AdjMat(examplePosets[["p1101"]]),
                      keepEvery = 5,
                      detectionSize = 1e6) 
 plot(m2, addtot = TRUE, log = "")
+
+
+## Simulating 50 individual trajectories
+
+p1 <- oncoSimulPop(50, p701, detectionSize = 1e7,
+                   sampleEvery = 10, mc.cores = 4)
 
 
 
