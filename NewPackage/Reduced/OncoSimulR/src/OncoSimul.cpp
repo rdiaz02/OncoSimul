@@ -509,13 +509,8 @@ static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
 
 
   if(numMutablePosParent > 1) {
-    // with gsl that gets a runif from 0 to numMutablePosParent - 1 inclusive
-    // mutatedPos = mutablePos[gsl_rng_uniform_int(r, numMutablePosParent)];
     std::uniform_int_distribution<int> unif(0, numMutablePosParent - 1);
-    int the_unif = unif(ran_generator);
-    Rcpp::Rcout << "\n numMutablePosParent " <<  numMutablePosParent;
-    Rcpp::Rcout << "\n    the_unif " << the_unif << " ";
-    mutatedPos = mutablePos[the_unif];
+    mutatedPos = mutablePos[unif(ran_generator)];
   } else {
     mutatedPos = mutablePos[0];
   } 
