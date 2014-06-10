@@ -23,7 +23,7 @@
 
 }
 \usage{
- oncoSimulIndiv(poset, model = "Bozic", numGenes = 30, mu = 5e-07,
+ oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 5e-07,
                 detectionSize = 1e+06, detectionDrivers = 4,
                 sampleEvery = 15, initSize = 2000, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
@@ -31,7 +31,7 @@
                 max.memory = 2000, max.wall.time = 200,
                 silent = FALSE)
 
- oncoSimulPop(Nindiv, poset, model = "Bozic", numGenes = 30, mu = 5e-07,
+ oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 5e-07,
                 detectionSize = 1e+06, detectionDrivers = 4,
                 sampleEvery = 15, initSize = 2000, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
@@ -55,15 +55,16 @@
   to "McFL").
 %%     ~~Describe \code{model} here~~
 }
-\item{numGenes}{
-  The total number of genes tracked. Must be smaller than 64. This
-  includes both driver and passenger genes.
-
-  All driver genes should be included in the adjacency matrix of
-  restrictions (even if they depend on no one and no one depends on
-  them), and will be numbered from 1 to the total number of driver
-  genes. Thus, passenger genes will be numbered from (number of driver
-  genes + 1):numGenes.
+\item{numPassengers}{
+  
+  The number of passenger genes.The total number of genes (drivers plus
+  passengers) must be smaller than 64.
+  
+  All driver genes should be included in the poset (even if they depend
+  on no one and no one depends on them), and will be numbered from 1 to
+  the total number of driver genes. Thus, passenger genes will be
+  numbered from (number of driver genes + 1):(number of drivers + number
+  of passengers).
 %%     ~~Describe \code{numGenes} here~~
 }
 \item{mu}{
@@ -323,7 +324,7 @@ plot(m1, addtot = TRUE, log = "")
 ## before exiting. And we allow it to run for longer
 m2 <- oncoSimulIndiv(examplePosets[["p1101"]],
                      model = "McFL",
-                     numGenes = 11,
+                     numPassengers = 0,
                      detectionDrivers = 10,
                      mu = 5e-7,
                      initSize = 4000,

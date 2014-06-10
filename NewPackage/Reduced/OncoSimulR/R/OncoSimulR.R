@@ -24,7 +24,7 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
 oncoSimulPop <- function(Nindiv,
                          poset,
                          model = "Bozic",
-                         numGenes = 30,
+                         numPassengers = 30,
                          mu = 5e-7,
                          detectionSize = 1e7,
                          detectionDrivers = 4,
@@ -52,7 +52,7 @@ oncoSimulPop <- function(Nindiv,
                     oncoSimulIndiv(
                         poset = poset,
                         model = model,
-                        numGenes = numGenes,
+                        numPassengers = numPassengers,
                         mu = mu,
                         detectionSize = detectionSize,
                         detectionDrivers = detectionDrivers,
@@ -82,7 +82,7 @@ oncoSimulPop <- function(Nindiv,
 
 oncoSimulIndiv <- function(poset,
                            model = "Bozic",
-                           numGenes = 30,
+                           numPassengers = 30,
                            mu = 5e-7,
                            detectionSize = 1e7,
                            detectionDrivers = 4,
@@ -101,6 +101,10 @@ oncoSimulIndiv <- function(poset,
                            ) {
     call <- match.call()
     rt <- poset.to.restrictTable(poset)
+
+
+    numDrivers <- nrow(rt)
+    numGenes <- (numDrivers + numPassengers)
     
     if(numGenes > 64)
         stop("Largest possible number of genes is 64")

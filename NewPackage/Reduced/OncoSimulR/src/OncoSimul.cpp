@@ -852,7 +852,7 @@ SEXP Algorithm5(SEXP restrictTable_,
     using namespace Rcpp;
 
   precissionLoss();
-
+  
   const IntegerMatrix restrictTable(restrictTable_);
   const int numDrivers = as<int>(numDrivers_);
   const int numGenes = as<int>(numGenes_);
