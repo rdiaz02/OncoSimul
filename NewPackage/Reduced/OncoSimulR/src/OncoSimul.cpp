@@ -9,7 +9,8 @@
 #include "OncoSimul.h"
 #include <limits>
 #include <iostream>
-#include <gsl/gsl_rng.h> // here? in the .h
+//#include <gsl/gsl_rng.h> // here? in the .h
+#include <random>
 #include <bitset>
 #include <set>
 #include <iterator>
@@ -42,25 +43,26 @@
 // }
 
 
-#ifdef _WIN32
-void setmemlimit(const long maxram){
-}
-#endif
-#ifndef _WIN32
-// Will this work under Windows? Probably not. OK, I do not care much.
-void setmemlimit(const long maxram){
-  // try to prevent any overhead if not set
-  if(maxram > 0) {
-    struct rlimit memlimit;
-    long bytes;
+// #ifdef _WIN32
+// void setmemlimit(const long maxram){
+// }
+// #endif
+// #ifndef _WIN32
+// // Will this work under Windows? Probably not. OK, I do not care much.
+// // No longer used
+// void setmemlimit(const long maxram){
+//   // try to prevent any overhead if not set
+//   if(maxram > 0) {
+//     struct rlimit memlimit;
+//     long bytes;
     
-    bytes = maxram * (1024*1024);
-    memlimit.rlim_cur = bytes;
-    memlimit.rlim_max = bytes;
-    setrlimit(RLIMIT_AS, &memlimit);
-  }
-}
-#endif
+//     bytes = maxram * (1024*1024);
+//     memlimit.rlim_cur = bytes;
+//     memlimit.rlim_max = bytes;
+//     setrlimit(RLIMIT_AS, &memlimit);
+//   }
+// }
+// #endif
 
 
 typedef int myT;
@@ -490,12 +492,13 @@ static inline void new_sp_bitset(unsigned int& sp, const Genotype64& newGenotype
 
 
 static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
-			  gsl_rng *r,
-			  std::vector<int>& mutablePos,
-			  const Genotype64& nextMutantGenotype,
-			  // const int& nextMutant,
-			  // const std::vector<Genotype64>& Genotypes,
-			  const int& numGenes) {
+				 //gsl_rng *r,
+				 std::mt19937& ran_generator, 
+				 std::vector<int>& mutablePos,
+				 const Genotype64& nextMutantGenotype,
+				 // const int& nextMutant,
+				 // const std::vector<Genotype64>& Genotypes,
+				 const int& numGenes) {
   numMutablePosParent = 0;
   for(int i = 0; i < numGenes; ++i) {
     if( !nextMutantGenotype.test(i) ) { 
@@ -504,8 +507,15 @@ static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
     }
   }
 
+
   if(numMutablePosParent > 1) {
-    mutatedPos = mutablePos[gsl_rng_uniform_int(r, numMutablePosParent)];
+    // with gsl that gets a runif from 0 to numMutablePosParent - 1 inclusive
+    // mutatedPos = mutablePos[gsl_rng_uniform_int(r, numMutablePosParent)];
+    std::uniform_int_distribution<int> unif(0, numMutablePosParent - 1);
+    int the_unif = unif(ran_generator);
+    Rcpp::Rcout << "\n numMutablePosParent " <<  numMutablePosParent;
+    Rcpp::Rcout << "\n    the_unif " << the_unif << " ";
+    mutatedPos = mutablePos[the_unif];
   } else {
     mutatedPos = mutablePos[0];
   } 
@@ -941,8 +951,13 @@ SEXP Algorithm5(SEXP restrictTable_,
   int u_2 = -99;
 
   //GSL rng
-  gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
-  gsl_rng_set (r, (unsigned long) seed);
+  // gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
+  // gsl_rng_set (r, (unsigned long) seed);
+
+  // C++11 random number
+  std::mt19937 ran_generator(seed);
+
+
 
   Genotype64 newGenotype;
   std::vector<Genotype64> Genotypes(1);
@@ -1125,7 +1140,8 @@ SEXP Algorithm5(SEXP restrictTable_,
 	forceSample = true;
 	simulsDone = true;
       }
-      getMutatedPos_bitset(mutatedPos, numMutablePosParent, r, 
+      getMutatedPos_bitset(mutatedPos, numMutablePosParent, //r,
+			   ran_generator,
 			   mutablePos,
 			   Genotypes[nextMutant], 
 			   numGenes);

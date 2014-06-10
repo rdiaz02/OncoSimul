@@ -247,21 +247,20 @@
 \references{
 
   Bozic, I., et al.,  (2010). Accumulation of driver and passenger mutations during tumor
-  progression. {\em Proceedings of the National Academy of Sciences of the United
-  States of America\/}, {\bf 107}, 18545--18550.
+  progression. \emph{ Proceedings of the National Academy of Sciences of the United
+  States of America\/}, \bold{107}, 18545--18550.
 
   Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
 of mutations during tumor progression: effects of passenger mutations,
 evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
 
   McFarland, C.~D. et al. (2013). Impact of deleterious passenger
-  mutations on cancer progression.  {\em Proceedings of the National
-  Academy of Sciences of the United States of America\/}, {\bf 110}(8),
+  mutations on cancer progression.  \emph{Proceedings of the National
+  Academy of Sciences of the United States of America\/}, \bold{110}(8),
   2910--5.
 
   Mather, W.~H., Hasty, J., and Tsimring, L.~S. (2012). Fast stochastic
-  algorithm for simulating evolutionary population dynamics.  {\em
-    Bioinformatics (Oxford, England)\/}, {\bf 28}(9), 1230--1238.
+  algorithm for simulating evolutionary population dynamics.  \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
 
   
 %% ~put references to the literature/web site here ~
