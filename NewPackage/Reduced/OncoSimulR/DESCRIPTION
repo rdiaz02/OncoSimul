@@ -8,6 +8,6 @@ Maintainer: Ramon Diaz-Uriarte <ramon.diaz@iib.uam.es>
 Description: Functions for simulating cancer progression data, including drivers and passengers, and allowing for order restrictions. 
 License: GPL (>= 3)
 Depends: 
-Imports: Rcpp (>= 0.9.14), parallel, data.table, graph
+Imports: Rcpp (>= 0.11.1), parallel, data.table, graph
 LinkingTo: Rcpp
 
