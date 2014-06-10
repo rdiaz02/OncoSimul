@@ -16,6 +16,7 @@ p1 <- oncoSimulPop(20, p705, detectionSize = 1e6,
 
 
 
+
 set.seed(40) ## algo2
 r1 <- oncoSimulIndiv(posetToAdj(p705), detectionSize = 1e9)
 

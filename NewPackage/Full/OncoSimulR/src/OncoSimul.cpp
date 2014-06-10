@@ -2473,9 +2473,10 @@ SEXP Algorithm5(SEXP restrictTable_,
   // if(typeFitness == "mcfarland")
   //   e1r = (1.0/K) * e1;
 
+  
   return 
     List::create(Named("pops.by.time") = outNS,
-		 Named("NumSpecies") = uniqueGenotypes.size(), 
+		 Named("NumClones") = uniqueGenotypes.size(), 
 		 Named("TotalPopSize") = totPopSize,
 		 Named("Genotypes") = returnGenotypes,
 		 Named("MaxNumDrivers") = maxNumDrivers,
