@@ -406,7 +406,7 @@ get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
     if(timeSample == "last") {
         return(as.numeric((tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
                                       tmp$Genotypes)/tmp$TotalPopSize) > threshold))
-    } else if (timeSample == "uniform") {
+    } else if (timeSample %in% c("uniform", "unif")) {
         the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
         pop <- tmp$pops.by.time[the.time, -1]
         popSize <- tmp$PerSampleStats[the.time, 1]
@@ -423,7 +423,7 @@ get.mut.vector.singlecell <- function(tmp, timeSample = "last") {
     
     if(timeSample == "last") {
         the.time <- nrow(tmp$pops.by.time)
-    } else if (timeSample == "uniform") {
+    } else if (timeSample %in% c("uniform", "unif")) {
         the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
     }
     pop <- tmp$pops.by.time[the.time, -1]

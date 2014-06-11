@@ -25,19 +25,20 @@ samplePop(x, timeSample = "last", typeSample = "whole", thresholdWhole = 0.5)
     An object of class \code{oncosimulpop}.
 %%     ~~Describe \code{x} here~~
 }
-  \item{timeSample}{
+\item{timeSample}{
+  
     "last" means to sample each individual in the very last time period
-    of the simulation. "unif" means sampling each individual at a time
-    choosen uniformly from all the times recorded in the simulation
-    between the time when the first driver appeared and the final time
-    period. "unif" means that it is almost sure that different
-    individuals will be sampled at different times. "last" does not
-    guarantee that different individuals will be sample at the same time
-    unit, only that all will be sampled in the last time unit of their
-    simulation. 
+    of the simulation. "unif" (or "uniform") means sampling each
+    individual at a time choosen uniformly from all the times recorded
+    in the simulation between the time when the first driver appeared
+    and the final time period. "unif" means that it is almost sure that
+    different individuals will be sampled at different times. "last"
+    does not guarantee that different individuals will be sample at the
+    same time unit, only that all will be sampled in the last time unit
+    of their simulation.
     
-
 }
+
 \item{typeSample}{
   "singleCell" (or "single") for single cell sampling, where the
   probability of sampling a cell (a clone) is directly proportional to
