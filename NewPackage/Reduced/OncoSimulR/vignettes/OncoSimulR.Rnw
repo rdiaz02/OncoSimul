@@ -1,0 +1,75 @@
+% \VignetteIndexEntry{ADaCGH2 Overview}
+% \VignetteDepends{ADaCGH2}
+% \VignetteKeywords{ADaCGH2 CGH segmentation parallelization}
+% \VignettePackage{ADaCGH2}
+% \VignetteEngine{knitr::knitr}
+
+\documentclass[a4paper,11pt]{article}
+\usepackage{amsmath}
+\usepackage[authoryear,round]{natbib}
+\usepackage{threeparttable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{verbose,a4paper,tmargin=23mm,bmargin=26mm,lmargin=28mm,rmargin=28mm}
+
+
+\SweaveOpts{echo=TRUE}
+
+%\usepackage{tikz}
+%\usetikzlibrary{arrows,shapes,positioning}
+
+\usepackage[latin1]{inputenc}
+
+
+\usepackage{gitinfo}
+
+% Uncomment for BioC
+% \usepackage{datetime}
+% \newdateformat{mydate}{\THEDAY-\monthname[\THEMONTH]-\THEYEAR}
+
+
+
+\title{\input{title.tex}}
+\author{Ramon Diaz-Uriarte\\
+  Dept. Biochemistry, Universidad Aut\'onoma de Madrid \\ 
+  Instituto de Investigaciones Biom\'edicas ``Alberto Sols'' (UAM-CSIC)\\
+  Madrid, Spain\\
+{\small \texttt{ramon.diaz@iib.uam.es}} \\
+{\small \texttt{rdiaz02@gmail.com}} \\
+ }
+%% \date{\the\year-\the\month-\the\day}
+%% \date{\mydate\today}
+ \date{\gitAuthorDate\ {\footnotesize (Rev: \gitAbbrevHash)}}
+\begin{document}
+\maketitle
+
+%% Remember to add BiocStyle to Suggests
+%%
+%% I get lots of problems, so will try later.
+%% <<style, eval=TRUE, echo=FALSE, results=tex>>=
+%% BiocStyle::latex()
+%% @
+
+\tableofcontents
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+%%% Local Variables:
+%%% TeX-master: t
+%%% ispell-local-dictionary: "en_US"
+%%% coding: iso-8859-15
+%%% End:
+
+
+
+

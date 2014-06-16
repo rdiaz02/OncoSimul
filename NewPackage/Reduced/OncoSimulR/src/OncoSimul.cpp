@@ -350,7 +350,7 @@ static double Algo3_st(const spParamsP& spP, const double& t){
 }
 
 // this is the log of the ratio of death rates
-// so the the difference of the successie death rates, if using
+// so the the difference of the successive death rates, as using
 // the log version.
 static double returnMFE(double& e1,
 			const double& K,
