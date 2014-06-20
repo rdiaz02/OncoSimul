@@ -33,6 +33,7 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
     cat("\n Subjects by Genes matrix of ",
         nrow(z), " subjects and ",
         ncol(z), " genes:\n")
+    colnames(z) <- paste0("G.", seq_len(ncol(z)))
     return(z)
 }
 

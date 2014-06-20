@@ -1,7 +1,7 @@
-% \VignetteIndexEntry{ADaCGH2 Overview}
-% \VignetteDepends{ADaCGH2}
-% \VignetteKeywords{ADaCGH2 CGH segmentation parallelization}
-% \VignettePackage{ADaCGH2}
+% \VignetteIndexEntry{OncoSimulR Overview}
+% \VignetteDepends{OncoSimulR}
+% \VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
+% \VignettePackage{OncoSimulR}
 % \VignetteEngine{knitr::knitr}
 
 \documentclass[a4paper,11pt]{article}
@@ -14,7 +14,7 @@
 \geometry{verbose,a4paper,tmargin=23mm,bmargin=26mm,lmargin=28mm,rmargin=28mm}
 
 
-\SweaveOpts{echo=TRUE}
+%% \SweaveOpts{echo=TRUE}
 
 %\usepackage{tikz}
 %\usetikzlibrary{arrows,shapes,positioning}
@@ -30,7 +30,7 @@
 
 
 
-\title{\input{title.tex}}
+\title{Using OncoSimulR}
 \author{Ramon Diaz-Uriarte\\
   Dept. Biochemistry, Universidad Aut\'onoma de Madrid \\ 
   Instituto de Investigaciones Biom\'edicas ``Alberto Sols'' (UAM-CSIC)\\
@@ -53,6 +53,111 @@
 
 \tableofcontents
 
+
+<<>>=
+opts_knit$set(concordance = TRUE)
+@ 
+\section{Introduction}
+
+This vignette presents the OncoSimulR package. blablblab
+
+\begin{itemize}
+\item BNB algorithm
+\item restrictions
+\end{itemize}
+
+
+\section{Simulating cancer progression}
+
+
+We can simulate the progression in a single individual. Using an example
+very similar to the one in the help:
+
+<<>>=
+library(OncoSimulR)
+## use poset p1101
+data(examplePosets)
+p1101 <- examplePosets[["p1101"]]
+
+## Bozic Model
+b1 <- oncoSimulIndiv(p1101, keepEvery = 10,
+                     detectionSize = 1e8)
+b1
+summary(b1)
+@ 
+
+
+The first thing we do is make it simpler (for future examples) to use a
+set of restrictions. In this case, those encoded in poset p1101. Then, we
+run the simulations and look at a simple summary and a plot.
+
+If you want to plot the trajectories, it then better to sample more
+frequently, so you can see when clones appear:
+
+<<>>=
+b1 <- oncoSimulIndiv(p1101, keepEvery = 1,
+                     detectionSize = 1e8)
+b1
+summary(b1)
+plot(b1)
+@ 
+
+
+To simulate the progression in a bunch of individuals (we will use only
+four, so as not to fill the vignette with plots) we can do, with the same
+settings as above:
+
+<<>>=
+p1 <- oncoSimulPop(4, p1101,
+                   detectionSize = 1e8)
+
+par(mfrow = c(2, 2))
+plot(p1)
+@ 
+
+\section{Specifying restrictions: posets}
+
+
+
+\section{Sampling from a set of simulated individuals}
+\label{sec:sampling-from-set}
+
+You will often want to do something with the simulated data. For instance,
+sample the simulated data. Here we will obtain the trajectories for 50
+individuals in a scenario without passengers. Then we will sample with the
+default options and store that as a vector of genotypes (or a matrix of
+subjects by genes):
+
+
+<<>>=
+
+p1 <- oncoSimulPop(50, examplePosets[["p1103"]], 
+                   numPassengers = 0,
+                   sampleEvery = 10)
+genotypes <- samplePop(p1)
+
+@ 
+
+The function \texttt{samplePop} gives you information about the output object.
+
+What can you do with it? That is up to you. As an example, let us try to
+infer an oncogenetic tree:
+
+<<>>=
+
+require(Oncotree)
+ot1 <- oncotree.fit(genotypes)
+plot(ot1)
+
+@ 
+
+You can of course rename the columns of the output matrix to something
+else if you want.
+
+
+\newpage
+\bibliographystyle{apalike}
+\bibliography{OncoSimulR}
 
 \end{document}
 

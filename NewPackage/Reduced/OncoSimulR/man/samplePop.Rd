@@ -61,11 +61,15 @@ samplePop(x, timeSample = "last", typeSample = "whole", thresholdWhole = 0.5)
   the oncosimulpop object.
 %%  ~~ If necessary, more details than the description above ~~
 }
+
 \value{
+
   A matrix. Each row is a genotype, where 0 denotes no alteration and 1
-  alteration.
+  alteration. To make it more clear that genes/laterations are in
+  columns, columns are named starting by "G."  (for "gene").
 
 }
+
 \references{
     Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
 of mutations during tumor progression: effects of passenger mutations,
