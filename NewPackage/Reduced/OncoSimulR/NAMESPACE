@@ -1,12 +1,13 @@
 useDynLib(OncoSimulR)
 ## exportPattern("^[^\\.]") ## anything that does not start with a period
-export("oncoSimulPop", "oncoSimulIndiv", "samplePop")
+export("oncoSimulPop", "oncoSimulIndiv", "samplePop", "plotPoset")
 
 importFrom("data.table", rbindlist, .rbind.data.table) 
 ## import(data.table)
 ## import(Rcpp)
 importFrom(Rcpp, evalCpp)
 import(graph)
+## import(methods)
 ## importFrom("parallel", clusterApplyLB, mclapply, stopCluster)
 importFrom("parallel", mclapply, detectCores)
 

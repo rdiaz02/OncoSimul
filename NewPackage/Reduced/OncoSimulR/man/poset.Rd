@@ -10,7 +10,6 @@
 }
 \usage{
 plotPoset(x)
-poset2AdjMat(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -84,27 +83,21 @@ poset2AdjMat(x)
 ## Node 2 and 3 depend on 1, and 4 depends on no one
 
 p1 <- cbind(c(1, 1, 0), c(2, 3, 4))
-poset2AdjMat(p1)
 plotPoset(p1, addroot = TRUE)
 
 ## Node 2 and 3 depend on 1, and 4 to 7 depend on no one.
 ## We do not have nodes 4 to 6 explicitly in the poset.
 p2 <- cbind(c(1, 1, 0), c(2, 3, 7))
-poset2AdjMat(p2)
 plotPoset(p2, addroot = TRUE)
 
 ## But this is arguably cleaner
 p3 <- cbind(c(1, 1, rep(0, 4)), c(2, 3, 4:7 ))
-poset2AdjMat(p3)
 plotPoset(p3, addroot = TRUE)
-
-identical(poset2AdjMat(p3), poset2AdjMat(p2))
 
 ## A simple way to create a poset where no gene (in a set of 15) depends
 ## on any other.
 
 p4 <- cbind(0, 15)
-poset2AdjMat(p4)
 plotPoset(p4, addroot = TRUE)
 
 }
