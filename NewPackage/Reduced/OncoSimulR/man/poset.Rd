@@ -1,16 +1,14 @@
 \name{poset}
 \alias{poset}
-\alias{poset2AdjMat}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   Poset
 }
 \description{
-  Poset: explanation, plotting posets, and conversion to adjacency matrix.
+  Poset: explanation.%, plotting posets, and conversion to adjacency matrix.
 }
-\usage{
-plotPoset(x)
-}
+%% \usage{
+%% }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
@@ -45,14 +43,14 @@ plotPoset(x)
   
 %%  ~~ If necessary, more details than the description above ~~
 }
-\value{
-  For poset2AdjMat: An adjacency matrix (for a directed graph).
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
+%% \value{
+%%   For poset2AdjMat: An adjacency matrix (for a directed graph).
+%% %%  ~Describe the value returned
+%% %%  If it is a LIST, use
+%% %%  \item{comp1 }{Description of 'comp1'}
+%% %%  \item{comp2 }{Description of 'comp2'}
+%% %% ...
+%% }
 \references{
   Posets and similar structures appear in several places. The following
   two papers use them extensively.
@@ -67,9 +65,6 @@ plotPoset(x)
 \author{
   Ramon Diaz-Uriarte
 %%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

@@ -43,9 +43,7 @@ List of 13
   Alterations in Tumorigenesis. \emph{PLoS ONE}, 6.
 %%  ~~ reference to a publication or URL from which the data were obtained ~~
 }
-\references{
-%%  ~~ possibly secondary sources and usages ~~
-}
+
 \seealso{
   \code{\link{poset}}
 }

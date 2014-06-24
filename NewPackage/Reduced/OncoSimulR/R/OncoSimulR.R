@@ -43,9 +43,9 @@ oncoSimulPop <- function(Nindiv,
                          model = "Bozic",
                          numPassengers = 30,
                          mu = 5e-7,
-                         detectionSize = 1e7,
+                         detectionSize = 1e6,
                          detectionDrivers = 4,
-                         sampleEvery = 10,
+                         sampleEvery = 5,
                          initSize = 2000,
                          s = 0.1,
                          sh = -1,
@@ -56,7 +56,7 @@ oncoSimulPop <- function(Nindiv,
                          max.memory = 2000,
                          max.wall.time = 200,
 #                         endTimeEvery = -9,
-                         silent = FALSE,
+                         silent = TRUE,
                          mc.cores = detectCores()) {
 
     if(.Platform$OS.type == "windows") {
@@ -101,10 +101,10 @@ oncoSimulIndiv <- function(poset,
                            model = "Bozic",
                            numPassengers = 30,
                            mu = 5e-7,
-                           detectionSize = 1e7,
+                           detectionSize = 1e6,
                            detectionDrivers = 4,
-                           sampleEvery = 10,
-                           initSize = 1000,
+                           sampleEvery = 5,
+                           initSize = 2000,
                            s = 0.1,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
@@ -114,7 +114,7 @@ oncoSimulIndiv <- function(poset,
                            max.memory = 2000,
                            max.wall.time = 200,
 ##                           endTimeEvery = -9,
-                           silent = FALSE
+                           silent = TRUE
                            ) {
     call <- match.call()
     rt <- poset.to.restrictTable(poset)
@@ -236,18 +236,18 @@ oncoSimulIndiv <- function(poset,
 }
 
 
-summary.oncosimul <- function(x) {
-    tmp <- x[c("NumClones", "TotalPopSize", "LargestClone",
+summary.oncosimul <- function(object, ...) {
+    tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
                "MaxNumDrivers", "MaxDriversLast",
                "NumDriversLargestPop", "TotalPresentDrivers",
                "FinalTime", "NumIter", "HittedWallTime")]
-    tmp$errorMF <- x$other$errorMF
+    tmp$errorMF <- object$other$errorMF
     if(tmp$errorMF == -99) tmp$errorMF <- NA
-    tmp$OccurringDrivers <- x$OccurringDrivers
+    tmp$OccurringDrivers <- object$OccurringDrivers
     return(as.data.frame(tmp))
 }
 
-print.oncosimul <- function(x) {
+print.oncosimul <- function(x, ...) {
     cat("\nIndividual OncoSimul trajectory with call:\n ")
     print(attributes(x)$call)
     cat("\n")
@@ -255,11 +255,11 @@ print.oncosimul <- function(x) {
 }
 
 ## I want this to return things storable
-summary.oncosimulpop <- function(x) {
-    as.data.frame(rbindlist(lapply(x, summary)))
+summary.oncosimulpop <- function(object, ...) {
+    as.data.frame(rbindlist(lapply(object, summary)))
 }
 
-print.oncosimulpop <- function(x) {
+print.oncosimulpop <- function(x, ...) {
     cat("\nPopulation of OncoSimul trajectories of ",
         length(x), " individuals. Call :\n")
     print(attributes(x)$call)
@@ -639,13 +639,13 @@ oncoSimul.internal <- function(restrict.table,
 }
 
 
-colnames.to.pops.by.time <- function(pops.by.time) {
-  if(prod(dim(pops.by.time)) > 1) {  
-    ## colnames(pops.by.time) <- rep("", ncol(pops.by.time))
-    colnames(pops.by.time) <- c("Time",
-                                paste("Clone_", 1:tmp$NumClones, sep = ""))
-  }
-}
+## colnames.to.pops.by.time <- function(pops.by.time) {
+##   if(prod(dim(pops.by.time)) > 1) {  
+##     ## colnames(pops.by.time) <- rep("", ncol(pops.by.time))
+##     colnames(pops.by.time) <- c("Time",
+##                                 paste("Clone_", 1:tmp$NumClones, sep = ""))
+##   }
+## }
 
 
 create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5

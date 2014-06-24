@@ -25,19 +25,19 @@
 \usage{
  oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 5e-07,
                 detectionSize = 1e+06, detectionDrivers = 4,
-                sampleEvery = 15, initSize = 2000, s = 0.1, sh = -1,
+                sampleEvery = 5, initSize = 2000, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
-                silent = FALSE)
+                silent = TRUE)
 
  oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 5e-07,
                 detectionSize = 1e+06, detectionDrivers = 4,
-                sampleEvery = 15, initSize = 2000, s = 0.1, sh = -1,
+                sampleEvery = 5, initSize = 2000, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
-                silent = FALSE, mc.cores = detectCores())
+                silent = TRUE, mc.cores = detectCores())
 
 
 }
@@ -269,9 +269,6 @@ evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
 \author{
   Ramon Diaz-Uriarte
 }
-\note{
-%%  ~~further notes~~
-}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
@@ -280,7 +277,6 @@ evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
   %% \code{\link{print.oncosimul}},
   %% \code{\link{summary.oncosimul}},
   \code{\link{examplePosets}},
-  \code{\link{poset2AdjMat}},
   \code{\link{samplePop}}
   
 %% ~~objects to See Also as \code{\link{help}}, ~~~

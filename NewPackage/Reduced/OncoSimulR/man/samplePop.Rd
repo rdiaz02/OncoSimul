@@ -80,9 +80,6 @@ evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
 \author{
   Ramon Diaz-Uriarte
 }
-\note{
-%%  ~~further notes~~
-}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 

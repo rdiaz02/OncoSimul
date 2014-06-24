@@ -16,17 +16,20 @@
 }
 \usage{
 
-    plot.oncosimul(x, col = c(8, "orange", 6:1), log = "y",
-                   ltyPop = 2:6, lwdPop = 0.2, ltyDrivers = 1,
-                   lwdDrivers = 3, xlab = "Time units",
+\method{plot}{oncosimul}(x, col = c(8, "orange", 6:1), log = "y",
+                   ltyClone = 2:6, lwdClone = 0.2,
+                   ltyDrivers = 1, lwdDrivers = 3,
+                   xlab = "Time units",
                    ylab = "Number of cells", plotClones = TRUE,
                    plotDrivers = TRUE, addtot = FALSE,
                    addtotlwd = 0.5, yl = NULL, thinData = FALSE,
                    thinData.keep = 0.1, thinData.min = 2, ...)
 
-    plot.oncosimulpop(x, ask = TRUE, col = c(8, "orange", 6:1), log = "y",
-                      ltyPop = 2:6, lwdPop = 0.2, ltyDrivers = 1,
-                      lwdDrivers = 3, xlab = "Time units",
+\method{plot}{oncosimulpop}(x, ask = TRUE, col = c(8, "orange", 6:1),
+                      log = "y",
+                      ltyClone = 2:6, lwdClone = 0.2,
+                      ltyDrivers = 1, lwdDrivers = 3,
+                      xlab = "Time units",
                       ylab = "Number of cells", plotClones = TRUE,
                       plotDrivers = TRUE, addtot = FALSE,
                       addtotlwd = 0.5, yl = NULL, thinData = FALSE,
@@ -114,14 +117,14 @@
   Thining is done to reduce the plot size and to speed up plotting..
 %%     ~~Describe \code{thinPops} here~~
 }
-  \item{thinPops.keep}{
+  \item{thinData.keep}{
     The fraction of the data to keep (actually, a lower bound on the
     fraction of data to keep).
 
     %%     ~~Describe \code{thinPops.keep} here~~
 }
-\item{thinPops.min}{
-  Any time point for which a clone has a population size < thinPops.min
+\item{thinData.min}{
+  Any time point for which a clone has a population size < thinData.min
   will be kept (i.e., will not be removed from) in the data.
   
 %%     ~~Describe \code{thinPops.min} here~~
@@ -131,25 +134,9 @@
 %%     ~~Describe \code{\dots} here~~
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-  %%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
 \author{
   Ramon Diaz-Uriarte
   %%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
@@ -168,12 +155,12 @@ b1 <- oncoSimulIndiv(p701, keepEvery = 5,
 plot(b1, addtot = TRUE)
 
 
-## simulate and plot 9 individuals out of 20
-p1 <- oncoSimulPop(20, p701, detectionSize = 1e7,
+## simulate and plot 9 individuals 
+p1 <- oncoSimulPop(9, p701, detectionSize = 1e7,
                    sampleEvery = 10, mc.cores = 4)
 
 par(mfrow = c(3, 3))
-plot(p1[1:9], ask = FALSE)
+plot(p1, ask = FALSE)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
