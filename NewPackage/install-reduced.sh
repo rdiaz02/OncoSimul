@@ -1,4 +1,5 @@
 #!/bin/bash
+V_R=$1
 export R_MAKEVARS_USER=/home/ramon/.R/Makevars
 
 
@@ -12,5 +13,6 @@ export R_MAKEVARS_USER=/home/ramon/.R/Makevars
 
 rm ./Reduced/OncoSimulR/src/OncoSimulR.so
 rm ./Reduced/OncoSimulR/src/OncoSimul.o
+rm ./Reduced/OncoSimulR/src/OncoSimulR_init.o
 rm ./Reduced/OncoSimulR/src/symbols.rds
-R-3.1.0 CMD INSTALL ./Reduced/OncoSimulR
+$V_R CMD INSTALL ./Reduced/OncoSimulR

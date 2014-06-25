@@ -8,10 +8,14 @@ rm OncoSimulR_$V_ADA.tar.gz
 
 rm ./Reduced/OncoSimulR/src/*.so
 rm ./Reduced/OncoSimulR/src/*.o
+rm ./Reduced/OncoSimulR/src/OncoSimulR.so
+rm ./Reduced/OncoSimulR/src/OncoSimul.o
+rm ./Reduced/OncoSimulR/src/OncoSimulR_init.o
+rm ./Reduced/OncoSimulR/src/symbols.rds
 rm ./Reduced/OncoSimulR.Rcheck/* -r -f
 rm ./OncoSimulR.Rcheck/* -r -f
-rm ./Reduced/OncoSimulR/inst/doc/auto/*
-rmdir ./Reduced/OncoSimulR/inst/doc/auto
+# rm ./Reduced/OncoSimulR/inst/doc/auto/*
+# rmdir ./Reduced/OncoSimulR/inst/doc/auto
 rm ./Reduced/OncoSimulR/vignettes/auto/*
 rmdir ./Reduced/OncoSimulR/vignettes/auto
 rm ./Reduced/OncoSimulR/vignettes/*.bbl

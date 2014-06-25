@@ -601,7 +601,8 @@ oncoSimul.internal <- function(restrict.table,
   ## return the matching call? call <- match.call()
   ## and then return(c(.Call(), call))
   call <- match.call()
-  return(c(.Call("Algorithm5",
+  return(c(.Call("C_Algorithm5",
+      ##"Algorithm5",
                  rtC,
                  numDrivers,
                  numGenes,
@@ -630,8 +631,8 @@ oncoSimul.internal <- function(restrict.table,
                  sh,
                  K,
                  endTimeEvery,
-                 finalDrivers,
-               PACKAGE = "OncoSimulR"),
+                 finalDrivers),
+##               PACKAGE = "OncoSimulR"),
 ##           call = call,
            NumDrivers = numDrivers
 ##         ,  initMutant = initMutant
