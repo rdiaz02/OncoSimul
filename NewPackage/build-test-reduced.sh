@@ -25,6 +25,9 @@ rm ./Reduced/OncoSimulR/vignettes/*.tex
 rm ./Reduced/OncoSimulR/vignettes/*.pdf
 rm ./Reduced/OncoSimulR/vignettes/*.log
 
+
+
+
 time $V_R CMD build --keep-empty-dirs --no-resave-data Reduced/OncoSimulR
 
 time $V_R CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
