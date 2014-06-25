@@ -12,4 +12,4 @@ Imports: Rcpp (>= 0.11.1), parallel, data.table, graph
 Suggests: knitr, Oncotree
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-## SystemRequirements: C++11
+SystemRequirements: C++11

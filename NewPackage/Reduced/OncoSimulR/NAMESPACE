@@ -1,9 +1,9 @@
-useDynLib(OncoSimulR, .registration=TRUE)
+## useDynLib(OncoSimulR, .registration=TRUE)
 ## Most examples of C++ code in Bioconductor do not register. And see
 ## https://stat.ethz.ch/pipermail/r-devel/2012-April/063928.html
 ## But I use Kmisc::registerFunctions(), as MIMOSA and COMPASS
 ## and it does work. I am not sure it is the best idea, though.
-## useDynLib(OncoSimulR)
+useDynLib(OncoSimulR)
 ## exportPattern("^[^\\.]") ## anything that does not start with a period
 export("oncoSimulPop", "oncoSimulIndiv", "samplePop", "plotPoset")
 

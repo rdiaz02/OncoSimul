@@ -332,9 +332,11 @@ plot(m2, addtot = TRUE, log = "")
 
 
 ## Simulating 50 individual trajectories
+## (set mc.cores = 2 to comply with --as-cran checks)
 
 p1 <- oncoSimulPop(50, p701, detectionSize = 1e7,
-                   sampleEvery = 10, mc.cores = 4)
+                   sampleEvery = 10,
+                   mc.cores = 2)
 
 
 
