@@ -1,4 +1,4 @@
-useDynLib(OncoSimulR)
+useDynLib(OncoSimulR, .registration=TRUE)
 ## exportPattern("^[^\\.]") ## anything that does not start with a period
 export("oncoSimulPop", "oncoSimulIndiv", "samplePop", "plotPoset")
 
