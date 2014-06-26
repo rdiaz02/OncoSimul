@@ -149,9 +149,7 @@ data(examplePosets)
 p701 <- examplePosets[["p701"]]
 
 ## simulate and plot a single individual
-b1 <- oncoSimulIndiv(p701, keepEvery = 5,
-                     sampleEvery = 5,
-                     detectionSize = 1e8)
+b1 <- oncoSimulIndiv(p701)
 plot(b1, addtot = TRUE)
 
 
@@ -160,8 +158,7 @@ plot(b1, addtot = TRUE)
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
 
-p1 <- oncoSimulPop(9, p701, detectionSize = 1e7,
-                   sampleEvery = 10, mc.cores = 2)
+p1 <- oncoSimulPop(9, p701, mc.cores = 2)
 
 par(mfrow = c(3, 3))
 plot(p1, ask = FALSE)

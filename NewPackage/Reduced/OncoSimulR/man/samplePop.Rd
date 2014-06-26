@@ -90,14 +90,18 @@ evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
 \examples{
 data(examplePosets)
 p705 <- examplePosets[["p705"]]
+
 ## (I set mc.cores = 2 to comply with --as-cran checks, but you
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
-p1 <- oncoSimulPop(20, p705, detectionSize = 1e6,
-                   sampleEvery = 10, mc.cores = 2)
+
+p1 <- oncoSimulPop(20, p705, mc.cores = 2)
 samplePop(p1)
 
-r1 <- oncoSimulIndiv(p705, detectionSize = 1e6)
+
+## Now, single cell sampling
+
+r1 <- oncoSimulIndiv(p705)
 samplePop(r1, typeSample = "single")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

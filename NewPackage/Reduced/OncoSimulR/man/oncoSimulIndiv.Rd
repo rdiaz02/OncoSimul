@@ -23,21 +23,21 @@
 
 }
 \usage{
- oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 5e-07,
-                detectionSize = 1e+06, detectionDrivers = 4,
-                sampleEvery = 5, initSize = 2000, s = 0.1, sh = -1,
+ oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
+                detectionSize = 1e8, detectionDrivers = 4,
+                sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
-                silent = TRUE)
+                verbosity = 0)
 
- oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 5e-07,
-                detectionSize = 1e+06, detectionDrivers = 4,
-                sampleEvery = 5, initSize = 2000, s = 0.1, sh = -1,
+ oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
+                detectionSize = 1e8, detectionDrivers = 4,
+                sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
-                silent = TRUE, mc.cores = detectCores())
+                verbosity = 0, mc.cores = detectCores())
 
 
 }
@@ -80,7 +80,16 @@
 %%     ~~Describe \code{detectionDrivers} here~~
 }
 \item{sampleEvery}{
-  How often the whole population is sampled.
+  
+  How often the whole population is sampled. This is not the same as the
+  interval between successive samples that keep stored (for that, see
+  \code{keepEvery}).
+
+  For very fast growing clones, you might need to have a small value
+  here to minimize possible numerical problems (such as huge increase in
+  population size between two successive samples that can then lead to
+  problems for random number generators). Likewise, for models with
+  density dependence (such as McF) this value should be very small.
 %%     ~~Describe \code{sampleEvery} here~~
 }
 \item{initSize}{
@@ -107,7 +116,13 @@
   Time interval between successive whole population samples that are
   actually stored. This must be larger or equal to sampleEvery. If keepEvery is
   not a multiple integer of sampleEvery, the keepEvery in use will be the
-  smallest multiple integer of keepEvery larger than the specified keepEvery.
+  smallest multiple integer of keepEvery larger than the specified
+  keepEvery.
+
+  If you want nice plots, set \code{sampleEvery} and \code{keepEvery} to
+  small values (say, 1 or 0.5). Otherwise, you can use a
+  \code{sampleEvery} of 1 but a \code{keepEvery} of 15, so that the
+  return objects are not huge.
 %%     ~~Describe \code{keepEvery} here~~
 }
 \item{finalTime}{
@@ -288,16 +303,16 @@ p701 <- examplePosets[["p701"]]
 
 ## Bozic Model
 
-b1 <- oncoSimulIndiv(p701, keepEvery = 5,
-                     sampleEvery = 5,
-                     detectionSize = 1e8)
-b1
+b1 <- oncoSimulIndiv(p701)
 summary(b1)
 
 plot(b1, addtot = TRUE)
 
-## McFarland; need to modify sampleEvery, but use a reasonable keepEvery
-## Note that detectionSize is huge, but will play no role
+## McFarland; need to modify sampleEvery, but use a reasonable
+##   keepEvery.
+## We also modify mutation rate to values similar to those in the
+##   original paper.
+## Note that detectionSize will play no role
 ## finalTime is large, since this is a slower process
 ## initSize is set to 4000 so the default K is larger and we are likely
 ## to reach cancer. Alternatively, set K = 2000.
@@ -308,27 +323,10 @@ m1 <- oncoSimulIndiv(p701,
                      initSize = 4000,
                      sampleEvery = 0.025,
                      finalTime = 15000,
-                     keepEvery = 5,
-                     detectionSize = 1e6) 
+                     keepEvery = 5)
 plot(m1, addtot = TRUE, log = "")
 
 
-
-
-## Now we do not care about passengers, but we want to use a different
-## graph, and we want a few more drivers
-## before exiting. And we allow it to run for longer
-m2 <- oncoSimulIndiv(examplePosets[["p1101"]],
-                     model = "McFL",
-                     numPassengers = 0,
-                     detectionDrivers = 10,
-                     mu = 5e-7,
-                     initSize = 4000,
-                     sampleEvery = 0.025,
-                     finalTime = 25000,
-                     keepEvery = 5,
-                     detectionSize = 1e6) 
-plot(m2, addtot = TRUE, log = "")
 
 
 ## Simulating 50 individual trajectories
@@ -337,11 +335,9 @@ plot(m2, addtot = TRUE, log = "")
 ##  leave it at its default value).
 
 
-p1 <- oncoSimulPop(50, p701, detectionSize = 1e7,
-                   sampleEvery = 10,
+p1 <- oncoSimulPop(50, p701,
+                   keepEvery = 10,
                    mc.cores = 2)
-
-
 
 
 }

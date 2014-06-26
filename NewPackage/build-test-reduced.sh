@@ -24,7 +24,8 @@ rm ./Reduced/OncoSimulR/vignettes/*.toc
 rm ./Reduced/OncoSimulR/vignettes/*.tex
 rm ./Reduced/OncoSimulR/vignettes/*.pdf
 rm ./Reduced/OncoSimulR/vignettes/*.log
-
+rm ./Reduced/OncoSimulR/vignettes/*.out
+rm ./Reduced/OncoSimulR/vignettes/*.blg
 
 
 

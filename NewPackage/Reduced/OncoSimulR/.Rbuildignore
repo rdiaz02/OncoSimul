@@ -6,5 +6,6 @@ vignettes/OncoSimulR.Rnw.synctex.gz
 vignettes/figure/*
 vignettes/figure/
 vignettes/figure
-
+R/.Rhistory
+.Rhistory
 
