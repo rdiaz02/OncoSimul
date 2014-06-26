@@ -1,4 +1,6 @@
 #!/bin/bash
+## much simpler to do calling it on the tangled code from vignette
+
 echo '
 
 library(OncoSimulR)

@@ -1,3 +1,20 @@
+//     Copyright 2013, 2014 Ramon Diaz-Uriarte
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 // The new semantics: add monotonicity or not. Will think how.
 
 // Restrctions:
@@ -87,7 +104,7 @@
 // - Check patterns
 
 
-// - check we reproduce patterns: launch and save and plot (use sampleEvery = 5)
+// - check we reproduce patterns: launch and save and plot (use sampleEvery of 5)
 // Do it with the four trees and prepare "for real" scripts.
 
 
@@ -172,7 +189,8 @@
 #include "OncoSimul.h"
 #include <limits>
 #include <iostream>
-#include <gsl/gsl_rng.h> // here? in the .h
+// #include <gsl/gsl_rng.h> // here? in the .h
+#include <random>
 #include <bitset>
 #include <set>
 #include <iterator>
@@ -180,7 +198,7 @@
 #include <sstream>
 #include <string>
 #include <ctime>
-#include <sys/resource.h> 
+// #include <sys/resource.h> 
 #include <sys/time.h> 
 
 
@@ -263,25 +281,25 @@
 // }
 
 
-#ifdef _WIN32
-void setmemlimit(const long maxram){
-}
-#endif
-#ifndef _WIN32
-// Will this work under Windows? Probably not. OK, I do not care much.
-void setmemlimit(const long maxram){
-  // try to prevent any overhead if not set
-  if(maxram > 0) {
-    struct rlimit memlimit;
-    long bytes;
+// #ifdef _WIN32
+// void setmemlimit(const long maxram){
+// }
+// #endif
+// #ifndef _WIN32
+// // Will this work under Windows? Probably not. OK, I do not care much.
+// void setmemlimit(const long maxram){
+//   // try to prevent any overhead if not set
+//   if(maxram > 0) {
+//     struct rlimit memlimit;
+//     long bytes;
     
-    bytes = maxram * (1024*1024);
-    memlimit.rlim_cur = bytes;
-    memlimit.rlim_max = bytes;
-    setrlimit(RLIMIT_AS, &memlimit);
-  }
-}
-#endif
+//     bytes = maxram * (1024*1024);
+//     memlimit.rlim_cur = bytes;
+//     memlimit.rlim_max = bytes;
+//     setrlimit(RLIMIT_AS, &memlimit);
+//   }
+// }
+// #endif
 
 
 
@@ -1172,7 +1190,8 @@ static inline void new_sp_bitset(unsigned int& sp, const Genotype64& newGenotype
 
 
 static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
-			  gsl_rng *r,
+				 //gsl_rng *r,
+				 std::mt19937& ran_generator, 
 			  std::vector<int>& mutablePos,
 			  const Genotype64& nextMutantGenotype,
 			  // const int& nextMutant,
@@ -1195,12 +1214,18 @@ static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
     }
   }
   
-
   if(numMutablePosParent > 1) {
-    mutatedPos = mutablePos[gsl_rng_uniform_int(r, numMutablePosParent)];
+    std::uniform_int_distribution<int> unif(0, numMutablePosParent - 1);
+    mutatedPos = mutablePos[unif(ran_generator)];
   } else {
     mutatedPos = mutablePos[0];
   } 
+
+  // if(numMutablePosParent > 1) {
+  //   mutatedPos = mutablePos[gsl_rng_uniform_int(r, numMutablePosParent)];
+  // } else {
+  //   mutatedPos = mutablePos[0];
+  // } 
 
 
 #ifdef DEBUGV
@@ -1292,7 +1317,8 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const double& detectionSize,
 					    const double& finalTime,
 					    const double& endTimeEvery,
-					    const int& finalDrivers) {
+					    const int& finalDrivers,
+					    const int& verbosity) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
   
@@ -1395,8 +1421,10 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
     throw std::range_error("totPopSize is NaN");
   }
   
-  if(totPopSize > (4.0 * 1e15))
-    Rcpp::Rcout << "\nWARNING: popSize > 4e15. Likely loss of precission\n";
+  if(totPopSize > (4.0 * 1e15)) {
+    if(verbosity > 0)
+      Rcpp::Rcout << "\nWARNING: popSize > 4e15. Likely loss of precission\n";
+  }
 }
 
 // FIXME: I might want to return the actual drivers in each period
@@ -1618,7 +1646,7 @@ static void init_tmpP(spParamsP& tmpParam) {
 }
 
 
-SEXP Algorithm5(SEXP restrictTable_,
+SEXP BNB_Algo5(SEXP restrictTable_,
 		 SEXP numDrivers_,
 		 SEXP numGenes_,
 		 SEXP typeCBN_,
@@ -1661,7 +1689,12 @@ SEXP Algorithm5(SEXP restrictTable_,
   const int numDrivers = as<int>(numDrivers_);
   const int numGenes = as<int>(numGenes_);
   const std::string typeCBN = as<std::string>(typeCBN_);
+
+  // DP2(typeCBN);
+
   const std::string typeFitness = as<std::string>(typeFitness_);
+  // DP2(typeFitness);
+
   // birth and death are irrelevant with Bozic
   const double birthRate = as<double>(birthRate_);
   const double death = as<double>(death_);
@@ -1683,6 +1716,10 @@ SEXP Algorithm5(SEXP restrictTable_,
   const long maxram = as<int>(maxram_);
   const int mutatorGenotype = as<int>(mutatorGenotype_);
   const int initMutant = as<int>(initMutant_);
+
+  // DP2(initMutant);
+
+  
   const double maxWallTime = as<double>(maxWallTime_);
   const double keepEvery = as<double>(keepEvery_);
   const double alpha = as<double>(alpha_);
@@ -1696,9 +1733,9 @@ SEXP Algorithm5(SEXP restrictTable_,
   double lastStoredSample;
   const double genTime = 4.0; // should be a parameter. For Bozic only.
   // memory limits
-#ifndef _WIN32  
-  if(maxram)  setmemlimit(maxram);
-#endif
+// #ifndef _WIN32  
+//   if(maxram)  setmemlimit(maxram);
+// #endif
 
   // if(maxram)  setmemlimit(maxram);
 
@@ -1744,11 +1781,12 @@ SEXP Algorithm5(SEXP restrictTable_,
     throw std::range_error("K < 1.");
 
 
-  // FIXME: uncomment this for package
-  // verify we are OK with usigned long
-  // if( !(static_cast<double>(std::numeric_limits<unsigned long long>::max()) 
-  // 	>= pow(2, 64)) )
-  //   throw std::range_error("The size of unsigned long long is too short.");
+
+  // verify we are OK with usigned long long
+  if( !(static_cast<double>(std::numeric_limits<unsigned long long>::max()) 
+  	>= pow(2, 64)) )
+    throw std::range_error("The size of unsigned long long is too short.");
+
 
   if(numGenes > 64)  
     throw std::range_error("This version only accepts up to 64 genes.");
@@ -1762,9 +1800,12 @@ SEXP Algorithm5(SEXP restrictTable_,
   int u_1 = -99;
   int u_2 = -99;
 
-  //GSL rng
-  gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
-  gsl_rng_set (r, (unsigned long long) seed);
+  // //GSL rng
+  // gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
+  // gsl_rng_set (r, (unsigned long long) seed);
+
+  // C++11 random number
+  std::mt19937 ran_generator(seed);
 
   Genotype64 newGenotype;
   std::vector<Genotype64> Genotypes(1);
@@ -2178,7 +2219,8 @@ SEXP Algorithm5(SEXP restrictTable_,
       }
 
       // ************   5.5   ***************
-      getMutatedPos_bitset(mutatedPos, numMutablePosParent, r, 
+      getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
+			   ran_generator,
 			   mutablePos,
 			   Genotypes[nextMutant], 
 			   numGenes);
@@ -2323,7 +2365,8 @@ SEXP Algorithm5(SEXP restrictTable_,
 				      detectionSize,
 				      finalTime,
 				      endTimeEvery,
-				      finalDrivers); //keepEvery is for thinning
+				      finalDrivers,
+				      verbosity); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -2486,18 +2529,18 @@ SEXP Algorithm5(SEXP restrictTable_,
 		 // Named("LargestPopSize_PerSample") = sampleLargestPopSize,
 		 // Named("PropLargestPopSize_PerSample") = sampleLargestPopProp,
 		 Named("MaxDriversLast") = sampleMaxNDr[outNS_i],
-		 Named("NumDriversLargestPopLast") =  sampleNDrLargestPop[outNS_i],
-		 Named("LargestPopLast") = sampleLargestPopSize[outNS_i],
+		 Named("NumDriversLargestPop") =  sampleNDrLargestPop[outNS_i],
+		 Named("LargestClone") = sampleLargestPopSize[outNS_i],
 		 Named("PropLargestPopLast") = sampleLargestPopProp[outNS_i],
 		 // Named("totDrivers") = totDrivers,
 		 Named("FinalTime") = currentTime,
-		 Named("iter") = iter,
-		 Named("outi") = outNS_i + 1, // silly. Use the real number of samples. FIXME
+		 Named("NumIter") = iter,
+		 //		 Named("outi") = outNS_i + 1, // silly. Use the real number of samples. FIXME
 		 Named("HittedWallTime") = (runningWallTime > maxWallTime),
 		 // Named("iRunningWallTime") = runningWallTime,
 		 // Named("oRunningWallTime") = difftime(time(NULL), start_time),
-		 Named("ti_dbl_min") = ti_dbl_min,
-		 Named("ti_e3") = ti_e3,
+		 // Named("ti_dbl_min") = ti_dbl_min,
+		 // Named("ti_e3") = ti_e3,
 		 Named("TotalPresentDrivers") = totalPresentDrivers,
 		 Named("CountByDriver") = countByDriver,
 		 Named("OccurringDrivers") = occurringDrivers,

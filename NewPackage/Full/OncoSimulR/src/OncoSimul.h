@@ -5,7 +5,7 @@
 //#include <RcppGSL.h> 
 
 
-RcppExport SEXP Algorithm5(SEXP restrictTable_,
+RcppExport SEXP BNB_Algo5(SEXP restrictTable_,
 			   SEXP numDrivers_,
 			   SEXP numGenes_,
 			   SEXP typeCBN_,

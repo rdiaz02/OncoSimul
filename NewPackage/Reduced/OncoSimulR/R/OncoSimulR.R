@@ -537,7 +537,7 @@ oncoSimul.internal <- function(restrict.table,
   if(is.null(seed_gsl)) {## passing a null creates a random seed
     seed_gsl <- as.integer(round(runif(1, min = 0, max = 2^16)))
     if(verbosity >= 2)
-      cat(paste("\n Using ", seed_gsl, " as seed for GSL\n"))
+      cat(paste("\n Using ", seed_gsl, " as seed for C++ generator\n"))
   }
 
   numDrivers <- nrow(restrict.table)

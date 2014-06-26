@@ -4,10 +4,10 @@
 % \VignettePackage{OncoSimulR}
 % \VignetteEngine{knitr::knitr}
 \documentclass[a4paper,11pt]{article}
-<<echo=FALSE,results='hide'>>=
+<<echo=FALSE,results='hide',error=FALSE>>=
 require(knitr, quietly = TRUE)
 opts_knit$set(concordance = TRUE)
-opts_knit$set(stop_on_error = 2L)
+## opts_knit$set(stop_on_error = 2L)
 @ 
 \usepackage{amsmath}
 \usepackage[authoryear,round,sort]{natbib}

@@ -1,94 +1,457 @@
-samplePop <- function(x) {
-}
+## Copyright 2013, 2014 Ramon Diaz-Uriarte
+
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-oncoSimulPop <- function(x, Nindiv ) {
-    ## do for all indivs
-    ## use mclapply
-
-}
 
 
-## pass either a poset or and adj matrix
-## internally, figure out what is
-
-oncoSimulIndiv <- function(x) {
-    while(!reachedCancer) {
-        oncoSimul.internal
-        reachCancer(oncoSimul.internal)
+samplePop <- function(x, timeSample = "last", typeSample = "whole",
+                      thresholdWhole = 0.5) {
+    if(inherits(x, "oncosimulpop"))
+        z <- do.call(rbind,
+                     lapply(x,
+                            get.mut.vector,
+                            timeSample = timeSample,
+                            typeSample = typeSample,
+                            thresholdWhole = thresholdWhole))
+    else {
+        z <- get.mut.vector(x,
+                            timeSample = timeSample,
+                            typeSample = typeSample,
+                            thresholdWhole = thresholdWhole)
+        dim(z) <- c(1, length(z))
     }
-}
-
-reachCancer <- function(x, ndr = 0, detectionSize = 0,
-                        maxPopSize = 1e15) {
-    return(
-        ((x$TotalPopSize >= detectionSize) &&
-         (x$MaxDriversLast >= ndr) &&
-         (x$ti_dbl_min == 0) &&
-         (x$TotalPopSize < maxPopSize) ## numerical issues here
-         ))
+    cat("\n Subjects by Genes matrix of ",
+        nrow(z), " subjects and ",
+        ncol(z), " genes:\n")
+    colnames(z) <- paste0("G.", seq_len(ncol(z)))
+    return(z)
 }
 
 
+oncoSimulPop <- function(Nindiv,
+                         poset,
+                         model = "Bozic",
+                         numPassengers = 30,
+                         mu = 1e-6,
+                         detectionSize = 1e8,
+                         detectionDrivers = 4,
+                         sampleEvery = 1,
+                         initSize = 500,
+                         s = 0.1,
+                         sh = -1,
+                         K = initSize/(exp(1) - 1),
+                         keepEvery = sampleEvery,
+                         finalTime = 0.25 * 25 * 365,
+                         onlyCancer = TRUE,
+                         max.memory = 2000,
+                         max.wall.time = 200,
+#                         endTimeEvery = -9,
+                         verbosity  = 0,
+                         mc.cores = detectCores()) {
+
+    if(.Platform$OS.type == "windows") {
+        if(mc.cores != 1)
+            message("You are running Windows. Setting mc.cores = 1")
+        mc.cores <- 1
+    }
+    pop <- mclapply(seq.int(Nindiv),
+                    function(x)
+                    oncoSimulIndiv(
+                        poset = poset,
+                        model = model,
+                        numPassengers = numPassengers,
+                        mu = mu,
+                        detectionSize = detectionSize,
+                        detectionDrivers = detectionDrivers,
+                        sampleEvery = sampleEvery,
+                        initSize = initSize,
+                        s = s,
+                        sh = sh,
+                        K = K,
+                        keepEvery = keepEvery,
+                        finalTime = finalTime,
+                        onlyCancer = onlyCancer,
+                        max.memory = max.memory,
+                        max.wall.time = max.wall.time,
+##                        endTimeEvery = endTimeEvery,
+                        verbosity = verbosity),
+                    mc.cores = mc.cores
+                    )
+    class(pop) <- "oncosimulpop"
+    attributes(pop)$call <- match.call()
+    return(pop)
+}
+
+## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
+
+oncoSimulIndiv <- function(poset,
+                           model = "Bozic",
+                           numPassengers = 30,
+                           mu = 1e-6,
+                           detectionSize = 1e8,
+                           detectionDrivers = 4,
+                           sampleEvery = 1,
+                           initSize = 500,
+                           s = 0.1,
+                           sh = -1,
+                           K = initSize/(exp(1) - 1),
+                           keepEvery = sampleEvery,
+                           finalTime = 0.25 * 25 * 365,
+                           onlyCancer = TRUE,
+                           max.memory = 2000,
+                           max.wall.time = 200,
+##                           endTimeEvery = -9,
+                           verbosity = 0
+                           ) {
+    typeCBN <- "CBN"
+    call <- match.call()
+    rt <- poset.to.restrictTable(poset)
 
 
-plotPopAndDrivers <- function(z, col = c(8, "orange", 6:1),
+    numDrivers <- nrow(rt)
+    numGenes <- (numDrivers + numPassengers)
+    
+    if(numGenes > 64)
+        stop("Largest possible number of genes is 64")
+
+    if(keepEvery < sampleEvery)
+        warning("setting keepEvery to sampleEvery")
+
+
+    ## legacies from poor name choices
+    typeFitness <- switch(model,
+                          "Bozic" = "bozic1",
+                          "Exp" = "exp",
+                          "McFarlandLog" = "mcfarlandlog",
+                          "McFL" = "mcfarlandlog",
+                          stop("No valid value for model")
+                          )
+
+    if(typeFitness == "exp") {
+        death <- 1
+        mutatorGenotype <- 1
+    } else {
+        death <- -99
+        mutatorGenotype <- 0
+    }
+    birth <- -99
+
+    if( (typeFitness == "mcfarlandlog") &&
+       (sampleEvery > 0.05)) {
+        warning("With the McFarland model you generally want smaller sampleEvery")
+    }
+    
+    if(typeFitness == "mcfarlandlog") {
+        endTimeEvery <- keepEvery
+    } else {
+        endTimeEvery <- -9
+    }
+    ## endTimeEvery <- -9
+
+
+    ## A simulation stops if cancer or finalTime appear, the first
+    ## one. But if we set onlyCnacer = FALSE, we also accept simuls
+    ## without cancer (or without anything)
+    
+    doneSimuls <- FALSE
+    while(!doneSimuls) {
+        op <- try(oncoSimul.internal(restrict.table = rt,
+                                 numGenes = numGenes,
+                                 typeFitness = typeFitness,
+                                 typeCBN = typeCBN,
+                                 birth = birth,
+                                 s = s,
+                                 sh = sh,
+                                 death = death,  
+                                 mu =  mu,  
+                                 initSize =  initSize, 
+                                 sampleEvery =  sampleEvery,  
+                                 detectionSize =  detectionSize, 
+                                 mutatorGenotype = mutatorGenotype,  
+                                 finalTime = finalTime, 
+                                 initSize_species = 2000, 
+                                 initSize_iter = 500, 
+                                 seed_gsl = NULL, 
+                                 verbosity = verbosity, 
+                                 initMutant = -1, 
+                                 speciesFS = 40000,  
+                                 ratioForce = 2,  
+                                 max.memory = max.memory, 
+                                 max.wall.time = max.wall.time, 
+                                 keepEvery = keepEvery,  
+                                 alpha = 0.0015,  
+                                 K = K, 
+                                 endTimeEvery = endTimeEvery, 
+                                 finalDrivers = detectionDrivers),
+                  silent = !verbosity)
+
+        if(!inherits(op, "try-error")) {
+            if(verbosity >= 2) {
+                cat("\n ... finished this run:")
+                cat("\n       Total Pop Size = ", op$TotalPopSize)
+                cat("\n       Drivers Last = ", op$MaxDriversLast)
+                cat("\n       Final Time = ", op$FinalTime)
+                ## cat("\n       Numerical Issuses?", op$ti_dbl_min)
+                
+                ##cat("\n")
+            }
+            ## browser()
+            if(onlyCancer) {
+                doneSimuls <- reachCancer(op, ndr = detectionDrivers,
+                                             detectionSize = detectionSize,
+                                             maxPopSize = 1e15)
+            } else {
+                doneSimuls <- TRUE
+            }
+            if(verbosity >= 2) {
+                if(doneSimuls)
+                    cat("\n ... Keeping this one\n")
+                else
+                    cat("\n ... Cancer not reached\n")
+            }
+        } else {
+            if(length(grep("BAIL OUT NOW", op)))
+                stop("Unrecoverable error")
+            if(verbosity >= 2)
+                cat("\n Simulation aborted because of numerical or other problems.",
+                    "Proceeding to next one.\n")
+        }
+    }
+    class(op) <- "oncosimul"
+    attributes(op)$call <- call
+    return(op)
+}
+
+
+summary.oncosimul <- function(object, ...) {
+    tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
+               "MaxNumDrivers", "MaxDriversLast",
+               "NumDriversLargestPop", "TotalPresentDrivers",
+               "FinalTime", "NumIter", "HittedWallTime")]
+    tmp$errorMF <- object$other$errorMF
+    if(tmp$errorMF == -99) tmp$errorMF <- NA
+    tmp$OccurringDrivers <- object$OccurringDrivers
+    return(as.data.frame(tmp))
+}
+
+print.oncosimul <- function(x, ...) {
+    cat("\nIndividual OncoSimul trajectory with call:\n ")
+    print(attributes(x)$call)
+    cat("\n")
+    print(summary(x))
+}
+
+## I want this to return things storable
+summary.oncosimulpop <- function(object, ...) {
+    as.data.frame(rbindlist(lapply(object, summary)))
+}
+
+print.oncosimulpop <- function(x, ...) {
+    cat("\nPopulation of OncoSimul trajectories of ",
+        length(x), " individuals. Call :\n")
+    print(attributes(x)$call)
+    cat("\n")
+    print(summary(x))
+}
+
+
+plot.oncosimulpop <- function(x, ask = TRUE,
+                              col = c(8, "orange", 6:1),
                               log = "y",
-                              ltyPop = 2:6,
-                              lwdPop = 0.2,
+                              ltyClone = 2:6,
+                              lwdClone = 0.2,
                               ltyDrivers = 1,
                               lwdDrivers = 3,
                               xlab = "Time units",
                               ylab = "Number of cells",
+                              plotClones = TRUE,
+                              plotDrivers = TRUE,
                               addtot = FALSE,
                               addtotlwd = 0.5,
                               yl = NULL,
-                              thinPops = TRUE,
-                              thinPops.keep = 0.1,
-                              thinPops.min = 2,
+                              thinData = FALSE,
+                              thinData.keep = 0.1,
+                              thinData.min = 2,
                               ...
                               ) {
+    op <- par(ask = ask)
+    on.exit(par(op))
+    null <- lapply(x, function(z)
+                   plot.oncosimul(z,
+                          col = col,
+                          log = log,
+                          ltyClone = ltyClone,
+                          lwdClone = lwdClone,
+                          ltyDrivers = ltyDrivers,
+                          lwdDrivers = lwdDrivers,
+                          xlab = xlab,
+                          ylab = ylab,
+                          plotClones = plotClones,
+                          plotDrivers = plotDrivers,
+                          addtot = addtot,
+                          addtotlwd = addtotlwd,
+                          yl = yl,
+                          thinData = thinData,
+                          thinData.keep = thinData.keep,
+                          thinData.min = thinData.min,
+                          ...))
+}
+                            
 
-    ## uses both of plotPop and plotDrivers in a single plot.
-    if(thinPops)
-        z <- thin.pops(z, keep = thinPops.keep, min.keep = thinPops.min)
-    gc()
-    ndr <- apply(z$Genotypes[1:z$NumDrivers, , drop = FALSE], 2, sum)
 
-    if(is.null(yl))
-        yl <- c(1, max(apply(z$pops.by.time[, -1, drop = FALSE], 1, sum)))
+plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
+                           log = "y",
+                           ltyClone = 2:6,
+                           lwdClone = 0.2,
+                           ltyDrivers = 1,
+                           lwdDrivers = 3,
+                           xlab = "Time units",
+                           ylab = "Number of cells",
+                           plotClones = TRUE,
+                           plotDrivers = TRUE,
+                           addtot = FALSE,
+                           addtotlwd = 0.5,
+                           yl = NULL,
+                           thinData = FALSE,
+                           thinData.keep = 0.1,
+                           thinData.min = 2,
+                           ...
+                           ) {
 
-    plotPop(z,
-            ndr = ndr, 
-            xlab = xlab,
-            ylab = ylab,
-            lty = ltyPop,
-            col = col, 
-            ylim = yl,
-            lwd = lwdPop,
-            axes = FALSE,
-            log = log,
-            ...)
-    par(new = TRUE)
-    plotDrivers0(z,
-                 timescale = 1,
-                 trim.no.drivers = FALSE,
-                 xlab = "", ylab = "",
-                 lwd = lwdDrivers,
-                 lty = ltyDrivers,
-                 col = col, 
-                 addtot = addtot,
-                 addtotlwd = addtotlwd,
-                 log = log, ylim = yl,
-                 ...)
+    if(thinData)
+        x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
+    
+    ndr <- apply(x$Genotypes[1:x$NumDrivers, , drop = FALSE], 2, sum)
+
+    if(is.null(yl)) {
+        if(log %in% c("y", "xy", "yx") )
+            yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+        else
+            yl <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+    }
+    if(plotClones) {
+        plotClones(x,
+                   ndr = ndr, 
+                   xlab = xlab,
+                   ylab = ylab,
+                   lty = ltyClone,
+                   col = col, 
+                   ylim = yl,
+                   lwd = lwdClone,
+                   axes = FALSE,
+                   log = log,
+                   ...)
+    }
+
+    if(plotClones && plotDrivers)
+        par(new = TRUE)
+    
+    if(plotDrivers){
+        plotDrivers0(x,
+                     timescale = 1,
+                     trim.no.drivers = FALSE,
+                     xlab = "", ylab = "",
+                     lwd = lwdDrivers,
+                     lty = ltyDrivers,
+                     col = col, 
+                     addtot = addtot,
+                     addtotlwd = addtotlwd,
+                     log = log, ylim = yl,
+                     ...)
+    }
 }
 
+
+plotPoset <- function(x, names = NULL, addroot = FALSE,
+                       box = FALSE, ...) {
+  if(is.null(names)) {
+    if(addroot) names <- c("Root", 1:max(x))
+    else names <- 1:max(x)
+  }
+  plot(poset.to.graph(x, names, addroot), ...)
+  if(box)
+    box()
+}
 
 
 ############# Do not documment anything below this line
 
 
+get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
+    ## Obtain, from  results from a simulation run, the vector
+    ## of 0/1 corresponding to each gene.
+    
+    ## threshold is the min. proportion for a mutation to be detected
+    ## We are doing whole tumor sampling here, as in Sprouffske
 
+    ## timeSample: do we sample at end, or at a time point, chosen
+    ## randomly, from all those with at least one driver?
+    
+        
+    if(timeSample == "last") {
+        return(as.numeric((tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
+                                      tmp$Genotypes)/tmp$TotalPopSize) > threshold))
+    } else if (timeSample %in% c("uniform", "unif")) {
+        the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
+        pop <- tmp$pops.by.time[the.time, -1]
+        popSize <- tmp$PerSampleStats[the.time, 1]
+        return( as.numeric((tcrossprod(pop, tmp$Genotypes)/popSize) > threshold) )
+    }
+}
+
+
+get.mut.vector.singlecell <- function(tmp, timeSample = "last") {
+    ## No threshold, as single cell.
+
+    ## timeSample: do we sample at end, or at a time point, chosen
+    ## randomly, from all those with at least one driver?
+    
+    if(timeSample == "last") {
+        the.time <- nrow(tmp$pops.by.time)
+    } else if (timeSample %in% c("uniform", "unif")) {
+        the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
+    }
+    pop <- tmp$pops.by.time[the.time, -1]
+    ##       popSize <- tmp$PerSampleStats[the.time, 1]
+    ## genot <- sample(seq_along(pop), 1, prob = pop)
+    return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+}
+
+
+get.mut.vector <- function(x, timeSample = "whole", typeSample = "last",
+                           thresholdWhole = 0.5) {
+    if(typeSample %in% c("wholeTumor", "whole")) {
+        get.mut.vector.whole(x, timeSample = timeSample,
+                             threshold = thresholdWhole)
+    } else if(typeSample %in%  c("singleCell", "single")) {
+        get.mut.vector.singlecell(x, timeSample = timeSample)
+    }
+}
+
+
+
+
+reachCancer <- function(x, ndr = 0, detectionSize = 0,
+                        maxPopSize = 1e15) {
+    return(
+        ( ((x$TotalPopSize >= detectionSize) ||
+           (x$MaxDriversLast >= ndr)) &&
+         ## (x$ti_dbl_min == 0) && ## silly, since now impossible
+         (x$TotalPopSize < maxPopSize) ## numerical issues here
+         ))
+}
 
 
 
@@ -115,15 +478,15 @@ oncoSimul.internal <- function(restrict.table,
                       ratioForce = 2,
                       max.memory = 20000,
                       max.wall.time = 3600,
-                      keep.every = 20,
+                      keepEvery = 20,
                       alpha = 0.0015,
                       K = 1000,
                       endTimeEvery = NULL,
-                      finalDrivers = 1000,
-                      silent = TRUE) {
+                      finalDrivers = 1000) {
   ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
-  ## FIXME: check argument types for typeFitness 
+    ## FIXME: check argument types for typeFitness 
+    ## FIXME: keepEvery not a multiple of sampleEvery
 
   if(initSize_species < 10) {
     warning("initSize_species too small?")
@@ -131,25 +494,25 @@ oncoSimul.internal <- function(restrict.table,
   if(initSize_iter < 100) {
     warning("initSize_iter too small?")
   }
-  if(keep.every < sampleEvery)
-    warning("setting keep.every to sampleEvery")
+  if(keepEvery < sampleEvery)
+    warning("setting keepEvery to sampleEvery")
   if(is.null(seed_gsl)) {## passing a null creates a random seed
     seed_gsl <- as.integer(round(runif(1, min = 0, max = 2^16)))
-    if(!silent)
-      cat(paste("\n Using ", seed_gsl, " as seed for GSL\n"))
+    if(verbosity >= 2)
+      cat(paste("\n Using ", seed_gsl, " as seed for C++ generator\n"))
   }
 
   numDrivers <- nrow(restrict.table)
   if(length(unique(restrict.table[, 1])) != numDrivers)
-    stop("EH??!! length(unique(restrict.table[, 1])) != numDrivers)")
+    stop("BAIL OUT NOW: EH??!! length(unique(restrict.table[, 1])) != numDrivers)")
   ddr <- restrict.table[, 1]
   if(any(diff(ddr) != 1))
-    stop(" any(diff(ddr) != 1")
+    stop("BAIL OUT NOW:  any(diff(ddr) != 1")
   ## sanity checks
   if(max(restrict.table[, 1]) != numDrivers)
-    stop("max(restrict.table[, 1]) != numDrivers")
+    stop("BAIL OUT NOW: max(restrict.table[, 1]) != numDrivers")
   if(numDrivers > numGenes)
-    stop("numDrivers > numGenes")
+    stop("BAIL OUT NOW: numDrivers > numGenes")
   
   non.dep.drivers <- restrict.table[which(restrict.table[, 2] == 0), 1]
 
@@ -171,9 +534,9 @@ oncoSimul.internal <- function(restrict.table,
                         "time to finish, or can hit the wall time limit. "))
       }
   if(is.null(endTimeEvery))
-    endTimeEvery <- keep.every
-  if( (endTimeEvery > 0) && (endTimeEvery %% keep.every) )
-    warning("!(endTimeEvery %% keep.every)")
+    endTimeEvery <- keepEvery
+  if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
+    warning("!(endTimeEvery %% keepEvery)")
   ## a sanity check in restricTable, so no neg. indices for the positive deps
   neg.deps <- function(x) {
     ## checks a row of restrict.table
@@ -184,7 +547,7 @@ oncoSimul.internal <- function(restrict.table,
     } else FALSE
   }
   if(any(apply(restrict.table, 1, neg.deps)))
-    stop("Negative dependencies in restriction table")
+    stop("BAIL OUT NOW: Negative dependencies in restriction table")
 
   ## transpose the table
   rtC <- convertRestrictTable(restrict.table)
@@ -193,7 +556,9 @@ oncoSimul.internal <- function(restrict.table,
   ## return the matching call? call <- match.call()
   ## and then return(c(.Call(), call))
   call <- match.call()
-  return(c(.Call("Algorithm5",
+  return(c(.Call(
+      ## "Algorithm5",
+      "C_BNB_Algo5",
                  rtC,
                  numDrivers,
                  numGenes,
@@ -217,30 +582,30 @@ oncoSimul.internal <- function(restrict.table,
                  mutatorGenotype,
                  initMutant,
                  max.wall.time,
-                 keep.every,
+                 keepEvery,
                  alpha,
                  sh,
                  K,
                  endTimeEvery,
-                 finalDrivers,
-               PACKAGE = "OncoSimulR"),
-           call = call,
-           NumDrivers = numDrivers,
-           initMutant = initMutant))
+                 finalDrivers),
+##                 PACKAGE = "OncoSimulR"),
+##           call = call,
+           NumDrivers = numDrivers
+##         ,  initMutant = initMutant
+           ))
 }
 
 
-colnames.to.pops.by.time <- function(pops.by.time) {
-  if(prod(dim(pops.by.time)) > 1) {  
-    ## colnames(pops.by.time) <- rep("", ncol(pops.by.time))
-    colnames(pops.by.time) <- c("Time",
-                                paste("Sp_", 1:tmp$NumSpecies, sep = ""))
-  }
-}
-
+## colnames.to.pops.by.time <- function(pops.by.time) {
+##   if(prod(dim(pops.by.time)) > 1) {  
+##     ## colnames(pops.by.time) <- rep("", ncol(pops.by.time))
+##     colnames(pops.by.time) <- c("Time",
+##                                 paste("Sp_", 1:tmp$NumSpecies, sep = ""))
+##   }
+## }
 
 create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
-  if(tmp$NumSpecies > 1) {
+  if(tmp$NumClones > 1) {
     NumMutations <- apply(tmp$Genotypes, 2, sum)
     muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
                           t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
@@ -255,50 +620,55 @@ create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
 
 create.drivers.by.time <- function(tmp, numDrivers) {
   CountNumDrivers <- apply(tmp$Genotypes[1:numDrivers, ,drop = FALSE], 2, sum)
-  if(tmp$NumSpecies > 1) {
-    if(length(unique(CountNumDrivers )) > 1) {
-      drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
-                               t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
-                                       function(x) tapply(x, CountNumDrivers, sum)))) 
-    } else {
-      drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
-                               rowSums(tmp$pops.by.time[, -c(1), drop = FALSE]))
-    }
-    colnames(drivers.by.time) <- c("Time",
-                                   paste("dr_", colnames(drivers.by.time)[-c(1)],
-                                         sep = ""))
+  if(tmp$NumClones >= 1) {
+      if(tmp$NumClones == 1) {
+          if(ncol(tmp$pops.by.time) != 2)
+              stop("This is impossible!")
+          drivers.by.time <- tmp$pops.by.time
+      } else {
+          if(length(unique(CountNumDrivers )) > 1) {
+              drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
+                                       t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
+                                               function(x) tapply(x, CountNumDrivers, sum)))) 
+          } else {
+              drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
+                                       rowSums(tmp$pops.by.time[, -c(1), drop = FALSE]))
+          }
+      }
+      colnames(drivers.by.time) <- c("Time",
+                                     paste("dr_", colnames(drivers.by.time)[-c(1)],
+                                           sep = ""))
   } else {
-    drivers.by.time <- NULL
+      drivers.by.time <- NULL
   }
   return(drivers.by.time)
 } 
 
 
-
 ## For plotting, this helps decrease huge file sizes, while still showing
 ## the start of each clone, if it was originally recorded.
 
-thin.pops <- function(x, keep = 0.1, min.keep = 3) {
+thin.pop.data <- function(x, keep = 0.1, min.keep = 3) {
     norig <- nrow(x$pops.by.time)
     keep1 <- round(seq.int(from = 1, to = norig,
                            length.out = round(norig * keep)))
-    keep2 <- apply(x$pops.by.time[, -1],
+    keep2 <- apply(x$pops.by.time[, -1, drop = FALSE],
                    1, function(x) any((x[x > 0] < min.keep)))
     keep <- sort(union(keep1, keep2))
-    x$pops.by.time <- x$pops.by.time[keep, ]
+    x$pops.by.time <- x$pops.by.time[keep, , drop = FALSE]
     return(x)
 }
 
 
 
-plotPop <- function(z, ndr = NULL, na.subs = TRUE,
+plotClones <- function(z, ndr = NULL, na.subs = TRUE,
                     log = "y", type = "l",
                     lty = 1:8, col = 1:9, ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
     ## drivers are plotted last
 
-    y <- z$pops.by.time[, 2:ncol(z$pops.by.time)]
+    y <- z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE]
     
     if(na.subs){
         y[y == 0] <- NA
@@ -307,7 +677,7 @@ plotPop <- function(z, ndr = NULL, na.subs = TRUE,
       ## could be done above, to avoid creating
       ## more copies
       oo <- order(ndr)
-      y <- y[, oo]
+      y <- y[, oo, drop = FALSE]
       ndr <- ndr[oo]
       col <- col[ndr + 1]
   }
@@ -384,19 +754,28 @@ convertRestrictTable <- function(x) {
 
 
 adjmat.to.restrictTable <- function(x) {
-  ## we have the zero
-  ## x <- x[-1, -1]
-  num.deps <- colSums(x)
-  max.n.deps <- max(num.deps)
-  rt <- matrix(-9, nrow = nrow(x),
-               ncol = max.n.deps + 2)
-  for(i in 1:ncol(x)) {
-    if( num.deps[ i ])
-      rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ], which(x[, i ] != 0))
-    else
-      rt[i , 1:2] <- c(i , 0)
-  }
-  return(rt)
+    ## we have the zero
+    ## x <- x[-1, -1]
+    if(!is.null(colnames(x))) {
+        ## FIXME: this makes sense with numeric labels for columns, but
+        ## not ow.
+        oi <- order(as.numeric(colnames(x)))
+        if(any(oi != (1:ncol(x)))) {
+            warning("Reordering adjacency matrix")
+            x <- x[oi, oi]
+        }
+    }
+    num.deps <- colSums(x)
+    max.n.deps <- max(num.deps)
+    rt <- matrix(-9, nrow = nrow(x),
+                 ncol = max.n.deps + 2)
+    for(i in 1:ncol(x)) {
+        if( num.deps[ i ])
+            rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ], which(x[, i ] != 0))
+        else
+            rt[i , 1:2] <- c(i , 0)
+    }
+    return(rt)
 }
 
 poset.to.restrictTable <- function(x) {
@@ -406,7 +785,6 @@ poset.to.restrictTable <- function(x) {
 
 
 ## have a graph without a null??
-
 
 poset.to.graph <- function(x, names,
                            addroot = FALSE,
@@ -433,7 +811,8 @@ poset.to.graph <- function(x, names,
     ## have two kinds of posets: ones that are full, with NAs, etc, if
     ## needed. Others that are not, but are fixed by the code here. But if
     ## using the later, the user needs to make sure that the last node is
-    ## in the poset.
+    ## in the poset. This can be used as a shortcut trick, but in the docs
+    ## I do not do it, as bad practice.
     
   m <- length(names) 
   m1 <- matrix(0, nrow = m, ncol = m)
@@ -476,106 +855,101 @@ poset.to.graph <- function(x, names,
 
 
 
-
-
-
-
-
-get.mut.vector.whole <- function(filename, timeSample, threshold = 0.5,
-                                 remove.offending = TRUE) {
-    ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
-    ## Obtain, from a file with results from a simulation run, the vector
-    ## of 0/1 corresponding to each gene.
+## get.mut.vector.whole <- function(filename, timeSample, threshold = 0.5,
+##                                  remove.offending = TRUE) {
+##     ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
+##     ## Obtain, from a file with results from a simulation run, the vector
+##     ## of 0/1 corresponding to each gene.
     
-    ## threshold is the min. proportion for a mutation to be detected
-    ## We are doing whole tumor sampling here, as in Sprouffske
+##     ## threshold is the min. proportion for a mutation to be detected
+##     ## We are doing whole tumor sampling here, as in Sprouffske
 
-    ## timeSample: do we sample at end, or at a time point, chosen
-    ## randomly, from all those with at least one driver?
+##     ## timeSample: do we sample at end, or at a time point, chosen
+##     ## randomly, from all those with at least one driver?
     
-    ## We can be using rds and RData
+##     ## We can be using rds and RData
 
-    ## This is fragile: if things fail below, but there is a tmp object in
-    ## global env, we can get garbage.
+##     ## This is fragile: if things fail below, but there is a tmp object in
+##     ## global env, we can get garbage.
 
-    ## Can be made more robust by assigning to another name on load,
-    ## and in the future I will only use rds
-    ## or if RData, do as in ADaCGH2 with named RDatas
-    rt <- try({
-        if(length(grep("RData$", filename))) {
-            load(filename) ## we expect the object to be called tmp
-        } else {
-            tmp <- readRDS(filename)
-        }
-    })
-    if(inherits(rt, "try-error")) {
-        if(remove.offending) {
-            warning("Removing offending filename ", filename)
-            file.remove(filename)
-            return(NA)
-        }
-    } else {
+##     ## Can be made more robust by assigning to another name on load,
+##     ## and in the future I will only use rds
+##     ## or if RData, do as in ADaCGH2 with named RDatas
+##     rt <- try({
+##         if(length(grep("RData$", filename))) {
+##             load(filename) ## we expect the object to be called tmp
+##         } else {
+##             tmp <- readRDS(filename)
+##         }
+##     })
+##     if(inherits(rt, "try-error")) {
+##         if(remove.offending) {
+##             warning("Removing offending filename ", filename)
+##             file.remove(filename)
+##             return(NA)
+##         }
+##     } else {
         
-        if(timeSample == "last") {
-            return(as.numeric((tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
-                                          tmp$Genotypes)/tmp$TotalPopSize) > threshold))
-        } else if (timeSample == "uniform") {
-            the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-            pop <- tmp$pops.by.time[the.time, -1]
-            popSize <- tmp$PerSampleStats[the.time, 1]
-            return( as.numeric((tcrossprod(pop, tmp$Genotypes)/popSize) > threshold) )
-        }
-  }
-}
+##         if(timeSample == "last") {
+##             return(as.numeric((tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
+##                                           tmp$Genotypes)/tmp$TotalPopSize) > threshold))
+##         } else if (timeSample == "uniform") {
+##             the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
+##             pop <- tmp$pops.by.time[the.time, -1]
+##             popSize <- tmp$PerSampleStats[the.time, 1]
+##             return( as.numeric((tcrossprod(pop, tmp$Genotypes)/popSize) > threshold) )
+##         }
+##   }
+## }
 
 
 
 
 
-get.mut.vector.singlecell <- function(filename, timeSample,
-                                      remove.offending = TRUE) {
-    ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
-    ## Obtain, from a file with results from a simulation run, the vector
-    ## of 0/1 corresponding to each gene.
+## get.mut.vector.singlecell <- function(filename, timeSample,
+##                                       remove.offending = TRUE) {
+##     ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
+##     ## Obtain, from a file with results from a simulation run, the vector
+##     ## of 0/1 corresponding to each gene.
     
-    ## No threshold, as single cell.
+##     ## No threshold, as single cell.
 
-    ## timeSample: do we sample at end, or at a time point, chosen
-    ## randomly, from all those with at least one driver?
+##     ## timeSample: do we sample at end, or at a time point, chosen
+##     ## randomly, from all those with at least one driver?
     
-    ## We can be using rds and RData
+##     ## We can be using rds and RData
 
-    ## This is fragile: if things fail below, but there is a tmp object in
-    ## global env, we can get garbage.
+##     ## This is fragile: if things fail below, but there is a tmp object in
+##     ## global env, we can get garbage.
 
-    ## Can be made more robust by assigning to another name on load,
-    ## and in the future I will only use rds
-    ## or if RData, do as in ADaCGH2 with named RDatas
-    rt <- try({
-        if(length(grep("RData$", filename))) {
-            load(filename) ## we expect the object to be called tmp
-        } else {
-            tmp <- readRDS(filename)
-        }
-    })
-    if(inherits(rt, "try-error")) {
-        if(remove.offending) {
-            warning("Removing offending filename ", filename)
-            file.remove(filename)
-            return(NA)
-        }
-    } else {
-        if(timeSample == "last") {
-            the.time <- nrow(tmp$pops.by.time)
-        } else if (timeSample == "uniform") {
-            the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-        }
-        pop <- tmp$pops.by.time[the.time, -1]
-        ##       popSize <- tmp$PerSampleStats[the.time, 1]
-        ## genot <- sample(seq_along(pop), 1, prob = pop)
-        return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
-  }
-}
+##     ## Can be made more robust by assigning to another name on load,
+##     ## and in the future I will only use rds
+##     ## or if RData, do as in ADaCGH2 with named RDatas
+##     rt <- try({
+##         if(length(grep("RData$", filename))) {
+##             load(filename) ## we expect the object to be called tmp
+##         } else {
+##             tmp <- readRDS(filename)
+##         }
+##     })
+##     if(inherits(rt, "try-error")) {
+##         if(remove.offending) {
+##             warning("Removing offending filename ", filename)
+##             file.remove(filename)
+##             return(NA)
+##         }
+##     } else {
+##         if(timeSample == "last") {
+##             the.time <- nrow(tmp$pops.by.time)
+##         } else if (timeSample == "uniform") {
+##             the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
+##         }
+##         pop <- tmp$pops.by.time[the.time, -1]
+##         ##       popSize <- tmp$PerSampleStats[the.time, 1]
+##         ## genot <- sample(seq_along(pop), 1, prob = pop)
+##         return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+##   }
+## }
 
 
 
