@@ -1273,7 +1273,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    double& totPopSize, 
 					    double& lastStoredSample,
 					    std::vector<Genotype64>& genot_out,
-					    //std::vector<unsigned long>& sp_id_out,
+					    //std::vector<unsigned long long>& sp_id_out,
 					    std::vector<double>& popSizes_out,
 					    std::vector<int>& index_out,
 					    std::vector<double>& time_out,
@@ -1422,14 +1422,14 @@ static inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
 }
 
 inline void reshape_to_outNS(Rcpp::NumericMatrix& outNS,
-			     const std::vector<unsigned long>& uniqueGenotV,
-			     const std::vector<unsigned long>& genot_out_ul,
+			     const std::vector<unsigned long long>& uniqueGenotV,
+			     const std::vector<unsigned long long>& genot_out_ul,
 			     const std::vector<double>& popSizes_out,
 			     const std::vector<int>& index_out,
 			     const std::vector<double>& time_out){
   
-  std::vector<unsigned long>::const_iterator fbeg = uniqueGenotV.begin();
-  std::vector<unsigned long>::const_iterator fend = uniqueGenotV.end();
+  std::vector<unsigned long long>::const_iterator fbeg = uniqueGenotV.begin();
+  std::vector<unsigned long long>::const_iterator fend = uniqueGenotV.end();
 
   int column;
 
@@ -1443,28 +1443,28 @@ inline void reshape_to_outNS(Rcpp::NumericMatrix& outNS,
     outNS(j, 0) = time_out[j];
 }
 
-static inline void find_unique_genotypes(std::set<unsigned long>& uniqueGenotypes,
-				  const std::vector<unsigned long>& genot_out_l) {
+static inline void find_unique_genotypes(std::set<unsigned long long>& uniqueGenotypes,
+				  const std::vector<unsigned long long>& genot_out_l) {
   for(size_t i = 0; i < genot_out_l.size(); ++i) 
     uniqueGenotypes.insert( genot_out_l[i] );
 }
 
-static inline void genot_out_to_ulong(std::vector<unsigned long>& go_l,
+static inline void genot_out_to_ullong(std::vector<unsigned long long>& go_l,
 			       const std::vector<Genotype64>& go) {
   for(size_t i = 0; i < go.size(); ++i)
-    go_l[i] = go[i].to_ulong();
+    go_l[i] = go[i].to_ullong();
 }
 
 
-static inline void uniqueGenotypes_to_vector(std::vector<unsigned long>& ugV,
-				      const std::set<unsigned long>& uniqueGenotypes) {
+static inline void uniqueGenotypes_to_vector(std::vector<unsigned long long>& ugV,
+				      const std::set<unsigned long long>& uniqueGenotypes) {
   ugV.assign(uniqueGenotypes.begin(), uniqueGenotypes.end() );
 }
 
 
 static inline void create_returnGenotypes(Rcpp::IntegerMatrix& returnGenotypes,
 					  const int& numGenes,
-					  const std::vector<unsigned long>& uniqueGenotypesV){
+					  const std::vector<unsigned long long>& uniqueGenotypesV){
   // In C++, as the original were bitsets, pos 0 is at the right
   // In R, pos 0 is at the left
 
@@ -1533,7 +1533,7 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
     Rcpp::Rcout << "\n\n     ********* 5.9 ******\n " 
 	      << "     Species  = " << i 
 	      << "\n      Genotype = " << Genotypes[i]
-	      << "\n      sp_id = " << Genotypes[i].to_ulong() // sp_id[i]  
+	      << "\n      sp_id = " << Genotypes[i].to_ullong() // sp_id[i]  
 	      << "\n      pre-update popSize = " 
 	      << popParams[i].popSize 
 	      << "\n      time of sample = " << tSample 
@@ -1563,7 +1563,7 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
       // sp_to_remove[sp_to_remove[0]] = i;
 #ifdef DEBUGV
       Rcpp::Rcout << "\n\n     Removing species i = " << i 
-		<< " with sp_id = " << Genotypes[i].to_ulong(); //sp_id[i];
+		<< " with sp_id = " << Genotypes[i].to_ullong(); //sp_id[i];
 #endif
     } // else {
     //   popParams[i].Flag = true;
@@ -1746,9 +1746,9 @@ SEXP Algorithm5(SEXP restrictTable_,
 
   // FIXME: uncomment this for package
   // verify we are OK with usigned long
-  // if( !(static_cast<double>(std::numeric_limits<unsigned long>::max()) 
+  // if( !(static_cast<double>(std::numeric_limits<unsigned long long>::max()) 
   // 	>= pow(2, 64)) )
-  //   throw std::range_error("The size of unsigned long is too short.");
+  //   throw std::range_error("The size of unsigned long long is too short.");
 
   if(numGenes > 64)  
     throw std::range_error("This version only accepts up to 64 genes.");
@@ -1764,12 +1764,12 @@ SEXP Algorithm5(SEXP restrictTable_,
 
   //GSL rng
   gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
-  gsl_rng_set (r, (unsigned long) seed);
+  gsl_rng_set (r, (unsigned long long) seed);
 
   Genotype64 newGenotype;
   std::vector<Genotype64> Genotypes(1);
   //  std::set<Genotype64> uniqueGenotypes;
-  std::set<unsigned long> uniqueGenotypes;
+  std::set<unsigned long long> uniqueGenotypes;
   spParamsP tmpParam; 
   std::vector<spParamsP> popParams(1);
   const int sp_per_period = 5000;
@@ -1968,7 +1968,7 @@ SEXP Algorithm5(SEXP restrictTable_,
   genot_out.push_back(Genotypes[0]);
   popSizes_out.push_back(popParams[0].popSize);
   index_out.push_back(outNS_i);
-  uniqueGenotypes.insert(Genotypes[0].to_ulong());
+  uniqueGenotypes.insert(Genotypes[0].to_ullong());
   time_out.push_back(currentTime);
 
   timeNextPopSample = currentTime + sampleEvery;
@@ -2235,8 +2235,8 @@ SEXP Algorithm5(SEXP restrictTable_,
 	if(verbosity >= 3) {
 	  Rcpp::Rcout << " \n\n\n Looking at NEW species " << sp << " at creation";
 	  Rcpp::Rcout << "\n Genotype = " << newGenotype; //Genotypes[sp];
-	  Rcpp::Rcout << "\n sp_id = " << newGenotype.to_ulong() ;
-	    //Genotypes[sp].to_ulong();
+	  Rcpp::Rcout << "\n sp_id = " << newGenotype.to_ullong() ;
+	    //Genotypes[sp].to_ullong();
 	  Rcpp::Rcout << "\n birth of sp = " << tmpParam.birth;
 	  Rcpp::Rcout << "\n death of sp = " << tmpParam.death;
 	  Rcpp::Rcout << "\n s = " << s;
@@ -2256,10 +2256,10 @@ SEXP Algorithm5(SEXP restrictTable_,
 	if(verbosity >= 2) {
 	  Rcpp::Rcout <<"\n     Mutated to existing species " << sp 
 		    << " (Genotype = " << Genotypes[sp] 
-		    << "; sp_id = " << Genotypes[sp].to_ulong() << ")"
+		    << "; sp_id = " << Genotypes[sp].to_ullong() << ")"
 		    << "\n from species "  <<   nextMutant
 		    << " (Genotypes = " << Genotypes[nextMutant] 
-		    << "; sp_id = " << Genotypes[sp].to_ulong() << ")";
+		    << "; sp_id = " << Genotypes[sp].to_ullong() << ")";
 	}
 
 	// FIXME00: the if can be removed??
@@ -2402,10 +2402,10 @@ SEXP Algorithm5(SEXP restrictTable_,
 
   // FIXME: all this is ugly and could be a single function
   // up to call to IntegerMatrix
-  std::vector<unsigned long> genot_out_ulong(genot_out.size());
-  genot_out_to_ulong(genot_out_ulong, genot_out);
-  find_unique_genotypes(uniqueGenotypes, genot_out_ulong);
-  std::vector<unsigned long> uniqueGenotypes_vector(uniqueGenotypes.size());
+  std::vector<unsigned long long> genot_out_ullong(genot_out.size());
+  genot_out_to_ullong(genot_out_ullong, genot_out);
+  find_unique_genotypes(uniqueGenotypes, genot_out_ullong);
+  std::vector<unsigned long long> uniqueGenotypes_vector(uniqueGenotypes.size());
   uniqueGenotypes_to_vector(uniqueGenotypes_vector, uniqueGenotypes);
   // IntegerMatrix returnGenotypes(uniqueGenotypes_vector.size(), numGenes);
   IntegerMatrix returnGenotypes(numGenes, uniqueGenotypes_vector.size());
@@ -2438,7 +2438,7 @@ SEXP Algorithm5(SEXP restrictTable_,
   }
   NumericMatrix outNS(outNS_r, outNS_c);  
   if(create_outNS) {
-    reshape_to_outNS(outNS, uniqueGenotypes_vector, genot_out_ulong, 
+    reshape_to_outNS(outNS, uniqueGenotypes_vector, genot_out_ullong, 
 		     popSizes_out, 
 		     index_out, time_out);
     

@@ -155,10 +155,10 @@
 %%   \item{endTimeEvery}{
 %% %%     ~~Describe \code{endTimeEvery} here~~
 %% }
-\item{silent}{
-  If FALSE, intermediate information about what is being done is
-  provided during the simulation, including possible warnings about
-  numerical problems.
+\item{verbosity}{
+  If 0, run as silently as possible. Otherwise, increasing values of
+  verbosity provide progressively more information about intermediate
+  steps, possible numerical notes/warnings from the C++ code, etc.
 %%     ~~Describe \code{silent} here~~
 }
 
@@ -329,13 +329,13 @@ plot(m1, addtot = TRUE, log = "")
 
 
 
-## Simulating 50 individual trajectories
+## Simulating 4 individual trajectories
 ## (I set mc.cores = 2 to comply with --as-cran checks, but you
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
 
 
-p1 <- oncoSimulPop(50, p701,
+p1 <- oncoSimulPop(4, p701,
                    keepEvery = 10,
                    mc.cores = 2)
 

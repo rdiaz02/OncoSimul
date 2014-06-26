@@ -95,7 +95,7 @@ p705 <- examplePosets[["p705"]]
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
 
-p1 <- oncoSimulPop(20, p705, mc.cores = 2)
+p1 <- oncoSimulPop(10, p705, mc.cores = 2)
 samplePop(p1)
 
 

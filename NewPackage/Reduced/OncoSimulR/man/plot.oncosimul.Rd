@@ -153,14 +153,14 @@ b1 <- oncoSimulIndiv(p701)
 plot(b1, addtot = TRUE)
 
 
-## simulate and plot 9 individuals
+## simulate and plot 2 individuals
 ## (I set mc.cores = 2 to comply with --as-cran checks, but you
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
 
-p1 <- oncoSimulPop(9, p701, mc.cores = 2)
+p1 <- oncoSimulPop(2, p701, mc.cores = 2)
 
-par(mfrow = c(3, 3))
+par(mfrow = c(1, 2))
 plot(p1, ask = FALSE)
 
 }
