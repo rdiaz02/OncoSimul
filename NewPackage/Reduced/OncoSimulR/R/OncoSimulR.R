@@ -42,11 +42,11 @@ oncoSimulPop <- function(Nindiv,
                          poset,
                          model = "Bozic",
                          numPassengers = 30,
-                         mu = 5e-7,
-                         detectionSize = 1e6,
+                         mu = 1e-6,
+                         detectionSize = 1e8,
                          detectionDrivers = 4,
-                         sampleEvery = 5,
-                         initSize = 2000,
+                         sampleEvery = 1,
+                         initSize = 500,
                          s = 0.1,
                          sh = -1,
                          K = initSize/(exp(1) - 1),
@@ -56,7 +56,7 @@ oncoSimulPop <- function(Nindiv,
                          max.memory = 2000,
                          max.wall.time = 200,
 #                         endTimeEvery = -9,
-                         silent = TRUE,
+                         verbosity  = 0,
                          mc.cores = detectCores()) {
 
     if(.Platform$OS.type == "windows") {
@@ -84,7 +84,7 @@ oncoSimulPop <- function(Nindiv,
                         max.memory = max.memory,
                         max.wall.time = max.wall.time,
 ##                        endTimeEvery = endTimeEvery,
-                        silent = silent),
+                        verbosity = verbosity),
                     mc.cores = mc.cores
                     )
     class(pop) <- "oncosimulpop"
@@ -100,11 +100,11 @@ oncoSimulPop <- function(Nindiv,
 oncoSimulIndiv <- function(poset,
                            model = "Bozic",
                            numPassengers = 30,
-                           mu = 5e-7,
-                           detectionSize = 1e6,
+                           mu = 1e-6,
+                           detectionSize = 1e8,
                            detectionDrivers = 4,
-                           sampleEvery = 5,
-                           initSize = 2000,
+                           sampleEvery = 1,
+                           initSize = 500,
                            s = 0.1,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
@@ -114,7 +114,7 @@ oncoSimulIndiv <- function(poset,
                            max.memory = 2000,
                            max.wall.time = 200,
 ##                           endTimeEvery = -9,
-                           silent = TRUE
+                           verbosity = 0
                            ) {
     call <- match.call()
     rt <- poset.to.restrictTable(poset)
@@ -184,7 +184,7 @@ oncoSimulIndiv <- function(poset,
                                  initSize_species = 2000, 
                                  initSize_iter = 500, 
                                  seed_gsl = NULL, 
-                                 verbosity = 1, 
+                                 verbosity = verbosity, 
                                  initMutant = -1, 
                                  speciesFS = 40000,  
                                  ratioForce = 2,  
@@ -194,12 +194,11 @@ oncoSimulIndiv <- function(poset,
                                  alpha = 0.0015,  
                                  K = K, 
                                  endTimeEvery = endTimeEvery, 
-                                 finalDrivers = detectionDrivers, 
-                                 silent = silent ),
-                  silent = silent)
+                                 finalDrivers = detectionDrivers),
+                  silent = !verbosity)
 
         if(!inherits(op, "try-error")) {
-            if(!silent) {
+            if(verbosity >= 2) {
                 cat("\n ... finished this run:")
                 cat("\n       Total Pop Size = ", op$TotalPopSize)
                 cat("\n       Drivers Last = ", op$MaxDriversLast)
@@ -216,7 +215,7 @@ oncoSimulIndiv <- function(poset,
             } else {
                 doneSimuls <- TRUE
             }
-            if(!silent) {
+            if(verbosity >= 2) {
                 if(doneSimuls)
                     cat("\n ... Keeping this one\n")
                 else
@@ -225,7 +224,7 @@ oncoSimulIndiv <- function(poset,
         } else {
             if(length(grep("BAIL OUT NOW", op)))
                 stop("Unrecoverable error")
-            if(!silent)
+            if(verbosity >= 2)
                 cat("\n Simulation aborted because of numerical or other problems.",
                     "Proceeding to next one.\n")
         }
@@ -525,8 +524,7 @@ oncoSimul.internal <- function(restrict.table,
                       alpha = 0.0015,
                       K = 1000,
                       endTimeEvery = NULL,
-                      finalDrivers = 1000,
-                      silent = TRUE) {
+                      finalDrivers = 1000) {
   ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
   ## FIXME: check argument types for typeFitness 
@@ -543,7 +541,7 @@ oncoSimul.internal <- function(restrict.table,
     warning("setting keepEvery to sampleEvery")
   if(is.null(seed_gsl)) {## passing a null creates a random seed
     seed_gsl <- as.integer(round(runif(1, min = 0, max = 2^16)))
-    if(!silent)
+    if(verbosity >= 2)
       cat(paste("\n Using ", seed_gsl, " as seed for GSL\n"))
   }
 
@@ -601,8 +599,9 @@ oncoSimul.internal <- function(restrict.table,
   ## return the matching call? call <- match.call()
   ## and then return(c(.Call(), call))
   call <- match.call()
-  return(c(.Call("Algorithm5",
-      ##"C_Algorithm5",
+  return(c(.Call(
+      ## "Algorithm5",
+      "C_Algorithm5",
                  rtC,
                  numDrivers,
                  numGenes,
@@ -631,8 +630,8 @@ oncoSimul.internal <- function(restrict.table,
                  sh,
                  K,
                  endTimeEvery,
-                 finalDrivers,
-                 PACKAGE = "OncoSimulR"),
+                 finalDrivers),
+##                 PACKAGE = "OncoSimulR"),
 ##           call = call,
            NumDrivers = numDrivers
 ##         ,  initMutant = initMutant
@@ -665,20 +664,26 @@ create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
 
 create.drivers.by.time <- function(tmp, numDrivers) {
   CountNumDrivers <- apply(tmp$Genotypes[1:numDrivers, ,drop = FALSE], 2, sum)
-  if(tmp$NumClones > 1) {
-    if(length(unique(CountNumDrivers )) > 1) {
-      drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
-                               t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
-                                       function(x) tapply(x, CountNumDrivers, sum)))) 
-    } else {
-      drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
-                               rowSums(tmp$pops.by.time[, -c(1), drop = FALSE]))
-    }
-    colnames(drivers.by.time) <- c("Time",
-                                   paste("dr_", colnames(drivers.by.time)[-c(1)],
-                                         sep = ""))
+  if(tmp$NumClones >= 1) {
+      if(tmp$NumClones == 1) {
+          if(ncol(tmp$pops.by.time) != 2)
+              stop("This is impossible!")
+          drivers.by.time <- tmp$pops.by.time
+      } else {
+          if(length(unique(CountNumDrivers )) > 1) {
+              drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
+                                       t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
+                                               function(x) tapply(x, CountNumDrivers, sum)))) 
+          } else {
+              drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
+                                       rowSums(tmp$pops.by.time[, -c(1), drop = FALSE]))
+          }
+      }
+      colnames(drivers.by.time) <- c("Time",
+                                     paste("dr_", colnames(drivers.by.time)[-c(1)],
+                                           sep = ""))
   } else {
-    drivers.by.time <- NULL
+      drivers.by.time <- NULL
   }
   return(drivers.by.time)
 } 

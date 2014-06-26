@@ -597,7 +597,8 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const double& detectionSize,
 					    const double& finalTime,
 					    const double& endTimeEvery,
-					    const int& finalDrivers) {
+					    const int& finalDrivers,
+					    const int& verbosity) {
   bool storeThis = false;
   totPopSize = 0.0;
   for(size_t i = 0; i < popParams.size(); ++i) {
@@ -670,8 +671,10 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
     throw std::range_error("totPopSize is NaN");
   }
   
-  if(totPopSize > (4.0 * 1e15))
-    Rcpp::Rcout << "\nWARNING: popSize > 4e15. Likely loss of precission\n";
+  if(totPopSize > (4.0 * 1e15)) {
+    if(verbosity > 0)
+      Rcpp::Rcout << "\nNOTE: popSize > 4e15. Likely loss of precission\n";
+  }
 }
 
 static inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
@@ -886,7 +889,7 @@ SEXP Algorithm5(SEXP restrictTable_,
   const double finalTime = as<double>(finalTime_);
   const int initSp = as<int>(initSize_species_);
   const int initIt = as<int>(initSize_iter_); // FIXME: this is a misnomer
-  int verbosity = as<int>(verbose_); ++verbosity; // will use later. for now, shut up the unused variable warnings
+  int verbosity = as<int>(verbose_); // ++verbosity; // will use later. for now, shut up the unused variable warnings
   // const double minNonZeroMut = mu * 0.01;  // to avoid == 0.0 comparisons
   double ratioForce = as<double>(ratioForce_); 
   int speciesFS = as<int>(speciesFS_);
@@ -1236,7 +1239,8 @@ SEXP Algorithm5(SEXP restrictTable_,
 				      detectionSize,
 				      finalTime,
 				      endTimeEvery,
-				      finalDrivers); 
+				      finalDrivers,
+				      verbosity); 
       computeMcFarlandError(e1, n_0, n_1, tps_0, tps_1, 
 			    typeFitness, totPopSize, K, initSize);
     
