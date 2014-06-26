@@ -95,11 +95,11 @@ p705 <- examplePosets[["p705"]]
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
 
-p1 <- oncoSimulPop(10, p705, mc.cores = 2)
+p1 <- oncoSimulPop(4, p705, mc.cores = 2)
 samplePop(p1)
 
 
-## Now, single cell sampling
+## Now single cell sampling
 
 r1 <- oncoSimulIndiv(p705)
 samplePop(r1, typeSample = "single")

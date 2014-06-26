@@ -94,9 +94,6 @@ oncoSimulPop <- function(Nindiv,
 
 ## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
 
-## pass an adj matrix.
-## offer convert poset to adj matrix.
-
 oncoSimulIndiv <- function(poset,
                            model = "Bozic",
                            numPassengers = 30,
@@ -374,21 +371,6 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
 }
 
 
-poset2AdjMat <- function(x) {
-    return(poset.to.graph(x, names = 1:max(x), addroot = FALSE,
-                          type = "adjmat"))
-}
-
-
-## adjMatNoDeps <- function(ngenes = 11) {
-##     posetToAdj(cbind(ngenes, 0))
-## }
-
-## posetNoDeps <- function(ngenes = 11){
-##     cbind(0, ngenes)
-## }
-
-
 plotPoset <- function(x, names = NULL, addroot = FALSE,
                        box = FALSE, ...) {
   if(is.null(names)) {
@@ -400,12 +382,26 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
     box()
 }
 
-## plotAdjMat <- function(x) {
-##     plot(as(x, "graphNEL"))
+############# The rest are internal functions
+
+## poset2AdjMat <- function(x) {
+##     return(poset.to.graph(x, names = 1:max(x), addroot = FALSE,
+##                           type = "adjmat"))
 ## }
 
 
-############# The rest are internal functions
+## adjMatNoDeps <- function(ngenes = 11) {
+##     posetToAdj(cbind(ngenes, 0))
+## }
+
+## posetNoDeps <- function(ngenes = 11){
+##     cbind(0, ngenes)
+## }
+
+
+## plotAdjMat <- function(x) {
+##     plot(as(x, "graphNEL"))
+## }
 
 
 get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
@@ -527,8 +523,7 @@ oncoSimul.internal <- function(restrict.table,
                       finalDrivers = 1000) {
   ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
-  ## FIXME: check argument types for typeFitness 
-
+    ## FIXME: check argument types for typeFitness 
     ## FIXME: keepEvery not a multiple of sampleEvery
 
   if(initSize_species < 10) {
@@ -860,7 +855,8 @@ poset.to.graph <- function(x, names,
     ## have two kinds of posets: ones that are full, with NAs, etc, if
     ## needed. Others that are not, but are fixed by the code here. But if
     ## using the later, the user needs to make sure that the last node is
-    ## in the poset.
+    ## in the poset. This can be used as a shortcut trick, but in the docs
+    ## I do not do it, as bad practice.
     
   m <- length(names) 
   m1 <- matrix(0, nrow = m, ncol = m)
