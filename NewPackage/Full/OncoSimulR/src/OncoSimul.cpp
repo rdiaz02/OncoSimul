@@ -1049,7 +1049,22 @@ static void fitness(spParamsP& tmpP,
   tmpP.absfitness = parentP.absfitness;
 
 
+
+
+
   //      **** Are driver constraints met? ***
+
+
+  // Two cases: same s, sh, sp or different ones. If same, return three
+  // integers: sumDriversMet, sumDriversNoMet, sumPassengers.  If
+  // different, return three vectors, filled with the non-zero
+  // entries. These vectors then are combined as dictated by the fintness
+  // functions.
+
+  // If same single s, sh, sp: function takes three integers. O.w. it
+  // takes three integer vectors.
+
+  
 
   if(mutatedPos >= numDrivers) { //the new mutation is a passenger
     return;
