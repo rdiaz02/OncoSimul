@@ -3,6 +3,8 @@ V_R=$1
 export R_MAKEVARS_USER=/home/ramon/.R/Makevars
 
 
+export CC=clang
+export CXX=/usr/bin/clang++
 
 # export OPTIMFLAGS=-march=native -O2 -ffunction-sections -g -fpic -pipe -Wall -pedantic
 # export CFLAGS=-Wall -pedantic -march=native -O2 -ffunction-sections -g -fpic -pipe 

@@ -40,10 +40,12 @@
 
 
 // From http://stackoverflow.com/a/5590404
-#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
-      ( std::ostringstream() << std::dec << x ) ).str()
-#define STOPASSERT(x);
+// #define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+//       ( std::ostringstream() << std::dec << x ) ).str()
+// no longer needed?
 
+
+#define STOPASSERT(x);
 
 // Will this work under Windows? Probably not. OK, I do not care much.
 // void setmemlimit(const long maxram){
@@ -464,7 +466,7 @@ static void fitness(spParamsP& tmpP,
 	  for(int i = 2; i < (2 + numDependencies); i++) {
 	    sumDependenciesMet += newGenotype[ thisRestrict[i] ];
 	  }
-	  if( (sumDependenciesMet == numDependencies) ) {
+	  if( sumDependenciesMet == numDependencies ) {
 	    sumDriversMet++;   
 	  } else {
 	    sumDriversNoMet++;
@@ -768,7 +770,7 @@ static inline void whichDrivers(int& totalPresentDrivers,
   std::string comma = "";
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {
-      strDrivers += (comma + SSTR(i + 1));
+      strDrivers += (comma + std::to_string(i + 1)); //SSTR(i + 1));
       comma = ", ";
       ++totalPresentDrivers;
     }

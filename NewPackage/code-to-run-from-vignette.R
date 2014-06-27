@@ -1,4 +1,4 @@
-
+set.seed(1)
 ## ----echo=FALSE,results='hide',error=FALSE-------------------------------
 require(knitr, quietly = TRUE)
 opts_knit$set(concordance = TRUE)
@@ -8,6 +8,7 @@ opts_knit$set(concordance = TRUE)
 ## ------------------------------------------------------------------------
 library(OncoSimulR)
 library(graph)
+library(help = OncoSimulR)
 
 
 ## ----fig.height=3--------------------------------------------------------
@@ -28,6 +29,7 @@ plotPoset(p4, addroot = TRUE)
 data(examplePosets)
 p1101 <- examplePosets[["p1101"]]
 
+set.seed(1)
 ## Bozic Model
 b1 <- oncoSimulIndiv(p1101, keepEvery = 15)
 summary(b1)
@@ -75,10 +77,15 @@ plot(p1)
 
 ## ------------------------------------------------------------------------
 
+library(parallel)
+RNGkind("L'Ecuyer-CMRG")
+set.seed(33)
+mc.reset.stream()
+
 m1 <- oncoSimulPop(100, examplePosets[["p1101"]], 
                    numPassengers = 0)
 
-
+summary(m1)
 
 ## ------------------------------------------------------------------------
 genotypes <- samplePop(m1)
@@ -98,5 +105,7 @@ colSums(genotypesSC)/nrow(genotypesSC)
 
 ot2 <- oncotree.fit(genotypesSC)
 plot(ot2)
+
+
 
 

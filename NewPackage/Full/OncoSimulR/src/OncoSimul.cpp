@@ -203,8 +203,8 @@
 
 
 // From http://stackoverflow.com/a/5590404
-#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
-      ( std::ostringstream() << std::dec << x ) ).str()
+// #define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+//       ( std::ostringstream() << std::dec << x ) ).str()
 
 // #define DEBUGZ
 // #define DEBUGV
@@ -1549,7 +1549,8 @@ static inline void whichDrivers(int& totalPresentDrivers,
   std::string comma = "";
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {
-      strDrivers += (comma + SSTR(i + 1));
+      strDrivers += (comma + std::to_string(i + 1)); //SSTR(i + 1));
+      // strDrivers += (comma + SSTR(i + 1));
       comma = ", ";
       ++totalPresentDrivers;
     }
