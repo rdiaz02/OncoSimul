@@ -1,15 +1,15 @@
 \name{poset}
 \alias{poset}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
   Poset
 }
 \description{
-  Poset: explanation.%, plotting posets, and conversion to adjacency matrix.
+  Poset: explanation.
 }
-%% \usage{
-%% }
-%- maybe also 'usage' for other objects documented here.
+
+
+
 \arguments{
   \item{x}{
     The poset. See details.
@@ -41,16 +41,16 @@
   below.
 
   
-%%  ~~ If necessary, more details than the description above ~~
+
 }
-%% \value{
-%%   For poset2AdjMat: An adjacency matrix (for a directed graph).
-%% %%  ~Describe the value returned
-%% %%  If it is a LIST, use
-%% %%  \item{comp1 }{Description of 'comp1'}
-%% %%  \item{comp2 }{Description of 'comp2'}
-%% %% ...
-%% }
+
+
+
+
+
+
+
+
 \references{
   Posets and similar structures appear in several places. The following
   two papers use them extensively.
@@ -60,18 +60,19 @@
 
   Gerstung et al., 2011. The Temporal Order of Genetic and Pathway
   Alterations in Tumorigenesis. \emph{PLoS ONE}, 6.
-%% ~put references to the literature/web site here ~
+
 }
 \author{
   Ramon Diaz-Uriarte
-%%  ~~who you are~~
+
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+
 
 \seealso{
-  \code{\link{examplePosets}}, \code{\link{plotPoset}}, \code{\link{oncoSimulIndiv}}
-  %% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{examplePosets}}, \code{\link{plotPoset}},
+  \code{\link{oncoSimulIndiv}}
+
 }
 \examples{
 
@@ -96,7 +97,6 @@ p4 <- cbind(0, 15)
 plotPoset(p4, addroot = TRUE)
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+
 \keyword{manip}
 

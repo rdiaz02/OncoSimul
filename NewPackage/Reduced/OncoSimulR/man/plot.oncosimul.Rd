@@ -2,7 +2,7 @@
 \alias{plot.oncosimul}
 \alias{plot.oncosimulpop}
 
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
   Plot simulated tumor progression data.
 }
@@ -38,7 +38,6 @@
 
 
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{
     An object of class \code{oncosimul} (for \code{plot.oncosimul}) or
@@ -73,40 +72,40 @@
 }
   \item{ltyDrivers}{
     Line type for the driver type.
-    %%     ~~Describe \code{ltyDrivers} here~~
+
 }
 \item{lwdDrivers}{
   Line width for the driver type.
-%%     ~~Describe \code{lwdDrivers} here~~
 }
   \item{xlab}{
     Same as \code{xlab} in \code{\link{plot.default}}.
-    %%     ~~Describe \code{xlab} here~~
+
 }
 \item{ylab}{
       Same as \code{ylab} in \code{\link{plot.default}}.
-%%     ~~Describe \code{ylab} here~~
+
 }
 \item{plotClones}{
   Should clones be plotted?
-%%     ~~Describe \code{plotClones} here~~
+
 }
 \item{plotDrivers}{
   Should clone types (which are defined by number of drivers), be plotted?
-%%     ~~Describe \code{plotDrivers} here~~
+
 }
 \item{addtot}{
   If TRUE, add a line with the total populatino size.
-%%     ~~Describe \code{addtot} here~~
+
 }
 \item{addtotlwd}{
   Line width for total population size.
-%%     ~~Describe \code{addtotlwd} here~~
+
 }
 \item{yl}{
   If non NULL, limits of the y axis. Same as in
-  \code{\link{plot.default}}. If NULL, the limits are calculated automatically.
-%%     ~~Describe \code{yl} here~~
+  \code{\link{plot.default}}. If NULL, the limits are calculated
+  automatically.
+
 }
 \item{thinData}{
   If TRUE, the data plotted is a subset of the original data. The
@@ -115,31 +114,31 @@
   each clone/driver originates).
 
   Thining is done to reduce the plot size and to speed up plotting..
-%%     ~~Describe \code{thinPops} here~~
+
 }
   \item{thinData.keep}{
     The fraction of the data to keep (actually, a lower bound on the
     fraction of data to keep).
 
-    %%     ~~Describe \code{thinPops.keep} here~~
+
 }
 \item{thinData.min}{
   Any time point for which a clone has a population size < thinData.min
   will be kept (i.e., will not be removed from) in the data.
   
-%%     ~~Describe \code{thinPops.min} here~~
+
 }
 \item{\dots}{
   Other arguments passed to \code{plots}. For instance, \code{main}.
-%%     ~~Describe \code{\dots} here~~
+
 }
 }
 \author{
   Ramon Diaz-Uriarte
-  %%  ~~who you are~~
+
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+
 
 \seealso{
   \code{\link{oncoSimulIndiv}}
@@ -164,8 +163,8 @@ par(mfrow = c(1, 2))
 plot(p1, ask = FALSE)
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+
+
 \keyword{hplot}
 
 

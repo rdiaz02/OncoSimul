@@ -145,7 +145,7 @@ oncoSimulIndiv <- function(poset,
 
     if( (typeFitness == "mcfarlandlog") &&
        (sampleEvery > 0.05)) {
-        warning("With the McFarland model you generally want smaller sampleEvery")
+        warning("With the McFarland model you often want smaller sampleEvery")
     }
     
     if(typeFitness == "mcfarlandlog") {
@@ -216,7 +216,7 @@ oncoSimulIndiv <- function(poset,
             if(length(grep("BAIL OUT NOW", op)))
                 stop("Unrecoverable error")
             if(verbosity >= 2)
-                cat("\n Simulation aborted because of numerical or other problems.",
+                cat("\nSimulation aborted because of numerical or other issues.",
                     "Proceeding to next one.\n")
         }
     }
@@ -366,14 +366,14 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
 
 
 plotPoset <- function(x, names = NULL, addroot = FALSE,
-                       box = FALSE, ...) {
-  if(is.null(names)) {
-    if(addroot) names <- c("Root", 1:max(x))
-    else names <- 1:max(x)
-  }
-  plot(poset.to.graph(x, names, addroot), ...)
-  if(box)
-    box()
+                      box = FALSE, ...) {
+    if(is.null(names)) {
+        if(addroot) names <- c("Root", 1:max(x))
+        else names <- 1:max(x)
+    }
+    plot(posetToGraph(x, names, addroot), ...)
+    if(box)
+        box()
 }
 
 ############# The rest are internal functions
@@ -388,15 +388,17 @@ get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
     ## timeSample: do we sample at end, or at a time point, chosen
     ## randomly, from all those with at least one driver?
     
-        
+    
     if(timeSample == "last") {
-        return(as.numeric((tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
-                                      tmp$Genotypes)/tmp$TotalPopSize) > threshold))
+        return(as.numeric(
+            (tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
+                        tmp$Genotypes)/tmp$TotalPopSize) > threshold))
     } else if (timeSample %in% c("uniform", "unif")) {
         the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
         pop <- tmp$pops.by.time[the.time, -1]
         popSize <- tmp$PerSampleStats[the.time, 1]
-        return( as.numeric((tcrossprod(pop, tmp$Genotypes)/popSize) > threshold) )
+        return( as.numeric((tcrossprod(pop,
+                                       tmp$Genotypes)/popSize) > threshold) )
     }
 }
 
@@ -446,182 +448,193 @@ reachCancer <- function(x, ndr = 0, detectionSize = 0,
 }
 
 oncoSimul.internal <- function(restrict.table,
-                      numGenes,
-                      typeFitness,
-                      typeCBN,
-                      birth, 
-                      s,
-                      sh,
-                      death,
-                      mu,
-                      initSize,
-                      sampleEvery,
-                      detectionSize,
-                      mutatorGenotype,
-                      finalTime,
-                      initSize_species = 2000,
-                      initSize_iter = 500,
-                      seed_gsl = NULL,
-                      verbosity = 1,
-                      initMutant = -1,
-                      speciesFS = 40000,
-                      ratioForce = 2,
-                      max.memory = 20000,
-                      max.wall.time = 3600,
-                      keepEvery = 20,
-                      alpha = 0.0015,
-                      K = 1000,
-                      endTimeEvery = NULL,
-                      finalDrivers = 1000) {
+                               numGenes,
+                               typeFitness,
+                               typeCBN,
+                               birth, 
+                               s,
+                               sh,
+                               death,
+                               mu,
+                               initSize,
+                               sampleEvery,
+                               detectionSize,
+                               mutatorGenotype,
+                               finalTime,
+                               initSize_species = 2000,
+                               initSize_iter = 500,
+                               seed_gsl = NULL,
+                               verbosity = 1,
+                               initMutant = -1,
+                               speciesFS = 40000,
+                               ratioForce = 2,
+                               max.memory = 20000,
+                               max.wall.time = 3600,
+                               keepEvery = 20,
+                               alpha = 0.0015,
+                               K = 1000,
+                               endTimeEvery = NULL,
+                               finalDrivers = 1000) {
 
-  if(initSize_species < 10) {
-    warning("initSize_species too small?")
-  }
-  if(initSize_iter < 100) {
-    warning("initSize_iter too small?")
-  }
-  if(keepEvery < sampleEvery)
-    warning("setting keepEvery to sampleEvery")
-  if(is.null(seed_gsl)) {## passing a null creates a random seed
-      ## name is a legacy. This is really the seed for the C++ generator.
-      ## Not a user modifieble argument for now, though.
-    seed_gsl <- as.integer(round(runif(1, min = 0, max = 2^16)))
-    if(verbosity >= 2)
-      cat(paste("\n Using ", seed_gsl, " as seed for C++ generator\n"))
-  }
+    if(initSize_species < 10) {
+        warning("initSize_species too small?")
+    }
+    if(initSize_iter < 100) {
+        warning("initSize_iter too small?")
+    }
+    if(keepEvery < sampleEvery)
+        warning("setting keepEvery to sampleEvery")
+    if(is.null(seed_gsl)) {## passing a null creates a random seed
+        ## name is a legacy. This is really the seed for the C++ generator.
+        ## Not a user modifieble argument for now, though.
+        seed_gsl <- as.integer(round(runif(1, min = 0, max = 2^16)))
+        if(verbosity >= 2)
+            cat(paste("\n Using ", seed_gsl, " as seed for C++ generator\n"))
+    }
 
-  numDrivers <- nrow(restrict.table)
-  if(length(unique(restrict.table[, 1])) != numDrivers)
-    stop("BAIL OUT NOW: EH??!! length(unique(restrict.table[, 1])) != numDrivers)")
-  ddr <- restrict.table[, 1]
-  if(any(diff(ddr) != 1))
-    stop("BAIL OUT NOW:  any(diff(ddr) != 1")
-  ## sanity checks
-  if(max(restrict.table[, 1]) != numDrivers)
-    stop("BAIL OUT NOW: max(restrict.table[, 1]) != numDrivers")
-  if(numDrivers > numGenes)
-    stop("BAIL OUT NOW: numDrivers > numGenes")
-  
-  non.dep.drivers <- restrict.table[which(restrict.table[, 2] == 0), 1]
-
-
-  if( (typeFitness == "bozic1") && (mutatorGenotype) )
-    warning("Using fitness bozic1 with mutatorGenotype;",
-            "this will have no effect.")
-
-  if( (typeFitness == "exp") && (death != 1) )
-    warning("Using fitness exp with death != 1")
+    numDrivers <- nrow(restrict.table)
+    if(length(unique(restrict.table[, 1])) != numDrivers)
+        stop("BAIL OUT NOW: length(unique(restrict.table[, 1])) != numDrivers)")
+    ddr <- restrict.table[, 1]
+    if(any(diff(ddr) != 1))
+        stop("BAIL OUT NOW:  any(diff(ddr) != 1")
+    ## sanity checks
+    if(max(restrict.table[, 1]) != numDrivers)
+        stop("BAIL OUT NOW: max(restrict.table[, 1]) != numDrivers")
+    if(numDrivers > numGenes)
+        stop("BAIL OUT NOW: numDrivers > numGenes")
+    
+    non.dep.drivers <- restrict.table[which(restrict.table[, 2] == 0), 1]
 
 
-  if( (is.null(endTimeEvery) || (endTimeEvery > 0)) &&
-      (typeFitness %in% c("bozic1", "exp") )) {
-          warning(paste("endTimeEvery will take a positive value. ",
-                        "This will make simulations not stop until the next ",
-                        "endTimeEvery has been reached. Thus, in simulations ",
-                        "with very fast growth, simulations can take a long ",
-                        "time to finish, or can hit the wall time limit. "))
-      }
-  if(is.null(endTimeEvery))
-    endTimeEvery <- keepEvery
-  if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
-    warning("!(endTimeEvery %% keepEvery)")
-  ## a sanity check in restricTable, so no neg. indices for the positive deps
-  neg.deps <- function(x) {
-    ## checks a row of restrict.table
-    numdeps <- x[2]
-    if(numdeps) {
-      deps <- x[3:(3+numdeps - 1)]
-      return(any(deps < 0))
-    } else FALSE
-  }
-  if(any(apply(restrict.table, 1, neg.deps)))
-    stop("BAIL OUT NOW: Negative dependencies in restriction table")
+    if( (typeFitness == "bozic1") && (mutatorGenotype) )
+        warning("Using fitness bozic1 with mutatorGenotype;",
+                "this will have no effect.")
 
-  ## transpose the table
-  rtC <- convertRestrictTable(restrict.table)
+    if( (typeFitness == "exp") && (death != 1) )
+        warning("Using fitness exp with death != 1")
 
-     
-  ## return the matching call? call <- match.call()
-  ## and then return(c(.Call(), call))
-  call <- match.call()
-  return(c(.Call(
-      ## "Algorithm5",
-      "C_Algorithm5",
-                 rtC,
-                 numDrivers,
-                 numGenes,
-                 typeCBN,
-                 birth, 
-                 s, 
-                 death,
-                 mu,
-                 initSize,
-                 sampleEvery,
-                 detectionSize,
-                 finalTime,
-                 initSize_species,
-                 initSize_iter,
-                 seed_gsl,
-                 verbosity,
-                 speciesFS,
-                 ratioForce,
-                 typeFitness,
-                 max.memory,
-                 mutatorGenotype,
-                 initMutant,
-                 max.wall.time,
-                 keepEvery,
-                 alpha,
-                 sh,
-                 K,
-                 endTimeEvery,
-                 finalDrivers),
-##                 PACKAGE = "OncoSimulR"),
-##           call = call,
-           NumDrivers = numDrivers
-##         ,  initMutant = initMutant
-           ))
+
+    if( (is.null(endTimeEvery) || (endTimeEvery > 0)) &&
+       (typeFitness %in% c("bozic1", "exp") )) {
+        warning(paste("endTimeEvery will take a positive value. ",
+                      "This will make simulations not stop until the next ",
+                      "endTimeEvery has been reached. Thus, in simulations ",
+                      "with very fast growth, simulations can take a long ",
+                      "time to finish, or can hit the wall time limit. "))
+    }
+    if(is.null(endTimeEvery))
+        endTimeEvery <- keepEvery
+    if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
+        warning("!(endTimeEvery %% keepEvery)")
+    ## a sanity check in restricTable, so no neg. indices for the positive deps
+    neg.deps <- function(x) {
+        ## checks a row of restrict.table
+        numdeps <- x[2]
+        if(numdeps) {
+            deps <- x[3:(3+numdeps - 1)]
+            return(any(deps < 0))
+        } else FALSE
+    }
+    if(any(apply(restrict.table, 1, neg.deps)))
+        stop("BAIL OUT NOW: Negative dependencies in restriction table")
+
+    ## transpose the table
+    rtC <- convertRestrictTable(restrict.table)
+
+    
+    ## return the matching call? call <- match.call()
+    ## and then return(c(.Call(), call))
+    call <- match.call()
+    return(c(.Call(
+        ## "Algorithm5",
+        "C_Algorithm5",
+        rtC,
+        numDrivers,
+        numGenes,
+        typeCBN,
+        birth, 
+        s, 
+        death,
+        mu,
+        initSize,
+        sampleEvery,
+        detectionSize,
+        finalTime,
+        initSize_species,
+        initSize_iter,
+        seed_gsl,
+        verbosity,
+        speciesFS,
+        ratioForce,
+        typeFitness,
+        max.memory,
+        mutatorGenotype,
+        initMutant,
+        max.wall.time,
+        keepEvery,
+        alpha,
+        sh,
+        K,
+        endTimeEvery,
+        finalDrivers),
+             ##                 PACKAGE = "OncoSimulR"),
+             ##           call = call,
+             NumDrivers = numDrivers
+             ##         ,  initMutant = initMutant
+             ))
 }
 
 
 create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
-  if(tmp$NumClones > 1) {
-    NumMutations <- apply(tmp$Genotypes, 2, sum)
-    muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
-                          t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
-                                  function(x) tapply(x, NumMutations, sum))))
-    colnames(muts.by.time)[c(1)] <- "Time"
-  } else {
-    muts.by.time <- tmp$pops.by.time
-  }
-  return(muts.by.time)
+    if(tmp$NumClones > 1) {
+        NumMutations <- apply(tmp$Genotypes, 2, sum)
+        muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
+                              t(apply(tmp$pops.by.time[, -c(1),
+                                                       drop = FALSE], 1,
+                                      function(x) tapply(x,
+                                                         NumMutations, sum))))
+        colnames(muts.by.time)[c(1)] <- "Time"
+    } else {
+        muts.by.time <- tmp$pops.by.time
+    }
+    return(muts.by.time)
 } 
-  
+
 
 create.drivers.by.time <- function(tmp, numDrivers) {
-  CountNumDrivers <- apply(tmp$Genotypes[1:numDrivers, ,drop = FALSE], 2, sum)
-  if(tmp$NumClones >= 1) {
-      if(tmp$NumClones == 1) {
-          if(ncol(tmp$pops.by.time) != 2)
-              stop("This is impossible!")
-          drivers.by.time <- tmp$pops.by.time
-      } else {
-          if(length(unique(CountNumDrivers )) > 1) {
-              drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
-                                       t(apply(tmp$pops.by.time[, -c(1), drop = FALSE], 1,
-                                               function(x) tapply(x, CountNumDrivers, sum)))) 
-          } else {
-              drivers.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
-                                       rowSums(tmp$pops.by.time[, -c(1), drop = FALSE]))
-          }
-      }
-      colnames(drivers.by.time) <- c("Time",
-                                     paste("dr_", colnames(drivers.by.time)[-c(1)],
-                                           sep = ""))
-  } else {
-      drivers.by.time <- NULL
-  }
-  return(drivers.by.time)
+    CountNumDrivers <- apply(tmp$Genotypes[1:numDrivers, ,drop = FALSE], 2, sum)
+    if(tmp$NumClones >= 1) {
+        if(tmp$NumClones == 1) {
+            if(ncol(tmp$pops.by.time) != 2)
+                stop("This is impossible!")
+            drivers.by.time <- tmp$pops.by.time
+        } else {
+            if(length(unique(CountNumDrivers )) > 1) {
+                drivers.by.time <- cbind(tmp$pops.by.time[, c(1),
+                                                          drop = FALSE] ,
+                                         t(apply(tmp$pops.by.time[, -c(1),
+                                                                  drop = FALSE],
+                                                 1,
+                                                 function(x)
+                                                 tapply(x,
+                                                        CountNumDrivers,
+                                                        sum)))) 
+            } else {
+                drivers.by.time <- cbind(tmp$pops.by.time[, c(1),
+                                                          drop = FALSE] ,
+                                         rowSums(tmp$pops.by.time[, -c(1),
+                                                                  drop = FALSE]))
+            }
+        }
+        colnames(drivers.by.time) <- c("Time",
+                                       paste("dr_",
+                                             colnames(drivers.by.time)[-c(1)],
+                                             sep = ""))
+    } else {
+        drivers.by.time <- NULL
+    }
+    return(drivers.by.time)
 } 
 
 
@@ -643,8 +656,8 @@ thin.pop.data <- function(x, keep = 0.1, min.keep = 3) {
 
 
 plotClones <- function(z, ndr = NULL, na.subs = TRUE,
-                    log = "y", type = "l",
-                    lty = 1:8, col = 1:9, ...) {
+                       log = "y", type = "l",
+                       lty = 1:8, col = 1:9, ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
     ## drivers are plotted last
@@ -654,19 +667,19 @@ plotClones <- function(z, ndr = NULL, na.subs = TRUE,
     if(na.subs){
         y[y == 0] <- NA
     }
-  if(!is.null(ndr)) {
-      ## could be done above, to avoid creating
-      ## more copies
-      oo <- order(ndr)
-      y <- y[, oo, drop = FALSE]
-      ndr <- ndr[oo]
-      col <- col[ndr + 1]
-  }
-  matplot(x = z$pops.by.time[, 1],
-          y = y,
-          log = log, type = type,
-          col = col, lty = lty,
-          ...)
+    if(!is.null(ndr)) {
+        ## could be done above, to avoid creating
+        ## more copies
+        oo <- order(ndr)
+        y <- y[, oo, drop = FALSE]
+        ndr <- ndr[oo]
+        col <- col[ndr + 1]
+    }
+    matplot(x = z$pops.by.time[, 1],
+            y = y,
+            log = log, type = type,
+            col = col, lty = lty,
+            ...)
 }
 
 
@@ -680,53 +693,54 @@ plotDrivers0 <- function(x,
                          lwd = 2,
                          ...) {
 
-  z <- create.drivers.by.time(x, x$NumDrivers)
-  if(trim.no.drivers && x$MaxDriversLast) {
-      fi <- which(apply(z[, -c(1, 2), drop = FALSE], 1, function(x) sum(x) > 0))[1]
-      z <- z[fi:nrow(z), , drop = FALSE]
-  }
-  y <- z[, 2:ncol(z), drop = FALSE]
-  if(na.subs){
-      y[y == 0] <- NA
-  }
-  if(timescale != 1) {
-      time <- timescale * z[, 1]
-  } else {
-      time <- z[, 1]
-  }
-  if(nrow(y) <= 2) type <- "b"
-  matplot(x = time,
-          y = y,
-          type = type, log = log, lty = lty, col = col, lwd = lwd,
-          ...)
-  if(addtot) {
-      tot <- rowSums(y, na.rm = TRUE)
-      lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
-  }
-  legend(x = "topleft",
-         title = "Number of drivers",
-         lty = lty, col = col, lwd = lwd,
-         legend = (1:ncol(y)) - 1)
+    z <- create.drivers.by.time(x, x$NumDrivers)
+    if(trim.no.drivers && x$MaxDriversLast) {
+        fi <- which(apply(z[, -c(1, 2), drop = FALSE], 1,
+                          function(x) sum(x) > 0))[1]
+        z <- z[fi:nrow(z), , drop = FALSE]
+    }
+    y <- z[, 2:ncol(z), drop = FALSE]
+    if(na.subs){
+        y[y == 0] <- NA
+    }
+    if(timescale != 1) {
+        time <- timescale * z[, 1]
+    } else {
+        time <- z[, 1]
+    }
+    if(nrow(y) <= 2) type <- "b"
+    matplot(x = time,
+            y = y,
+            type = type, log = log, lty = lty, col = col, lwd = lwd,
+            ...)
+    if(addtot) {
+        tot <- rowSums(y, na.rm = TRUE)
+        lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
+    }
+    legend(x = "topleft",
+           title = "Number of drivers",
+           lty = lty, col = col, lwd = lwd,
+           legend = (1:ncol(y)) - 1)
 }
 
 
 rtNoDep <- function(numdrivers) {
-  ## create a restriction table with no dependencies
-  x <- matrix(nrow = numdrivers, ncol = 3)
-  x[, 1] <- 1:numdrivers
-  x[, 2] <- 0
-  x[, 3] <- -9
-  return(x)
+    ## create a restriction table with no dependencies
+    x <- matrix(nrow = numdrivers, ncol = 3)
+    x[, 1] <- 1:numdrivers
+    x[, 2] <- 0
+    x[, 3] <- -9
+    return(x)
 }
 
 
 
 convertRestrictTable <- function(x) {
-  t.restrictTable <- matrix(as.integer(x),
-                            ncol = nrow(x), byrow = TRUE)
+    t.restrictTable <- matrix(as.integer(x),
+                              ncol = nrow(x), byrow = TRUE)
 
-  t.restrictTable[-2, ] <- t.restrictTable[-2, ] - 1
-  return(t.restrictTable)
+    t.restrictTable[-2, ] <- t.restrictTable[-2, ] - 1
+    return(t.restrictTable)
 }
 
 
@@ -752,7 +766,8 @@ adjmat.to.restrictTable <- function(x) {
                  ncol = max.n.deps + 2)
     for(i in 1:ncol(x)) {
         if( num.deps[ i ])
-            rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ], which(x[, i ] != 0))
+            rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ],
+                                               which(x[, i ] != 0))
         else
             rt[i , 1:2] <- c(i , 0)
     }
@@ -762,23 +777,24 @@ adjmat.to.restrictTable <- function(x) {
 
 
 poset.to.restrictTable <- function(x) {
-  x1 <- poset.to.graph(x, names = 1:max(x), addroot = FALSE, type = "adjmat")
-  adjmat.to.restrictTable(x1)
+    x1 <- posetToGraph(x, names = 1:max(x), addroot = FALSE, type = "adjmat")
+    adjmat.to.restrictTable(x1)
 }
 
 
 ## have a graph without a null??
 
 
-poset.to.graph <- function(x, names,
-                           addroot = FALSE,
-                           type = "graphNEL") {
+posetToGraph <- function(x, names,
+                         addroot = FALSE,
+                         type = "graphNEL") {
     ## Intermediate nodes, if no ancestor or descendant, need not
     ## be in the poset.
     ## Any node with index largest than any node with ancestor or descendant
     ## needs to be in the file.
-    ## E.g., rbind(c(1,2), c(4, 5)) will get three as a child-less and parent-less node.
-    ## But to place 6 you need c(6, NA)
+
+    ## E.g., rbind(c(1,2), c(4, 5)) will get three as a child-less and
+    ## parent-less node.  But to place 6 you need c(6, NA)
 
     
     ## We could use something like in run.oncotree,
@@ -798,40 +814,40 @@ poset.to.graph <- function(x, names,
     ## in the poset. This can be used as a shortcut trick, but in the docs
     ## I do not do it, as it is bad practice.
     
-  m <- length(names) 
-  m1 <- matrix(0, nrow = m, ncol = m)
-  colnames(m1) <- names
-  rownames(m1) <- names
-  if(is.null(dim(x)) ) {
-    if(length(x) != 1)
-      stop("If poset is not a matrix, it must be a vector of length 1")
-  } else { ## a matrix so a non-null poset
-    ## a debugging check. 
-    if(nrow(x) > 0) {
-      if(addroot) {
-        if(max(x, na.rm = TRUE) != (m - 1))
-          stop("\n in poset, max(x) != (m - 1)")
-      } else { ## this was missing!
-        if(max(x, na.rm = TRUE) != m)
-          stop("\n in poset, max(x) != m")
-      }
+    m <- length(names) 
+    m1 <- matrix(0, nrow = m, ncol = m)
+    colnames(m1) <- names
+    rownames(m1) <- names
+    if(is.null(dim(x)) ) {
+        if(length(x) != 1)
+            stop("If poset is not a matrix, it must be a vector of length 1")
+    } else { ## a matrix so a non-null poset
+        ## a debugging check. 
+        if(nrow(x) > 0) {
+            if(addroot) {
+                if(max(x, na.rm = TRUE) != (m - 1))
+                    stop("\n in poset, max(x) != (m - 1)")
+            } else { ## this was missing!
+                if(max(x, na.rm = TRUE) != m)
+                    stop("\n in poset, max(x) != m")
+            }
+        }
+        if(nrow(x) > 0) {
+            if(addroot)
+                m1[x + 1] <- 1
+            else
+                m1[x] <- 1
+        }
+        if((length(names) > 1) & addroot) {
+            no.ancestor <- which(apply(m1, 2, function(x) all(x == 0)))
+            no.ancestor <- no.ancestor[-1]
+            m1[cbind(1, no.ancestor)] <- 1
+        } ## o.w. do nothing
     }
-    if(nrow(x) > 0) {
-      if(addroot)
-        m1[x + 1] <- 1
-      else
-        m1[x] <- 1
-    }
-    if((length(names) > 1) & addroot) {
-      no.ancestor <- which(apply(m1, 2, function(x) all(x == 0)))
-      no.ancestor <- no.ancestor[-1]
-      m1[cbind(1, no.ancestor)] <- 1
-    } ## o.w. do nothing
-  }
-  if(type == "adjmat") return(m1)
-  else if (type == "graphNEL") return(as(m1, "graphNEL"))
-  ## does not show the labels
-  ## else if (type == "igraph") return(graph.adjacency(m1))
+    if(type == "adjmat") return(m1)
+    else if (type == "graphNEL") return(as(m1, "graphNEL"))
+    ## does not show the labels
+    ## else if (type == "igraph") return(graph.adjacency(m1))
 }
 
 

@@ -15,7 +15,7 @@ Example posets
   pancreatic cancer poset).
 
   
-%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+
 }
 \usage{data("examplePosets")}
 \format{
@@ -41,7 +41,7 @@ List of 13
 
   Gerstung et al., 2011. The Temporal Order of Genetic and Pathway
   Alterations in Tumorigenesis. \emph{PLoS ONE}, 6.
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
+
 }
 
 \seealso{

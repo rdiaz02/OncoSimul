@@ -9,7 +9,7 @@ Plot a poset. Optionally add a root and change names of nodes.
 \usage{
 plotPoset(x, names = NULL, addroot = FALSE, box = FALSE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{x}{
     A poset. A matrix with two columns where, in each row, the first
@@ -35,22 +35,22 @@ plotPoset(x, names = NULL, addroot = FALSE, box = FALSE, ...)
 }
 \details{
   The poset is converted to a \code{graphNEL} object.
-%%  ~~ If necessary, more details than the description above ~~
+
 }
 \value{
   A plot is produced.
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
+
+
+
+
 }
 \author{
   Ramon Diaz-Uriarte
-%%  ~~who you are~~
+
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+
 
 \seealso{
   \code{\link{examplePosets}}, \code{\link{poset}}
@@ -81,7 +81,7 @@ plotPoset(poset701b,
                      "MLL3","PXDN", "TGFBR2"))
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+
+
 \keyword{ hplot }
 

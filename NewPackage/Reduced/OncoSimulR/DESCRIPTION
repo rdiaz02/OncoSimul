@@ -4,8 +4,10 @@ Title: Simulation of cancer progresion with order restrictions
 Version: 0.99.0
 Date: 2014-06-28
 Author: Ramon Diaz-Uriarte. 
-Maintainer: Ramon Diaz-Uriarte <ramon.diaz@iib.uam.es>
-Description: Functions for simulating cancer progression data, including drivers and passengers, and allowing for order restrictions. 
+Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
+Description: Functions for simulating cancer progression data, including
+	     drivers and passengers, and allowing for order restrictions. 
+biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 Depends: R (>= 3.1.0)
 Imports: Rcpp (>= 0.11.1), parallel, data.table, graph, Rgraphviz

@@ -7,7 +7,7 @@
 \alias{summary.oncosimulpop}
 
 
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
   Simulate tumor progression for one or more individuals.
 }
@@ -17,9 +17,6 @@
   order of driver mutations. Optionally add passenger
   mutations. Simulation is done using the BNB algorithm of Mather et
   al., 2012.
-
-
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 
 }
 \usage{
@@ -41,19 +38,19 @@
 
 
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{Nindiv}{Number of individuals or number of different
     trajectories to simulate.}
   \item{poset}{
     
     The poset that specifies the order restrictions. See \code{\link{poset}}.
-%%     ~~Describe \code{adjm} here~~
+
 }
 \item{model}{
   One of "Bozic", "Exp", "McFarlandLog" (the last one can be abbreviated
   to "McFL").
-%%     ~~Describe \code{model} here~~
+
 }
 \item{numPassengers}{
   
@@ -65,19 +62,19 @@
   the total number of driver genes. Thus, passenger genes will be
   numbered from (number of driver genes + 1):(number of drivers + number
   of passengers).
-%%     ~~Describe \code{numGenes} here~~
+
 }
 \item{mu}{
   Mutation rate.
-%%     ~~Describe \code{mu} here~~
+
 }
 \item{detectionSize}{
   What is the minimal number of cells for cancer to be detected.
-%%     ~~Describe \code{detectionSize} here~~
+
 }
 \item{detectionDrivers}{
   The minimal number of drivers present in any clone for cancer to be detected.
-%%     ~~Describe \code{detectionDrivers} here~~
+
 }
 \item{sampleEvery}{
   
@@ -90,15 +87,15 @@
   population size between two successive samples that can then lead to
   problems for random number generators). Likewise, for models with
   density dependence (such as McF) this value should be very small.
-%%     ~~Describe \code{sampleEvery} here~~
+
 }
 \item{initSize}{
   Initial population size.
-%%     ~~Describe \code{initSize} here~~
+
 }
 \item{s}{
   Selection coefficient for drivers.
-%%     ~~Describe \code{s} here~~
+
 }
 \item{sh}{
   Selection coefficient for drivers with restrictions not satisfied. A
@@ -106,11 +103,11 @@
   clone when its restrictions are not satisfied.
 
   To specify "sh=Inf" (in Diaz-Uriarte, 2014) use sh = -1.
-%%     ~~Describe \code{sh} here~~
+
 }
 \item{K}{
   Initial population equilibrium size in the McFarland models.
-%%     ~~Describe \code{K} here~~
+
 }
 \item{keepEvery}{
   Time interval between successive whole population samples that are
@@ -123,11 +120,11 @@
   small values (say, 1 or 0.5). Otherwise, you can use a
   \code{sampleEvery} of 1 but a \code{keepEvery} of 15, so that the
   return objects are not huge.
-%%     ~~Describe \code{keepEvery} here~~
+
 }
 \item{finalTime}{
   What is the maximum number of time units that the simulation can run.
-%%     ~~Describe \code{finalTime} here~~
+
 }
 \item{onlyCancer}{
   Return only simulations that reach cancer?
@@ -138,28 +135,25 @@
   met). Otherwise, the simulation is returned regardless of final
   population size or number of drivers in any clone and this includes
   simulations where the population goes extinct.
-%%     ~~Describe \code{onlyCancer} here~~
+
 }
 \item{max.memory}{
   The largest size (in MB) of the matrix of Populations by Time. If it
   creating it would use more than this amount of memory, it is not
   created. This prevents you from accidentally passing parameters that
   will return an enormous object.
-%%     ~~Describe \code{max.memory} here~~
+
 }
 \item{max.wall.time}{
   Maximum wall time for each individual simulation run. If the
   simulation is not done in this time, it is aborted.
-%%     ~~Describe \code{max.wall.time} here~~
+
 }
-%%   \item{endTimeEvery}{
-%% %%     ~~Describe \code{endTimeEvery} here~~
-%% }
 \item{verbosity}{
   If 0, run as silently as possible. Otherwise, increasing values of
   verbosity provide progressively more information about intermediate
   steps, possible numerical notes/warnings from the C++ code, etc.
-%%     ~~Describe \code{silent} here~~
+
 }
 
 \item{mc.cores}{Number of cores to use when simulating more than one
@@ -206,10 +200,14 @@
     pops.by.time matrix, its genotype, with a 0 if the gene is not
     mutated and a 1 if it is mutated.}
   
-  \item{MaxNumDrivers}{The largest number of mutated driver genes ever seen in the
+  \item{MaxNumDrivers}{The largest number of mutated driver genes ever
+    seen in 
+    the
     simulation in any clone.}
 
-  \item{MaxDriversLast}{The largest number of mutated drivers in any clone at the
+  \item{MaxDriversLast}{The largest number of mutated drivers in any
+    clone 
+    at the
     end of the simulation.}
 
   \item{NumDriversLargestPop}{The number of mutated driver genes in the
@@ -254,21 +252,19 @@
   \code{"oncosimulpop"}, where each element of the list is itself a
   list, of class \code{oncosimul}, with components as described above.
   
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
 }
 \references{
 
-  Bozic, I., et al.,  (2010). Accumulation of driver and passenger mutations during tumor
-  progression. \emph{ Proceedings of the National Academy of Sciences of the United
-  States of America\/}, \bold{107}, 18545--18550.
+  Bozic, I., et al., (2010). Accumulation of driver and passenger
+  mutations during tumor progression. \emph{ Proceedings of the National
+  Academy of Sciences of the United States of America\/}, \bold{107},
+  18545--18550.
 
   Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
-of mutations during tumor progression: effects of passenger mutations,
-evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
+  of mutations during tumor progression: effects of passenger mutations,
+  evolutionary models, and
+  sampling. \url{http://dx.doi.org/10.1101/005587}
 
   McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National
@@ -276,25 +272,24 @@ evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
   2910--5.
 
   Mather, W.~H., Hasty, J., and Tsimring, L.~S. (2012). Fast stochastic
-  algorithm for simulating evolutionary population dynamics.  \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
+  algorithm for simulating evolutionary population dynamics.
+  \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
 
   
-%% ~put references to the literature/web site here ~
+
 }
 \author{
   Ramon Diaz-Uriarte
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+
 
 \seealso{
   \code{\link{plot.oncosimul}},
-  %% \code{\link{print.oncosimul}},
-  %% \code{\link{summary.oncosimul}},
   \code{\link{examplePosets}},
   \code{\link{samplePop}}
   
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+
 }
 \examples{
 ## use poset p701
@@ -341,7 +336,5 @@ p1 <- oncoSimulPop(4, p701,
 
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{misc}
-\keyword{iteration}% __ONLY ONE__ keyword per line
+\keyword{iteration}
