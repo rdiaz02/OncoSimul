@@ -216,7 +216,7 @@ oncoSimulIndiv <- function(poset,
             if(length(grep("BAIL OUT NOW", op)))
                 stop("Unrecoverable error")
             if(verbosity >= 2)
-                cat("\nSimulation aborted because of numerical or other issues.",
+                cat("\nSimulation aborted because of numerical/other issues.",
                     "Proceeding to next one.\n")
         }
     }
@@ -624,7 +624,7 @@ create.drivers.by.time <- function(tmp, numDrivers) {
                 drivers.by.time <- cbind(tmp$pops.by.time[, c(1),
                                                           drop = FALSE] ,
                                          rowSums(tmp$pops.by.time[, -c(1),
-                                                                  drop = FALSE]))
+                                                                  drop =FALSE]))
             }
         }
         colnames(drivers.by.time) <- c("Time",
