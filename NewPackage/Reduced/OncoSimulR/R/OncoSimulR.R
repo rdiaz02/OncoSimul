@@ -55,7 +55,6 @@ oncoSimulPop <- function(Nindiv,
                          onlyCancer = TRUE,
                          max.memory = 2000,
                          max.wall.time = 200,
-#                         endTimeEvery = -9,
                          verbosity  = 0,
                          mc.cores = detectCores()) {
 
@@ -83,7 +82,6 @@ oncoSimulPop <- function(Nindiv,
                         onlyCancer = onlyCancer,
                         max.memory = max.memory,
                         max.wall.time = max.wall.time,
-##                        endTimeEvery = endTimeEvery,
                         verbosity = verbosity),
                     mc.cores = mc.cores
                     )
@@ -92,6 +90,7 @@ oncoSimulPop <- function(Nindiv,
     return(pop)
 }
 
+## where is the default K coming from? Here:
 ## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
 
 oncoSimulIndiv <- function(poset,
@@ -110,7 +109,6 @@ oncoSimulIndiv <- function(poset,
                            onlyCancer = TRUE,
                            max.memory = 2000,
                            max.wall.time = 200,
-##                           endTimeEvery = -9,
                            verbosity = 0
                            ) {
     call <- match.call()
@@ -155,7 +153,7 @@ oncoSimulIndiv <- function(poset,
     } else {
         endTimeEvery <- -9
     }
-    ## endTimeEvery <- -9
+
 
 
     ## A simulation stops if cancer or finalTime appear, the first
@@ -200,12 +198,8 @@ oncoSimulIndiv <- function(poset,
                 cat("\n       Total Pop Size = ", op$TotalPopSize)
                 cat("\n       Drivers Last = ", op$MaxDriversLast)
                 cat("\n       Final Time = ", op$FinalTime)
-                ## cat("\n       Numerical Issuses?", op$ti_dbl_min)
-                
-                ##cat("\n")
             }
-            ## browser()
-            if(onlyCancer) {
+             if(onlyCancer) {
                 doneSimuls <- reachCancer(op, ndr = detectionDrivers,
                                              detectionSize = detectionSize,
                                              maxPopSize = 1e15)
@@ -250,7 +244,7 @@ print.oncosimul <- function(x, ...) {
     print(summary(x))
 }
 
-## I want this to return things storable
+## I want this to return things that are storable
 summary.oncosimulpop <- function(object, ...) {
     as.data.frame(rbindlist(lapply(object, summary)))
 }
@@ -384,26 +378,6 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
 
 ############# The rest are internal functions
 
-## poset2AdjMat <- function(x) {
-##     return(poset.to.graph(x, names = 1:max(x), addroot = FALSE,
-##                           type = "adjmat"))
-## }
-
-
-## adjMatNoDeps <- function(ngenes = 11) {
-##     posetToAdj(cbind(ngenes, 0))
-## }
-
-## posetNoDeps <- function(ngenes = 11){
-##     cbind(0, ngenes)
-## }
-
-
-## plotAdjMat <- function(x) {
-##     plot(as(x, "graphNEL"))
-## }
-
-
 get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
     ## Obtain, from  results from a simulation run, the vector
     ## of 0/1 corresponding to each gene.
@@ -471,28 +445,6 @@ reachCancer <- function(x, ndr = 0, detectionSize = 0,
          ))
 }
 
-
-## adjM.or.poset.to.restrictTable <- function(x) {
-##     if(nrow(x) == 1) {
-##         is.poset <- TRUE 
-##     }
-##     if(nrow(x) == ncol(x))
-    
-##     if(all(colnames(x) == rownames(x)) ||
-##        (ncol(x) > 2) ) {
-##         if(any(! (x %in% c(0, 1) )))
-##             stop("This looks like an adjacency matrix, but entries are not 0 or 1")
-        
-##     }
-    
-##     if(ncol(x) == 2) {
-##         if(colnames(x) == c("Ancestor"))
-
-##     }
-
-## }
-
-
 oncoSimul.internal <- function(restrict.table,
                       numGenes,
                       typeFitness,
@@ -521,10 +473,6 @@ oncoSimul.internal <- function(restrict.table,
                       K = 1000,
                       endTimeEvery = NULL,
                       finalDrivers = 1000) {
-  ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
-  
-    ## FIXME: check argument types for typeFitness 
-    ## FIXME: keepEvery not a multiple of sampleEvery
 
   if(initSize_species < 10) {
     warning("initSize_species too small?")
@@ -535,6 +483,8 @@ oncoSimul.internal <- function(restrict.table,
   if(keepEvery < sampleEvery)
     warning("setting keepEvery to sampleEvery")
   if(is.null(seed_gsl)) {## passing a null creates a random seed
+      ## name is a legacy. This is really the seed for the C++ generator.
+      ## Not a user modifieble argument for now, though.
     seed_gsl <- as.integer(round(runif(1, min = 0, max = 2^16)))
     if(verbosity >= 2)
       cat(paste("\n Using ", seed_gsl, " as seed for C++ generator\n"))
@@ -632,15 +582,6 @@ oncoSimul.internal <- function(restrict.table,
 ##         ,  initMutant = initMutant
            ))
 }
-
-
-## colnames.to.pops.by.time <- function(pops.by.time) {
-##   if(prod(dim(pops.by.time)) > 1) {  
-##     ## colnames(pops.by.time) <- rep("", ncol(pops.by.time))
-##     colnames(pops.by.time) <- c("Time",
-##                                 paste("Clone_", 1:tmp$NumClones, sep = ""))
-##   }
-## }
 
 
 create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
@@ -762,7 +703,6 @@ plotDrivers0 <- function(x,
       tot <- rowSums(y, na.rm = TRUE)
       lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
   }
-  ## will need to add a legend
   legend(x = "topleft",
          title = "Number of drivers",
          lty = lty, col = col, lwd = lwd,
@@ -851,12 +791,12 @@ poset.to.graph <- function(x, names,
     ## anymore.  But that is irrelevant for metrics based on transitive
     ## closure. Note for Diff, etc.
 
-    ## FIXME: in fact, this is all OK, but is confussing, because I can
+    ## In fact, this is all OK, but is confussing, because I can
     ## have two kinds of posets: ones that are full, with NAs, etc, if
     ## needed. Others that are not, but are fixed by the code here. But if
     ## using the later, the user needs to make sure that the last node is
     ## in the poset. This can be used as a shortcut trick, but in the docs
-    ## I do not do it, as bad practice.
+    ## I do not do it, as it is bad practice.
     
   m <- length(names) 
   m1 <- matrix(0, nrow = m, ncol = m)
@@ -902,103 +842,6 @@ poset.to.graph <- function(x, names,
 
 
 
-
-
-## get.mut.vector.whole <- function(filename, timeSample, threshold = 0.5,
-##                                  remove.offending = TRUE) {
-##     ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
-##     ## Obtain, from a file with results from a simulation run, the vector
-##     ## of 0/1 corresponding to each gene.
-    
-##     ## threshold is the min. proportion for a mutation to be detected
-##     ## We are doing whole tumor sampling here, as in Sprouffske
-
-##     ## timeSample: do we sample at end, or at a time point, chosen
-##     ## randomly, from all those with at least one driver?
-    
-##     ## We can be using rds and RData
-
-##     ## This is fragile: if things fail below, but there is a tmp object in
-##     ## global env, we can get garbage.
-
-##     ## Can be made more robust by assigning to another name on load,
-##     ## and in the future I will only use rds
-##     ## or if RData, do as in ADaCGH2 with named RDatas
-##     rt <- try({
-##         if(length(grep("RData$", filename))) {
-##             load(filename) ## we expect the object to be called tmp
-##         } else {
-##             tmp <- readRDS(filename)
-##         }
-##     })
-##     if(inherits(rt, "try-error")) {
-##         if(remove.offending) {
-##             warning("Removing offending filename ", filename)
-##             file.remove(filename)
-##             return(NA)
-##         }
-##     } else {
-        
-##         if(timeSample == "last") {
-##             return(as.numeric((tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
-##                                           tmp$Genotypes)/tmp$TotalPopSize) > threshold))
-##         } else if (timeSample == "uniform") {
-##             the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-##             pop <- tmp$pops.by.time[the.time, -1]
-##             popSize <- tmp$PerSampleStats[the.time, 1]
-##             return( as.numeric((tcrossprod(pop, tmp$Genotypes)/popSize) > threshold) )
-##         }
-##   }
-## }
-
-
-
-
-
-## get.mut.vector.singlecell <- function(filename, timeSample,
-##                                       remove.offending = TRUE) {
-##     ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
-##     ## Obtain, from a file with results from a simulation run, the vector
-##     ## of 0/1 corresponding to each gene.
-    
-##     ## No threshold, as single cell.
-
-##     ## timeSample: do we sample at end, or at a time point, chosen
-##     ## randomly, from all those with at least one driver?
-    
-##     ## We can be using rds and RData
-
-##     ## This is fragile: if things fail below, but there is a tmp object in
-##     ## global env, we can get garbage.
-
-##     ## Can be made more robust by assigning to another name on load,
-##     ## and in the future I will only use rds
-##     ## or if RData, do as in ADaCGH2 with named RDatas
-##     rt <- try({
-##         if(length(grep("RData$", filename))) {
-##             load(filename) ## we expect the object to be called tmp
-##         } else {
-##             tmp <- readRDS(filename)
-##         }
-##     })
-##     if(inherits(rt, "try-error")) {
-##         if(remove.offending) {
-##             warning("Removing offending filename ", filename)
-##             file.remove(filename)
-##             return(NA)
-##         }
-##     } else {
-##         if(timeSample == "last") {
-##             the.time <- nrow(tmp$pops.by.time)
-##         } else if (timeSample == "uniform") {
-##             the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-##         }
-##         pop <- tmp$pops.by.time[the.time, -1]
-##         ##       popSize <- tmp$PerSampleStats[the.time, 1]
-##         ## genot <- sample(seq_along(pop), 1, prob = pop)
-##         return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
-##   }
-## }
 
 
 
