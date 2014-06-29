@@ -1378,6 +1378,9 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   // paranoid. The idea is of application mainly for McF and Beeren
   // models, so we do not bail out as soon as just a single cell with one
   // new driver. But this makes things very slow.
+
+  // Thus, never pass an endTimeEvery > 0, but use finalDrivers = 1 +
+  // intended final Drivers.
   if(endTimeEvery > 0) {
     if(done_at <= 0 ) {
       if( (totPopSize >= detectionSize) ||

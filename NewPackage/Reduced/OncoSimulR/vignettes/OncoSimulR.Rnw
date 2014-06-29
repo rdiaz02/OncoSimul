@@ -256,7 +256,7 @@ plot(p1)
 \label{sec:sampling-from-set}
 
 You will often want to do something with the simulated data. For instance,
-sample the simulated data. Here we will obtain the trajectories for 50
+sample the simulated data. Here we will obtain the trajectories for 100
 subjects in a scenario without passengers. Then we will sample with the
 default options and store that as a vector of genotypes (or a matrix of
 subjects by genes):
