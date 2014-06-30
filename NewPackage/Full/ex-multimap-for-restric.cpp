@@ -12,7 +12,7 @@ using namespace Rcpp ;
 // std::multimap<int, Deps> restrictTable;
 
 
-
+// FIXME: check later penalty for using a string for typeDep
 struct geneDeps {
   int typeDep; // smaller, predictable size. A lot less readable, though.
   double s;
@@ -77,20 +77,20 @@ void f4(){
 
 
 // [[Rcpp::export]]
-void restrictTable_to_cpp(List rt) {
-  // int n = rt.size();
+void restrictTable_to_cpp(Rcpp::List rt,
+			  std::vector<geneSeps>& restrictTable) { 
   int ndeps;
-  //std::cout << "size is " << n << std::endl;
-  
-  std::vector<geneDeps> restrictTable;
+
+  if(restrictTable.size())
+    restrictTable.clear(); //not needed later!! FIXME
+
+  //std::vector<geneDeps> restrictTable;
   restrictTable.resize(rt.size());
   
   Rcpp::List rt_element;
   Rcpp::List parent_list;
   Rcpp::IntegerVector module;
   for(int i = 0; i != rt.size(); ++i) {
-    //std::cout <<"\n ****** \n i = " << i << std::endl;
-
     rt_element = rt[i];
     restrictTable[i].typeDep = rt_element["type"];
     restrictTable[i].s = rt_element["s"];
@@ -109,10 +109,24 @@ void restrictTable_to_cpp(List rt) {
 
     }
   }
- 
 }
 
 
+void printRestrictTable(const std::vector<geneSeps>& restrictTable) {
+  Rcpp::Rcout << "\n **********  Restriction table *******" << std::endl;
+  Rcpp::Rcout << "\t Size = ", restrictTable.size() << std::endl;
+  for(size_t i = 0; i != restrictTable.size(); ++i) {
+    Rcpp::Rcout <<"\t\t Dependent node = " << i << std::endl;
+    Rcpp::Rcout <<"\t\t\t typeDep = " << restrictTable[i].typeDep << " ";
+    Rcpp::Rcout <<"\t s = " << restrictTable[i].s << " ";
+    Rcpp::Rcout <<"\t sh = " << restrictTable[i].sh << std::endl;
+    // here the code for parent modules
+
+
+    
+  }
+
+}
 
 
 
