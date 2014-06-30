@@ -124,17 +124,34 @@ to.long.rt <- function(rt) {
 
 rt.to.cpp <- function(rt) {
     lrt <- to.long.rt(rt)
-    restrictTable_to_cpp(lrt)
+    restrictTable_to_cpp0(lrt)
 }
+
+wrap.test.rt <- function(rt) {
+    lrt <- to.long.rt(rt)
+    wrap_test_rt(lrt)
+}
+
 
 library(Rcpp)
 ## setwd("../../")
 
 sourceCpp("ex-multimap-for-restric.cpp",
           verbose = TRUE)
+wrap.test.rt(rt3)
+wrap.test.rt(rt2)
+
+
+rt.to.cpp(rt2)
+rt.to.cpp(rt3)
+
+wrap.test.rt(rt3)
+
+
 
 ## f4()
-rt.to.cpp(rt2)
+rt.to.cpp(rt2) ## will not work now, as the code for creating the object
+               ## is outside restrictTable_to_cpp.
 
 ## turn into a list, each element of the list is the poset.
 ## similar to the C++ structure I'll have.
