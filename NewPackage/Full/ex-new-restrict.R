@@ -134,6 +134,7 @@ list.of.deps <- function(x) {
     }
 }
 
+## FIXME: make sure mutations within modules are ordered!!
 ## This next add to R code.
 ## FIXME: remember to pass num drivers!!
 to.long.rt <- function(rt, verbosity = 0) {

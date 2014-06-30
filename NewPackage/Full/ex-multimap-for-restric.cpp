@@ -154,91 +154,74 @@ void restrictTable_to_cpp0(Rcpp::List rt){
 
 }
 
+// stretching vector of mutatedDrv unlikely to speed up;
+// access (seeing if a module gene in there) is O(1) but I do
+// that for every gene and then sum over the vector (linear in
+// number of positions?)
 
-static void checkThisConstraint(const int& thisPos, 
-				const std::vector<int>& mutatedPositions,
-				const geneDeps& thisDeps) {
+// Could be made much faster if we could assume lower numbered
+// positions cannot depend on higher numbered ones. Nope, not that much.
+static void checkThisConstraint(const std::vector<int>& mutatedDrv,
+				const geneDeps& thisDeps,
+				std::vector<double>& s_vector,
+				std::vector<double>& sh_vector) {
   // const std::vector<geneDeps>& restrictTable) {
-  size_t numDependencies;
-  size_t sumDependenciesMet = 0;
+  size_t numDepends;
+  size_t sumDependsMet = 0;
   size_t sizeModule = 0;
+  int module_mutated = 0;
   if( (thisDeps.deps.size() == 1) &&
-      (thisDeps.deps[0][0] == 0) ) {
-    return thisDeps.s;
+      (thisDeps.deps[0][0] == 0) ) { //Depends only on root
+    s_vector.push_back(thisDeps.s);
   } else {
-    //FIXME: I am casting here. Is this OK? Doing it twice
-    numDependencies = thisDeps.deps.size();
+    numDepends = thisDeps.deps.size();
     for(size_t i = 0; i != numDependencies; ++i) {
-      sizeModule = thisDeps.deps[i].size();
-      
-    }
-    
-  }
-
-}
-
-
-
-
-static void checkConstraints(const int& mutatedPos, 
-			     const int& numDrivers,
-			     const std::vector<geneDeps>& restrictTable,
-			     // const std::string& typeCBN,
-			     const Genotype64& newGenotype) {
-  //      **** Are driver constraints met? ***
-  using namespace Rcpp;
-
-  int numDependencies;
-  int sumDriversMet = 0;
-  int sumDriversNoMet = 0;
-  int sumDependenciesMet = 0;
-
-  // Two cases: same s, sh, sp or different ones. If same, return three
-  // integers: sumDriversMet, sumDriversNoMet, sumPassengers.  If
-  // different, return three vectors, filled with the non-zero
-  // entries. These vectors then are combined as dictated by the fintness
-  // functions.
-
-  // If same single s, sh, sp: function takes three integers. O.w. it
-  // takes three integer vectors.
-  
-
-  if(mutatedPos >= numDrivers) { //the new mutation is a passenger
-    // do something: iterate through the passenger part of genotype.
-    return;
-  } else {
-    for(int m = 0; m < numDrivers; ++m) {
-      if( newGenotype[m] ) { // this m is mutated
-	const Rcpp::IntegerMatrix::Column thisRestrict = 
-	  restrictTable(_, m);
-	numDependencies = thisRestrict[1];
-	if(!numDependencies) { // this driver has no dependencies
-	  sumDriversMet++;
-#ifdef DEBUGZ
-	  Rcpp::Rcout << "\n No dependencies:  ";
-	  DP2(sumDriversMet);
-#endif
-	}
-	else {
-	  sumDependenciesMet = 0;
-	  for(int i = 2; i < (2 + numDependencies); i++) {
-	    sumDependenciesMet += newGenotype[ thisRestrict[i] ];
-	  }
-	  if( ( (typeCBN == "Multiple") && (sumDependenciesMet) ) ||
-	      ( (typeCBN == "CBN") && (sumDependenciesMet == numDependencies) )) {
-	    sumDriversMet++;   
-	  } else {
-	    sumDriversNoMet++;
-	  }
+      // any of the module entries are mutated?
+      for(std::vector<int>::const_iterator g = thisDeps.deps[i].begin();
+	  g != thisDeps.deps[i].end(); ++g) {
+	// if sorted, could use binary search
+	module_mutated = (std::find(mutatePositions.begin(), 
+				    mutatedDrv.end(), 
+				    (*g)) != mutatedDrv.end());
+	if(module_mutated) {
+	  ++sumDependensMet;
+	  break;
 	}
       }
     }
+    if( ((thisDeps.type == "SM") && (sumDependensMet)) ||
+	((thisDeps.type == "MN") && (sumDependensMet == numDepends)) ) {
+      s_vector.push_back(thisDeps.s);
+    } else {
+      sh_vector.push_back(thisDeps.sh);
+    }
   }
-
-#ifdef DEBUGZ
-  DP2(sumDriversMet);
-  DP2(sumDriversNoMet);
-  DP2(sh);
-  DP2(typeFitness);
-#endif
 }
+
+
+// Now, for each clone we have to keep vector s, sh, sp
+static void checkConstraints(const int& numDrivers,
+			     const std::vector<geneDeps>& restrictTable,
+			     const std::vector<int>& mutatedDrv,
+			     const Genotype64& newGenotype) {
+  for(std::vector<int>::const_iterator mg = mutatedDrv.begin();
+      mg != mutatedDrv.end(); ++mg) {
+    checkThisConstraint(mutatedDrv, restrictTable[(*mg)],
+			s_vector, sh_vector);
+  }
+}
+
+// FIXME: be very careful with numberings. Do mutations start at 0?
+// No, cannot.
+
+// when mutation happens, if a passenger, insert in mutatedPass and give p_vector.
+  // if(mutatedPos >= numDrivers) { //the new mutation is a passenger
+  //   // do something: iterate through the passenger part of genotype
+  //   // keeping the rest of the parent stuff.
+  //   return;
+  // } else {
+
+
+// if driver, insert in mutatedDrv.
+// and check restrictions
+
