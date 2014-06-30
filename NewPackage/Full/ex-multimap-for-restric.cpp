@@ -50,6 +50,8 @@ struct geneDeps {
 // }
 
 void printRestrictTable(const std::vector<geneDeps>& restrictTable) {
+  int counterInfs = 0;
+  int counterNegInfs = 0;
   Rcpp::Rcout << "\n **********  Restriction table inside C++ *******" << std::endl;
   Rcpp::Rcout << "\t Size = " << restrictTable.size() << std::endl;
   for(size_t i = 0; i != restrictTable.size(); ++i) {
@@ -57,6 +59,10 @@ void printRestrictTable(const std::vector<geneDeps>& restrictTable) {
     Rcpp::Rcout <<"\t\t\t typeDep = " << restrictTable[i].typeDep << " ";
     Rcpp::Rcout <<"\t s = " << restrictTable[i].s << " ";
     Rcpp::Rcout <<"\t sh = " << restrictTable[i].sh << std::endl;
+    if(isinf(restrictTable[i].sh))
+      ++counterInfs;
+    if(isinf(restrictTable[i].sh) && (restrictTable[i].sh < 0))
+      ++counterNegInfs;
     // here the code for parent modules
     Rcpp::Rcout << "\t\t\t Number of parent modules or genes = " << 
       restrictTable[i].deps.size() << std::endl;
@@ -67,6 +73,12 @@ void printRestrictTable(const std::vector<geneDeps>& restrictTable) {
       Rcpp::Rcout << std::endl;
     }
     Rcpp::Rcout << std::endl;
+  }
+  if(counterInfs) {
+    Rcpp::Rcout << "In sh there were " << counterNegInfs 
+	     << " negative infinites and "
+	     << (counterInfs - counterNegInfs) 
+	     << " positive infinites" << std::endl;
   }
 }
 
@@ -86,6 +98,13 @@ void restrictTable_to_cpp(Rcpp::List rt,
     restrictTable[i].sh = rt_element["sh"];
     parent_list = rt_element["parent"];
     ndeps = parent_list.size();
+
+    if(isinf(restrictTable[i].s))
+      Rcpp::Rcout << "WARNING: at least one s is Infinite" 
+		  << std::endl;
+    if(isinf(restrictTable[i].sh) && (restrictTable[i].sh > 0))
+      Rcpp::Rcout << "WARNING: at least one sh is positive Infinite" 
+		  << std::endl;
 
     for(int j = 0; j != ndeps; ++j) {
       module = as<IntegerVector>(parent_list[j]);

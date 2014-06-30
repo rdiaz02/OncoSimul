@@ -84,6 +84,29 @@ rt3 <- data.frame(parent = c(
                   stringsAsFactors = FALSE)
 
 
+rt4 <- data.frame(parent = c(
+                      0, 0
+                      ),
+           child = c(
+               1,
+               2),
+                  s = 0.1,
+                  sh = c(0.05, -Inf),
+                  type = "MN",
+                  stringsAsFactors = FALSE)
+
+rt5 <- data.frame(parent = c(
+                      0, 0
+                      ),
+           child = c(
+               1,
+               2),
+                  s = -Inf,
+                  sh = Inf,
+                  type = "MN",
+                  stringsAsFactors = FALSE)
+
+
 list.of.deps <- function(x) {
     lookupType <- c("MN" = 1, "monotone" = 1,
                     "SM" = 2, "semimonotone" = 2)
@@ -111,7 +134,9 @@ list.of.deps <- function(x) {
     }
 }
 
-to.long.rt <- function(rt) { 
+to.long.rt <- function(rt) {
+    if(is.numeric(rt$parent))
+        rt$parent <- as.character(rt$parent)
     srt <- rt[order(rt$child), ]
     ## check all childs
     if(!identical(as.integer(sort(unique(rt$child))),
@@ -138,8 +163,13 @@ library(Rcpp)
 
 sourceCpp("ex-multimap-for-restric.cpp",
           verbose = TRUE)
+
 wrap.test.rt(rt3)
 wrap.test.rt(rt2)
+
+## test the Inf
+wrap.test.rt(rt4)
+wrap.test.rt(rt5)
 
 
 rt.to.cpp(rt2)
