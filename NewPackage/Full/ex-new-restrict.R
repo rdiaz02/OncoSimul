@@ -134,7 +134,9 @@ list.of.deps <- function(x) {
     }
 }
 
-to.long.rt <- function(rt) {
+## This next add to R code.
+## FIXME: remember to pass num drivers!!
+to.long.rt <- function(rt, verbosity = 0) {
     if(is.numeric(rt$parent))
         rt$parent <- as.character(rt$parent)
     srt <- rt[order(rt$child), ]
@@ -142,6 +144,9 @@ to.long.rt <- function(rt) {
     if(!identical(as.integer(sort(unique(rt$child))),
                   seq.int(max(rt$child))))
         stop("Not all children present")
+    if(verbosity >= 4)
+        message("Setting number of drivers to ",
+                max(rt$child))
     ## splitted <- split(srt, srt$child)
     return(lapply(split(srt, srt$child), list.of.deps))
 }
