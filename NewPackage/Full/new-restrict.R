@@ -126,13 +126,73 @@ rt7 <- data.frame(parent = c(
                2,
                3,
                4),
-                  s = c(0.1, 0.3, 0.2, 0.25),
+                  s = c(0.1, 0.2, 0.3, 0.4),
                   sh = c(99, 99, -0.05, -Inf),
                   typeDep = "MN",
                   stringsAsFactors = FALSE)
 
 
 
+rt8 <- data.frame(
+    parent = c(
+        0,
+        0,
+        0,
+        "1,2",
+        "1,2",
+        5
+        ),
+    child = c(
+        1,
+        2,
+        5,
+        3,
+        4,
+        4),
+    s = c(0.1, 0.2, 0.5, 0.3, 0.4, 0.4),
+    sh = c(99, 99, 99, -0.03, -0.04, -0.04),
+    typeDep = "MN",
+    stringsAsFactors = FALSE)
+
+rt8.sm <- data.frame(
+    parent = c(
+        0,
+        0,
+        0,
+        "1,2",
+        "1,2",
+        5
+        ),
+    child = c(
+        1,
+        2,
+        5,
+        3,
+        4,
+        4),
+    s = c(0.1, 0.2, 0.5, 0.3, 0.4, 0.4),
+    sh = c(99, 99, 99, -0.03, -0.04, -0.04),
+    typeDep = "SM",
+    stringsAsFactors = FALSE)
+
+
+
+rt9 <- data.frame(
+    parent = c(
+        0,
+        0,
+        "1,2",
+        "1,2"
+        ),
+    child = c(
+        1,
+        2,
+        1,
+        2),
+    s = c(0.1, 0.1, 0.1, 0.1),
+    sh = c(-1, -2, -1, -2),
+    typeDep = "MN",
+    stringsAsFactors = FALSE)
 
 
 
@@ -195,6 +255,12 @@ wrap.test.rt <- function(rt) {
     wrap_test_rt(lrt)
 }
 
+wrap.test.checkRestrictions <- function(rt, genotype) {
+    lrt <- to.long.rt(rt)
+    wrap_test_checkRestriction(lrt, genotype)
+}
+
+
 
 library(Rcpp)
 ## setwd("../../")
@@ -214,8 +280,46 @@ wrap.test.rt(rt4)
 wrap.test.rt(rt5)
 
 
+wrap.test.checkRestrictions(rt7, c(1L, 2L))
+wrap.test.checkRestrictions(rt7, c(1L, 3L))
+wrap.test.checkRestrictions(rt7, c(1L, 4L))
+wrap.test.checkRestrictions(rt7, c(2L, 3L))
+wrap.test.checkRestrictions(rt7, c(2L, 4L))
+
+wrap.test.checkRestrictions(rt7, c(1L, 2L, 3L))
+wrap.test.checkRestrictions(rt7, c(1L, 2L, 4L))
+wrap.test.checkRestrictions(rt7, c(1L, 3L, 4L))
+
+wrap.test.checkRestrictions(rt7, c(2L, 3L, 4L))
+wrap.test.checkRestrictions(rt7, c(1L, 2L, 3L, 4L))
+
+wrap.test.checkRestrictions(rt8, c(1L, 5L))
+wrap.test.checkRestrictions(rt8, c(1L, 2L, 5L))
+
+wrap.test.checkRestrictions(rt8, c(1L, 3L))
+wrap.test.checkRestrictions(rt8, c(2L, 3L))
+wrap.test.checkRestrictions(rt8, c(1L, 2L, 3L))
+wrap.test.checkRestrictions(rt8, c(5L, 3L))
+wrap.test.checkRestrictions(rt8, c(4L, 3L))
+
+wrap.test.checkRestrictions(rt8, c(5L, 4L))
+wrap.test.checkRestrictions(rt8, c(1L, 4L))
+wrap.test.checkRestrictions(rt8, c(2L, 4L))
+wrap.test.checkRestrictions(rt8, c(1L, 2L, 4L))
+
+
+
+
+
+
+## do test with modules with multiple
+
+
 ## rt.to.cpp(rt2)
 ## rt.to.cpp(rt3)
+
+
+
 
 
 

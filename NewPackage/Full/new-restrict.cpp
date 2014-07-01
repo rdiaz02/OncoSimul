@@ -54,9 +54,10 @@ void printPoset(const std::vector<geneDeps>& Poset) {
   int counterInfs = 0;
   int counterNegInfs = 0;
   Rcpp::Rcout << "\n **********  Restriction table inside C++ *******" << std::endl;
-  Rcpp::Rcout << "\t Size = " << Poset.size() << std::endl;
-  for(size_t i = 0; i != Poset.size(); ++i) {
-    Rcpp::Rcout <<"\n\t\t Dependent gene " << (i + 1) << std::endl;
+  Rcpp::Rcout << "\t Size = " << (Poset.size() - 1) << std::endl;
+  for(size_t i = 1; i != Poset.size(); ++i) {
+    // We do not show the Poset[0]
+    Rcpp::Rcout <<"\n\t\t Dependent gene " << i << std::endl;
     Rcpp::Rcout <<"\t\t\t typeDep = " << Poset[i].typeDep << " ";
     Rcpp::Rcout <<"\t s = " << Poset[i].s << " ";
     Rcpp::Rcout <<"\t sh = " << Poset[i].sh << std::endl;
@@ -86,14 +87,28 @@ void printPoset(const std::vector<geneDeps>& Poset) {
 void rTable_to_Poset(Rcpp::List rt,
 			  std::vector<geneDeps>& Poset) { 
   int ndeps;
-  Poset.resize(rt.size());
+  // The restriction table, or Poset, has a first element
+  // with nothing, so that all references by mutated gene
+  // are simply accessing the Poset[mutated gene] without
+  // having to remember to add 1, etc.
+  Poset.resize(rt.size() + 1);
+  Poset[0].typeDep = "NA";
+  Poset[0].s = std::numeric_limits<double>::quiet_NaN();
+  Poset[0].sh = std::numeric_limits<double>::quiet_NaN();
+  Poset[0].deps.resize(0);
+    
 
   Rcpp::List rt_element;
   Rcpp::List parent_list;
   Rcpp::IntegerVector module;
 
-  for(int i = 0; i != rt.size(); ++i) {
-    rt_element = rt[i];
+  for(int i = 1; i != (rt.size() + 1); ++i) {
+    rt_element = rt[i - 1];
+    if(as<int>(rt_element["child"]) != i) {
+      // Rcpp::Rcout << "\n child = " << as<int>(rt_element["child"]);
+      // Rcpp::Rcout << "\n i = " << i << std::endl;
+      throw std::logic_error("child != index");
+    }
     Poset[i].typeDep = as<std::string>(rt_element["typeDep"]);
     Poset[i].s = as<double>(rt_element["s"]);
     Poset[i].sh = as<double>(rt_element["sh"]);
@@ -161,47 +176,79 @@ void wrap_test_rt(Rcpp::List rtR) {
 
 // Could be made much faster if we could assume lower numbered
 // positions cannot depend on higher numbered ones. Nope, not that much.
-// static void checkConstraints(const std::vector<int>& Drv,
-// 			     const std::vector<geneDeps>& Poset,
-// 			     std::vector<double>& s_vector,
-// 			     std::vector<double>& sh_vector) {
-//   size_t numDeps;
-//   size_t sumDepsMet = 0;
-//   int module_mutated = 0;
+static void checkConstraints(const std::vector<int>& Drv,
+			     const std::vector<geneDeps>& Poset,
+			     std::vector<double>& s_vector,
+			     std::vector<double>& sh_vector) {
+  size_t numDeps;
+  size_t sumDepsMet = 0;
+  int module_mutated = 0;
 
-//   for(std::vector<int>::const_iterator gene = Drv.begin();
-//       gene != Drv.end(); ++gene) {
-//     if( (Poset[(*gene)].deps.size() == 1) &&
-// 	(Poset[(*gene)].deps[0][0] == 0) ) { //Depends only on root
-//       s_vector.push_back(Poset[(*gene)].s);
-//     } else {
-//       numDeps = Poset[(*gene)].deps.size();
-//       // for(std::vector<std::vector<int> >::const_iterator Module = Poset[(*gene)].deps.begin();
-//       // 	  Module !=  Poset[(*gene)].deps.end(); ++Module) {
-//       // and then replace Poset[(*gene)].deps[i] by Module
-//       for(size_t i = 0; i != numDeps; ++i) {
-// 	// any of the module entries are mutated?
-// 	for(std::vector<int>::const_iterator m = Poset[(*gene)].deps[i].begin();
-// 	    m != Poset[(*gene)].deps[i].end(); ++m) {
-// 	  // if sorted, could use binary search
-// 	  module_mutated = (std::find(mutatePositions.begin(), 
-// 				      Drv.end(), 
-// 				      (*m)) != Drv.end());
-// 	  if(module_mutated) {
-// 	    ++sumDepsMet;
-// 	    break;
-// 	  }
-// 	}
-//       }
-//       if( ((Poset[(*gene)].type == "SM") && (sumDepsMet)) ||
-// 	  ((Poset[(*gene)].type == "MN") && (sumDepsMet == numDeps)) ) {
-// 	s_vector.push_back(Poset[(*gene)].s);
-//       } else {
-// 	sh_vector.push_back(Poset[(*gene)].sh);
-//       }
-//     }
-//   }
-// }
+  for(std::vector<int>::const_iterator gene = Drv.begin();
+      gene != Drv.end(); ++gene) {
+    if( (Poset[(*gene)].deps.size() == 1) &&
+	(Poset[(*gene)].deps[0][0] == 0) ) { //Depends only on root
+      s_vector.push_back(Poset[(*gene)].s);
+    } else {
+      sumDepsMet = 0;
+      numDeps = Poset[(*gene)].deps.size();
+      // for(std::vector<std::vector<int> >::const_iterator Module = Poset[(*gene)].deps.begin();
+      // 	  Module !=  Poset[(*gene)].deps.end(); ++Module) {
+      // and then replace Poset[(*gene)].deps[i] by Module
+      for(size_t i = 0; i != numDeps; ++i) {
+	// any of the module entries are mutated?
+	for(std::vector<int>::const_iterator m = Poset[(*gene)].deps[i].begin();
+	    m != Poset[(*gene)].deps[i].end(); ++m) {
+	  // if sorted, could use binary search
+	  module_mutated = (std::find(Drv.begin(), 
+				      Drv.end(), 
+				      (*m)) != Drv.end());
+	  if(module_mutated) {
+	    ++sumDepsMet;
+	    break;
+	  }
+	}
+      }
+      if( ((Poset[(*gene)].typeDep == "SM") && (sumDepsMet)) ||
+	  ((Poset[(*gene)].typeDep == "MN") && (sumDepsMet == numDeps)) ) {
+	s_vector.push_back(Poset[(*gene)].s);
+      } else {
+	sh_vector.push_back(Poset[(*gene)].sh);
+      }
+    }
+  }
+}
+
+
+
+// [[Rcpp::export]]
+SEXP wrap_test_checkRestriction(Rcpp::List rtR, 
+				Rcpp::IntegerVector genotype) {
+  std::vector<geneDeps> Poset;
+  std::vector<int> Genotype;
+  std::vector<double> s_vector;
+  std::vector<double> sh_vector;
+
+  rTable_to_Poset(rtR, Poset);
+  Genotype = Rcpp::as< std::vector<int> >(genotype);
+
+  checkConstraints(Genotype, Poset, s_vector, sh_vector);
+
+  // Rcpp::Rcout << "s_vector:\n ";
+  // for (auto c : s_vector)
+  //   Rcpp::Rcout << c << ' ';
+  // Rcpp::Rcout << std::endl;
+  // Rcpp::Rcout << "sh_vector:\n ";
+  // for (auto c : sh_vector)
+  //   Rcpp::Rcout << c << ' ';
+  // Rcpp::Rcout << std::endl;
+
+  return
+    List::create(Named("s_vector") = s_vector,
+		 Named("sh_vector") = sh_vector);
+}
+
+
 
 
 
