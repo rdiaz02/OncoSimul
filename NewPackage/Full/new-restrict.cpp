@@ -21,9 +21,15 @@ struct Poset_and_Modules {
   std::vector<std::pair<std::string, std::string> > geneToModule;
 };
 
+// change this: we have to numeric ids and two strings
+// two things to keep:
+// the numeric IDs pair and the strings IDs pair.
+// the second only used for checking, not for real
+// NOPE: a vector of tuple or a vector of struct
+
 static void rGM_GeneModule(Rcpp::DataFrame rGM,
 			   std::vector<std::pair<std::string, std::string> >& geneModule){
-  Rcpp::IntegerVector id = rGM["NumericID"];
+  Rcpp::IntegerVector GeneID = rGM["GeneNumID"];
   Rcpp::CharacterVector Gene = rGM["Gene"];
   Rcpp::CharacterVector Module = rGM["Module"];
   geneModule.resize(id.size());
@@ -71,6 +77,7 @@ static void rTable_to_Poset(Rcpp::List rt,
 
   for(int i = 1; i != (rt.size() + 1); ++i) {
     rt_element = rt[i - 1];
+    // FIXME: check this again!!! we are now using numeric IDs
     // if(as<int>(rt_element["child"]) != i) {
     //   // Rcpp::Rcout << "\n child = " << as<int>(rt_element["child"]);
     //   // Rcpp::Rcout << "\n i = " << i << std::endl;
@@ -153,48 +160,77 @@ void wrap_test_rt(Rcpp::List rtR,
 
 // Could be made much faster if we could assume lower numbered
 // positions cannot depend on higher numbered ones. Nope, not that much.
-// static void checkConstraints(const std::vector<int>& Drv,
-// 			     const std::vector<geneDeps>& Poset,
-// 			     std::vector<double>& s_vector,
-// 			     std::vector<double>& sh_vector) {
-//   size_t numDeps;
-//   size_t sumDepsMet = 0;
-//   int module_mutated = 0;
 
-//   for(std::vector<int>::const_iterator gene = Drv.begin();
-//       gene != Drv.end(); ++gene) {
-//     if( (Poset[(*gene)].deps.size() == 1) &&
-// 	(Poset[(*gene)].deps[0][0] == 0) ) { //Depends only on root
-//       s_vector.push_back(Poset[(*gene)].s);
-//     } else {
-//       sumDepsMet = 0;
-//       numDeps = Poset[(*gene)].deps.size();
-//       // for(std::vector<std::vector<int> >::const_iterator Module = Poset[(*gene)].deps.begin();
-//       // 	  Module !=  Poset[(*gene)].deps.end(); ++Module) {
-//       // and then replace Poset[(*gene)].deps[i] by Module
-//       for(size_t i = 0; i != numDeps; ++i) {
-// 	// any of the module entries are mutated?
-// 	for(std::vector<int>::const_iterator m = Poset[(*gene)].deps[i].begin();
-// 	    m != Poset[(*gene)].deps[i].end(); ++m) {
-// 	  // if sorted, could use binary search
-// 	  module_mutated = (std::find(Drv.begin(), 
-// 				      Drv.end(), 
-// 				      (*m)) != Drv.end());
-// 	  if(module_mutated) {
-// 	    ++sumDepsMet;
-// 	    break;
-// 	  }
-// 	}
-//       }
-//       if( ((Poset[(*gene)].typeDep == "SM") && (sumDepsMet)) ||
-// 	  ((Poset[(*gene)].typeDep == "MN") && (sumDepsMet == numDeps)) ) {
-// 	s_vector.push_back(Poset[(*gene)].s);
-//       } else {
-// 	sh_vector.push_back(Poset[(*gene)].sh);
-//       }
-//     }
-//   }
-// }
+
+static void DrvToModule(const std::vector<int>& Drv,
+			const 
+			std::vector<std::pair<std::string, std::string> >& geneToModule,
+			std::vector<std::string>& mutatedModules) {
+  
+  for(auto it = Drv.begin(); it != Drv.end(); ++it) {
+    mutatedModules.push_back(geneModule[(*it)].second);
+  }
+  sort( mutatedModules.begin(), mutatedModules.end() );
+  mutatedModules.erase( unique( mutatedModules.begin(), 
+				mutatedModules.end() ), 
+			mutatedModules.end() );
+}
+
+
+static void checkConstraints(const std::vector<int>& Drv,
+			     Poset_and_Modules& PosetModule, 
+    //			     const std::vector<geneDeps>& Poset,
+			     std::vector<double>& s_vector,
+			     std::vector<double>& sh_vector) {
+  size_t numDeps;
+  size_t sumDepsMet = 0;
+  int module_mutated = 0;
+
+  std::vector<std::string> mutatedModules;
+  // FIXME
+  // Think this!! Use the numericIDs always!!!
+  // Only at end we go back from Genes to IDs (or maybe in R)
+
+  DrvToModules(Drv, PosetModule.geneToModule, mutatedModules);
+
+
+  // for(std::vector<int>::const_iterator gene = Drv.begin();
+  //     gene != Drv.end(); ++gene) {
+
+  for(auto module = mutatedModules.begin();
+      module != mutatedModules.end(); ++module) {
+    if( (PosetModule.Poset[(*module)].deps.size() == 1) &&
+	(PosetModule.Poset[(*module)].deps[0] == "0") ) { //Depends only on root
+      s_vector.push_back(Poset[(*module)].s);
+    } else {
+      sumDepsMet = 0;
+      numDeps = Poset[(*gene)].deps.size();
+      // for(std::vector<std::vector<int> >::const_iterator Module = Poset[(*gene)].deps.begin();
+      // 	  Module !=  Poset[(*gene)].deps.end(); ++Module) {
+      // and then replace Poset[(*gene)].deps[i] by Module
+      for(size_t i = 0; i != numDeps; ++i) {
+	// any of the module entries are mutated?
+	for(std::vector<int>::const_iterator m = Poset[(*gene)].deps[i].begin();
+	    m != Poset[(*gene)].deps[i].end(); ++m) {
+	  // if sorted, could use binary search
+	  module_mutated = (std::find(Drv.begin(), 
+				      Drv.end(), 
+				      (*m)) != Drv.end());
+	  if(module_mutated) {
+	    ++sumDepsMet;
+	    break;
+	  }
+	}
+      }
+      if( ((Poset[(*gene)].typeDep == "SM") && (sumDepsMet)) ||
+	  ((Poset[(*gene)].typeDep == "MN") && (sumDepsMet == numDeps)) ) {
+	s_vector.push_back(Poset[(*gene)].s);
+      } else {
+	sh_vector.push_back(Poset[(*gene)].sh);
+      }
+    }
+  }
+}
 
 
 

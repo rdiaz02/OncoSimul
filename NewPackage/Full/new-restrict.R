@@ -295,7 +295,7 @@ gene.to.module <- function(rt) {
     geneMod$Gene <- as.character(geneMod$Gene)
     geneMod$Module <- as.character(geneMod$Module)
     geneMod <- geneMod[order(geneMod$Gene), ]
-    geneMod$NumericID <- 0:(nrow(geneMod) - 1)
+    geneMod$GeneNumID <- 0:(nrow(geneMod) - 1)
     geneMod
 }
 
@@ -323,7 +323,13 @@ to.long.rt <- function(rt, verbosity = 0) {
     ##               seq.int(max(all.child.genes))))
     ##     stop("Not all children present")
     long.rt <- lapply(split(srt, srt$child), list.of.deps)
+
     geneModule <- gene.to.module(srt)
+    idm <- seq.int(length(names(long.rt)))
+    names(idm) <- names(long.rt)
+    idm <- c("0" = 0, idm)
+    geneModule$ModuleNumID <- idm[geneModule[, "Module"]]
+
     if(verbosity >= 4) {
         message(paste("Number of drivers: ",
                       length(unique(geneModule[, "Gene"]))))
