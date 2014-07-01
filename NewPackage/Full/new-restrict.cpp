@@ -15,30 +15,49 @@ struct geneDeps {
   std::vector<std::string > deps; // as module names
 };
 
+struct geneToModule {
+  int Gene;
+  int Module;
+};
+
+struct geneToModuleLong {
+  int Gene;
+  int Module;
+  std::string GeneName;
+  std::string ModuleName;
+};
 
 struct Poset_and_Modules {
   std::vector<geneDeps> Poset;
-  std::vector<std::pair<std::string, std::string> > geneToModule;
+  std::vector<geneToModule> geneModule;
 };
 
 // change this: we have to numeric ids and two strings
 // two things to keep:
 // the numeric IDs pair and the strings IDs pair.
 // the second only used for checking, not for real
-// NOPE: a vector of tuple or a vector of struct
+// a vector of tuple or a vector of struct
 
 static void rGM_GeneModule(Rcpp::DataFrame rGM,
-			   std::vector<std::pair<std::string, std::string> >& geneModule){
+			   std::vector<geneToModule> >& geneModule,
+			   std::vector<geneToModuleLong>& geneModuleLong,
+){
   Rcpp::IntegerVector GeneID = rGM["GeneNumID"];
+  Rcpp::IntegerVector ModuleID = rGM["ModuleNumID"];
   Rcpp::CharacterVector Gene = rGM["Gene"];
   Rcpp::CharacterVector Module = rGM["Module"];
   geneModule.resize(id.size());
+  geneModuleLong.resize(id.size());
 
   for(size_t i = 0; i != geneModule.size(); ++i) {
-    if( static_cast<int>(i) != id[i])
-      throw std::logic_error(" i != id");
-    geneModule[i].first = Gene[i];
-    geneModule[i].second = Module[i];
+    if( static_cast<int>(i) != GeneID[i])
+      throw std::logic_error(" i != GeneID");
+    geneModule[i].Gene = GeneID[i];
+    geneModule[i].Module = ModuleID[i];
+    geneModuleLong[i].Gene = GeneID[i];
+    geneModuleLong[i].Module = ModuleID[i];
+    geneModuleLong[i].GeneName = Gene[i];
+    geneModuleLong[i].ModuleName = Module[i];
   }
 }
 
