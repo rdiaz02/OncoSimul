@@ -137,20 +137,18 @@ rt8 <- data.frame(
     parent = c(
         0,
         0,
-        0,
         "1,2",
         "1,2",
         5
         ),
     child = c(
-        1,
-        2,
+        "1, 2",
         5,
         3,
         4,
         4),
-    s = c(0.1, 0.2, 0.5, 0.3, 0.4, 0.4),
-    sh = c(99, 99, 99, -0.03, -0.04, -0.04),
+    s = c(0.12,  0.5, 0.3, 0.4, 0.4),
+    sh = c(99,  99, -0.03, -0.04, -0.04),
     typeDep = "MN",
     stringsAsFactors = FALSE)
 
@@ -187,14 +185,75 @@ rt9 <- data.frame(
     child = c(
         1,
         2,
-        1,
-        2),
+        3,
+        4),
     s = c(0.1, 0.1, 0.1, 0.1),
     sh = c(-1, -2, -1, -2),
     typeDep = "MN",
     stringsAsFactors = FALSE)
 
 
+rt11 <- data.frame(
+    parent = c(
+        0,
+        0,
+        0,
+        1,
+        2,
+        "3,4",
+        "3, 4",
+        7
+        ),
+    child = c(
+        1,
+        2,
+        7,
+        "3, 4",
+        "3,4",
+        5,
+        6,
+        6),
+    s = c(0.1, 0.2, 0.7, 0.34, 0.34, 0.5, 0.6, 0.6),
+    sh = c(-1, -2, -7, -34, -34, -5, -6, -6),
+    typeDep = "MN",
+    stringsAsFactors = FALSE)
+
+
+
+rt12 <- data.frame(
+    parent = c(
+        0,
+        0,
+        0,
+        "M",
+        "B",
+        "3,4",
+        "3, 4",
+        "C"
+        ),
+    child = c(
+        "M",
+        "B",
+        "C",
+        "3, 4",
+        "3,4",
+        "D",
+        "E",
+        "E"),
+    s = c(0.1, 0.2, 0.7, 0.34, 0.34, 0.5, 0.6, 0.6),
+    sh = c(-1, -2, -7, -34, -34, -5, -6, -6),
+    typeDep = "MN",
+    stringsAsFactors = FALSE)
+
+## FIXME
+## do I really want "as.integer"
+## If I don't, i can use arbitrary things
+
+nice.string <- function(z) {
+    paste(sort(unique(unlist(lapply(strsplit(z, " "),
+                                    function(u) strsplit(u, ","))))),
+          collapse = ", ")
+}
 
 list.of.deps <- function(x) {
     ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
@@ -202,14 +261,14 @@ list.of.deps <- function(x) {
     lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
                        "SM" = "SM", "semimonotone" = "SM")
     ## FIXME: check values of typeDep
+   
     if(length(x) == 1)
         return(list(
-            child = x$child,
+            child = nice.string(x$child),
             s = x$s,
             sh = x$sh,
             typeDep = lookupTypeDep[x$typeDep],
-            parent = list(
-                as.integer(unlist(strsplit(x$parent, ","))))))
+            parent = nice.string(x$parent)))
     else {
         if(length(unique(x$s))!= 1)
             stop("Not all s identical within a child")
@@ -218,13 +277,29 @@ list.of.deps <- function(x) {
         if(length(unique(x$typeDep))!= 1)
             stop("Not all typeDep identical within a child")
         return(list(
-            child = x$child[1],
+            child = nice.string(x$child),
             s = x$s[1],
             sh = x$sh[1],
             typeDep = lookupTypeDep[x$typeDep[1]],
-            parent = lapply(strsplit(x$parent, ","), as.integer)))
+            parent = lapply(x$parent, nice.string)))
     }
 }
+
+gene.to.module <- function(rt) {
+    gtm <- function(x) {
+        data.frame(cbind(unlist(strsplit(x, ", ")), x))
+    }
+    all.modules <- unique(unlist(lapply(c(rt$parent, rt$child), nice.string)))
+    geneMod <- as.data.frame(rbindlist(lapply(all.modules, gtm)))
+    colnames(geneMod) <- c("Gene", "Module")
+    geneMod$Gene <- as.character(geneMod$Gene)
+    geneMod$Module <- as.character(geneMod$Module)
+    geneMod <- geneMod[order(geneMod$Gene), ]
+    geneMod$NumericID <- 0:(nrow(geneMod) - 1)
+    geneMod
+}
+
+
 
 ## FIXME: make sure mutations within modules are ordered!!
 ## This next add to R code.
@@ -232,17 +307,32 @@ list.of.deps <- function(x) {
 to.long.rt <- function(rt, verbosity = 0) {
     if(is.numeric(rt$parent))
         rt$parent <- as.character(rt$parent)
+    if(is.numeric(rt$child))
+        rt$child <- as.character(rt$child)
+    rt$parent <- unlist(lapply(rt$parent, nice.string))
+    rt$child <- unlist(lapply(rt$child, nice.string))
+   
     srt <- rt[order(rt$child), ]
-    ## check all childs
-    if(!identical(as.integer(sort(unique(rt$child))),
-                  seq.int(max(rt$child))))
-        stop("Not all children present")
-    if(verbosity >= 4)
-        message("Setting number of drivers to ",
-                max(rt$child))
-    ## splitted <- split(srt, srt$child)
-    return(lapply(split(srt, srt$child), list.of.deps))
+
+    ## Not relevant if we allow non-numeric names
+    ## all.child.genes <- as.integer(
+    ##     unlist(lapply(rt[, 2],
+    ##                   function(x) strsplit(x, ","))))
+    ## ## check all childs
+    ## if(!identical(sort(unique(all.child.genes)),
+    ##               seq.int(max(all.child.genes))))
+    ##     stop("Not all children present")
+    long.rt <- lapply(split(srt, srt$child), list.of.deps)
+    geneModule <- gene.to.module(srt)
+    if(verbosity >= 4) {
+        message(paste("Number of drivers: ",
+                      length(unique(geneModule[, "Gene"]))))
+        message(paste("Number of modules: ",
+                      length(unique(geneModule[, "Module"]))))
+    }
+    return(list(long.rt = long.rt, geneModule = geneModule))
 }
+
 
 
 ## rt.to.cpp <- function(rt) {
@@ -252,7 +342,7 @@ to.long.rt <- function(rt, verbosity = 0) {
 
 wrap.test.rt <- function(rt) {
     lrt <- to.long.rt(rt)
-    wrap_test_rt(lrt)
+    wrap_test_rt(lrt$long.rt, lrt$geneModule)
 }
 
 wrap.test.checkRestrictions <- function(rt, genotype) {
@@ -373,3 +463,99 @@ rt1 <- data.frame(parent = c(
 to.long.rt(rt1)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+list.of.deps1 <- function(x) {
+    ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
+    ##                 "SM" = 2, "semimonotone" = 2)
+    lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
+                       "SM" = "SM", "semimonotone" = "SM")
+    ## FIXME: check values of typeDep
+
+    if(length(x) == 1)
+        return(list(
+            child = unique(as.integer(unlist(strsplit(x$child, ",")))),
+            s = x$s,
+            sh = x$sh,
+            typeDep = lookupTypeDep[x$typeDep],
+            parent = list(
+                as.integer(unlist(strsplit(x$parent, ","))))))
+    else {
+        if(length(unique(x$s))!= 1)
+            stop("Not all s identical within a child")
+        if(length(unique(x$sh))!= 1)
+            stop("Not all sh identical within a child")
+        if(length(unique(x$typeDep))!= 1)
+            stop("Not all typeDep identical within a child")
+        return(list(
+            child = unique(as.integer(unlist(strsplit(x$child, ",")))),
+            s = x$s[1],
+            sh = x$sh[1],
+            typeDep = lookupTypeDep[x$typeDep[1]],
+            parent = lapply(strsplit(x$parent, ","), as.integer)))
+    }
+}
+
+
+
+
+
+
+
+
+
+list.of.deps0 <- function(x) {
+    ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
+    ##                 "SM" = 2, "semimonotone" = 2)
+    lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
+                       "SM" = "SM", "semimonotone" = "SM")
+    ## FIXME: check values of typeDep
+    if(length(x) == 1)
+        return(list(
+            child = x$child,
+            s = x$s,
+            sh = x$sh,
+            typeDep = lookupTypeDep[x$typeDep],
+            parent = list(
+                as.integer(unlist(strsplit(x$parent, ","))))))
+    else {
+        if(length(unique(x$s))!= 1)
+            stop("Not all s identical within a child")
+        if(length(unique(x$sh))!= 1)
+            stop("Not all sh identical within a child")
+        if(length(unique(x$typeDep))!= 1)
+            stop("Not all typeDep identical within a child")
+        return(list(
+            child = x$child[1],
+            s = x$s[1],
+            sh = x$sh[1],
+            typeDep = lookupTypeDep[x$typeDep[1]],
+            parent = lapply(strsplit(x$parent, ","), as.integer)))
+    }
+}
+
+
+to.long.rt0 <- function(rt, verbosity = 0) {
+    if(is.numeric(rt$parent))
+        rt$parent <- as.character(rt$parent)
+    srt <- rt[order(rt$child), ]
+    ## check all childs
+    if(!identical(as.integer(sort(unique(rt$child))),
+                  seq.int(max(rt$child))))
+        stop("Not all children present")
+    if(verbosity >= 4)
+        message("Setting number of drivers to ",
+                max(rt$child))
+    ## splitted <- split(srt, srt$child)
+    return(lapply(split(srt, srt$child), list.of.deps0))
+}
