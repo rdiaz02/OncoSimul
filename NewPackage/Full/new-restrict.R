@@ -21,7 +21,7 @@ rt2 <- data.frame(parent = c(
                6),
                   s = 0.1,
                   sh = 0.05,
-                  type = "MN",
+                  typeDep = "MN",
                   stringsAsFactors = FALSE)
 
 rt3 <- data.frame(parent = c(
@@ -80,10 +80,10 @@ rt3 <- data.frame(parent = c(
                ),
                   s = 0.1,
                   sh = 0.05,
-                  type = "MN",
+                  typeDep = "MN",
                   stringsAsFactors = FALSE)
 
-
+## rt4 and rt5 are for checking. The values in sh would have no effect here.
 rt4 <- data.frame(parent = c(
                       0, 0
                       ),
@@ -92,7 +92,7 @@ rt4 <- data.frame(parent = c(
                2),
                   s = 0.1,
                   sh = c(0.05, -Inf),
-                  type = "MN",
+                  typeDep = "MN",
                   stringsAsFactors = FALSE)
 
 rt5 <- data.frame(parent = c(
@@ -101,21 +101,53 @@ rt5 <- data.frame(parent = c(
            child = c(
                1,
                2),
-                  s = -Inf,
-                  sh = Inf,
-                  type = "MN",
+                  s = c(-Inf, Inf),
+                  sh = c(Inf, -Inf),
+                  typeDep = "MN",
                   stringsAsFactors = FALSE)
 
 
+rt6 <- data.frame(parent = c(
+                      0, 0
+                      ),
+           child = c(
+               1,
+               2),
+                  s = c(0.1, 0.3),
+                  sh = c(99, 99),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+rt7 <- data.frame(parent = c(
+                      0, 0, 1, 2
+                      ),
+           child = c(
+               1,
+               2,
+               3,
+               4),
+                  s = c(0.1, 0.3, 0.2, 0.25),
+                  sh = c(99, 99, -0.05, -Inf),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+
+
+
+
+
 list.of.deps <- function(x) {
-    lookupType <- c("MN" = 1, "monotone" = 1,
-                    "SM" = 2, "semimonotone" = 2)
+    ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
+    ##                 "SM" = 2, "semimonotone" = 2)
+    lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
+                       "SM" = "SM", "semimonotone" = "SM")
+    ## FIXME: check values of typeDep
     if(length(x) == 1)
         return(list(
             child = x$child,
             s = x$s,
             sh = x$sh,
-            type = lookupType[x$type],
+            typeDep = lookupTypeDep[x$typeDep],
             parent = list(
                 as.integer(unlist(strsplit(x$parent, ","))))))
     else {
@@ -123,13 +155,13 @@ list.of.deps <- function(x) {
             stop("Not all s identical within a child")
         if(length(unique(x$sh))!= 1)
             stop("Not all sh identical within a child")
-        if(length(unique(x$type))!= 1)
-            stop("Not all type identical within a child")
+        if(length(unique(x$typeDep))!= 1)
+            stop("Not all typeDep identical within a child")
         return(list(
             child = x$child[1],
             s = x$s[1],
             sh = x$sh[1],
-            type = lookupType[x$type[1]],
+            typeDep = lookupTypeDep[x$typeDep[1]],
             parent = lapply(strsplit(x$parent, ","), as.integer)))
     }
 }
@@ -153,10 +185,10 @@ to.long.rt <- function(rt, verbosity = 0) {
 }
 
 
-rt.to.cpp <- function(rt) {
-    lrt <- to.long.rt(rt)
-    restrictTable_to_cpp0(lrt)
-}
+## rt.to.cpp <- function(rt) {
+##     lrt <- to.long.rt(rt)
+##     rTable_to_Poset0(lrt)
+## }
 
 wrap.test.rt <- function(rt) {
     lrt <- to.long.rt(rt)
@@ -167,32 +199,29 @@ wrap.test.rt <- function(rt) {
 library(Rcpp)
 ## setwd("../../")
 
-sourceCpp("ex-multimap-for-restric.cpp",
+sourceCpp("new-restrict.cpp",
           verbose = TRUE)
+
 
 wrap.test.rt(rt3)
 wrap.test.rt(rt2)
+wrap.test.rt(rt6)
+wrap.test.rt(rt7)
+
 
 ## test the Inf
 wrap.test.rt(rt4)
 wrap.test.rt(rt5)
 
 
-rt.to.cpp(rt2)
-rt.to.cpp(rt3)
-
-wrap.test.rt(rt3)
+## rt.to.cpp(rt2)
+## rt.to.cpp(rt3)
 
 
 
-## f4()
-rt.to.cpp(rt2) ## will not work now, as the code for creating the object
-               ## is outside restrictTable_to_cpp.
+## FIXME: store output of each wrap, and use as test cases later.
 
-## turn into a list, each element of the list is the poset.
-## similar to the C++ structure I'll have.
 
-## How do I turn that into my structure inside C++?
 
 
 
@@ -234,7 +263,7 @@ rt1 <- data.frame(parent = c(
                9),
                   s = 0.1,
                   sh = 0.05,
-                  type = "MN",
+                  typeDep = "MN",
                   stringsAsFactors = FALSE)
 
 to.long.rt(rt1)
