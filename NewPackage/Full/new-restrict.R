@@ -1,3 +1,4 @@
+library(data.table)
 rt2 <- data.frame(parent = c(
                       0, 0, 0,
                       1,
@@ -215,7 +216,33 @@ rt11 <- data.frame(
         6),
     s = c(0.1, 0.2, 0.7, 0.34, 0.34, 0.5, 0.6, 0.6),
     sh = c(-1, -2, -7, -34, -34, -5, -6, -6),
-    typeDep = "MN",
+    typeDep = c(rep("MN", 3), "SM", "SM", rep("MN", 3)),
+    stringsAsFactors = FALSE)
+
+
+rt11s <- data.frame(
+    parent = c(
+        0,
+        0,
+        0,
+        "myc",
+        "ras",
+        "PT,alpa",
+        "PT, alpa",
+        "u1"
+        ),
+    child = c(
+        "myc",
+        "ras",
+        "u1",
+        "PT, alpa",
+        "PT,alpa",
+        "AC",
+        "BG",
+        "BG"),
+    s = c(0.1, 0.2, 0.7, 0.34, 0.34, 0.5, 0.6, 0.6),
+    sh = c(-1, -2, -7, -34, -34, -5, -6, -6),
+    typeDep = c(rep("MN", 3), "SM", "SM", rep("MN", 3)),
     stringsAsFactors = FALSE)
 
 
@@ -258,38 +285,38 @@ nice.string <- function(z) {
 list.of.deps <- function(x) {
     ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
     ##                 "SM" = 2, "semimonotone" = 2)
-    lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
-                       "SM" = "SM", "semimonotone" = "SM")
+    lookupTypeDep <- c("MN" = "monotone",
+                       "monotone" = "monotone",
+                       "SM" = "semimonotone",
+                       "semimonotone" = "semimonotone")
     ## FIXME: check values of typeDep
-   
-    if(length(x) == 1)
-        return(list(
-            child = nice.string(x$child),
-            s = x$s,
-            sh = x$sh,
-            typeDep = lookupTypeDep[x$typeDep],
-            parent = nice.string(x$parent)))
-    else {
+
+    if(length(x) > 1) {
         if(length(unique(x$s))!= 1)
             stop("Not all s identical within a child")
         if(length(unique(x$sh))!= 1)
             stop("Not all sh identical within a child")
         if(length(unique(x$typeDep))!= 1)
             stop("Not all typeDep identical within a child")
-        return(list(
-            child = nice.string(x$child),
-            s = x$s[1],
-            sh = x$sh[1],
-            typeDep = lookupTypeDep[x$typeDep[1]],
-            parent = lapply(x$parent, nice.string)))
+        if(length(unique(x$child))!= 1)
+            stop("child not unique")
     }
+    return(list(
+        child = unique(x$child),
+        s = unique(x$s),
+        sh = unique(x$sh),
+        typeDep = lookupTypeDep[unique(x$typeDep)],
+        parents = unlist(x$parent)))
+
 }
+
 
 gene.to.module <- function(rt) {
     gtm <- function(x) {
         data.frame(cbind(unlist(strsplit(x, ", ")), x))
     }
-    all.modules <- unique(unlist(lapply(c(rt$parent, rt$child), nice.string)))
+##    all.modules <- unique(unlist(lapply(c(rt$parent, rt$child), nice.string)))
+    all.modules <- unique(unlist(c(rt$parent, rt$child)))
     geneMod <- as.data.frame(rbindlist(lapply(all.modules, gtm)))
     colnames(geneMod) <- c("Gene", "Module")
     geneMod$Gene <- as.character(geneMod$Gene)
@@ -327,9 +354,25 @@ to.long.rt <- function(rt, verbosity = 0) {
     geneModule <- gene.to.module(srt)
     idm <- seq.int(length(names(long.rt)))
     names(idm) <- names(long.rt)
-    idm <- c("0" = 0, idm)
+    idm <- c("0" = 0L, idm)
     geneModule$ModuleNumID <- idm[geneModule[, "Module"]]
 
+    ## add integer IDs
+    addIntID <- function(z, idm) {
+        z$childID <- idm[z$child]
+        z$parentsID <- idm[z$parents]
+        if( any(is.na(z$parentsID)) ||
+           any(is.na(z$childID)) ) {
+            stop(paste("An ID is NA:",
+                       "Is a gene part of two different modules?",
+                       "(That includes being by itself and part",
+                       "of a module.)"))
+            
+        }
+        return(z)
+    }
+    long.rt <- lapply(long.rt, function(x) addIntID(x, idm = idm))
+   
     if(verbosity >= 4) {
         message(paste("Number of drivers: ",
                       length(unique(geneModule[, "Gene"]))))
@@ -348,6 +391,7 @@ to.long.rt <- function(rt, verbosity = 0) {
 
 wrap.test.rt <- function(rt) {
     lrt <- to.long.rt(rt)
+    ## wrap_test_rt(lrt$long.rt)
     wrap_test_rt(lrt$long.rt, lrt$geneModule)
 }
 
@@ -361,19 +405,28 @@ wrap.test.checkRestrictions <- function(rt, genotype) {
 library(Rcpp)
 ## setwd("../../")
 
-sourceCpp("new-restrict.cpp",
-          verbose = TRUE)
+sourceCpp("new-restrict.cpp", verbose = TRUE)
 
-
-wrap.test.rt(rt3)
-wrap.test.rt(rt2)
+wrap.test.rt(rt12)
 wrap.test.rt(rt6)
 wrap.test.rt(rt7)
-
+wrap.test.rt(rt8)
+wrap.test.rt(rt11)
+wrap.test.rt(rt11s)
 
 ## test the Inf
 wrap.test.rt(rt4)
 wrap.test.rt(rt5)
+
+
+
+## These are not proper posets
+wrap.test.rt(rt9)
+wrap.test.rt(rt8.sm)
+wrap.test.rt(rt2) ## rt2 is not a proper poset
+wrap.test.rt(rt3) ## rt3 is not a proper poset
+## same gene as module and as isolated.
+
 
 
 wrap.test.checkRestrictions(rt7, c(1L, 2L))
@@ -565,3 +618,39 @@ to.long.rt0 <- function(rt, verbosity = 0) {
     ## splitted <- split(srt, srt$child)
     return(lapply(split(srt, srt$child), list.of.deps0))
 }
+
+
+
+
+
+## list.of.deps.00 <- function(x) {
+##     ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
+##     ##                 "SM" = 2, "semimonotone" = 2)
+##     lookupTypeDep <- c("MN" = "monotone",
+##                        "monotone" = "monotone",
+##                        "SM" = "semimonotone",
+##                        "semimonotone" = "semimonotone")
+##     ## FIXME: check values of typeDep
+   
+##     if(length(x) == 1)
+##         return(list(
+##             child = nice.string(x$child),
+##             s = x$s,
+##             sh = x$sh,
+##             typeDep = lookupTypeDep[x$typeDep],
+##             parent = nice.string(x$parent)))
+##     else {
+##         if(length(unique(x$s))!= 1)
+##             stop("Not all s identical within a child")
+##         if(length(unique(x$sh))!= 1)
+##             stop("Not all sh identical within a child")
+##         if(length(unique(x$typeDep))!= 1)
+##             stop("Not all typeDep identical within a child")
+##         return(list(
+##             child = nice.string(x$child),
+##             s = x$s[1],
+##             sh = x$sh[1],
+##             typeDep = lookupTypeDep[x$typeDep[1]],
+##             parent = lapply(x$parent, nice.string)))
+##     }
+## }
