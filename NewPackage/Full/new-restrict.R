@@ -157,6 +157,25 @@ rt8.sm <- data.frame(
     parent = c(
         0,
         0,
+        "1,2",
+        "1,2",
+        5
+        ),
+    child = c(
+        "1, 2",
+        5,
+        3,
+        4,
+        4),
+    s = c(0.12,  0.5, 0.3, 0.4, 0.4),
+    sh = c(99,  99, -0.03, -0.04, -0.04),
+    typeDep = c(rep("MN",3), "SM", "SM"),
+    stringsAsFactors = FALSE)
+
+rt8.b <- data.frame(
+    parent = c(
+        0,
+        0,
         0,
         "1,2",
         "1,2",
@@ -397,7 +416,7 @@ wrap.test.rt <- function(rt) {
 
 wrap.test.checkRestrictions <- function(rt, genotype) {
     lrt <- to.long.rt(rt)
-    wrap_test_checkRestriction(lrt, genotype)
+    wrap_test_checkRestriction(lrt$long.rt, lrt$geneModule,  genotype)
 }
 
 
@@ -422,12 +441,17 @@ wrap.test.rt(rt5)
 
 ## These are not proper posets
 wrap.test.rt(rt9)
-wrap.test.rt(rt8.sm)
+wrap.test.rt(rt8.b)
 wrap.test.rt(rt2) ## rt2 is not a proper poset
 wrap.test.rt(rt3) ## rt3 is not a proper poset
 ## same gene as module and as isolated.
 
 
+wrap.test.checkRestrictions(rt7, c(1L))
+wrap.test.checkRestrictions(rt7, c(2L))
+
+wrap.test.checkRestrictions(rt7, c(3L))
+wrap.test.checkRestrictions(rt7, c(4L))
 
 wrap.test.checkRestrictions(rt7, c(1L, 2L))
 wrap.test.checkRestrictions(rt7, c(1L, 3L))
@@ -456,19 +480,29 @@ wrap.test.checkRestrictions(rt8, c(1L, 4L))
 wrap.test.checkRestrictions(rt8, c(2L, 4L))
 wrap.test.checkRestrictions(rt8, c(1L, 2L, 4L))
 
+wrap.test.checkRestrictions(rt8, c(1L, 5L, 4L))
+wrap.test.checkRestrictions(rt8, c(2L, 5L, 4L))
+
+wrap.test.checkRestrictions(rt8, c(1L, 2L, 5L, 4L))
 
 
+wrap.test.checkRestrictions(rt8.sm, c(5L, 4L))
+wrap.test.checkRestrictions(rt8.sm, c(1L, 4L))
+wrap.test.checkRestrictions(rt8.sm, c(2L, 4L))
+wrap.test.checkRestrictions(rt8.sm, c(1L, 2L, 4L))
 
 
+identical(wrap.test.checkRestrictions(rt8, c(1L, 5L, 4L)),
+          wrap.test.checkRestrictions(rt8.sm, c(1L, 5L, 4L)))
 
-## do test with modules with multiple
+identical(wrap.test.checkRestrictions(rt8, c(2L, 5L, 4L)),
+          wrap.test.checkRestrictions(rt8.sm, c(2L, 5L, 4L)))
 
+identical(wrap.test.checkRestrictions(rt8, c(1L, 2L, 5L, 4L)),
+          wrap.test.checkRestrictions(rt8.sm, c(1L, 2L, 5L, 4L)))
 
-## rt.to.cpp(rt2)
-## rt.to.cpp(rt3)
-
-
-
+         
+## guardar todos los tests en un RData para future testing
 
 
 
