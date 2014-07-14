@@ -188,7 +188,7 @@
   For \code{oncoSimulIndiv} a list, of class "oncosimul", with the
   following components:
   
-  \item{pops.by.time }{A matrix of the population sizes of the clones,
+    \item{pops.by.time }{A matrix of the population sizes of the clones,
     with clones in columns and time in row. Not all clones are shown here,
     only those that were present in at least on of the keepEvery samples.}
   
@@ -256,38 +256,35 @@
 }
 \references{
 
-  Bozic, I., et al., (2010). Accumulation of driver and passenger
-  mutations during tumor progression. \emph{ Proceedings of the National
-  Academy of Sciences of the United States of America\/}, \bold{107},
-  18545--18550.
+    Bozic, I., et al., (2010). Accumulation of driver and passenger
+    mutations during tumor progression. \emph{ Proceedings of the National
+    Academy of Sciences of the United States of America\/}, \bold{107},
+    18545--18550.
 
-  Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
-  of mutations during tumor progression: effects of passenger mutations,
-  evolutionary models, and
-  sampling. \url{http://dx.doi.org/10.1101/005587}
+    Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
+    of mutations during tumor progression: effects of passenger mutations,
+    evolutionary models, and
+    sampling. \url{http://dx.doi.org/10.1101/005587}
 
-  McFarland, C.~D. et al. (2013). Impact of deleterious passenger
-  mutations on cancer progression.  \emph{Proceedings of the National
-  Academy of Sciences of the United States of America\/}, \bold{110}(8),
-  2910--5.
+    McFarland, C.~D. et al. (2013). Impact of deleterious passenger
+    mutations on cancer progression.  \emph{Proceedings of the National
+    Academy of Sciences of the United States of America\/}, \bold{110}(8),
+    2910--5.
 
-  Mather, W.~H., Hasty, J., and Tsimring, L.~S. (2012). Fast stochastic
-  algorithm for simulating evolutionary population dynamics.
-  \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
+    Mather, W.~H., Hasty, J., and Tsimring, L.~S. (2012). Fast stochastic
+    algorithm for simulating evolutionary population dynamics.
+    \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
 
   
 
 }
-\author{
-  Ramon Diaz-Uriarte
-}
 
+\author{Ramon Diaz-Uriarte}
 
 
 \seealso{
-  \code{\link{plot.oncosimul}},
-  \code{\link{examplePosets}},
-  \code{\link{samplePop}}
+    \code{\link{plot.oncosimul}}, \code{\link{examplePosets}},
+    \code{\link{samplePop}}
   
 
 }

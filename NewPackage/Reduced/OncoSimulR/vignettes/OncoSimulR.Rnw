@@ -1,21 +1,22 @@
-% \VignetteIndexEntry{OncoSimulR Overview}
-% \VignetteDepends{OncoSimulR}
-% \VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
-% \VignettePackage{OncoSimulR}
-% \VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{OncoSimulR Overview}
+%\VignetteDepends{OncoSimulR}
+%\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
+%\VignettePackage{OncoSimulR}
+%\VignetteEngine{knitr::knitr}
 \documentclass[a4paper,11pt]{article}
 <<echo=FALSE,results='hide',error=FALSE>>=
 require(knitr, quietly = TRUE)
 opts_knit$set(concordance = TRUE)
-## opts_knit$set(stop_on_error = 2L)
+##opts_knit$set(stop_on_error = 2L)
 @ 
 \usepackage{amsmath}
-\usepackage[authoryear,round,sort]{natbib}
+%% \usepackage[authoryear,round,sort]{natbib}
 \usepackage{threeparttable}
 \usepackage{array}
-\usepackage{hyperref}
-\usepackage{geometry}
-\geometry{verbose,a4paper,tmargin=23mm,bmargin=26mm,lmargin=28mm,rmargin=28mm}
+%%\usepackage{hyperref} %% not if using BiocStyle
+%%ditto
+%\usepackage{geometry}
+%\geometry{verbose,a4paper,tmargin=23mm,bmargin=26mm,lmargin=28mm,rmargin=28mm}
 \usepackage{url}
 \usepackage{xcolor}
 %\definecolor{light-gray}{gray}{0.72}
@@ -24,7 +25,7 @@ opts_knit$set(concordance = TRUE)
 \newcommand{\Burl}[1]{\blu{\url{#1}}}
 
 
-%% \SweaveOpts{echo=TRUE}
+%%\SweaveOpts{echo=TRUE}
 
 %\usepackage{tikz}
 %\usetikzlibrary{arrows,shapes,positioning}
@@ -34,21 +35,36 @@ opts_knit$set(concordance = TRUE)
 
 \usepackage{gitinfo}
 
-% Uncomment for BioC
-% \usepackage{datetime}
-% \newdateformat{mydate}{\THEDAY-\monthname[\THEMONTH]-\THEYEAR}
+%Uncomment for BioC
+%\usepackage{datetime}
+%\newdateformat{mydate}{\THEDAY-\monthname[\THEMONTH]-\THEYEAR}
+
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
+BiocStyle::latex()
+@
 
 
+%%\title{Using OncoSimulR: a package for simulating cancer progression data,
+%%including drivers and passengers, and allowing for order restrictions.}
 
-\title{Using OncoSimulR: a package for simulating cancer progression data,
+%%\author{Ramon Diaz-Uriarte\\
+%%Dept. Biochemistry, Universidad Aut\'onoma de Madrid \\ 
+%%Instituto de Investigaciones Biom\'edicas ``Alberto Sols'' (UAM-CSIC)\\
+%%Madrid, Spain\\
+%%{\small \texttt{ramon.diaz@iib.uam.es}} \\
+%%{\small \texttt{rdiaz02@gmail.com}} \\
+%%{\small \Burl{http://ligarto.org/rdiaz}} \\
+%%}
+
+
+\bioctitle{Using OncoSimulR: a package for simulating cancer progression data,
   including drivers and passengers, and allowing for order restrictions.}
 
 \author{Ramon Diaz-Uriarte\\
   Dept. Biochemistry, Universidad Aut\'onoma de Madrid \\ 
   Instituto de Investigaciones Biom\'edicas ``Alberto Sols'' (UAM-CSIC)\\
-  Madrid, Spain\\
-{\small \texttt{ramon.diaz@iib.uam.es}} \\
-{\small \texttt{rdiaz02@gmail.com}} \\
+  Madrid, Spain{\footnote{ramon.diaz@iib.uam.es, rdiaz02@gmail.com}} \\
+%% {\footnote{rdiaz02@gmail.com}} \\
 {\small \Burl{http://ligarto.org/rdiaz}} \\
  }
 %% \date{\the\year-\the\month-\the\day}
@@ -74,12 +90,12 @@ This vignette presents the OncoSimulR package. OncoSimulR allows you to
 simulate tumor progression using several models of tumor progression. In
 these simulations you can restrict the order in which mutations can
 accumulate. For instance, you can restrict the allowed order as specified,
-for instance, in Oncogenetic Tree (OT; \citealp{Desper1999JCB, Szabo2008})
-or Conjunctive Bayesian Network (CBN; \citealp{Beerenwinkel2007,
-  Gerstung2009, Gerstung2011}) models. Moreover, you can add passenger
-mutations to the simulations. The models so far implemented are all
-continuous time models, which are simulated using the BNB algorithm of
-\cite{Mather2012}. This is a summary of some of the key features:
+for instance, in Oncogenetic Tree (OT; \cite{Desper1999JCB, Szabo2008}) or
+Conjunctive Bayesian Network (CBN; \cite{Beerenwinkel2007, Gerstung2009,
+  Gerstung2011}) models. Moreover, you can add passenger mutations to the
+simulations. The models so far implemented are all continuous time models,
+which are simulated using the BNB algorithm of Mather et
+al.\ \cite{Mather2012}. This is a summary of some of the key features:
 
 
 \begin{itemize}
@@ -91,8 +107,9 @@ continuous time models, which are simulated using the BNB algorithm of
   a penalty for such deviations (the $s_h$ parameter).
   
 \item Right now, three different models are available, two that lead to
-  exponential growth, one of them loosely based on \cite{Bozic2010}, and
-  another that leads to logistic-like growth, based on \cite{McFarland2013}.
+  exponential growth, one of them loosely based on Bozic et al.\
+  \cite{Bozic2010}, and another that leads to logistic-like growth, based
+  on McFarland et al.\ \cite{McFarland2013}.
 \item Simulations are generally very fast as I use the BNB algorithm
   implemented in C++.
 \end{itemize}
@@ -131,7 +148,7 @@ Using this package will often involve the following steps:
 
 
 Before anything else, let us load the package. We also explicitly load
-\texttt{graph} for the vignette to work (you do not need that for your
+\Biocpkg{graph} for the vignette to work (you do not need that for your
 usual interactive work).
 
 <<>>=
@@ -143,7 +160,7 @@ library(graph)
 \section{Specifying restrictions: posets}\label{poset}
 
 How to specify the restrictions is shown in the help for
-\texttt{poset}. It is often useful, to make sure you did not make any
+\Rfunction{poset}. It is often useful, to make sure you did not make any
 mistakes, to plot the poset. This is from the examples:
 
 <<fig.height=3>>=
@@ -160,11 +177,30 @@ plotPoset(p4, addroot = TRUE)
 @ 
 
 
+
+Specifying posets is actually straightforward. For instance, we can
+specify the pancreatic cancer poset in Gerstung et al.\
+\cite{Gerstung2011} (their figure 2B, left). We specify the poset using
+numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2,
+etc). This example is also in the help for \Rfunction{poset}:
+
+<<fig.height=3>>=
+pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
+                               c(2, 3, 4, 5, 6, 6, 6, 7, 7))
+plotPoset(pancreaticCancerPoset,
+          names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
+                    "MLL3","PXDN", "TGFBR2"))
+@
 \section{Simulating cancer progression}\label{simul}
 
 
 We can simulate the progression in a single subject. Using an example
 very similar to the one in the help:
+
+
+<<echo=FALSE,results='hide',error=FALSE>>=
+options(width=60)
+@ 
 
 <<>>=
 ## use poset p1101
@@ -218,7 +254,7 @@ The default is to simulate progression until a simulation reaches cancer
 (i.e., only simulations that satisfy the detectionDrivers or the
 detectionSize will be returned). If you use the McF model with large
 enough \texttt{initSize} this will often be the case but not if you use
-very small \textit{initSize}. Likewise, most of the Bozic runs do not
+very small \texttt{initSize}. Likewise, most of the Bozic runs do not
 reach cancer. Lets try a few:
 
 <<>>=
@@ -269,7 +305,9 @@ m1 <- oncoSimulPop(100, examplePosets[["p1101"]],
 
 @ 
 
-The function \texttt{samplePop} gives you information about the output object.
+The function \Rfunction{samplePop} samples that object, and also gives you
+some information about the output:
+
 <<>>=
 genotypes <- samplePop(m1)
 @ 
@@ -277,9 +315,9 @@ genotypes <- samplePop(m1)
 
 
 What can you do with it? That is up to you. As an example, let us try to
-infer an oncogenetic tree (and plot it) using the \texttt{Oncotree} package
-\citep{Oncotree} after getting a quick look at the marginal frequencies of
-events:
+infer an oncogenetic tree (and plot it) using the \CRANpkg{Oncotree}
+package \cite{Oncotree} after getting a quick look at the marginal
+frequencies of events:
 
 <<fig.width=4, fig.height=4>>=
 colSums(genotypes)/nrow(genotypes)
@@ -311,9 +349,18 @@ else if you want so the names of the nodes will reflect those potentially
 more meaningful names.
 
 
+\section{Session info and packages used}
+
+This is the information about the version of R and packages used:
+<<>>=
+sessionInfo()
+@ 
+
 %\newpage
-\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm
+%%\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm
 %% does the URL without turning into note?
+
+%\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm
 \bibliography{OncoSimulR}
 
 \end{document}

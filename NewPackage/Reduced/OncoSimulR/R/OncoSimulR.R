@@ -228,9 +228,9 @@ oncoSimulIndiv <- function(poset,
 
 summary.oncosimul <- function(object, ...) {
     tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
-               "MaxNumDrivers", "MaxDriversLast",
-               "NumDriversLargestPop", "TotalPresentDrivers",
-               "FinalTime", "NumIter", "HittedWallTime")]
+                    "MaxNumDrivers", "MaxDriversLast",
+                    "NumDriversLargestPop", "TotalPresentDrivers",
+                    "FinalTime", "NumIter", "HittedWallTime")]
     tmp$errorMF <- object$other$errorMF
     if(tmp$errorMF == -99) tmp$errorMF <- NA
     tmp$OccurringDrivers <- object$OccurringDrivers

@@ -37,3 +37,8 @@ time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 
 
 ## --force-multiarch in windoze?
+
+## can use BiocCheck: install, load, and run with dir
+## https://github.com/Bioconductor/BiocCheck
+## BiocCheck("~/Proyectos/OncoSimulR/NewPackage/Reduced/OncoSimulR/")
+## I hack it to provide more detailed output SOurces/BiocCheckR, as library BiocCheckRamon

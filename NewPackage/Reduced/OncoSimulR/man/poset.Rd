@@ -96,6 +96,26 @@ plotPoset(p3, addroot = TRUE)
 p4 <- cbind(0, 15)
 plotPoset(p4, addroot = TRUE)
 
+
+## Specifying the pancreatic cancer poset in Gerstung et al., 2011
+##   (their figure 2B, left). We use numbers, but for nicer plotting we
+##   will use names: KRAS is 1, SMAD4 is 2, etc.
+
+pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
+                               c(2, 3, 4, 5, 6, 6, 6, 7, 7))
+plotPoset(pancreaticCancerPoset,
+          names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
+                    "MLL3","PXDN", "TGFBR2"))
+
+
+## Specifying poset 2 in Figure 2A of Gerstung et al., 2009:
+
+poset2 <- cbind(c(1, 1, 3, 3, 3, 7, 7, 8, 9, 10),
+                c(2, 3, 4, 5, 6, 8, 9, 10, 10, 11))
+
+plotPoset(poset2)
+
+
 }
 
 \keyword{manip}

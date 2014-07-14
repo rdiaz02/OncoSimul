@@ -70,6 +70,12 @@ plotPoset(poset701,
           names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
                      "MLL3","PXDN", "TGFBR2"))
 
+## If you want to show Root explicitly do
+
+plotPoset(poset701, addroot = TRUE,
+          names = c("Root", "KRAS", "SMAD4", "CDNK2A", "TP53",
+                     "MLL3","PXDN", "TGFBR2"))
+
 
 ## Of course, names are in the order of nodes, so KRAS is for node 1,
 ##   etc, but the order of entries in the poset does not matter:
@@ -79,6 +85,7 @@ poset701b <- poset701[nrow(poset701):1, ]
 plotPoset(poset701b,
           names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
                      "MLL3","PXDN", "TGFBR2"))
+
 
 }
 
