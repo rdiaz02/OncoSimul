@@ -163,33 +163,33 @@ oncoSimulIndiv <- function(poset,
     doneSimuls <- FALSE
     while(!doneSimuls) {
         op <- try(oncoSimul.internal(restrict.table = rt,
-                                 numGenes = numGenes,
-                                 typeFitness = typeFitness,
-                                 typeCBN = "-99",
-                                 birth = birth,
-                                 s = s,
-                                 sh = sh,
-                                 death = death,  
-                                 mu =  mu,  
-                                 initSize =  initSize, 
-                                 sampleEvery =  sampleEvery,  
-                                 detectionSize =  detectionSize, 
-                                 mutatorGenotype = mutatorGenotype,  
-                                 finalTime = finalTime, 
-                                 initSize_species = 2000, 
-                                 initSize_iter = 500, 
-                                 seed_gsl = NULL, 
-                                 verbosity = verbosity, 
-                                 initMutant = -1, 
-                                 speciesFS = 40000,  
-                                 ratioForce = 2,  
-                                 max.memory = max.memory, 
-                                 max.wall.time = max.wall.time, 
-                                 keepEvery = keepEvery,  
-                                 alpha = 0.0015,  
-                                 K = K, 
-                                 endTimeEvery = endTimeEvery, 
-                                 finalDrivers = detectionDrivers),
+                                     numGenes = numGenes,
+                                     typeFitness = typeFitness,
+                                     typeCBN = "-99",
+                                     birth = birth,
+                                     s = s,
+                                     sh = sh,
+                                     death = death,  
+                                     mu =  mu,  
+                                     initSize =  initSize, 
+                                     sampleEvery =  sampleEvery,  
+                                     detectionSize =  detectionSize, 
+                                     mutatorGenotype = mutatorGenotype,  
+                                     finalTime = finalTime, 
+                                     initSize_species = 2000, 
+                                     initSize_iter = 500, 
+                                     seed_gsl = NULL, 
+                                     verbosity = verbosity, 
+                                     initMutant = -1, 
+                                     speciesFS = 40000,  
+                                     ratioForce = 2,  
+                                     max.memory = max.memory, 
+                                     max.wall.time = max.wall.time, 
+                                     keepEvery = keepEvery,  
+                                     alpha = 0.0015,  
+                                     K = K, 
+                                     endTimeEvery = endTimeEvery, 
+                                     finalDrivers = detectionDrivers),
                   silent = !verbosity)
 
         if(!inherits(op, "try-error")) {
@@ -199,10 +199,10 @@ oncoSimulIndiv <- function(poset,
                 cat("\n       Drivers Last = ", op$MaxDriversLast)
                 cat("\n       Final Time = ", op$FinalTime)
             }
-             if(onlyCancer) {
+            if(onlyCancer) {
                 doneSimuls <- reachCancer(op, ndr = detectionDrivers,
-                                             detectionSize = detectionSize,
-                                             maxPopSize = 1e15)
+                                          detectionSize = detectionSize,
+                                          maxPopSize = 1e15)
             } else {
                 doneSimuls <- TRUE
             }
@@ -281,25 +281,24 @@ plot.oncosimulpop <- function(x, ask = TRUE,
     on.exit(par(op))
     null <- lapply(x, function(z)
                    plot.oncosimul(z,
-                          col = col,
-                          log = log,
-                          ltyClone = ltyClone,
-                          lwdClone = lwdClone,
-                          ltyDrivers = ltyDrivers,
-                          lwdDrivers = lwdDrivers,
-                          xlab = xlab,
-                          ylab = ylab,
-                          plotClones = plotClones,
-                          plotDrivers = plotDrivers,
-                          addtot = addtot,
-                          addtotlwd = addtotlwd,
-                          yl = yl,
-                          thinData = thinData,
-                          thinData.keep = thinData.keep,
-                          thinData.min = thinData.min,
-                          ...))
+                                  col = col,
+                                  log = log,
+                                  ltyClone = ltyClone,
+                                  lwdClone = lwdClone,
+                                  ltyDrivers = ltyDrivers,
+                                  lwdDrivers = lwdDrivers,
+                                  xlab = xlab,
+                                  ylab = ylab,
+                                  plotClones = plotClones,
+                                  plotDrivers = plotDrivers,
+                                  addtot = addtot,
+                                  addtotlwd = addtotlwd,
+                                  yl = yl,
+                                  thinData = thinData,
+                                  thinData.keep = thinData.keep,
+                                  thinData.min = thinData.min,
+                                  ...))
 }
-                            
 
 
 plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
@@ -578,10 +577,7 @@ oncoSimul.internal <- function(restrict.table,
         K,
         endTimeEvery,
         finalDrivers),
-             ##                 PACKAGE = "OncoSimulR"),
-             ##           call = call,
              NumDrivers = numDrivers
-             ##         ,  initMutant = initMutant
              ))
 }
 
@@ -589,7 +585,7 @@ oncoSimul.internal <- function(restrict.table,
 create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
     if(tmp$NumClones > 1) {
         NumMutations <- apply(tmp$Genotypes, 2, sum)
-        muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE] ,
+        muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE],
                               t(apply(tmp$pops.by.time[, -c(1),
                                                        drop = FALSE], 1,
                                       function(x) tapply(x,
@@ -783,7 +779,6 @@ poset.to.restrictTable <- function(x) {
 
 
 ## have a graph without a null??
-
 
 posetToGraph <- function(x, names,
                          addroot = FALSE,

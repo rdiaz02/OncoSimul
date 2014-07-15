@@ -1,10 +1,10 @@
 \name{plotPoset}
 \alias{plotPoset}
 \title{
-Plot a poset.
+  Plot a poset.
 }
 \description{
-Plot a poset. Optionally add a root and change names of nodes.
+  Plot a poset. Optionally add a root and change names of nodes.
 }
 \usage{
 plotPoset(x, names = NULL, addroot = FALSE, box = FALSE, ...)
@@ -28,29 +28,22 @@ plotPoset(x, names = NULL, addroot = FALSE, box = FALSE, ...)
   }
   \item{box}{
     Should the graph be placed inside a box?
-}
-
-\item{\dots}{ Additional arguments to \code{plot} (actually,
+  }
+  
+  \item{\dots}{ Additional arguments to \code{plot} (actually,
     \code{plot.graphNEL} in the \code{Rgraphviz} package}).
 }
 \details{
   The poset is converted to a \code{graphNEL} object.
-
+  
 }
 \value{
   A plot is produced.
-
-
-
-
-
 }
 \author{
   Ramon Diaz-Uriarte
 
 }
-
-
 
 \seealso{
   \code{\link{examplePosets}}, \code{\link{poset}}
@@ -85,10 +78,7 @@ poset701b <- poset701[nrow(poset701):1, ]
 plotPoset(poset701b,
           names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
                      "MLL3","PXDN", "TGFBR2"))
-
-
 }
-
 
 \keyword{ hplot }
 

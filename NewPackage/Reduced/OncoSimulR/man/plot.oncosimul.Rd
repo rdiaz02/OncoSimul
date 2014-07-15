@@ -14,6 +14,7 @@
   different line types), and clones with different number of drivers are
   plotted in different colours.
 }
+
 \usage{
 
 \method{plot}{oncosimul}(x, col = c(8, "orange", 6:1), log = "y",
@@ -39,11 +40,12 @@
 
 }
 \arguments{
+
   \item{x}{
     An object of class \code{oncosimul} (for \code{plot.oncosimul}) or
     \code{oncosimulpop} (for \code{plot.oncosimulpop}). 
   }
-
+  
   \item{ask}{Same meaning as in \code{\link{par}}.    
   }
   
@@ -52,90 +54,90 @@
     by number of drivers) has a different color. If there are many
     drivers, col is recycled, so you might want to increase the number
     of possible colours.
-}
+  }
   \item{log}{
     See \code{log} in \code{\link{plot.default}}. The default, "y", will
     make the y axis logarithmic.
   }
   
   \item{ltyClone}{
-
+    
     Line type for each clone. Recycled as needed. You probably do not
     want to use lty=1 for any clone, to differentiate from the clone
     type, unless you change the setting for \code{ltyDrivers}.
-
+    
   }
   
   \item{lwdClone}{
     Line width for clones.
-
-}
+    
+  }
   \item{ltyDrivers}{
     Line type for the driver type.
-
-}
-\item{lwdDrivers}{
-  Line width for the driver type.
-}
+    
+  }
+  \item{lwdDrivers}{
+    Line width for the driver type.
+  }
   \item{xlab}{
     Same as \code{xlab} in \code{\link{plot.default}}.
-
-}
-\item{ylab}{
-      Same as \code{ylab} in \code{\link{plot.default}}.
-
-}
-\item{plotClones}{
-  Should clones be plotted?
-
-}
-\item{plotDrivers}{
-  Should clone types (which are defined by number of drivers), be plotted?
-
-}
-\item{addtot}{
-  If TRUE, add a line with the total populatino size.
-
-}
-\item{addtotlwd}{
-  Line width for total population size.
-
-}
-\item{yl}{
-  If non NULL, limits of the y axis. Same as in
-  \code{\link{plot.default}}. If NULL, the limits are calculated
-  automatically.
-
-}
-\item{thinData}{
-  If TRUE, the data plotted is a subset of the original data. The
-  original data are "thinned" in such a way that the origin of each
-  clone is not among the non-shown data (i.e., so that we can see when
-  each clone/driver originates).
-
-  Thining is done to reduce the plot size and to speed up plotting..
-
-}
+    
+  }
+  \item{ylab}{
+    Same as \code{ylab} in \code{\link{plot.default}}.
+    
+  }
+  \item{plotClones}{
+    Should clones be plotted?
+    
+  }
+  \item{plotDrivers}{
+    Should clone types (which are defined by number of drivers), be plotted?
+    
+  }
+  \item{addtot}{
+    If TRUE, add a line with the total populatino size.
+    
+  }
+  \item{addtotlwd}{
+    Line width for total population size.
+    
+  }
+  \item{yl}{
+    If non NULL, limits of the y axis. Same as in
+    \code{\link{plot.default}}. If NULL, the limits are calculated
+    automatically.
+    
+  }
+  \item{thinData}{
+    If TRUE, the data plotted is a subset of the original data. The
+    original data are "thinned" in such a way that the origin of each
+    clone is not among the non-shown data (i.e., so that we can see when
+    each clone/driver originates).
+    
+    Thining is done to reduce the plot size and to speed up plotting..
+    
+  }
   \item{thinData.keep}{
     The fraction of the data to keep (actually, a lower bound on the
     fraction of data to keep).
-
-
-}
-\item{thinData.min}{
-  Any time point for which a clone has a population size < thinData.min
-  will be kept (i.e., will not be removed from) in the data.
-  
-
-}
-\item{\dots}{
-  Other arguments passed to \code{plots}. For instance, \code{main}.
-
-}
+    
+    
+  }
+  \item{thinData.min}{
+    Any time point for which a clone has a population size < thinData.min
+    will be kept (i.e., will not be removed from) in the data.
+    
+    
+  }
+  \item{\dots}{
+    Other arguments passed to \code{plots}. For instance, \code{main}.
+    
+  }
 }
 \author{
   Ramon Diaz-Uriarte
-
+  
 }
 
 
