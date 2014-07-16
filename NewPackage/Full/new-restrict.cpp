@@ -291,6 +291,12 @@ static void checkConstraints(const std::vector<int>& Drv,
 }
 
 
+// Turn the following into a function called from R naturally.  Allows for
+// testing AND allows users to understand the consequences of an rt and a
+// genotype. Call this "eval_Genotype" and the R function evalGenotype
+
+
+
 // [[Rcpp::export]]
 SEXP wrap_test_checkRestriction(Rcpp::List rtR, 
 				Rcpp::DataFrame rGM,
