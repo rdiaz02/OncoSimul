@@ -323,6 +323,7 @@ more meaningful names.
 
 %% remember to use bibexport to keep just the minimal bib needed
 %% bibexport -o extracted.bib OncoSimulR.aux
+%% but it seems reftex-create-bibtex-file does the same or similar from emacs?
 %% rm OncoSimulR.bib
 %% mv extracted.bib OncoSimulR.bib
 %% and then turn URL of packages into notes
