@@ -706,7 +706,7 @@ inline void reshape_to_outNS(Rcpp::NumericMatrix& outNS,
   std::vector<unsigned long long>::const_iterator fend = uniqueGenotV.end();
 
   int column;
-
+  // FIXME keepTheseMany: here, fill up only when index_out[i] takes certain values
   for(size_t i = 0; i < genot_out_ul.size(); ++i) {
     column = std::distance(fbeg, lower_bound(fbeg, fend, genot_out_ul[i]) );
     outNS(index_out[i], column + 1) =  popSizes_out[i];
@@ -1275,6 +1275,9 @@ SEXP Algorithm5(SEXP restrictTable_,
   IntegerMatrix returnGenotypes(numGenes, uniqueGenotypes_vector.size());
   create_returnGenotypes(returnGenotypes, numGenes, uniqueGenotypes_vector);
 
+  // FIXME: keepTheseMany: redo these calculations
+  // correctly. keepTheseMany, not outNS_i + 1;
+  
   int outNS_r, outNS_c, create_outNS;
   if( ( (uniqueGenotypes.size() + 1) *  (outNS_i + 1) ) > ( pow(2, 31) - 1 ) ) {
     Rcpp::Rcout << "\nWARNING: Return outNS object > 2^31 - 1. Not created.\n";
@@ -1289,7 +1292,7 @@ SEXP Algorithm5(SEXP restrictTable_,
     outNS_c = 1;
     create_outNS = 0;
   } else {
-    outNS_r = outNS_i + 1;
+    outNS_r = outNS_i + 1; //FIXME: here it is keepTheseMany
     outNS_c = uniqueGenotypes.size() + 1;
     create_outNS = 1;
   }
@@ -1298,6 +1301,8 @@ SEXP Algorithm5(SEXP restrictTable_,
     reshape_to_outNS(outNS, uniqueGenotypes_vector, genot_out_ullong, 
 		     popSizes_out, 
 		     index_out, time_out);
+
+    //FIXME: keepTheseMany need to prune the uniqueGenotypes
     
   } else {
     outNS(0, 0) = -99;
