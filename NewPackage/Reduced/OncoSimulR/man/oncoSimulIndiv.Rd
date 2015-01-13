@@ -22,6 +22,7 @@
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                endTimeEvery = 5 * sampleEvery,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 verbosity = 0)
@@ -30,6 +31,7 @@
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                endTimeEvery = 5 * sampleEvery,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 verbosity = 0, mc.cores = detectCores())
@@ -121,6 +123,20 @@
   return objects are not huge.
 
 }
+
+\item{endTimeEvery}{
+  If endTimeEvery is > 0, even if conditions for finishing a simulation
+  (number of drivers or population size) are met at time \emph{t}, the
+  simulation will run at least until \emph{t + endTimeEvery} and
+  conditions will be checked again. Only if conditions for finishing a
+  simulation are still met, will the simulation end.
+
+  The reason for this parameter is to ensure that, say, a clone with a
+  certain number of drivers that would cause the simulation to end has
+  not just appeared but then gone extinct shortly after.  }
+
+
+
 \item{finalTime}{
   What is the maximum number of time units that the simulation can run.
 

@@ -105,6 +105,7 @@ oncoSimulIndiv <- function(poset,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
                            keepEvery = sampleEvery,
+                           endTimeEvery = 5 * sampleEvery,
                            finalTime = 0.25 * 25 * 365,
                            onlyCancer = TRUE,
                            max.memory = 2000,
@@ -148,11 +149,11 @@ oncoSimulIndiv <- function(poset,
         warning("With the McFarland model you often want smaller sampleEvery")
     }
     
-    if(typeFitness == "mcfarlandlog") {
-        endTimeEvery <- keepEvery
-    } else {
-        endTimeEvery <- -9
-    }
+    ## if(typeFitness == "mcfarlandlog") {
+    ##     endTimeEvery <- keepEvery
+    ## } else {
+    ##     endTimeEvery <- -9
+    ## }
 
 
 
