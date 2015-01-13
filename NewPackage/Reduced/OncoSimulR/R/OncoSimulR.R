@@ -45,12 +45,15 @@ oncoSimulPop <- function(Nindiv,
                          mu = 1e-6,
                          detectionSize = 1e8,
                          detectionDrivers = 4,
-                         sampleEvery = 1,
+                         sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                             0.025),
                          initSize = 500,
                          s = 0.1,
                          sh = -1,
                          K = initSize/(exp(1) - 1),
                          keepEvery = sampleEvery,
+                         endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                                               5 * sampleEvery),
                          finalTime = 0.25 * 25 * 365,
                          onlyCancer = TRUE,
                          max.memory = 2000,
@@ -78,6 +81,7 @@ oncoSimulPop <- function(Nindiv,
                         sh = sh,
                         K = K,
                         keepEvery = keepEvery,
+                        endTimeEvery = endTimeEvery,
                         finalTime = finalTime,
                         onlyCancer = onlyCancer,
                         max.memory = max.memory,
@@ -99,13 +103,15 @@ oncoSimulIndiv <- function(poset,
                            mu = 1e-6,
                            detectionSize = 1e8,
                            detectionDrivers = 4,
-                           sampleEvery = 1,
+                           sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                               0.025),
                            initSize = 500,
                            s = 0.1,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
                            keepEvery = sampleEvery,
-                           endTimeEvery = 5 * sampleEvery,
+                           endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                               5 * sampleEvery),
                            finalTime = 0.25 * 25 * 365,
                            onlyCancer = TRUE,
                            max.memory = 2000,
@@ -473,7 +479,7 @@ oncoSimul.internal <- function(restrict.table,
                                keepEvery = 20,
                                alpha = 0.0015,
                                K = 1000,
-                               endTimeEvery = NULL,
+                               endTimeEvery = 5 * sampleEvery,
                                finalDrivers = 1000) {
 
     if(initSize_species < 10) {
@@ -515,18 +521,18 @@ oncoSimul.internal <- function(restrict.table,
         warning("Using fitness exp with death != 1")
 
 
-    if( (is.null(endTimeEvery) || (endTimeEvery > 0)) &&
-       (typeFitness %in% c("bozic1", "exp") )) {
-        warning(paste("endTimeEvery will take a positive value. ",
-                      "This will make simulations not stop until the next ",
-                      "endTimeEvery has been reached. Thus, in simulations ",
-                      "with very fast growth, simulations can take a long ",
-                      "time to finish, or can hit the wall time limit. "))
-    }
-    if(is.null(endTimeEvery))
-        endTimeEvery <- keepEvery
-    if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
-        warning("!(endTimeEvery %% keepEvery)")
+    ## if( (is.null(endTimeEvery) || (endTimeEvery > 0)) &&
+    ##    (typeFitness %in% c("bozic1", "exp") )) {
+    ##     warning(paste("endTimeEvery will take a positive value. ",
+    ##                   "This will make simulations not stop until the next ",
+    ##                   "endTimeEvery has been reached. Thus, in simulations ",
+    ##                   "with very fast growth, simulations can take a long ",
+    ##                   "time to finish, or can hit the wall time limit. "))
+    ## }
+    ## if(is.null(endTimeEvery))
+    ##     endTimeEvery <- keepEvery
+    ## if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
+    ##     warning("!(endTimeEvery %% keepEvery)")
     ## a sanity check in restricTable, so no neg. indices for the positive deps
     neg.deps <- function(x) {
         ## checks a row of restrict.table

@@ -20,18 +20,24 @@
 \usage{
  oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
-                sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
+                sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                             0.025),
+                initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = 5 * sampleEvery,
+                endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                                               5 * sampleEvery),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 verbosity = 0)
 
  oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
-                sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
+                sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                             0.025),
+                initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = 5 * sampleEvery,
+                endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                                               5 * sampleEvery),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 verbosity = 0, mc.cores = detectCores())
@@ -133,7 +139,10 @@
 
   The reason for this parameter is to ensure that, say, a clone with a
   certain number of drivers that would cause the simulation to end has
-  not just appeared but then gone extinct shortly after.  }
+  not just appeared but then gone extinct shortly after. Beware, though,
+  that in simulations with very fast growth, setting large endTimeEvery
+  can result in the simulations taking a long time to finish or hitting
+  the wall time limit.}
 
 
 
@@ -311,7 +320,7 @@ summary(b1)
 
 plot(b1, addtot = TRUE)
 
-## McFarland; need to modify sampleEvery, but use a reasonable
+## McFarland; use a small sampleEvery, but also a reasonable
 ##   keepEvery.
 ## We also modify mutation rate to values similar to those in the
 ##   original paper.
