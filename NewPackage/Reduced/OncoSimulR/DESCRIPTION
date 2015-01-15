@@ -1,8 +1,8 @@
 Package: OncoSimulR
 Type: Package
 Title: Simulation of cancer progresion with order restrictions
-Version: 0.99.2
-Date: 2014-07-14
+Version: 1.1.1
+Date: 2015-01-13
 Author: Ramon Diaz-Uriarte. 
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for simulating and plotting cancer progression
