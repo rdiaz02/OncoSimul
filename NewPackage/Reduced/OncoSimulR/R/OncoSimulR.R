@@ -119,7 +119,11 @@ oncoSimulIndiv <- function(poset,
                            verbosity = 0
                            ) {
     call <- match.call()
-    rt <- poset.to.restrictTable(poset)
+    ## a backdoor to allow passing restrictionTables directly
+    if(inherits(poset, "restrictionTable"))
+        rt <- poset
+    else
+        rt <- poset.to.restrictTable(poset)
 
 
     numDrivers <- nrow(rt)
