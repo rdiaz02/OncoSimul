@@ -796,7 +796,7 @@ adjmat.to.restrictTable <- function(x, root = FALSE,
         else
             rt[i , 1:2] <- c(i , 0L)
     }
-    class(rt) <- "restrictTable"
+    class(rt) <- "restrictionTable"
     return(rt)
 }
 
