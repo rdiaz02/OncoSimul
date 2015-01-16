@@ -1348,14 +1348,21 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   // DP2((lastStoredSample + endTimeEvery));
   // DP2(detectionSize);
 
+  int tmp_ndr = 0;
+  int max_ndr = 0;
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     totPopSize += popParams[i].popSize;
+    tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers);
+    if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
   }
+  lastMaxDr = max_ndr;
 
-
-
-  if( currentTime >= (lastStoredSample + keepEvery) ) {
+  
+  // FIXME keepEvery
+  if (keepEvery < 0) {
+    storeThis = false;
+  } else if( currentTime >= (lastStoredSample + keepEvery) ) {
     storeThis = true;
   }
 
@@ -1423,13 +1430,33 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 	l_pop_s = popParams[i].popSize;
 	ndr_lp = tmp_ndr;
       }
-      lastMaxDr = max_ndr;
+      // lastMaxDr = max_ndr; // and this should have been out of the
+      // popParams.size() loop
     }
+    // lastMaxDr = max_ndr;
     sampleTotPopSize.push_back(totPopSize);
     sampleLargestPopSize.push_back(l_pop_s);
     sampleMaxNDr.push_back(max_ndr);
     sampleNDrLargestPop.push_back(ndr_lp);
-  } 
+  }//  else if (keepEvery < 0) {
+  //   // FIXME keepEvery
+  //   // must keep track of results to bail out
+
+  //   // FIXME counting max drivers should be done always, like counting
+  //   // totPopSize.
+    
+  //   int tmp_ndr = 0;
+  //   int max_ndr = 0;
+   
+  //   for(size_t i = 0; i < popParams.size(); ++i) {
+  //     tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers);
+  //     if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
+  //     // lastMaxDr = max_ndr;
+  //   }
+  //   lastMaxDr = max_ndr;
+  // }
+
+  
     
   
   if( !std::isfinite(totPopSize) ) {
