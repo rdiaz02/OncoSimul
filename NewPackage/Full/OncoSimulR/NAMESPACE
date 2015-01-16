@@ -1,8 +1,7 @@
 useDynLib(OncoSimulR, .registration=TRUE)
 ## useDynLib(OncoSimulR)
 
-## export("oncoSimulPop", "oncoSimulIndiv", "samplePop", "plotPoset")
-exportPattern("^[^\\.]") ## anything that does not start with a period
+export("oncoSimulPop", "oncoSimulIndiv", "samplePop", "plotPoset")
 
 S3method(plot, oncosimul)
 S3method(print, oncosimul)
