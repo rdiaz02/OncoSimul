@@ -1423,9 +1423,9 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
       genot_out.push_back(Genotypes[i]);
       popSizes_out.push_back(popParams[i].popSize);
       index_out.push_back(outNS_i);
-      
-      tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers);
-      if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
+      // I repeat the counting of drivers here.
+      tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers); 
+      // if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
       if(popParams[i].popSize > l_pop_s) {
 	l_pop_s = popParams[i].popSize;
 	ndr_lp = tmp_ndr;
