@@ -1,4 +1,4 @@
-## Copyright 2013, 2014 Ramon Diaz-Uriarte
+## Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -14,6 +14,74 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+
+oncoSimulSample <- function(Nindiv,
+                            poset,
+                            model = "Bozic",
+                            numPassengers = 30,
+                            mu = 1e-6,
+                            detectionSize = round(runif(Nindiv, 1e6, 1e8)),
+                            detectionDrivers = sample(3:round(0.75 * max(poset)),
+                                                      Nindiv, replace = TRUE),
+                            sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                                0.025),
+                            initSize = 500,
+                            s = 0.1,
+                            sh = -1,
+                            K = initSize/(exp(1) - 1),
+                            endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                                5 * sampleEvery),
+                            finalTime = 0.25 * 25 * 365,
+                            onlyCancer = TRUE,
+                            max.memory = 2000,
+                            max.wall.time = 200,
+                            verbosity  = 1,
+                            typeSample = "whole",
+                            thresholdWhole = 0.5,
+                            mc.cores = detectCores()
+                            ){
+
+    ## leaving detectionSize and detectionDrivers as they are, produces
+    ## the equivalente of uniform sampling. For last, fix a single number
+
+    if(.Platform$OS.type == "windows") {
+        if(mc.cores != 1)
+            message("You are running Windows. Setting mc.cores = 1")
+        mc.cores <- 1
+    }
+
+    
+    
+    pop <- mcMap(dummyOncoSimulIndiv,
+                 Nindiv = seq.int(Nindiv),
+                 poset = poset,
+                 model = model,
+                 numPassengers = numPassengers,
+                 mu = mu,
+                 detectionSize = detectionSize,
+                 detectionDrivers = detectionDrivers,
+                 sampleEvery = sampleEvery,
+                 initSize = initSize,
+                 s = s,
+                 sh = sh,
+                 K = K,
+                 endTimeEvery = endTimeEvery,
+                 finalTime = finalTime,
+                 max.memory = max.memory,
+                 max.wall.time = max.wall.time,
+                 verbosity = verbosity,
+                 keepEvery = -9,
+                 onlyCancer = TRUE,
+                 mc.cores = mc.cores
+                 )
+
+    ## Now, sampling code here for typeSample
+}
+
+## we leave it up to mcMap to make sure we do in fact replicate up to Nindiv
+dummyOncoSimulIndiv <- function(n, ...){
+    oncoSimulIndiv(...)
+}
 
 
 samplePop <- function(x, timeSample = "last", typeSample = "whole",
@@ -135,9 +203,10 @@ oncoSimulIndiv <- function(poset,
     if(numGenes > 64)
         stop("Largest possible number of genes is 64")
 
-    if(keepEvery < sampleEvery)
-        warning("setting keepEvery to sampleEvery")
-
+    if( (keepEvery > 0) & (keepEvery < sampleEvery)) {
+        keepEvery <- sampleEvery
+        warning("setting keepEvery <- sampleEvery")
+    }
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -179,7 +248,7 @@ oncoSimulIndiv <- function(poset,
         op <- try(oncoSimul.internal(restrict.table = rt,
                                      numGenes = numGenes,
                                      typeFitness = typeFitness,
-                                 typeCBN = typeCBN,
+                                     typeCBN = typeCBN,
                                      birth = birth,
                                      s = s,
                                      sh = sh,
@@ -497,8 +566,8 @@ oncoSimul.internal <- function(restrict.table,
     if(initSize_iter < 100) {
         warning("initSize_iter too small?")
     }
-    if(keepEvery < sampleEvery)
-        warning("setting keepEvery to sampleEvery")
+    ## if(keepEvery < sampleEvery)
+    ##     warning("setting keepEvery to sampleEvery")
     if(is.null(seed_gsl)) {## passing a null creates a random seed
         ## name is a legacy. This is really the seed for the C++ generator.
         ## Not a user modifieble argument for now, though.
