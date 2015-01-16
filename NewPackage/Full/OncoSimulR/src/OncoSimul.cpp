@@ -1359,7 +1359,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   lastMaxDr = max_ndr;
 
   
-  // FIXME keepEvery
+
   if (keepEvery < 0) {
     storeThis = false;
   } else if( currentTime >= (lastStoredSample + keepEvery) ) {
@@ -1408,12 +1408,10 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   if(simulsDone)
     storeThis = true;
 
-  // do we want to store results?
+
   if( storeThis ) {
     lastStoredSample = currentTime;
     outNS_i++;
-    int tmp_ndr = 0;
-    int max_ndr = 0;
     int ndr_lp = 0;
     double l_pop_s = 0.0;
     
@@ -1423,22 +1421,51 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
       genot_out.push_back(Genotypes[i]);
       popSizes_out.push_back(popParams[i].popSize);
       index_out.push_back(outNS_i);
-      // I repeat the counting of drivers here.
-      tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers); 
-      // if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
+      
       if(popParams[i].popSize > l_pop_s) {
 	l_pop_s = popParams[i].popSize;
-	ndr_lp = tmp_ndr;
+	ndr_lp = count_NDrivers(Genotypes[i], NumDrivers);
       }
-      // lastMaxDr = max_ndr; // and this should have been out of the
-      // popParams.size() loop
     }
-    // lastMaxDr = max_ndr;
     sampleTotPopSize.push_back(totPopSize);
     sampleLargestPopSize.push_back(l_pop_s);
     sampleMaxNDr.push_back(max_ndr);
     sampleNDrLargestPop.push_back(ndr_lp);
-  }//  else if (keepEvery < 0) {
+  } 
+
+
+  
+  // if( storeThis ) {
+  //   lastStoredSample = currentTime;
+  //   outNS_i++;
+  //   int tmp_ndr = 0;
+  //   int max_ndr = 0;
+  //   int ndr_lp = 0;
+  //   double l_pop_s = 0.0;
+    
+  //   time_out.push_back(currentTime);
+    
+  //   for(size_t i = 0; i < popParams.size(); ++i) {
+  //     genot_out.push_back(Genotypes[i]);
+  //     popSizes_out.push_back(popParams[i].popSize);
+  //     index_out.push_back(outNS_i);
+  //     // I have to repeat the counting of drivers here.
+  //     tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers); 
+  //     if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
+  //     if(popParams[i].popSize > l_pop_s) {
+  // 	l_pop_s = popParams[i].popSize;
+  // 	ndr_lp = tmp_ndr;
+  // 	// ndr_lp = count_NDrivers(Genotypes[i], NumDrivers); 
+  //     }
+  //     // lastMaxDr = max_ndr; // and this should have been out of the
+  //     // popParams.size() loop
+  //   }
+  //   // lastMaxDr = max_ndr;
+  //   sampleTotPopSize.push_back(totPopSize);
+  //   sampleLargestPopSize.push_back(l_pop_s);
+  //   sampleMaxNDr.push_back(max_ndr);
+  //   sampleNDrLargestPop.push_back(ndr_lp);
+  // }//  else if (keepEvery < 0) {
   //   // FIXME keepEvery
   //   // must keep track of results to bail out
 
@@ -2073,7 +2100,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   while(!simulsDone) {
     iter++;
-    if(verbosity) {
+    if(verbosity > 1) {
       if(! (iter % iterL) ) {
 	Rcpp::Rcout << "\n\n    ... iteration " << iter;
 	Rcpp::Rcout << "\n    ... currentTime " << currentTime <<"\n";

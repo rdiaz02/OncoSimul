@@ -18,7 +18,7 @@
 oncoSimulSample <- function(Nindiv,
                             poset,
                             model = "Bozic",
-                            numPassengers = 30,
+                            numPassengers = 0,
                             mu = 1e-6,
                             detectionSize = round(runif(Nindiv, 1e6, 1e8)),
                             detectionDrivers = sample(3:round(0.75 * max(poset)),
@@ -54,7 +54,7 @@ oncoSimulSample <- function(Nindiv,
     
     pop <- mcMap(dummyOncoSimulIndiv,
                  Nindiv = seq.int(Nindiv),
-                 poset = poset,
+                 poset = list(poset),
                  model = model,
                  numPassengers = numPassengers,
                  mu = mu,
@@ -75,11 +75,13 @@ oncoSimulSample <- function(Nindiv,
                  mc.cores = mc.cores
                  )
 
+    class(pop) <- "oncosimulpop"
+    attributes(pop)$call <- match.call()
     ## Now, sampling code here for typeSample
 }
 
 ## we leave it up to mcMap to make sure we do in fact replicate up to Nindiv
-dummyOncoSimulIndiv <- function(n, ...){
+dummyOncoSimulIndiv <- function(Nindiv, ...){
     oncoSimulIndiv(...)
 }
 
