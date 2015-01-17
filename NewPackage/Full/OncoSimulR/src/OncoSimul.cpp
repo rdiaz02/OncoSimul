@@ -1659,6 +1659,12 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
     }
     if( popParams[i].popSize <=  0.0 ) {
       // this i has never been non-zero in any sampling time
+      // eh??
+
+      // If it is 0 here, remove from _current_ population. Anything that
+      // has had a non-zero size at sampling time is preserved (if it
+      // needs to be preserved, because it is keepEvery time).
+
       // sp_to_remove[0]++;
       sp_to_remove.push_back(i);
       // sp_to_remove[sp_to_remove[0]] = i;
@@ -1833,7 +1839,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   int numMutablePosParent = 0;
   int mutatedPos = 0;
   //int indexMutatedPos = 0;
-  int outNS_i = 0; // the column in the outNS
+  int outNS_i = -1; // the column in the outNS
   unsigned int sp = 0;
   //int type_resize = 0;
 
@@ -2079,20 +2085,28 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   popParams[0].pv = mapTimes.insert(std::make_pair(-999, 0));
 
-  genot_out.push_back(Genotypes[0]);
-  popSizes_out.push_back(popParams[0].popSize);
-  index_out.push_back(outNS_i);
-  uniqueGenotypes.insert(Genotypes[0].to_ullong());
-  time_out.push_back(currentTime);
+  if( keepEvery > 0 ) {
+    // We keep the first ONLY if we are storing more than one.
+    outNS_i++;
+    time_out.push_back(currentTime);
+    
+    genot_out.push_back(Genotypes[0]);
+    popSizes_out.push_back(popParams[0].popSize);
+    index_out.push_back(outNS_i);
 
+    sampleTotPopSize.push_back(popParams[0].popSize);
+    sampleLargestPopSize.push_back(popParams[0].popSize);
+    sampleMaxNDr.push_back(count_NDrivers(Genotypes[0], numDrivers));
+    sampleNDrLargestPop.push_back(sampleMaxNDr[0]);
+  }
+  // FIXME: why next line and not just genot_out.push_back(Genotypes[i]);
+  // if keepEvery > 0? We do that already.
+  // It is just ugly to get a 0 in that first genotype when keepEvery < 0
+  // uniqueGenotypes.insert(Genotypes[0].to_ullong());
   timeNextPopSample = currentTime + sampleEvery;
   numSpecies = 1;
 
-  sampleTotPopSize.push_back(popParams[0].popSize);
-  sampleLargestPopSize.push_back(popParams[0].popSize);
-  sampleMaxNDr.push_back(count_NDrivers(Genotypes[0], numDrivers));
-  sampleNDrLargestPop.push_back(sampleMaxNDr[0]);
-
+  
 #ifdef DEBUGV
   Rcpp::Rcout << "\n the initial species\n";
   print_spP(popParams[0]);
@@ -2230,7 +2244,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       // Need this, o.w. would skip a sampling.
       timeNextPopSample = currentTime;
     } 
-    
+
     
     // ******************** 5.3 and do we sample? *********** 
     // Find minimum to know if we need to sample the whole pop
@@ -2270,7 +2284,6 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	//}
 #endif
       }      
-      
       // Check also for numSpecies, and force sampling if needed
       // This is very different from the other algos, as we do not yet 
       // now total number of different species
@@ -2616,6 +2629,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 		 // Named("ti_e3") = ti_e3,
 		 Named("TotalPresentDrivers") = totalPresentDrivers,
 		 Named("CountByDriver") = countByDriver,
+		 // FIXME: OccurringDrivers underestimates true occurring
+		 // drivers if keepEvery < 0, so we only return the last.
 		 Named("OccurringDrivers") = occurringDrivers,
 		 Named("PerSampleStats") = perSampleStats,
 		 Named("other") = List::create(Named("errorMF") = 
