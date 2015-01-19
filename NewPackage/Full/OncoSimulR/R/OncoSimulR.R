@@ -1061,5 +1061,34 @@ posetToGraph <- function(x, names,
 
 
 
+## simulate from generative model. This might not be fully correct!!!
 
+simposet <- function(poset, p) {
+    ## if (length(parent.nodes) != length (child.nodes)){
+    ##     print("An Error Occurred")
+    ## }
+    ##    else {
+    num.genes <- max(poset) - 1 ## as root is not a gene
+    genotype <-t(c(1, rep(NA, num.genes)))
+    colnames(genotype) <- as.character(0:num.genes)
+    
+    
+    poset$runif <- runif(nrow(poset))
+    ## this.relation.prob.OK could be done outside, but having it inside
+    ## the loop would allow to use different thresholds for different
+    ## relationships
+    for (i in (1:nrow(poset))) {
+        child <- poset[i, 2]
+        this.relation.prob.OK <- as.numeric(poset[i, "runif"] > p)
+        the.parent <- genotype[ poset[i, 1] ] ## it's the value of parent in genotype. 
+        if (is.na(genotype[child])){
+            genotype[child] <- this.relation.prob.OK * the.parent  
+        }
+        else
+            genotype[child] <- genotype[child]*(this.relation.prob.OK * the.parent)
+    }
+    ##    }
+    
+    return(genotype)
+}
 
