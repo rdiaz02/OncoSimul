@@ -1684,6 +1684,7 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
 }
 
 
+
 static void precissionLoss(){
   // We are storing population sizes as doubles.
   // Should not loose any precission up to 2^53 - 1
