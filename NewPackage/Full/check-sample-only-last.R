@@ -5,6 +5,13 @@
 ##  - launch simuls with only single sample
 ##  - work on keepTheseMany
 
+
+
+
+
+
+
+
 library(OncoSimulR)
 
 data(examplePosets)
@@ -129,6 +136,7 @@ ff <- function(seed) {
     return(list(b, bb, m, mm))
    
 }
+
 
 
 
