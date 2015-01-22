@@ -76,8 +76,11 @@ oncoSimulSample <- function(Nindiv,
     ## attributes(pop)$call <- match.call()
     ## Now, sampling code here for typeSample
 
-    return(samplePop(pop, typeSample = typeSample,
-                     thresholdWhole = thresholdWhole))
+    return(list(
+        popSummary = summary(pop),
+        popSample = samplePop(pop, typeSample = typeSample,
+                  thresholdWhole = thresholdWhole)
+    ))
 }
 
 ## we leave it up to mcMap to make sure we do in fact replicate up to Nindiv
