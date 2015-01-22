@@ -29,7 +29,8 @@ oncoSimulSample <- function(Nindiv,
                             s = 0.1,
                             sh = -1,
                             K = initSize/(exp(1) - 1),
-                            endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                            endTimeEvery = ifelse(model %in% c("Bozic", "Exp"),
+                                -9,
                                 5 * sampleEvery),
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
@@ -40,44 +41,43 @@ oncoSimulSample <- function(Nindiv,
                             thresholdWhole = 0.5,
                             mc.cores = detectCores()
                             ){
-
     ## leaving detectionSize and detectionDrivers as they are, produces
     ## the equivalente of uniform sampling. For last, fix a single number
-
     if(.Platform$OS.type == "windows") {
         if(mc.cores != 1)
             message("You are running Windows. Setting mc.cores = 1")
         mc.cores <- 1
     }
-
     
-    
-    pop <- mcMap(dummyOncoSimulIndiv,
-                 Nindiv = seq.int(Nindiv),
-                 poset = list(poset),
-                 model = model,
-                 numPassengers = numPassengers,
-                 mu = mu,
-                 detectionSize = detectionSize,
-                 detectionDrivers = detectionDrivers,
-                 sampleEvery = sampleEvery,
-                 initSize = initSize,
-                 s = s,
-                 sh = sh,
-                 K = K,
-                 endTimeEvery = endTimeEvery,
-                 finalTime = finalTime,
-                 max.memory = max.memory,
-                 max.wall.time = max.wall.time,
-                 verbosity = verbosity,
-                 keepEvery = -9,
-                 onlyCancer = TRUE,
-                 mc.cores = mc.cores
-                 )
+    pop <- parallel::mcMap(dummyOncoSimulIndiv,
+                           Nindiv = seq.int(Nindiv),
+                           poset = list(poset),
+                           model = model,
+                           numPassengers = numPassengers,
+                           mu = mu,
+                           detectionSize = detectionSize,
+                           detectionDrivers = detectionDrivers,
+                           sampleEvery = sampleEvery,
+                           initSize = initSize,
+                           s = s,
+                           sh = sh,
+                           K = K,
+                           endTimeEvery = endTimeEvery,
+                           finalTime = finalTime,
+                           max.memory = max.memory,
+                           max.wall.time = max.wall.time,
+                           verbosity = verbosity,
+                           keepEvery = -9,
+                           onlyCancer = TRUE,
+                           mc.cores = mc.cores
+                           )
 
     class(pop) <- "oncosimulpop"
-    attributes(pop)$call <- match.call()
+    ## attributes(pop)$call <- match.call()
     ## Now, sampling code here for typeSample
+
+    return(samplePop(pop, typeSample = typeSample,
+                     thresholdWhole = thresholdWhole))
 }
 
 ## we leave it up to mcMap to make sure we do in fact replicate up to Nindiv
