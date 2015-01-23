@@ -207,8 +207,8 @@
 //       ( std::ostringstream() << std::dec << x ) ).str()
 
 // #define DEBUGZ
-// #define DEBUGV
-// #define DEBUGW
+//#define DEBUGV
+//#define DEBUGW
 
 #ifdef DEBUGW
 #define ASSERT(x) {							\
