@@ -18,4 +18,4 @@ Suggests: BiocStyle, knitr, Oncotree,
     testthat
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-SystemRequirements: C++11
+#SystemRequirements: C++11

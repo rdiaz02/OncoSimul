@@ -203,7 +203,7 @@
 
 
 // From http://stackoverflow.com/a/5590404
-// #define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+// #define SSTR(x) dynamic_cast< std::ostringstream & >(           \
 //       ( std::ostringstream() << std::dec << x ) ).str()
 
 // #define DEBUGZ
@@ -526,7 +526,7 @@ static double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	  spP.W + spP.R + 2.0 * spP.death;
 	double ti2 = invspr * log(numerator2/denominator2);
 
-	if(abs(ti - ti2) > 1e-5) {
+	if(std::abs(ti - ti2) > 1e-5) {
 	  DP2(ti);
 	  DP2(ti2);
 	  DP2(numerator);
@@ -880,8 +880,8 @@ static void computeMcFarlandError(double& e1,
 				  double& tps_1,
 				  const std::string typeFitness,
 				  const double& totPopSize,
-				  const double& K,
-				  const double& initSize) {
+				  const double& K){
+  //				  const double& initSize) {
   // static double tps_0 = initSize;
   // static double tps_1 = 0.0;
 
@@ -891,7 +891,7 @@ static void computeMcFarlandError(double& e1,
     double etmp;
     tps_1 = totPopSize;
     if(typeFitness == "mcfarland")
-      etmp = abs( tps_1 - (tps_0 + 1) );
+      etmp = std::abs( tps_1 - (tps_0 + 1) );
     else {
       if( (tps_0 + 1.0) > tps_1 ) 
 	etmp = (K + tps_0 + 1.0)/(K + tps_1);
@@ -1024,7 +1024,7 @@ static void fitness(spParamsP& tmpP,
 		    const Genotype64& newGenotype,
 		    const double& birthRate, 
 		    const double& s,
-		    const double& death,
+		    // const double& death,
 		    const int& numDrivers,
 		    const std::string typeFitness,
 		    const double& genTime,
@@ -1184,12 +1184,12 @@ static void fitness(spParamsP& tmpP,
 
 
 // limited benchmarks suggest the following is slower
-static inline void new_sp_bitset2(unsigned int& sp, const Genotype64& newGenotype,
-			   const std::vector<Genotype64>& Genotypes) {
-  sp = std::distance(Genotypes.begin(),
-		     std::find(Genotypes.begin(), 
-			       Genotypes.end(), newGenotype));
-}
+// static inline void new_sp_bitset2(unsigned int& sp, const Genotype64& newGenotype,
+// 			   const std::vector<Genotype64>& Genotypes) {
+//   sp = std::distance(Genotypes.begin(),
+// 		     std::find(Genotypes.begin(), 
+// 			       Genotypes.end(), newGenotype));
+// }
 
 
 static inline void new_sp_bitset(unsigned int& sp, const Genotype64& newGenotype,
@@ -1617,6 +1617,7 @@ static inline void whichDrivers(int& totalPresentDrivers,
 
 static void sample_all_pop_P(std::vector<int>& sp_to_remove,
 			     std::vector<spParamsP>& popParams,
+			     // next only used with DEBUGV
 			     const std::vector<Genotype64>& Genotypes,
 			     const double& tSample){
 
@@ -2020,7 +2021,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
     if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
 	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
       fitness(popParams[0], tmpParam, initMutant, restrictTable,
-	      typeCBN, Genotypes[0], birthRate, s, death, numDrivers, 
+	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
 	      typeFitness, genTime, adjust_fitness_B, sh,
 	      adjust_fitness_MF);
     // we pass as the parent the tmpParam; it better initialize
@@ -2332,7 +2333,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
 	fitness(tmpParam, popParams[nextMutant], mutatedPos, 
 		restrictTable,
-		typeCBN, newGenotype, birthRate, s, death,
+		typeCBN, newGenotype, birthRate, s,
 		numDrivers, typeFitness, genTime,
 		adjust_fitness_B, sh, adjust_fitness_MF);
 	
@@ -2460,7 +2461,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       }
       
       computeMcFarlandError(e1, n_0, n_1, tps_0, tps_1, 
-			    typeFitness, totPopSize, K, initSize);
+			    typeFitness, totPopSize, K); //, initSize);
 
       // Largest error in McFarlands' method
       // if( (typeFitness == "mcfarland0") ||
