@@ -2529,7 +2529,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // FIXME: do I want to move this right after out_crude
   // and do it incrementally? I'd have also a counter of total unique species
 
-
+  here("right after simuls done");
 
   // FIXME: all this is ugly and could be a single function
   // up to call to IntegerMatrix
@@ -2577,6 +2577,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
     outNS(0, 0) = -99;
   }
 
+  here("before count_NumDrivers");
   // IntegerVector totDrivers(returnGenotypes.ncol());
   // count_NumDrivers(maxNumDrivers, returnGenotypes, numDrivers,
   // 		   totDrivers);
@@ -2604,7 +2605,16 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // if(typeFitness == "mcfarland")
   //   e1r = (1.0/K) * e1;
 
-  
+  here("before return");
+
+  // debuggin: precompute things
+  DP2(outNS_i);
+  DP2( sampleMaxNDr[outNS_i]);
+  DP2(sampleNDrLargestPop[outNS_i]);
+  DP2(sampleLargestPopSize[outNS_i]);
+  DP2(sampleLargestPopProp[outNS_i]);
+  DP2((runningWallTime > maxWallTime));
+  here("after precomp");
   return 
     List::create(Named("pops.by.time") = outNS,
 		 Named("NumClones") = uniqueGenotypes.size(), 
