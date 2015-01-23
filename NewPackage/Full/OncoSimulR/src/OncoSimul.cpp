@@ -2526,6 +2526,34 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       forceSample = false;
     }
   }
+  // If we hit wallTime, we can get done without going through
+  // totPopSize.... Problem if sampling at end
+  if ( outNS_i == -1 ) {
+    here("entering outNS_i == -1"); // debug
+    totPopSize_and_fill_out_crude_P(outNS_i, totPopSize, 
+				    lastStoredSample,
+				    genot_out, 
+				    //sp_id_out,
+				    popSizes_out, index_out,
+				    time_out, 
+				    sampleTotPopSize,sampleLargestPopSize,
+				    sampleMaxNDr, sampleNDrLargestPop,
+				    simulsDone,
+				    lastMaxDr,
+				    done_at,
+				    Genotypes, popParams, 
+				    currentTime,
+				    numDrivers,
+				    keepEvery,
+				    detectionSize,
+				    finalTime,
+				    endTimeEvery,
+				    finalDrivers,
+				    verbosity); //keepEvery is for thinning
+  }
+    
+
+  
   // FIXME: do I want to move this right after out_crude
   // and do it incrementally? I'd have also a counter of total unique species
 
@@ -2608,6 +2636,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   here("before return");
 
   // debuggin: precompute things
+  DP2(simulsDone);
+  DP2(maxWallTime);
   DP2(outNS_i);
   DP2( sampleMaxNDr[outNS_i]);
   DP2(sampleNDrLargestPop[outNS_i]);
