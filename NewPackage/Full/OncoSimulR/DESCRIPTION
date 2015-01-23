@@ -18,9 +18,4 @@ Suggests: BiocStyle, knitr, Oncotree,
     testthat
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-<<<<<<< HEAD
-#SystemRequirements: C++11
-=======
 # SystemRequirements: C++11
-
->>>>>>> user my Makefile and undebug
