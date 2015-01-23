@@ -1823,7 +1823,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // time limits
   time_t start_time = time(NULL);
   double runningWallTime = 0;
-  //int hittedWallTime = 0;
+  bool  hittedWallTime = false;
 
   bool forceSample = false;
   bool simulsDone = false;
@@ -2115,6 +2115,14 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 #endif
 
   while(!simulsDone) {
+    // Check how we are doing with time as first thing.
+    runningWallTime = difftime(time(NULL), start_time);
+    if( runningWallTime > maxWallTime ) {
+      hittedWallTime = true;
+      forceSample = true;
+      simulsDone = true;
+    }
+    
     iter++;
     if(verbosity > 1) {
       if(! (iter % iterL) ) {
@@ -2300,11 +2308,15 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	  numSpecies << " at iteration " << iter << "\n";
 #endif
       }
-      runningWallTime = difftime(time(NULL), start_time);
-      if( runningWallTime > maxWallTime ) {
-	forceSample = true;
-	simulsDone = true;
-      }
+      // Why are these lines here instead of somewhere else?
+      // Right before the if for sampling or not?
+      // FIXME
+      // runningWallTime = difftime(time(NULL), start_time);
+      // if( runningWallTime > maxWallTime ) {
+      // 	hittedWalllTime = true;
+      // 	forceSample = true;
+      // 	simulsDone = true;
+      // }
 
       // ************   5.5   ***************
       getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
@@ -2528,36 +2540,17 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   }
   // If we hit wallTime, we can get done without going through
   // totPopSize.... Problem if sampling at end
-  if ( outNS_i == -1 ) {
-    here("entering outNS_i == -1"); // debug
-    totPopSize_and_fill_out_crude_P(outNS_i, totPopSize, 
-				    lastStoredSample,
-				    genot_out, 
-				    //sp_id_out,
-				    popSizes_out, index_out,
-				    time_out, 
-				    sampleTotPopSize,sampleLargestPopSize,
-				    sampleMaxNDr, sampleNDrLargestPop,
-				    simulsDone,
-				    lastMaxDr,
-				    done_at,
-				    Genotypes, popParams, 
-				    currentTime,
-				    numDrivers,
-				    keepEvery,
-				    detectionSize,
-				    finalTime,
-				    endTimeEvery,
-				    finalDrivers,
-				    verbosity); //keepEvery is for thinning
-  }
+  // if ( hittedWallTime ) {
+  //   // hitted wall time. So we need to sample at the very end.
+  // Nope! Just ensure if hittedWallTime you always sample properly!
+  // }
     
 
   
   // FIXME: do I want to move this right after out_crude
   // and do it incrementally? I'd have also a counter of total unique species
 
-  here("right after simuls done");
+  // here("right after simuls done");
 
   // FIXME: all this is ugly and could be a single function
   // up to call to IntegerMatrix
@@ -2605,7 +2598,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
     outNS(0, 0) = -99;
   }
 
-  here("before count_NumDrivers");
+  // here("before count_NumDrivers");
   // IntegerVector totDrivers(returnGenotypes.ncol());
   // count_NumDrivers(maxNumDrivers, returnGenotypes, numDrivers,
   // 		   totDrivers);
@@ -2633,18 +2626,20 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // if(typeFitness == "mcfarland")
   //   e1r = (1.0/K) * e1;
 
-  here("before return");
+  // here("before return");
 
-  // debuggin: precompute things
-  DP2(simulsDone);
-  DP2(maxWallTime);
-  DP2(outNS_i);
-  DP2( sampleMaxNDr[outNS_i]);
-  DP2(sampleNDrLargestPop[outNS_i]);
-  DP2(sampleLargestPopSize[outNS_i]);
-  DP2(sampleLargestPopProp[outNS_i]);
-  DP2((runningWallTime > maxWallTime));
-  here("after precomp");
+  // // // debuggin: precompute things
+  // DP2(simulsDone);
+  // DP2(maxWallTime);
+  // DP2(hittedWallTime);
+  // DP2(outNS_i);
+  // DP2( sampleMaxNDr[outNS_i]);
+  // DP2(sampleNDrLargestPop[outNS_i]);
+  // DP2(sampleLargestPopSize[outNS_i]);
+  // DP2(sampleLargestPopProp[outNS_i]);
+  // DP2((runningWallTime > maxWallTime));
+  // here("after precomp");
+  // here("*******************************************");
   return 
     List::create(Named("pops.by.time") = outNS,
 		 Named("NumClones") = uniqueGenotypes.size(), 
@@ -2664,7 +2659,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 		 Named("FinalTime") = currentTime,
 		 Named("NumIter") = iter,
 		 //		 Named("outi") = outNS_i + 1, // silly. Use the real number of samples. FIXME
-		 Named("HittedWallTime") = (runningWallTime > maxWallTime),
+		 Named("HittedWallTime") = hittedWallTime, // (runningWallTime > maxWallTime),
 		 // Named("iRunningWallTime") = runningWallTime,
 		 // Named("oRunningWallTime") = difftime(time(NULL), start_time),
 		 // Named("ti_dbl_min") = ti_dbl_min,
