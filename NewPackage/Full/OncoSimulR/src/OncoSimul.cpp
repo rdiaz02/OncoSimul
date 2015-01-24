@@ -245,6 +245,15 @@
 #define DP(x);
 #endif
 
+// To track if mutation is really much smaller than birth/death
+#define MIN_RATIO_MUTS
+#ifdef MIN_RATIO_MUTS
+// There is really no need for these to be globals?
+// Unless I wanted to use them inside some function. So leave as globals.
+double g_min_birth_mut_ratio = DBL_MAX;
+double g_min_death_mut_ratio = DBL_MAX;
+double g_tmp1 = DBL_MAX;
+#endif
 
 // Memory limits, from
 // https://marylou.byu.edu/wiki/How+do+I+limit+the+amount+of+memory+that+my+program+uses%3F
@@ -1959,6 +1968,13 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   // 5.1 Initialize 
 
+#ifdef MIN_RATIO_MUTS
+  g_min_birth_mut_ratio = DBL_MAX;
+  g_min_death_mut_ratio = DBL_MAX;
+  g_tmp1 = DBL_MAX;
+#endif
+
+  
   //tmpParam is a temporary holder. 
   init_tmpP(tmpParam);
   init_tmpP(popParams[0]);
@@ -2368,6 +2384,13 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	  popParams.push_back(tmpParam);
 	  Genotypes.push_back(newGenotype);
 	  to_update = 2;
+#ifdef MIN_RATIO_MUTS
+	  g_tmp1 = tmpParam.birth/tmpParam.mutation;
+	  if(g_tmp1 < g_min_birth_mut_ratio) g_min_birth_mut_ratio = g_tmp1;
+	  
+	  g_tmp1 = tmpParam.death/tmpParam.mutation;
+	  if(g_tmp1 < g_min_death_mut_ratio) g_min_death_mut_ratio = g_tmp1;	
+#endif	  
 	} else {// fitness is 0, so we do not add it
 	  --sp;
 	  --numSpecies;
@@ -2388,7 +2411,6 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	  print_spP(tmpParam);
 	}
 	//#endif
-
       } else {	// A mutation to pre-existing species
 #ifdef DEBUGW
 	if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0)
@@ -2534,7 +2556,19 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	updateRatesMcFarlandLog(popParams, adjust_fitness_MF,
 			     K, totPopSize);
       }
-
+      
+#ifdef MIN_RATIO_MUTS
+      // could go inside sample_all_pop but here we are sure death, etc, current
+      // But I catch them when they are created. Is this really needed?
+      for(size_t i = 0; i < popParams.size(); i++) {
+	g_tmp1 = popParams[i].birth/popParams[i].mutation;
+	if(g_tmp1 < g_min_birth_mut_ratio) g_min_birth_mut_ratio = g_tmp1;
+	
+	g_tmp1 = popParams[i].death/popParams[i].mutation;
+	if(g_tmp1 < g_min_death_mut_ratio) g_min_death_mut_ratio = g_tmp1;
+      }
+#endif
+      
       forceSample = false;
     }
   }
@@ -2675,6 +2709,15 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 							 typeFitness),
 					       Named("errorMF_size") = e1,
 					       Named("errorMF_n_0") = n_0,
+#ifdef MIN_RATIO_MUTS
+					       Named("minDMratio") =
+					       g_min_death_mut_ratio,
+					       Named("minBMratio") =
+					       g_min_birth_mut_ratio,      
+#else
+					       Named("minDMratio") = -99,
+					       Named("minBMratio") = -99,
+#endif
 					       Named("errorMF_n_1") = n_1)
 		 );
 

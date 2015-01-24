@@ -320,7 +320,11 @@ summary.oncosimul <- function(object, ...) {
                     "NumDriversLargestPop", "TotalPresentDrivers",
                     "FinalTime", "NumIter", "HittedWallTime")]
     tmp$errorMF <- object$other$errorMF
+    tmp$minDMratio <- object$other$minDMratio
+    tmp$minBMratio <- object$other$minBMratio
     if(tmp$errorMF == -99) tmp$errorMF <- NA
+    if(tmp$minDMratio == -99) tmp$minDMratio <- NA
+    if(tmp$minBMratio == -99) tmp$minBMratio <- NA
     tmp$OccurringDrivers <- object$OccurringDrivers
     return(as.data.frame(tmp))
 }
@@ -564,7 +568,9 @@ oncoSimul.internal <- function(restrict.table,
                                finalDrivers = 1000) {
   ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
-
+    if(mu < 0) {
+        stop("mutation rate (mu) is negative")
+    }
     if(initSize_species < 10) {
         warning("initSize_species too small?")
     }
