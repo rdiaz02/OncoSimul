@@ -1735,6 +1735,61 @@ static void init_tmpP(spParamsP& tmpParam) {
   tmpParam.numMutablePos = -999999;
 }
 
+static void innerBNB(int numRuns,
+		     double& totPopSize,
+		     std::vector<Genotype64>& genot_out,
+		     std::vector<double>& popSizes_out,
+		     std::vector<int>& index_out,
+		     std::vector<double>& time_out) {
+  if(numRuns > 0) {
+    genot_out.clear();
+    popSizes_out.clear();
+    index_out.clear();
+    time_out.clear();
+    totPopSize = 0;
+  }
+
+  bool forceSample = false;
+  bool simulsDone = false;
+  double lastStoredSample;
+  int numRuns = 0;
+
+  double minNextMutationTime;
+  double mutantTimeSinceLastUpdate;
+  double currentTime = 0.0;
+  double timeNextPopSample;
+  double tSample;
+
+  int nextMutant;
+  unsigned int numSpecies = 0;
+  int iter = 0;
+  int numMutablePosParent = 0;
+  int mutatedPos = 0;
+  //int indexMutatedPos = 0;
+  int outNS_i = -1; // the column in the outNS
+  unsigned int sp = 0;
+  //int type_resize = 0;
+
+  int iterL = 1000;
+  int speciesL = 1000; 
+  //int timeL = 1000;
+  
+  double tmpdouble1 = 0.0;
+  double tmpdouble2 = 0.0;
+  
+  std::vector<int>sp_to_remove(1);
+  sp_to_remove.reserve(10000);
+
+  // those to update
+  int to_update = 1; //1: one species; 2: 2 species; 3: all.
+  int u_1 = -99;
+  int u_2 = -99;
+
+  Genotype64 newGenotype;
+
+  
+  
+}
 
 SEXP BNB_Algo5(SEXP restrictTable_,
 		 SEXP numDrivers_,
@@ -1820,84 +1875,54 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   const int finalDrivers = as<int>(finalDrivers_); 
 
 
-  double lastStoredSample;
   const double genTime = 4.0; // should be a parameter. For Bozic only.
-  // memory limits
-// #ifndef _WIN32  
-//   if(maxram)  setmemlimit(maxram);
-// #endif
 
-  // if(maxram)  setmemlimit(maxram);
-
-  // time limits
-  time_t start_time = time(NULL);
-  double runningWallTime = 0;
-  bool  hittedWallTime = false;
-
-  bool forceSample = false;
-  bool simulsDone = false;
-
-  double totPopSize = 0;
-  double minNextMutationTime;
-  double mutantTimeSinceLastUpdate;
-  double currentTime = 0.0;
-  double timeNextPopSample;
-  double tSample;
-
-  int nextMutant;
-  unsigned int numSpecies = 0;
-  int iter = 0;
-  int numMutablePosParent = 0;
-  int mutatedPos = 0;
-  //int indexMutatedPos = 0;
-  int outNS_i = -1; // the column in the outNS
-  unsigned int sp = 0;
-  //int type_resize = 0;
-
-  int iterL = 1000;
-  int speciesL = 1000; 
-  //int timeL = 1000;
-  
-  double tmpdouble1 = 0.0;
-  double tmpdouble2 = 0.0;
-  
-  std::vector<int>sp_to_remove(1);
-  sp_to_remove.reserve(10000);
-  
+  // C++11 random number
+  std::mt19937 ran_generator(seed);
 
   // some checks. Do this systematically
   // FIXME: do only if mcfarland!
   if(K < 1 )
     throw std::range_error("K < 1.");
 
-
-
   // verify we are OK with usigned long long
   if( !(static_cast<double>(std::numeric_limits<unsigned long long>::max()) 
   	>= pow(2, 64)) )
     throw std::range_error("The size of unsigned long long is too short.");
 
-
   if(numGenes > 64)  
     throw std::range_error("This version only accepts up to 64 genes.");
 
 
+  bool runAgain = true;  
 
-  // those to update
-  int to_update = 1; //1: one species; 2: 2 species; 3: all.
-  // unsigned int u_1 = 999999999;
-  // unsigned int u_2 = 999999999;
-  int u_1 = -99;
-  int u_2 = -99;
+  //Output
+  std::vector<Genotype64> genot_out;
+  std::vector<double> popSizes_out;
+  std::vector<int> index_out; 
+  std::vector<double> time_out; //only one entry per period!
 
-  // //GSL rng
-  // gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
-  // gsl_rng_set (r, (unsigned long long) seed);
+  genot_out.reserve(initSp);
+  popSizes_out.reserve(initSp);
+  index_out.reserve(initSp);
+  time_out.reserve(initIt);
 
-  // C++11 random number
-  std::mt19937 ran_generator(seed);
+  double totPopSize = 0;
 
-  Genotype64 newGenotype;
+  
+  // Inside the inner function
+  
+
+
+  
+
+  
+  // time limits
+  time_t start_time = time(NULL);
+  double runningWallTime = 0;
+  bool  hittedWallTime = false;
+
+
   std::vector<Genotype64> Genotypes(1);
   //  std::set<Genotype64> uniqueGenotypes;
   std::set<unsigned long long> uniqueGenotypes;
@@ -1910,16 +1935,9 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
 
-  //Output
-  std::vector<Genotype64> genot_out;
-  std::vector<double> popSizes_out;
-  std::vector<int> index_out; 
-  std::vector<double> time_out; //only one entry per period!
 
-  genot_out.reserve(initSp);
-  popSizes_out.reserve(initSp);
-  index_out.reserve(initSp);
-  time_out.reserve(initIt);
+
+  
 
   // multimap to hold nextMutationTime
   std::multimap<double, int> mapTimes;
@@ -1968,12 +1986,21 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   // 5.1 Initialize 
 
+  while(runAgain) {
+
+    // Initialize a bunch of things
+    
 #ifdef MIN_RATIO_MUTS
   g_min_birth_mut_ratio = DBL_MAX;
   g_min_death_mut_ratio = DBL_MAX;
   g_tmp1 = DBL_MAX;
 #endif
 
+  
+  // untilcancer goes here
+  
+
+  
   
   //tmpParam is a temporary holder. 
   init_tmpP(tmpParam);
@@ -1988,6 +2015,11 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   e1 = 0.0;
   tps_1 = totPopSize;
 
+
+
+
+
+  
   // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
@@ -2572,6 +2604,27 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       forceSample = false;
     }
   }
+
+  // FIXME: think about the exceptions thrown
+  // they should be captured here and result in runAgain = true
+  if(anyFatalIssues) {
+    runAgain = true;
+  } else {
+    //untilcancer
+    if(onlyCancer) {
+      runAgain = !reachCancer(something);
+    } else {
+      runAgain = false;
+    }
+  }
+  
+  } // runAgain loop
+  // FIXME: zz
+  // untilcancer
+  // inner loop ends above
+  // The return objects only created if needed
+
+  
   // If we hit wallTime, we can get done without going through
   // totPopSize.... Problem if sampling at end
   // if ( hittedWallTime ) {
