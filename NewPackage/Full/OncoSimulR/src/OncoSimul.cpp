@@ -202,6 +202,7 @@
 #include <sys/time.h> 
 
 
+
 // From http://stackoverflow.com/a/5590404
 // #define SSTR(x) dynamic_cast< std::ostringstream & >(           \
 //       ( std::ostringstream() << std::dec << x ) ).str()
@@ -311,6 +312,12 @@ double g_tmp1 = DBL_MAX;
 // #endif
 
 
+// Simple custom exception for exceptions that lead to re-runs.
+class rerunException: public std::runtime_error {
+public:
+  rerunExcept(const std::string &s) :
+    std::runtime_error(s) {}
+};
 
 
 void here(std::string x) {
@@ -613,7 +620,8 @@ static double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// abort simulation and go to a new one?  FIXME
 	// Rcpp::Rcout << "ti set to DBL_MIN\n";
 	// Yes, abort because o.w. we can repeat it many, manu times
-	throw std::range_error("ti set to DBL_MIN");
+	// throw std::range_error("ti set to DBL_MIN");
+	throw ti_DBL_MIN_ex;
       }
       if(ti < 0.001) ++ti_e3;
       ti += currentTime;
@@ -937,7 +945,7 @@ static void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 				    const double& K,
 				    const double& totPopSize){
 
-  adjust_fitness_MF = log(1.0 + totPopSize/K);
+  adjust_fitness_MF = log1p(totPopSize/K);
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
@@ -956,7 +964,7 @@ static void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
 				  const int& mutatorGenotype,
 				  const double& mu){
   
-  adjust_fitness_MF = 1.0 / log(1.0 + (totPopSize/K));
+  adjust_fitness_MF = 1.0 / log1p(totPopSize/K);
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].birth = adjust_fitness_MF * popParams[i].absfitness;
@@ -1170,7 +1178,7 @@ static void fitness(spParamsP& tmpP,
 #endif
 
     } else if (typeFitness == "log") {
-      tmpP.birth = birthRate + s * log( 1 + sumDriversMet) - 
+      tmpP.birth = birthRate + s * log1p(sumDriversMet) - 
 	sh * log(1 + sumDriversNoMet);
     } else { // linear
       tmpP.birth = birthRate + s * static_cast<double>(sumDriversMet) - 
@@ -1331,6 +1339,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    std::vector<int>& sampleMaxNDr,
 					    std::vector<int>& sampleNDrLargestPop,
 					    bool& simulsDone,
+					    bool& cancerDetected,
 					    int& lastMaxDr,
 					    double& done_at,
 					    const std::vector<Genotype64>& Genotypes,
@@ -1341,8 +1350,9 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const double& detectionSize,
 					    const double& finalTime,
 					    const double& endTimeEvery,
-					    const int& finalDrivers,
-					    const int& verbosity) {
+					    const int& detectionDrivers,
+					    const int& verbosity,
+					    const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
   
@@ -1352,7 +1362,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   totPopSize = 0.0;
   
    // DP2(lastMaxDr);
-  // DP2(finalDrivers);
+  // DP2(detectionDrivers);
   // DP2(currentTime);
   // DP2((lastStoredSample + endTimeEvery));
   // DP2(detectionSize);
@@ -1381,7 +1391,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 
     // if ( ( currentTime >= (lastStoredSample + endTimeEvery) ) &&
     // 	 ( (totPopSize >= detectionSize) ||
-    // 	   (lastMaxDr >= finalDrivers) ) ) {
+    // 	   (lastMaxDr >= detectionDrivers) ) ) {
     //   simulsDone = true;
     // }
   
@@ -1395,25 +1405,29 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   // models, so we do not bail out as soon as just a single cell with one
   // new driver. But this makes things very slow.
 
-  // Thus, never pass an endTimeEvery > 0, but use finalDrivers = 1 +
+  // Thus, never pass an endTimeEvery > 0, but use detectionDrivers = 1 +
   // intended final Drivers.
   if(endTimeEvery > 0) {
     if(done_at <= 0 ) {
       if( (totPopSize >= detectionSize) ||
-	   (lastMaxDr >= finalDrivers)  )
+	   (lastMaxDr >= detectionDrivers)  )
 	done_at = currentTime + endTimeEvery;
     } else if (currentTime >= done_at) {
       if( (totPopSize >= detectionSize) ||
-	  (lastMaxDr >= finalDrivers)  )
+	  (lastMaxDr >= detectionDrivers)  )
 	simulsDone = true;
       else
 	done_at = -9;
     }
   } else if( (totPopSize >= detectionSize) ||
-	     (lastMaxDr >= finalDrivers) )  {	
+	     (lastMaxDr >= detectionDrivers) )  {	
       simulsDone = true;
+      reachDetection = true;
   }
 
+  if(totPopSize >= fatalPopSize)
+    anyFatalIssues = true;
+  
   if(simulsDone)
     storeThis = true;
 
@@ -1735,6 +1749,18 @@ static void init_tmpP(spParamsP& tmpParam) {
   tmpParam.numMutablePos = -999999;
 }
 
+static bool reachCancer(const int maxNumDrivers,
+			const int detectionDrivers,
+			const double totPopSize,
+			const double detectionSize,
+			const double maxPopSize = 1e15){
+  return(
+	 maxNum
+
+)
+}
+
+
 static void innerBNB(const int numRuns,
 		     const in numGenes,
 		     double& totPopSize,
@@ -1746,20 +1772,23 @@ static void innerBNB(const int numRuns,
 		     std::vector<double>& sampleTotPopSize,
 		     std::vector<double>& sampleLargestPopSize,
 		     std::vector<int>& sampleMaxNDr,
-		     std::vector<int>& sampleNDrLargestPop
+		     std::vector<int>& sampleNDrLargestPop,
+		     bool& cancerDetected,
+		     bool& anyFatalIssues
 		     ) {
-  if(numRuns > 0) {
-    genot_out.clear();
-    popSizes_out.clear();
-    index_out.clear();
-    time_out.clear();
-    totPopSize = 0;
-    sampleTotPopSize.clear();
-  }
-
+  //  if(numRuns > 0) {
+  genot_out.clear();
+  popSizes_out.clear();
+  index_out.clear();
+  time_out.clear();
+  totPopSize = 0;
+  sampleTotPopSize.clear();
+  // }
+  anyFatalIssues = false;
+  
   bool forceSample = false;
   bool simulsDone = false;
-  double lastStoredSample;
+  double lastStoredSample = 0.0;
 
 
   double minNextMutationTime;
@@ -1795,13 +1824,19 @@ static void innerBNB(const int numRuns,
 
   Genotype64 newGenotype;
   std::vector<Genotype64> Genotypes(1);
+  Genotypes[0].reset();
   
-  spParamsP tmpParam; 
   std::vector<spParamsP> popParams(1);
+  popParams[0].popSize = initSize;
+  totPopSize = initSize;
+  
   const int sp_per_period = 5000;
-
   popParams.reserve(sp_per_period);
   Genotypes.reserve(sp_per_period);
+  
+  spParamsP tmpParam; 
+  init_tmpP(tmpParam);
+  init_tmpP(popParams[0]);
 
   std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
 
@@ -1817,244 +1852,26 @@ static void innerBNB(const int numRuns,
   //McFarland
   double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
 
-  double tps_0, tps_1; // for McFarland error
+  // for McFarland error
   e1 = 0.0;
   n_0 = 0.0;
   n_1 = 0.0;
+  double tps_0, tps_1; 
+  tps_0 = totPopSize;
+  tps_1 = totPopSize;
+
   
   int lastMaxDr = 0;
   double done_at = -9;
-}
 
-SEXP BNB_Algo5(SEXP restrictTable_,
-		 SEXP numDrivers_,
-		 SEXP numGenes_,
-		 SEXP typeCBN_,
-		 SEXP birthRate_, 
-		 SEXP s_, 
-		 SEXP death_,
-		 SEXP mu_,
-		 SEXP initSize_,
-		 SEXP sampleEvery_,
-		 SEXP detectionSize_,
-		 SEXP finalTime_,
-		 SEXP initSize_species_,
-		 SEXP initSize_iter_,
-		 SEXP seed_gsl_,
-		 SEXP verbose_,
-		 SEXP speciesFS_,
-		 SEXP ratioForce_,
-		 SEXP typeFitness_,
-		 SEXP maxram_,
-		 SEXP mutatorGenotype_,
-		 SEXP initMutant_,
-		 SEXP maxWallTime_,
-		 SEXP keepEvery_,
-		 SEXP alpha_,
-		 SEXP sh_,
-		 SEXP K_,
-		 SEXP endTimeEvery_,
-		 SEXP finalDrivers_) {
-
-  // Based on 5O, but functions now take struct, not doubles, etc via []
-  
-  
-  BEGIN_RCPP
-    
-    using namespace Rcpp;
-
-  precissionLoss();
-
-  const IntegerMatrix restrictTable(restrictTable_);
-  const int numDrivers = as<int>(numDrivers_);
-  const int numGenes = as<int>(numGenes_);
-  const std::string typeCBN = as<std::string>(typeCBN_);
-
-  // DP2(typeCBN);
-
-  const std::string typeFitness = as<std::string>(typeFitness_);
-  // DP2(typeFitness);
-
-  // birth and death are irrelevant with Bozic
-  const double birthRate = as<double>(birthRate_);
-  const double death = as<double>(death_);
-  const double s = as<double>(s_);
-  const double mu = as<double>(mu_);
-  const double initSize = as<double>(initSize_);
-  const double sampleEvery = as<double>(sampleEvery_);
-  const double detectionSize = as<double>(detectionSize_);
-  const double finalTime = as<double>(finalTime_);
-  const int initSp = as<int>(initSize_species_);
-  const int initIt = as<int>(initSize_iter_); // FIXME: this is a misnomer
-  const int verbosity = as<int>(verbose_);
-  // const double minNonZeroMut = mu * 0.01;  // to avoid == 0.0 comparisons
-  double ratioForce = as<double>(ratioForce_); // If a single species this times
-  // detectionSize, force a sampling to prevent going too far.
-  int speciesFS = as<int>(speciesFS_); // to force sampling when too many 
-  // species
-  const int seed = as<int>(seed_gsl_);
-  const long maxram = as<int>(maxram_);
-  const int mutatorGenotype = as<int>(mutatorGenotype_);
-  const int initMutant = as<int>(initMutant_);
-
-  // DP2(initMutant);
-
-  
-  const double maxWallTime = as<double>(maxWallTime_);
-  const double keepEvery = as<double>(keepEvery_);
-  const double alpha = as<double>(alpha_);
-  const double sh = as<double>(sh_); // coeff for fitness
-  // if a driver without dependencies. Like in Datta et al., 2013.
-  const double K = as<double>(K_); //for McFarland
-  const double endTimeEvery = as<double>(endTimeEvery_); 
-  const int finalDrivers = as<int>(finalDrivers_); 
-
-
-  const double genTime = 4.0; // should be a parameter. For Bozic only.
-
-  // C++11 random number
-  std::mt19937 ran_generator(seed);
-
-  // some checks. Do this systematically
-  // FIXME: do only if mcfarland!
-  if(K < 1 )
-    throw std::range_error("K < 1.");
-
-  // verify we are OK with usigned long long
-  if( !(static_cast<double>(std::numeric_limits<unsigned long long>::max()) 
-  	>= pow(2, 64)) )
-    throw std::range_error("The size of unsigned long long is too short.");
-
-  if(numGenes > 64)  
-    throw std::range_error("This version only accepts up to 64 genes.");
-
-
-  bool runAgain = true;  
-
-  //Output
-  std::vector<Genotype64> genot_out;
-  std::vector<double> popSizes_out;
-  std::vector<int> index_out; 
-  std::vector<double> time_out; //only one entry per period!
-
-  genot_out.reserve(initSp);
-  popSizes_out.reserve(initSp);
-  index_out.reserve(initSp);
-  time_out.reserve(initIt);
-
-  double totPopSize = 0;
-
-
-
-  std::vector<double> sampleTotPopSize;
-  std::vector<double> sampleLargestPopSize;
-  std::vector<int> sampleMaxNDr; //The number of drivers in the population
-  // with the largest number of drivers; and this for each time sample
-  std::vector<int> sampleNDrLargestPop; //Number of drivers in population
-  // with largest size (at each time sample)
-  sampleTotPopSize.reserve(initIt);
-  sampleLargestPopSize.reserve(initIt);
-  sampleMaxNDr.reserve(initIt);
-  sampleNDrLargestPop.reserve(initIt);
-
-
-  // do not pass to inner; never used there
-  int maxNumDrivers = 0;
-  int totalPresentDrivers = 0;
-  std::vector<int>countByDriver(numDrivers, 0);
-  std::string occurringDrivers;
-  
-
-  
-  // Inside the inner function
-  
- 
-  // time limits
-  // FIXME think later FIXME
-  time_t start_time = time(NULL);
-  double runningWallTime = 0;
-  bool  hittedWallTime = false;
-
-  std::set<unsigned long long> uniqueGenotypes;
-
-  // spParamsP tmpParam; 
-  // std::vector<spParamsP> popParams(1);
-  // const int sp_per_period = 5000;
-
-  // popParams.reserve(sp_per_period);
-  // Genotypes.reserve(sp_per_period);
-
-  // std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
-
-
-  // // multimap to hold nextMutationTime
-  // std::multimap<double, int> mapTimes;
-  // //std::multimap<double, int>::iterator m1pos;
-
-
-  // // count troublesome tis
-  // int ti_dbl_min = 0;
-  // int ti_e3 = 0;
-
-
-  
-  // // Beerenwinkel
-  // double adjust_fitness_B = -std::numeric_limits<double>::infinity();
-  // //McFarland
-  // double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
-
-  double e1, n_0, n_1; // for McFarland error
-  // double tps_0, tps_1; // for McFarland error
-  // tps_0 = 0.0;
-  // tps_1 = 0.0;
-  e1 = 0.0;
-  n_0 = 0.0;
-  n_1 = 0.0;
-
-  // // For totPopSize_and_fill and bailing out
-  // // should be static vars inside funct,
-  // // but they keep value over calls in same R session.
-  // int lastMaxDr = 0;
-  // double done_at = -9;
-  // // totalPopSize at time t, at t-1 and the max error.
-
-  // 5.1 Initialize 
-
-  while(runAgain) {
-
-    // Initialize a bunch of things
-    
 #ifdef MIN_RATIO_MUTS
   g_min_birth_mut_ratio = DBL_MAX;
   g_min_death_mut_ratio = DBL_MAX;
   g_tmp1 = DBL_MAX;
 #endif
 
-  
-  // untilcancer goes here
-  
 
-  
-  
-  //tmpParam is a temporary holder. 
-  init_tmpP(tmpParam);
-  init_tmpP(popParams[0]);
-
-  lastStoredSample = 0.0;
-  Genotypes[0].reset();
-  popParams[0].popSize = initSize;
-  totPopSize = initSize;
-
-  tps_0 = totPopSize;
-  e1 = 0.0;
-  tps_1 = totPopSize;
-
-
-
-
-
-  
-  // This long block, from here to X1, is ugly and a mess!
+    // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
   if(initMutant >= 0) {
@@ -2074,7 +1891,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 			mutatorGenotype, mu);
     } else if(typeFitness == "mcfarland0") {
       // death equal to birth of a non-mutant.
-      popParams[0].death = log(1.0 + (totPopSize/K)); // log(2.0), except rare cases
+      popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
       if(!mutatorGenotype)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0 + s;
@@ -2085,7 +1902,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       popParams[0].death = totPopSize/K;
       popParams[0].birth = 1.0 + s;
     } else if(typeFitness == "mcfarlandlog") {
-      popParams[0].death = log(1.0 + totPopSize/K);
+      popParams[0].death = log1p(totPopSize/K);
       popParams[0].birth = 1.0 + s;
     } else if(typeFitness == "bozic1") {
       tmpParam.birth =  1.0;
@@ -2122,7 +1939,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 			currentTime, alpha, initSize, 
 			mutatorGenotype, mu);
     } else if(typeFitness == "mcfarland0") {
-      popParams[0].death = log(1.0 + (totPopSize/K));
+      popParams[0].death = log1p(totPopSize/K);
       if(!mutatorGenotype)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0;
@@ -2135,7 +1952,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       // no need to call updateRates
     } else if(typeFitness == "mcfarlandlog") {
       popParams[0].birth = 1.0;
-      popParams[0].death = log(1.0 + totPopSize/K);
+      popParams[0].death = log1p(totPopSize/K);
       // no need to call updateRates
     } else if(typeFitness == "bozic1") {
       popParams[0].birth = 1.0;
@@ -2544,6 +2361,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 				      sampleTotPopSize,sampleLargestPopSize,
 				      sampleMaxNDr, sampleNDrLargestPop,
 				      simulsDone,
+				      cancerDetected,
 				      lastMaxDr,
 				      done_at,
 				      Genotypes, popParams, 
@@ -2553,7 +2371,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 				      detectionSize,
 				      finalTime,
 				      endTimeEvery,
-				      finalDrivers,
+				      detectionDrivers,
 				      verbosity); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
@@ -2638,6 +2456,204 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       forceSample = false;
     }
   }
+}
+
+SEXP BNB_Algo5(SEXP restrictTable_,
+		 SEXP numDrivers_,
+		 SEXP numGenes_,
+		 SEXP typeCBN_,
+		 SEXP birthRate_, 
+		 SEXP s_, 
+		 SEXP death_,
+		 SEXP mu_,
+		 SEXP initSize_,
+		 SEXP sampleEvery_,
+		 SEXP detectionSize_,
+		 SEXP finalTime_,
+		 SEXP initSize_species_,
+		 SEXP initSize_iter_,
+		 SEXP seed_gsl_,
+		 SEXP verbose_,
+		 SEXP speciesFS_,
+		 SEXP ratioForce_,
+		 SEXP typeFitness_,
+		 SEXP maxram_,
+		 SEXP mutatorGenotype_,
+		 SEXP initMutant_,
+		 SEXP maxWallTime_,
+		 SEXP keepEvery_,
+		 SEXP alpha_,
+		 SEXP sh_,
+		 SEXP K_,
+		 SEXP endTimeEvery_,
+		 SEXP detectionDrivers_) {
+  BEGIN_RCPP
+    using namespace Rcpp;
+  precissionLoss();
+  const IntegerMatrix restrictTable(restrictTable_);
+  const int numDrivers = as<int>(numDrivers_);
+  const int numGenes = as<int>(numGenes_);
+  const std::string typeCBN = as<std::string>(typeCBN_);
+  const std::string typeFitness = as<std::string>(typeFitness_);
+  // birth and death are irrelevant with Bozic
+  const double birthRate = as<double>(birthRate_);
+  const double death = as<double>(death_);
+  const double s = as<double>(s_);
+  const double mu = as<double>(mu_);
+  const double initSize = as<double>(initSize_);
+  const double sampleEvery = as<double>(sampleEvery_);
+  const double detectionSize = as<double>(detectionSize_);
+  const double finalTime = as<double>(finalTime_);
+  const int initSp = as<int>(initSize_species_);
+  const int initIt = as<int>(initSize_iter_); // FIXME: this is a misnomer
+  const int verbosity = as<int>(verbose_);
+  // const double minNonZeroMut = mu * 0.01;  // to avoid == 0.0 comparisons
+  double ratioForce = as<double>(ratioForce_); // If a single species this times
+  // detectionSize, force a sampling to prevent going too far.
+  int speciesFS = as<int>(speciesFS_); // to force sampling when too many 
+  // species
+  const int seed = as<int>(seed_gsl_);
+  const long maxram = as<int>(maxram_);
+  const int mutatorGenotype = as<int>(mutatorGenotype_);
+  const int initMutant = as<int>(initMutant_);
+  const double maxWallTime = as<double>(maxWallTime_);
+  const double keepEvery = as<double>(keepEvery_);
+  const double alpha = as<double>(alpha_);
+  const double sh = as<double>(sh_); // coeff for fitness
+  // if a driver without dependencies. Like in Datta et al., 2013.
+  const double K = as<double>(K_); //for McFarland
+  const double endTimeEvery = as<double>(endTimeEvery_); 
+  const int detectionDrivers = as<int>(detectionDrivers_); 
+  const double genTime = 4.0; // should be a parameter. For Bozic only.
+  // C++11 random number
+  std::mt19937 ran_generator(seed);
+
+  // some checks. Do this systematically
+  // FIXME: do only if mcfarland!
+  if(K < 1 )
+    throw std::range_error("K < 1.");
+  // verify we are OK with usigned long long
+  if( !(static_cast<double>(std::numeric_limits<unsigned long long>::max()) 
+  	>= pow(2, 64)) )
+    throw std::range_error("The size of unsigned long long is too short.");
+  if(numGenes > 64)  
+    throw std::range_error("This version only accepts up to 64 genes.");
+
+  bool runAgain = true;
+  bool cancerDetected = false;
+  //Output
+  std::vector<Genotype64> genot_out;
+  std::vector<double> popSizes_out;
+  std::vector<int> index_out; 
+  std::vector<double> time_out; //only one entry per period!
+  genot_out.reserve(initSp);
+  popSizes_out.reserve(initSp);
+  index_out.reserve(initSp);
+  time_out.reserve(initIt);
+
+  double totPopSize = 0;
+  std::vector<double> sampleTotPopSize;
+  std::vector<double> sampleLargestPopSize;
+  std::vector<int> sampleMaxNDr; //The number of drivers in the population
+  // with the largest number of drivers; and this for each time sample
+  std::vector<int> sampleNDrLargestPop; //Number of drivers in population
+  // with largest size (at each time sample)
+  sampleTotPopSize.reserve(initIt);
+  sampleLargestPopSize.reserve(initIt);
+  sampleMaxNDr.reserve(initIt);
+  sampleNDrLargestPop.reserve(initIt);
+
+  // time limits
+  // FIXME think later FIXME
+  time_t start_time = time(NULL);
+  double runningWallTime = 0;
+  bool  hittedWallTime = false;
+
+ 
+  // spParamsP tmpParam; 
+  // std::vector<spParamsP> popParams(1);
+  // const int sp_per_period = 5000;
+
+  // popParams.reserve(sp_per_period);
+  // Genotypes.reserve(sp_per_period);
+
+  // std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
+
+
+  // // multimap to hold nextMutationTime
+  // std::multimap<double, int> mapTimes;
+  // //std::multimap<double, int>::iterator m1pos;
+
+
+  // // count troublesome tis
+  // int ti_dbl_min = 0;
+  // int ti_e3 = 0;
+
+
+  
+  // // Beerenwinkel
+  // double adjust_fitness_B = -std::numeric_limits<double>::infinity();
+  // //McFarland
+  // double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
+
+  double e1, n_0, n_1; // for McFarland error
+  // double tps_0, tps_1; // for McFarland error
+  // tps_0 = 0.0;
+  // tps_1 = 0.0;
+  e1 = 0.0;
+  n_0 = 0.0;
+  n_1 = 0.0;
+
+  // // For totPopSize_and_fill and bailing out
+  // // should be static vars inside funct,
+  // // but they keep value over calls in same R session.
+  // int lastMaxDr = 0;
+  // double done_at = -9;
+  // // totalPopSize at time t, at t-1 and the max error.
+
+  // 5.1 Initialize 
+
+  while(runAgain) {
+
+    // Initialize a bunch of things
+    
+// #ifdef MIN_RATIO_MUTS
+//   g_min_birth_mut_ratio = DBL_MAX;
+//   g_min_death_mut_ratio = DBL_MAX;
+//   g_tmp1 = DBL_MAX;
+// #endif
+
+  
+  // untilcancer goes here
+  
+
+  
+  
+  //tmpParam is a temporary holder. 
+  // init_tmpP(tmpParam);
+  // init_tmpP(popParams[0]);
+
+  // lastStoredSample = 0.0;
+  // Genotypes[0].reset();
+  // popParams[0].popSize = initSize;
+  // totPopSize = initSize;
+
+  // tps_0 = totPopSize;
+  // e1 = 0.0;
+  // tps_1 = totPopSize;
+
+
+
+    try {
+      innerBNB();
+      ++numRuns;
+    } catch (rerunException &e) {
+      Rcpp::Rcout << "\n Exception " << e.what() <<
+		  << ". Rerunning.";
+      anyFatalIssues = true;
+    }
+
+  
 
   // FIXME: think about the exceptions thrown
   // they should be captured here and result in runAgain = true
@@ -2646,7 +2662,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   } else {
     //untilcancer
     if(onlyCancer) {
-      runAgain = !reachCancer(something);
+      runAgain = !cancerDetected;
     } else {
       runAgain = false;
     }
@@ -2675,6 +2691,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   // FIXME: all this is ugly and could be a single function
   // up to call to IntegerMatrix
+  std::set<unsigned long long> uniqueGenotypes;
   std::vector<unsigned long long> genot_out_ullong(genot_out.size());
   genot_out_to_ullong(genot_out_ullong, genot_out);
   find_unique_genotypes(uniqueGenotypes, genot_out_ullong);
@@ -2718,6 +2735,12 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   } else {
     outNS(0, 0) = -99;
   }
+
+  int maxNumDrivers = 0;
+  int totalPresentDrivers = 0;
+  std::vector<int>countByDriver(numDrivers, 0);
+  std::string occurringDrivers;
+  
 
   // here("before count_NumDrivers");
   // IntegerVector totDrivers(returnGenotypes.ncol());
