@@ -1735,24 +1735,32 @@ static void init_tmpP(spParamsP& tmpParam) {
   tmpParam.numMutablePos = -999999;
 }
 
-static void innerBNB(int numRuns,
+static void innerBNB(const int numRuns,
+		     const in numGenes,
 		     double& totPopSize,
+		     double& e1, double& n_0, double& n_1,
 		     std::vector<Genotype64>& genot_out,
 		     std::vector<double>& popSizes_out,
 		     std::vector<int>& index_out,
-		     std::vector<double>& time_out) {
+		     std::vector<double>& time_out,
+		     std::vector<double>& sampleTotPopSize,
+		     std::vector<double>& sampleLargestPopSize,
+		     std::vector<int>& sampleMaxNDr,
+		     std::vector<int>& sampleNDrLargestPop
+		     ) {
   if(numRuns > 0) {
     genot_out.clear();
     popSizes_out.clear();
     index_out.clear();
     time_out.clear();
     totPopSize = 0;
+    sampleTotPopSize.clear();
   }
 
   bool forceSample = false;
   bool simulsDone = false;
   double lastStoredSample;
-  int numRuns = 0;
+
 
   double minNextMutationTime;
   double mutantTimeSinceLastUpdate;
@@ -1786,9 +1794,36 @@ static void innerBNB(int numRuns,
   int u_2 = -99;
 
   Genotype64 newGenotype;
+  std::vector<Genotype64> Genotypes(1);
+  
+  spParamsP tmpParam; 
+  std::vector<spParamsP> popParams(1);
+  const int sp_per_period = 5000;
 
+  popParams.reserve(sp_per_period);
+  Genotypes.reserve(sp_per_period);
+
+  std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
+
+    // multimap to hold nextMutationTime
+  std::multimap<double, int> mapTimes;
+  //std::multimap<double, int>::iterator m1pos;
+
+  int ti_dbl_min = 0;
+  int ti_e3 = 0;
+
+  // Beerenwinkel
+  double adjust_fitness_B = -std::numeric_limits<double>::infinity();
+  //McFarland
+  double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
+
+  double tps_0, tps_1; // for McFarland error
+  e1 = 0.0;
+  n_0 = 0.0;
+  n_1 = 0.0;
   
-  
+  int lastMaxDr = 0;
+  double done_at = -9;
 }
 
 SEXP BNB_Algo5(SEXP restrictTable_,
@@ -1909,50 +1944,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   double totPopSize = 0;
 
-  
-  // Inside the inner function
-  
 
 
-  
-
-  
-  // time limits
-  time_t start_time = time(NULL);
-  double runningWallTime = 0;
-  bool  hittedWallTime = false;
-
-
-  std::vector<Genotype64> Genotypes(1);
-  //  std::set<Genotype64> uniqueGenotypes;
-  std::set<unsigned long long> uniqueGenotypes;
-  spParamsP tmpParam; 
-  std::vector<spParamsP> popParams(1);
-  const int sp_per_period = 5000;
-
-  popParams.reserve(sp_per_period);
-  Genotypes.reserve(sp_per_period);
-
-  std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
-
-
-
-  
-
-  // multimap to hold nextMutationTime
-  std::multimap<double, int> mapTimes;
-  //std::multimap<double, int>::iterator m1pos;
-
-
-  // count troublesome tis
-  int ti_dbl_min = 0;
-  int ti_e3 = 0;
-
-  int maxNumDrivers = 0;
-  int totalPresentDrivers = 0;
-  std::vector<int>countByDriver(numDrivers, 0);
-  std::string occurringDrivers;
-  
   std::vector<double> sampleTotPopSize;
   std::vector<double> sampleLargestPopSize;
   std::vector<int> sampleMaxNDr; //The number of drivers in the population
@@ -1964,25 +1957,66 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   sampleMaxNDr.reserve(initIt);
   sampleNDrLargestPop.reserve(initIt);
 
-  
-  // Beerenwinkel
-  double adjust_fitness_B = -std::numeric_limits<double>::infinity();
-  //McFarland
-  double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
 
-  double e1, n_0, n_1, tps_0, tps_1; // for McFarland error
-  tps_0 = 0.0;
-  tps_1 = 0.0;
+  // do not pass to inner; never used there
+  int maxNumDrivers = 0;
+  int totalPresentDrivers = 0;
+  std::vector<int>countByDriver(numDrivers, 0);
+  std::string occurringDrivers;
+  
+
+  
+  // Inside the inner function
+  
+ 
+  // time limits
+  // FIXME think later FIXME
+  time_t start_time = time(NULL);
+  double runningWallTime = 0;
+  bool  hittedWallTime = false;
+
+  std::set<unsigned long long> uniqueGenotypes;
+
+  // spParamsP tmpParam; 
+  // std::vector<spParamsP> popParams(1);
+  // const int sp_per_period = 5000;
+
+  // popParams.reserve(sp_per_period);
+  // Genotypes.reserve(sp_per_period);
+
+  // std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
+
+
+  // // multimap to hold nextMutationTime
+  // std::multimap<double, int> mapTimes;
+  // //std::multimap<double, int>::iterator m1pos;
+
+
+  // // count troublesome tis
+  // int ti_dbl_min = 0;
+  // int ti_e3 = 0;
+
+
+  
+  // // Beerenwinkel
+  // double adjust_fitness_B = -std::numeric_limits<double>::infinity();
+  // //McFarland
+  // double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
+
+  double e1, n_0, n_1; // for McFarland error
+  // double tps_0, tps_1; // for McFarland error
+  // tps_0 = 0.0;
+  // tps_1 = 0.0;
   e1 = 0.0;
   n_0 = 0.0;
   n_1 = 0.0;
 
-  // For totPopSize_and_fill and bailing out
-  // should be static vars inside funct,
-  // but they keep value over calls in same R session.
-  int lastMaxDr = 0;
-  double done_at = -9;
-  // totalPopSize at time t, at t-1 and the max error.
+  // // For totPopSize_and_fill and bailing out
+  // // should be static vars inside funct,
+  // // but they keep value over calls in same R session.
+  // int lastMaxDr = 0;
+  // double done_at = -9;
+  // // totalPopSize at time t, at t-1 and the max error.
 
   // 5.1 Initialize 
 
