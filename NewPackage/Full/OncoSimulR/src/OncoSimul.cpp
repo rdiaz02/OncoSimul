@@ -1,4 +1,7 @@
-//     Copyright 2013, 2014 Ramon Diaz-Uriarte
+
+
+
+//     Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -27,7 +30,7 @@
 // where the 1:2:3:4 are a module, so if any is hit, all is hit. Allows
 // combining modules with/without monotonicity.
 
-
+// FIXME: pass restrictTable by reference?
 // FIXME: do not use "mutatorGenotype" but "mutProp" or similar.
 
 // I will use Bozic1, but do not start from init mutant
@@ -201,6 +204,9 @@
 // #include <sys/resource.h> 
 #include <sys/time.h> 
 
+// #include <exception>
+#include <stdexcept>
+
 
 
 // From http://stackoverflow.com/a/5590404
@@ -312,8 +318,9 @@ double g_tmp1 = DBL_MAX;
 // #endif
 
 
+
 // Simple custom exception for exceptions that lead to re-runs.
-class rerunException: public std::runtime_error {
+class rerunExcept: public std::runtime_error {
 public:
   rerunExcept(const std::string &s) :
     std::runtime_error(s) {}
@@ -621,7 +628,7 @@ static double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// Rcpp::Rcout << "ti set to DBL_MIN\n";
 	// Yes, abort because o.w. we can repeat it many, manu times
 	// throw std::range_error("ti set to DBL_MIN");
-	throw ti_DBL_MIN_ex;
+	throw rerunExcept("ti set to DBL_MIN");
       }
       if(ti < 0.001) ++ti_e3;
       ti += currentTime;
@@ -877,7 +884,7 @@ static double Algo3_st(const spParamsP& spP, const double& t){
 // the log version.
 static double returnMFE(double& e1,
 			const double& K,
-			const std::string typeFitness) {
+			const std::string& typeFitness) {
   if((typeFitness == "mcfarland0") || (typeFitness == "mcfarlandlog"))
     return log(e1);
   else if(typeFitness == "mcfarland")
@@ -895,7 +902,7 @@ static void computeMcFarlandError(double& e1,
 				  double& n_1,
 				  double& tps_0,
 				  double& tps_1,
-				  const std::string typeFitness,
+				  const std::string& typeFitness,
 				  const double& totPopSize,
 				  const double& K){
   //				  const double& initSize) {
@@ -1043,7 +1050,7 @@ static void fitness(spParamsP& tmpP,
 		    const double& s,
 		    // const double& death,
 		    const int& numDrivers,
-		    const std::string typeFitness,
+		    const std::string& typeFitness,
 		    const double& genTime,
 		    const double& adjust_fitness_B,
 		    const double& sh,
@@ -1339,7 +1346,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    std::vector<int>& sampleMaxNDr,
 					    std::vector<int>& sampleNDrLargestPop,
 					    bool& simulsDone,
-					    bool& cancerDetected,
+					    bool& reachDetection,
 					    int& lastMaxDr,
 					    double& done_at,
 					    const std::vector<Genotype64>& Genotypes,
@@ -1425,8 +1432,10 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
       reachDetection = true;
   }
 
-  if(totPopSize >= fatalPopSize)
-    anyFatalIssues = true;
+  if(totPopSize >= fatalPopSize) {
+    Rcpp::Rcout << "\n\totPopSize > " << fatalPopSize
+		<<". You are likely to loose precision and run into numerical issues\n";
+       }
   
   if(simulsDone)
     storeThis = true;
@@ -1749,20 +1758,26 @@ static void init_tmpP(spParamsP& tmpParam) {
   tmpParam.numMutablePos = -999999;
 }
 
-static bool reachCancer(const int maxNumDrivers,
-			const int detectionDrivers,
-			const double totPopSize,
-			const double detectionSize,
-			const double maxPopSize = 1e15){
-  return(
-	 maxNum
-
-)
-}
 
 
-static void innerBNB(const int numRuns,
-		     const in numGenes,
+static void innerBNB(//const int numRuns,
+		     const int& numGenes,
+		     const double& initSize,
+		     const double& K,
+		     const double& alpha,
+		     const std::string& typeCBN,
+		     const double& genTime,
+		     const std::string& typeFitness,
+		     const int& mutatorGenotype,
+		     const double& mu,
+		     const double& sh,
+		     const double& s,
+		     const double& death,
+		     const double& birthRate,
+		     const double& keepEvery,
+		     const double& sampleEvery,		     
+		     const int& numDrivers,
+		     const int& initMutant,
 		     double& totPopSize,
 		     double& e1, double& n_0, double& n_1,
 		     std::vector<Genotype64>& genot_out,
@@ -1773,9 +1788,10 @@ static void innerBNB(const int numRuns,
 		     std::vector<double>& sampleLargestPopSize,
 		     std::vector<int>& sampleMaxNDr,
 		     std::vector<int>& sampleNDrLargestPop,
-		     bool& cancerDetected,
-		     bool& anyFatalIssues
-		     ) {
+		     bool& reachDetection,
+		     std::mt19937& ran_generator,
+		     Rcpp::IntegerMatrix restrictTable) {
+		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
   genot_out.clear();
   popSizes_out.clear();
@@ -1784,7 +1800,7 @@ static void innerBNB(const int numRuns,
   totPopSize = 0;
   sampleTotPopSize.clear();
   // }
-  anyFatalIssues = false;
+  // anyForceRerunIssues = false;
   
   bool forceSample = false;
   bool simulsDone = false;
@@ -2361,7 +2377,7 @@ static void innerBNB(const int numRuns,
 				      sampleTotPopSize,sampleLargestPopSize,
 				      sampleMaxNDr, sampleNDrLargestPop,
 				      simulsDone,
-				      cancerDetected,
+				      reachDetection,
 				      lastMaxDr,
 				      done_at,
 				      Genotypes, popParams, 
@@ -2540,7 +2556,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
     throw std::range_error("This version only accepts up to 64 genes.");
 
   bool runAgain = true;
-  bool cancerDetected = false;
+  bool reachDetection = false;
   //Output
   std::vector<Genotype64> genot_out;
   std::vector<double> popSizes_out;
@@ -2650,19 +2666,23 @@ SEXP BNB_Algo5(SEXP restrictTable_,
     } catch (rerunException &e) {
       Rcpp::Rcout << "\n Exception " << e.what() <<
 		  << ". Rerunning.";
-      anyFatalIssues = true;
+      anyForceRerunIssues = true;
+    } catch (...) {
+      Rcpp::Rcout << "\n Unrecoverable exception. Aborting \n";
+      return
+	List::create(Named("other") =
+		     List::create(Named("UnrecoverExcept") = true));
     }
 
   
 
   // FIXME: think about the exceptions thrown
   // they should be captured here and result in runAgain = true
-  if(anyFatalIssues) {
+  if(anyForceRerunIssues) {
     runAgain = true;
   } else {
-    //untilcancer
     if(onlyCancer) {
-      runAgain = !cancerDetected;
+      runAgain = !reachDetection;
     } else {
       runAgain = false;
     }
@@ -2828,7 +2848,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 					       Named("minDMratio") = -99,
 					       Named("minBMratio") = -99,
 #endif
-					       Named("errorMF_n_1") = n_1)
+					       Named("errorMF_n_1") = n_1,
+					       Named("UnrecoverExcept") = false)
 		 );
 
   END_RCPP
