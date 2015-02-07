@@ -34,7 +34,10 @@ RcppExport SEXP BNB_Algo5(SEXP restrictTable_,
 			   SEXP sh_,
 			   SEXP K_,
 			   SEXP endTimeEvery_,
-			   SEXP finalDrivers_);
+			  SEXP detectionDrivers_,
+			  SEXP onlyCancer_,
+			  SEXP errorHitWallTime_);
+
 
 
 #endif

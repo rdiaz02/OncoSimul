@@ -1,6 +1,3 @@
-
-
-
 //     Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
 
 //     This program is free software: you can redistribute it and/or modify
@@ -209,11 +206,7 @@
 
 
 
-// From http://stackoverflow.com/a/5590404
-// #define SSTR(x) dynamic_cast< std::ostringstream & >(           \
-//       ( std::ostringstream() << std::dec << x ) ).str()
-
-// #define DEBUGZ
+//#define DEBUGZ
 //#define DEBUGV
 //#define DEBUGW
 
@@ -1760,8 +1753,7 @@ static void init_tmpP(spParamsP& tmpParam) {
 
 
 
-static void innerBNB(//const int numRuns,
-		     const int& numGenes,
+static void innerBNB(const int& numGenes,
 		     const double& initSize,
 		     const double& K,
 		     const double& alpha,
@@ -1778,8 +1770,22 @@ static void innerBNB(//const int numRuns,
 		     const double& sampleEvery,		     
 		     const int& numDrivers,
 		     const int& initMutant,
+		     const time_t& start_time,
+		     const double& maxWallTime,
+		     const double& finalTime,
+		     const double& detectionSize,
+		     const double& endTimeEvery,
+		     const int& detectionDrivers,
+		     const int& verbosity,
 		     double& totPopSize,
-		     double& e1, double& n_0, double& n_1,
+		     double& e1,
+		     double& n_0,
+		     double& n_1,
+		     double& ratioForce,
+		     double& currentTime,
+		     int& speciesFS,
+		     int& outNS_i,
+		     int& iter,
 		     std::vector<Genotype64>& genot_out,
 		     std::vector<double>& popSizes_out,
 		     std::vector<int>& index_out,
@@ -1790,6 +1796,8 @@ static void innerBNB(//const int numRuns,
 		     std::vector<int>& sampleNDrLargestPop,
 		     bool& reachDetection,
 		     std::mt19937& ran_generator,
+		     double& runningWallTime,
+		     bool& hittedWallTime,
 		     Rcpp::IntegerMatrix restrictTable) {
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
@@ -1799,6 +1807,8 @@ static void innerBNB(//const int numRuns,
   time_out.clear();
   totPopSize = 0;
   sampleTotPopSize.clear();
+  currentTime = 0.0;
+  iter = 0;
   // }
   // anyForceRerunIssues = false;
   
@@ -1809,17 +1819,15 @@ static void innerBNB(//const int numRuns,
 
   double minNextMutationTime;
   double mutantTimeSinceLastUpdate;
-  double currentTime = 0.0;
   double timeNextPopSample;
   double tSample;
 
   int nextMutant;
   unsigned int numSpecies = 0;
-  int iter = 0;
   int numMutablePosParent = 0;
   int mutatedPos = 0;
   //int indexMutatedPos = 0;
-  int outNS_i = -1; // the column in the outNS
+
   unsigned int sp = 0;
   //int type_resize = 0;
 
@@ -2475,34 +2483,38 @@ static void innerBNB(//const int numRuns,
 }
 
 SEXP BNB_Algo5(SEXP restrictTable_,
-		 SEXP numDrivers_,
-		 SEXP numGenes_,
-		 SEXP typeCBN_,
-		 SEXP birthRate_, 
-		 SEXP s_, 
-		 SEXP death_,
-		 SEXP mu_,
-		 SEXP initSize_,
-		 SEXP sampleEvery_,
-		 SEXP detectionSize_,
-		 SEXP finalTime_,
-		 SEXP initSize_species_,
-		 SEXP initSize_iter_,
-		 SEXP seed_gsl_,
-		 SEXP verbose_,
-		 SEXP speciesFS_,
-		 SEXP ratioForce_,
-		 SEXP typeFitness_,
-		 SEXP maxram_,
-		 SEXP mutatorGenotype_,
-		 SEXP initMutant_,
-		 SEXP maxWallTime_,
-		 SEXP keepEvery_,
-		 SEXP alpha_,
-		 SEXP sh_,
-		 SEXP K_,
-		 SEXP endTimeEvery_,
-		 SEXP detectionDrivers_) {
+	       SEXP numDrivers_,
+	       SEXP numGenes_,
+	       SEXP typeCBN_,
+	       SEXP birthRate_, 
+	       SEXP s_, 
+	       SEXP death_,
+	       SEXP mu_,
+	       SEXP initSize_,
+	       SEXP sampleEvery_,
+	       SEXP detectionSize_,
+	       SEXP finalTime_,
+	       SEXP initSize_species_,
+	       SEXP initSize_iter_,
+	       SEXP seed_gsl_,
+	       SEXP verbose_,
+	       SEXP speciesFS_,
+	       SEXP ratioForce_,
+	       SEXP typeFitness_,
+	       SEXP maxram_,
+	       SEXP mutatorGenotype_,
+	       SEXP initMutant_,
+	       SEXP maxWallTime_,
+	       SEXP keepEvery_,
+	       SEXP alpha_,
+	       SEXP sh_,
+	       SEXP K_,
+	       SEXP endTimeEvery_,
+	       SEXP detectionDrivers_,
+	       SEXP onlyCancer_,
+	       SEXP errorHitWallTime_) {
+	       // SEXP errorFinalTime_,
+	       // SEXP errorHitWallTime_) {
   BEGIN_RCPP
     using namespace Rcpp;
   precissionLoss();
@@ -2541,6 +2553,9 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   const double endTimeEvery = as<double>(endTimeEvery_); 
   const int detectionDrivers = as<int>(detectionDrivers_); 
   const double genTime = 4.0; // should be a parameter. For Bozic only.
+  // const bool errorFinalTime = as<bool>(errorFinalTime_);
+  const bool errorHitWallTime = as<bool>(errorHitWallTime_);
+  const bool onlyCancer = as<bool>(onlyCancer_);
   // C++11 random number
   std::mt19937 ran_generator(seed);
 
@@ -2579,6 +2594,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   sampleMaxNDr.reserve(initIt);
   sampleNDrLargestPop.reserve(initIt);
 
+
+  int outNS_i = -1; // the column in the outNS
   // time limits
   // FIXME think later FIXME
   time_t start_time = time(NULL);
@@ -2629,6 +2646,11 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   // 5.1 Initialize 
 
+  int numRuns = 0;
+  bool forceRerun = false;
+  
+  double currentTime = 0;
+  int iter = 0;
   while(runAgain) {
 
     // Initialize a bunch of things
@@ -2661,12 +2683,59 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
 
     try {
-      innerBNB();
+      innerBNB(
+	       numGenes,
+	       initSize,
+	       K,
+	       alpha,
+	       typeCBN,
+	       genTime,
+	       typeFitness,
+	       mutatorGenotype,
+	       mu,
+	       sh,
+	       s,
+	       death,
+	       birthRate,
+	       keepEvery,
+	       sampleEvery,		     
+	       numDrivers,
+	       initMutant,
+	       start_time,
+	       maxWallTime,
+	       finalTime,
+	       detectionSize,
+	       endTimeEvery,
+	       detectionDrivers,
+	       verbosity,
+	       totPopSize,
+	       e1,
+	       n_0,
+	       n_1,
+	       ratioForce,
+	       currentTime,
+	       speciesFS,
+	       outNS_i,
+	       iter,
+	       genot_out,
+	       popSizes_out,
+	       index_out,
+	       time_out,
+	       sampleTotPopSize,
+	       sampleLargestPopSize,
+	       sampleMaxNDr,
+	       sampleNDrLargestPop,
+	       reachDetection,
+	       ran_generator,
+	       runningWallTime,
+	       hittedWallTime,
+	       restrictTable);
       ++numRuns;
-    } catch (rerunException &e) {
-      Rcpp::Rcout << "\n Exception " << e.what() <<
+      forceRerun = false;
+    } catch (rerunExcept &e) {
+      Rcpp::Rcout << "\n Exception " << e.what() 
 		  << ". Rerunning.";
-      anyForceRerunIssues = true;
+      forceRerun = true;
     } catch (...) {
       Rcpp::Rcout << "\n Unrecoverable exception. Aborting \n";
       return
@@ -2676,17 +2745,25 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
   
 
-  // FIXME: think about the exceptions thrown
-  // they should be captured here and result in runAgain = true
-  if(anyForceRerunIssues) {
-    runAgain = true;
-  } else {
-    if(onlyCancer) {
-      runAgain = !reachDetection;
-    } else {
+
+    if(hittedWallTime) {
+      Rcpp::Rcout << "\n Hitted wall time. Exiting \n";
       runAgain = false;
+      if(errorHitWallTime) {
+	Rcpp::Rcout << "\n Hitting wall time is regarded an error. \n";
+	return
+	  List::create(Named("HittedWallTime") = true);
+      }
+    } else if(forceRerun) {
+      runAgain = true;
+      forceRerun = false;
+    } else {
+      if(onlyCancer) {
+	runAgain = !reachDetection;
+      } else {
+	runAgain = false;
+      }
     }
-  }
   
   } // runAgain loop
   // FIXME: zz
