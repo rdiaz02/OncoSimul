@@ -1,0 +1,6 @@
+- finish comparing with previous. Use the 
+
+check-untilcancer-branch.R
+
+but try to generate smaller files, so I can easily add to repo, and add a
+few more cases.

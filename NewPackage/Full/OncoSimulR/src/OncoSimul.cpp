@@ -207,7 +207,7 @@
 
 
 //#define DEBUGZ
-//#define DEBUGV
+#define DEBUGV
 //#define DEBUGW
 
 #ifdef DEBUGW
@@ -1408,6 +1408,11 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 
   // Thus, never pass an endTimeEvery > 0, but use detectionDrivers = 1 +
   // intended final Drivers.
+#ifdef DEBUGV
+      Rcpp::Rcout << "\n inside totPopSize: endTimeEvery " << endTimeEvery;
+#endif       
+
+  
   if(endTimeEvery > 0) {
     if(done_at <= 0 ) {
       if( (totPopSize >= detectionSize) ||
@@ -1415,8 +1420,10 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 	done_at = currentTime + endTimeEvery;
     } else if (currentTime >= done_at) {
       if( (totPopSize >= detectionSize) ||
-	  (lastMaxDr >= detectionDrivers)  )
+	  (lastMaxDr >= detectionDrivers)  ) {
 	simulsDone = true;
+	reachDetection = true;
+      }
       else
 	done_at = -9;
     }
@@ -1426,6 +1433,10 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
       reachDetection = true;
   }
 
+#ifdef DEBUGV
+      Rcpp::Rcout << "\n inside totPopSize: reachDetection = " << reachDetection;
+#endif       
+  
   if(totPopSize >= fatalPopSize) {
     Rcpp::Rcout << "\n\totPopSize > " << fatalPopSize
 		<<". You are likely to loose precision and run into numerical issues\n";
@@ -1853,10 +1864,10 @@ static void innerBNB(const int& numGenes,
   
   std::vector<spParamsP> popParams(1);
 
-      // FIXME debug
-      Rcpp::Rcout << "\n popSize[0]  at 1 ";
-      print_spP(popParams[0]);
-      // end debug
+      // // FIXME debug
+      // Rcpp::Rcout << "\n popSize[0]  at 1 ";
+      // print_spP(popParams[0]);
+      // // end debug
   
   
   const int sp_per_period = 5000;
@@ -1864,10 +1875,10 @@ static void innerBNB(const int& numGenes,
   Genotypes.reserve(sp_per_period);
 
 
-      // FIXME debug
-      Rcpp::Rcout << "\n popSize[0]  at 01 ";
-      print_spP(popParams[0]);
-      // end debug
+      // // FIXME debug
+      // Rcpp::Rcout << "\n popSize[0]  at 01 ";
+      // print_spP(popParams[0]);
+      // // end debug
 
   
   spParamsP tmpParam; 
@@ -1877,10 +1888,10 @@ static void innerBNB(const int& numGenes,
   totPopSize = initSize;
 
 
-      // FIXME debug
-      Rcpp::Rcout << "\n popSize[0]  at 10000 ";
-      print_spP(popParams[0]);
-      // end debug
+      // // FIXME debug
+      // Rcpp::Rcout << "\n popSize[0]  at 10000 ";
+      // print_spP(popParams[0]);
+      // // end debug
 
 
   
@@ -1894,10 +1905,10 @@ static void innerBNB(const int& numGenes,
   int ti_e3 = 0;
 
 
-      // FIXME debug
-      Rcpp::Rcout << "\n popSize[0]  at 10002 ";
-      print_spP(popParams[0]);
-      // end debug
+      // // FIXME debug
+      // Rcpp::Rcout << "\n popSize[0]  at 10002 ";
+      // print_spP(popParams[0]);
+      // // end debug
 
 
   
@@ -1915,10 +1926,10 @@ static void innerBNB(const int& numGenes,
   tps_1 = totPopSize;
 
 
-      // FIXME debug
-      Rcpp::Rcout << "\n popSize[0]  at 10004 ";
-      print_spP(popParams[0]);
-      // end debug
+      // // FIXME debug
+      // Rcpp::Rcout << "\n popSize[0]  at 10004 ";
+      // print_spP(popParams[0]);
+      // // end debug
 
   
   
@@ -1931,10 +1942,10 @@ static void innerBNB(const int& numGenes,
   g_tmp1 = DBL_MAX;
 #endif
 
-      // FIXME debug
-      Rcpp::Rcout << " popSize[0]  at 1b ";
-      print_spP(popParams[0]);
-      // end debug
+      // // FIXME debug
+      // Rcpp::Rcout << " popSize[0]  at 1b ";
+      // print_spP(popParams[0]);
+      // // end debug
 
     // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
@@ -2035,10 +2046,10 @@ static void innerBNB(const int& numGenes,
   }
 
 
-  // FIXME debug
-      Rcpp::Rcout << " popSize[0]  at 2 ";
-      print_spP(popParams[0]);
-      // end debug
+  // // FIXME debug
+  //     Rcpp::Rcout << " popSize[0]  at 2 ";
+  //     print_spP(popParams[0]);
+  //     // end debug
   
 
   
@@ -2052,10 +2063,10 @@ static void innerBNB(const int& numGenes,
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
-  // FIXME debug
-      Rcpp::Rcout << " popSize[0]  at 3 ";
-      print_spP(popParams[0]);
-      // end debug
+  // // FIXME debug
+  //     Rcpp::Rcout << " popSize[0]  at 3 ";
+  //     print_spP(popParams[0]);
+  //     // end debug
   
 
   // X1: end of mess of initialization block
@@ -2090,10 +2101,10 @@ static void innerBNB(const int& numGenes,
 #endif
 
 
-  // FIXME debug
-      Rcpp::Rcout << " popSize[0]  at 4 ";
-      print_spP(popParams[0]);
-      // end debug
+  // // FIXME debug
+  //     Rcpp::Rcout << " popSize[0]  at 4 ";
+  //     print_spP(popParams[0]);
+  //     // end debug
   
 
   
@@ -2132,10 +2143,10 @@ static void innerBNB(const int& numGenes,
 #endif
 
     if(iter == 1) { // handle special case of first iter
-      // FIXME debug
-      Rcpp::Rcout << " popSize[0] ";
-      print_spP(popParams[0]);
-      // end debug
+      // // FIXME debug
+      // Rcpp::Rcout << " popSize[0] ";
+      // print_spP(popParams[0]);
+      // // end debug
       tmpdouble1 = ti_nextTime_tmax_2_st(popParams[0],
 					 currentTime,
 					 tSample, 
@@ -2833,7 +2844,12 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	runAgain = false;
       }
     }
-  
+#ifdef DEBUGV
+      Rcpp::Rcout << "\n reachDetection = " << reachDetection;
+      Rcpp::Rcout << "\n forceRerun =  " << forceRerun  << "\n";
+      
+#endif
+    
   } // runAgain loop
   // FIXME: zz
   // untilcancer

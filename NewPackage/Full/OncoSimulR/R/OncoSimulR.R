@@ -29,9 +29,7 @@ oncoSimulSample <- function(Nindiv,
                             s = 0.1,
                             sh = -1,
                             K = initSize/(exp(1) - 1),
-                            endTimeEvery = ifelse(model %in% c("Bozic", "Exp"),
-                                -9,
-                                5 * sampleEvery),
+                            endTimeEvery = -9, 
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
                             max.memory = 2000,
@@ -129,8 +127,7 @@ oncoSimulPop <- function(Nindiv,
                          sh = -1,
                          K = initSize/(exp(1) - 1),
                          keepEvery = sampleEvery,
-                         endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
-                                               5 * sampleEvery),
+                         endTimeEvery = -9, 
                          finalTime = 0.25 * 25 * 365,
                          onlyCancer = TRUE,
                          max.memory = 2000,
@@ -189,8 +186,7 @@ oncoSimulIndiv <- function(poset,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
                            keepEvery = sampleEvery,
-                           endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
-                               5 * sampleEvery),
+                           endTimeEvery = -9, 
                            finalTime = 0.25 * 25 * 365,
                            onlyCancer = TRUE,
                            max.memory = 2000,
@@ -290,7 +286,12 @@ oncoSimulIndiv <- function(poset,
         ##         if(length(grep("BAIL OUT NOW", op)))
         stop("Unrecoverable error")
     }
-    
+    if(verbosity >= 2) {
+        cat("\n ... finished this run:")
+        cat("\n       Total Pop Size = ", op$TotalPopSize)
+        cat("\n       Drivers Last = ", op$MaxDriversLast)
+        cat("\n       Final Time = ", op$FinalTime, "\n")
+    }
     ##     if(!inherits(op, "try-error")) {
     ##         if(verbosity >= 2) {
     ##             cat("\n ... finished this run:")
@@ -538,16 +539,16 @@ get.mut.vector <- function(x, timeSample = "whole", typeSample = "last",
 
 
 
-
-reachCancer <- function(x, ndr = 0, detectionSize = 0,
-                        maxPopSize = 1e15) {
-    return(
-        ( ((x$TotalPopSize >= detectionSize) ||
-           (x$MaxDriversLast >= ndr)) &&
-         ## (x$ti_dbl_min == 0) && ## silly, since now impossible
-         (x$TotalPopSize < maxPopSize) ## numerical issues here
-         ))
-}
+## Now done in C++
+## reachCancer <- function(x, ndr = 0, detectionSize = 0,
+##                         maxPopSize = 1e15) {
+##     return(
+##         ( ((x$TotalPopSize >= detectionSize) ||
+##            (x$MaxDriversLast >= ndr)) &&
+##          ## (x$ti_dbl_min == 0) && ## silly, since now impossible
+##          (x$TotalPopSize < maxPopSize) ## numerical issues here
+##          ))
+## }
 
 ## oncoSimul.internal <- function(restrict.table,
 ##                                numGenes,
