@@ -1852,17 +1852,38 @@ static void innerBNB(const int& numGenes,
   Genotypes[0].reset();
   
   std::vector<spParamsP> popParams(1);
-  popParams[0].popSize = initSize;
-  totPopSize = initSize;
+
+      // FIXME debug
+      Rcpp::Rcout << "\n popSize[0]  at 1 ";
+      print_spP(popParams[0]);
+      // end debug
+  
   
   const int sp_per_period = 5000;
   popParams.reserve(sp_per_period);
   Genotypes.reserve(sp_per_period);
+
+
+      // FIXME debug
+      Rcpp::Rcout << "\n popSize[0]  at 01 ";
+      print_spP(popParams[0]);
+      // end debug
+
   
   spParamsP tmpParam; 
   init_tmpP(tmpParam);
   init_tmpP(popParams[0]);
+  popParams[0].popSize = initSize;
+  totPopSize = initSize;
 
+
+      // FIXME debug
+      Rcpp::Rcout << "\n popSize[0]  at 10000 ";
+      print_spP(popParams[0]);
+      // end debug
+
+
+  
   std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
 
     // multimap to hold nextMutationTime
@@ -1872,6 +1893,14 @@ static void innerBNB(const int& numGenes,
   int ti_dbl_min = 0;
   int ti_e3 = 0;
 
+
+      // FIXME debug
+      Rcpp::Rcout << "\n popSize[0]  at 10002 ";
+      print_spP(popParams[0]);
+      // end debug
+
+
+  
   // Beerenwinkel
   double adjust_fitness_B = -std::numeric_limits<double>::infinity();
   //McFarland
@@ -1885,6 +1914,13 @@ static void innerBNB(const int& numGenes,
   tps_0 = totPopSize;
   tps_1 = totPopSize;
 
+
+      // FIXME debug
+      Rcpp::Rcout << "\n popSize[0]  at 10004 ";
+      print_spP(popParams[0]);
+      // end debug
+
+  
   
   int lastMaxDr = 0;
   double done_at = -9;
@@ -1895,6 +1931,10 @@ static void innerBNB(const int& numGenes,
   g_tmp1 = DBL_MAX;
 #endif
 
+      // FIXME debug
+      Rcpp::Rcout << " popSize[0]  at 1b ";
+      print_spP(popParams[0]);
+      // end debug
 
     // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
@@ -1995,6 +2035,13 @@ static void innerBNB(const int& numGenes,
   }
 
 
+  // FIXME debug
+      Rcpp::Rcout << " popSize[0]  at 2 ";
+      print_spP(popParams[0]);
+      // end debug
+  
+
+  
   // these lines (up to, and including, R_F_st)
   // not needed with mcfarland0 or beerenwinkel
   if(mutatorGenotype)
@@ -2005,7 +2052,11 @@ static void innerBNB(const int& numGenes,
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
-
+  // FIXME debug
+      Rcpp::Rcout << " popSize[0]  at 3 ";
+      print_spP(popParams[0]);
+      // end debug
+  
 
   // X1: end of mess of initialization block
 
@@ -2038,6 +2089,14 @@ static void innerBNB(const int& numGenes,
   print_spP(popParams[0]);
 #endif
 
+
+  // FIXME debug
+      Rcpp::Rcout << " popSize[0]  at 4 ";
+      print_spP(popParams[0]);
+      // end debug
+  
+
+  
   while(!simulsDone) {
     // Check how we are doing with time as first thing.
     runningWallTime = difftime(time(NULL), start_time);
@@ -2073,6 +2132,10 @@ static void innerBNB(const int& numGenes,
 #endif
 
     if(iter == 1) { // handle special case of first iter
+      // FIXME debug
+      Rcpp::Rcout << " popSize[0] ";
+      print_spP(popParams[0]);
+      // end debug
       tmpdouble1 = ti_nextTime_tmax_2_st(popParams[0],
 					 currentTime,
 					 tSample, 
@@ -2738,7 +2801,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       forceRerun = true;
     } catch (const std::exception &e) {
       Rcpp::Rcout << "\n Unrecoverable exception: " << e.what()
-		  << "Aborting. \n";
+		  << ". Aborting. \n";
       return
 	List::create(Named("other") =
 		     List::create(Named("UnrecoverExcept") = true));
