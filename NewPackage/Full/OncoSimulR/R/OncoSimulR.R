@@ -36,6 +36,7 @@ oncoSimulSample <- function(Nindiv,
                             onlyCancer = TRUE,
                             max.memory = 2000,
                             max.wall.time = 200,
+                            errorHitWallTime = TRUE,
                             verbosity  = 1,
                             typeSample = "whole",
                             thresholdWhole = 0.5,
@@ -68,7 +69,8 @@ oncoSimulSample <- function(Nindiv,
                            max.wall.time = max.wall.time,
                            verbosity = verbosity,
                            keepEvery = -9,
-                           onlyCancer = TRUE,
+                           onlyCancer = onlyCancer,
+                           errorHitWallTime = errorHitWallTime,
                            mc.cores = mc.cores
                            )
 
@@ -133,6 +135,7 @@ oncoSimulPop <- function(Nindiv,
                          onlyCancer = TRUE,
                          max.memory = 2000,
                          max.wall.time = 200,
+                         errorHitWallTime = TRUE,
                          verbosity  = 0,
                          mc.cores = detectCores()) {
 
@@ -161,6 +164,7 @@ oncoSimulPop <- function(Nindiv,
                         onlyCancer = onlyCancer,
                         max.memory = max.memory,
                         max.wall.time = max.wall.time,
+                        errorHitWallTime = errorHitWallTime,
                         verbosity = verbosity),
                     mc.cores = mc.cores
                     )
@@ -191,6 +195,7 @@ oncoSimulIndiv <- function(poset,
                            onlyCancer = TRUE,
                            max.memory = 2000,
                            max.wall.time = 200,
+                           errorHitWallTime = TRUE,
                            verbosity = 0
                            ) {
     typeCBN <- "CBN"
@@ -248,66 +253,72 @@ oncoSimulIndiv <- function(poset,
     ## one. But if we set onlyCnacer = FALSE, we also accept simuls
     ## without cancer (or without anything)
     
-    doneSimuls <- FALSE
-    while(!doneSimuls) {
-        op <- try(oncoSimul.internal(restrict.table = rt,
-                                     numGenes = numGenes,
-                                     typeFitness = typeFitness,
-                                     typeCBN = typeCBN,
-                                     birth = birth,
-                                     s = s,
-                                     sh = sh,
-                                     death = death,  
-                                     mu =  mu,  
-                                     initSize =  initSize, 
-                                     sampleEvery =  sampleEvery,  
-                                     detectionSize =  detectionSize, 
-                                     mutatorGenotype = mutatorGenotype,  
-                                     finalTime = finalTime, 
-                                     initSize_species = 2000, 
-                                     initSize_iter = 500, 
-                                     seed_gsl = NULL, 
-                                     verbosity = verbosity, 
-                                     initMutant = -1, 
-                                     speciesFS = 40000,  
-                                     ratioForce = 2,  
-                                     max.memory = max.memory, 
-                                     max.wall.time = max.wall.time, 
-                                     keepEvery = keepEvery,  
-                                     alpha = 0.0015,  
-                                     K = K, 
-                                     endTimeEvery = endTimeEvery, 
-                                     finalDrivers = detectionDrivers),
-                  silent = !verbosity)
-
-        if(!inherits(op, "try-error")) {
-            if(verbosity >= 2) {
-                cat("\n ... finished this run:")
-                cat("\n       Total Pop Size = ", op$TotalPopSize)
-                cat("\n       Drivers Last = ", op$MaxDriversLast)
-                cat("\n       Final Time = ", op$FinalTime)
-            }
-            if(onlyCancer) {
-                doneSimuls <- reachCancer(op, ndr = detectionDrivers,
-                                          detectionSize = detectionSize,
-                                          maxPopSize = 1e15)
-            } else {
-                doneSimuls <- TRUE
-            }
-            if(verbosity >= 2) {
-                if(doneSimuls)
-                    cat("\n ... Keeping this one\n")
-                else
-                    cat("\n ... Cancer not reached\n")
-            }
-        } else {
-            if(length(grep("BAIL OUT NOW", op)))
-                stop("Unrecoverable error")
-            if(verbosity >= 2)
-                cat("\nSimulation aborted because of numerical/other issues.",
-                    "Proceeding to next one.\n")
-        }
+    ## doneSimuls <- FALSE
+    ## while(!doneSimuls) {
+    op <- try(oncoSimul.internal(restrict.table = rt,
+                                 numGenes = numGenes,
+                                 typeCBN = typeCBN,
+                                 birth = birth,
+                                 s = s,
+                                 death = death,  
+                                 mu =  mu,  
+                                 initSize =  initSize, 
+                                 sampleEvery =  sampleEvery,  
+                                 detectionSize =  detectionSize, 
+                                 finalTime = finalTime, 
+                                 initSize_species = 2000, 
+                                 initSize_iter = 500, 
+                                 seed_gsl = NULL, 
+                                 verbosity = verbosity, 
+                                 speciesFS = 40000,  
+                                 ratioForce = 2,
+                                 typeFitness = typeFitness,
+                                 max.memory = max.memory,
+                                 mutatorGenotype = mutatorGenotype,                                   
+                                 initMutant = -1, 
+                                 max.wall.time = max.wall.time, 
+                                 keepEvery = keepEvery,  
+                                 alpha = 0.0015,  
+                                 sh = sh,
+                                 K = K, 
+                                 endTimeEvery = endTimeEvery, 
+                                 detectionDrivers = detectionDrivers,
+                                 onlyCancer = onlyCancer,
+                                 errorHitWallTime = errorHitWallTime),
+              silent = !verbosity)
+    if(inherits(op, "try-error")) {
+        ##         if(length(grep("BAIL OUT NOW", op)))
+        stop("Unrecoverable error")
     }
+    
+    ##     if(!inherits(op, "try-error")) {
+    ##         if(verbosity >= 2) {
+    ##             cat("\n ... finished this run:")
+    ##             cat("\n       Total Pop Size = ", op$TotalPopSize)
+    ##             cat("\n       Drivers Last = ", op$MaxDriversLast)
+    ##             cat("\n       Final Time = ", op$FinalTime)
+    ##         }
+    ##         if(onlyCancer) {
+    ##             doneSimuls <- reachCancer(op, ndr = detectionDrivers,
+    ##                                       detectionSize = detectionSize,
+    ##                                       maxPopSize = 1e15)
+    ##         } else {
+    ##             doneSimuls <- TRUE
+    ##         }
+    ##         if(verbosity >= 2) {
+    ##             if(doneSimuls)
+    ##                 cat("\n ... Keeping this one\n")
+    ##             else
+    ##                 cat("\n ... Cancer not reached\n")
+    ##         }
+    ##     } else {
+    ##         if(length(grep("BAIL OUT NOW", op)))
+    ##             stop("Unrecoverable error")
+    ##         if(verbosity >= 2)
+    ##             cat("\nSimulation aborted because of numerical/other issues.",
+    ##                 "Proceeding to next one.\n")
+    ##     }
+    ## }
     class(op) <- "oncosimul"
     attributes(op)$call <- call
     return(op)
@@ -538,35 +549,66 @@ reachCancer <- function(x, ndr = 0, detectionSize = 0,
          ))
 }
 
+## oncoSimul.internal <- function(restrict.table,
+##                                numGenes,
+##                                typeFitness,
+##                                typeCBN,
+##                                birth, 
+##                                s,
+##                                sh,
+##                                death,
+##                                mu,
+##                                initSize,
+##                                sampleEvery,
+##                                detectionSize,
+##                                mutatorGenotype,
+##                                finalTime,
+##                                initSize_species = 2000,
+##                                initSize_iter = 500,
+##                                seed_gsl = NULL,
+##                                verbosity = 1,
+##                                initMutant = -1,
+##                                speciesFS = 40000,
+##                                ratioForce = 2,
+##                                max.memory = 20000,
+##                                max.wall.time = 3600,
+##                                keepEvery = 20,
+##                                alpha = 0.0015,
+##                                K = 1000,
+##                                endTimeEvery = 5 * sampleEvery,
+##                                finalDrivers = 1000) {
 oncoSimul.internal <- function(restrict.table,
                                numGenes,
-                               typeFitness,
                                typeCBN,
                                birth, 
                                s,
-                               sh,
                                death,
                                mu,
                                initSize,
                                sampleEvery,
                                detectionSize,
-                               mutatorGenotype,
                                finalTime,
-                               initSize_species = 2000,
-                               initSize_iter = 500,
-                               seed_gsl = NULL,
-                               verbosity = 1,
-                               initMutant = -1,
-                               speciesFS = 40000,
-                               ratioForce = 2,
-                               max.memory = 20000,
-                               max.wall.time = 3600,
-                               keepEvery = 20,
-                               alpha = 0.0015,
-                               K = 1000,
-                               endTimeEvery = 5 * sampleEvery,
-                               finalDrivers = 1000) {
-  ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
+                               initSize_species,
+                               initSize_iter,
+                               seed_gsl,
+                               verbosity,
+                               speciesFS,
+                               ratioForce,
+                               typeFitness,
+                               max.memory,
+                               mutatorGenotype,
+                               initMutant,
+                               max.wall.time,
+                               keepEvery,
+                               alpha,
+                               sh,                               
+                               K,
+                               endTimeEvery,
+                               detectionDrivers,
+                               onlyCancer,
+                               errorHitWallTime) {
+
+    ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
     if(mu < 0) {
         stop("mutation rate (mu) is negative")
@@ -672,7 +714,10 @@ oncoSimul.internal <- function(restrict.table,
         sh,
         K,
         endTimeEvery,
-        finalDrivers),
+        detectionDrivers,
+        onlyCancer,
+        errorHitWallTime
+    ),
              NumDrivers = numDrivers
              ))
 }

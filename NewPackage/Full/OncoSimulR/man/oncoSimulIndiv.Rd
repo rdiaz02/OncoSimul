@@ -5,11 +5,12 @@
 \alias{print.oncosimulpop}
 \alias{summary.oncosimul}
 \alias{summary.oncosimulpop}
-
+\alias{oncoSimulSample}
 
 
 \title{
-  Simulate tumor progression for one or more individuals.
+  Simulate tumor progression for one or more individuals, optionally
+  returning just a sample in time.
 }
 \description{
   Simulate tumor progression including possible restrictions in the
@@ -28,6 +29,7 @@
                                                5 * sampleEvery),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
+                errorHitWallTime = TRUE,
                 verbosity = 0)
 
  oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
@@ -40,7 +42,38 @@
                                                5 * sampleEvery),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
+                errorHitWallTime = TRUE,
                 verbosity = 0, mc.cores = detectCores())
+
+
+oncoSimulSample(Nindiv,
+               poset,
+               model = "Bozic",
+               numPassengers = 0,
+               mu = 1e-6,
+               detectionSize = round(runif(Nindiv, 1e6, 1e8)),
+               detectionDrivers = sample(3:round(0.75 * max(poset)),
+                                         Nindiv, replace = TRUE),
+               sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                   0.025),
+               initSize = 500,
+               s = 0.1,
+               sh = -1,
+               K = initSize/(exp(1) - 1),
+               endTimeEvery = ifelse(model %in% c("Bozic", "Exp"),
+                   -9,
+                   5 * sampleEvery),
+               finalTime = 0.25 * 25 * 365,
+               onlyCancer = TRUE,
+               max.memory = 2000,
+               max.wall.time = 200,
+               errorHitWallTime = TRUE,
+               verbosity  = 1,
+               typeSample = "whole",
+               thresholdWhole = 0.5,
+               mc.cores = detectCores())
+
+
 
 
 }
@@ -173,6 +206,17 @@
   simulation is not done in this time, it is aborted.
 
 }
+
+\item{errorHitWallTime}{
+  If TRUE (the default) a simulation that reaches the maximum wall time
+  is considered not to have succesfully finished and, thus, an error,
+  and no output from it will be reported. This is often what you
+  want. But if you want to see what is happening for some set of
+  parameters that seem to never finish, set this to FALSE, and check
+  what the output looks like.
+}
+
+
 \item{verbosity}{
   If 0, run as silently as possible. Otherwise, increasing values of
   verbosity provide progressively more information about intermediate

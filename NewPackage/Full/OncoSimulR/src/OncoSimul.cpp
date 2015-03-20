@@ -439,9 +439,10 @@ static double ti_nextTime_tmax_2_st(const spParamsP& spP,
   double pM;
 
   // FIXME: should never happen
-  if(spP.popSize <= 0.0)
-    throw std::range_error("ti: popSize < 0");
-
+  if(spP.popSize <= 0.0) {
+    throw std::range_error("ti: popSize <= 0. spP.popSize = "
+			   + std::to_string(spP.popSize));
+  }
   // long double invpop = 1/spP.popSize;
   // long double r;
 
@@ -2513,8 +2514,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	       SEXP detectionDrivers_,
 	       SEXP onlyCancer_,
 	       SEXP errorHitWallTime_) {
-	       // SEXP errorFinalTime_,
-	       // SEXP errorHitWallTime_) {
+
   BEGIN_RCPP
     using namespace Rcpp;
   precissionLoss();
@@ -2736,8 +2736,14 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       Rcpp::Rcout << "\n Exception " << e.what() 
 		  << ". Rerunning.";
       forceRerun = true;
+    } catch (const std::exception &e) {
+      Rcpp::Rcout << "\n Unrecoverable exception: " << e.what()
+		  << "Aborting. \n";
+      return
+	List::create(Named("other") =
+		     List::create(Named("UnrecoverExcept") = true));
     } catch (...) {
-      Rcpp::Rcout << "\n Unrecoverable exception. Aborting \n";
+      Rcpp::Rcout << "\n Unknown unrecoverable exception. Aborting. \n";
       return
 	List::create(Named("other") =
 		     List::create(Named("UnrecoverExcept") = true));
@@ -2750,7 +2756,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       Rcpp::Rcout << "\n Hitted wall time. Exiting \n";
       runAgain = false;
       if(errorHitWallTime) {
-	Rcpp::Rcout << "\n Hitting wall time is regarded an error. \n";
+	Rcpp::Rcout << "\n Hitting wall time is regarded as an error. \n";
 	return
 	  List::create(Named("HittedWallTime") = true);
       }

@@ -54,6 +54,9 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 \details{
   samplePop simply repeats the sampling process in each individual of
   the oncosimulpop object.
+
+  Please see \code{\link{oncoSimulSample}} for a much more efficient way
+  of sampling when you are sure what you want to sample.
 }
 
 \value{
@@ -73,7 +76,8 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 }
 
 \seealso{
-  \code{\link{oncoSimulPop}}
+  \code{\link{oncoSimulPop}}, \code{\link{oncoSimulSample}}
+  
 }
 
 \examples{
