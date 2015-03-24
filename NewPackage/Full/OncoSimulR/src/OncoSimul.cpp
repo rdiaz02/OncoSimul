@@ -1408,9 +1408,6 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 
   // Thus, never pass an endTimeEvery > 0, but use detectionDrivers = 1 +
   // intended final Drivers.
-#ifdef DEBUGV
-      Rcpp::Rcout << "\n inside totPopSize: endTimeEvery " << endTimeEvery;
-#endif       
 
   
   if(endTimeEvery > 0) {
@@ -1433,9 +1430,6 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
       reachDetection = true;
   }
 
-#ifdef DEBUGV
-      Rcpp::Rcout << "\n inside totPopSize: reachDetection = " << reachDetection;
-#endif       
   
   if(totPopSize >= fatalPopSize) {
     Rcpp::Rcout << "\n\totPopSize > " << fatalPopSize
@@ -2823,7 +2817,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 		     List::create(Named("UnrecoverExcept") = true));
     }
 
-  
+    // add here "hittedMaxTries"
 
 
     if(hittedWallTime) {
