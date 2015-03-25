@@ -396,6 +396,11 @@ p1 <- oncoSimulPop(4, p701,
                    mc.cores = 2)
 
 
+p2 <- oncoSimulSample(4, p701)
+                      
+
+)
+
 }
 \keyword{misc}
 \keyword{iteration}

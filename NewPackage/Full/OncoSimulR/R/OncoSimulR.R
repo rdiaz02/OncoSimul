@@ -34,28 +34,48 @@ oncoSimulSample <- function(Nindiv,
                             onlyCancer = TRUE,
                             max.memory = 2000,
                             max.wall.time = 200,
+                            max.num.tries.total = 500 * Nindiv,
                             errorHitWallTime = TRUE,
+                            errorHitMaxTries = TRUE,
                             verbosity  = 1,
                             typeSample = "whole",
-                            thresholdWhole = 0.5,
-                            mc.cores = detectCores()
-                            ){
+                            thresholdWhole = 0.5){
+    ## No longer using mclapply, because of the way we use the limit on
+    ## the number of tries.
+    
     ## leaving detectionSize and detectionDrivers as they are, produces
     ## the equivalente of uniform sampling. For last, fix a single number
-    if(.Platform$OS.type == "windows") {
-        if(mc.cores != 1)
-            message("You are running Windows. Setting mc.cores = 1")
-        mc.cores <- 1
-    }
+
+    if(max.num.tries.total < Nindiv)
+        stop(paste("You have requested something impossible: ",
+                   "max.num.tries.total < Nindiv"))
+    attemptsLeft <- max.num.tries.total
+    attemptsUsed <- 0
+    numToRun <- Nindiv
+    pop <- vector(mode = "list", length = Nindiv)
+    indiv <- 1
     
-    pop <- parallel::mcMap(dummyOncoSimulIndiv,
-                           Nindiv = seq.int(Nindiv),
-                           poset = list(poset),
+    params <- cbind(seq.int(Nindiv),
+                    detectionSize = detectionSize,
+                    detectionDrivers = detectionDrivers)[, -1]
+
+    f.out.attempts <- function() {
+        message("Run out of attempts")
+        return(list(
+            popSummary = NA,
+            popSample = NA,
+            hittedMaxTries = TRUE))    
+    }    
+    
+    while(TRUE) {
+        
+        possibleAttempts <- attemptsLeft - (numToRun - 1)
+        tmp <-  oncoSimulIndiv(poset = poset,
                            model = model,
                            numPassengers = numPassengers,
                            mu = mu,
-                           detectionSize = detectionSize,
-                           detectionDrivers = detectionDrivers,
+                           detectionSize = params[indiv, "detectionSize"],
+                           detectionDrivers = params[indiv, "detectionDrivers"],
                            sampleEvery = sampleEvery,
                            initSize = initSize,
                            s = s,
@@ -64,29 +84,147 @@ oncoSimulSample <- function(Nindiv,
                            endTimeEvery = endTimeEvery,
                            finalTime = finalTime,
                            max.memory = max.memory,
-                           max.wall.time = max.wall.time,
+                               max.wall.time = max.wall.time,
+                               max.num.tries = possibleAttempts,
                            verbosity = verbosity,
                            keepEvery = -9,
                            onlyCancer = onlyCancer,
                            errorHitWallTime = errorHitWallTime,
-                           mc.cores = mc.cores
-                           )
+                           errorHitMaxTries = errorHitMaxTries)
+        pop[[indiv]] <- tmp
+        numToRun <- (numToRun - 1)
+        attemptsUsed <- attemptsUsed + tmp$other$attemptsUsed
+        attemptsLeft <- (max.num.tries.total - attemptsUsed)
+        indiv <- indiv + 1
 
-    class(pop) <- "oncosimulpop"
-    ## attributes(pop)$call <- match.call()
-    ## Now, sampling code here for typeSample
+        
+        ## We need to check in exactly this order. Attempts left only
+        ## matters if no remaining individuals to run. But C++ might bail
+        ## out in exactly the last individual
+        if(  
+            (exists("HittedMaxTries", where = tmp) &&
+                 tmp[["HittedMaxTries"]])  ) {
+            ## in C++ code
+            return(f.out.attempts())
+        }
+        
+        if( indiv > Nindiv ) {
+            if(verbosity > 0)
+                message(paste("Successfully sampled ", Nindiv, " individuals"))
+            class(pop) <- "oncosimulpop"
+            return(list(
+                popSummary = summary(pop),
+                popSample = samplePop(pop, typeSample = typeSample,
+                    thresholdWhole = thresholdWhole),
+                attemptsUsed = attemptsUsed,
+                probCancer = Nindiv/attemptsUsed
+            ))
+            ## break
+        }
 
-    return(list(
-        popSummary = summary(pop),
-        popSample = samplePop(pop, typeSample = typeSample,
-                  thresholdWhole = thresholdWhole)
-    ))
+        if( attemptsLeft <= 0 ) {
+            return(f.out.attempts())
+        }
+        ## if( attemptsLeft <= 0 ) {
+        ##     message("Run out of attempts")
+        ##     if(verbosity > 0)
+        ##         message(paste("attemptsUsed = ", attemptsUsed,
+        ##                       "numToRun = ", numToRun))
+        ##     return(list(
+        ##         popSummary = NA,
+        ##         popSample = NA,
+        ##         hittedMaxTries = TRUE))
+        ## }
+    }
+
+    ## class(pop) <- "oncosimulpop"
+    ## ## attributes(pop)$call <- match.call()
+    ## ## Now, sampling code here for typeSample
+
+    ## return(list(
+    ##     popSummary = summary(pop),
+    ##     popSample = samplePop(pop, typeSample = typeSample,
+    ##         thresholdWhole = thresholdWhole),
+    ##     attemptsUsed = attemptsUsed,
+    ##     probCancer = Nindiv/attemptsUsed
+    ## ))
 }
 
+## oncoSimulSample <- function(Nindiv,
+##                             poset,
+##                             model = "Bozic",
+##                             numPassengers = 0,
+##                             mu = 1e-6,
+##                             detectionSize = round(runif(Nindiv, 1e6, 1e8)),
+##                             detectionDrivers = sample(3:round(0.75 * max(poset)),
+##                                                       Nindiv, replace = TRUE),
+##                             sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+##                                 0.025),
+##                             initSize = 500,
+##                             s = 0.1,
+##                             sh = -1,
+##                             K = initSize/(exp(1) - 1),
+##                             endTimeEvery = -9, 
+##                             finalTime = 0.25 * 25 * 365,
+##                             onlyCancer = TRUE,
+##                             max.memory = 2000,
+##                             max.wall.time = 200,
+##                             man.num.tries.total = 500 * Nindiv,
+##                             errorHitWallTime = TRUE,
+##                             errorHitMaxTries = TRUE,
+##                             verbosity  = 1,
+##                             typeSample = "whole",
+##                             thresholdWhole = 0.5,
+##                             mc.cores = detectCores()
+##                             ){
+##     ## leaving detectionSize and detectionDrivers as they are, produces
+##     ## the equivalente of uniform sampling. For last, fix a single number
+##     if(.Platform$OS.type == "windows") {
+##         if(mc.cores != 1)
+##             message("You are running Windows. Setting mc.cores = 1")
+##         mc.cores <- 1
+##     }
+    
+##     pop <- parallel::mcMap(dummyOncoSimulIndiv,
+##                            Nindiv = seq.int(Nindiv),
+##                            poset = list(poset),
+##                            model = model,
+##                            numPassengers = numPassengers,
+##                            mu = mu,
+##                            detectionSize = detectionSize,
+##                            detectionDrivers = detectionDrivers,
+##                            sampleEvery = sampleEvery,
+##                            initSize = initSize,
+##                            s = s,
+##                            sh = sh,
+##                            K = K,
+##                            endTimeEvery = endTimeEvery,
+##                            finalTime = finalTime,
+##                            max.memory = max.memory,
+##                            max.wall.time = max.wall.time,
+##                            verbosity = verbosity,
+##                            keepEvery = -9,
+##                            onlyCancer = onlyCancer,
+##                            errorHitWallTime = errorHitWallTime,
+##                            mc.cores = mc.cores
+##                            )
+
+##     class(pop) <- "oncosimulpop"
+##     ## attributes(pop)$call <- match.call()
+##     ## Now, sampling code here for typeSample
+
+##     return(list(
+##         popSummary = summary(pop),
+##         popSample = samplePop(pop, typeSample = typeSample,
+##                   thresholdWhole = thresholdWhole)
+##     ))
+## }
 ## we leave it up to mcMap to make sure we do in fact replicate up to Nindiv
-dummyOncoSimulIndiv <- function(Nindiv, ...){
-    oncoSimulIndiv(...)
-}
+
+
+## dummyOncoSimulIndiv <- function(Nindiv, ...){
+##     oncoSimulIndiv(...)
+## }
 
 
 samplePop <- function(x, timeSample = "last", typeSample = "whole",
@@ -105,9 +243,9 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
                             thresholdWhole = thresholdWhole)
         dim(z) <- c(1, length(z))
     }
-    cat("\n Subjects by Genes matrix of ",
+    message("\n Subjects by Genes matrix of ",
         nrow(z), " subjects and ",
-        ncol(z), " genes:\n")
+        ncol(z), " genes.\n")
     colnames(z) <- paste0("G.", seq_len(ncol(z)))
     return(z)
 }
@@ -132,7 +270,9 @@ oncoSimulPop <- function(Nindiv,
                          onlyCancer = TRUE,
                          max.memory = 2000,
                          max.wall.time = 200,
+                         max.num.tries = 500,
                          errorHitWallTime = TRUE,
+                         errorHitMaxTries = TRUE,
                          verbosity  = 0,
                          mc.cores = detectCores()) {
 
@@ -161,7 +301,9 @@ oncoSimulPop <- function(Nindiv,
                         onlyCancer = onlyCancer,
                         max.memory = max.memory,
                         max.wall.time = max.wall.time,
+                        max.num.tries = max.num.tries,
                         errorHitWallTime = errorHitWallTime,
+                        errorHitMaxTries = errorHitMaxTries,
                         verbosity = verbosity),
                     mc.cores = mc.cores
                     )
@@ -191,7 +333,9 @@ oncoSimulIndiv <- function(poset,
                            onlyCancer = TRUE,
                            max.memory = 2000,
                            max.wall.time = 200,
+                           max.num.tries = 500,
                            errorHitWallTime = TRUE,
+                           errorHitMaxTries = TRUE,
                            verbosity = 0
                            ) {
     typeCBN <- "CBN"
@@ -272,7 +416,8 @@ oncoSimulIndiv <- function(poset,
                                  max.memory = max.memory,
                                  mutatorGenotype = mutatorGenotype,                                   
                                  initMutant = -1, 
-                                 max.wall.time = max.wall.time, 
+                                 max.wall.time = max.wall.time,
+                                 max.num.tries = max.num.tries,
                                  keepEvery = keepEvery,  
                                  alpha = 0.0015,  
                                  sh = sh,
@@ -280,7 +425,8 @@ oncoSimulIndiv <- function(poset,
                                  endTimeEvery = endTimeEvery, 
                                  detectionDrivers = detectionDrivers,
                                  onlyCancer = onlyCancer,
-                                 errorHitWallTime = errorHitWallTime),
+                                 errorHitWallTime = errorHitWallTime,
+                                 errorHitMaxTries = errorHitMaxTries),
               silent = !verbosity)
     if(inherits(op, "try-error")) {
         ##         if(length(grep("BAIL OUT NOW", op)))
@@ -607,7 +753,9 @@ oncoSimul.internal <- function(restrict.table,
                                endTimeEvery,
                                detectionDrivers,
                                onlyCancer,
-                               errorHitWallTime) {
+                               errorHitWallTime,
+                               max.num.tries,
+                               errorHitMaxTries) {
 
     ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
@@ -717,7 +865,9 @@ oncoSimul.internal <- function(restrict.table,
         endTimeEvery,
         detectionDrivers,
         onlyCancer,
-        errorHitWallTime
+        errorHitWallTime,
+        max.num.tries,
+        errorHitMaxTries
     ),
              NumDrivers = numDrivers
              ))

@@ -1,5 +1,9 @@
+Changes in version 99.1.6 (2014-03-20)
+	- untilcancer and oncoSimulSample working together
+
 Changes in version 99.1.5 (2014-03-20)
 	- Using the untilcancer branch
+
 Changes in version 99.1.4 (2014-12-24)
 	- Added computation of min. of ratio birth/mutation and death/mutation.
 

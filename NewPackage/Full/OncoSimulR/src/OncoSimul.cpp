@@ -207,7 +207,7 @@
 
 
 //#define DEBUGZ
-#define DEBUGV
+// #define DEBUGV
 //#define DEBUGW
 
 #ifdef DEBUGW
@@ -2581,7 +2581,10 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	       SEXP endTimeEvery_,
 	       SEXP detectionDrivers_,
 	       SEXP onlyCancer_,
-	       SEXP errorHitWallTime_) {
+	       SEXP errorHitWallTime_,
+	       SEXP maxNumTries_,
+	       SEXP errorHitMaxTries_
+	       ) {
 
   BEGIN_RCPP
     using namespace Rcpp;
@@ -2624,6 +2627,9 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // const bool errorFinalTime = as<bool>(errorFinalTime_);
   const bool errorHitWallTime = as<bool>(errorHitWallTime_);
   const bool onlyCancer = as<bool>(onlyCancer_);
+  const int maxNumTries = as<int>(maxNumTries_);
+  const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
+  
   // C++11 random number
   std::mt19937 ran_generator(seed);
 
@@ -2817,16 +2823,23 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 		     List::create(Named("UnrecoverExcept") = true));
     }
 
-    // add here "hittedMaxTries"
-
 
     if(hittedWallTime) {
-      Rcpp::Rcout << "\n Hitted wall time. Exiting \n";
+      Rcpp::Rcout << "\n Hitted wall time. Exiting.";
       runAgain = false;
       if(errorHitWallTime) {
 	Rcpp::Rcout << "\n Hitting wall time is regarded as an error. \n";
 	return
 	  List::create(Named("HittedWallTime") = true);
+      }
+    } else if(numRuns > maxNumTries) {
+      //  hittedMaxTries
+      Rcpp::Rcout << "\n Hitted maxtries. Exiting.";
+      runAgain = false;
+      if(errorHitMaxTries) {
+	Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
+	return
+	  List::create(Named("HittedMaxTries") = true);
       }
     } else if(forceRerun) {
       runAgain = true;
@@ -2990,7 +3003,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 		 // drivers if keepEvery < 0, so we only return the last.
 		 Named("OccurringDrivers") = occurringDrivers,
 		 Named("PerSampleStats") = perSampleStats,
-		 Named("other") = List::create(Named("errorMF") = 
+		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
+					       Named("errorMF") = 
 					       returnMFE(e1, K, 
 							 typeFitness),
 					       Named("errorMF_size") = e1,
