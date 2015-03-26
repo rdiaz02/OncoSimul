@@ -49,31 +49,30 @@
 
 
 oncoSimulSample(Nindiv,
-               poset,
-               model = "Bozic",
-               numPassengers = 0,
-               mu = 1e-6,
-               detectionSize = round(runif(Nindiv, 1e6, 1e8)),
-               detectionDrivers = sample(3:round(0.75 * max(poset)),
-                                         Nindiv, replace = TRUE),
-               sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
-                   0.025),
-               initSize = 500,
-               s = 0.1,
-               sh = -1,
-               K = initSize/(exp(1) - 1),
-               endTimeEvery = -9,
-               finalTime = 0.25 * 25 * 365,
-               onlyCancer = TRUE,
-               max.memory = 2000,
-               max.wall.time = 200,
-               errorHitWallTime = TRUE,
-               verbosity  = 1,
-               typeSample = "whole",
-               thresholdWhole = 0.5,
-               mc.cores = detectCores())
-
-
+                poset,
+                model = "Bozic",
+                numPassengers = 0,
+                mu = 1e-6,
+                detectionSize = round(runif(Nindiv, 1e6, 1e8)),
+                detectionDrivers = sample(3:round(0.75 * max(poset)),
+                                          Nindiv, replace = TRUE),
+                sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
+                    0.025),
+                initSize = 500,
+                s = 0.1,
+                sh = -1,
+                K = initSize/(exp(1) - 1),
+                endTimeEvery = -9, 
+                finalTime = 0.25 * 25 * 365,
+                onlyCancer = TRUE,
+                max.memory = 2000,
+                max.wall.time = 200,
+                max.num.tries.total = 500 * Nindiv,
+                errorHitWallTime = TRUE,
+                errorHitMaxTries = TRUE,
+                verbosity  = 1,
+                typeSample = "whole",
+                thresholdWhole = 0.5)
 
 
 }
@@ -194,6 +193,31 @@ oncoSimulSample(Nindiv,
   simulations where the population goes extinct.
 
 }
+
+\item{max.num.tries}{Only applies when \code{onlyCancer = TRUE}. What is
+  the maximum number of times, for an individual simulation, we can
+  repeat the simulation for it to reach cancer? There are certain
+  parameter settings where reaching cancer is extremely unlikely and you
+  might not want to run forever in those cases.  }
+
+
+\item{max.num.tries.total}{Only applies when \code{onlyCancer = TRUE}
+  and for \code{oncoSimulSample}. What is the maximum number of times,
+  over all simulations for all individuals in a population sample, that
+  we can repeat the simulations so that cancer is reached for all
+  individuals?  The idea is to set a limit on the average minimal
+  probability of reaching cancer for a set of simulations to be
+  accepted.}
+
+\item{errorHitMaxTries}{ If TRUE (the default) a simulation that reaches
+  the maximum number of repetitions allowed is considered not to have
+  succesfully finished and, thus, an error, and no output from it will
+  be reported. This is often what you want. But if you want to see what
+  is happening for some set of parameters that seem to never finish, set
+  this to FALSE, and check what the output looks like.  }
+
+
+
 \item{max.memory}{
   The largest size (in MB) of the matrix of Populations by Time. If it
   creating it would use more than this amount of memory, it is not
@@ -223,6 +247,21 @@ oncoSimulSample(Nindiv,
   steps, possible numerical notes/warnings from the C++ code, etc.
 
 }
+
+  \item{typeSample}{
+    "singleCell" (or "single") for single cell sampling, where the
+    probability of sampling a cell (a clone) is directly proportional to
+    its population size.  "wholeTumor" (or "whole") for whole tumor
+    sampling (i.e., this is similar to a biopsy being the entire
+    tumor). See \code{\link{samplePop}}.
+  }
+
+  \item{thresholdWhole}{
+    In whole tumor sampling, whether a gene is detected as mutated depends
+    on thresholdWhole: a gene is considered mutated if it is altered in at
+    least thresholdWhole proportion of the cells in that individual. See \code{\link{samplePop}}.
+  }
+  
 
 \item{mc.cores}{Number of cores to use when simulating more than one
   individual (i.e., when calling oncoSimulPop).}
