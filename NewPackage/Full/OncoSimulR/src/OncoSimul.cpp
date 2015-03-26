@@ -1807,14 +1807,26 @@ static void innerBNB(const int& numGenes,
 		     Rcpp::IntegerMatrix restrictTable) {
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
+
+  // ALWAYS initialize this here, or reinit or rezero
   genot_out.clear();
   popSizes_out.clear();
   index_out.clear();
   time_out.clear();
-  totPopSize = 0;
+  totPopSize = 0.0;
   sampleTotPopSize.clear();
   currentTime = 0.0;
   iter = 0;
+
+  outNS_i = -1;
+  
+  sampleTotPopSize.clear();
+  sampleLargestPopSize.clear();
+  sampleMaxNDr.clear();
+  sampleNDrLargestPop.clear();
+  // end of rezeroing.
+
+  
   // }
   // anyForceRerunIssues = false;
   
@@ -2617,6 +2629,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   const int initMutant = as<int>(initMutant_);
   const double maxWallTime = as<double>(maxWallTime_);
   const double keepEvery = as<double>(keepEvery_);
+
+  
   const double alpha = as<double>(alpha_);
   const double sh = as<double>(sh_); // coeff for fitness
   // if a driver without dependencies. Like in Datta et al., 2013.
@@ -2757,6 +2771,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 
 
     try {
+      // it is CRUCIAL that several entries are zeroed (or -1) at the
+      // start of innerBNB now that we do multiple runs if onlyCancer = true.
       innerBNB(
 	       numGenes,
 	       initSize,
@@ -2789,7 +2805,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	       ratioForce,
 	       currentTime,
 	       speciesFS,
-	       outNS_i,
+	       outNS_i, 
 	       iter,
 	       genot_out,
 	       popSizes_out,

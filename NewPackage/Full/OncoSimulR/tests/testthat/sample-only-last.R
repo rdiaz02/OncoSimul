@@ -66,6 +66,21 @@ for(i in 1:length(examplePosets)) {
                             expect_equal(b1$TotalPopSize, b2$TotalPopSize)
                             expect_equal(b1$FinalTime, b2$FinalTime)
                             expect_equal(b1$NumIter, b2$NumIter)
+
+                            expect_equal(b1$NumDriversLargestPop,
+                                         b2$NumDriversLargestPop)
+                            expect_equal(b1$MaxDriversLast, b2$MaxDriversLast)
+                            expect_equal(b1$PropLargestPopLast,
+                                         b2$PropLargestPopLast)                            
+                            expect_equal(b1$LargestClone, b2$LargestClone)
+                            ## these need not be the same as those
+                            ## accumulate over all samples
+
+                            ## expect_equal(b1$MaxNumDrivers,
+                            ## b2$MaxNumDrivers)
+                            ## expect_equal(b1$TotalPresentDrivers,
+                            ## b2$TotalPresentDrivers)
+
                             expect_equal(popsGenots$pops, b2$pops.by.time[1, ])
                             expect_equal(popsGenots$genots, b2$Genotypes)
                             expect_false(

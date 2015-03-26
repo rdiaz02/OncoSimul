@@ -25,11 +25,12 @@
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = ifelse(model \%in\% c("Bozic", "Exp"), -9,
-                                               5 * sampleEvery),
+                endTimeEvery = -9,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
+                max.num.tries = 500,
                 errorHitWallTime = TRUE,
+                errorHitMaxTries = TRUE,
                 verbosity = 0)
 
  oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
@@ -38,11 +39,12 @@
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = ifelse(model \%in\% c("Bozic", "Exp"), -9,
-                                               5 * sampleEvery),
+                endTimeEvery = -9,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
+                max.num.tries = 500,
                 errorHitWallTime = TRUE,
+                errorHitMaxTries = TRUE,
                 verbosity = 0, mc.cores = detectCores())
 
 
@@ -54,15 +56,13 @@ oncoSimulSample(Nindiv,
                detectionSize = round(runif(Nindiv, 1e6, 1e8)),
                detectionDrivers = sample(3:round(0.75 * max(poset)),
                                          Nindiv, replace = TRUE),
-               sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+               sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                    0.025),
                initSize = 500,
                s = 0.1,
                sh = -1,
                K = initSize/(exp(1) - 1),
-               endTimeEvery = ifelse(model %in% c("Bozic", "Exp"),
-                   -9,
-                   5 * sampleEvery),
+               endTimeEvery = -9,
                finalTime = 0.25 * 25 * 365,
                onlyCancer = TRUE,
                max.memory = 2000,
@@ -398,9 +398,6 @@ p1 <- oncoSimulPop(4, p701,
 
 p2 <- oncoSimulSample(4, p701)
                       
-
-)
-
 }
 \keyword{misc}
 \keyword{iteration}
