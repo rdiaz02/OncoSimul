@@ -66,10 +66,8 @@ oncoSimulSample(Nindiv,
                 finalTime = 0.25 * 25 * 365,
                 onlyCancer = TRUE,
                 max.memory = 2000,
-                max.wall.time = 200,
+                max.wall.time.total = 600,
                 max.num.tries.total = 500 * Nindiv,
-                errorHitWallTime = TRUE,
-                errorHitMaxTries = TRUE,
                 verbosity  = 1,
                 typeSample = "whole",
                 thresholdWhole = 0.5)
@@ -230,6 +228,15 @@ oncoSimulSample(Nindiv,
   simulation is not done in this time, it is aborted.
 
 }
+
+\item{max.wall.time.total}{ Maximum wall time for all the simulations
+  (when using \code{oncoSimulSample}), in seconds. If the simulation is not completed in
+  this time, it is aborted. To prevent problems from a single individual
+  simulation going wild, this limit is also enforced per simulation (so
+  the run can be aborted directly from C++).
+
+}
+
 
 \item{errorHitWallTime}{
   If TRUE (the default) a simulation that reaches the maximum wall time

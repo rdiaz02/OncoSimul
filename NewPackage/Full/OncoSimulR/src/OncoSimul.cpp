@@ -2989,6 +2989,10 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // DP2((runningWallTime > maxWallTime));
   // here("after precomp");
   // here("*******************************************");
+
+  // FIXME debug
+  throw std::out_of_range("A dummy except");
+  
   return 
     List::create(Named("pops.by.time") = outNS,
 		 Named("NumClones") = uniqueGenotypes.size(), 
@@ -3009,6 +3013,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 		 Named("NumIter") = iter,
 		 //		 Named("outi") = outNS_i + 1, // silly. Use the real number of samples. FIXME
 		 Named("HittedWallTime") = hittedWallTime, // (runningWallTime > maxWallTime),
+		 Named("HittedMaxTries") = hittedMaxTries,
 		 // Named("iRunningWallTime") = runningWallTime,
 		 // Named("oRunningWallTime") = difftime(time(NULL), start_time),
 		 // Named("ti_dbl_min") = ti_dbl_min,

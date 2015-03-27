@@ -33,10 +33,11 @@ oncoSimulSample <- function(Nindiv,
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
                             max.memory = 2000,
-                            max.wall.time = 200,
+                            max.wall.time.total = 600,
                             max.num.tries.total = 500 * Nindiv,
-                            errorHitWallTime = TRUE,
-                            errorHitMaxTries = TRUE,
+                            ## well, obviously they are errors
+                            ## errorHitWallTime = TRUE,
+                            ## errorHitMaxTries = TRUE,
                             verbosity  = 1,
                             typeSample = "whole",
                             thresholdWhole = 0.5){
@@ -64,9 +65,43 @@ oncoSimulSample <- function(Nindiv,
         return(list(
             popSummary = NA,
             popSample = NA,
-            hittedMaxTries = TRUE))    
+            HittedMaxTries = TRUE,
+            hittedWallTime = FALSE
+        ))    
     }    
+
+    f.out.time <- function() {
+        message("Run out of time")
+        return(list(
+            popSummary = NA,
+            popSample = NA,
+            HittedMaxTries = FALSE,
+            HittedWallTime = TRUE
+        ))    
+    }    
+
+    f.out.attempts.cpp <- function() {
+        message("Run out of attempts (in C++)")
+        return(list(
+            popSummary = NA,
+            popSample = NA,
+            HittedMaxTries = TRUE,
+            hittedWallTime = FALSE
+        ))    
+    }    
+
+    f.out.time.cpp <- function() {
+        message("Run out of time (in C++)")
+        return(list(
+            popSummary = NA,
+            popSample = NA,
+            HittedMaxTries = FALSE,
+            HittedWallTime = TRUE
+        ))    
+    }    
+
     
+    startTime <- Sys.time()
     while(TRUE) {
         
         possibleAttempts <- attemptsLeft - (numToRun - 1)
@@ -84,31 +119,34 @@ oncoSimulSample <- function(Nindiv,
                            endTimeEvery = endTimeEvery,
                            finalTime = finalTime,
                            max.memory = max.memory,
-                               max.wall.time = max.wall.time,
+                               max.wall.time = max.wall.time.total,
                                max.num.tries = possibleAttempts,
                            verbosity = verbosity,
                            keepEvery = -9,
                            onlyCancer = onlyCancer,
-                           errorHitWallTime = errorHitWallTime,
-                           errorHitMaxTries = errorHitMaxTries)
+                           errorHitWallTime = TRUE,
+                           errorHitMaxTries = TRUE)
         pop[[indiv]] <- tmp
         numToRun <- (numToRun - 1)
         attemptsUsed <- attemptsUsed + tmp$other$attemptsUsed
         attemptsLeft <- (max.num.tries.total - attemptsUsed)
         indiv <- indiv + 1
-
         
         ## We need to check in exactly this order. Attempts left only
         ## matters if no remaining individuals to run. But C++ might bail
         ## out in exactly the last individual
+
         if(  
             (exists("HittedMaxTries", where = tmp) &&
                  tmp[["HittedMaxTries"]])  ) {
             ## in C++ code
-            return(f.out.attempts())
-        }
-        
-        if( indiv > Nindiv ) {
+            return(f.out.attempts.cpp())
+        } else if(  
+            (exists("HittedWallTime", where = tmp) &&
+                 tmp[["HittedWallTime"]])  ) {
+            ## in C++ code
+            return(f.out.time.cpp())
+        } else if( indiv > Nindiv ) {
             if(verbosity > 0)
                 message(paste("Successfully sampled ", Nindiv, " individuals"))
             class(pop) <- "oncosimulpop"
@@ -119,35 +157,13 @@ oncoSimulSample <- function(Nindiv,
                 attemptsUsed = attemptsUsed,
                 probCancer = Nindiv/attemptsUsed
             ))
-            ## break
-        }
-
-        if( attemptsLeft <= 0 ) {
+        } else if( attemptsLeft <= 0 ) {
             return(f.out.attempts())
-        }
-        ## if( attemptsLeft <= 0 ) {
-        ##     message("Run out of attempts")
-        ##     if(verbosity > 0)
-        ##         message(paste("attemptsUsed = ", attemptsUsed,
-        ##                       "numToRun = ", numToRun))
-        ##     return(list(
-        ##         popSummary = NA,
-        ##         popSample = NA,
-        ##         hittedMaxTries = TRUE))
-        ## }
+        } else  if( as.double(difftime(Sys.time(), startTime, units = "secs"))
+                   > max.wall.time.total ) {
+            return(f.out.time())
+        } 
     }
-
-    ## class(pop) <- "oncosimulpop"
-    ## ## attributes(pop)$call <- match.call()
-    ## ## Now, sampling code here for typeSample
-
-    ## return(list(
-    ##     popSummary = summary(pop),
-    ##     popSample = samplePop(pop, typeSample = typeSample,
-    ##         thresholdWhole = thresholdWhole),
-    ##     attemptsUsed = attemptsUsed,
-    ##     probCancer = Nindiv/attemptsUsed
-    ## ))
 }
 
 ## oncoSimulSample <- function(Nindiv,
