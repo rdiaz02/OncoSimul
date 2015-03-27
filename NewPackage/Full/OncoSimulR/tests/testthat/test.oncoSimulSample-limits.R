@@ -30,7 +30,7 @@ test_that("oncoSimulSample exits with minimal num tries", {
     p5 <- oncoSimulSample(nindiv, p701,
                           max.num.tries = nindiv,
                           onlyCancer = TRUE)
-    expect_true(p5$hittedMaxTries)
+    expect_true(p5$HittedMaxTries)
     expect_true(is.na(p5$popSummary))
 })
 
@@ -39,7 +39,7 @@ test_that("oncoSimulSample exits with small num tries", {
     p6 <- oncoSimulSample(nindiv, p701,
                           max.num.tries = nindiv + 4,
                           onlyCancer = TRUE)
-    expect_true(p6$hittedMaxTries)
+    expect_true(p6$HittedMaxTries)
     expect_true(is.na(p6$popSummary))
 })
 

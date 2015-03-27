@@ -105,6 +105,7 @@ oncoSimulSample <- function(Nindiv,
     while(TRUE) {
         
         possibleAttempts <- attemptsLeft - (numToRun - 1)
+        ## I think I do not want a try here.
         tmp <-  oncoSimulIndiv(poset = poset,
                            model = model,
                            numPassengers = numPassengers,

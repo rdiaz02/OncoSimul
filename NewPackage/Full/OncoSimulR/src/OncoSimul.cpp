@@ -1819,7 +1819,7 @@ static void innerBNB(const int& numGenes,
   iter = 0;
 
   outNS_i = -1;
-  
+
   sampleTotPopSize.clear();
   sampleLargestPopSize.clear();
   sampleMaxNDr.clear();
@@ -2689,7 +2689,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   time_t start_time = time(NULL);
   double runningWallTime = 0;
   bool  hittedWallTime = false;
-
+  bool hittedMaxTries = false;
  
   // spParamsP tmpParam; 
   // std::vector<spParamsP> popParams(1);
@@ -2850,6 +2850,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       }
     } else if(numRuns > maxNumTries) {
       //  hittedMaxTries
+      hittedMaxTries = true;
       Rcpp::Rcout << "\n Hitted maxtries. Exiting.";
       runAgain = false;
       if(errorHitMaxTries) {
@@ -2990,8 +2991,6 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // here("after precomp");
   // here("*******************************************");
 
-  // FIXME debug
-  throw std::out_of_range("A dummy except");
   
   return 
     List::create(Named("pops.by.time") = outNS,
