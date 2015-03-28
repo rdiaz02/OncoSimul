@@ -2848,7 +2848,9 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       if(errorHitWallTime) {
 	Rcpp::Rcout << "\n Hitting wall time is regarded as an error. \n";
 	return
-	  List::create(Named("HittedWallTime") = true);
+	  List::create(Named("HittedWallTime") = true,
+		       Named("other") =
+		       List::create(Named("UnrecoverExcept") = false));
       }
     } else if(numRuns > maxNumTries) {
       //  hittedMaxTries
@@ -2858,7 +2860,9 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       if(errorHitMaxTries) {
 	Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
 	return
-	  List::create(Named("HittedMaxTries") = true);
+	  List::create(Named("HittedMaxTries") = true,
+		       Named("other") =
+		       List::create(Named("UnrecoverExcept") = false));
       }
     } else if(forceRerun) {
       runAgain = true;
