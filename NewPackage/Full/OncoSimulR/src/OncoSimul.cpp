@@ -2838,7 +2838,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       return
 	List::create(Named("other") =
 		     List::create(Named("UnrecoverExcept") = true,
-				  Named("ExceptionMessage") = "Unknown exception");
+				  Named("ExceptionMessage") = "Unknown exception"));
     }
 
 
