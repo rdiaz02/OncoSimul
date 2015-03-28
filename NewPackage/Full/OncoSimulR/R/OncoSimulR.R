@@ -177,7 +177,10 @@ oncoSimulSample <- function(Nindiv,
                 popSample = samplePop(pop, typeSample = typeSample,
                     thresholdWhole = thresholdWhole),
                 attemptsUsed = attemptsUsed,
-                probCancer = Nindiv/attemptsUsed
+                probCancer = Nindiv/attemptsUsed,
+                HittedMaxTries = FALSE,
+                HittedWallTime = FALSE,
+                UnrecoverExcept = FALSE
             ))
         } else if( attemptsLeft <= 0 ) {
             return(f.out.attempts())
