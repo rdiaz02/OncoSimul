@@ -66,7 +66,8 @@ oncoSimulSample <- function(Nindiv,
             popSummary = NA,
             popSample = NA,
             HittedMaxTries = TRUE,
-            hittedWallTime = FALSE
+            hittedWallTime = FALSE,
+            UnrecoverExcept = FALSE
         ))    
     }    
 
@@ -76,7 +77,8 @@ oncoSimulSample <- function(Nindiv,
             popSummary = NA,
             popSample = NA,
             HittedMaxTries = FALSE,
-            HittedWallTime = TRUE
+            HittedWallTime = TRUE,
+            UnrecoverExcept = FALSE
         ))    
     }    
 
@@ -86,7 +88,8 @@ oncoSimulSample <- function(Nindiv,
             popSummary = NA,
             popSample = NA,
             HittedMaxTries = TRUE,
-            hittedWallTime = FALSE
+            hittedWallTime = FALSE,
+            UnrecoverExcept = FALSE
         ))    
     }    
 
@@ -96,10 +99,23 @@ oncoSimulSample <- function(Nindiv,
             popSummary = NA,
             popSample = NA,
             HittedMaxTries = FALSE,
-            HittedWallTime = TRUE
+            HittedWallTime = TRUE,
+            UnrecoverExcept = FALSE
         ))    
     }    
 
+    f.out.unrecover.except <- function(x) {
+        message("Unrecoverable exception (in C++)")
+        return(list(
+            popSummary = NA,
+            popSample = NA,
+            HittedMaxTries = NA,
+            HittedWallTime = NA,
+            UnrecoverExcept = TRUE,
+            ExceptionMessage = x$other$ExceptionMessage
+        ))    
+    }    
+   
     
     startTime <- Sys.time()
     while(TRUE) {
@@ -126,7 +142,12 @@ oncoSimulSample <- function(Nindiv,
                            keepEvery = -9,
                            onlyCancer = onlyCancer,
                            errorHitWallTime = TRUE,
-                           errorHitMaxTries = TRUE)
+                                   errorHitMaxTries = TRUE)
+        
+        if(tmp$other$UnrecoverExcept) {
+            return(f.out.unrecover.except(tmp))
+        }
+        
         pop[[indiv]] <- tmp
         numToRun <- (numToRun - 1)
         attemptsUsed <- attemptsUsed + tmp$other$attemptsUsed

@@ -2831,7 +2831,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 		  << ". Aborting. \n";
       return
 	List::create(Named("other") =
-		     List::create(Named("UnrecoverExcept") = true));
+		     List::create(Named("UnrecoverExcept") = true,
+				  Named("ExceptionMessage") = e.what()));
     } catch (...) {
       Rcpp::Rcout << "\n Unknown unrecoverable exception. Aborting. \n";
       return
