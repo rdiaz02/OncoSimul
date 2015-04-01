@@ -58,7 +58,7 @@ oncoSimulSample <- function(Nindiv,
     
     params <- cbind(seq.int(Nindiv),
                     detectionSize = detectionSize,
-                    detectionDrivers = detectionDrivers)[, -1]
+                    detectionDrivers = detectionDrivers)[, -1, drop = FALSE]
 
     f.out.attempts <- function() {
         message("Run out of attempts")
