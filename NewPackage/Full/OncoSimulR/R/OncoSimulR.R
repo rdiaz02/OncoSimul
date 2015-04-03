@@ -58,11 +58,11 @@ oncoSimulSample <- function(Nindiv,
     indiv <- 1
     ## FIXME! really pass params such as extraTime and minDDr as vectors,
     ## or give a warning
-    params <- cbind(seq.int(Nindiv),
-                    extraTime = extraTime,
-                    minDDrPopSize = minDDrPopSize,
-                    detectionSize = detectionSize,
-                    detectionDrivers = detectionDrivers)[, -1, drop = FALSE]
+    params <- data.frame(seq.int(Nindiv),
+                         extraTime = extraTime,
+                         minDDrPopSize = minDDrPopSize,
+                         detectionSize = detectionSize,
+                         detectionDrivers = detectionDrivers)[, -1, drop = FALSE]
 
     f.out.attempts <- function() {
         message("Run out of attempts")
