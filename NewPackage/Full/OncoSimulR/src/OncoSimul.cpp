@@ -1356,7 +1356,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    bool& simulsDone,
 					    bool& reachDetection,
 					    int& lastMaxDr,
-					    //double& done_at,
+					    double& done_at,
 					    const std::vector<Genotype64>& Genotypes,
 					    const std::vector<spParamsP>& popParams, 
 					    const double& currentTime,
@@ -1368,6 +1368,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const int& detectionDrivers,
 					    const int& verbosity,
 					    const double& minDDrPopSize,
+					    const double& extraTime,
 					    const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
@@ -1411,13 +1412,34 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   }
 
 
-  if( (totPopSize >= detectionSize) ||
-      ( (lastMaxDr >= detectionDrivers) &&
-        (popSizeOverDDr >= minDDrPopSize) ) ) {
+  // if( (totPopSize >= detectionSize) ||
+  //     ( (lastMaxDr >= detectionDrivers) &&
+  //       (popSizeOverDDr >= minDDrPopSize) ) ) {
+  //   simulsDone = true;
+  //   reachDetection = true;
+  // }
+
+  if(extraTime > 0) {
+    if(done_at <  0) {
+      if( (totPopSize >= detectionSize) ||
+	  ( (lastMaxDr >= detectionDrivers) &&
+	    (popSizeOverDDr >= minDDrPopSize) ) ) {
+	done_at = currentTime + extraTime;
+      }
+    } else if (currentTime >= done_at) {
+	simulsDone = true;
+	reachDetection = true; 
+      }
+  } else if( (totPopSize >= detectionSize) ||
+	     ( (lastMaxDr >= detectionDrivers) &&
+	       (popSizeOverDDr >= minDDrPopSize) ) ) {
     simulsDone = true;
-    reachDetection = true;
+    reachDetection = true; 
   }
   
+ 
+
+    
   // This is no longer used.
   // // Beware: this can lead to never stopping if
   // // decreases in popSize or drivers
@@ -1812,6 +1834,7 @@ static void innerBNB(const int& numGenes,
 		     // const double& endTimeEvery,
 		     const int& detectionDrivers,
 		     const double& minDDrPopSize,
+		     const double& extraTime,
 		     const int& verbosity,
 		     double& totPopSize,
 		     double& e1,
@@ -1970,7 +1993,7 @@ static void innerBNB(const int& numGenes,
   
   
   int lastMaxDr = 0;
-  //double done_at = -9;
+  double done_at = -9;
 
 #ifdef MIN_RATIO_MUTS
   g_min_birth_mut_ratio = DBL_MAX;
@@ -2498,7 +2521,7 @@ static void innerBNB(const int& numGenes,
 				      simulsDone,
 				      reachDetection,
 				      lastMaxDr,
-				      //done_at,
+				      done_at,
 				      Genotypes, popParams, 
 				      currentTime,
 				      numDrivers,
@@ -2508,7 +2531,8 @@ static void innerBNB(const int& numGenes,
 				      //endTimeEvery,
 				      detectionDrivers,
 				      verbosity,
-				      minDDrPopSize); //keepEvery is for thinning
+				      minDDrPopSize,
+				      extraTime); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -2627,7 +2651,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	       SEXP errorHitWallTime_,
 	       SEXP maxNumTries_,
 	       SEXP errorHitMaxTries_,
-	       SEXP minDDrPopSize_
+	       SEXP minDDrPopSize_,
+	       SEXP extraTime_
 	       ) {
 
   BEGIN_RCPP
@@ -2676,6 +2701,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   const int maxNumTries = as<int>(maxNumTries_);
   const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
   const double minDDrPopSize = as<double>(minDDrPopSize_);
+  const double extraTime = as<double>(extraTime_);
   
   // C++11 random number
   std::mt19937 ran_generator(seed);
@@ -2831,6 +2857,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	       //endTimeEvery,
 	       detectionDrivers,
 	       minDDrPopSize,
+	       extraTime,
 	       verbosity,
 	       totPopSize,
 	       e1,

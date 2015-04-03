@@ -39,7 +39,8 @@ RcppExport SEXP BNB_Algo5(SEXP restrictTable_,
 			  SEXP errorHitWallTime_,
 			  SEXP maxNumTries_,
 			  SEXP errorHitMaxTries_,
-			  SEXP minDDrPopSize_
+			  SEXP minDDrPopSize_,
+			  SEXP extraTime_
 			  );
 
 

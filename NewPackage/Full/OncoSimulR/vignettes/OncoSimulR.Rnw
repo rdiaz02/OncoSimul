@@ -240,7 +240,7 @@ we directly access the poset in the list of posets.
 <<>>=
 
 m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL", 
-                     numPassengers = 0, detectionDrivers = 10, 
+                     numPassengers = 0, detectionDrivers = 8, 
                      mu = 5e-7, initSize = 4000, 
                      sampleEvery = 0.025,
                      finalTime = 25000, keepEvery = 5, 

@@ -28,6 +28,9 @@
                 minDDrPopSize = ifelse(model \%in\%
                                 c("McFL", "McFarlandLog"),
                                 initSize, 0),
+                extraTime = ifelse(model \%in\%
+                                   c("McFL", "McFarlandLog"), 
+                                   runif(1, 0, 500), 0),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
@@ -44,6 +47,9 @@
                 minDDrPopSize = ifelse(model \%in\%
                                 c("McFL", "McFarlandLog"),
                                 initSize, 0),
+                extraTime = ifelse(model \%in\%
+                                   c("McFL", "McFarlandLog"), 
+                                   runif(1, 0, 500), 0),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
@@ -69,6 +75,9 @@ oncoSimulSample(Nindiv,
                 minDDrPopSize = ifelse(model \%in\%
                                 c("McFL", "McFarlandLog"),
                                 initSize, 0),
+                extraTime = ifelse(model \%in\%
+                                   c("McFL", "McFarlandLog"), 
+                                   runif(Nindiv, 0, 500), 0),
                 finalTime = 0.25 * 25 * 365,
                 onlyCancer = TRUE,
                 max.memory = 2000,
@@ -195,9 +204,21 @@ oncoSimulSample(Nindiv,
   then immediately go extinct. This can be relevant in secenarios such
   as the McFarland model.
 
+  See also \code{extraTime}.
 }
 
+\item{extraTime}{
+  A value larger than zero waits those many additional time periods
+  before exiting after having reached the exit condition (population
+  size, number of drivers).
 
+  The reason for this setting is to prevent the McFL models from always
+  exiting at a time when one clone is increasing its size quickly (see
+  \code{minDDrPopSize}). By setting an \code{extraTime} larger than 0,
+  we can sample at points when we are at the plateau.
+  
+
+}
 
 \item{finalTime}{
   What is the maximum number of time units that the simulation can run.

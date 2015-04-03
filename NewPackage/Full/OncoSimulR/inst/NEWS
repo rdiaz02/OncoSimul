@@ -1,5 +1,8 @@
+Changes in version 99.1.8 (2014-04-03)
+	- added extraTime.
+
 Changes in version 99.1.7 (2014-04-03)
-	- ednTimeEvery removed. Now using minDDrPopSize if needed.
+	- endTimeEvery removed. Now using minDDrPopSize if needed.
 
 Changes in version 99.1.6 (2014-03-20)
 	- untilcancer and oncoSimulSample working together

@@ -33,7 +33,7 @@ FexpectedSame <- list(
 popsNoZero <- function(x) {
     keep <- which(x$pops.by.time[nrow(x$pops.by.time), ] > 0)
     pops <- x$pops.by.time[nrow(x$pops.by.time), keep]
-    genots <- x$Genotypes[, keep[-1] - 1] ## keep contains time too in first col.
+    genots <- x$Genotypes[, keep[-1] - 1, drop = FALSE] ## keep contains time too in first col.
     return(list(pops = pops, genots = genots))
 }
 
