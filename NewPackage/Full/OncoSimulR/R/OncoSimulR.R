@@ -29,11 +29,8 @@ oncoSimulSample <- function(Nindiv,
                             s = 0.1,
                             sh = -1,
                             K = initSize/(exp(1) - 1),
-                            minDDrPopSize = ifelse(model %in%
-                                c("McFL", "McFarlandLog"),
-                                initSize, 0),
-                            extraTime = ifelse(model %in% c("McFL", "McFarlandLog"),
-                                runif(Nindiv, 0, 500), 0),
+                            minDDrPopSize = "auto",
+                            extraTime = 0,
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
                             max.memory = 2000,
@@ -59,8 +56,11 @@ oncoSimulSample <- function(Nindiv,
     numToRun <- Nindiv
     pop <- vector(mode = "list", length = Nindiv)
     indiv <- 1
-    
+    ## FIXME! really pass params such as extraTime and minDDr as vectors,
+    ## or give a warning
     params <- cbind(seq.int(Nindiv),
+                    extraTime = extraTime,
+                    minDDrPopSize = minDDrPopSize,
                     detectionSize = detectionSize,
                     detectionDrivers = detectionDrivers)[, -1, drop = FALSE]
 
@@ -137,10 +137,8 @@ oncoSimulSample <- function(Nindiv,
                                s = s,
                                sh = sh,
                                K = K,
-                               minDDrPopSize = ifelse(model %in%
-                                   c("McFL", "McFarlandLog"),
-                                   initSize, 0),
-                               extraTime = ifelse(model %in% c("McFL", "McFarlandLog"), runif(1, 0, 500), 0),
+                               minDDrPopSize = params[indiv, "minDDrPopSize"],
+                               extraTime = params[indiv, "extraTime"],
                                finalTime = finalTime,
                                max.memory = max.memory,
                                max.wall.time = max.wall.time.total,
@@ -313,10 +311,8 @@ oncoSimulPop <- function(Nindiv,
                          sh = -1,
                          K = initSize/(exp(1) - 1),
                          keepEvery = sampleEvery, 
-                         minDDrPopSize = ifelse(model %in%
-                                c("McFL", "McFarlandLog"),
-                             initSize, 0),
-                         extraTime = ifelse(model %in% c("McFL", "McFarlandLog"), runif(1, 0, 500), 0),
+                         minDDrPopSize = "auto",
+                         extraTime = 0,
                          ## used to be this
                          ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
                          ##                       5 * sampleEvery),
@@ -383,10 +379,8 @@ oncoSimulIndiv <- function(poset,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
                            keepEvery = sampleEvery,
-                           minDDrPopSize = ifelse(model %in%
-                                c("McFL", "McFarlandLog"),
-                               initSize, 0),
-                           extraTime = ifelse(model %in% c("McFL", "McFarlandLog"), runif(1, 0, 500), 0),
+                           minDDrPopSize = "auto",
+                           extraTime = 0,
                            ## used to be this
                            ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
                            ##                     5 * sampleEvery),
@@ -441,7 +435,15 @@ oncoSimulIndiv <- function(poset,
        (sampleEvery > 0.05)) {
         warning("With the McFarland model you often want smaller sampleEvery")
     }
-    
+
+    if(minDDrPopSize == "auto") {
+        if(model %in% c("Bozic", "Exp") )
+            minDDrPopSize <- 0
+        else if (model %in% c("McFL", "McFarlandLog"))
+            minDDrPopSize <- eFinalMf(initSize, s, detectionDrivers)
+        else
+            stop("Unknown model")
+    }
     ## if(typeFitness == "mcfarlandlog") {
     ##     endTimeEvery <- keepEvery
     ## } else {
