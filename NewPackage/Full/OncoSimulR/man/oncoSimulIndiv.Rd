@@ -25,7 +25,9 @@
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = -9,
+                minDDrPopSize = ifelse(model \%in\%
+                                c("McFL", "McFarlandLog"),
+                                initSize, 0),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
@@ -39,7 +41,9 @@
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = -9,
+                minDDrPopSize = ifelse(model \%in\%
+                                c("McFL", "McFarlandLog"),
+                                initSize, 0),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
@@ -62,7 +66,9 @@ oncoSimulSample(Nindiv,
                 s = 0.1,
                 sh = -1,
                 K = initSize/(exp(1) - 1),
-                endTimeEvery = -9, 
+                minDDrPopSize = ifelse(model \%in\%
+                                c("McFL", "McFarlandLog"),
+                                initSize, 0),
                 finalTime = 0.25 * 25 * 365,
                 onlyCancer = TRUE,
                 max.memory = 2000,
@@ -160,19 +166,36 @@ oncoSimulSample(Nindiv,
 
 }
 
-\item{endTimeEvery}{
-  If endTimeEvery is > 0, even if conditions for finishing a simulation
-  (number of drivers or population size) are met at time \emph{t}, the
-  simulation will run at least until \emph{t + endTimeEvery} and
-  conditions will be checked again. Only if conditions for finishing a
-  simulation are still met, will the simulation end.
+%% \item{endTimeEvery}{
+%%   If endTimeEvery is > 0, even if conditions for finishing a simulation
+%%   (number of drivers or population size) are met at time \emph{t}, the
+%%   simulation will run at least until \emph{t + endTimeEvery} and
+%%   conditions will be checked again. Only if conditions for finishing a
+%%   simulation are still met, will the simulation end.
+
+%%   The reason for this parameter is to ensure that, say, a clone with a
+%%   certain number of drivers that would cause the simulation to end has
+%%   not just appeared but then gone extinct shortly after. Beware, though,
+%%   that in simulations with very fast growth, setting large endTimeEvery
+%%   can result in the simulations taking a long time to finish or hitting
+%%   the wall time limit.}
+
+\item{minDDrPopSize}{
+
+  A value of 0 or larger than 0 (by default equal to
+  \code{initSize} in the McFarland model). If larger than 0, when
+  checking if we are done with a simulation, we verify that the sum of
+  the population sizes of all clones that have a number of mutated
+  drivers larger or equal to \code{detectionDrivers} is larger or equal
+  to this \code{minDDrPopSize}.
 
   The reason for this parameter is to ensure that, say, a clone with a
   certain number of drivers that would cause the simulation to end has
-  not just appeared but then gone extinct shortly after. Beware, though,
-  that in simulations with very fast growth, setting large endTimeEvery
-  can result in the simulations taking a long time to finish or hitting
-  the wall time limit.}
+  not just appeared and is present in only one individual that might
+  then immediately go extinct. This can be relevant in secenarios such
+  as the McFarland model.
+
+}
 
 
 

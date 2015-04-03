@@ -29,7 +29,9 @@ oncoSimulSample <- function(Nindiv,
                             s = 0.1,
                             sh = -1,
                             K = initSize/(exp(1) - 1),
-                            endTimeEvery = -9, 
+                            minDDrPopSize = ifelse(model %in%
+                                c("McFL", "McFarlandLog"),
+                                initSize, 0),
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
                             max.memory = 2000,
@@ -133,7 +135,9 @@ oncoSimulSample <- function(Nindiv,
                            s = s,
                            sh = sh,
                            K = K,
-                           endTimeEvery = endTimeEvery,
+                           minDDrPopSize = ifelse(model %in%
+                                c("McFL", "McFarlandLog"),
+                                initSize, 0),
                            finalTime = finalTime,
                            max.memory = max.memory,
                                max.wall.time = max.wall.time.total,
@@ -306,7 +310,9 @@ oncoSimulPop <- function(Nindiv,
                          sh = -1,
                          K = initSize/(exp(1) - 1),
                          keepEvery = sampleEvery, 
-                         endTimeEvery = -9,
+                         minDDrPopSize = ifelse(model %in%
+                                c("McFL", "McFarlandLog"),
+                                initSize, 0),
                          ## used to be this
                          ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
                          ##                       5 * sampleEvery),
@@ -340,7 +346,7 @@ oncoSimulPop <- function(Nindiv,
                         sh = sh,
                         K = K,
                         keepEvery = keepEvery,
-                        endTimeEvery = endTimeEvery,
+                        minDDrPopSize = minDDrPopSize,
                         finalTime = finalTime,
                         onlyCancer = onlyCancer,
                         max.memory = max.memory,
@@ -372,7 +378,9 @@ oncoSimulIndiv <- function(poset,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
                            keepEvery = sampleEvery,
-                           endTimeEvery = -9,
+                           minDDrPopSize = ifelse(model %in%
+                                c("McFL", "McFarlandLog"),
+                                initSize, 0),
                            ## used to be this
                            ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
                            ##                     5 * sampleEvery),
@@ -469,7 +477,7 @@ oncoSimulIndiv <- function(poset,
                                  alpha = 0.0015,  
                                  sh = sh,
                                  K = K, 
-                                 endTimeEvery = endTimeEvery, 
+                                 minDDrPopSize = minDDrPopSize, 
                                  detectionDrivers = detectionDrivers,
                                  onlyCancer = onlyCancer,
                                  errorHitWallTime = errorHitWallTime,
@@ -797,12 +805,13 @@ oncoSimul.internal <- function(restrict.table,
                                alpha,
                                sh,                               
                                K,
-                               endTimeEvery,
+                               ## endTimeEvery,
                                detectionDrivers,
                                onlyCancer,
                                errorHitWallTime,
                                max.num.tries,
-                               errorHitMaxTries) {
+                               errorHitMaxTries,
+                               minDDrPopSize) {
 
     ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
@@ -909,12 +918,13 @@ oncoSimul.internal <- function(restrict.table,
         alpha,
         sh,
         K,
-        endTimeEvery,
+        # endTimeEvery,
         detectionDrivers,
         onlyCancer,
         errorHitWallTime,
         max.num.tries,
-        errorHitMaxTries
+        errorHitMaxTries,
+        minDDrPopSize
     ),
              NumDrivers = numDrivers
              ))
@@ -1344,3 +1354,14 @@ simposet <- function(poset, p) {
     return(genotype)
 }
 
+
+
+
+eFinalMf <- function(initSize, s, j) {
+    ## Expected final sizes for McF, when K is set to the default.
+    # j is number of drivers
+    ## as it says, with no passengers
+    ## Set B(d) = D(N)
+    K <- initSize/(exp(1) - 1)
+    return(K * (exp( (1 + s)^j) - 1))
+}

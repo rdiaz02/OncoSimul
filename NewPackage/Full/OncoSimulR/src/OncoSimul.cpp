@@ -1327,6 +1327,20 @@ static inline int count_NDrivers(const Genotype64& Genotype,
   return totalDr;
 }
 
+// static inline double popSize_over_m_dr(const int& dr,
+// 				       const Genotype64& Genotype,
+// 				       const int& NumDrivers,
+// 				       const std::vector<spParamsP>& popParams) {
+//   double psize = 0.0;
+//   for(size_t i = 0; i < popParams.size(); ++i) {
+//     if( count_NDrivers(Genotypes[i], NumDrivers) >= dr)
+//       psize += popParams[i].popSize;
+//   }
+//   return psize;
+// }
+
+
+
 static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    double& totPopSize, 
 					    double& lastStoredSample,
@@ -1342,7 +1356,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    bool& simulsDone,
 					    bool& reachDetection,
 					    int& lastMaxDr,
-					    double& done_at,
+					    //double& done_at,
 					    const std::vector<Genotype64>& Genotypes,
 					    const std::vector<spParamsP>& popParams, 
 					    const double& currentTime,
@@ -1350,12 +1364,16 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const double& keepEvery,
 					    const double& detectionSize,
 					    const double& finalTime,
-					    const double& endTimeEvery,
+					    // const double& endTimeEvery,
 					    const int& detectionDrivers,
 					    const int& verbosity,
+					    const double& minDDrPopSize,
 					    const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
+  
+  // This determines if we are done or not by checking popSize, number of
+  // drivers, etc
   
   // static int lastMaxDr = 0; // preserves value across calls to Algo5 from R.
   // so can not use it.
@@ -1368,18 +1386,20 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   // DP2((lastStoredSample + endTimeEvery));
   // DP2(detectionSize);
 
+  // this could all be part of popSize_over_m_dr, with a better name
   int tmp_ndr = 0;
   int max_ndr = 0;
+  double popSizeOverDDr = 0.0;
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     totPopSize += popParams[i].popSize;
     tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers);
     if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
+    if(tmp_ndr >= detectionDrivers) popSizeOverDDr += popParams[i].popSize;
   }
   lastMaxDr = max_ndr;
 
   
-
   if (keepEvery < 0) {
     storeThis = false;
   } else if( currentTime >= (lastStoredSample + keepEvery) ) {
@@ -1390,45 +1410,54 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
     simulsDone = true;
   }
 
-    // if ( ( currentTime >= (lastStoredSample + endTimeEvery) ) &&
-    // 	 ( (totPopSize >= detectionSize) ||
-    // 	   (lastMaxDr >= detectionDrivers) ) ) {
-    //   simulsDone = true;
-    // }
-  
-  // Beware: this can lead to never stopping if
-  // decreases in popSize or drivers
 
-  // Logic: if a period k you meet any condition, recheck again at k +
-  // endTimeEvery, and if conditions met exit. Prevents exiting if you
-  // reach the cancer state almost by chance. But this is way too
-  // paranoid. The idea is of application mainly for McF and Beeren
-  // models, so we do not bail out as soon as just a single cell with one
-  // new driver. But this makes things very slow.
-
-  // Thus, never pass an endTimeEvery > 0, but use detectionDrivers = 1 +
-  // intended final Drivers.
-
-  
-  if(endTimeEvery > 0) {
-    if(done_at <= 0 ) {
-      if( (totPopSize >= detectionSize) ||
-	   (lastMaxDr >= detectionDrivers)  )
-	done_at = currentTime + endTimeEvery;
-    } else if (currentTime >= done_at) {
-      if( (totPopSize >= detectionSize) ||
-	  (lastMaxDr >= detectionDrivers)  ) {
-	simulsDone = true;
-	reachDetection = true;
-      }
-      else
-	done_at = -9;
-    }
-  } else if( (totPopSize >= detectionSize) ||
-	     (lastMaxDr >= detectionDrivers) )  {	
-      simulsDone = true;
-      reachDetection = true;
+  if( (totPopSize >= detectionSize) ||
+      ( (lastMaxDr >= detectionDrivers) &&
+        (popSizeOverDDr >= minDDrPopSize) ) ) {
+    simulsDone = true;
+    reachDetection = true;
   }
+  
+  // This is no longer used.
+  // // Beware: this can lead to never stopping if
+  // // decreases in popSize or drivers
+
+  // // Logic: if a period k you meet any condition, recheck again at k +
+  // // endTimeEvery, and if conditions met exit. Prevents exiting if you
+  // // reach the cancer state almost by chance. But this is way too
+  // // paranoid. The idea is of application mainly for McF and Beeren
+  // // models, so we do not bail out as soon as just a single cell with one
+  // // new driver. But this makes things very slow.
+
+  // // Thus, never pass an endTimeEvery > 0, but use detectionDrivers = 1 +
+  // // intended final Drivers.
+
+  // // FIXME
+  // // Ideally, we would check, for McFL, that popsize of the pop with
+  // // required number of drivers is at least, say, > initSize.
+  // // But that is not trivial, as requires more accounting. Do later.
+
+  
+  // if(endTimeEvery > 0) {
+  //   if(done_at <= 0 ) {
+  //     if( (totPopSize >= detectionSize) ||
+  // 	   (lastMaxDr >= detectionDrivers)  )
+  // 	done_at = currentTime + endTimeEvery;
+  //   } else if (currentTime >= done_at) {
+  //     if( (totPopSize >= detectionSize) ||
+  // 	  (lastMaxDr >= detectionDrivers)  ) {
+  // 	simulsDone = true;
+  // 	reachDetection = true;
+  //     }
+  //     else
+  // 	done_at = -9;
+  //   }
+  // } else if( (totPopSize >= detectionSize) ||
+  // 	     (lastMaxDr >= detectionDrivers) )  {
+    
+  //     simulsDone = true;
+  //     reachDetection = true;
+  // }
 
   
   if(totPopSize >= fatalPopSize) {
@@ -1780,8 +1809,9 @@ static void innerBNB(const int& numGenes,
 		     const double& maxWallTime,
 		     const double& finalTime,
 		     const double& detectionSize,
-		     const double& endTimeEvery,
+		     // const double& endTimeEvery,
 		     const int& detectionDrivers,
+		     const double& minDDrPopSize,
 		     const int& verbosity,
 		     double& totPopSize,
 		     double& e1,
@@ -1940,7 +1970,7 @@ static void innerBNB(const int& numGenes,
   
   
   int lastMaxDr = 0;
-  double done_at = -9;
+  //double done_at = -9;
 
 #ifdef MIN_RATIO_MUTS
   g_min_birth_mut_ratio = DBL_MAX;
@@ -2468,16 +2498,17 @@ static void innerBNB(const int& numGenes,
 				      simulsDone,
 				      reachDetection,
 				      lastMaxDr,
-				      done_at,
+				      //done_at,
 				      Genotypes, popParams, 
 				      currentTime,
 				      numDrivers,
 				      keepEvery,
 				      detectionSize,
 				      finalTime,
-				      endTimeEvery,
+				      //endTimeEvery,
 				      detectionDrivers,
-				      verbosity); //keepEvery is for thinning
+				      verbosity,
+				      minDDrPopSize); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -2590,12 +2621,13 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	       SEXP alpha_,
 	       SEXP sh_,
 	       SEXP K_,
-	       SEXP endTimeEvery_,
+	       // SEXP endTimeEvery_,
 	       SEXP detectionDrivers_,
 	       SEXP onlyCancer_,
 	       SEXP errorHitWallTime_,
 	       SEXP maxNumTries_,
-	       SEXP errorHitMaxTries_
+	       SEXP errorHitMaxTries_,
+	       SEXP minDDrPopSize_
 	       ) {
 
   BEGIN_RCPP
@@ -2635,7 +2667,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   const double sh = as<double>(sh_); // coeff for fitness
   // if a driver without dependencies. Like in Datta et al., 2013.
   const double K = as<double>(K_); //for McFarland
-  const double endTimeEvery = as<double>(endTimeEvery_); 
+  //const double endTimeEvery = as<double>(endTimeEvery_); 
   const int detectionDrivers = as<int>(detectionDrivers_); 
   const double genTime = 4.0; // should be a parameter. For Bozic only.
   // const bool errorFinalTime = as<bool>(errorFinalTime_);
@@ -2643,6 +2675,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   const bool onlyCancer = as<bool>(onlyCancer_);
   const int maxNumTries = as<int>(maxNumTries_);
   const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
+  const double minDDrPopSize = as<double>(minDDrPopSize_);
   
   // C++11 random number
   std::mt19937 ran_generator(seed);
@@ -2795,8 +2828,9 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	       maxWallTime,
 	       finalTime,
 	       detectionSize,
-	       endTimeEvery,
+	       //endTimeEvery,
 	       detectionDrivers,
+	       minDDrPopSize,
 	       verbosity,
 	       totPopSize,
 	       e1,
@@ -2849,6 +2883,9 @@ SEXP BNB_Algo5(SEXP restrictTable_,
 	Rcpp::Rcout << "\n Hitting wall time is regarded as an error. \n";
 	return
 	  List::create(Named("HittedWallTime") = true,
+		       Named("HittedMaxTries") = false, // yes, for
+							// coherent return
+							// objects
 		       Named("other") =
 		       List::create(Named("UnrecoverExcept") = false));
       }
@@ -2860,7 +2897,8 @@ SEXP BNB_Algo5(SEXP restrictTable_,
       if(errorHitMaxTries) {
 	Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
 	return
-	  List::create(Named("HittedMaxTries") = true,
+	  List::create(Named("HittedWallTime") = false,
+		       Named("HittedMaxTries") = true,
 		       Named("other") =
 		       List::create(Named("UnrecoverExcept") = false));
       }
@@ -2997,7 +3035,7 @@ SEXP BNB_Algo5(SEXP restrictTable_,
   // here("after precomp");
   // here("*******************************************");
 
-  
+
   return 
     List::create(Named("pops.by.time") = outNS,
 		 Named("NumClones") = uniqueGenotypes.size(), 
