@@ -689,6 +689,11 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
         box()
 }
 
+## to plot and adjacency matrix in this context can do
+## plotPoset(intAdjMatToPoset(adjMat))
+## where intAdjMatToPoset is from best oncotree code: generate-random-trees.
+
+
 ############# The rest are internal functions
 
 get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {

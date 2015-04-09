@@ -399,6 +399,13 @@ static double pM_f_st(const double& t,
 static inline double pE_f_st(double& pM, const spParamsP& spP){
   double pE = (spP.death * (1.0 - pM ) )/(spP.W - spP.death - spP.birth * pM );
   if( !std::isfinite(pE) ) {
+    // FIXME debug
+    DP2(spP.death); DP2(pM);
+    print_spP(spP);
+    // for the running out of mutations
+    // set a very tiny mutation prob, and if by chance it happens,
+    // then mutate back to one self, so do not mutate
+    // o.w., work out the math carefully
     throw std::range_error("pE.f: pE not finite");
   }
   return pE;
@@ -652,11 +659,38 @@ static double Algo2_st(const spParamsP& spP,
     #endif
     return 0.0;
   }
-  
+
+
+  if(spP.mutation == 0.0) {
+    Rcpp::Rcout << "\n Entered Algo2 with mutation rate = 0\n";
+    if(spP.numMutablePos != 0)
+      throw std::range_error("mutation = 0 with numMutable != 0?");
+  }
+
+
+  // double pm, pe, pb;
+  double m; // the holder for the binomial
+
   double pm = pM_f_st(t, spP);
   double pe = pE_f_st(pm, spP);
   double pb = pB_f_st(pe, spP);
-  double m; // the holder for the binomial
+
+  // if(spP.numMutablePos == 0) {
+  //   // Just do the math. In this case mutation rate is 0. Thus, pM (eq. 8
+  //   // in paper) is 1 necessarily. And pE is birth/death rates (if you do
+  //   // things sensibly, not multiplying numbers as in computing pE
+  //   // below). And pB is also 1.
+
+  //   // This will blow up below if death > birth, as then pe/pm > 1 and 1 -
+  //   // pe/pm < 0. But I think this would just mean this is extinct?
+  //   pm = 1;
+  //   pe = spP.death/spP.birth;
+  //   pb = 1;
+  // } else {
+  //   pm = pM_f_st(t, spP);
+  //   pe = pE_f_st(pm, spP);
+  //   pb = pB_f_st(pe, spP);
+  // }
 
   double rnb; // holder for neg. bino. So we can check.
   double retval; //So we can check 
@@ -729,7 +763,7 @@ static double Algo2_st(const spParamsP& spP,
     #endif    
     retval = 0.0;
   } else {
-    rnb = ::Rf_rnbinom(m, 1.0 - pb);
+    rnb = ::Rf_rnbinom(m, 1.0 - pb); // this is the correct ONE
     // if(std::isnan(rnb)) {
     //   Rcpp::Rcout << "\n\nWARNING: Using hack around rnbinom NaN problem in Algo2\n";
     //   rnb = ::Rf_rnbinom(m + 1, 1.0 - pb);
@@ -825,7 +859,8 @@ static double Algo3_st(const spParamsP& spP, const double& t){
   //   Rcpp::Rcout << "\n\nWARNING: Using hack around rbinom NaN problem in Algo3\n";
   //   m = ::Rf_rbinom(spP.popSize, 1.0 - (pe/pm));
   // }
-  rnb = ::Rf_rnbinom(m + 2.0, 1.0 - pb);
+  rnb = ::Rf_rnbinom(m + 2.0, 1.0 - pb); 
+  
   // if(std::isnan(rnb)) {
   //   Rcpp::Rcout << "\n\nWARNING: Using hack around rnbinom NaN problem in Algo3\n";
   //   rnb = ::Rf_rnbinom(m + 1.0, 1.0 - pb);
@@ -1225,11 +1260,11 @@ static inline void new_sp_bitset(unsigned int& sp, const Genotype64& newGenotype
 static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
 				 //gsl_rng *r,
 				 std::mt19937& ran_generator, 
-			  std::vector<int>& mutablePos,
-			  const Genotype64& nextMutantGenotype,
-			  // const int& nextMutant,
-			  // const std::vector<Genotype64>& Genotypes,
-			  const int& numGenes) {
+				 std::vector<int>& mutablePos,
+				 const Genotype64& nextMutantGenotype,
+				 // const int& nextMutant,
+				 // const std::vector<Genotype64>& Genotypes,
+				 const int& numGenes) {
   // We want mutatedPos and numMutablePosParent
 
   // Note: impossible to have a second recorded mutation in
@@ -1861,6 +1896,8 @@ static void innerBNB(const int& numGenes,
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
 
+  double dummyMutationRate = std::max(mu/1000, 1e-13);
+  // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero
   genot_out.clear();
   popSizes_out.clear();
@@ -2336,6 +2373,9 @@ static void innerBNB(const int& numGenes,
       
       popParams[nextMutant].popSize = Algo3_st(popParams[nextMutant],
 					       mutantTimeSinceLastUpdate);
+
+
+
       
       if(popParams[nextMutant].popSize > (ratioForce * detectionSize)) {
 	forceSample = true;
@@ -2375,119 +2415,141 @@ static void innerBNB(const int& numGenes,
       // 	simulsDone = true;
       // }
 
-      // ************   5.5   ***************
-      getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
-			   ran_generator,
-			   mutablePos,
-			   Genotypes[nextMutant], 
-			   numGenes);
+
+      if(popParams[nextMutant].numMutablePos != 0) {
+	// this is the usual case. The alternative is the dummy or null mutation
+
       
-      // ************   5.6   ***************
-      newGenotype = Genotypes[nextMutant];
-      newGenotype.set(mutatedPos);
-      // newGenotype[mutatedPos] = 1;
+	// ************   5.5   ***************
+	getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
+			     ran_generator,
+			     mutablePos,
+			     Genotypes[nextMutant], 
+			     numGenes);
       
-      new_sp_bitset(sp, newGenotype, Genotypes);
+	// ************   5.6   ***************
 
-      if(sp == numSpecies) {// New species
-	++numSpecies;
-	init_tmpP(tmpParam);
+	newGenotype = Genotypes[nextMutant];
+	newGenotype.set(mutatedPos);
+	// newGenotype[mutatedPos] = 1;
+      
+	new_sp_bitset(sp, newGenotype, Genotypes);
 
-	if(verbosity >= 2) {
-	  Rcpp::Rcout <<"\n     Creating new species   " << (numSpecies - 1)
-		    << "         from species "  <<   nextMutant;
-	}
-	
-	tmpParam.popSize = 1;
+	if(sp == numSpecies) {// New species
+	  ++numSpecies;
+	  init_tmpP(tmpParam);
 
-	fitness(tmpParam, popParams[nextMutant], mutatedPos, 
-		restrictTable,
-		typeCBN, newGenotype, birthRate, s,
-		numDrivers, typeFitness, genTime,
-		adjust_fitness_B, sh, adjust_fitness_MF);
-	
-
-	if(tmpParam.birth > 0.0) {
-	  tmpParam.numMutablePos = numMutablePosParent - 1;
-	  if(mutatorGenotype)
-	    tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
-	  //	    tmpParam.mutation = mu * tmpParam.birth * (numMutablePosParent - 1);
-	  else
-	    tmpParam.mutation = mu * tmpParam.numMutablePos;
-	    //tmpParam.mutation = mu * (numMutablePosParent - 1);
-	  if (tmpParam.mutation > 1 )
-	    Rcpp::Rcout << "WARNING: mutation > 1\n";
-	  if (numMutablePosParent == 1) 
-	    Rcpp::Rcout << "Note: mutation = 0; no positions left for mutation\n";
-	  W_f_st(tmpParam);
-	  R_f_st(tmpParam);
-	  tmpParam.timeLastUpdate = -99999.99999; //mapTimes_updateP does what it should.
-	  popParams.push_back(tmpParam);
-	  Genotypes.push_back(newGenotype);
-	  to_update = 2;
-#ifdef MIN_RATIO_MUTS
-	  g_tmp1 = tmpParam.birth/tmpParam.mutation;
-	  if(g_tmp1 < g_min_birth_mut_ratio) g_min_birth_mut_ratio = g_tmp1;
-	  
-	  g_tmp1 = tmpParam.death/tmpParam.mutation;
-	  if(g_tmp1 < g_min_death_mut_ratio) g_min_death_mut_ratio = g_tmp1;	
-#endif	  
-	} else {// fitness is 0, so we do not add it
-	  --sp;
-	  --numSpecies;
-	  to_update = 1;
-	}
-	//#ifdef DEBUGV	
-	if(verbosity >= 3) {
-	  Rcpp::Rcout << " \n\n\n Looking at NEW species " << sp << " at creation";
-	  Rcpp::Rcout << "\n Genotype = " << newGenotype; //Genotypes[sp];
-	  Rcpp::Rcout << "\n sp_id = " << newGenotype.to_ullong() ;
-	    //Genotypes[sp].to_ullong();
-	  Rcpp::Rcout << "\n birth of sp = " << tmpParam.birth;
-	  Rcpp::Rcout << "\n death of sp = " << tmpParam.death;
-	  Rcpp::Rcout << "\n s = " << s;
-	  Rcpp::Rcout << "\n parent birth = " << popParams[nextMutant].birth;
-	  Rcpp::Rcout << "\n parent death = " << popParams[nextMutant].death;
-	  Rcpp::Rcout << "\n parent Genotype = " << Genotypes[nextMutant];
-	  print_spP(tmpParam);
-	}
-	//#endif
-      } else {	// A mutation to pre-existing species
-#ifdef DEBUGW
-	if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0)
-	  throw std::out_of_range("currentTime - timeLastUpdate out of range"); 
-#endif
-	
-	if(verbosity >= 2) {
-	  Rcpp::Rcout <<"\n     Mutated to existing species " << sp 
-		    << " (Genotype = " << Genotypes[sp] 
-		    << "; sp_id = " << Genotypes[sp].to_ullong() << ")"
-		    << "\n from species "  <<   nextMutant
-		    << " (Genotypes = " << Genotypes[nextMutant] 
-		    << "; sp_id = " << Genotypes[sp].to_ullong() << ")";
-	}
-
-	// FIXME00: the if can be removed??
-	if(popParams[sp].popSize > 0.0) {
-	  popParams[sp].popSize = 1.0 + 
-	    Algo2_st(popParams[sp], currentTime);
 	  if(verbosity >= 2) {
-	    Rcpp::Rcout << "\n New popSize = " << popParams[sp].popSize << "\n";
+	    Rcpp::Rcout <<"\n     Creating new species   " << (numSpecies - 1)
+			<< "         from species "  <<   nextMutant;
 	  }
-	} else {
-	  throw std::range_error("\n popSize == 0 but existing? \n");
-	}
+	
+	  tmpParam.popSize = 1;
+
+	  fitness(tmpParam, popParams[nextMutant], mutatedPos, 
+		  restrictTable,
+		  typeCBN, newGenotype, birthRate, s,
+		  numDrivers, typeFitness, genTime,
+		  adjust_fitness_B, sh, adjust_fitness_MF);
+	
+
+	  if(tmpParam.birth > 0.0) {
+	    tmpParam.numMutablePos = numMutablePosParent - 1;
+	    if(mutatorGenotype)
+	      tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
+	    //	    tmpParam.mutation = mu * tmpParam.birth * (numMutablePosParent - 1);
+	    else
+	      tmpParam.mutation = mu * tmpParam.numMutablePos;
+	    //tmpParam.mutation = mu * (numMutablePosParent - 1);
+	    if (tmpParam.mutation > 1 )
+	      Rcpp::Rcout << "WARNING: mutation > 1\n";
+	    if (numMutablePosParent == 1) {
+	      Rcpp::Rcout << "Note: mutation = 0; no positions left for mutation\n";
+	      tmpParam.mutation = dummyMutationRate; // dummy mutation here. Set some mu.
+	    }
+	    W_f_st(tmpParam);
+	    R_f_st(tmpParam);
+	    tmpParam.timeLastUpdate = -99999.99999; //mapTimes_updateP does what it should.
+	    popParams.push_back(tmpParam);
+	    Genotypes.push_back(newGenotype);
+	    to_update = 2;
+#ifdef MIN_RATIO_MUTS
+	    g_tmp1 = tmpParam.birth/tmpParam.mutation;
+	    if(g_tmp1 < g_min_birth_mut_ratio) g_min_birth_mut_ratio = g_tmp1;
+	  
+	    g_tmp1 = tmpParam.death/tmpParam.mutation;
+	    if(g_tmp1 < g_min_death_mut_ratio) g_min_death_mut_ratio = g_tmp1;	
+#endif	  
+	  } else {// fitness is 0, so we do not add it
+	    --sp;
+	    --numSpecies;
+	    to_update = 1;
+	  }
+	  //#ifdef DEBUGV	
+	  if(verbosity >= 3) {
+	    Rcpp::Rcout << " \n\n\n Looking at NEW species " << sp << " at creation";
+	    Rcpp::Rcout << "\n Genotype = " << newGenotype; //Genotypes[sp];
+	    Rcpp::Rcout << "\n sp_id = " << newGenotype.to_ullong() ;
+	    //Genotypes[sp].to_ullong();
+	    Rcpp::Rcout << "\n birth of sp = " << tmpParam.birth;
+	    Rcpp::Rcout << "\n death of sp = " << tmpParam.death;
+	    Rcpp::Rcout << "\n s = " << s;
+	    Rcpp::Rcout << "\n parent birth = " << popParams[nextMutant].birth;
+	    Rcpp::Rcout << "\n parent death = " << popParams[nextMutant].death;
+	    Rcpp::Rcout << "\n parent Genotype = " << Genotypes[nextMutant];
+	    print_spP(tmpParam);
+	  }
+	  //#endif
+	} else {	// A mutation to pre-existing species
+#ifdef DEBUGW
+	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0)
+	    throw std::out_of_range("currentTime - timeLastUpdate out of range"); 
+#endif
+	
+	  if(verbosity >= 2) {
+	    Rcpp::Rcout <<"\n     Mutated to existing species " << sp 
+			<< " (Genotype = " << Genotypes[sp] 
+			<< "; sp_id = " << Genotypes[sp].to_ullong() << ")"
+			<< "\n from species "  <<   nextMutant
+			<< " (Genotypes = " << Genotypes[nextMutant] 
+			<< "; sp_id = " << Genotypes[sp].to_ullong() << ")";
+	  }
+
+	  // FIXME00: the if can be removed??
+	  if(popParams[sp].popSize > 0.0) {
+	    popParams[sp].popSize = 1.0 + 
+	      Algo2_st(popParams[sp], currentTime);
+	    if(verbosity >= 2) {
+	      Rcpp::Rcout << "\n New popSize = " << popParams[sp].popSize << "\n";
+	    }
+	  } else {
+	    throw std::range_error("\n popSize == 0 but existing? \n");
+	  }
 	
 #ifdef DEBUGW
-	popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
+	  popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
 #endif
-	//popParams[sp].Flag = true;
+	  //popParams[sp].Flag = true;
+	}
+	//   ***************  5.7 ***************
+	// u_2 irrelevant if to_update = 1;
+	u_1 = nextMutant;
+	u_2 = static_cast<int>(sp);
+      } else { // the null or dummy mutation case
+	// Rcpp::Rcout << "\n null mutation; before popSize" << std::endl;
+	// DP2(popParams[nextMutant].popSize);
+	++popParams[nextMutant].popSize;
+	to_update = 1;
+	u_1 = nextMutant;
+	u_2 = -99;
+	// FIXME: do this conditionally on flag
+	Rcpp::Rcout << "Note: updating in null mutation\n";
+	// Rcpp::Rcout << "\n null mutation; after popSize" << std::endl;
+	// DP2(popParams[nextMutant].popSize);
+	// Rcpp::Rcout << "\n done null mutation; after popSize ********" << std::endl;
       }
-      //   ***************  5.7 ***************
-      // u_2 irrelevant if to_update = 1;
-      u_1 = nextMutant;
-      u_2 = static_cast<int>(sp);
-    } else { //       *********** We are sampling **********
+    }
+      else { //       *********** We are sampling **********
       to_update = 3; //short_update = false;
       if(verbosity >= 2) {
 	Rcpp::Rcout <<"\n We are SAMPLING";   
