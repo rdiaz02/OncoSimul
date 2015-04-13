@@ -1401,10 +1401,15 @@ intAdjMatToPoset <- function(x,
      return(which(x == 1, arr.ind = TRUE) - 1L)
 }    
 
+## plotAdjMat <- function(adjmat) {
+##     plotPoset(intAdjMatToPoset(adjmat))
+## }
+
 plotAdjMat <- function(adjmat) {
-    plotPoset(intAdjMatToPoset(adjmat))
+    plot(as(adjmat, "graphNEL"))
 }
 
 ## to plot and adjacency matrix in this context can do
 ## plotPoset(intAdjMatToPoset(adjMat))
 ## where intAdjMatToPoset is from best oncotree code: generate-random-trees.
+## No! the above is simpler
