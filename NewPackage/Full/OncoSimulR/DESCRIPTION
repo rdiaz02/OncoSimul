@@ -17,4 +17,4 @@ Imports: Rcpp (>= 0.11.1), parallel, data.table, graph, Rgraphviz
 Suggests: BiocStyle, knitr, Oncotree, testthat
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-#SystemRequirements: C++11
+SystemRequirements: C++11
