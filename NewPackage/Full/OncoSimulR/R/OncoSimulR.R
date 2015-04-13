@@ -692,7 +692,7 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
 ## to plot and adjacency matrix in this context can do
 ## plotPoset(intAdjMatToPoset(adjMat))
 ## where intAdjMatToPoset is from best oncotree code: generate-random-trees.
-
+## see below
 
 ############# The rest are internal functions
 
@@ -1381,3 +1381,30 @@ eFinalMf <- function(initSize, s, j) {
     K <- initSize/(exp(1) - 1)
     return(K * (exp( (1 + s)^j) - 1))
 }
+
+
+
+
+## just for plotting. This is provisional. This function was defined
+## in generate-random-trees.R
+intAdjMatToPoset <- function(x, 
+                             rootNames = c("0", "root", "Root")) {
+
+     if(!identical(colnames(x), rownames(x)))
+         stop("colnames and rownames not identical")
+     posRoot <- which(colnames(x) %in% rootNames)
+     if(!length(posRoot))
+         stop("No column with the root name")
+     if(length(posRoot) > 1)
+         stop("Ambiguous location of root")
+     
+     return(which(x == 1, arr.ind = TRUE) - 1L)
+}    
+
+plotAdjMat <- function(adjmat) {
+    plotPoset(intAdjMatToPoset(adjmat))
+}
+
+## to plot and adjacency matrix in this context can do
+## plotPoset(intAdjMatToPoset(adjMat))
+## where intAdjMatToPoset is from best oncotree code: generate-random-trees.
