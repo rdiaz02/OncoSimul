@@ -56,15 +56,17 @@ createAndConvert <- function(rangeNodes = 4:30,
     
     am1.To.p1 <- OncoSimulR:::intAdjMatToPoset(am1)
     am1.To.p1.To.am1 <- OncoSimulR:::posetToGraph(am1.To.p1,
-                                                  names = 0:tp$nodes,
+                                                  names = NULL,
+                                                  ## names = 0:tp$nodes,
                                                   addroot = TRUE,
                                                   type = "adjmat")
 
 
     am1.To.p1.To.am1.No.Root <- OncoSimulR:::posetToGraph(am1.To.p1,
-                                                        names = 1:tp$nodes,
-                                                        addroot = FALSE,
-                                                        type = "adjmat")
+                                                          names = NULL,
+                                                          ## names = 1:tp$nodes,
+                                                          addroot = FALSE,
+                                                          type = "adjmat")
 
     
     am1.To.rt <- OncoSimulR:::adjmat.to.restrictTable(am1, root = TRUE)

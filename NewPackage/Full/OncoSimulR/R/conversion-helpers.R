@@ -9,9 +9,6 @@ graphToPoset <- function(g) {
     return(intAdjMatToPoset(as(g, "matrix")))
 }
 
-as(gf1, "matrix") ## from graph to Matrix
-
-
 poset.to.restrictTable <- function(x) {
     x1 <- posetToGraph(x, names = 1:max(x), addroot = FALSE, type = "adjmat")
     adjmat.to.restrictTable(x1)
@@ -20,9 +17,58 @@ poset.to.restrictTable <- function(x) {
 
 ## have a graph without a null??
 
-posetToGraph <- function(x, names,
-                         addroot = FALSE,
-                         type = "graphNEL") {
+checkProperPoset <- function(x, rootNames = c("0", "root", "Root")) {
+    ## checks if proper poset. If it is, returns poset and sorted unique
+    ## names
+    if(ncol(x) != 2)
+        stop("Posets must have two columns")
+    nn <- unique(as.vector(x))
+    matchRoot <- which(nn %in% rootNames)
+    if(length(matchRoot) > 1)
+        stop("More than one possible root")
+    if(length(matchRoot) == 0)
+        stop("No root in the poset")
+    n1 <- nn[matchRoot]
+    nn <- c(n1, nn[-matchRoot])
+    return(list(x, uniqueNames = nn))
+}
+
+
+checkProperAdjMat <- function(x) {
+
+}
+
+posetToGraph <- function(x,
+                         type = "graphNEL",
+                         keeproot = TRUE,
+                         rootNames = c("0", "root", "Root")) {
+
+    pp <- checkProperPoset(x)
+    
+    m1 <- matrix(0L, nrow = length(pp$uniqueNames),
+                 ncol = length(pp$uniqueNames))
+    colnames(m1) <- pp$uniqueNames
+    rownames(m1) <- pp$uniqueNames
+
+    m1[x] <- 1L
+
+    if(!keeproot)
+        m1 <- m1[-1, -1]
+    if(type == "adjmat") return(m1)
+    else if (type == "graphNEL") return(as(m1, "graphNEL"))
+    ## does not show the labels
+    ## else if (type == "igraph") return(graph.adjacency(m1))
+}
+
+
+posetToGraphOld <- function(x, names,
+                            addroot = FALSE,
+                            type = "graphNEL") {
+
+    ## This used to be the old code. But this is a complicated mess that
+    ## can lead to confusion. And cannot easily handle posets with names
+    ## of nodes. So I fix all that.
+    
     ## Intermediate nodes, if no ancestor or descendant, need not
     ## be in the poset.
     ## Any node with index largest than any node with ancestor or descendant
@@ -48,7 +94,6 @@ posetToGraph <- function(x, names,
     ## using the later, the user needs to make sure that the last node is
     ## in the poset. This can be used as a shortcut trick, but in the docs
     ## I do not do it, as it is bad practice.
-
 
     m <- length(names) 
     m1 <- matrix(0L, nrow = m, ncol = m)
@@ -142,7 +187,8 @@ adjMatToPoset <- function(x, rootNames = c("0", "root", "Root")) {
     p1 <- intAdjMatToPoset(x, rootNames)
     namNodes <- colnames(x)
     ## Map back to non-integer labels if any used in the adjacency matrix
-    if(any(is.na(as.numeric(namNodes)))) {    
+    namesInts <- is.integer(type.convert(namNodes, as.is = TRUE))
+    if(!namesInts) {    
         p <- cbind(namNodes[p1[, 1] + 1], namNodes[p1[, 2] + 1])
         return(p)
     } else {
