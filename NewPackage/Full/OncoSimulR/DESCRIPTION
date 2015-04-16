@@ -1,8 +1,8 @@
 Package: OncoSimulR
 Type: Package
 Title: Simulation of cancer progresion with order restrictions
-Version: 99.1.9
-Date: 2015-04-09
+Version: 99.1.10
+Date: 2015-04-16
 Author: Ramon Diaz-Uriarte. 
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for simulating and plotting cancer progression
@@ -17,4 +17,4 @@ Imports: Rcpp (>= 0.11.1), parallel, data.table, graph, Rgraphviz
 Suggests: BiocStyle, knitr, Oncotree, testthat
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-SystemRequirements: C++11
+#SystemRequirements: C++11
