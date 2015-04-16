@@ -1,3 +1,4 @@
+
 graphToPoset <- function(g) {
     return(adjMatToPoset(as(g, "matrix")))
 }
@@ -68,50 +69,29 @@ posetToGraph <- function(x,
         m1 <- m1[-1, -1]
     if(type == "adjmat") return(m1)
     else if (type == "graphNEL") return(as(m1, "graphNEL"))
-    ## does not show the labels
     ## else if (type == "igraph") return(graph.adjacency(m1))
+    ## I am not using igraph now
 }
 
 
 
 
 adjmat.to.restrictTable <- function(x, root = FALSE,
-                                    rootNames = c("0", "root", "Root")) {
+                                    rootNames = c("0")) {
 
     null <- checkProperAdjMat(x, rootNames = rootNames)
 
-    ## we have the zero
-    ## if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
-    ##     warning("Looks like the matrix has a root but you specified root = FALSE")
-
-    ## if(!identical(colnames(x), rownames(x)))
-    ##     stop("colnames and rownames not identical")
-    ## if(root) {
-    ##     posRoot <- which(colnames(x) %in% rootNames)
-    ##     if(!length(posRoot))
-    ##         stop("No column with the root name")
-    ##     if(length(posRoot) > 1)
-    ##         stop("Ambiguous location of root")
-    ##     x <- x[-posRoot, -posRoot]
-    ## }
-
+    ## For now, we only accept matrices with integer column names
+    if(!is.integer(type.convert(colnames(x), as.is = TRUE)))
+        stop("For now, we only convert to restrictTable if integer row/col. names")
+    
     ## restrictTable has no root, ever, so remove it from adj matrix
     x <- x[-1, -1]
     
-    ## if(typeof(x) != "integer")
-    ##     warning("This is not an _integer_ adjacency matrix")
-    ## if( !all(x %in% c(0, 1) ))
-    ##     stop("Values not in [0, 1]")
-
-    ## FIXME: are rTs only filled with integers?
-    if(!is.null(colnames(x))) {
-        ## FIXME: this makes sense with numeric labels for columns, but
-        ## not ow.
-        oi <- order(as.numeric(colnames(x)))
-        if(any(oi != (1:ncol(x)))) {
-            warning("Reordering adjacency matrix")
-            x <- x[oi, oi]
-        }
+    oi <- order(as.numeric(colnames(x)))
+    if(any(oi != (1:ncol(x)))) {
+        warning("Reordering adjacency matrix")
+        x <- x[oi, oi]
     }
     
     num.deps <- colSums(x)
@@ -248,9 +228,72 @@ posetToGraphOld <- function(x, names,
 }
 
 
+adjmat.to.restrictTableOld <- function(x, root = FALSE,
+                                    rootNames = c("0", "root", "Root")) {
+    ## we have the zero
+    if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
+        warning("Looks like the matrix has a root but you specified root = FALSE")
+
+    if(!identical(colnames(x), rownames(x)))
+        stop("colnames and rownames not identical")
+    if(root) {
+        posRoot <- which(colnames(x) %in% rootNames)
+        if(!length(posRoot))
+            stop("No column with the root name")
+        if(length(posRoot) > 1)
+            stop("Ambiguous location of root")
+        x <- x[-posRoot, -posRoot]
+    }
+
+    if(typeof(x) != "integer")
+        warning("This is not an _integer_ adjacency matrix")
+    if( !all(x %in% c(0, 1) ))
+        stop("Values not in [0, 1]")
+    if(!is.null(colnames(x))) {
+        ## FIXME: this makes sense with numeric labels for columns, but
+        ## not ow.
+        oi <- order(as.numeric(colnames(x)))
+        if(any(oi != (1:ncol(x)))) {
+            warning("Reordering adjacency matrix")
+            x <- x[oi, oi]
+        }
+    }
+    
+    num.deps <- colSums(x)
+    max.n.deps <- max(num.deps)
+    rt <- matrix(-9L, nrow = nrow(x),
+                 ncol = max.n.deps + 2)
+    for(i in 1:ncol(x)) {
+        if( num.deps[ i ])
+            rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ],
+                                               which(x[, i ] != 0))
+        else
+            rt[i , 1:2] <- c(i , 0L)
+    }
+    class(rt) <- "restrictionTable"
+    return(rt)
+}
+
+
+
+## ## names are preserved in igraph, graphNEL, interconversions, etc
+## uu <- matrix(c(1, 0, 0, 1), ncol = 2)
+## colnames(uu) <- rownames(uu) <- c("root", "A")
+## get.adjacency(graph.adjacency(uu), sparse = FALSE)
+
+
+## get.adjacency(igraph.from.graphNEL(as(uu, "graphNEL")), sparse = FALSE)
+## as(igraph.to.graphNEL(graph.adjacency(uu)), "matrix")
+
+
+
 ## this is blatantly wrong
 ## graph.to.poset <- function(x) {
 ##   ## FIXME: this are characters, not numeric
 ##   return(matrix(as.numeric(unlist(edgeL(x))), ncol = 2,
 ##                 byrow = TRUE))
 ## }
+
+
+
+

@@ -2,6 +2,7 @@
 ## OK. Recall that restrictionTable acts like a "sink": nothing is
 ## transformed from a restctiionTable to anything else.
 
+## Recall that restrcitionTable only uses integers for now.
 
 ## For really exhaustive, set this to a big number
 ## numTests <- 5000
@@ -34,6 +35,12 @@ createAndConvert <- function(rangeNodes = 4:30,
                     )
 
 
+    
+    ## FIXME: for now, we only excercise names = 0.  NOPE!!! we exercise
+    ## everything, except the converstion to restrictTable, which only
+    ## works if all are integers.
+
+    
     if(names == 1) {
         rn <- replicate(nrow(am1) - 1,
                         paste(sample(letters, 10, replace = TRUE),
@@ -56,26 +63,44 @@ createAndConvert <- function(rangeNodes = 4:30,
     
     am1.To.p1 <- OncoSimulR:::intAdjMatToPoset(am1)
     am1.To.p1.To.am1 <- OncoSimulR:::posetToGraph(am1.To.p1,
-                                                  names = NULL,
-                                                  ## names = 0:tp$nodes,
-                                                  addroot = TRUE,
+                                                  keeproot = TRUE,
                                                   type = "adjmat")
 
 
     am1.To.p1.To.am1.No.Root <- OncoSimulR:::posetToGraph(am1.To.p1,
-                                                          names = NULL,
-                                                          ## names = 1:tp$nodes,
-                                                          addroot = FALSE,
+                                                          keeproot = FALSE,
                                                           type = "adjmat")
 
     
-    am1.To.rt <- OncoSimulR:::adjmat.to.restrictTable(am1, root = TRUE)
-    am1.To.rt.2 <- OncoSimulR:::adjmat.to.restrictTable(am1[-1, -1], root = FALSE)
-    am1.To.p1.To.rt <- OncoSimulR:::poset.to.restrictTable(am1.To.p1)
-
+    if(names == 0) {
+        am1.To.rt <- OncoSimulR:::adjmat.to.restrictTable(am1, root = TRUE)
+        am1.To.rt.2 <- OncoSimulR:::adjmat.to.restrictTable(am1[-1, -1], root = FALSE)
+        am1.To.p1.To.rt <- OncoSimulR:::poset.to.restrictTable(am1.To.p1)
+    } else {
+        am1.To.rt <- NA
+        am1.To.rt.2 <- NA
+        am1.To.p1.To.rt <- NA
+    }
+    
     gf1 <- as(am1, "graphNEL")
-
     gf1.To.p1 <- OncoSimulR:::graphToPoset(gf1)
+    p1.To.gf1 <- OncoSimulR:::posetToGraph(am1.To.p1,
+                                           type = "graphNEL",
+                                           keeproot = TRUE)
+
+    gf1.nr <-  as(am1[-1, -1], "graphNEL")
+    gf1.To.p1.nr <- OncoSimulR:::graphToPoset(gf1.nr)
+    p1.To.gf1.nr <- OncoSimulR:::posetToGraph(am1.To.p1.nr,
+                                              type = "graphNEL",
+                                              keeproot = FALSE)
+
+
+
+    ## add compositions also
+    ## gf1 vs posetTograph(graphToPoset(gf1))
+    ## p1 vs graphToPoset(posetToGraph(p1))
+
+    
 
     return(list(am1 = am1,
                 am1.To.p1 = am1.To.p1,
@@ -83,7 +108,9 @@ createAndConvert <- function(rangeNodes = 4:30,
                 am1.To.p1.To.am1.No.Root = am1.To.p1.To.am1.No.Root,
                 am1.To.rt = am1.To.rt,
                 am1.To.rt.2 = am1.To.rt.2,
-                am1.To.p1.To.rt = am1.To.p1.To.rt
+                am1.To.p1.To.rt = am1.To.p1.To.rt,
+                gf1 = gf1,
+                gf1.To.p1 = gf1.To.p1
                 )
        )
 }
@@ -127,22 +154,29 @@ masterTestCall <- function(rangeNodes = 4:30,
     test_that("adjmat identical to adjmat->poset->adjmat, without Root", {
         expect_identical(out$am1[-1, -1], out$am1.To.p1.To.am1.No.Root)
     })
-    test_that("restriction table: identical adjmat->rT and adjmat->poset->rT", {
-        expect_identical(out$am1.To.rt, out$am1.To.p1.To.rt)
-    })
-    test_that("restriction table: identical adjmat->rT and adjmat->poset->rT, No root", {
-        expect_identical(out$am1.To.rt.2, out$am1.To.p1.To.rt)
-    })
+    
+
+    ## gf1 and p1Togf1
+    ## similar for nr
+    ## gf1Top1 and am1.To.p1
+    ## ditto for nr
+    
+    
+    if(names == 0) {
+        test_that("restriction table: identical adjmat->rT and adjmat->poset->rT", {
+            expect_identical(out$am1.To.rt, out$am1.To.p1.To.rt)
+        })
+        test_that("restriction table: identical adjmat->rT and adjmat->poset->rT, No root", {
+            expect_identical(out$am1.To.rt.2, out$am1.To.p1.To.rt)
+        })
+    }
     ## cat("A full round of tests completed OK.\n")
     return("OK")
 }
 
 
-tmp <- replicate(numTests, masterTestCall(names = 0) )
-
-## FIXME for now, only with names = 0
-## for(nn in 0:4) 
-##     tmp <- replicate(numTests, masterTestCall(names = nn) )
+for(nn in 0:4) 
+    tmp <- replicate(numTests, masterTestCall(names = nn) )
 
 
 
