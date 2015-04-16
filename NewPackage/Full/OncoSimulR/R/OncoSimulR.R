@@ -15,6 +15,11 @@
 
 
 
+
+## FIXME if adjmat or poset have non-integer labels, these are lost.
+## Maybe place them back after the return of the object? Or later in C++.
+## But this will change with the modules/genes
+
 oncoSimulSample <- function(Nindiv,
                             poset,
                             model = "Bozic",
@@ -291,7 +296,10 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
     }
     message("\n Subjects by Genes matrix of ",
         nrow(z), " subjects and ",
-        ncol(z), " genes.\n")
+            ncol(z), " genes.\n")
+    ## FIXME why this?? To make it clear is the genes.  but I do not like
+    ##  it, since it is better to use the same names as in the entry for
+    ##  the adjacency matrix, or poset, or restriction table.
     colnames(z) <- paste0("G.", seq_len(ncol(z)))
     return(z)
 }

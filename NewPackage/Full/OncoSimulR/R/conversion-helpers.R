@@ -1,25 +1,22 @@
-## this is blatantly wrong
-## graph.to.poset <- function(x) {
-##   ## FIXME: this are characters, not numeric
-##   return(matrix(as.numeric(unlist(edgeL(x))), ncol = 2,
-##                 byrow = TRUE))
-## }
-
 graphToPoset <- function(g) {
-    return(intAdjMatToPoset(as(g, "matrix")))
+    return(adjMatToPoset(as(g, "matrix")))
 }
 
 poset.to.restrictTable <- function(x) {
-    x1 <- posetToGraph(x, names = 1:max(x), addroot = FALSE, type = "adjmat")
+    x1 <- posetToGraph(x, type = "adjmat",
+                       keeproot = FALSE)
     adjmat.to.restrictTable(x1)
 }
 
 
 ## have a graph without a null??
+## do faster if these are integers
 
 checkProperPoset <- function(x, rootNames = c("0", "root", "Root")) {
     ## checks if proper poset. If it is, returns poset and sorted unique
     ## names
+
+    ## I return things to avoid doing the same work twice.
     if(ncol(x) != 2)
         stop("Posets must have two columns")
     nn <- unique(as.vector(x))
@@ -34,8 +31,23 @@ checkProperPoset <- function(x, rootNames = c("0", "root", "Root")) {
 }
 
 
-checkProperAdjMat <- function(x) {
-
+checkProperAdjMat <- function(x,
+                              rootNames = c("0", "root", "Root")) {
+    if(is.null(colnames(x)) && is.null(rownames(x)))
+        stop("column and/or row names are null")
+    if(!identical(colnames(x), rownames(x)))
+        stop("colnames and rownames not identical")
+    posRoot <- which(colnames(x) %in% rootNames)
+    if(!length(posRoot))
+        stop("No column with the root name")
+    if(length(posRoot) > 1)
+        stop("Ambiguous location of root")
+    if(!is.integer(x))
+        stop("Non-integer values")
+    if( !all(x %in% c(0, 1) ))
+        stop("Values not in [0, 1]")
+    if( posRoot != 1)
+        stop("Root must be in first row and column")
 }
 
 posetToGraph <- function(x,
@@ -50,7 +62,7 @@ posetToGraph <- function(x,
     colnames(m1) <- pp$uniqueNames
     rownames(m1) <- pp$uniqueNames
 
-    m1[x] <- 1L
+    m1[pp$x] <- 1L
 
     if(!keeproot)
         m1 <- m1[-1, -1]
@@ -59,6 +71,105 @@ posetToGraph <- function(x,
     ## does not show the labels
     ## else if (type == "igraph") return(graph.adjacency(m1))
 }
+
+
+
+
+adjmat.to.restrictTable <- function(x, root = FALSE,
+                                    rootNames = c("0", "root", "Root")) {
+
+    null <- checkProperAdjMat(x, rootNames = rootNames)
+
+    ## we have the zero
+    ## if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
+    ##     warning("Looks like the matrix has a root but you specified root = FALSE")
+
+    ## if(!identical(colnames(x), rownames(x)))
+    ##     stop("colnames and rownames not identical")
+    ## if(root) {
+    ##     posRoot <- which(colnames(x) %in% rootNames)
+    ##     if(!length(posRoot))
+    ##         stop("No column with the root name")
+    ##     if(length(posRoot) > 1)
+    ##         stop("Ambiguous location of root")
+    ##     x <- x[-posRoot, -posRoot]
+    ## }
+
+    ## restrictTable has no root, ever, so remove it from adj matrix
+    x <- x[-1, -1]
+    
+    ## if(typeof(x) != "integer")
+    ##     warning("This is not an _integer_ adjacency matrix")
+    ## if( !all(x %in% c(0, 1) ))
+    ##     stop("Values not in [0, 1]")
+
+    ## FIXME: are rTs only filled with integers?
+    if(!is.null(colnames(x))) {
+        ## FIXME: this makes sense with numeric labels for columns, but
+        ## not ow.
+        oi <- order(as.numeric(colnames(x)))
+        if(any(oi != (1:ncol(x)))) {
+            warning("Reordering adjacency matrix")
+            x <- x[oi, oi]
+        }
+    }
+    
+    num.deps <- colSums(x)
+    max.n.deps <- max(num.deps)
+    rt <- matrix(-9L, nrow = nrow(x),
+                 ncol = max.n.deps + 2)
+    for(i in 1:ncol(x)) {
+        if( num.deps[ i ])
+            rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ],
+                                               which(x[, i ] != 0))
+        else
+            rt[i , 1:2] <- c(i , 0L)
+    }
+    class(rt) <- "restrictionTable"
+    return(rt)
+}
+
+
+adjMatToPoset <- function(x, rootNames = c("0", "root", "Root")) {
+    null <- checkProperAdjMat(x, rootNames)
+    ## rootNames is not used for anything else. We simply check it is
+    ## there, so that the poset will have the root.
+    
+    p1 <- intAdjMatToPoset(x)
+    namNodes <- colnames(x)
+    ## Map back to non-integer labels if any used in the adjacency matrix
+    namesInts <- is.integer(type.convert(namNodes, as.is = TRUE))
+    if(namesInts) {
+        return(p1)
+    } else {
+        p2 <- cbind(namNodes[p1[, 1] + 1], namNodes[p1[, 2] + 1])
+        return(p2)
+    }
+}
+
+intAdjMatToPoset <- function(x) {
+     y <- (which(x == 1, arr.ind = TRUE) - 1L)
+     rownames(y) <- colnames(y) <- NULL
+     return(y)
+}    
+
+
+
+convertRestrictTable <- function(x) {
+    ## Only used to put the restrictTable in the format that the C++ code
+    ## uses.
+    t.restrictTable <- matrix(as.integer(x),
+                              ncol = nrow(x), byrow = TRUE)
+
+    t.restrictTable[-2, ] <- t.restrictTable[-2, ] - 1
+    return(t.restrictTable)
+}
+
+
+
+
+
+
 
 
 posetToGraphOld <- function(x, names,
@@ -136,90 +247,10 @@ posetToGraphOld <- function(x, names,
     ## else if (type == "igraph") return(graph.adjacency(m1))
 }
 
-adjmat.to.restrictTable <- function(x, root = FALSE,
-                                    rootNames = c("0", "root", "Root")) {
-    ## we have the zero
-    if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
-        warning("Looks like the matrix has a root but you specified root = FALSE")
 
-    if(!identical(colnames(x), rownames(x)))
-        stop("colnames and rownames not identical")
-    if(root) {
-        posRoot <- which(colnames(x) %in% rootNames)
-        if(!length(posRoot))
-            stop("No column with the root name")
-        if(length(posRoot) > 1)
-            stop("Ambiguous location of root")
-        x <- x[-posRoot, -posRoot]
-    }
-
-    if(typeof(x) != "integer")
-        warning("This is not an _integer_ adjacency matrix")
-    if( !all(x %in% c(0, 1) ))
-        stop("Values not in [0, 1]")
-    if(!is.null(colnames(x))) {
-        ## FIXME: this makes sense with numeric labels for columns, but
-        ## not ow.
-        oi <- order(as.numeric(colnames(x)))
-        if(any(oi != (1:ncol(x)))) {
-            warning("Reordering adjacency matrix")
-            x <- x[oi, oi]
-        }
-    }
-    
-    num.deps <- colSums(x)
-    max.n.deps <- max(num.deps)
-    rt <- matrix(-9L, nrow = nrow(x),
-                 ncol = max.n.deps + 2)
-    for(i in 1:ncol(x)) {
-        if( num.deps[ i ])
-            rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ],
-                                               which(x[, i ] != 0))
-        else
-            rt[i , 1:2] <- c(i , 0L)
-    }
-    class(rt) <- "restrictionTable"
-    return(rt)
-}
-
-
-adjMatToPoset <- function(x, rootNames = c("0", "root", "Root")) {
-    p1 <- intAdjMatToPoset(x, rootNames)
-    namNodes <- colnames(x)
-    ## Map back to non-integer labels if any used in the adjacency matrix
-    namesInts <- is.integer(type.convert(namNodes, as.is = TRUE))
-    if(!namesInts) {    
-        p <- cbind(namNodes[p1[, 1] + 1], namNodes[p1[, 2] + 1])
-        return(p)
-    } else {
-        return(p1)
-    }
-}
-
-intAdjMatToPoset <- function(x, 
-                             rootNames = c("0", "root", "Root")) {
-
-     if(!identical(colnames(x), rownames(x)))
-         stop("colnames and rownames not identical")
-     posRoot <- which(colnames(x) %in% rootNames)
-     if(!length(posRoot))
-         stop("No column with the root name")
-     if(length(posRoot) > 1)
-         stop("Ambiguous location of root")
-     y <- (which(x == 1, arr.ind = TRUE) - 1L)
-     rownames(y) <- colnames(y) <- NULL
-     return(y)
-}    
-
-
-
-convertRestrictTable <- function(x) {
-    ## Only used to put the restrictTable in the format that the C++ code
-    ## uses.
-    t.restrictTable <- matrix(as.integer(x),
-                              ncol = nrow(x), byrow = TRUE)
-
-    t.restrictTable[-2, ] <- t.restrictTable[-2, ] - 1
-    return(t.restrictTable)
-}
-
+## this is blatantly wrong
+## graph.to.poset <- function(x) {
+##   ## FIXME: this are characters, not numeric
+##   return(matrix(as.numeric(unlist(edgeL(x))), ncol = 2,
+##                 byrow = TRUE))
+## }
