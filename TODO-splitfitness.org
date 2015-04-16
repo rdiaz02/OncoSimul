@@ -1,0 +1,6 @@
+* adjmats, posets, etc
+  - create like an extended adjmat:
+    - can be a matrix of pairs (or trios)
+      - s
+      - sh
+      - names of genes (as the adjmat is of modules, if any)
