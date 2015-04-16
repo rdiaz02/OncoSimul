@@ -11,7 +11,7 @@ simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
                            multilevelParent = TRUE,
                            removeIndirect = TRUE,
                            rootName = "0") {
-
+    ## Returns an adjacency matrix
     if(h > n)
         stop("h > n")
 

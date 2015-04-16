@@ -1,10 +1,15 @@
-graph.to.poset <- function(x) {
-  ## FIXME: this are characters, not numeric
-  return(matrix(as.numeric(unlist(edgeL(x))), ncol = 2,
-                byrow = TRUE))
+## this is blatantly wrong
+## graph.to.poset <- function(x) {
+##   ## FIXME: this are characters, not numeric
+##   return(matrix(as.numeric(unlist(edgeL(x))), ncol = 2,
+##                 byrow = TRUE))
+## }
+
+graphToPoset <- function(g) {
+    return(intAdjMatToPoset(as(g, "matrix")))
 }
 
-
+as(gf1, "matrix") ## from graph to Matrix
 
 
 poset.to.restrictTable <- function(x) {
@@ -133,6 +138,17 @@ adjmat.to.restrictTable <- function(x, root = FALSE,
 }
 
 
+adjMatToPoset <- function(x, rootNames = c("0", "root", "Root")) {
+    p1 <- intAdjMatToPoset(x, rootNames)
+    namNodes <- colnames(x)
+    ## Map back to non-integer labels if any used in the adjacency matrix
+    if(any(is.na(as.numeric(namNodes)))) {    
+        p <- cbind(namNodes[p1[, 1] + 1], namNodes[p1[, 2] + 1])
+        return(p)
+    } else {
+        return(p1)
+    }
+}
 
 intAdjMatToPoset <- function(x, 
                              rootNames = c("0", "root", "Root")) {
@@ -144,8 +160,9 @@ intAdjMatToPoset <- function(x,
          stop("No column with the root name")
      if(length(posRoot) > 1)
          stop("Ambiguous location of root")
-     
-     return(which(x == 1, arr.ind = TRUE) - 1L)
+     y <- (which(x == 1, arr.ind = TRUE) - 1L)
+     rownames(y) <- colnames(y) <- NULL
+     return(y)
 }    
 
 
