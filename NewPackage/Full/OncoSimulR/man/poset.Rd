@@ -61,22 +61,22 @@
 \examples{
 
 ## Node 2 and 3 depend on 1, and 4 depends on no one
-p1 <- cbind(c(1, 1, 0), c(2, 3, 4))
+p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L))
 plotPoset(p1, addroot = TRUE)
 
 ## Node 2 and 3 depend on 1, and 4 to 7 depend on no one.
 ## We do not have nodes 4 to 6 explicitly in the poset.
-p2 <- cbind(c(1, 1, 0), c(2, 3, 7))
+p2 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 7L))
 plotPoset(p2, addroot = TRUE)
 
 ## But this is arguably cleaner
-p3 <- cbind(c(1, 1, rep(0, 4)), c(2, 3, 4:7 ))
+p3 <- cbind(c(1L, 1L, rep(0L, 4)), c(2L, 3L, 4:7 ))
 plotPoset(p3, addroot = TRUE)
 
 ## A simple way to create a poset where no gene (in a set of 15) depends
 ## on any other.
 
-p4 <- cbind(0, 15)
+p4 <- cbind(0L, 15L)
 plotPoset(p4, addroot = TRUE)
 
 
@@ -86,6 +86,8 @@ plotPoset(p4, addroot = TRUE)
 
 pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
                                c(2, 3, 4, 5, 6, 6, 6, 7, 7))
+storage.mode(pancreaticCancerPoset) <- "integer"
+
 plotPoset(pancreaticCancerPoset,
           names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
                     "MLL3","PXDN", "TGFBR2"))
@@ -96,6 +98,7 @@ plotPoset(pancreaticCancerPoset,
 poset2 <- cbind(c(1, 1, 3, 3, 3, 7, 7, 8, 9, 10),
                 c(2, 3, 4, 5, 6, 8, 9, 10, 10, 11))
 
+storage.mode(poset2) <- "integer"
 plotPoset(poset2)
 
 }

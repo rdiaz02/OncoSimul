@@ -161,18 +161,20 @@ library(graph)
 
 How to specify the restrictions is shown in the help for
 \Rfunction{poset}. It is often useful, to make sure you did not make any
-mistakes, to plot the poset. This is from the examples:
+mistakes, to plot the poset. This is from the examples (we use an ``L''
+after a number so that the numbers are integers, not doubles; we could
+alternatively have modified \texttt{storage.mode}).
 
 <<fig.height=3>>=
 ## Node 2 and 3 depend on 1, and 4 depends on no one
-p1 <- cbind(c(1, 1, 0), c(2, 3, 4))
+p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L))
 plotPoset(p1, addroot = TRUE)
 @ 
 
 <<fig.height=3>>=
 ## A simple way to create a poset where no gene (in a set of 15) depends
 ## on any other.
-p4 <- cbind(0, 15)
+p4 <- cbind(0L, 15L)
 plotPoset(p4, addroot = TRUE)
 @ 
 
@@ -187,6 +189,7 @@ etc). This example is also in the help for \Rfunction{poset}:
 <<fig.height=3>>=
 pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
                                c(2, 3, 4, 5, 6, 6, 6, 7, 7))
+storage.mode(pancreaticCancerPoset) <- "integer"
 plotPoset(pancreaticCancerPoset,
           names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
                     "MLL3","PXDN", "TGFBR2"))

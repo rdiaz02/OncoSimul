@@ -2,6 +2,7 @@ Changes in version 99.1.10 (2014-04-16)
 	- Added conversion helpers as separate file.
 	- Added tests of conversion helpers.
 	- Added generate-random-trees code (separate file).
+	- More strict now on the poset format and conversions.
 
 Changes in version 99.1.9 (2014-04-09)
 	- added null mutation for when we run out of mutable positions,

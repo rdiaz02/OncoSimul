@@ -686,6 +686,7 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
 }
 
 
+
 plotPoset <- function(x, names = NULL, addroot = FALSE,
                       box = FALSE, ...) {
     if(is.null(names)) {
