@@ -8,6 +8,50 @@
 
 ## Recall that restrcitionTable only uses integers for now.
 
+## We have, first, some specific tests and then a general testing call
+## with random trees. The second might not catch specific issues, such as
+## not all nodes being in the poset, etc.
+
+
+m1 <- structure(c(0L, 0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L), .Dim = c(3L, 
+3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
+                                             )))
+
+m1b <- structure(c(0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L), .Dim = c(3L, 
+3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
+)))
+
+
+pm1 <- structure(c(0L, 2L, 2L, 4L), .Dim = c(2L, 2L))
+pm1.nr <- structure(c(2L, 4L), .Dim = 1:2)
+
+pm1b <- structure(c(4L, 0L, 2L, 4L), .Dim = c(2L, 2L))
+pm1b.nr <- structure(c(4L, 2L), .Dim = 1:2)
+
+test_that("adjmat to Poset, example 1", {
+    expect_identical(OncoSimulR:::adjMatToPoset(m1, dropRoot = FALSE),
+                     pm1)
+})
+
+test_that("adjmat to Poset, example 1, no root", {
+    expect_identical(OncoSimulR:::adjMatToPoset(m1, dropRoot = TRUE),
+                     pm1.nr)
+})
+
+test_that("adjmat to Poset, example 2", {
+    expect_identical(OncoSimulR:::adjMatToPoset(m1b, dropRoot = FALSE),
+                     pm1b)
+})
+
+test_that("adjmat to Poset, example 2, no root", {
+    expect_identical(OncoSimulR:::adjMatToPoset(m1b, dropRoot = TRUE),
+                     pm1b.nr)
+})
+
+## adjmat -> poset -> adjMat
+
+
+
 ## For really exhaustive, set this to a big number
 ## numTests <- 5000
 numTests <- 100
@@ -354,6 +398,11 @@ masterTestCall <- function(rangeNodes = 4:30,
     ## cat("A full round of tests completed OK.\n")
     return("OK")
 }
+
+
+
+
+
 
 
 tmp <- replicate(numTests, masterTestCall() )

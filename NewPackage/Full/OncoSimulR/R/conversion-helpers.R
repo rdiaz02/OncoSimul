@@ -1,3 +1,31 @@
+## Posets, restriction tables, etc.
+
+## When we go poset -> rT or
+##  adjMat -> rT
+
+## we have there all there is to be, or the poset follows the usual
+## (messy) rules. In particular, CBN does understand that OK. And a linear
+## poset, for example, places all nodes there. And CBN returns all nodes.
+
+
+## Problem is generating a poset from an adjmat that is the output of OT,
+## since that adjmat need not contain all nodes, as OT sometimes drops
+## some of them. So we need to preserve names AND when we write the poset,
+## we need to specify, as we always do, the correct number of columns.
+
+
+## In newer, future, versions of OncoSimulR all this will be cleared out
+##    by having posets that are strict. This means:
+
+##  - if we pass things to CBN, we will clean that to the messy format in
+##  write.poset.
+
+##  - when using OTs, ??, maybe force all nodes to be there, connected
+##  from root? Think this later. Or use the current the mess?? Or never
+##  use the simple poset for nothing, except calling CBN.
+
+
+
 graphToPoset <- function(g) {
     m <- as(g, "matrix") 
     mi <- m
@@ -30,6 +58,10 @@ checkProperAdjMat <- function(x,
         stop("Values not in [0, 1]")
     if( posRoot != 1)
         stop("Root must be in first row and column")
+    ## The following is not reasonable
+    ## scn <- sort(as.integer(colnames(x)[-1]))
+    ## if(!identical(scn, seq.int(ncol(x) - 1)))
+    ##     stop("Either non-integer column names, or non-successive integers")
 }
 
 
@@ -135,6 +167,11 @@ adjMatToPoset <- function(x, rootNames = c("0", "root", "Root"),
     ## namNodes <- colnames(x)
     ## ## Map back to non-integer labels if any used in the adjacency matrix
     ## namesInts <- is.integer(type.convert(namNodes, as.is = TRUE))
+    
+    ## Actually, this is wrong, as you can have nameInts but non
+    ## consecutive indices in the adjMat, and you will get a poset that
+    ## starts at 1, always, etc.
+
     ## if(namesInts) {
     ##     return(p1)
     ## } else {
@@ -147,15 +184,42 @@ intAdjMatToPoset <- function(x, dropRoot = FALSE) {
     if(dropRoot) {
         ncx <- ncol(x)
         x <- x[-1, -1]
-        y <- (which(x == 1, arr.ind = TRUE) )
+        y <- (which(x == 1L, arr.ind = TRUE) )
         if(nrow(y) == 0) ## all nodes descend from 0
             y <- cbind(0L, ncx - 1L)
+
     } else {
-        y <- (which(x == 1, arr.ind = TRUE) - 1L)
+        y <- (which(x == 1L, arr.ind = TRUE) - 1L)
     }
     rownames(y) <- colnames(y) <- NULL
     storage.mode(y) <- "integer"
     return(y)
+}
+
+
+
+intAdjMatToPosetPreserveNames <- function(x, dropRoot = FALSE) {
+    if(dropRoot) {
+        ncx <- ncol(x)
+        x <- x[-1, -1]
+        ## y <- (which(x == 1L, arr.ind = TRUE) )
+        ## if(nrow(y) == 0) ## all nodes descend from 0
+        ##     y <- cbind(0L, ncx - 1L)
+        namesInts <- type.convert(colnames(x), as.is = TRUE)
+        
+    } else {
+        ## y <- (which(x == 1L, arr.ind = TRUE) )
+        namesInts <- c(0L, type.convert(colnames(x)[-1], as.is = TRUE))
+    }
+    if(!is.integer(namesInts))
+        stop("cannot convert to poset adj mat with non-int colnames")
+    y <- (which(x == 1L, arr.ind = TRUE) )
+    if(nrow(y) == 0) ## all nodes descend from 0
+        y <- cbind(0L, ncx - 1L)
+
+    p2 <- cbind(namesInts[ y[, 1] ], namesInts[ y[, 2] ])
+    storage.mode(p2) <- "integer"
+    return(p2)
 }    
 
 
@@ -395,3 +459,11 @@ posetToGraph <- function(x, names,
 
 
 
+## why was this working? when converting adjmat to poset to adjmat?
+m1 <- structure(c(0L, 0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L), .Dim = c(3L, 
+3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
+                                             )))
+
+m1b <- structure(c(0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L), .Dim = c(3L, 
+3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
+)))
