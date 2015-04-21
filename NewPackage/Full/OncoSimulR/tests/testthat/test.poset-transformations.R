@@ -13,6 +13,33 @@
 ## not all nodes being in the poset, etc.
 
 
+## Verify
+
+## poset to rT. From the different kinds of posets?
+
+## all the code for new simulations is based upon going from adjmat to rT.
+## verify that.
+
+
+
+
+m0 <- matrix(0L, ncol = 4, nrow = 4)
+colnames(m0) <- rownames(m0) <- c(0, 2, 3, 5)
+m0[1, 4] <- 1L
+intAdjMatToPosetPreserveNames(m0, dropRoot = TRUE)
+## what is a poset for all derive from 0?
+
+
+m6 <- matrix(0L, ncol = 4, nrow = 4)
+colnames(m6) <- rownames(m6) <- c(0, 2, 3, 5)
+m6[1, 4] <- m6[2, 3] <- 1L
+
+m6p <- 
+intAdjMatToPosetPreserveNames(m6, dropRoot = TRUE) ## what should we do here?
+
+
+
+
 m1 <- structure(c(0L, 0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L), .Dim = c(3L, 
 3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
                                              )))
@@ -20,6 +47,8 @@ m1 <- structure(c(0L, 0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L), .Dim = c(3L,
 m1b <- structure(c(0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L), .Dim = c(3L, 
 3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
 )))
+
+
 
 
 pm1 <- structure(c(0L, 2L, 2L, 4L), .Dim = c(2L, 2L))

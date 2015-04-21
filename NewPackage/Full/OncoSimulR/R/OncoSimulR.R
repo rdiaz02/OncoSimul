@@ -698,11 +698,6 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
         box()
 }
 
-## Oh, man, is this silly or what!
-## plotAdjMat <- function(adjmat) {
-##     plotPoset(intAdjMatToPoset(adjmat))
-## }
-
 plotAdjMat <- function(adjmat) {
     plot(as(adjmat, "graphNEL"))
 }

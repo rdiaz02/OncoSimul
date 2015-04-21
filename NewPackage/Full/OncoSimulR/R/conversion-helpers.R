@@ -1,5 +1,12 @@
 ## Posets, restriction tables, etc.
 
+
+## This is all too complicated. Have here just the minimal set we need,
+## because we will soon be changing formats.
+
+## FIXME Compare functions that remain with those in original code (v. 99.1.9)
+## FIXME try running simul code with this new thing. Make sure it works.
+
 ## When we go poset -> rT or
 ##  adjMat -> rT
 
@@ -25,43 +32,15 @@
 ##  use the simple poset for nothing, except calling CBN.
 
 
+## adjMatToPoset is not really used for anything at all in the code now.
 
-graphToPoset <- function(g) {
-    m <- as(g, "matrix") 
-    mi <- m
-    storage.mode(mi) <- "integer"
-    stopifnot(all.equal(m, mi))
-    return(adjMatToPoset(mi))
-}
+## Remember from adjmat we go to rT directly.
+
+
 
 poset.to.restrictTable <- function(x) {
-    ## x1 <- posetToAdjmat(x) ## If I had used the new ones I wrote
     x1 <- posetToGraph(x, names = 1:max(x), addroot = FALSE, type = "adjmat")
     adjmat.to.restrictTable(x1)
-}
-
-
-checkProperAdjMat <- function(x,
-                              rootNames = c("0", "root", "Root")) {
-    if(is.null(colnames(x)) && is.null(rownames(x)))
-        stop("column and/or row names are null")
-    if(!identical(colnames(x), rownames(x)))
-        stop("colnames and rownames not identical")
-    posRoot <- which(colnames(x) %in% rootNames)
-    if(!length(posRoot)) ## adjmat.to.restrictTable depends on this being true
-        stop("No column with the root name")
-    if(length(posRoot) > 1)
-        stop("Ambiguous location of root")
-    if(!is.integer(x))
-        stop("Non-integer values")
-    if( !all(x %in% c(0, 1) ))
-        stop("Values not in [0, 1]")
-    if( posRoot != 1)
-        stop("Root must be in first row and column")
-    ## The following is not reasonable
-    ## scn <- sort(as.integer(colnames(x)[-1]))
-    ## if(!identical(scn, seq.int(ncol(x) - 1)))
-    ##     stop("Either non-integer column names, or non-successive integers")
 }
 
 
@@ -111,94 +90,13 @@ adjmat.to.restrictTable <- function(x, root = FALSE,
     return(rt)
 }
 
-## Attempt at new version, but does not work, as we need to be able to
-## deal with matrices without root. Because we often go from a poset.  So
-## when we do poset -> restrictTable, from the poset we generate an
-## adjmat wthout root
-
-## adjmat.to.restrictTable <- function(x,
-##                                     rootNames = c("0")) {
-    
-##     null <- checkProperAdjMat(x, rootNames = rootNames)
-
-##     ## For now, we only accept matrices with integer column names
-##     if(!is.integer(type.convert(colnames(x), as.is = TRUE)))
-##         stop("For now, we only convert to restrictTable if integer row/col. names")
-    
-##     ## restrictTable has no root, ever, so remove it from adj matrix
-##     ## as adjacency matrix has root, always
-##     x <- x[-1, -1]
-    
-##     oi <- order(as.numeric(colnames(x)))
-##     if(any(oi != (1:ncol(x)))) {
-##         warning("Reordering adjacency matrix")
-##         x <- x[oi, oi]
-##     }
-    
-##     num.deps <- colSums(x)
-##     max.n.deps <- max(num.deps)
-##     rt <- matrix(-9L, nrow = nrow(x),
-##                  ncol = max.n.deps + 2)
-##     for(i in 1:ncol(x)) {
-##         if( num.deps[ i ])
-##             rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ],
-##                                                which(x[, i ] != 0))
-##         else
-##             rt[i , 1:2] <- c(i , 0L)
-##     }
-##     class(rt) <- "restrictionTable"
-##     return(rt)
-## }
-
-
-adjMatToPoset <- function(x, rootNames = c("0", "root", "Root"),
-                          dropRoot = FALSE) {
-    null <- checkProperAdjMat(x, rootNames)
-    ## rootNames is not used for anything else. We simply check it is
-    ## there, so that the poset will have the root.
-
-    
-    p1 <- intAdjMatToPoset(x, dropRoot = dropRoot)
-
-    return(p1)
-    
-    ## ## Well, nice, but posets now only accept integer labels
-    ##  And if back, we will need to think the dropRoot argument here.
-    ## namNodes <- colnames(x)
-    ## ## Map back to non-integer labels if any used in the adjacency matrix
-    ## namesInts <- is.integer(type.convert(namNodes, as.is = TRUE))
-    
-    ## Actually, this is wrong, as you can have nameInts but non
-    ## consecutive indices in the adjMat, and you will get a poset that
-    ## starts at 1, always, etc.
-
-    ## if(namesInts) {
-    ##     return(p1)
-    ## } else {
-    ##     p2 <- cbind(namNodes[p1[, 1] + 1], namNodes[p1[, 2] + 1])
-    ##     return(p2)
-    ## }
-}
-
-intAdjMatToPoset <- function(x, dropRoot = FALSE) {
-    if(dropRoot) {
-        ncx <- ncol(x)
-        x <- x[-1, -1]
-        y <- (which(x == 1L, arr.ind = TRUE) )
-        if(nrow(y) == 0) ## all nodes descend from 0
-            y <- cbind(0L, ncx - 1L)
-
-    } else {
-        y <- (which(x == 1L, arr.ind = TRUE) - 1L)
-    }
-    rownames(y) <- colnames(y) <- NULL
-    storage.mode(y) <- "integer"
-    return(y)
-}
 
 
 
-intAdjMatToPosetPreserveNames <- function(x, dropRoot = FALSE) {
+## this preserves the names in the adj mat. For OT -> poset.
+intAdjMatToPosetPreserveNames <- function(x, dropRoot = TRUE) {
+    if(!dropRoot)
+        warning("Are you sure you do not want dropRoot?")
     if(dropRoot) {
         ncx <- ncol(x)
         x <- x[-1, -1]
@@ -217,7 +115,10 @@ intAdjMatToPosetPreserveNames <- function(x, dropRoot = FALSE) {
     if(nrow(y) == 0) ## all nodes descend from 0
         y <- cbind(0L, ncx - 1L)
 
-    p2 <- cbind(namesInts[ y[, 1] ], namesInts[ y[, 2] ])
+    if(ncol(y) == 1)
+        p2 <- matrix(nrow = 0, ncol = 2)
+    else
+        p2 <- cbind(namesInts[ y[, 1] ], namesInts[ y[, 2] ])
     storage.mode(p2) <- "integer"
     return(p2)
 }    
@@ -467,3 +368,141 @@ m1 <- structure(c(0L, 0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L), .Dim = c(3L,
 m1b <- structure(c(0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L), .Dim = c(3L, 
 3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
 )))
+
+
+
+
+
+
+
+
+
+
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+
+## This used to be code, but now is commented
+
+
+## graphToPoset <- function(g) {
+##     m <- as(g, "matrix") 
+##     mi <- m
+##     storage.mode(mi) <- "integer"
+##     stopifnot(all.equal(m, mi))
+##     return(adjMatToPoset(mi))
+## }
+
+## checkProperAdjMat <- function(x,
+##                               rootNames = c("0", "root", "Root")) {
+##     if(is.null(colnames(x)) && is.null(rownames(x)))
+##         stop("column and/or row names are null")
+##     if(!identical(colnames(x), rownames(x)))
+##         stop("colnames and rownames not identical")
+##     posRoot <- which(colnames(x) %in% rootNames)
+##     if(!length(posRoot)) ## adjmat.to.restrictTable depends on this being true
+##         stop("No column with the root name")
+##     if(length(posRoot) > 1)
+##         stop("Ambiguous location of root")
+##     if(!is.integer(x))
+##         stop("Non-integer values")
+##     if( !all(x %in% c(0, 1) ))
+##         stop("Values not in [0, 1]")
+##     if( posRoot != 1)
+##         stop("Root must be in first row and column")
+##     ## The following is not reasonable
+##     ## scn <- sort(as.integer(colnames(x)[-1]))
+##     ## if(!identical(scn, seq.int(ncol(x) - 1)))
+##     ##     stop("Either non-integer column names, or non-successive integers")
+## }
+
+
+
+
+## ## Attempt at new version, but does not work, as we need to be able to
+## ## deal with matrices without root. Because we often go from a poset.  So
+## ## when we do poset -> restrictTable, from the poset we generate an
+## ## adjmat wthout root
+
+## ## adjmat.to.restrictTable <- function(x,
+## ##                                     rootNames = c("0")) {
+    
+## ##     null <- checkProperAdjMat(x, rootNames = rootNames)
+
+## ##     ## For now, we only accept matrices with integer column names
+## ##     if(!is.integer(type.convert(colnames(x), as.is = TRUE)))
+## ##         stop("For now, we only convert to restrictTable if integer row/col. names")
+    
+## ##     ## restrictTable has no root, ever, so remove it from adj matrix
+## ##     ## as adjacency matrix has root, always
+## ##     x <- x[-1, -1]
+    
+## ##     oi <- order(as.numeric(colnames(x)))
+## ##     if(any(oi != (1:ncol(x)))) {
+## ##         warning("Reordering adjacency matrix")
+## ##         x <- x[oi, oi]
+## ##     }
+    
+## ##     num.deps <- colSums(x)
+## ##     max.n.deps <- max(num.deps)
+## ##     rt <- matrix(-9L, nrow = nrow(x),
+## ##                  ncol = max.n.deps + 2)
+## ##     for(i in 1:ncol(x)) {
+## ##         if( num.deps[ i ])
+## ##             rt[i , 1:(2 + num.deps[ i ])] <- c(i, num.deps[i ],
+## ##                                                which(x[, i ] != 0))
+## ##         else
+## ##             rt[i , 1:2] <- c(i , 0L)
+## ##     }
+## ##     class(rt) <- "restrictionTable"
+## ##     return(rt)
+## ## }
+
+
+## adjMatToPoset <- function(x, rootNames = c("0", "root", "Root"),
+##                           dropRoot = FALSE) {
+##     message("Do you really need to call this function?")
+##     null <- checkProperAdjMat(x, rootNames)
+##     ## rootNames is not used for anything else. We simply check it is
+##     ## there, so that the poset will have the root.
+
+    
+##     p1 <- intAdjMatToPoset(x, dropRoot = dropRoot)
+
+##     return(p1)
+    
+##     ## ## Well, nice, but posets now only accept integer labels
+##     ##  And if back, we will need to think the dropRoot argument here.
+##     ## namNodes <- colnames(x)
+##     ## ## Map back to non-integer labels if any used in the adjacency matrix
+##     ## namesInts <- is.integer(type.convert(namNodes, as.is = TRUE))
+    
+##     ## Actually, this is wrong, as you can have nameInts but non
+##     ## consecutive indices in the adjMat, and you will get a poset that
+##     ## starts at 1, always, etc.
+
+##     ## if(namesInts) {
+##     ##     return(p1)
+##     ## } else {
+##     ##     p2 <- cbind(namNodes[p1[, 1] + 1], namNodes[p1[, 2] + 1])
+##     ##     return(p2)
+##     ## }
+## }
+## intAdjMatToPoset <- function(x, dropRoot = FALSE) {
+##     if(dropRoot) {
+##         ncx <- ncol(x)
+##         x <- x[-1, -1]
+##         y <- (which(x == 1L, arr.ind = TRUE) )
+##         if(nrow(y) == 0) ## all nodes descend from 0
+##             y <- cbind(0L, ncx - 1L)
+
+##     } else {
+##         y <- (which(x == 1L, arr.ind = TRUE) - 1L)
+##     }
+##     rownames(y) <- colnames(y) <- NULL
+##     storage.mode(y) <- "integer"
+##     return(y)
+## }
