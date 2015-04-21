@@ -6,6 +6,8 @@
 
 ## FIXME Compare functions that remain with those in original code (v. 99.1.9)
 ## FIXME try running simul code with this new thing. Make sure it works.
+## FIXME run v.99.1.9 but put tests in there and check
+
 
 ## When we go poset -> rT or
 ##  adjMat -> rT
@@ -35,6 +37,42 @@
 ## adjMatToPoset is not really used for anything at all in the code now.
 
 ## Remember from adjmat we go to rT directly.
+
+
+## FIXME two checks: the one for general adjMat, that should include a root and
+## the one for creatin rts. The latter do not
+
+## so write two functions
+
+## minimalProperAdjMat
+## properAdjMat that calls minimal, and adds checks for root, etc.
+
+
+
+checkProperAdjMat <- function(x,
+                              rootNames = c("0", "root", "Root")) {
+    if(is.null(colnames(x)) && is.null(rownames(x)))
+        stop("column and/or row names are null")
+    if(!identical(colnames(x), rownames(x)))
+        stop("colnames and rownames not identical")
+    posRoot <- which(colnames(x) %in% rootNames)
+    
+    ## if(!length(posRoot)) ## adjmat.to.restrictTable depends on this being true
+    ##     stop("No column with the root name")
+    ## NOPE!
+    if(length(posRoot) > 1)
+        stop("Ambiguous location of root")
+    if(!is.integer(x))
+        stop("Non-integer values")
+    if( !all(x %in% c(0L, 1L) ))
+        stop("Values not in {0L, 1L}")
+    if( posRoot != 1)
+        stop("Root must be in first row and column")
+    ## FIXME: beware if no root!  And columns should be sorted already!
+    scn <- sort(as.integer(colnames(x)[-1]))
+    if(!identical(scn, seq.int(ncol(x) - 1)))
+        stop("Either non-integer column names, or non-successive integers")
+}
 
 
 
@@ -115,11 +153,10 @@ intAdjMatToPosetPreserveNames <- function(x, dropRoot = TRUE) {
     if(nrow(y) == 0) ## all nodes descend from 0
         y <- cbind(0L, ncx - 1L)
 
-    if(ncol(y) == 1)
-        p2 <- matrix(nrow = 0, ncol = 2)
-    else
-        p2 <- cbind(namesInts[ y[, 1] ], namesInts[ y[, 2] ])
+    p2 <- cbind(namesInts[ y[, 1] ], namesInts[ y[, 2] ])
     storage.mode(p2) <- "integer"
+    if(ncol(p2) == 1) ## the hack for when all from root
+        p2 <- matrix(nrow = 0, ncol = 2)
     return(p2)
 }    
 
@@ -360,14 +397,6 @@ posetToGraph <- function(x, names,
 
 
 
-## why was this working? when converting adjmat to poset to adjmat?
-m1 <- structure(c(0L, 0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L), .Dim = c(3L, 
-3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
-                                             )))
-
-m1b <- structure(c(0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L), .Dim = c(3L, 
-3L), .Dimnames = list(c("Root", "2", "4"), c("Root", "2", "4"
-)))
 
 
 

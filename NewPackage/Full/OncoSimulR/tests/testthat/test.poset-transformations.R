@@ -13,6 +13,9 @@
 ## not all nodes being in the poset, etc.
 
 
+## FIXME: include code that tests convertRestrictTable
+
+
 ## Verify
 
 ## poset to rT. From the different kinds of posets?
@@ -21,21 +24,42 @@
 ## verify that.
 
 
-
-
 m0 <- matrix(0L, ncol = 4, nrow = 4)
 colnames(m0) <- rownames(m0) <- c(0, 2, 3, 5)
 m0[1, 4] <- 1L
-intAdjMatToPosetPreserveNames(m0, dropRoot = TRUE)
+OncoSimulR:::intAdjMatToPosetPreserveNames(m0, dropRoot = TRUE)
 ## what is a poset for all derive from 0?
 
+## FIXME: note the labels are missed!
+## FIXME add the check for proper adjMat The strict one with integers, etc.
+## FIXME: also check no column has all entries zero, except the root one
+## FIXME: rename that to unambiguousAdjMatforRT
 
+## FIXME: verify the simulation code for trees generates properAdjMat
+
+OncoSimulR:::adjmat.to.restrictTable(m0, root = TRUE)
+
+## this should generate a warning or error
+OncoSimulR:::adjmat.to.restrictTable(m0, root = FALSE)
+
+
+p0 <- cbind(c(0L), c(5L))
+
+OncoSimulR:::posetToGraph(p0, names = 0:5, addroot = TRUE, type = "adjmat")
+OncoSimulR:::posetToGraph(p0, names = 1:5, addroot = FALSE, type = "adjmat")
+
+rt0 <- OncoSimulR:::adjmat.to.restrictTable(
+    OncoSimulR:::posetToGraph(p0, names = 1:5, addroot = FALSE, type = "adjmat"))
+
+
+## this is a "defective" adjacency matrix as first column depends on no
+## one but there is a root.
 m6 <- matrix(0L, ncol = 4, nrow = 4)
 colnames(m6) <- rownames(m6) <- c(0, 2, 3, 5)
 m6[1, 4] <- m6[2, 3] <- 1L
 
-m6p <- 
-intAdjMatToPosetPreserveNames(m6, dropRoot = TRUE) ## what should we do here?
+## m6p <- 
+## intAdjMatToPosetPreserveNames(m6, dropRoot = TRUE) ## what should we do here?
 
 
 
@@ -57,25 +81,25 @@ pm1.nr <- structure(c(2L, 4L), .Dim = 1:2)
 pm1b <- structure(c(4L, 0L, 2L, 4L), .Dim = c(2L, 2L))
 pm1b.nr <- structure(c(4L, 2L), .Dim = 1:2)
 
-test_that("adjmat to Poset, example 1", {
-    expect_identical(OncoSimulR:::adjMatToPoset(m1, dropRoot = FALSE),
-                     pm1)
-})
+## test_that("adjmat to Poset, example 1", {
+##     expect_identical(OncoSimulR:::adjMatToPoset(m1, dropRoot = FALSE),
+##                      pm1)
+## })
 
-test_that("adjmat to Poset, example 1, no root", {
-    expect_identical(OncoSimulR:::adjMatToPoset(m1, dropRoot = TRUE),
-                     pm1.nr)
-})
+## test_that("adjmat to Poset, example 1, no root", {
+##     expect_identical(OncoSimulR:::adjMatToPoset(m1, dropRoot = TRUE),
+##                      pm1.nr)
+## })
 
-test_that("adjmat to Poset, example 2", {
-    expect_identical(OncoSimulR:::adjMatToPoset(m1b, dropRoot = FALSE),
-                     pm1b)
-})
+## test_that("adjmat to Poset, example 2", {
+##     expect_identical(OncoSimulR:::adjMatToPoset(m1b, dropRoot = FALSE),
+##                      pm1b)
+## })
 
-test_that("adjmat to Poset, example 2, no root", {
-    expect_identical(OncoSimulR:::adjMatToPoset(m1b, dropRoot = TRUE),
-                     pm1b.nr)
-})
+## test_that("adjmat to Poset, example 2, no root", {
+##     expect_identical(OncoSimulR:::adjMatToPoset(m1b, dropRoot = TRUE),
+##                      pm1b.nr)
+## })
 
 ## adjmat -> poset -> adjMat
 
@@ -140,33 +164,33 @@ createAndConvert <- function(rangeNodes = 4:30,
     
     am1.nr <- am1[-1, -1]
     gf1 <- as(am1, "graphNEL")
-    p1 <- OncoSimulR:::adjMatToPoset(am1) ## am1.To.p1
+##    p1 <- OncoSimulR:::adjMatToPoset(am1) ## am1.To.p1
 
-    p1.nr <- OncoSimulR:::adjMatToPoset(am1, dropRoot = TRUE)
+##     p1.nr <- OncoSimulR:::adjMatToPoset(am1, dropRoot = TRUE)
     
-    p1.am1 <- OncoSimulR:::posetToGraph(p1,
-                                        names = 0:tp$nodes,
-                                        addroot = TRUE,
-                                        type = "adjmat")
+    ## p1.am1 <- OncoSimulR:::posetToGraph(p1,
+    ##                                     names = 0:tp$nodes,
+    ##                                     addroot = TRUE,
+    ##                                     type = "adjmat")
 
-    p1.am1.p1 <- OncoSimulR:::adjMatToPoset(p1.am1)
+##    p1.am1.p1 <- OncoSimulR:::adjMatToPoset(p1.am1)
 
     
-    p1.am1.nr <- OncoSimulR:::posetToGraph(p1,
-                                           names = 1:tp$nodes,
-                                           addroot = FALSE,
-                                           type = "adjmat")
+    ## p1.am1.nr <- OncoSimulR:::posetToGraph(p1,
+    ##                                        names = 1:tp$nodes,
+    ##                                        addroot = FALSE,
+    ##                                        type = "adjmat")
     
 
-    p1.nr.am1 <- OncoSimulR:::posetToGraph(p1.nr,
-                                           names = 0:tp$nodes,
-                                           addroot = TRUE,
-                                           type = "adjmat")
+    ## p1.nr.am1 <- OncoSimulR:::posetToGraph(p1.nr,
+    ##                                        names = 0:tp$nodes,
+    ##                                        addroot = TRUE,
+    ##                                        type = "adjmat")
 
-    p1.nr.am1.nr <- OncoSimulR:::posetToGraph(p1.nr,
-                                              names = 1:tp$nodes,
-                                              addroot = FALSE,
-                                              type = "adjmat")
+    ## p1.nr.am1.nr <- OncoSimulR:::posetToGraph(p1.nr,
+    ##                                           names = 1:tp$nodes,
+    ##                                           addroot = FALSE,
+    ##                                           type = "adjmat")
 
 
     am1.gf1.am1 <- as(as(am1, "graphNEL"), "matrix")
@@ -178,36 +202,36 @@ createAndConvert <- function(rangeNodes = 4:30,
     NR.gf1.am1.gf1 <- as(as(gf1.nr, "matrix"), "graphNEL")
 
     
-    gf1.p1 <- OncoSimulR:::graphToPoset(gf1)
-    p1.gf1 <- OncoSimulR:::posetToGraph(p1,
-                           names = 0:tp$nodes,
-                           addroot = TRUE,
-                           type = "graphNEL")
-    p1.gf1.p1 <- OncoSimulR:::graphToPoset(p1.gf1)
+##    gf1.p1 <- OncoSimulR:::graphToPoset(gf1)
+    ## p1.gf1 <- OncoSimulR:::posetToGraph(p1,
+    ##                        names = 0:tp$nodes,
+    ##                        addroot = TRUE,
+    ##                        type = "graphNEL")
+    ## p1.gf1.p1 <- OncoSimulR:::graphToPoset(p1.gf1)
 
-    p1.gf1.nr <- OncoSimulR:::posetToGraph(p1,
-                              names = 1:tp$nodes,
-                              addroot = FALSE,
-                              type = "graphNEL")
+    ## p1.gf1.nr <- OncoSimulR:::posetToGraph(p1,
+    ##                           names = 1:tp$nodes,
+    ##                           addroot = FALSE,
+    ##                           type = "graphNEL")
 
     ## these cannot be done now, as adj matrices without 0 are disabled
     ## gf1.nr.p1 <- OncoSimulR:::graphToPoset(gf1.nr)
     ## gf1.nr.p1.B <- OncoSimulR:::graphToPoset(p1.gf1.nr)
 
-    p1.nr.gf1 <- OncoSimulR:::posetToGraph(p1.nr,
-                              names = 0:tp$nodes,
-                              addroot = TRUE,
-                              type = "graphNEL")
-    p1.nr.gf1.nr <- OncoSimulR:::posetToGraph(p1.nr,
-                              names = 1:tp$nodes,
-                              addroot = FALSE,
-                              type = "graphNEL")
+    ## p1.nr.gf1 <- OncoSimulR:::posetToGraph(p1.nr,
+    ##                           names = 0:tp$nodes,
+    ##                           addroot = TRUE,
+    ##                           type = "graphNEL")
+    ## p1.nr.gf1.nr <- OncoSimulR:::posetToGraph(p1.nr,
+    ##                           names = 1:tp$nodes,
+    ##                           addroot = FALSE,
+    ##                           type = "graphNEL")
 
 
     am1.To.rt <- OncoSimulR:::adjmat.to.restrictTable(am1, root = TRUE)
     am1.To.rt.2 <- OncoSimulR:::adjmat.to.restrictTable(am1[-1, -1], root = FALSE)
-    p1.To.rt <- OncoSimulR:::poset.to.restrictTable(p1)
-    p1.To.rt.2 <- OncoSimulR:::poset.to.restrictTable(p1.nr)
+    ## p1.To.rt <- OncoSimulR:::poset.to.restrictTable(p1)
+    ## p1.To.rt.2 <- OncoSimulR:::poset.to.restrictTable(p1.nr)
    
    
     ## p1.gf1.p1 <- graphToPoset(posetTograph(p1, keeproot = TRUE))
@@ -241,30 +265,30 @@ createAndConvert <- function(rangeNodes = 4:30,
         am1 = am1,
         am1.nr = am1.nr,
         gf1 = gf1,
-        p1 = p1,
-        p1.nr = p1.nr,
-        p1.am1 = p1.am1,
-        p1.am1.p1 = p1.am1.p1,
-        p1.am1.nr = p1.am1.nr,
-        p1.nr.am1 = p1.nr.am1,
-        p1.nr.am1.nr = p1.nr.am1.nr,
+##        p1 = p1,
+##        p1.nr = p1.nr,
+##        p1.am1 = p1.am1,
+##        p1.am1.p1 = p1.am1.p1,
+##        p1.am1.nr = p1.am1.nr,
+##        p1.nr.am1 = p1.nr.am1,
+##        p1.nr.am1.nr = p1.nr.am1.nr,
         am1.gf1.am1 = am1.gf1.am1,
         gf1.am1.gf1 = gf1.am1.gf1,
         gf1.nr = gf1.nr,
         NR.am1.gf1.am1 = NR.am1.gf1.am1,
         NR.gf1.am1.gf1 = NR.gf1.am1.gf1,
-        gf1.p1 = gf1.p1,
-        p1.gf1 = p1.gf1,
-        p1.gf1.p1 = p1.gf1.p1,
-        p1.gf1.nr = p1.gf1.nr,
+        ## gf1.p1 = gf1.p1,
+##        p1.gf1 = p1.gf1,
+        ## p1.gf1.p1 = p1.gf1.p1,
+##        p1.gf1.nr = p1.gf1.nr,
         ## gf1.nr.p1 = gf1.nr.p1,
         ## gf1.nr.p1.B = gf1.nr.p1.B,
-        p1.nr.gf1 = p1.nr.gf1,
-        p1.nr.gf1.nr = p1.nr.gf1.nr,
+##        p1.nr.gf1 = p1.nr.gf1,
+##        p1.nr.gf1.nr = p1.nr.gf1.nr,
         am1.To.rt   = am1.To.rt, 
-        am1.To.rt.2 = am1.To.rt.2, 
-        p1.To.rt    = p1.To.rt, 
-        p1.To.rt.2  = p1.To.rt.2        
+        am1.To.rt.2 = am1.To.rt.2 
+        ## p1.To.rt    = p1.To.rt, 
+        ## p1.To.rt.2  = p1.To.rt.2        
     ))  
     ## return(list(am1 = am1,
     ##             gf1 = gf1,
@@ -318,39 +342,39 @@ masterTestCall <- function(rangeNodes = 4:30,
                             names = names)
 
 
-    test_that("adjmat->poset->adjmat", {
-        expect_identical(out$am1, out$p1.am1)
-    })
-    ## the next one is currently redundant
-    test_that("poset->adjmat->poset", {
-        expect_identical(out$p1, out$p1.am1.p1)
-    })
+    ## test_that("adjmat->poset->adjmat", {
+    ##     expect_identical(out$am1, out$p1.am1)
+    ## })
+    ## ## the next one is currently redundant
+    ## test_that("poset->adjmat->poset", {
+    ##     expect_identical(out$p1, out$p1.am1.p1)
+    ## })
 
-    test_that("adjmat->poset->adjmat, no root", {
-        expect_identical(out$am1.nr, out$p1.am1.nr)
-    })
+    ## test_that("adjmat->poset->adjmat, no root", {
+    ##     expect_identical(out$am1.nr, out$p1.am1.nr)
+    ## })
 
 
-    test_that("sizes return adj mats w/w.o nr", {
-        expect_true( nrow(out$p1.am1) == (nrow(out$p1.am1.nr) + 1) ) 
-    })
+    ## test_that("sizes return adj mats w/w.o nr", {
+    ##     expect_true( nrow(out$p1.am1) == (nrow(out$p1.am1.nr) + 1) ) 
+    ## })
 
-    test_that("different posets, p1, p1.nr", {
-        expect_false(identical(out$p1 , out$p1.nr))
-    })
+    ## test_that("different posets, p1, p1.nr", {
+    ##     expect_false(identical(out$p1 , out$p1.nr))
+    ## })
 
-    test_that("p1 larger than p1.nr", {
-        expect_true( nrow(out$p1) > nrow(out$p1.nr) )
-    })
+    ## test_that("p1 larger than p1.nr", {
+    ##     expect_true( nrow(out$p1) > nrow(out$p1.nr) )
+    ## })
    
     
-    test_that("adjmat->poset.nr ->adjmat", {
-        expect_identical(out$am1, out$p1.nr.am1)
-    })
+    ## test_that("adjmat->poset.nr ->adjmat", {
+    ##     expect_identical(out$am1, out$p1.nr.am1)
+    ## })
 
-    test_that("adjmat->poset.nr ->adjmat, no root", {
-        expect_identical(out$am1.nr, out$p1.nr.am1.nr)
-    })
+    ## test_that("adjmat->poset.nr ->adjmat, no root", {
+    ##     expect_identical(out$am1.nr, out$p1.nr.am1.nr)
+    ## })
 
     ## next two are redundant
     test_that("adjmat->graph->adjmat", {
@@ -370,22 +394,22 @@ masterTestCall <- function(rangeNodes = 4:30,
     })
 
 
-    test_that("poset = (graph->poset)", {
-        expect_identical(out$p1, out$gf1.p1)
-    })
+    ## test_that("poset = (graph->poset)", {
+    ##     expect_identical(out$p1, out$gf1.p1)
+    ## })
     
-    test_that("graph =   (poset -> graph) ", {
-        expect_identical(out$gf1, out$p1.gf1)
-    })
+    ## test_that("graph =   (poset -> graph) ", {
+    ##     expect_identical(out$gf1, out$p1.gf1)
+    ## })
 
-    ## redundant
-    test_that("poset -> graph->poset ", {
-        expect_identical(out$p1, out$p1.gf1.p1)
-    })
+    ## ## redundant
+    ## test_that("poset -> graph->poset ", {
+    ##     expect_identical(out$p1, out$p1.gf1.p1)
+    ## })
 
-    test_that("poset -> graph.nr  = gf1.nr ", {
-        expect_identical(out$gf1.nr, out$p1.gf1.nr)
-    })
+    ## test_that("poset -> graph.nr  = gf1.nr ", {
+    ##     expect_identical(out$gf1.nr, out$p1.gf1.nr)
+    ## })
 
     ## No adjanceny matrices without 0 allowed
     ## test_that("graph.nr -> poset  =  am.nr -> poset ", {
@@ -396,17 +420,17 @@ masterTestCall <- function(rangeNodes = 4:30,
     ##     expect_identical(out$gf1.nr.p1, out$gf1.nr.p1.B)
     ## })
 
-    test_that("gf1 =  poset.nr ->graph", {
-        expect_identical(out$gf1, out$p1.nr.gf1)
-    })
+    ## test_that("gf1 =  poset.nr ->graph", {
+    ##     expect_identical(out$gf1, out$p1.nr.gf1)
+    ## })
 
-    test_that("gf1.nr =  poset.nr ->graph nr", {
-        expect_identical(out$gf1.nr, out$p1.nr.gf1.nr)
-    })
+    ## test_that("gf1.nr =  poset.nr ->graph nr", {
+    ##     expect_identical(out$gf1.nr, out$p1.nr.gf1.nr)
+    ## })
 
-    test_that(" from p1.nr to gf1 w and w/o root differ", {
-        expect_false(identical(out$p1.nr.gf1, out$p1.nr.gf1.nr))
-    })
+    ## test_that(" from p1.nr to gf1 w and w/o root differ", {
+    ##     expect_false(identical(out$p1.nr.gf1, out$p1.nr.gf1.nr))
+    ## })
 
     ## test_that("graph->poset->graph", {
     ##     expect_identical(out$gf1, out$gf1.p1.gf1)
@@ -414,19 +438,19 @@ masterTestCall <- function(rangeNodes = 4:30,
   
     
     ## if(names == 0) {
-        test_that("restriction table: identical from adjmat and poset", {
-            expect_identical(out$am1.To.rt, out$p1.To.rt)
-        })
+        ## test_that("restriction table: identical from adjmat and poset", {
+        ##     expect_identical(out$am1.To.rt, out$p1.To.rt)
+        ## })
         test_that("restriction table: identical from adjmat w/wo root", {
             expect_identical(out$am1.To.rt, out$am1.To.rt.2)
         })
-        test_that("restriction table: identical from poset w/wo root", {
-            expect_identical(out$p1.To.rt, out$p1.To.rt.2)
-        })
+        ## test_that("restriction table: identical from poset w/wo root", {
+        ##     expect_identical(out$p1.To.rt, out$p1.To.rt.2)
+        ## })
   ##   }
     ## cat("A full round of tests completed OK.\n")
     return("OK")
-}
+} 
 
 
 
