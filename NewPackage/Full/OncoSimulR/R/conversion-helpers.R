@@ -21,6 +21,8 @@
 ## since that adjmat need not contain all nodes, as OT sometimes drops
 ## some of them. So we need to preserve names AND when we write the poset,
 ## we need to specify, as we always do, the correct number of columns.
+## Thus, we use the special intAdjMatToPosetPreserveNames.
+## Change name! OTtoPoset
 
 
 ## In newer, future, versions of OncoSimulR all this will be cleared out
@@ -29,89 +31,142 @@
 ##  - if we pass things to CBN, we will clean that to the messy format in
 ##  write.poset.
 
-##  - when using OTs, ??, maybe force all nodes to be there, connected
-##  from root? Think this later. Or use the current the mess?? Or never
-##  use the simple poset for nothing, except calling CBN.
-
+## And we will relax adjMats, to allow for non-integer names? Or pass that
+## as additional labels, so we can interchange with posets without ambiguity?
 
 ## adjMatToPoset is not really used for anything at all in the code now.
 
 ## Remember from adjmat we go to rT directly.
 
-
-## FIXME two checks: the one for general adjMat, that should include a root and
-## the one for creatin rts. The latter do not
-
-## so write two functions
-
-## minimalProperAdjMat
-## properAdjMat that calls minimal, and adds checks for root, etc.
+## Now, posetToGraph also includes checking strict adjMat, except if
+## called from plotPoset, where arbitrary labels can be used.
 
 
 
-checkProperAdjMat <- function(x,
-                              rootNames = c("0", "root", "Root")) {
+
+
+checkProperMinimalAdjMat <- function(x,
+                                     rootNames = c("0", "root", "Root"),
+                                     root = TRUE,
+                                     orderedNames = TRUE) {
+
+    ## We go from poset to rt through adjmat, but the adjmat has no root,
+    ## as the rT has no root. But this must have ordered names, as any
+    ## poset uses only integers from 1 to whatever.
+
+    ## Any adjmat should fulfill what follows, with the option of not
+    ## checking for root and for orderedNames
+    
     if(is.null(colnames(x)) && is.null(rownames(x)))
         stop("column and/or row names are null")
     if(!identical(colnames(x), rownames(x)))
         stop("colnames and rownames not identical")
-    posRoot <- which(colnames(x) %in% rootNames)
-    
-    ## if(!length(posRoot)) ## adjmat.to.restrictTable depends on this being true
-    ##     stop("No column with the root name")
-    ## NOPE!
-    if(length(posRoot) > 1)
-        stop("Ambiguous location of root")
     if(!is.integer(x))
         stop("Non-integer values")
     if( !all(x %in% c(0L, 1L) ))
         stop("Values not in {0L, 1L}")
-    if( posRoot != 1)
-        stop("Root must be in first row and column")
-    ## FIXME: beware if no root!  And columns should be sorted already!
-    scn <- sort(as.integer(colnames(x)[-1]))
-    if(!identical(scn, seq.int(ncol(x) - 1)))
-        stop("Either non-integer column names, or non-successive integers")
+    posRoot <- which(colnames(x) %in% rootNames)
+    cs <- colSums(x)
+    if(root) {
+        ## only applies to rooted adj mat, as a matrix without root where
+        ## all descend from root will have not a single 1
+        if(any( (cs + rowSums(x)) < 1))
+            stop("You have nodes that have no incoming and no outgoing connections")
+    }
+    if(length(posRoot) > 0) {
+        if(length(posRoot) > 1)
+            stop("Ambiguous location of root")
+        if( posRoot != 1)
+            stop("Root must be in first row and column")
+        if(cs[1] > 0)
+            stop("Nothing can have an edge to Root")
+        cs <- cs[-1]
+        if(any(cs < 1))
+            stop(paste("In trees with Root,",
+                       " there must be at least one incoming edge to every node (except Root)"))
+        if(!root)
+            stop("You said there is no root, but there is one")
+    } else {
+        if(root)
+            stop("No Root, and you said one should be present")
+    }
+
+    if(orderedNames) {
+        if(length(posRoot) == 1) {
+            ncx <- ncol(x) - 1
+            scn <- sort(as.integer(colnames(x)[-1]))
+        }
+        else {
+            ncx <- ncol(x)
+            scn <- sort(as.integer(colnames(x)))
+        }
+        if(!identical(scn, seq.int(ncx)))
+            stop(paste("Either non-integer column names,",
+                       " or non-successive integers, ",
+                       " or not sorted integer names") )
+    }
+}
+
+
+checkProperFullAdjMat <- function(x,
+                              rootNames = c("0", "root", "Root")) {
+    checkProperMinimalAdjMat(x, rootNames = rootNames,
+                             root = TRUE, orderedNames = TRUE)
+}
+
+
+checkProperOTAdjMat <- function(x) {
+    ## oncotree ALWAYS returns things that have a rootName that says "Root"
+    checkProperMinimalAdjMat(x, rootNames = "Root", root = TRUE,
+                             orderedNames = FALSE)
 }
 
 
 
 poset.to.restrictTable <- function(x) {
     x1 <- posetToGraph(x, names = 1:max(x), addroot = FALSE, type = "adjmat")
-    adjmat.to.restrictTable(x1)
+    adjmat.to.restrictTable(x1, root = FALSE,
+                            rootNames = c("0", "root", "Root"))
 }
 
 
 adjmat.to.restrictTable <- function(x, root = FALSE,
                                     rootNames = c("0", "root", "Root")) {
-    ## we have the zero
-    if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
-        warning("Looks like the matrix has a root but you specified root = FALSE")
 
-    if(!identical(colnames(x), rownames(x)))
-        stop("colnames and rownames not identical")
-    if(root) {
-        posRoot <- which(colnames(x) %in% rootNames)
-        if(!length(posRoot))
-            stop("No column with the root name")
-        if(length(posRoot) > 1)
-            stop("Ambiguous location of root")
-        x <- x[-posRoot, -posRoot]
-    }
+    checkProperMinimalAdjMat(x, rootNames = rootNames,
+                             root = root,
+                             orderedNames = TRUE)
+    if(root)
+        x <- x[-1, -1]
+    ## ## we have the zero
+    ## if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
+    ##     warning("Looks like the matrix has a root but you specified root = FALSE")
 
-    if(typeof(x) != "integer")
-        warning("This is not an _integer_ adjacency matrix")
-    if( !all(x %in% c(0, 1) ))
-        stop("Values not in [0, 1]")
-    if(!is.null(colnames(x))) {
-        ## FIXME: this makes sense with numeric labels for columns, but
-        ## not ow.
-        oi <- order(as.numeric(colnames(x)))
-        if(any(oi != (1:ncol(x)))) {
-            warning("Reordering adjacency matrix")
-            x <- x[oi, oi]
-        }
-    }
+    ## if(!identical(colnames(x), rownames(x)))
+    ##     stop("colnames and rownames not identical")
+    ## if(root) {
+    ##     posRoot <- which(colnames(x) %in% rootNames)
+    ##     if(!length(posRoot))
+    ##         stop("No column with the root name")
+    ##     if(length(posRoot) > 1)
+    ##         stop("Ambiguous location of root")
+    ##     x <- x[-posRoot, -posRoot]
+    ## }
+
+    ## if(typeof(x) != "integer")
+    ##     warning("This is not an _integer_ adjacency matrix")
+    ## if( !all(x %in% c(0, 1) ))
+    ##     stop("Values not in [0, 1]")
+
+    ## if(!is.null(colnames(x))) {
+    ##     ## FIXME: this makes sense with numeric labels for columns, but
+    ##     ## not ow.
+    ##     oi <- order(as.numeric(colnames(x)))
+    ##     if(any(oi != (1:ncol(x)))) {
+    ##         warning("Reordering adjacency matrix")
+    ##         x <- x[oi, oi]
+    ##     }
+    ## }
     
     num.deps <- colSums(x)
     max.n.deps <- max(num.deps)
@@ -132,21 +187,35 @@ adjmat.to.restrictTable <- function(x, root = FALSE,
 
 
 ## this preserves the names in the adj mat. For OT -> poset.
-intAdjMatToPosetPreserveNames <- function(x, dropRoot = TRUE) {
-    if(!dropRoot)
-        warning("Are you sure you do not want dropRoot?")
-    if(dropRoot) {
-        ncx <- ncol(x)
-        x <- x[-1, -1]
-        ## y <- (which(x == 1L, arr.ind = TRUE) )
-        ## if(nrow(y) == 0) ## all nodes descend from 0
-        ##     y <- cbind(0L, ncx - 1L)
-        namesInts <- type.convert(colnames(x), as.is = TRUE)
+## intAdjMatToPosetPreserveNames <- function(x, dropRoot = TRUE) {
+
+OTtoPoset <- function(x) {
+    checkProperOTAdjMat(x)
+
+    ## ## root must always be dropped, as we are creating a poset
+    ## dropRoot <- TRUE
+    ## if(!dropRoot)
+    ##     warning("Are you sure you do not want dropRoot?")
+    ## if(dropRoot) {
+    ##     ncx <- ncol(x)
+    ##     x <- x[-1, -1]
+    ##     ## y <- (which(x == 1L, arr.ind = TRUE) )
+    ##     ## if(nrow(y) == 0) ## all nodes descend from 0
+    ##     ##     y <- cbind(0L, ncx - 1L)
+    ##     namesInts <- type.convert(colnames(x), as.is = TRUE)
         
-    } else {
-        ## y <- (which(x == 1L, arr.ind = TRUE) )
-        namesInts <- c(0L, type.convert(colnames(x)[-1], as.is = TRUE))
-    }
+    ## } else {
+    ##     ## y <- (which(x == 1L, arr.ind = TRUE) )
+    ##     namesInts <- c(0L, type.convert(colnames(x)[-1], as.is = TRUE))
+    ## }
+
+    ncx <- ncol(x)
+    x <- x[-1, -1]
+    ## y <- (which(x == 1L, arr.ind = TRUE) )
+    ## if(nrow(y) == 0) ## all nodes descend from 0
+    ##     y <- cbind(0L, ncx - 1L)
+    namesInts <- type.convert(colnames(x), as.is = TRUE)
+    
     if(!is.integer(namesInts))
         stop("cannot convert to poset adj mat with non-int colnames")
     y <- (which(x == 1L, arr.ind = TRUE) )
@@ -175,7 +244,8 @@ convertRestrictTable <- function(x) {
 
 posetToGraph <- function(x, names,
                          addroot = FALSE,
-                         type = "graphNEL") {
+                         type = "graphNEL",
+                         strictAdjMat = TRUE) {
 
     ## Using addroot = FALSE returns adjacency matrices without root,
     ## which is not neat.
@@ -246,6 +316,10 @@ posetToGraph <- function(x, names,
     }
     if(addroot)
         m1[1, 1] <- 0L
+    ## yes, we must skip this check when plotting a poset (because we can
+    ## have arbitrary non-integer names )
+    if(strictAdjMat)
+        checkProperMinimalAdjMat(m1, root = addroot)
     
     if(type == "adjmat") return(m1)
     else if (type == "graphNEL") return(as(m1, "graphNEL"))

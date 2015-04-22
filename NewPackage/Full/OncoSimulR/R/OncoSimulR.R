@@ -693,7 +693,9 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
         if(addroot) names <- c("Root", 1:max(x))
         else names <- 1:max(x)
     }
-    plot(posetToGraph(x, names, addroot), ...)
+    plot(posetToGraph(x, names =  names, addroot = addroot,
+                      type = "graphNEL",
+                      strictAdjMat = FALSE), ...)
     if(box)
         box()
 }

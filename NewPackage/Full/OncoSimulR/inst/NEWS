@@ -1,5 +1,10 @@
+Changes in version 99.1.12 (2014-04-22)
+	- Removed lots of unused conversion helpers and added more strict
+	checks and tests of those checks.
+
 Changes in version 99.1.11 (2014-04-18)
 	- Tests of conversion helpers now really working.
+
 
 Changes in version 99.1.10 (2014-04-16)
 	- Added conversion helpers as separate file.
