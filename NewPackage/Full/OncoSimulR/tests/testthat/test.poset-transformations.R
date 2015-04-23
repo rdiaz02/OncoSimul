@@ -9,8 +9,6 @@
 ## not all nodes being in the poset, etc.
 
 
-## FIXME: verify the simulation code for trees generates properAdjMat
-
 ## include code that tests convertRestrictTable. Nope, not now.
 
 ## Verify
@@ -19,6 +17,10 @@
 
 ## all the code for new simulations is based upon going from adjmat to rT.
 ## verify that.
+
+
+
+
 
 
 m0 <- matrix(0L, ncol = 4, nrow = 4)

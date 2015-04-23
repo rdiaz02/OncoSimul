@@ -229,6 +229,34 @@ OTtoPoset <- function(x) {
     return(p2)
 }    
 
+## the next is just a convenience
+## sortAdjMat <- function(am) {
+##     cn <- colnames(am)
+##     rootpos <- grep("^Root$", cn) 
+##     if(length(rootpos) != 1)
+##         stop("No root in adj mat, or multiple Roots")
+##     cn <- c("Root", sort(colnames(am)[-rootpos]))
+##     return(am[cn, cn])
+## }
+
+sortAdjMat <- function(am) {
+    ## If column names, except Root, are integers, sort as integers. O.w.,
+    ## general lexicog. sort.
+    cn <- colnames(am)
+    rootpos <- grep("^Root$", cn) 
+    if(length(rootpos) != 1)
+        stop("No root in adj mat, or multiple Roots")
+    cn0 <- colnames(am)[-rootpos]
+    namesInts <- type.convert(cn0, as.is = TRUE)
+    if(is.integer(namesInts)) {
+        cn <- c("Root", sort(namesInts))
+    } else {
+        cn <- c("Root", sort(cn0))
+    }
+    return(am[cn, cn])
+}
+
+
 
 
 convertRestrictTable <- function(x) {
@@ -495,7 +523,7 @@ posetToGraph <- function(x, names,
 ##     m <- as(g, "matrix") 
 ##     mi <- m
 ##     storage.mode(mi) <- "integer"
-##     stopifnot(all.equal(m, mi))
+##     stopifnot(isTRUE(all.equal(m, mi)))
 ##     return(adjMatToPoset(mi))
 ## }
 
