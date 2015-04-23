@@ -1,3 +1,8 @@
+Changes in version 99.1.13 (2014-04-23)
+	- Added a couple of drop = FALSE. Their absence lead to crashes in
+	some strange, borderline cases.
+	- Increased version to make unambiguous version used for anal. CBN.
+
 Changes in version 99.1.12 (2014-04-22)
 	- Removed lots of unused conversion helpers and added more strict
 	checks and tests of those checks.
