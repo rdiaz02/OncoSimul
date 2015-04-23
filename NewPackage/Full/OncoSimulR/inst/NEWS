@@ -1,36 +1,39 @@
-Changes in version 99.1.13 (2014-04-23)
+Changes in version 99.1.14 (2015-04-23):
+	- Now are things OK (I messed up the repos)
+
+Changes in version 99.1.13 (2015-04-23)
 	- Added a couple of drop = FALSE. Their absence lead to crashes in
 	some strange, borderline cases.
 	- Increased version to make unambiguous version used for anal. CBN.
 
-Changes in version 99.1.12 (2014-04-22)
+Changes in version 99.1.12 (2015-04-22)
 	- Removed lots of unused conversion helpers and added more strict
 	checks and tests of those checks.
 
-Changes in version 99.1.11 (2014-04-18)
+Changes in version 99.1.11 (2015-04-18)
 	- Tests of conversion helpers now really working.
 
 
-Changes in version 99.1.10 (2014-04-16)
+Changes in version 99.1.10 (2015-04-16)
 	- Added conversion helpers as separate file.
 	- Added tests of conversion helpers.
 	- Added generate-random-trees code (separate file).
 	- More strict now on the poset format and conversions.
 
-Changes in version 99.1.9 (2014-04-09)
+Changes in version 99.1.9 (2015-04-09)
 	- added null mutation for when we run out of mutable positions,
 	and since not clear how to use BNB then.
 
-Changes in version 99.1.8 (2014-04-03)
+Changes in version 99.1.8 (2015-04-03)
 	- added extraTime.
 
-Changes in version 99.1.7 (2014-04-03)
+Changes in version 99.1.7 (2015-04-03)
 	- endTimeEvery removed. Now using minDDrPopSize if needed.
 
-Changes in version 99.1.6 (2014-03-20)
+Changes in version 99.1.6 (2015-03-20)
 	- untilcancer and oncoSimulSample working together
 
-Changes in version 99.1.5 (2014-03-20)
+Changes in version 99.1.5 (2015-03-20)
 	- Using the untilcancer branch
 
 Changes in version 99.1.4 (2014-12-24)
