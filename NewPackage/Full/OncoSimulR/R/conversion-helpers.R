@@ -137,7 +137,7 @@ adjmat.to.restrictTable <- function(x, root = FALSE,
                              root = root,
                              orderedNames = TRUE)
     if(root)
-        x <- x[-1, -1]
+        x <- x[-1, -1, drop = FALSE]
     ## ## we have the zero
     ## if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
     ##     warning("Looks like the matrix has a root but you specified root = FALSE")
@@ -210,7 +210,7 @@ OTtoPoset <- function(x) {
     ## }
 
     ncx <- ncol(x)
-    x <- x[-1, -1]
+    x <- x[-1, -1, drop = FALSE]
     ## y <- (which(x == 1L, arr.ind = TRUE) )
     ## if(nrow(y) == 0) ## all nodes descend from 0
     ##     y <- cbind(0L, ncx - 1L)
