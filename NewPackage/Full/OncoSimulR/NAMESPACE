@@ -1,8 +1,8 @@
 useDynLib(OncoSimulR, .registration=TRUE)
 ## useDynLib(OncoSimulR)
 
-## export("oncoSimulPop", "oncoSimulIndiv", "samplePop", "plotPoset")
-exportPattern("^[^\\.]") ## anything that does not start with a period
+export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
+       "plotPoset", "oncoSimulSample")
 
 S3method(plot, oncosimul)
 S3method(print, oncosimul)
@@ -16,4 +16,4 @@ importFrom("data.table", rbindlist, .rbind.data.table)
 importFrom(Rcpp, evalCpp)
 import(graph)
 import(Rgraphviz)
-importFrom("parallel", mclapply, detectCores)
+importFrom("parallel", mclapply, detectCores, mcMap)

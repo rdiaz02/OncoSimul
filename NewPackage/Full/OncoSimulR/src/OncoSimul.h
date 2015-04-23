@@ -1,6 +1,7 @@
 #ifndef _OncoSimul_H
 #define _OncoSimul_H
 
+
 #include <Rcpp.h> 
 //#include <RcppGSL.h> 
 
@@ -32,8 +33,16 @@ RcppExport SEXP BNB_Algo5(SEXP restrictTable_,
 			   SEXP alpha_,
 			   SEXP sh_,
 			   SEXP K_,
-			   SEXP endTimeEvery_,
-			   SEXP finalDrivers_);
+			  //SEXP endTimeEvery_,
+			  SEXP detectionDrivers_,
+			  SEXP onlyCancer_,
+			  SEXP errorHitWallTime_,
+			  SEXP maxNumTries_,
+			  SEXP errorHitMaxTries_,
+			  SEXP minDDrPopSize_,
+			  SEXP extraTime_
+			  );
+
 
 
 #endif

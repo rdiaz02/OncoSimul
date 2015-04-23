@@ -5,55 +5,92 @@
 \alias{print.oncosimulpop}
 \alias{summary.oncosimul}
 \alias{summary.oncosimulpop}
+\alias{oncoSimulSample}
 
 
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Simulate tumor progression for one or more individuals.
+  Simulate tumor progression for one or more individuals, optionally
+  returning just a sample in time.
 }
 \description{
-  
   Simulate tumor progression including possible restrictions in the
   order of driver mutations. Optionally add passenger
   mutations. Simulation is done using the BNB algorithm of Mather et
   al., 2012.
-
-
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-
 }
 \usage{
  oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
-                sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
+                sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
+                             0.025),
+                initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                minDDrPopSize = "auto",
+                extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
+                max.num.tries = 500,
+                errorHitWallTime = TRUE,
+                errorHitMaxTries = TRUE,
                 verbosity = 0)
 
  oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
-                sampleEvery = 1, initSize = 500, s = 0.1, sh = -1,
+                sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
+                             0.025),
+                initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                minDDrPopSize = "auto",
+                extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
+                max.num.tries = 500,
+                errorHitWallTime = TRUE,
+                errorHitMaxTries = TRUE,
                 verbosity = 0, mc.cores = detectCores())
 
 
+oncoSimulSample(Nindiv,
+                poset,
+                model = "Bozic",
+                numPassengers = 0,
+                mu = 1e-6,
+                detectionSize = round(runif(Nindiv, 1e6, 1e8)),
+                detectionDrivers = sample(3:round(0.75 * max(poset)),
+                                          Nindiv, replace = TRUE),
+                sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
+                    0.025),
+                initSize = 500,
+                s = 0.1,
+                sh = -1,
+                K = initSize/(exp(1) - 1),
+                minDDrPopSize = "auto",
+                extraTime = 0,
+                finalTime = 0.25 * 25 * 365,
+                onlyCancer = TRUE,
+                max.memory = 2000,
+                max.wall.time.total = 600,
+                max.num.tries.total = 500 * Nindiv,
+                verbosity  = 1,
+                typeSample = "whole",
+                thresholdWhole = 0.5)
+
+
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
+  
   \item{Nindiv}{Number of individuals or number of different
     trajectories to simulate.}
   \item{poset}{
     
     The poset that specifies the order restrictions. See \code{\link{poset}}.
-%%     ~~Describe \code{adjm} here~~
+
 }
 \item{model}{
   One of "Bozic", "Exp", "McFarlandLog" (the last one can be abbreviated
   to "McFL").
-%%     ~~Describe \code{model} here~~
+
 }
 \item{numPassengers}{
   
@@ -65,19 +102,19 @@
   the total number of driver genes. Thus, passenger genes will be
   numbered from (number of driver genes + 1):(number of drivers + number
   of passengers).
-%%     ~~Describe \code{numGenes} here~~
+
 }
 \item{mu}{
   Mutation rate.
-%%     ~~Describe \code{mu} here~~
+
 }
 \item{detectionSize}{
   What is the minimal number of cells for cancer to be detected.
-%%     ~~Describe \code{detectionSize} here~~
+
 }
 \item{detectionDrivers}{
   The minimal number of drivers present in any clone for cancer to be detected.
-%%     ~~Describe \code{detectionDrivers} here~~
+
 }
 \item{sampleEvery}{
   
@@ -90,15 +127,15 @@
   population size between two successive samples that can then lead to
   problems for random number generators). Likewise, for models with
   density dependence (such as McF) this value should be very small.
-%%     ~~Describe \code{sampleEvery} here~~
+
 }
 \item{initSize}{
   Initial population size.
-%%     ~~Describe \code{initSize} here~~
+
 }
 \item{s}{
   Selection coefficient for drivers.
-%%     ~~Describe \code{s} here~~
+
 }
 \item{sh}{
   Selection coefficient for drivers with restrictions not satisfied. A
@@ -106,11 +143,11 @@
   clone when its restrictions are not satisfied.
 
   To specify "sh=Inf" (in Diaz-Uriarte, 2014) use sh = -1.
-%%     ~~Describe \code{sh} here~~
+
 }
 \item{K}{
   Initial population equilibrium size in the McFarland models.
-%%     ~~Describe \code{K} here~~
+
 }
 \item{keepEvery}{
   Time interval between successive whole population samples that are
@@ -123,11 +160,57 @@
   small values (say, 1 or 0.5). Otherwise, you can use a
   \code{sampleEvery} of 1 but a \code{keepEvery} of 15, so that the
   return objects are not huge.
-%%     ~~Describe \code{keepEvery} here~~
+
 }
+
+%% \item{endTimeEvery}{
+%%   If endTimeEvery is > 0, even if conditions for finishing a simulation
+%%   (number of drivers or population size) are met at time \emph{t}, the
+%%   simulation will run at least until \emph{t + endTimeEvery} and
+%%   conditions will be checked again. Only if conditions for finishing a
+%%   simulation are still met, will the simulation end.
+
+%%   The reason for this parameter is to ensure that, say, a clone with a
+%%   certain number of drivers that would cause the simulation to end has
+%%   not just appeared but then gone extinct shortly after. Beware, though,
+%%   that in simulations with very fast growth, setting large endTimeEvery
+%%   can result in the simulations taking a long time to finish or hitting
+%%   the wall time limit.}
+
+\item{minDDrPopSize}{
+
+  A value of 0 or larger than 0 (by default equal to
+  \code{initSize} in the McFarland model). If larger than 0, when
+  checking if we are done with a simulation, we verify that the sum of
+  the population sizes of all clones that have a number of mutated
+  drivers larger or equal to \code{detectionDrivers} is larger or equal
+  to this \code{minDDrPopSize}.
+
+  The reason for this parameter is to ensure that, say, a clone with a
+  certain number of drivers that would cause the simulation to end has
+  not just appeared and is present in only one individual that might
+  then immediately go extinct. This can be relevant in secenarios such
+  as the McFarland model.
+
+  See also \code{extraTime}.
+}
+
+\item{extraTime}{
+  A value larger than zero waits those many additional time periods
+  before exiting after having reached the exit condition (population
+  size, number of drivers).
+
+  The reason for this setting is to prevent the McFL models from always
+  exiting at a time when one clone is increasing its size quickly (see
+  \code{minDDrPopSize}). By setting an \code{extraTime} larger than 0,
+  we can sample at points when we are at the plateau.
+  
+
+}
+
 \item{finalTime}{
   What is the maximum number of time units that the simulation can run.
-%%     ~~Describe \code{finalTime} here~~
+
 }
 \item{onlyCancer}{
   Return only simulations that reach cancer?
@@ -138,29 +221,86 @@
   met). Otherwise, the simulation is returned regardless of final
   population size or number of drivers in any clone and this includes
   simulations where the population goes extinct.
-%%     ~~Describe \code{onlyCancer} here~~
+
 }
+
+\item{max.num.tries}{Only applies when \code{onlyCancer = TRUE}. What is
+  the maximum number of times, for an individual simulation, we can
+  repeat the simulation for it to reach cancer? There are certain
+  parameter settings where reaching cancer is extremely unlikely and you
+  might not want to run forever in those cases.  }
+
+
+\item{max.num.tries.total}{Only applies when \code{onlyCancer = TRUE}
+  and for \code{oncoSimulSample}. What is the maximum number of times,
+  over all simulations for all individuals in a population sample, that
+  we can repeat the simulations so that cancer is reached for all
+  individuals?  The idea is to set a limit on the average minimal
+  probability of reaching cancer for a set of simulations to be
+  accepted.}
+
+\item{errorHitMaxTries}{ If TRUE (the default) a simulation that reaches
+  the maximum number of repetitions allowed is considered not to have
+  succesfully finished and, thus, an error, and no output from it will
+  be reported. This is often what you want. But if you want to see what
+  is happening for some set of parameters that seem to never finish, set
+  this to FALSE, and check what the output looks like.  }
+
+
+
 \item{max.memory}{
   The largest size (in MB) of the matrix of Populations by Time. If it
   creating it would use more than this amount of memory, it is not
   created. This prevents you from accidentally passing parameters that
   will return an enormous object.
-%%     ~~Describe \code{max.memory} here~~
+
 }
 \item{max.wall.time}{
   Maximum wall time for each individual simulation run. If the
   simulation is not done in this time, it is aborted.
-%%     ~~Describe \code{max.wall.time} here~~
+
 }
-%%   \item{endTimeEvery}{
-%% %%     ~~Describe \code{endTimeEvery} here~~
-%% }
+
+\item{max.wall.time.total}{ Maximum wall time for all the simulations
+  (when using \code{oncoSimulSample}), in seconds. If the simulation is not completed in
+  this time, it is aborted. To prevent problems from a single individual
+  simulation going wild, this limit is also enforced per simulation (so
+  the run can be aborted directly from C++).
+
+}
+
+
+\item{errorHitWallTime}{
+  If TRUE (the default) a simulation that reaches the maximum wall time
+  is considered not to have succesfully finished and, thus, an error,
+  and no output from it will be reported. This is often what you
+  want. But if you want to see what is happening for some set of
+  parameters that seem to never finish, set this to FALSE, and check
+  what the output looks like.
+}
+
+
 \item{verbosity}{
   If 0, run as silently as possible. Otherwise, increasing values of
   verbosity provide progressively more information about intermediate
   steps, possible numerical notes/warnings from the C++ code, etc.
-%%     ~~Describe \code{silent} here~~
+
 }
+
+  \item{typeSample}{
+    "singleCell" (or "single") for single cell sampling, where the
+    probability of sampling a cell (a clone) is directly proportional to
+    its population size.  "wholeTumor" (or "whole") for whole tumor
+    sampling (i.e., this is similar to a biopsy being the entire
+    tumor). See \code{\link{samplePop}}.
+  }
+
+  \item{thresholdWhole}{
+    In whole tumor sampling, whether a gene is detected as mutated depends
+    on thresholdWhole: a gene is considered mutated if it is altered in at
+    least thresholdWhole proportion of the cells in that individual. See \code{\link{samplePop}}.
+  }
+  
 
 \item{mc.cores}{Number of cores to use when simulating more than one
   individual (i.e., when calling oncoSimulPop).}
@@ -194,7 +334,7 @@
   For \code{oncoSimulIndiv} a list, of class "oncosimul", with the
   following components:
   
-  \item{pops.by.time }{A matrix of the population sizes of the clones,
+    \item{pops.by.time }{A matrix of the population sizes of the clones,
     with clones in columns and time in row. Not all clones are shown here,
     only those that were present in at least on of the keepEvery samples.}
   
@@ -206,11 +346,11 @@
     pops.by.time matrix, its genotype, with a 0 if the gene is not
     mutated and a 1 if it is mutated.}
   
-  \item{MaxNumDrivers}{The largest number of mutated driver genes ever seen in the
-    simulation in any clone.}
+  \item{MaxNumDrivers}{The largest number of mutated driver genes ever
+    seen in the simulation in any clone.}
 
-  \item{MaxDriversLast}{The largest number of mutated drivers in any clone at the
-    end of the simulation.}
+  \item{MaxDriversLast}{The largest number of mutated drivers in any
+    clone     at the   end of the simulation.}
 
   \item{NumDriversLargestPop}{The number of mutated driver genes in the
     clone with largest population size. }
@@ -254,47 +394,41 @@
   \code{"oncosimulpop"}, where each element of the list is itself a
   list, of class \code{oncosimul}, with components as described above.
   
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
 }
 \references{
 
-  Bozic, I., et al.,  (2010). Accumulation of driver and passenger mutations during tumor
-  progression. \emph{ Proceedings of the National Academy of Sciences of the United
-  States of America\/}, \bold{107}, 18545--18550.
-
+  Bozic, I., et al., (2010). Accumulation of driver and passenger
+  mutations during tumor progression. \emph{ Proceedings of the National
+  Academy of Sciences of the United States of America\/}, \bold{107},
+  18545--18550.
+  
   Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
-of mutations during tumor progression: effects of passenger mutations,
-evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
-
+  of mutations during tumor progression: effects of passenger mutations,
+  evolutionary models, and
+  sampling. \url{http://dx.doi.org/10.1101/005587}
+  
   McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National
   Academy of Sciences of the United States of America\/}, \bold{110}(8),
   2910--5.
 
   Mather, W.~H., Hasty, J., and Tsimring, L.~S. (2012). Fast stochastic
-  algorithm for simulating evolutionary population dynamics.  \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
+  algorithm for simulating evolutionary population dynamics.
+  \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
 
   
-%% ~put references to the literature/web site here ~
-}
-\author{
-  Ramon Diaz-Uriarte
+
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\author{Ramon Diaz-Uriarte}
+
 
 \seealso{
-  \code{\link{plot.oncosimul}},
-  %% \code{\link{print.oncosimul}},
-  %% \code{\link{summary.oncosimul}},
-  \code{\link{examplePosets}},
+  \code{\link{plot.oncosimul}}, \code{\link{examplePosets}},
   \code{\link{samplePop}}
   
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+
 }
 \examples{
 ## use poset p701
@@ -308,7 +442,7 @@ summary(b1)
 
 plot(b1, addtot = TRUE)
 
-## McFarland; need to modify sampleEvery, but use a reasonable
+## McFarland; use a small sampleEvery, but also a reasonable
 ##   keepEvery.
 ## We also modify mutation rate to values similar to those in the
 ##   original paper.
@@ -340,8 +474,11 @@ p1 <- oncoSimulPop(4, p701,
                    mc.cores = 2)
 
 
+p2 <- oncoSimulSample(4, p701)
+                      
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{misc}
-\keyword{iteration}% __ONLY ONE__ keyword per line
+\keyword{iteration}
+
+
+
