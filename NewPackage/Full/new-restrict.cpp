@@ -194,7 +194,7 @@ static void printGeneToModule(const
   Rcpp::Rcout << 
     "\n\n******** geneModule table inside C++ *******:\ngene ID,\t Gene,\t Module ID,\t Module\n";
   for(auto it = geneModulesLong.begin(); it != geneModulesLong.end(); ++it) {
-    Rcpp::Rcout << it->GeneID << '\t' << it->GeneName << '\t' 
+    Rcpp::Rcout << '\t' << it->GeneID << '\t' << it->GeneName << '\t' 
 		<< it->ModuleID << '\t' << it->ModuleName << std::endl;
   }
 }
@@ -240,6 +240,10 @@ static void DrvToModule(const std::vector<int>& Drv,
 			mutatedModules.end() );
 }
 
+// FIXME: can we make it faster if we know each module a single gene?
+// FIXME: if genotype is always kept sorted, with drivers first, can it be
+// faster? As well, note that number of drivers is automatically known
+// from this table of constraints.
 
 static void checkConstraints(const std::vector<int>& Drv,
 			     const std::vector<geneDeps>& Poset,
@@ -291,16 +295,24 @@ static void checkConstraints(const std::vector<int>& Drv,
 }
 
 
+
+
+
+// SEXP wrap_test_checkRestriction(Rcpp::List rtR, 
+// 				Rcpp::DataFrame rGM,
+// 				Rcpp::IntegerVector genotype) {
+
+
 // Turn the following into a function called from R naturally.  Allows for
 // testing AND allows users to understand the consequences of an rt and a
-// genotype. Call this "eval_Genotype" and the R function evalGenotype
-
+// genotype. The R function is evalGenotype
 
 
 // [[Rcpp::export]]
-SEXP wrap_test_checkRestriction(Rcpp::List rtR, 
-				Rcpp::DataFrame rGM,
-				Rcpp::IntegerVector genotype) {
+SEXP eval_Genotype(Rcpp::List rtR, 
+		   Rcpp::DataFrame rGM,
+		   Rcpp::IntegerVector genotype) {
+
   std::vector<geneDeps> Poset;
   std::vector<geneToModule> geneModules;
   std::vector<geneToModuleLong> geneModulesLong;

@@ -1,3 +1,12 @@
+## FIXME add formal tests. Verify all output carefully.
+
+## FIXME a converter from old posets to the new format.  do this INSIDE
+## the code.  If you pass a single two-column poset and s and sh, the new
+## format is created.
+
+## FIXME I think we must enforce that 0 always show up. And it is the
+## root? Or not, but enforce a policy
+
 library(data.table)
 rt2 <- data.frame(parent = c(
                       0, 0, 0,
@@ -353,6 +362,8 @@ gene.to.module <- function(rt) {
 to.long.rt <- function(rt, verbosity = 0) {
     if(is.numeric(rt$parent))
         rt$parent <- as.character(rt$parent)
+    if(!("0" %in% rt$parent))
+        stop("0 must be one parent node")
     if(is.numeric(rt$child))
         rt$child <- as.character(rt$child)
     rt$parent <- unlist(lapply(rt$parent, nice.string))
@@ -413,10 +424,11 @@ wrap.test.rt <- function(rt) {
     ## wrap_test_rt(lrt$long.rt)
     wrap_test_rt(lrt$long.rt, lrt$geneModule)
 }
+## was called wrap.test.checkRestrictions
 
-wrap.test.checkRestrictions <- function(rt, genotype) {
+evalGenotype <- function(rt, genotype) {
     lrt <- to.long.rt(rt)
-    wrap_test_checkRestriction(lrt$long.rt, lrt$geneModule,  genotype)
+    eval_Genotype(lrt$long.rt, lrt$geneModule,  genotype)
 }
 
 
@@ -447,59 +459,165 @@ wrap.test.rt(rt3) ## rt3 is not a proper poset
 ## same gene as module and as isolated.
 
 
-wrap.test.checkRestrictions(rt7, c(1L))
-wrap.test.checkRestrictions(rt7, c(2L))
 
-wrap.test.checkRestrictions(rt7, c(3L))
-wrap.test.checkRestrictions(rt7, c(4L))
-
-wrap.test.checkRestrictions(rt7, c(1L, 2L))
-wrap.test.checkRestrictions(rt7, c(1L, 3L))
-wrap.test.checkRestrictions(rt7, c(1L, 4L))
-wrap.test.checkRestrictions(rt7, c(2L, 3L))
-wrap.test.checkRestrictions(rt7, c(2L, 4L))
-
-wrap.test.checkRestrictions(rt7, c(1L, 2L, 3L))
-wrap.test.checkRestrictions(rt7, c(1L, 2L, 4L))
-wrap.test.checkRestrictions(rt7, c(1L, 3L, 4L))
-
-wrap.test.checkRestrictions(rt7, c(2L, 3L, 4L))
-wrap.test.checkRestrictions(rt7, c(1L, 2L, 3L, 4L))
-
-wrap.test.checkRestrictions(rt8, c(1L, 5L))
-wrap.test.checkRestrictions(rt8, c(1L, 2L, 5L))
-
-wrap.test.checkRestrictions(rt8, c(1L, 3L))
-wrap.test.checkRestrictions(rt8, c(2L, 3L))
-wrap.test.checkRestrictions(rt8, c(1L, 2L, 3L))
-wrap.test.checkRestrictions(rt8, c(5L, 3L))
-wrap.test.checkRestrictions(rt8, c(4L, 3L))
-
-wrap.test.checkRestrictions(rt8, c(5L, 4L))
-wrap.test.checkRestrictions(rt8, c(1L, 4L))
-wrap.test.checkRestrictions(rt8, c(2L, 4L))
-wrap.test.checkRestrictions(rt8, c(1L, 2L, 4L))
-
-wrap.test.checkRestrictions(rt8, c(1L, 5L, 4L))
-wrap.test.checkRestrictions(rt8, c(2L, 5L, 4L))
-
-wrap.test.checkRestrictions(rt8, c(1L, 2L, 5L, 4L))
+rt.nr <- data.frame(parent = c(1, 2),
+                    child = c(
+                        3,
+                        4),
+                  s = 0.1,
+                  sh = 0.05,
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+wrap.test.rt(rt.nr) ## fails, as it should
 
 
-wrap.test.checkRestrictions(rt8.sm, c(5L, 4L))
-wrap.test.checkRestrictions(rt8.sm, c(1L, 4L))
-wrap.test.checkRestrictions(rt8.sm, c(2L, 4L))
-wrap.test.checkRestrictions(rt8.sm, c(1L, 2L, 4L))
+
+## FIXME show the semantically equivalent formulation without modules
+## for example, this would be equivalent to rt9
+rt9ok <- data.frame(
+    parent = c(
+        0,
+        0,
+        1,
+        2,
+        1,
+        2
+        ),
+    child = c(
+        1,
+        2,
+        3,
+        3,
+        4,
+        4),
+    s = c(0.1),
+    sh = c(-1, -2, -1, -1, -2, -2),
+    typeDep = c("MN", "MN", "SM", "SM", "SM", "SM"),
+    stringsAsFactors = FALSE)
+
+## FIXME have another way of specification, where we specify dependencies
+## between modules AND module membership
+## Anything that accepts an rt, has
+## function(rt, geneModule = NULL)
+## if geneModule is not null, it is the mapping.
+
+rtAndGeneModule <- function(mdeps, gM) {
+    ## Specify restriction table of modules and a mapping of modules to
+    ## genes. gM is a named vector; names are modules, values are elements
+    ## of each module.
+
+    if(ncol(mdeps) != 5)
+        stop("mdpes must be of exactly 5 columns")
+    if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
+        stop(paste("Column names of mdeps not of appropriate format. ",
+                   "Should be parent, child, s, sh, typeDep"))
+    if(any(is.na(match(mdeps[ , 1], names(gM)))))
+        stop("Some values in parent not from a known module")
+    if(any(is.na(match(mdeps[ , 2], names(gM)))))
+        stop("Some values in child not from a known module")
+    if(any(is.na(match(names(gM), c(mdeps[, 1], mdeps[, 2])))))
+        stop("Some values in module in neither parent or child")
+    
+    parent <- gM[mdeps[, 1]]
+    child <- gM[mdeps[, 2]]
+    df <- data.frame(parent = parent,
+                      child = child,
+                      s = mdeps$s,
+                      sh = mdeps$sh,
+                      typeDep = mdeps$typeDep,
+                     stringsAsFactors = FALSE)
+    rownames(df) <- seq.int(nrow(df))
+    return(df)
+}
 
 
-identical(wrap.test.checkRestrictions(rt8, c(1L, 5L, 4L)),
-          wrap.test.checkRestrictions(rt8.sm, c(1L, 5L, 4L)))
+m0 <- data.frame(parent = c(0, "a", "b"),
+                 child  = c("a", "b", "c"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+gM <- c("0" = 0, "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
 
-identical(wrap.test.checkRestrictions(rt8, c(2L, 5L, 4L)),
-          wrap.test.checkRestrictions(rt8.sm, c(2L, 5L, 4L)))
+rtAndGeneModule(m0, gM)
+wrap.test.rt(rtAndGeneModule(m0, gM))
 
-identical(wrap.test.checkRestrictions(rt8, c(1L, 2L, 5L, 4L)),
-          wrap.test.checkRestrictions(rt8.sm, c(1L, 2L, 5L, 4L)))
+## yes, at least one element needs to be a character to force all to be chars
+m1 <- data.frame(parent = c(0, 1, "2"),
+                 child  = c(1, 2, "3"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+gM1 <- c("0" = 0, "1" = "1,2", "2" = "3,4,5", "3" = "6")
+
+rtAndGeneModule(m1, gM1)
+wrap.test.rt(rtAndGeneModule(m1, gM1))
+
+m2 <- data.frame(parent = c("0", "A", "B"),
+                 child  = c("A", "B", "C"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+gM2 <- c("0" = 0, "A" = "pten,myc", "B" = "p53", "C" = "BRCA1, BRCA2")
+rtAndGeneModule(m2, gM2)
+wrap.test.rt(rtAndGeneModule(m2, gM2))
+
+
+
+evalGenotype(rt7, c(1L))
+
+evalGenotype(rt7, c(1L))
+evalGenotype(rt7, c(2L))
+
+evalGenotype(rt7, c(3L))
+evalGenotype(rt7, c(4L))
+
+evalGenotype(rt7, c(1L, 2L))
+evalGenotype(rt7, c(1L, 3L))
+evalGenotype(rt7, c(1L, 4L))
+evalGenotype(rt7, c(2L, 3L))
+evalGenotype(rt7, c(2L, 4L))
+
+evalGenotype(rt7, c(1L, 2L, 3L))
+evalGenotype(rt7, c(1L, 2L, 4L))
+evalGenotype(rt7, c(1L, 3L, 4L))
+
+evalGenotype(rt7, c(2L, 3L, 4L))
+evalGenotype(rt7, c(1L, 2L, 3L, 4L))
+
+evalGenotype(rt8, c(1L, 5L))
+evalGenotype(rt8, c(1L, 2L, 5L))
+
+evalGenotype(rt8, c(1L, 3L))
+evalGenotype(rt8, c(2L, 3L))
+evalGenotype(rt8, c(1L, 2L, 3L))
+evalGenotype(rt8, c(5L, 3L))
+evalGenotype(rt8, c(4L, 3L))
+
+evalGenotype(rt8, c(5L, 4L))
+evalGenotype(rt8, c(1L, 4L))
+evalGenotype(rt8, c(2L, 4L))
+evalGenotype(rt8, c(1L, 2L, 4L))
+
+evalGenotype(rt8, c(1L, 5L, 4L))
+evalGenotype(rt8, c(2L, 5L, 4L))
+
+evalGenotype(rt8, c(1L, 2L, 5L, 4L))
+
+
+evalGenotype(rt8.sm, c(5L, 4L))
+evalGenotype(rt8.sm, c(1L, 4L))
+evalGenotype(rt8.sm, c(2L, 4L))
+evalGenotype(rt8.sm, c(1L, 2L, 4L))
+
+
+identical(evalGenotype(rt8, c(1L, 5L, 4L)),
+          evalGenotype(rt8.sm, c(1L, 5L, 4L)))
+
+identical(evalGenotype(rt8, c(2L, 5L, 4L)),
+          evalGenotype(rt8.sm, c(2L, 5L, 4L)))
+
+identical(evalGenotype(rt8, c(1L, 2L, 5L, 4L)),
+          evalGenotype(rt8.sm, c(1L, 2L, 5L, 4L)))
 
          
 ## guardar todos los tests en un RData para future testing
