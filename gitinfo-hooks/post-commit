@@ -4,8 +4,8 @@
 # -----------------------------------------------------
 # Post-{commit,checkout,merge} hook for the gitinfo package
 #
-# prefixes="NewPackage/Reduced/OncoSimulR/vignettes NewPackage/Full/OncoSimulR/vignettes"    # Example for multiple gitHeadInfo.tex files
-prefixes="."              # Default --- in the working copy root
+prefixes="NewPackage/Reduced/OncoSimulR/vignettes NewPackage/Full/OncoSimulR/vignettes"    # Example for multiple gitHeadInfo.tex files
+## prefixes="."              # Default --- in the working copy root
 for pref in $prefixes
 	do
 	git log -1 --date=short \
