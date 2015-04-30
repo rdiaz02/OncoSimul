@@ -1,3 +1,5 @@
+- Update to gitinfo2 the vignette stuff
+
 - Add graph.to.poset to testing-poset-transformations and add that as a
   formal test in testthat
 

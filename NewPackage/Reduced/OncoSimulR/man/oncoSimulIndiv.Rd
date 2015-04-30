@@ -20,11 +20,11 @@
 \usage{
  oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
-                sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                endTimeEvery = ifelse(model \%in\% c("Bozic", "Exp"), -9,
                                                5 * sampleEvery),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
@@ -32,11 +32,11 @@
 
  oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
-                sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                endTimeEvery = ifelse(model %in% c("Bozic", "Exp"), -9,
+                endTimeEvery = ifelse(model \%in\% c("Bozic", "Exp"), -9,
                                                5 * sampleEvery),
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
@@ -281,7 +281,13 @@
   Academy of Sciences of the United States of America\/}, \bold{107},
   18545--18550.
   
-  Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
+  Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
+             accumulation of mutations during tumor progression: effects
+             of passengers, evolutionary models, and sampling, \emph{BMC
+             Bioinformatics\/},
+             \bold{16}(41). \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}.
+
+  Inferring restrictions in the temporal order
   of mutations during tumor progression: effects of passenger mutations,
   evolutionary models, and
   sampling. \url{http://dx.doi.org/10.1101/005587}
