@@ -7,6 +7,23 @@
 ## FIXME I think we must enforce that 0 always show up. And it is the
 ## root? Or not, but enforce a policy
 
+
+## synthetic lethality:
+## specified as a row with colons: A:B
+## change synbol; a box? plain text? getDefaultAttrs()
+## plot(g1, nodeAttrs = list(shape = c(a = "box", b = "plaintext")))
+## note how simple is to specify the shape of some node.
+## see the "Hot to plot a graph using Rgraphviz"
+
+## if using igraph, more shapes.
+## http://stackoverflow.com/questions/7429162/how-to-use-igraph-vertex-shape-functionality
+## How to get a tree?
+## http://stackoverflow.com/questions/18270370/plot-tree-with-graph-tree-function-from-igraph
+
+## but then ... maybe igraph is really the way to go for simuls? Or I
+## should use both.
+
+
 library(data.table)
 rt2 <- data.frame(parent = c(
                       0, 0, 0,
@@ -677,12 +694,157 @@ to.long.rt(rt1)
 
 
 
+## FIXME  how to specify the genotype
+## right now, it is doing it wrong! it is mapping letters to 1, 2, incorrectly
+rt7.l <- data.frame(parent = c(
+                      0, 0, "a", "b"
+                      ),
+           child = c(
+               "a",
+               "b",
+               "c",
+               "d"),
+                  s = c(0.1, 0.2, 0.3, 0.4),
+                  sh = c(99, 99, -0.05, -Inf),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+evalGenotype(rt7.l, c(1L, 2L))
+## FIXME  the next should work!!!
+evalGenotype(rt7.l, c("a", "b"))
+
+## synthetic viability
+sv1 <- data.frame(parent = c(
+                      0, "a"
+                      ),
+           child = c(
+               "a",
+               "b"),
+                  s = c(-0.1, 0.2),
+                  sh = c(99, -0.3),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+evalGenotype(sv1, c(1L))
+evalGenotype(sv1, c(2L))
+evalGenotype(sv1, c(1L, 2L))
+
+
+
+##
+
+## A   B   fitness
+## wt  wt  s
+## wt  M   s1
+## M   wt  s2
+## M   M   s3
+
+s1 <- -0.3
+s2 <- -0.1
+s3 <- 0.4
+
+sv2a <- data.frame(parent = c(
+                      0, "a"
+                      ),
+           child = c(
+               "a",
+               "b"),
+                  s = c(s1, s3),
+                  sh = c(99, s2),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+evalGenotype(sv2a, c(1L))
+evalGenotype(sv2a, c(2L))
+evalGenotype(sv2a, c(1L, 2L))
+
+
+sv2b <- data.frame(parent = c(
+                      0, "b"
+                      ),
+           child = c(
+               "b",
+               "a"),
+                  s = c(s2, s3),
+                  sh = c(99, s1),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+evalGenotype(sv2b, c(1L))
+evalGenotype(sv2b, c(2L))
+evalGenotype(sv2b, c(1L, 2L))
+
+
+identical( evalGenotype(sv2a, c(2L)), evalGenotype(sv2b, c(1L)) )
+
+evalGenotype(sv2a, c(1L))
+evalGenotype(sv2b, c(2L)) ## FIXME this is wrong now. because of the letters?
 
 
 
 
 
 
+## numbers not letters
+sv2a <- data.frame(parent = c(
+                      0, 1
+                      ),
+           child = c(
+               1,
+               2),
+                  s = c(s1, s3),
+                  sh = c(99, s2),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+evalGenotype(sv2a, c(1L))
+evalGenotype(sv2a, c(2L))
+evalGenotype(sv2a, c(1L, 2L))
+
+
+sv2b <- data.frame(parent = c(
+                      0, 2
+                      ),
+           child = c(
+               2,
+               1),
+                  s = c(s2, s3),
+                  sh = c(99, s1),
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+evalGenotype(sv2b, c(1L))
+evalGenotype(sv2b, c(2L))
+evalGenotype(sv2b, c(1L, 2L))
+
+
+identical( evalGenotype(sv2a, c(2L)), evalGenotype(sv2b, c(1L)) )
+
+## these would be identical if we added, or similar, s and sh
+evalGenotype(sv2a, c(1L))
+evalGenotype(sv2b, c(1L)) 
+
+## ditto
+evalGenotype(sv2a, c(2L))
+evalGenotype(sv2b, c(2L)) 
+
+
+## works if we add the s.
+evalGenotype(sv2a, c(1L, 2L))
+evalGenotype(sv2b, c(1L, 2L)) 
+
+## FIXME: evalGenotype should return the final fitness, final birth, and
+## final death, if we would also specify the model
+
+
+## Should we just add (or whatever) all the s and sh?
+## Yes. Well, all the birth and death rate expressions are of the form
+##  (1 +/- s)^number.of.events
+## so just do \prod_{i} (1 + s_i), where s keeps the sign.
+
+
+
+## FIXME allow s to be a symbol? Not, just define externally
 
 
 
