@@ -1075,68 +1075,70 @@ static void updateRatesBeeren(std::vector<spParamsP>& popParams,
 // Do I have two functions, overloaded, that take eithe three ints or
 // three vectors of ints, or do I have a single one?
 
-static void checkConstraints(int& mutatedPos, 
-			     Rcpp::IntegerMatrix restrictTable,
-			     const std::string& typeCBN,
-			     const Genotype64& newGenotype) {
-  //      **** Are driver constraints met? ***
-  using namespace Rcpp;
+// FIXME: what is this doing here? I have it in the new-restrict.cpp code too.
+// and newer and better:
+// static void checkConstraints(int& mutatedPos, 
+// 			     Rcpp::IntegerMatrix restrictTable,
+// 			     const std::string& typeCBN,
+// 			     const Genotype64& newGenotype) {
+//   //      **** Are driver constraints met? ***
+//   using namespace Rcpp;
 
-  int numDependencies;
-  int sumDriversMet = 0;
-  int sumDriversNoMet = 0;
-  int sumDependenciesMet = 0;
+//   int numDependencies;
+//   int sumDriversMet = 0;
+//   int sumDriversNoMet = 0;
+//   int sumDependenciesMet = 0;
 
-  // Two cases: same s, sh, sp or different ones. If same, return three
-  // integers: sumDriversMet, sumDriversNoMet, sumPassengers.  If
-  // different, return three vectors, filled with the non-zero
-  // entries. These vectors then are combined as dictated by the fintness
-  // functions.
+//   // Two cases: same s, sh, sp or different ones. If same, return three
+//   // integers: sumDriversMet, sumDriversNoMet, sumPassengers.  If
+//   // different, return three vectors, filled with the non-zero
+//   // entries. These vectors then are combined as dictated by the fintness
+//   // functions.
 
-  // If same single s, sh, sp: function takes three integers. O.w. it
-  // takes three integer vectors.
+//   // If same single s, sh, sp: function takes three integers. O.w. it
+//   // takes three integer vectors.
   
 
-  if(mutatedPos >= numDrivers) { //the new mutation is a passenger
-    // do something: iterate through the passenger part of genotype.
-    return;
-  } else {
-    for(int m = 0; m < numDrivers; ++m) {
-      if( newGenotype[m] ) { // this m is mutated
-	const Rcpp::IntegerMatrix::Column thisRestrict = 
-	  restrictTable(_, m);
-	numDependencies = thisRestrict[1];
-	if(!numDependencies) { // this driver has no dependencies
-	  sumDriversMet++;
-#ifdef DEBUGZ
-	  Rcpp::Rcout << "\n No dependencies:  ";
-	  DP2(sumDriversMet);
-#endif
+//   if(mutatedPos >= numDrivers) { //the new mutation is a passenger
+//     // do something: iterate through the passenger part of genotype.
+//     return;
+//   } else {
+//     for(int m = 0; m < numDrivers; ++m) {
+//       if( newGenotype[m] ) { // this m is mutated
+// 	const Rcpp::IntegerMatrix::Column thisRestrict = 
+// 	  restrictTable(_, m);
+// 	numDependencies = thisRestrict[1];
+// 	if(!numDependencies) { // this driver has no dependencies
+// 	  sumDriversMet++;
+// #ifdef DEBUGZ
+// 	  Rcpp::Rcout << "\n No dependencies:  ";
+// 	  DP2(sumDriversMet);
+// #endif
 
-	}
-	else {
-	  sumDependenciesMet = 0;
-	  for(int i = 2; i < (2 + numDependencies); i++) {
-	    sumDependenciesMet += newGenotype[ thisRestrict[i] ];
-	  }
-	  if( ( (typeCBN == "Multiple") && (sumDependenciesMet) ) ||
-	      ( (typeCBN == "CBN") && (sumDependenciesMet == numDependencies) )) {
-	    sumDriversMet++;   
-	  } else {
-	    sumDriversNoMet++;
-	  }
-	}
-      }
-    }
-  }
+// 	}
+// 	else {
+// 	  sumDependenciesMet = 0;
+// 	  for(int i = 2; i < (2 + numDependencies); i++) {
+// 	    sumDependenciesMet += newGenotype[ thisRestrict[i] ];
+// 	  }
+// 	  if( ( (typeCBN == "Multiple") && (sumDependenciesMet) ) ||
+// 	      ( (typeCBN == "CBN") && (sumDependenciesMet == numDependencies) )) {
+// 	    sumDriversMet++;   
+// 	  } else {
+// 	    sumDriversNoMet++;
+// 	  }
+// 	}
+//       }
+//     }
+//   }
 
-#ifdef DEBUGZ
-  DP2(sumDriversMet);
-  DP2(sumDriversNoMet);
-  DP2(sh);
-  DP2(typeFitness);
-#endif
-}
+// #ifdef DEBUGZ
+//   DP2(sumDriversMet);
+//   DP2(sumDriversNoMet);
+//   DP2(sh);
+//   DP2(typeFitness);
+// #endif
+// }
 
 
 
