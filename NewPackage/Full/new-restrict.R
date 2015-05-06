@@ -24,6 +24,16 @@
 ## should use both.
 
 
+## How to specify order differences: e.g., A first, B second different
+## from B first?
+
+## Use ">" in restriction table
+
+## In graphs, use a double-headed arrow, if possible with inverted arrow
+## head, and a different colour (say, gray)
+
+
+
 library(data.table)
 rt2 <- data.frame(parent = c(
                       0, 0, 0,
@@ -579,6 +589,8 @@ rtAndGeneModule(m2, gM2)
 wrap.test.rt(rtAndGeneModule(m2, gM2))
 
 
+## FIXME: create an "evalAllGenotypes" that produces a table of the
+## fitness of all possible genotypes?
 
 evalGenotype(rt7, c(1L))
 
