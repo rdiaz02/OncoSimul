@@ -981,7 +981,9 @@ static void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 				    const double& K,
 				    const double& totPopSize){
 
+  // from original log(1 + totPopSize/K)
   adjust_fitness_MF = log1p(totPopSize/K);
+  
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
