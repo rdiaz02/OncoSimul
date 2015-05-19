@@ -534,7 +534,7 @@ rtAndGeneModule <- function(mdeps, gM) {
     ## of each module.
 
     if(ncol(mdeps) != 5)
-        stop("mdpes must be of exactly 5 columns")
+        stop("mdeps must be of exactly 5 columns")
     if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
         stop(paste("Column names of mdeps not of appropriate format. ",
                    "Should be parent, child, s, sh, typeDep"))
@@ -857,6 +857,56 @@ evalGenotype(sv2b, c(1L, 2L))
 
 
 ## FIXME allow s to be a symbol? Not, just define externally
+
+
+
+## The general object has:
+## - the restriction table
+## - the epistasis
+## - the order
+
+## At least one of the above.
+
+
+
+rt2 <- data.frame(parent = c(
+                      0, 0, 0,
+                      1,
+                      "2, 3",
+                      4,
+                      "5, 6, 7",
+                      "5, 6, 7",
+                      4,
+                      4
+                      ),
+           child = c(
+               1,
+               7,
+               3,
+               2,
+               4,
+               5,
+               8,
+               9,
+               9,
+               6),
+                  s = 0.1,
+                  sh = 0.05,
+                  typeDep = "MN",
+                  stringsAsFactors = FALSE)
+
+epist2 <- c("")
+
+
+print.genotToFitness <- function(x) {
+    print(x$rt)
+    
+}
+
+
+
+
+
 
 
 
