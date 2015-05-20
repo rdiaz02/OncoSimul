@@ -238,6 +238,7 @@ static void DrvToModule(const std::vector<int>& Drv,
   mutatedModules.erase( unique( mutatedModules.begin(), 
 				mutatedModules.end() ), 
 			mutatedModules.end() );
+  // That is sorted. So use binary search below. But shouldn't I use a set?
 }
 
 // FIXME: can we make it faster if we know each module a single gene?
@@ -263,7 +264,8 @@ static void checkConstraints(const std::vector<int>& Drv,
   for(auto it_mutatedModule = mutatedModules.begin();
       it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
     if( (Poset[(*it_mutatedModule)].parentsID.size() == 1) &&
-	(Poset[(*it_mutatedModule)].parentsID[0] == 0) ) { //Depends only on root
+	(Poset[(*it_mutatedModule)].parentsID[0] == 0) ) { //Depends only on root.
+      // FIXME: isn't it enough to check the second condition?
       s_vector.push_back(Poset[(*it_mutatedModule)].s);
     } else {
       sumDepsMet = 0;
@@ -272,6 +274,12 @@ static void checkConstraints(const std::vector<int>& Drv,
 	  it_Parents != Poset[(*it_mutatedModule)].parentsID.end();
 	  ++it_Parents) {
 	// if sorted, could use binary search
+	// FIXME: try a set or sort mutatedModules?
+
+	//parent_module_mutated =
+	//std::binary_search(mutatedModules.begin(), mutatedModules.end(),
+	//(*it_Parents))
+
 	parent_module_mutated = 
 	  (std::find(mutatedModules.begin(), 
 		     mutatedModules.end(), 
