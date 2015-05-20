@@ -1,3 +1,340 @@
+library(data.table)
+library(Rcpp)
+## setwd("../../")
+
+sourceCpp("new-restrict.cpp", verbose = TRUE)
+
+
+check.gm <- function(gm) {
+    ## Yes, Root: we want no ambiguities
+    if(gm[1] != "Root")
+        stop("First value of a module table must be Root")
+    if(names(gm)[1] != "Root")
+        stop("First name of a module table must be Root")
+    if(length(unique(names(gm))) != length(gm))
+        stop("Number of unique module names different from length of vector")
+    
+}
+
+gtm2 <- function(x) {
+    data.frame(cbind(nice.vector.eo(x, ","), x))
+}
+
+nice.vector.eo <- function(z, chr) {
+    ## with epistasis, maybe we want sorted?
+    setdiff(unlist(lapply(strsplit(z, " "),
+                                    function(u) strsplit(u, chr))), "")
+}
+
+gm.to.geneModuleL <- function(gm) {
+    check.gm(gm)
+    ## the named vector with the mapping into the long geneModule df
+    geneMod <- as.data.frame(rbindlist(lapply(gm, gtm2)))
+    geneMod$Module <- names(gm)[geneMod[, 2]] ## reverse lookup table
+    colnames(geneMod)[1] <- c("Gene")
+    geneMod <- geneMod[, -2]
+    geneMod$Gene <- as.character(geneMod$Gene)
+    ## geneMod$Module <- as.character(geneMod$Module) ## already a char
+    geneMod <- geneMod[c(1, order(geneMod$Gene[-1]) + 1), ] 
+    geneMod$GeneNumID <- 0:(nrow(geneMod) - 1)
+    rlem <- rle(geneMod$Module)
+    geneMod$ModuleNumID <- rep( 0:(length(rlem$values) - 1), rlem$lengths)
+    ## idm <- seq.int(length(gm) - 1)
+    ## idm <- c("0" = 0L, idm)
+    ## names(idm) <- names(gm)
+    ## geneMod$ModuleNumID <- idm[geneMod[, "Module"]]
+    rownames(geneMod) <- 1:nrow(geneMod)
+    geneMod   
+}
+
+geneModuleNull <- function(namesM) {
+    v <- c("Root", setdiff(namesM, "Root"))
+    names(v) <- v
+    return(v)
+}
+
+list.of.deps <- function(x) {
+    ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
+    ##                 "SM" = 2, "semimonotone" = 2)
+    lookupTypeDep <- c("MN" = "monotone",
+                       "monotone" = "monotone",
+                       "SM" = "semimonotone",
+                       "semimonotone" = "semimonotone")
+    ## FIXME: check values of typeDep
+
+    if(length(x) > 1) {
+        if(length(unique(x$s))!= 1)
+            stop("Not all s identical within a child")
+        if(length(unique(x$sh))!= 1)
+            stop("Not all sh identical within a child")
+        if(length(unique(x$typeDep))!= 1)
+            stop("Not all typeDep identical within a child")
+        if(length(unique(x$child))!= 1)
+            stop("child not unique")
+    }
+    return(list(
+        child = unique(x$child),
+        s = unique(x$s),
+        sh = unique(x$sh),
+        typeDep = lookupTypeDep[unique(x$typeDep)],
+        parents = unlist(x$parent)))
+
+}
+
+to.long.rt <- function(rt, geneModule, verbosity = 0) {
+    if(is.numeric(rt$parent))
+        rt$parent <- as.character(rt$parent)
+    if(!("Root" %in% rt$parent))
+        stop("Root must be one parent node")
+    if(is.numeric(rt$child))
+        rt$child <- as.character(rt$child)
+    ## rt$parent <- unlist(lapply(rt$parent, nice.string))
+    ## rt$child <- unlist(lapply(rt$child, nice.string))
+   
+    srt <- rt[order(rt$child), ]
+
+    ## Not relevant if we allow non-numeric names
+    ## all.child.genes <- as.integer(
+    ##     unlist(lapply(rt[, 2],
+    ##                   function(x) strsplit(x, ","))))
+    ## ## check all childs
+    ## if(!identical(sort(unique(all.child.genes)),
+    ##               seq.int(max(all.child.genes))))
+    ##     stop("Not all children present")
+    long.rt <- lapply(split(srt, srt$child), list.of.deps)
+
+    ## geneModule <- gene.to.module(srt)
+    ## idm <- seq.int(length(names(long.rt)))
+    ## names(idm) <- names(long.rt)
+    ## idm <- c("0" = 0L, idm)
+    ## geneModule$ModuleNumID <- idm[geneModule[, "Module"]]
+
+    ## idm is just a look up table for the id of the module
+    idm <- unique(geneModule$ModuleNumID)
+    names(idm) <- unique(geneModule$Module)
+    
+    ## add integer IDs
+    addIntID <- function(z, idm) {
+        z$childID <- idm[z$child]
+        z$parentsID <- idm[z$parents]
+        if( any(is.na(z$parentsID)) ||
+           any(is.na(z$childID)) ) {
+            stop(paste("An ID is NA:",
+                       "Is a gene part of two different modules?",
+                       "(That includes being by itself and part",
+                       "of a module.)"))
+            
+        }
+        return(z)
+    }
+    long.rt <- lapply(long.rt, function(x) addIntID(x, idm = idm))
+   
+    if(verbosity >= 4) {
+        message(paste("Number of drivers: ",
+                      length(unique(geneModule[, "Gene"]))))
+        message(paste("Number of modules: ",
+                      length(unique(geneModule[, "Module"]))))
+    }
+    return(long.rt)
+    ## return(list(long.rt = long.rt, geneModule = geneModule))
+}
+
+
+epist.order.element <- function(x, y, chr) {
+    list(ids = nice.vector.eo(x, chr = chr), s = y)
+}
+
+
+to.long.epist.order <- function(epor, chr) {
+    if(is.vector(epor))
+        long <- Map(function(x, y) epist.order.element(x, y, chr),
+                       names(epor), epor)
+    else if(is.data.frame(epor)) 
+        long <- Map(function(x, y) epist.order.element(x, y, chr),
+                    as.character(epor$ids),
+                    epor$s)
+    names(long) <- NULL
+    return(long)
+}
+
+
+checkRT <- function(mdeps) {
+    if(ncol(mdeps) != 5)
+        stop("mdeps must be of exactly 5 columns")
+    if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
+        stop(paste("Column names of mdeps not of appropriate format. ",
+                   "Should be parent, child, s, sh, typeDep"))
+}
+
+
+
+
+
+allFitnessEffects <- function(rt = NULL, epistasis = NULL,
+                              orderEffects = NULL,
+                              geneToModule = NULL) {
+    rtNames <- NULL
+    epiNames <- NULL
+    orNames <- NULL
+    if(!is.null(rt))
+        rtNames <- unique(c(rt$parent, rt$child))
+    if(!is.null(epistasis)) {
+        long.epistasis <- to.long.epist.order(epistatis, ":")
+        epiNames <- unique(lapply(long.epistasis, function(x) x$ids))
+    } else {
+        long.epistasis <- NULL
+    }
+    if(!is.null(orderEffects)) {
+        long.orderEffects <- to.long.epist.order(orderEffects, ">")
+        orNames <- unique(lapply(long.orderEffects, function(x) x$ids))
+    } else {
+        long.orderEffects <- NULL
+    }
+    allModuleNames <- unique(c(rtNames, epiNames, orNames))
+    if(is.null(geneToModule)) {
+        gMOneToOne <- TRUE
+        geneToModule <- geneModuleNull(allModuleNames)
+    } else {
+        gMOneToOne <- FALSE
+        if(any(is.na(match(names(geneToModule), allModuleNames))))
+            stop("Some values in geneToModule not present in any of rt, epistasis, or order effects")
+        if(any(is.na(match(allModuleNames, names(geneToModule)))))
+            stop("Some values in rt, epistasis, or order effects not in geneToModule")
+    }
+    geneModule <- gm.to.geneModuleL(geneToModule)
+
+    if(!is.null(rt)) {
+        checkRT(rt)
+        long.rt <- to.long.rt(rt, geneModule)
+    } else {
+        long.rt <- NULL
+    }
+    return(list(long.rt = long.rt,
+                geneModule = geneModule,
+                long.epistasis = long.epistasis,
+                long.orderEffects = long.orderEffects,
+                gMOneToOne = gMOneToOne))
+}
+
+
+rtAndGeneModule <- function(mdeps, gM = NULL) {
+    ## To show a table of restrictions when there are modules. Do not use
+    ## for anything else. Maybe as intermediate to plotting.
+    
+    ## Specify restriction table of modules and a mapping of modules to
+    ## genes. gM is a named vector; names are modules, values are elements
+    ## of each module.
+
+    ## We do nothing important if gM is NULL except checks
+
+    ## If there are modules, the table shows the individual genes.
+    checkRT(mdeps)
+    ## if(ncol(mdeps) != 5)
+    ##     stop("mdeps must be of exactly 5 columns")
+    ## if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
+    ##     stop(paste("Column names of mdeps not of appropriate format. ",
+    ##                "Should be parent, child, s, sh, typeDep"))
+    if(!is.null(gM)) {
+        if(any(is.na(match(mdeps[ , 1], names(gM)))))
+            stop("Some values in parent not from a known module")
+        if(any(is.na(match(mdeps[ , 2], names(gM)))))
+            stop("Some values in child not from a known module")
+        if(any(is.na(match(names(gM), c(mdeps[, 1], mdeps[, 2])))))
+            stop("Some values in module in neither parent or child")
+        
+        parent <- gM[mdeps[, 1]]
+        child <- gM[mdeps[, 2]]
+        df <- data.frame(parent = parent,
+                         child = child,
+                         s = mdeps$s,
+                         sh = mdeps$sh,
+                         typeDep = mdeps$typeDep,
+                         stringsAsFactors = FALSE)
+    } else {
+        df <- mdeps
+    }
+    rownames(df) <- seq.int(nrow(df))
+    return(df)
+}
+
+wrap.test.rt <- function(rt, gM = NULL) {
+    ## FIXME add epistasis and orderEffects
+    lrt <- allFitnessEffects(rt, geneToModule = gM)
+    ## wrap_test_rt(lrt$long.rt)
+    wrap_test_rt(lrt$long.rt, lrt$geneModule)
+}
+
+evalGenotype <- function(rt, genotype) {
+    lrt <- to.long.rt(rt)
+    eval_Genotype(lrt$long.rt, lrt$geneModule,  genotype)
+}
+
+print.genotToFitness <- function(x) {
+    print(x$rt)
+    
+}
+
+
+
+## FIXME
+## - print.genotToFitness?
+## - wrap.test.rt and evalGenotype
+## - getting epistatis and order in C++
+## - testing of examples in C++: several genotypes with evalGenotype
+##      - see below for synthetic lethality, etc, examples
+##      - add XOR example: it is done via epistasis code.
+
+
+
+### examples here
+
+m0 <- data.frame(parent = c("Root", "a", "b"),
+                 child  = c("a", "b", "c"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+
+
+
+gM2 <- c("Root" = "Root", "a" = "1, 2", "b2" = "3, 4, 5", "b" = "8",
+         "c" = "7")
+
+to.long.rt(m0, gm.to.geneModule(gM))
+
+to.long.rt(m0, gm.to.geneModule(gM2))
+
+m0 <- data.frame(parent = c("Root", "a", "b"),
+                 child  = c("a", "b", "c"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+
+gM <- c("Root" = "Root", "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
+gm.to.geneModule(gM)
+
+
+allFitnessEffects(m0)
+
+
+rtAndGeneModule(m0, gM)
+rtAndGeneModule(m0)
+
+
+
+
+
+
+## We do something somewhat silly: we accept as input a set of
+## restrictions and then find modules, etc. But it is probably better to
+## simply take restrictions and modules separately, which minimizes the
+## checking. And simplifies the code. But then, it is already there, and
+## is more flexible now. But epistasis and order only as modules.
+
+
+
+
 ## FIXME add formal tests. Verify all output carefully.
 
 ## FIXME a converter from old posets to the new format.  do this INSIDE
@@ -348,40 +685,15 @@ nice.string <- function(z) {
           collapse = ", ")
 }
 
-list.of.deps <- function(x) {
-    ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
-    ##                 "SM" = 2, "semimonotone" = 2)
-    lookupTypeDep <- c("MN" = "monotone",
-                       "monotone" = "monotone",
-                       "SM" = "semimonotone",
-                       "semimonotone" = "semimonotone")
-    ## FIXME: check values of typeDep
 
-    if(length(x) > 1) {
-        if(length(unique(x$s))!= 1)
-            stop("Not all s identical within a child")
-        if(length(unique(x$sh))!= 1)
-            stop("Not all sh identical within a child")
-        if(length(unique(x$typeDep))!= 1)
-            stop("Not all typeDep identical within a child")
-        if(length(unique(x$child))!= 1)
-            stop("child not unique")
-    }
-    return(list(
-        child = unique(x$child),
-        s = unique(x$s),
-        sh = unique(x$sh),
-        typeDep = lookupTypeDep[unique(x$typeDep)],
-        parents = unlist(x$parent)))
-
+gtm <- function(x) {
+    data.frame(cbind(unlist(strsplit(x, ", ")), x))
 }
 
 
+
 gene.to.module <- function(rt) {
-    gtm <- function(x) {
-        data.frame(cbind(unlist(strsplit(x, ", ")), x))
-    }
-##    all.modules <- unique(unlist(lapply(c(rt$parent, rt$child), nice.string)))
+    ##    all.modules <- unique(unlist(lapply(c(rt$parent, rt$child), nice.string)))
     all.modules <- unique(unlist(c(rt$parent, rt$child)))
     geneMod <- as.data.frame(rbindlist(lapply(all.modules, gtm)))
     colnames(geneMod) <- c("Gene", "Module")
@@ -397,7 +709,7 @@ gene.to.module <- function(rt) {
 ## FIXME: make sure mutations within modules are ordered!!
 ## This next add to R code.
 ## FIXME: remember to pass num drivers!!
-to.long.rt <- function(rt, verbosity = 0) {
+to.long.rt.original <- function(rt, verbosity = 0) {
     if(is.numeric(rt$parent))
         rt$parent <- as.character(rt$parent)
     if(!("0" %in% rt$parent))
@@ -464,17 +776,10 @@ wrap.test.rt <- function(rt) {
 }
 ## was called wrap.test.checkRestrictions
 
-evalGenotype <- function(rt, genotype) {
-    lrt <- to.long.rt(rt)
-    eval_Genotype(lrt$long.rt, lrt$geneModule,  genotype)
-}
 
 
 
-library(Rcpp)
-## setwd("../../")
 
-sourceCpp("new-restrict.cpp", verbose = TRUE)
 
 wrap.test.rt(rt12)
 wrap.test.rt(rt6)
@@ -539,41 +844,10 @@ rt9ok <- data.frame(
 ## function(rt, geneModule = NULL)
 ## if geneModule is not null, it is the mapping.
 
-rtAndGeneModule <- function(mdeps, gM = NULL) {
-    ## Specify restriction table of modules and a mapping of modules to
-    ## genes. gM is a named vector; names are modules, values are elements
-    ## of each module.
 
-    ## We do nothing important if gM is NULL except checks
 
-    ## If there are modules, the table shows the individual genes.
-    if(ncol(mdeps) != 5)
-        stop("mdeps must be of exactly 5 columns")
-    if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
-        stop(paste("Column names of mdeps not of appropriate format. ",
-                   "Should be parent, child, s, sh, typeDep"))
-    if(!is.null(gM)) {
-        if(any(is.na(match(mdeps[ , 1], names(gM)))))
-            stop("Some values in parent not from a known module")
-        if(any(is.na(match(mdeps[ , 2], names(gM)))))
-            stop("Some values in child not from a known module")
-        if(any(is.na(match(names(gM), c(mdeps[, 1], mdeps[, 2])))))
-            stop("Some values in module in neither parent or child")
-        
-        parent <- gM[mdeps[, 1]]
-        child <- gM[mdeps[, 2]]
-        df <- data.frame(parent = parent,
-                         child = child,
-                         s = mdeps$s,
-                         sh = mdeps$sh,
-                         typeDep = mdeps$typeDep,
-                         stringsAsFactors = FALSE)
-    } else {
-        df <- mdeps
-    }
-    rownames(df) <- seq.int(nrow(df))
-    return(df)
-}
+## FIXME: if modules, verify they are in the union of rt, epist and order
+
 
 
 m0 <- data.frame(parent = c(0, "a", "b"),
@@ -605,37 +879,10 @@ oeffects1b <- data.frame(ids = c("d>a", "c > d"),
                          s = c(0.4, -0.3))
 
 
-## nice.vector.epist <- function(z) {
-##     setdiff(sort(unique(unlist(lapply(strsplit(z, " "),
-##                                     function(u) strsplit(u, ":"))))), "")
-## }
-
-nice.vector <- function(z, chr) {
-    setdiff(unlist(lapply(strsplit(z, " "),
-                                    function(u) strsplit(u, chr))), "")
-}
-
-## epist.element <- function(x, y) {
-##     list(ids = nice.vector(x, chr = ":"), s = y)
-## }
 
 
-epist.order.element <- function(x, y, chr) {
-    list(ids = nice.vector(x, chr = chr), s = y)
-}
 
 
-to.long.epist.order <- function(epor, chr) {
-    if(is.vector(epor))
-        long <- Map(function(x, y) epist.order.element(x, y, chr),
-                       names(epor), epor)
-    else if(is.data.frame(epor)) 
-        long <- Map(function(x, y) epist.order.element(x, y, chr),
-                    as.character(epor$ids),
-                    epor$s)
-    names(long) <- NULL
-    return(long)
-}
 
 
 to.long.epist.order(epistm1, ":")
@@ -655,6 +902,8 @@ to.long.epist.order(oeffects1b, ">")
 
 ## FIXME printing of tables: if modules then both in terms of modules and genes.
 ## FIXME: plotting: similar, giving options of modules or genes.
+
+
 
 
 
@@ -990,11 +1239,6 @@ rt2 <- data.frame(parent = c(
 
 
 
-print.genotToFitness <- function(x) {
-    print(x$rt)
-    
-}
-
 
 
 
@@ -1121,4 +1365,17 @@ to.long.rt0 <- function(rt, verbosity = 0) {
 ##             typeDep = lookupTypeDep[x$typeDep[1]],
 ##             parent = lapply(x$parent, nice.string)))
 ##     }
+## }
+
+
+
+
+## nice.vector.epist <- function(z) {
+##     setdiff(sort(unique(unlist(lapply(strsplit(z, " "),
+##                                     function(u) strsplit(u, ":"))))), "")
+## }
+
+
+## epist.element <- function(x, y) {
+##     list(ids = nice.vector(x, chr = ":"), s = y)
 ## }

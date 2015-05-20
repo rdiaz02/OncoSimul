@@ -62,7 +62,7 @@ static void rTable_to_Poset(Rcpp::List rt,
   // are simply accessing the Poset[mutated gene] without
   // having to remember to add 1, etc. 
   Poset.resize(rt.size() + 1);
-  Poset[0].child = "0";
+  Poset[0].child = "0"; //should this be Root?? I don't think so.
   Poset[0].childID = 0;
   Poset[0].typeDep = Dependency::NA;
   Poset[0].s = std::numeric_limits<double>::quiet_NaN();
