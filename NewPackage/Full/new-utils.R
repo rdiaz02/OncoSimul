@@ -27,3 +27,9 @@ plotRegimeClonalInterference <- function(N, numDrivers, mu, s, npoints = 100) {
 
 ## do it for McFL model. Remember that a relationship between N and number
 ## of drivers.
+
+fm <- function(z, m = 10000) {
+    vp <- runif(z)
+    vp <- vp/sum(vp)
+    return(rmultinom(1, m, vp))
+}

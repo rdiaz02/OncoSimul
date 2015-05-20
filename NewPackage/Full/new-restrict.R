@@ -8,6 +8,10 @@
 ## root? Or not, but enforce a policy
 
 
+## FIXME: for sanity, and when dealing with the rT, etc, and to avoid the stingsAsFactors do
+## mm[, "parent"] <- as.character(mm[, "parent"])
+## and ditto for child
+
 ## synthetic lethality:
 ## specified as a row with colons: A:B
 ## change synbol; a box? plain text? getDefaultAttrs()
@@ -332,8 +336,15 @@ rt12 <- data.frame(
 ## If I don't, i can use arbitrary things
 
 nice.string <- function(z) {
-    paste(sort(unique(unlist(lapply(strsplit(z, " "),
-                                    function(u) strsplit(u, ","))))),
+    ## Spaces are ALWAYS ignored. Do not do silly things like having
+    ## spaces in names
+
+    ## why unique? and why sort? Because we want to recognize that, say, a
+    ## set of parents as 1,2 is the same as 2,1. That will not happen with
+    ## epistasis and order effects.
+    paste(setdiff(sort(unique(unlist(lapply(strsplit(z, " "),
+                                            function(u) strsplit(u, ","))))),
+                  ""),
           collapse = ", ")
 }
 
@@ -528,31 +539,38 @@ rt9ok <- data.frame(
 ## function(rt, geneModule = NULL)
 ## if geneModule is not null, it is the mapping.
 
-rtAndGeneModule <- function(mdeps, gM) {
+rtAndGeneModule <- function(mdeps, gM = NULL) {
     ## Specify restriction table of modules and a mapping of modules to
     ## genes. gM is a named vector; names are modules, values are elements
     ## of each module.
 
+    ## We do nothing important if gM is NULL except checks
+
+    ## If there are modules, the table shows the individual genes.
     if(ncol(mdeps) != 5)
         stop("mdeps must be of exactly 5 columns")
     if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
         stop(paste("Column names of mdeps not of appropriate format. ",
                    "Should be parent, child, s, sh, typeDep"))
-    if(any(is.na(match(mdeps[ , 1], names(gM)))))
-        stop("Some values in parent not from a known module")
-    if(any(is.na(match(mdeps[ , 2], names(gM)))))
-        stop("Some values in child not from a known module")
-    if(any(is.na(match(names(gM), c(mdeps[, 1], mdeps[, 2])))))
-        stop("Some values in module in neither parent or child")
-    
-    parent <- gM[mdeps[, 1]]
-    child <- gM[mdeps[, 2]]
-    df <- data.frame(parent = parent,
-                      child = child,
-                      s = mdeps$s,
-                      sh = mdeps$sh,
-                      typeDep = mdeps$typeDep,
-                     stringsAsFactors = FALSE)
+    if(!is.null(gM)) {
+        if(any(is.na(match(mdeps[ , 1], names(gM)))))
+            stop("Some values in parent not from a known module")
+        if(any(is.na(match(mdeps[ , 2], names(gM)))))
+            stop("Some values in child not from a known module")
+        if(any(is.na(match(names(gM), c(mdeps[, 1], mdeps[, 2])))))
+            stop("Some values in module in neither parent or child")
+        
+        parent <- gM[mdeps[, 1]]
+        child <- gM[mdeps[, 2]]
+        df <- data.frame(parent = parent,
+                         child = child,
+                         s = mdeps$s,
+                         sh = mdeps$sh,
+                         typeDep = mdeps$typeDep,
+                         stringsAsFactors = FALSE)
+    } else {
+        df <- mdeps
+    }
     rownames(df) <- seq.int(nrow(df))
     return(df)
 }
@@ -566,7 +584,81 @@ m0 <- data.frame(parent = c(0, "a", "b"),
 gM <- c("0" = 0, "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
 
 rtAndGeneModule(m0, gM)
+rtAndGeneModule(m0)
+
 wrap.test.rt(rtAndGeneModule(m0, gM))
+wrap.test.rt(rtAndGeneModule(m0))
+
+
+
+m1 <- data.frame(parent = c(0, "a", "b", 0),
+                 child  = c("a", "b", "c", "d"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+epistm1 <- c("a:d" = 0.2, "d:c" = 0.3)
+epistm1b <- data.frame(ids = c("a:d", "c:d"), s = c(0.2, 0.3))
+
+oeffects1 <- c("d>a" = 0.4, "c > d" = -0.3)
+oeffects1b <- data.frame(ids = c("d>a", "c > d"),
+                         s = c(0.4, -0.3))
+
+
+## nice.vector.epist <- function(z) {
+##     setdiff(sort(unique(unlist(lapply(strsplit(z, " "),
+##                                     function(u) strsplit(u, ":"))))), "")
+## }
+
+nice.vector <- function(z, chr) {
+    setdiff(unlist(lapply(strsplit(z, " "),
+                                    function(u) strsplit(u, chr))), "")
+}
+
+## epist.element <- function(x, y) {
+##     list(ids = nice.vector(x, chr = ":"), s = y)
+## }
+
+
+epist.order.element <- function(x, y, chr) {
+    list(ids = nice.vector(x, chr = chr), s = y)
+}
+
+
+to.long.epist.order <- function(epor, chr) {
+    if(is.vector(epor))
+        long <- Map(function(x, y) epist.order.element(x, y, chr),
+                       names(epor), epor)
+    else if(is.data.frame(epor)) 
+        long <- Map(function(x, y) epist.order.element(x, y, chr),
+                    as.character(epor$ids),
+                    epor$s)
+    names(long) <- NULL
+    return(long)
+}
+
+
+to.long.epist.order(epistm1, ":")
+to.long.epist.order(epistm1b, ":")
+
+to.long.epist.order(oeffects1, ">")
+to.long.epist.order(oeffects1b, ">")
+
+
+
+
+## FIXME user specifies the rt, the epist and the order, and optionally
+## the modules.
+
+
+
+
+## FIXME printing of tables: if modules then both in terms of modules and genes.
+## FIXME: plotting: similar, giving options of modules or genes.
+
+
+
+
 
 ## yes, at least one element needs to be a character to force all to be chars
 m1 <- data.frame(parent = c(0, 1, "2"),
@@ -895,7 +987,7 @@ rt2 <- data.frame(parent = c(
                   typeDep = "MN",
                   stringsAsFactors = FALSE)
 
-epist2 <- c("")
+
 
 
 print.genotToFitness <- function(x) {
