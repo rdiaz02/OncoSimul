@@ -41,15 +41,28 @@ struct geneToModuleLong {
 
 struct geneDeps {
   Dependency typeDep;
-  int childID; //redundant, but leave
+  int childNumID; //redundant, but leave
   double s;
   double sh;
-  std::vector<int> parentsID;
+  std::vector<int> parentsNumID;
   // The next two are clearly redundant but a triple check
   std::string child;
   std::vector<std::string> parents;
 };
 
+
+
+struct epistasis {
+  std::vector<int> NumID; //a set instead?
+  std::vector<std::string> names; // will remove later
+  double s;
+};
+
+struct orderEffects {
+  std::vector<int> NumID;
+  std::vector<std::string> names; // will remove later
+  double s;
+};
 
 // For users: if something depends on 0, that is it. No further deps.
 // And do not touch the 0 in GeneToModule.
@@ -63,12 +76,12 @@ static void rTable_to_Poset(Rcpp::List rt,
   // having to remember to add 1, etc. 
   Poset.resize(rt.size() + 1);
   Poset[0].child = "0"; //should this be Root?? I don't think so.
-  Poset[0].childID = 0;
+  Poset[0].childNumID = 0;
   Poset[0].typeDep = Dependency::NA;
   Poset[0].s = std::numeric_limits<double>::quiet_NaN();
   Poset[0].sh = std::numeric_limits<double>::quiet_NaN();
   Poset[0].parents.resize(0);
-  Poset[0].parentsID.resize(0);
+  Poset[0].parentsNumID.resize(0);
 
   Rcpp::List rt_element;
   // std::string tmpname;
@@ -78,29 +91,29 @@ static void rTable_to_Poset(Rcpp::List rt,
   for(int i = 1; i != (rt.size() + 1); ++i) {
     rt_element = rt[i - 1];
     Poset[i].child = Rcpp::as<std::string>(rt_element["child"]);
-    Poset[i].childID = as<int>(rt_element["childID"]);
+    Poset[i].childNumID = as<int>(rt_element["childNumID"]);
     Poset[i].typeDep = stringToDep(as<std::string>(rt_element["typeDep"]));
     Poset[i].s = as<double>(rt_element["s"]);
     Poset[i].sh = as<double>(rt_element["sh"]);
 
-    if(i != Poset[i].childID) {
-      // Rcpp::Rcout << "\n childID, original = " << as<int>(rt_element["childID"]);
-      // Rcpp::Rcout << "\n childID, Poset = " << Poset[i].childID;
+    if(i != Poset[i].childNumID) {
+      // Rcpp::Rcout << "\n childNumID, original = " << as<int>(rt_element["childNumID"]);
+      // Rcpp::Rcout << "\n childNumID, Poset = " << Poset[i].childNumID;
       // Rcpp::Rcout << "\n i = " << i << std::endl;
-      throw std::logic_error("childID != index");
+      throw std::logic_error("childNumID != index");
     }
-    // Rcpp::IntegerVector parentsid = as<Rcpp::IntegerVector>(rt_element["parentsID"]);
+    // Rcpp::IntegerVector parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
     // Rcpp::StringVector parents = as<Rcpp::StringVector>(rt_element["parents"]);
 
-    parentsid = as<Rcpp::IntegerVector>(rt_element["parentsID"]);
+    parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
     parents = as<Rcpp::StringVector>(rt_element["parents"]);
 
     if( parentsid.size() != parents.size() ) {
-      throw std::logic_error("parents size != parentsID size");
+      throw std::logic_error("parents size != parentsNumID size");
     }
 
     for(int j = 0; j != parentsid.size(); ++j) {
-      Poset[i].parentsID.push_back(parentsid[j]);
+      Poset[i].parentsNumID.push_back(parentsid[j]);
       Poset[i].parents.push_back( (Rcpp::as< std::string >(parents[j])) );
       // tmpname = Rcpp::as< std::string >(parents[j]);
       // Poset[i].parents.push_back(tmpname);
@@ -127,7 +140,7 @@ void printPoset(const std::vector<geneDeps>& Poset) {
   for(size_t i = 1; i != Poset.size(); ++i) {
     // We do not show the Poset[0]
     Rcpp::Rcout <<"\t Dependent Module or gene (child) " << i 
-		<< ". childID: " << Poset[i].childID 
+		<< ". childNumID: " << Poset[i].childNumID 
 		<< ". child full name: " << Poset[i].child
 		<< std::endl;
     Rcpp::Rcout <<"\t\t typeDep = " << depToString(Poset[i].typeDep) << ' ' ;
@@ -140,7 +153,7 @@ void printPoset(const std::vector<geneDeps>& Poset) {
     Rcpp::Rcout << "\t\t Number of parent modules or genes = " << 
       Poset[i].parents.size() << std::endl;
     Rcpp::Rcout << "\t\t\t Parents IDs: ";
-    for(auto c : Poset[i].parentsID)
+    for(auto c : Poset[i].parentsNumID)
       Rcpp::Rcout << c << "; ";
     Rcpp::Rcout << std::endl;
     Rcpp::Rcout << "\t\t\t Parents names: ";
@@ -263,15 +276,15 @@ static void checkConstraints(const std::vector<int>& Drv,
 
   for(auto it_mutatedModule = mutatedModules.begin();
       it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
-    if( (Poset[(*it_mutatedModule)].parentsID.size() == 1) &&
-	(Poset[(*it_mutatedModule)].parentsID[0] == 0) ) { //Depends only on root.
+    if( (Poset[(*it_mutatedModule)].parentsNumID.size() == 1) &&
+	(Poset[(*it_mutatedModule)].parentsNumID[0] == 0) ) { //Depends only on root.
       // FIXME: isn't it enough to check the second condition?
       s_vector.push_back(Poset[(*it_mutatedModule)].s);
     } else {
       sumDepsMet = 0;
-      numDeps = Poset[(*it_mutatedModule)].parentsID.size();
-      for(auto it_Parents = Poset[(*it_mutatedModule)].parentsID.begin();
-	  it_Parents != Poset[(*it_mutatedModule)].parentsID.end();
+      numDeps = Poset[(*it_mutatedModule)].parentsNumID.size();
+      for(auto it_Parents = Poset[(*it_mutatedModule)].parentsNumID.begin();
+	  it_Parents != Poset[(*it_mutatedModule)].parentsNumID.end();
 	  ++it_Parents) {
 	// if sorted, could use binary search
 	// FIXME: try a set or sort mutatedModules?
@@ -366,15 +379,74 @@ SEXP eval_Genotype(Rcpp::List rtR,
 
 
 
+static void convertFitnessEffects(Rcpp::List rtR,
+				  Rcpp::List longEpistasis,
+ 				  Rcpp::List longOrderE,
+				  Rcpp::DataFrame rGM,
+				  Rcpp::DataFrame geneNoInt,
+ 				  Rcpp::IntegerVector gMOneToOne,
+				  std::vector<geneDeps>& Poset,
+				  std::vector<geneToModule>& geneModules,
+ 				  std::vector<geneToModuleLong>& geneModulesLong) {
+  rTable_to_Poset(rtR, Poset);
+  rGM_GeneModule(rGM, geneModules, geneModulesLong);
+}
 
 
 
 
+// [[Rcpp::export]]
+void readFitnessEffects(Rcpp::List rtR,
+			Rcpp::List longEpistasis,
+			Rcpp::List longOrderE,
+			Rcpp::DataFrame rGM,
+			Rcpp::DataFrame geneNoInt,
+			Rcpp::IntegerVector gMOneToOne) {
+
+   
+  std::vector<geneDeps> Poset;
+  std::vector<geneToModule> geneModules;
+  std::vector<geneToModuleLong> geneModulesLong;
+
+  convertFitnessEffects(rtR, longEpistasis, longOrderE,
+			rGM, geneNoInt, gMOneToOne,
+			Poset, geneModules, geneModulesLong);
+}
 
 
 
 
+// void readFitnessEffects(Rcpp::List rtR,
+// 			       Rcpp::List longEpistasis,
+// 			       Rcpp::List longOrderE,
+// 			       Rcpp::DataFrame rGM,
+// 			       Rcpp::DataFrame geneNoInt,
+// 			       Rcpp::IntegerVector gMOneToOne,
+// 			       std::vector<geneDeps>&  Poset,
+// 			       std::vector<geneToModule>& geneModules,
+// 			       std::vector<geneToModuleLong>& geneModulesLong
+// 			       // return objects
+// 			       // something else
+// 			       ) {
+//    rTable_to_Poset(rtR, Poset);
+//    rGM_GeneModule(rGM, geneModules, geneModulesLong);
+ 
+// }
 
+
+// epistasis and order can also be of modules, as we map modules to genes
+// for that.
+
+
+
+// How we store a given genotype and how we store the restrictions need to
+// have a 1-to-1 mapping.
+
+
+// checkEpistasis: for every epistatic set, check if there?
+
+// checkOrderEffects: we find each member in the vector, but the indices
+// must be correlative.
 
 
 

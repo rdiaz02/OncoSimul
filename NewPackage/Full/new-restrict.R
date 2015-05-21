@@ -20,10 +20,10 @@ gtm2 <- function(x) {
     data.frame(cbind(nice.vector.eo(x, ","), x))
 }
 
-nice.vector.eo <- function(z, chr) {
+nice.vector.eo <- function(z, sep) {
     ## with epistasis, maybe we want sorted?
     setdiff(unlist(lapply(strsplit(z, " "),
-                                    function(u) strsplit(u, chr))), "")
+                                    function(u) strsplit(u, sep))), "")
 }
 
 gm.to.geneModuleL <- function(gm) {
@@ -81,7 +81,7 @@ list.of.deps <- function(x) {
 
 }
 
-to.long.rt <- function(rt, geneModule, verbosity = 0) {
+to.long.rt <- function(rt, idm, verbosity = 0) {
     if(is.numeric(rt$parent))
         rt$parent <- as.character(rt$parent)
     if(!("Root" %in% rt$parent))
@@ -110,15 +110,15 @@ to.long.rt <- function(rt, geneModule, verbosity = 0) {
     ## geneModule$ModuleNumID <- idm[geneModule[, "Module"]]
 
     ## idm is just a look up table for the id of the module
-    idm <- unique(geneModule$ModuleNumID)
-    names(idm) <- unique(geneModule$Module)
+    ## idm <- unique(geneModule$ModuleNumID)
+    ## names(idm) <- unique(geneModule$Module)
     
     ## add integer IDs
     addIntID <- function(z, idm) {
-        z$childID <- idm[z$child]
-        z$parentsID <- idm[z$parents]
-        if( any(is.na(z$parentsID)) ||
-           any(is.na(z$childID)) ) {
+        z$childNumID <- idm[z$child]
+        z$parentsNumID <- idm[z$parents]
+        if( any(is.na(z$parentsNumID)) ||
+           any(is.na(z$childNumID)) ) {
             stop(paste("An ID is NA:",
                        "Is a gene part of two different modules?",
                        "(That includes being by itself and part",
@@ -140,23 +140,27 @@ to.long.rt <- function(rt, geneModule, verbosity = 0) {
 }
 
 
-epist.order.element <- function(x, y, chr) {
-    list(ids = nice.vector.eo(x, chr = chr), s = y)
+epist.order.element <- function(x, y, sep) {
+    list(ids = nice.vector.eo(x, sep = sep), s = y)
 }
 
 
-to.long.epist.order <- function(epor, chr) {
+to.long.epist.order <- function(epor, sep) {
     if(is.vector(epor))
-        long <- Map(function(x, y) epist.order.element(x, y, chr),
+        long <- Map(function(x, y) epist.order.element(x, y, sep),
                        names(epor), epor)
     else if(is.data.frame(epor)) 
-        long <- Map(function(x, y) epist.order.element(x, y, chr),
+        long <- Map(function(x, y) epist.order.element(x, y, sep),
                     as.character(epor$ids),
                     epor$s)
     names(long) <- NULL
     return(long)
 }
 
+addIntID.epist.order <- function(z, idm) {
+    z$NumID <- idm[z$ids]
+    return(z)
+}
 
 checkRT <- function(mdeps) {
     if(ncol(mdeps) != 5)
@@ -170,23 +174,45 @@ checkRT <- function(mdeps) {
 
 
 
-allFitnessEffects <- function(rt = NULL, epistasis = NULL,
+allFitnessEffects <- function(rT = NULL,
+                              epistasis = NULL,
                               orderEffects = NULL,
+                              noIntGenes = NULL,
                               geneToModule = NULL) {
+    ## restrictions: the usual rt
+
+    ## epistasis: as it says, with the ":"
+
+    ## orderEffects: the ">"
+    
+    ## All of the above can be genes or can be modules (if you pass a
+    ## geneToModule)
+
+    ## rest: rest of genes, with fitness
+
+
+    ## For epistasis and order effects we create the output object but
+    ## missing the numeric ids of genes. With rT we do it in one go, as we
+    ## already know the mapping of genes to numeric ids. We could do the
+    ## same in epistasis and order, but we would be splitting twice
+    ## (whereas for rT extracting the names is very simple).
+
+    
     rtNames <- NULL
     epiNames <- NULL
     orNames <- NULL
-    if(!is.null(rt))
-        rtNames <- unique(c(rt$parent, rt$child))
+    if(!is.null(rT))
+        rtNames <- unique(c(rT$parent, rT$child))
+
     if(!is.null(epistasis)) {
-        long.epistasis <- to.long.epist.order(epistatis, ":")
-        epiNames <- unique(lapply(long.epistasis, function(x) x$ids))
+        long.epistasis <- to.long.epist.order(epistasis, ":")
+        epiNames <- unique(unlist(lapply(long.epistasis, function(x) x$ids)))
     } else {
         long.epistasis <- NULL
     }
     if(!is.null(orderEffects)) {
         long.orderEffects <- to.long.epist.order(orderEffects, ">")
-        orNames <- unique(lapply(long.orderEffects, function(x) x$ids))
+        orNames <- unique(unlist(lapply(long.orderEffects, function(x) x$ids)))
     } else {
         long.orderEffects <- NULL
     }
@@ -197,23 +223,60 @@ allFitnessEffects <- function(rt = NULL, epistasis = NULL,
     } else {
         gMOneToOne <- FALSE
         if(any(is.na(match(names(geneToModule), allModuleNames))))
-            stop("Some values in geneToModule not present in any of rt, epistasis, or order effects")
+            stop(paste("Some values in geneToModule not present in any of",
+                       " rT, epistasis, or order effects"))
         if(any(is.na(match(allModuleNames, names(geneToModule)))))
-            stop("Some values in rt, epistasis, or order effects not in geneToModule")
+            stop(paste("Some values in rT, epistasis, ",
+                       "or order effects not in geneToModule"))
     }
     geneModule <- gm.to.geneModuleL(geneToModule)
 
-    if(!is.null(rt)) {
-        checkRT(rt)
-        long.rt <- to.long.rt(rt, geneModule)
+    idm <- unique(geneModule$ModuleNumID)
+    names(idm) <- unique(geneModule$Module)
+
+
+    if(!is.null(rT)) {
+        checkRT(rT)
+        long.rt <- to.long.rt(rT, idm)
     } else {
         long.rt <- NULL
     }
-    return(list(long.rt = long.rt,
+
+    ## Append the numeric ids to epistasis and order
+    if(!is.null(epistasis)) {
+        long.epistasis <- lapply(long.epistasis,
+                                 function(x) addIntID.epist.order(x, idm))
+    }
+    if(!is.null(orderEffects)) {
+        long.orderEffects <- lapply(long.orderEffects,
+                                 function(x) addIntID.epist.order(x, idm))
+    }
+    
+    
+    if(!is.null(noIntGenes)) {
+        mg <- max(geneModule[, "GeneNumID"])
+        gnum <- seq_along(noIntGenes) + mg
+        if(!is.null(names(noIntGenes))) {
+            ng <- names(noIntGenes)
+            if(any(ng %in% geneModule[, "Gene"] ))
+                stop("A gene in noIntGenes also present in the other terms")
+        } else {
+            ng <- gnum
+        }
+        geneNoInt <- data.frame(Gene = ng,
+                                GeneNumID = gnum,
+                                s = noIntGenes)
+    } else {
+        geneNoInt <- NULL
+    }
+    out <- list(long.rt = long.rt,
                 geneModule = geneModule,
                 long.epistasis = long.epistasis,
                 long.orderEffects = long.orderEffects,
-                gMOneToOne = gMOneToOne))
+                geneNoInt = geneNoInt,
+                gMOneToOne = gMOneToOne)
+    class(out) <- c("fitnessEffects")
+    return(out)
 }
 
 
@@ -300,9 +363,9 @@ m0 <- data.frame(parent = c("Root", "a", "b"),
 gM2 <- c("Root" = "Root", "a" = "1, 2", "b2" = "3, 4, 5", "b" = "8",
          "c" = "7")
 
-to.long.rt(m0, gm.to.geneModule(gM))
+to.long.rt(m0, gm.to.geneModuleL(gM))
 
-to.long.rt(m0, gm.to.geneModule(gM2))
+to.long.rt(m0, gm.to.geneModuleL(gM2))
 
 m0 <- data.frame(parent = c("Root", "a", "b"),
                  child  = c("a", "b", "c"),
@@ -312,19 +375,27 @@ m0 <- data.frame(parent = c("Root", "a", "b"),
 
 
 gM <- c("Root" = "Root", "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
-gm.to.geneModule(gM)
+gm.to.geneModuleL(gM)
 
 
 allFitnessEffects(m0)
+
+allFitnessEffects(m0, noIntGenes = c(0.1, 0, 0.2))
+
+allFitnessEffects(m0, noIntGenes = c("u" = 0.1, "v" = 0, "mm" = 0.2))
 
 
 rtAndGeneModule(m0, gM)
 rtAndGeneModule(m0)
 
 
+epistm1 <- c("a:d" = 0.2, "d:c" = 0.3)
+epistm1b <- data.frame(ids = c("a:d", "c:d"), s = c(0.2, 0.3))
+oeffects1 <- c("d>a" = 0.4, "c > d" = -0.3)
 
-
-
+allFitnessEffects(m0, epistasis = epistm1,
+                  orderEffects = oeffects1,
+                  noIntGenes = c(0.1, 0, 0.2))
 
 ## We do something somewhat silly: we accept as input a set of
 ## restrictions and then find modules, etc. But it is probably better to
@@ -1377,5 +1448,5 @@ to.long.rt0 <- function(rt, verbosity = 0) {
 
 
 ## epist.element <- function(x, y) {
-##     list(ids = nice.vector(x, chr = ":"), s = y)
+##     list(ids = nice.vector(x, sep = ":"), s = y)
 ## }
