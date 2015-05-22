@@ -2,10 +2,16 @@
 
 #include <Rcpp.h>
 #include <iomanip> // for setw
+#include <algorithm>    
+#include <random>
 
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
 
 using namespace Rcpp ;
+
+// FIXME: move this later
+int seed = 1; 
+std::mt19937 ran_gen(seed);
 
 enum class Dependency {monotone, semimonotone, NA}; // monotone, semimonotone
 
@@ -38,10 +44,10 @@ struct geneToModule {
 
 // this is temporary. Will remove at end??
 struct geneToModuleLong {
-  int GeneNumID;
-  int ModuleNumID;
   std::string GeneName;
   std::string ModuleName;
+  int GeneNumID;
+  int ModuleNumID;
 };
 
 struct geneDeps {
@@ -61,9 +67,9 @@ struct geneDeps {
 // restriction. And checking is done using that fact.
 
 struct epistasis {
+  double s;
   std::vector<int> NumID; //a set instead? nope.using includes with epistasis
   std::vector<std::string> names; // will remove later
-  double s;
 };
 
 // struct orderEffects {
@@ -73,26 +79,40 @@ struct epistasis {
 // };
 
 struct genesWithoutInt {
-  // The first two are not really needed. Will remove later
-  std::vector<int> NumID;
-  std::vector<std::string> names;
-  std::vector<double> s;
   int shift; // access the s as s[index of mutation or index of mutated
 	     // gene in genome - shift]. shift is the min. of NumID, given
 	     // how that is numbered from R. We assume mutations always
 	     // indexed 1 to something. Not 0 to something.
-    // If shift is -9, no elements
+  // If shift is -9, no elements
+  // The next first two are not really needed. Will remove later
+  std::vector<int> NumID;
+  std::vector<std::string> names;
+  std::vector<double> s;
 };
 
 
 struct fitnessEffectsAll {
+  bool gMOneToOne;
+  // Here to place new mutations in their correct place. Only one is needed.
+  // Use the one that is presumably always shorter
+  std::vector<int> allOrderG;
+  // std::vector<int> allEpistRTG;
   std::vector<geneDeps> Poset;
   std::vector<epistasis> Epistasis;
   std::vector<epistasis> orderE;
   std::vector<geneToModule> geneModules;
   std::vector<geneToModuleLong> geneModulesLong;
   genesWithoutInt genesNoInt;
-  bool gMOneToOne;
+};
+
+
+// No, there are no shared genes in order and epist.  Yes, any gene in
+// orderEff can also be in the posets, but orderEff is for only for those
+// that have order effects.
+struct Genotype {
+  std::vector<int> orderEff;
+  std::vector<int> epistRtEff; //always sorted
+  std::vector<int> rest; // always sorted
 };
 
 
@@ -218,7 +238,25 @@ static void convertNoInts(Rcpp::List nI,
 }
 
 static void convertEpiOrderEff(Rcpp::List ep,
-			       std::vector<epistasis>& Epistasis) {
+			       std::vector<epistasis>& Epistasis,
+			       std::vector<int>& allG) {
+  Rcpp::List element;
+  // For epistasis, the numID must be sorted, but never with order effects.
+  // Things come sorted (or not) from R.
+  Epistasis.resize(ep.size());
+  for(int i = 0; i != ep.size(); ++i) {
+    element = ep[i];
+    Epistasis[i].NumID = Rcpp::as<std::vector<int> >(element["NumID"]);
+    Epistasis[i].names = Rcpp::as<std::vector<std::string> >(element["ids"]);
+    Epistasis[i].s = as<double>(element["s"]);
+    for(auto g : Epistasis[i].NumID) {
+      allG.push_back(g);
+    }
+  }
+}
+
+static void convertEpiOrderEff0(Rcpp::List ep,
+				std::vector<epistasis>& Epistasis) {
   Rcpp::List element;
   // For epistasis, the numID must be sorted, but never with order effects.
   // Things come sorted (or not) from R.
@@ -248,10 +286,11 @@ static void convertFitnessEffects(Rcpp::List rFE,
     rTable_to_Poset(rrt, fe.Poset);
   } 
   if(re.size()) {
-    convertEpiOrderEff(re, fe.Epistasis);
+    convertEpiOrderEff0(re, fe.Epistasis);
+    // convertEpiOrderEff(re, fe.Epistasis, fe.allEpistRTG);
   } 
   if(ro.size()) {
-    convertEpiOrderEff(ro, fe.orderE);
+    convertEpiOrderEff(ro, fe.orderE, fe.allOrderG);
   } 
   if(rgi.size()) {
     convertNoInts(rgi, fe.genesNoInt);
@@ -259,11 +298,86 @@ static void convertFitnessEffects(Rcpp::List rFE,
     fe.genesNoInt.shift = -9L;
   }
   rGM_GeneModule(rgm, fe.geneModules, fe.geneModulesLong);
-
+  sort(fe.allOrderG.begin(), fe.allOrderG.end());
+  // sort(fe.allEpistRTG.begin(), fe.allEpistRTG.end());
   fe.gMOneToOne = rone;
 }
 
 
+// It is simple to write specialized functions for when
+// there are no restrictions or no order effects , etc.
+
+static Genotype createNewGenotype(const Genotype& parent,
+				  const std::vector<int>& mutations,
+				  const fitnessEffectsAll& fe,
+				  std::mt19937& ran_gen) {
+  Genotype newGenot = parent;
+  std::vector<int> tempOrder;
+  bool sort_rest = false;
+  bool sort_epist = false;
+  for(auto g : mutations) {
+    if( g >= fe.genesNoInt.shift ) {
+      newGenot.rest.push_back(g);
+      sort_rest = true;
+    } else {
+      if( binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), g) ) {
+	tempOrder.push_back(g);
+      } else {
+	newGenot.epistRtEff.push_back(g);
+	sort_epist = true;
+      }
+    }
+  }
+
+  // With chromothripsis and order, we just randomly insert them
+  if(tempOrder.size() > 1)
+    shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
+  for(auto g : tempOrder)
+    newGenot.orderEff.push_back(g);
+
+  if(sort_rest)
+    sort(newGenot.rest.begin(), newGenot.rest.end());
+  if(sort_epist)
+    sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
+  
+  return newGenot;
+}
+
+
+static void convertGenotype(Rcpp::List rGE,
+			    Genotype& g) {
+  Rcpp::IntegerVector oe = rGE["orderEffGenes"];
+  Rcpp::IntegerVector ert = rGE["epistRTGenes"];
+  Rcpp::IntegerVector rest = rGE["noInteractionGenes"];
+
+  g.orderEff = Rcpp::as<std::vector<int> > (oe);
+  g.epistRtEff = Rcpp::as<std::vector<int> > (ert);
+  g.rest = Rcpp::as<std::vector<int> > (rest);
+  sort(g.epistRtEff.begin(), g.epistRtEff.end());
+  sort(g.rest.begin(), g.rest.end());
+}
+
+
+
+static void genotypeFitness(const Genotype& Ge,
+			    const fitnessEffectsAll& fe,
+			    std::vector<double>& s) {
+
+  std::vector<int> r1 (Ge.epistRtEff);
+  r1.insert( r1.end(), Ge.orderEff.begin(), Ge.orderEff.end());
+  sort(r1.begin(), r1.end()); // yes, for rT checking
+
+  if(fe.genesNoInt.shift > 0) {
+    int shift = fe.genesNoInt.shift;
+    for(auto  r : Ge.rest ) {
+      s.push_back(fe.genesNoInt.s[r - shift]);
+    }
+  }
+
+  // rT checking: with the r1 vector, call something like checkConstraints
+
+  // finally, order checking
+}
 
 
 

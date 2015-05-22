@@ -19,6 +19,11 @@ wrap.readFitnessEffects(m0,
                         c(0.1, 0.1),
                         NULL)
 
+wrap.readFitnessEffects(NULL,
+                        NULL,
+                        NULL,
+                        c(0.1, 0.1),
+                        NULL)
 wrap.readFitnessEffects(m0,
                         NULL,
                         NULL,

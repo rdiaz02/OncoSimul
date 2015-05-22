@@ -3,6 +3,7 @@ library(Rcpp)
 ## setwd("../../")
 
 sourceCpp("new-restrict.cpp", verbose = TRUE)
+## sourceCpp("t1.cpp", verbose = TRUE)
 
 
 check.gm <- function(gm) {
@@ -419,6 +420,11 @@ allFitnessEffects(m0, epistasis = epistm1,
                   orderEffects = oeffects1,
                   noIntGenes = c(0.1, 0, 0.2))
 
+wrap.readFitnessEffects(NULL,
+                        NULL,
+                        NULL,
+                        c(0.1, 0.1),
+                        NULL)
 
 wrap.readFitnessEffects(m0,
                         NULL,
