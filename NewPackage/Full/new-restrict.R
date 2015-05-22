@@ -284,7 +284,7 @@ allFitnessEffects <- function(rT = NULL,
                 long.geneNoInt = geneNoInt,
                 geneModule = geneModule,
                 gMOneToOne = gMOneToOne)
-    class(out) <- c("fitnessEffects")
+    ## class(out) <- c("fitnessEffects")
     return(out)
 }
 
@@ -339,13 +339,14 @@ rtAndGeneModule <- function(mdeps, gM = NULL) {
 
 wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm) {
     tt <- allFitnessEffects(rt, epi, oe, ni, gm)
-    readFitnessEffects(tt$long.rt,
-                       tt$long.epistasis,
-                       tt$long.orderEffects,
-                       tt$long.geneNoInt,
-                       tt$geneModule,
-                       tt$gMOneToOne,
-                       echo = TRUE)
+    readFitnessEffects(tt, echo = TRUE)
+    ## readFitnessEffects(tt$long.rt,
+    ##                    tt$long.epistasis,
+    ##                    tt$long.orderEffects,
+    ##                    tt$long.geneNoInt,
+    ##                    tt$geneModule,
+    ##                    tt$gMOneToOne,
+    ##                    echo = TRUE)
 }
 
 evalGenotype <- function(rt, genotype) {

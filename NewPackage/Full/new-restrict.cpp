@@ -1,6 +1,7 @@
-// FIXME: all StringVector by CharacterVector
+// FIXME later, put all fitness effects in a single structure
+
 #include <Rcpp.h>
-#include <iomanip>
+#include <iomanip> // for setw
 
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
 
@@ -83,6 +84,18 @@ struct genesWithoutInt {
     // If shift is -9, no elements
 };
 
+
+struct fitnessEffectsAll {
+  std::vector<geneDeps> Poset;
+  std::vector<epistasis> Epistasis;
+  std::vector<epistasis> orderE;
+  std::vector<geneToModule> geneModules;
+  std::vector<geneToModuleLong> geneModulesLong;
+  genesWithoutInt genesNoInt;
+  bool gMOneToOne;
+};
+
+
 // For users: if something depends on 0, that is it. No further deps.
 // And do not touch the 0 in GeneToModule.
 
@@ -105,7 +118,7 @@ static void rTable_to_Poset(Rcpp::List rt,
   Rcpp::List rt_element;
   // std::string tmpname;
   Rcpp::IntegerVector parentsid;
-  Rcpp::StringVector parents;
+  Rcpp::CharacterVector parents;
 
   for(int i = 1; i != (rt.size() + 1); ++i) {
     rt_element = rt[i - 1];
@@ -122,10 +135,10 @@ static void rTable_to_Poset(Rcpp::List rt,
       throw std::logic_error("childNumID != index");
     }
     // Rcpp::IntegerVector parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
-    // Rcpp::StringVector parents = as<Rcpp::StringVector>(rt_element["parents"]);
+    // Rcpp::CharacterVector parents = as<Rcpp::CharacterVector>(rt_element["parents"]);
 
     parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
-    parents = as<Rcpp::StringVector>(rt_element["parents"]);
+    parents = as<Rcpp::CharacterVector>(rt_element["parents"]);
 
     if( parentsid.size() != parents.size() ) {
       throw std::logic_error("parents size != parentsNumID size");
@@ -148,7 +161,7 @@ static void rTable_to_Poset(Rcpp::List rt,
 }
 
 
-static void rGM_GeneModule(Rcpp::DataFrame rGM,
+static void rGM_GeneModule(Rcpp::List rGM,
 			   std::vector<geneToModule>& geneModule,
 			   std::vector<geneToModuleLong>& geneModuleLong){
 
@@ -189,7 +202,7 @@ static void DrvToModule(const std::vector<int>& Drv,
 }
 
 
-static void convertNoInts(Rcpp::DataFrame nI,
+static void convertNoInts(Rcpp::List nI,
 			  genesWithoutInt& genesNoInt) {
   
   Rcpp::CharacterVector names = nI["Gene"];
@@ -218,42 +231,36 @@ static void convertEpiOrderEff(Rcpp::List ep,
   }
 }
 
-static void convertFitnessEffects(Rcpp::List rtR,
-				  Rcpp::List longEpistasis,
- 				  Rcpp::List longOrderE,
-				  Rcpp::DataFrame rGM,
-				  Rcpp::DataFrame longGeneNoInt,
- 				  // bool gMOneToOne,
-				  std::vector<geneDeps>& Poset,
-				  std::vector<epistasis>& Epistasis,
-				  std::vector<epistasis>& orderE,
-				  genesWithoutInt& genesNoInt,
-				  std::vector<geneToModule>& geneModules,
- 				  std::vector<geneToModuleLong>& geneModulesLong) {
+static void convertFitnessEffects(Rcpp::List rFE,
+				  fitnessEffectsAll& fe) {
 
-  if(rtR.size()) {
-    rTable_to_Poset(rtR, Poset);
-  } // else {
-  //   Poset.resize(0);
-  // }
-  if(longEpistasis.size()) {
-    convertEpiOrderEff(longEpistasis, Epistasis);
-  } // else {
-  //   Epistasis.resize(0);
-  // }
-  if(longOrderE.size()) {
-    convertEpiOrderEff(longOrderE, orderE);
-  } // else {
-  //   orderE.resize(0);
-  // }
-  if(longGeneNoInt.size()) {
-    convertNoInts(longGeneNoInt, genesNoInt);
-  } else {
-    genesNoInt.shift = -9L;
-  }
+  // Yes, some of the things below are data.frames in R, but for
+  // us that is used just as a list.
+  Rcpp::List rrt = rFE["long.rt"];
+  Rcpp::List re = rFE["long.epistasis"];
+  Rcpp::List ro = rFE["long.orderEffects"];
+  Rcpp::List rgi = rFE["long.geneNoInt"];
+  Rcpp::List rgm = rFE["geneModule"];
+  bool rone = rFE["gMOneToOne"];
   
-  rGM_GeneModule(rGM, geneModules, geneModulesLong);
 
+  if(rrt.size()) {
+    rTable_to_Poset(rrt, fe.Poset);
+  } 
+  if(re.size()) {
+    convertEpiOrderEff(re, fe.Epistasis);
+  } 
+  if(ro.size()) {
+    convertEpiOrderEff(ro, fe.orderE);
+  } 
+  if(rgi.size()) {
+    convertNoInts(rgi, fe.genesNoInt);
+  } else {
+    fe.genesNoInt.shift = -9L;
+  }
+  rGM_GeneModule(rgm, fe.geneModules, fe.geneModulesLong);
+
+  fe.gMOneToOne = rone;
 }
 
 
@@ -385,10 +392,10 @@ static void printGeneToModule(const
 
   Rcpp::Rcout << 
     "\n\n******** geneModule table (internal) *******:\n" <<
-    std::setw(14) << "Gene name" << std::setw(14) << "Gene NumID" << std::setw(14)
+    std::setw(14) << std::left << "Gene name" << std::setw(14) << "Gene NumID" << std::setw(14)
 	      << "Module name" << std::setw(14) << "Module NumID" << "\n";
   for(auto it = geneModulesLong.begin(); it != geneModulesLong.end(); ++it) {
-    Rcpp::Rcout << std::setw(14) << it->GeneName << std::setw(14)
+    Rcpp::Rcout << std::setw(14) << std::left << it->GeneName << std::setw(14)
 		<< it->GeneNumID << std::setw(14) << it->ModuleName
 		<< std::setw(14) << it->ModuleNumID << std::endl;
   }
@@ -432,17 +439,23 @@ static void printNoInteractionGenes(const genesWithoutInt& genesNoInt) {
   if(genesNoInt.shift <= 0) {
     Rcpp::Rcout << "No other genes without interactions" << std::endl;
   } else {
-    Rcpp::Rcout << std::setw(14) << "Gene name" << std::setw(14)
+    Rcpp::Rcout << std::setw(14) << std::left << "Gene name" << std::setw(14)
 		<< "Gene NumID" << std::setw(14) << "s" << std::endl;
     for(size_t i = 0; i != genesNoInt.NumID.size(); ++i) {
-      Rcpp::Rcout << std::setw(14) << genesNoInt.names[i]
+      Rcpp::Rcout << std::setw(14) << std::left << genesNoInt.names[i]
 		  << std::setw(14) << genesNoInt.NumID[i]	
 		  << std::setw(14) << genesNoInt.s[i] << '\n';
     }
   }
 }
 
-
+static void printFitnessEffects(const fitnessEffectsAll& fe) {
+  printGeneToModule(fe.geneModulesLong, fe.gMOneToOne);
+  printPoset(fe.Poset);
+  printOtherEpistasis(fe.orderE, "order effect", " > ");
+  printOtherEpistasis(fe.Epistasis, "epistatic interaction", ", ");
+  printNoInteractionGenes(fe.genesNoInt);
+}
 
 // // [[Rcpp::export]]
 // void wrap_test_rt(Rcpp::List rtR, Rcpp::DataFrame rGM) {
@@ -538,37 +551,18 @@ SEXP eval_Genotype(Rcpp::List rtR,
 // }
 
 
+
 // [[Rcpp::export]]
-void readFitnessEffects(Rcpp::List rtR,
-			Rcpp::List longEpistasis,
-			Rcpp::List longOrderE,
-			Rcpp::DataFrame longGeneNoInt,
-			Rcpp::DataFrame rGM,
-			bool gMOneToOne,
+void readFitnessEffects(Rcpp::List rFE,
 			bool echo) {
-
-   
-  std::vector<geneDeps> Poset;
-  std::vector<epistasis> Epistasis;
-  std::vector<epistasis> orderE;
-  std::vector<geneToModule> geneModules;
-  std::vector<geneToModuleLong> geneModulesLong;
-  genesWithoutInt genesNoInt;
-
-  convertFitnessEffects(rtR, longEpistasis, longOrderE,
-			rGM, longGeneNoInt, //gMOneToOne,
-			Poset, Epistasis, orderE, genesNoInt,
-			geneModules,  geneModulesLong);
-
+  fitnessEffectsAll fitnessEffects;
+  convertFitnessEffects(rFE, fitnessEffects);
   if(echo) {
-    printGeneToModule(geneModulesLong, gMOneToOne);
-    printPoset(Poset);
-    printOtherEpistasis(orderE, "order effect", " > ");
-    printOtherEpistasis(Epistasis, "epistatic interaction", ", ");
-    printNoInteractionGenes(genesNoInt);
+     printFitnessEffects(fitnessEffects);
   }
-
 }
+
+
 
 
 
