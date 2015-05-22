@@ -338,9 +338,9 @@ rtAndGeneModule <- function(mdeps, gM = NULL) {
 ## }
 
 
-wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm) {
+wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm, echo = TRUE) {
     tt <- allFitnessEffects(rt, epi, oe, ni, gm)
-    readFitnessEffects(tt, echo = TRUE)
+    readFitnessEffects(tt, echo = echo)
     ## readFitnessEffects(tt$long.rt,
     ##                    tt$long.epistasis,
     ##                    tt$long.orderEffects,
@@ -349,6 +349,39 @@ wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm) {
     ##                    tt$gMOneToOne,
     ##                    echo = TRUE)
 }
+
+
+oa <- allFitnessEffects(m0, epistm1,
+                        oeffects1, c(0.1, 0.1, 0.2), gM3)
+
+oa2 <- allFitnessEffects(m0, epistm1,
+                        oeffects1, runif(1000), gM3)
+
+
+benchmark(wrap.readFitnessEffects(m0, epistm1,
+                        oeffects1, c(0.1, 0.1, 0.2),
+                                  gM3, echo = FALSE),
+          replications = 100)
+
+benchmark(allFitnessEffects(m0, epistm1,
+                            oeffects1, c(0.1, 0.1, 0.2), gM3),
+          replications = 100)
+
+benchmark(readFitnessEffects(oa2, echo = FALSE),
+          replications = 10000)
+benchmark(readFitnessEffects(oa, echo = FALSE),
+          replications = 10000)
+
+
+
+microbenchmark(readFitnessEffects(oa, echo = FALSE), times = 1000)
+
+microbenchmark(allFitnessEffects(m0, epistm1,
+                            oeffects1, c(0.1, 0.1, 0.2), gM3),
+          times = 100)
+
+
+
 
 evalGenotype <- function(rt, genotype) {
     lrt <- to.long.rt(rt)
@@ -461,6 +494,11 @@ wrap.readFitnessEffects(m0, epistm1,
                         gM3)
 
 
+
+benchmark(wrap.readFitnessEffects(m0, epistm1,
+                        oeffects1, c(0.1, 0.1, 0.2),
+                                  gM3, echo = FALSE),
+          replications = 100)
 ## FIXME make sure to test with 0 size elements: rT, epist, order
 
 
