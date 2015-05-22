@@ -1,5 +1,8 @@
 // FIXME: all StringVector by CharacterVector
 #include <Rcpp.h>
+#include <iomanip>
+
+#define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
 
 using namespace Rcpp ;
 
@@ -28,14 +31,14 @@ inline static std::string depToString(const Dependency dep) {
 }
 
 struct geneToModule {
-  int GeneID;
-  int ModuleID;
+  int GeneNumID;
+  int ModuleNumID;
 };
 
 // this is temporary. Will remove at end??
 struct geneToModuleLong {
-  int GeneID;
-  int ModuleID;
+  int GeneNumID;
+  int ModuleNumID;
   std::string GeneName;
   std::string ModuleName;
 };
@@ -145,114 +148,29 @@ static void rTable_to_Poset(Rcpp::List rt,
 }
 
 
-
-void printPoset(const std::vector<geneDeps>& Poset) {
-
-  int counterInfs = 0;
-  int counterNegInfs = 0;
-  Rcpp::Rcout << "\n **********  Restriction table inside C++ *******" 
-	      << std::endl;
-  Rcpp::Rcout << "Size = " << (Poset.size() - 1) << std::endl;
-  for(size_t i = 1; i != Poset.size(); ++i) {
-    // We do not show the Poset[0]
-    Rcpp::Rcout <<"\t Dependent Module or gene (child) " << i 
-		<< ". childNumID: " << Poset[i].childNumID 
-		<< ". child full name: " << Poset[i].child
-		<< std::endl;
-    Rcpp::Rcout <<"\t\t typeDep = " << depToString(Poset[i].typeDep) << ' ' ;
-    Rcpp::Rcout <<"\t s = " << Poset[i].s << " ";
-    Rcpp::Rcout <<"\t sh = " << Poset[i].sh << std::endl;
-    if(isinf(Poset[i].sh))
-      ++counterInfs;
-    if(isinf(Poset[i].sh) && (Poset[i].sh < 0))
-      ++counterNegInfs;
-    Rcpp::Rcout << "\t\t Number of parent modules or genes = " << 
-      Poset[i].parents.size() << std::endl;
-    Rcpp::Rcout << "\t\t\t Parents IDs: ";
-    for(auto c : Poset[i].parentsNumID)
-      Rcpp::Rcout << c << "; ";
-    Rcpp::Rcout << std::endl;
-    Rcpp::Rcout << "\t\t\t Parents names: ";
-    for(auto c : Poset[i].parents)
-      Rcpp::Rcout << '(' << c << ')' << "; ";
-    Rcpp::Rcout << std::endl;
-    
-    // for(size_t j = 0; j != Poset[i].deps.size(); ++j) {
-    //   Rcpp::Rcout << "\t\t\t\t Module " << (j + 1) << ": " 
-    // 		  << Poset[i].deps[j] << std::endl;
-  }
-  Rcpp::Rcout << std::endl;
-
-  if(counterInfs) {
-    Rcpp::Rcout << "In sh there were " << counterNegInfs 
-		<< " negative infinites and "
-		<< (counterInfs - counterNegInfs) 
-		<< " positive infinites" << std::endl;
-  }
-}
-
-
-
 static void rGM_GeneModule(Rcpp::DataFrame rGM,
 			   std::vector<geneToModule>& geneModule,
 			   std::vector<geneToModuleLong>& geneModuleLong){
 
-  Rcpp::IntegerVector GeneID = rGM["GeneNumID"];
-  Rcpp::IntegerVector ModuleID = rGM["ModuleNumID"];
+  Rcpp::IntegerVector GeneNumID = rGM["GeneNumID"];
+  Rcpp::IntegerVector ModuleNumID = rGM["ModuleNumID"];
   Rcpp::CharacterVector GeneName = rGM["Gene"];
   Rcpp::CharacterVector ModuleName = rGM["Module"];
-  geneModule.resize(GeneID.size());
-  geneModuleLong.resize(GeneID.size()); // remove later
+  geneModule.resize(GeneNumID.size());
+  geneModuleLong.resize(GeneNumID.size()); // remove later
 
   for(size_t i = 0; i != geneModule.size(); ++i) {
-    if( static_cast<int>(i) != GeneID[i])
-      throw std::logic_error(" i != GeneID");
-    geneModule[i].GeneID = GeneID[i];
-    geneModule[i].ModuleID = ModuleID[i];
+    if( static_cast<int>(i) != GeneNumID[i])
+      throw std::logic_error(" i != GeneNumID");
+    geneModule[i].GeneNumID = GeneNumID[i];
+    geneModule[i].ModuleNumID = ModuleNumID[i];
     // remove these later?
-    geneModuleLong[i].GeneID = GeneID[i];
-    geneModuleLong[i].ModuleID = ModuleID[i];
+    geneModuleLong[i].GeneNumID = GeneNumID[i];
+    geneModuleLong[i].ModuleNumID = ModuleNumID[i];
     geneModuleLong[i].GeneName = GeneName[i];
     geneModuleLong[i].ModuleName = ModuleName[i];
   }
 }
-
-
-static void printGeneToModule(const 
-			      std::vector<geneToModuleLong>& geneModulesLong) {
-  Rcpp::Rcout << 
-    "\n\n******** geneModule table inside C++ *******:\ngene ID,\t Gene,\t Module ID,\t Module\n";
-  for(auto it = geneModulesLong.begin(); it != geneModulesLong.end(); ++it) {
-    Rcpp::Rcout << '\t' << it->GeneID << '\t' << it->GeneName << '\t' 
-		<< it->ModuleID << '\t' << it->ModuleName << std::endl;
-  }
-}
-
-
-
-// [[Rcpp::export]]
-void wrap_test_rt(Rcpp::List rtR, Rcpp::DataFrame rGM) {
-  std::vector<geneDeps> Poset;
-  std::vector<geneToModule> geneModules;
-  std::vector<geneToModuleLong> geneModulesLong;
-
-  rGM_GeneModule(rGM, geneModules, geneModulesLong);
-  printGeneToModule(geneModulesLong);
-
-  rTable_to_Poset(rtR, Poset);
-  printPoset(Poset);
-}
-
-
-
-
-// // stretching vector of mutatedDrv unlikely to speed up;
-// // access (seeing if a module gene in there) is O(1) but I do
-// // that for every gene and then sum over the vector (linear in
-// // number of positions?)
-
-// // Could be made much faster if we could assume lower numbered
-// // positions cannot depend on higher numbered ones. Nope, not that much.
 
 
 static void DrvToModule(const std::vector<int>& Drv,
@@ -261,7 +179,7 @@ static void DrvToModule(const std::vector<int>& Drv,
 			std::vector<int>& mutatedModules) {
   
   for(auto it = Drv.begin(); it != Drv.end(); ++it) {
-    mutatedModules.push_back(geneModules[(*it)].ModuleID);
+    mutatedModules.push_back(geneModules[(*it)].ModuleNumID);
   }
   sort( mutatedModules.begin(), mutatedModules.end() );
   mutatedModules.erase( unique( mutatedModules.begin(), 
@@ -269,6 +187,78 @@ static void DrvToModule(const std::vector<int>& Drv,
 			mutatedModules.end() );
   // That is sorted. So use binary search below. But shouldn't I use a set?
 }
+
+
+static void convertNoInts(Rcpp::DataFrame nI,
+			  genesWithoutInt& genesNoInt) {
+  
+  Rcpp::CharacterVector names = nI["Gene"];
+  Rcpp::IntegerVector id = nI["GeneNumID"];
+  Rcpp::NumericVector s1 = nI["s"];
+  
+  genesNoInt.names = Rcpp::as<std::vector<std::string> >(names);
+  genesNoInt.NumID = Rcpp::as<std::vector<int> >(nI["GeneNumID"]);
+  genesNoInt.s = Rcpp::as<std::vector<double> >(nI["s"]);
+  genesNoInt.shift = genesNoInt.NumID[0]; // FIXME: we assume mutations always
+				      // indexed 1 to something. Not 0 to
+				      // something.
+}
+
+static void convertEpiOrderEff(Rcpp::List ep,
+			       std::vector<epistasis>& Epistasis) {
+  Rcpp::List element;
+  // For epistasis, the numID must be sorted, but never with order effects.
+  // Things come sorted (or not) from R.
+  Epistasis.resize(ep.size());
+  for(int i = 0; i != ep.size(); ++i) {
+    element = ep[i];
+    Epistasis[i].NumID = Rcpp::as<std::vector<int> >(element["NumID"]);
+    Epistasis[i].names = Rcpp::as<std::vector<std::string> >(element["ids"]);
+    Epistasis[i].s = as<double>(element["s"]);
+  }
+}
+
+static void convertFitnessEffects(Rcpp::List rtR,
+				  Rcpp::List longEpistasis,
+ 				  Rcpp::List longOrderE,
+				  Rcpp::DataFrame rGM,
+				  Rcpp::DataFrame longGeneNoInt,
+ 				  // bool gMOneToOne,
+				  std::vector<geneDeps>& Poset,
+				  std::vector<epistasis>& Epistasis,
+				  std::vector<epistasis>& orderE,
+				  genesWithoutInt& genesNoInt,
+				  std::vector<geneToModule>& geneModules,
+ 				  std::vector<geneToModuleLong>& geneModulesLong) {
+
+  if(rtR.size()) {
+    rTable_to_Poset(rtR, Poset);
+  } // else {
+  //   Poset.resize(0);
+  // }
+  if(longEpistasis.size()) {
+    convertEpiOrderEff(longEpistasis, Epistasis);
+  } // else {
+  //   Epistasis.resize(0);
+  // }
+  if(longOrderE.size()) {
+    convertEpiOrderEff(longOrderE, orderE);
+  } // else {
+  //   orderE.resize(0);
+  // }
+  if(longGeneNoInt.size()) {
+    convertNoInts(longGeneNoInt, genesNoInt);
+  } else {
+    genesNoInt.shift = -9L;
+  }
+  
+  rGM_GeneModule(rGM, geneModules, geneModulesLong);
+
+}
+
+
+
+
 
 // FIXME: can we make it faster if we know each module a single gene?
 // FIXME: if genotype is always kept sorted, with drivers first, can it be
@@ -334,6 +324,156 @@ static void checkConstraints(const std::vector<int>& Drv,
 
 
 
+void printPoset(const std::vector<geneDeps>& Poset) {
+
+  int counterInfs = 0;
+  int counterNegInfs = 0;
+  Rcpp::Rcout << "\n **********  Restriction table (internal) *******" 
+	      << std::endl;
+  if(!Poset.size()) {
+    Rcpp::Rcout << "No posets: restriction table of size 0"<< std::endl;
+  } else {
+    Rcpp::Rcout << "Size = " << (Poset.size() - 1) << std::endl;
+    for(size_t i = 1; i != Poset.size(); ++i) {
+      // We do not show the Poset[0]
+      Rcpp::Rcout <<"\t Dependent Module or gene (child) " << i 
+		  << ". childNumID: " << Poset[i].childNumID 
+		  << ". child full name: " << Poset[i].child
+		  << std::endl;
+      Rcpp::Rcout <<"\t\t typeDep = " << depToString(Poset[i].typeDep) << ' ' ;
+      Rcpp::Rcout <<"\t s = " << Poset[i].s << " ";
+      Rcpp::Rcout <<"\t sh = " << Poset[i].sh << std::endl;
+      if(isinf(Poset[i].sh))
+	++counterInfs;
+      if(isinf(Poset[i].sh) && (Poset[i].sh < 0))
+	++counterNegInfs;
+      Rcpp::Rcout << "\t\t Number of parent modules or genes = " << 
+	Poset[i].parents.size() << std::endl;
+      Rcpp::Rcout << "\t\t\t Parents IDs: ";
+      for(auto c : Poset[i].parentsNumID)
+	Rcpp::Rcout << c << "; ";
+      Rcpp::Rcout << std::endl;
+      Rcpp::Rcout << "\t\t\t Parents names: ";
+      for(auto c : Poset[i].parents)
+	Rcpp::Rcout << '(' << c << ')' << "; ";
+      Rcpp::Rcout << std::endl;
+    
+      // for(size_t j = 0; j != Poset[i].deps.size(); ++j) {
+      //   Rcpp::Rcout << "\t\t\t\t Module " << (j + 1) << ": " 
+      // 		  << Poset[i].deps[j] << std::endl;
+    }
+    Rcpp::Rcout << std::endl;
+
+    if(counterInfs) {
+      Rcpp::Rcout << "In sh there were " << counterNegInfs 
+		  << " negative infinites and "
+		  << (counterInfs - counterNegInfs) 
+		  << " positive infinites" << std::endl;
+    }
+  }
+}
+
+static void printGeneToModule(const 
+			      std::vector<geneToModuleLong>& geneModulesLong,
+			      const bool gMOneToOne) {
+  // Rcpp::Rcout << 
+  //   "\n\n******** geneModule table (internal) *******:\nGene name\t Gene NumID\t Module name\t Module NumID\n";
+  // for(auto it = geneModulesLong.begin(); it != geneModulesLong.end(); ++it) {
+  //   Rcpp::Rcout << '\t' << it->GeneName << '\t' << it->GeneNumID << '\t' 
+  // 		<< it->ModuleName << '\t' << it->ModuleNumID << std::endl;
+  // }
+
+  Rcpp::Rcout << 
+    "\n\n******** geneModule table (internal) *******:\n" <<
+    std::setw(14) << "Gene name" << std::setw(14) << "Gene NumID" << std::setw(14)
+	      << "Module name" << std::setw(14) << "Module NumID" << "\n";
+  for(auto it = geneModulesLong.begin(); it != geneModulesLong.end(); ++it) {
+    Rcpp::Rcout << std::setw(14) << it->GeneName << std::setw(14)
+		<< it->GeneNumID << std::setw(14) << it->ModuleName
+		<< std::setw(14) << it->ModuleNumID << std::endl;
+  }
+
+
+  if(gMOneToOne)
+    Rcpp::Rcout << "This is a dummy module table: each module is one gene."
+		<< std::endl;
+}
+
+
+static void printOtherEpistasis(const std::vector<epistasis>& Epistasis,
+				const std::string effectName,
+				const std::string sepstr) {
+  Rcpp::Rcout << "\n **********  General epistatic effects (internal) *******"
+	      << std::endl;
+  if(!Epistasis.size()) {
+    Rcpp::Rcout << "No general " << effectName << std::endl;
+  } else {
+    Rcpp::Rcout << " Number of " << effectName <<"s = " << Epistasis.size();
+    for(size_t i = 0; i != Epistasis.size(); ++i) {
+      Rcpp::Rcout << "\n\t " << effectName << " " << i + 1 << ": " <<
+	". Modules or Genes (names) = " << Epistasis[i].names[0];
+      for(size_t j = 1; j != Epistasis[i].NumID.size(); ++j) {
+	Rcpp::Rcout << sepstr << Epistasis[i].names[j] ;
+      }
+      Rcpp::Rcout << ".\t Modules or Genes (NumID) = " << Epistasis[i].NumID[0];
+      for(size_t j = 1; j != Epistasis[i].NumID.size(); ++j) {
+	Rcpp::Rcout << sepstr << Epistasis[i].NumID[j] ;
+      }
+      Rcpp::Rcout << ".\t s = " << Epistasis[i].s;
+    }
+  }
+  Rcpp::Rcout << std::endl;
+}
+
+static void printNoInteractionGenes(const genesWithoutInt& genesNoInt) {
+  Rcpp::Rcout << "\n **********  All remaining genes without interactions (internal) *******"
+	      << std::endl;
+  
+  if(genesNoInt.shift <= 0) {
+    Rcpp::Rcout << "No other genes without interactions" << std::endl;
+  } else {
+    Rcpp::Rcout << std::setw(14) << "Gene name" << std::setw(14)
+		<< "Gene NumID" << std::setw(14) << "s" << std::endl;
+    for(size_t i = 0; i != genesNoInt.NumID.size(); ++i) {
+      Rcpp::Rcout << std::setw(14) << genesNoInt.names[i]
+		  << std::setw(14) << genesNoInt.NumID[i]	
+		  << std::setw(14) << genesNoInt.s[i] << '\n';
+    }
+  }
+}
+
+
+
+// // [[Rcpp::export]]
+// void wrap_test_rt(Rcpp::List rtR, Rcpp::DataFrame rGM) {
+//   std::vector<geneDeps> Poset;
+//   std::vector<geneToModule> geneModules;
+//   std::vector<geneToModuleLong> geneModulesLong;
+
+//   rGM_GeneModule(rGM, geneModules, geneModulesLong);
+//   printGeneToModule(geneModulesLong);
+
+//   rTable_to_Poset(rtR, Poset);
+//   printPoset(Poset);
+// }
+
+
+
+
+// // stretching vector of mutatedDrv unlikely to speed up;
+// // access (seeing if a module gene in there) is O(1) but I do
+// // that for every gene and then sum over the vector (linear in
+// // number of positions?)
+
+// // Could be made much faster if we could assume lower numbered
+// // positions cannot depend on higher numbered ones. Nope, not that much.
+
+
+
+
+
+
+
 
 // SEXP wrap_test_checkRestriction(Rcpp::List rtR, 
 // 				Rcpp::DataFrame rGM,
@@ -392,92 +532,18 @@ SEXP eval_Genotype(Rcpp::List rtR,
 // if driver, insert in Drv.
 // and check restrictions
 
-static void convertNoInts(Rcpp::DataFrame nI,
-			  genesWithoutInt& genesNoInt) {
-  
-  Rcpp::CharacterVector names = nI["Gene"];
-  Rcpp::IntegerVector id = nI["GeneNumID"];
-  Rcpp::NumericVector s1 = nI["s"];
-  
-  genesNoInt.names = Rcpp::as<std::vector<std::string> >(names);
-  genesNoInt.NumID = Rcpp::as<std::vector<int> >(nI["GeneNumID"]);
-  genesNoInt.s = Rcpp::as<std::vector<double> >(nI["s"]);
-  genesNoInt.shift = genesNoInt.s[0]; // FIXME: we assume mutations always
-				      // indexed 1 to something. Not 0 to
-				      // something.
-}
 
-static void convertEpiOrderEff(Rcpp::List ep,
-			       std::vector<epistasis>& Epistasis) {
-  Rcpp::List element;
-  Rcpp::IntegerVector NumID;
-  Rcpp::StringVector names;
-  // For epistasis, the numID must be sorted, but never with order effects.
-  // Things come sorted (or not) from R.
-  for(int i = 0; i != ep.size(); ++i) {
-    element = ep[i];
-    Epistasis[i].NumID = Rcpp::as<std::vector<int> >(ep["NumID"]);
-    Epistasis[i].names = Rcpp::as<std::vector<std::string> >(ep["ids"]);
-    Epistasis[i].s = as<double>(ep["s"]);
-  }
-}
-
-static void convertFitnessEffects(Rcpp::List rtR,
-				  Rcpp::List longEpistasis,
- 				  Rcpp::List longOrderE,
-				  Rcpp::DataFrame rGM,
-				  Rcpp::DataFrame longGeneNoInt,
- 				  bool gMOneToOne,
-				  std::vector<geneDeps>& Poset,
-				  std::vector<epistasis>& Epistasis,
-				  std::vector<epistasis>& orderE,
-				  genesWithoutInt& genesNoInt,
-				  std::vector<geneToModule>& geneModules,
- 				  std::vector<geneToModuleLong>& geneModulesLong) {
-
-  if(rtR.size()) {
-    rTable_to_Poset(rtR, Poset);
-  } // else {
-  //   Poset.resize(0);
-  // }
-  if(longEpistasis.size()) {
-    convertEpiOrderEff(longEpistasis, Epistasis);
-  } // else {
-  //   Epistasis.resize(0);
-  // }
-  if(longOrderE.size()) {
-    convertEpiOrderEff(longOrderE, orderE);
-  } // else {
-  //   orderE.resize(0);
-  // }
-  if(longGeneNoInt.size()) {
-    convertNoInts(longGeneNoInt, genesNoInt);
-  } else {
-    genesNoInt.shift = -9L;
-  }
-  
-  rGM_GeneModule(rGM, geneModules, geneModulesLong);
-
-}
-
-
-static void printOrderEffects(const std::vector<epistasis>& orderE) {
-  // do something
-}
-static void printOtherEpistasis(const std::vector<epistasis>& Epistasis) {
-  // do something
-}
-static void printNoInteractionGenes(const genesWithoutInt& genesNoInt) {
-  // do something
-}
+// static void printOrderEffects(const std::vector<epistasis>& orderE) {
+//   // do something
+// }
 
 
 // [[Rcpp::export]]
 void readFitnessEffects(Rcpp::List rtR,
 			Rcpp::List longEpistasis,
 			Rcpp::List longOrderE,
-			Rcpp::DataFrame rGM,
 			Rcpp::DataFrame longGeneNoInt,
+			Rcpp::DataFrame rGM,
 			bool gMOneToOne,
 			bool echo) {
 
@@ -490,15 +556,15 @@ void readFitnessEffects(Rcpp::List rtR,
   genesWithoutInt genesNoInt;
 
   convertFitnessEffects(rtR, longEpistasis, longOrderE,
-			rGM, longGeneNoInt, gMOneToOne,
+			rGM, longGeneNoInt, //gMOneToOne,
 			Poset, Epistasis, orderE, genesNoInt,
 			geneModules,  geneModulesLong);
 
   if(echo) {
-    printGeneToModule(geneModulesLong);
+    printGeneToModule(geneModulesLong, gMOneToOne);
     printPoset(Poset);
-    printOrderEffects(orderE);
-    printOtherEpistasis(Epistasis);
+    printOtherEpistasis(orderE, "order effect", " > ");
+    printOtherEpistasis(Epistasis, "epistatic interaction", ", ");
     printNoInteractionGenes(genesNoInt);
   }
 

@@ -275,11 +275,14 @@ allFitnessEffects <- function(rT = NULL,
     } else {
         geneNoInt <- data.frame()
     }
+    if( (length(long.rt) + length(long.epistasis) + length(long.orderEffects) +
+             nrow(geneNoInt)) == 0)
+        stop("You have specified nothing!")
     out <- list(long.rt = long.rt,
-                geneModule = geneModule,
                 long.epistasis = long.epistasis,
                 long.orderEffects = long.orderEffects,
                 long.geneNoInt = geneNoInt,
+                geneModule = geneModule,
                 gMOneToOne = gMOneToOne)
     class(out) <- c("fitnessEffects")
     return(out)
@@ -326,11 +329,23 @@ rtAndGeneModule <- function(mdeps, gM = NULL) {
     return(df)
 }
 
-wrap.test.rt <- function(rt, gM = NULL) {
-    ## FIXME add epistasis and orderEffects
-    lrt <- allFitnessEffects(rt, geneToModule = gM)
-    ## wrap_test_rt(lrt$long.rt)
-    wrap_test_rt(lrt$long.rt, lrt$geneModule)
+## wrap.test.rt <- function(rt, gM = NULL) {
+##     ## FIXME add epistasis and orderEffects
+##     lrt <- allFitnessEffects(rt, geneToModule = gM)
+##     ## wrap_test_rt(lrt$long.rt)
+##     wrap_test_rt(lrt$long.rt, lrt$geneModule)
+## }
+
+
+wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm) {
+    tt <- allFitnessEffects(rt, epi, oe, ni, gm)
+    readFitnessEffects(tt$long.rt,
+                       tt$long.epistasis,
+                       tt$long.orderEffects,
+                       tt$long.geneNoInt,
+                       tt$geneModule,
+                       tt$gMOneToOne,
+                       echo = TRUE)
 }
 
 evalGenotype <- function(rt, genotype) {
@@ -404,7 +419,45 @@ allFitnessEffects(m0, epistasis = epistm1,
                   noIntGenes = c(0.1, 0, 0.2))
 
 
+wrap.readFitnessEffects(m0,
+                        NULL,
+                        NULL,
+                        c(0.1, 0.1),
+                        NULL)
+
+wrap.readFitnessEffects(m0,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL)
+
+wrap.readFitnessEffects(NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL)
+
+
+wrap.readFitnessEffects(m0, epistm1,
+                        oeffects1, c(0.1, 0.1, 0.2),
+                        NULL)
+
+wrap.readFitnessEffects(m0, epistm1,
+                        oeffects1, c(0.1, 0.1, 0.2),
+                        gM2)
+
+gM3 <- c("Root" = "Root", "d" = "d9, d8",
+         "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
+
+wrap.readFitnessEffects(m0, epistm1,
+                        oeffects1, c(0.1, 0.1, 0.2),
+                        gM3)
+
+
 ## FIXME make sure to test with 0 size elements: rT, epist, order
+
+
+
 
 
 ## We do something somewhat silly: we accept as input a set of
