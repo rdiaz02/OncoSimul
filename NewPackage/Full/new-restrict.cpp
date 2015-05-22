@@ -1,3 +1,4 @@
+// FIXME: all StringVector by CharacterVector
 #include <Rcpp.h>
 
 using namespace Rcpp ;
@@ -51,17 +52,32 @@ struct geneDeps {
 };
 
 
+// We use same structure for epistasis and order effects. With order
+// effects, NumID is NOT sorted, but reflects the order of the
+// restriction. And checking is done using that fact.
 
 struct epistasis {
-  std::vector<int> NumID; //a set instead?
+  std::vector<int> NumID; //a set instead? nope.using includes with epistasis
   std::vector<std::string> names; // will remove later
   double s;
 };
 
-struct orderEffects {
+// struct orderEffects {
+//   std::vector<int> NumID;
+//   std::vector<std::string> names; // will remove later
+//   double s;
+// };
+
+struct genesWithoutInt {
+  // The first two are not really needed. Will remove later
   std::vector<int> NumID;
-  std::vector<std::string> names; // will remove later
-  double s;
+  std::vector<std::string> names;
+  std::vector<double> s;
+  int shift; // access the s as s[index of mutation or index of mutated
+	     // gene in genome - shift]. shift is the min. of NumID, given
+	     // how that is numbered from R. We assume mutations always
+	     // indexed 1 to something. Not 0 to something.
+    // If shift is -9, no elements
 };
 
 // For users: if something depends on 0, that is it. No further deps.
@@ -376,23 +392,84 @@ SEXP eval_Genotype(Rcpp::List rtR,
 // if driver, insert in Drv.
 // and check restrictions
 
+static void convertNoInts(Rcpp::DataFrame nI,
+			  genesWithoutInt& genesNoInt) {
+  
+  Rcpp::CharacterVector names = nI["Gene"];
+  Rcpp::IntegerVector id = nI["GeneNumID"];
+  Rcpp::NumericVector s1 = nI["s"];
+  
+  genesNoInt.names = Rcpp::as<std::vector<std::string> >(names);
+  genesNoInt.NumID = Rcpp::as<std::vector<int> >(nI["GeneNumID"]);
+  genesNoInt.s = Rcpp::as<std::vector<double> >(nI["s"]);
+  genesNoInt.shift = genesNoInt.s[0]; // FIXME: we assume mutations always
+				      // indexed 1 to something. Not 0 to
+				      // something.
+}
 
-
+static void convertEpiOrderEff(Rcpp::List ep,
+			       std::vector<epistasis>& Epistasis) {
+  Rcpp::List element;
+  Rcpp::IntegerVector NumID;
+  Rcpp::StringVector names;
+  // For epistasis, the numID must be sorted, but never with order effects.
+  // Things come sorted (or not) from R.
+  for(int i = 0; i != ep.size(); ++i) {
+    element = ep[i];
+    Epistasis[i].NumID = Rcpp::as<std::vector<int> >(ep["NumID"]);
+    Epistasis[i].names = Rcpp::as<std::vector<std::string> >(ep["ids"]);
+    Epistasis[i].s = as<double>(ep["s"]);
+  }
+}
 
 static void convertFitnessEffects(Rcpp::List rtR,
 				  Rcpp::List longEpistasis,
  				  Rcpp::List longOrderE,
 				  Rcpp::DataFrame rGM,
-				  Rcpp::DataFrame geneNoInt,
- 				  Rcpp::IntegerVector gMOneToOne,
+				  Rcpp::DataFrame longGeneNoInt,
+ 				  bool gMOneToOne,
 				  std::vector<geneDeps>& Poset,
+				  std::vector<epistasis>& Epistasis,
+				  std::vector<epistasis>& orderE,
+				  genesWithoutInt& genesNoInt,
 				  std::vector<geneToModule>& geneModules,
  				  std::vector<geneToModuleLong>& geneModulesLong) {
-  rTable_to_Poset(rtR, Poset);
+
+  if(rtR.size()) {
+    rTable_to_Poset(rtR, Poset);
+  } // else {
+  //   Poset.resize(0);
+  // }
+  if(longEpistasis.size()) {
+    convertEpiOrderEff(longEpistasis, Epistasis);
+  } // else {
+  //   Epistasis.resize(0);
+  // }
+  if(longOrderE.size()) {
+    convertEpiOrderEff(longOrderE, orderE);
+  } // else {
+  //   orderE.resize(0);
+  // }
+  if(longGeneNoInt.size()) {
+    convertNoInts(longGeneNoInt, genesNoInt);
+  } else {
+    genesNoInt.shift = -9L;
+  }
+  
   rGM_GeneModule(rGM, geneModules, geneModulesLong);
+
 }
 
 
+static void printOrderEffects(const std::vector<epistasis>& orderE) {
+  // do something
+}
+static void printOtherEpistasis(const std::vector<epistasis>& Epistasis) {
+  // do something
+}
+static void printNoInteractionGenes(const genesWithoutInt& genesNoInt) {
+  // do something
+}
 
 
 // [[Rcpp::export]]
@@ -400,19 +477,54 @@ void readFitnessEffects(Rcpp::List rtR,
 			Rcpp::List longEpistasis,
 			Rcpp::List longOrderE,
 			Rcpp::DataFrame rGM,
-			Rcpp::DataFrame geneNoInt,
-			Rcpp::IntegerVector gMOneToOne) {
+			Rcpp::DataFrame longGeneNoInt,
+			bool gMOneToOne,
+			bool echo) {
 
    
   std::vector<geneDeps> Poset;
+  std::vector<epistasis> Epistasis;
+  std::vector<epistasis> orderE;
   std::vector<geneToModule> geneModules;
   std::vector<geneToModuleLong> geneModulesLong;
+  genesWithoutInt genesNoInt;
 
   convertFitnessEffects(rtR, longEpistasis, longOrderE,
-			rGM, geneNoInt, gMOneToOne,
-			Poset, geneModules, geneModulesLong);
+			rGM, longGeneNoInt, gMOneToOne,
+			Poset, Epistasis, orderE, genesNoInt,
+			geneModules,  geneModulesLong);
+
+  if(echo) {
+    printGeneToModule(geneModulesLong);
+    printPoset(Poset);
+    printOrderEffects(orderE);
+    printOtherEpistasis(Epistasis);
+    printNoInteractionGenes(genesNoInt);
+  }
+
 }
 
+
+
+// // [[Rcpp::export]]
+// void wrap_FitnessEffects(Rcpp::List rtR,
+// 			Rcpp::List longEpistasis,
+// 			Rcpp::List longOrderE,
+// 			Rcpp::DataFrame rGM,
+// 			Rcpp::DataFrame geneNoInt,
+// 			Rcpp::IntegerVector gMOneToOne) {
+
+   
+//   std::vector<geneDeps> Poset;
+//   std::vector<geneToModule> geneModules;
+//   std::vector<geneToModuleLong> geneModulesLong;
+
+//   convertFitnessEffects(rtR, longEpistasis, longOrderE,
+// 			rGM, geneNoInt, gMOneToOne,
+// 			Poset, geneModules, geneModulesLong);
+//   printGeneToModule(geneModulesLong);
+//   printPoset(Poset);
+// }
 
 
 

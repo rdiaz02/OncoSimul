@@ -157,8 +157,14 @@ to.long.epist.order <- function(epor, sep) {
     return(long)
 }
 
-addIntID.epist.order <- function(z, idm) {
+addIntID.epist.order <- function(z, idm, sort) {
     z$NumID <- idm[z$ids]
+    if(sort) {
+        ## essential for epistasis, but never do for order effects
+        o <- order(z$NumID)
+        z$NumID <- z$NumID[o]
+        z$ids <- z$ids[o]
+    }
     return(z)
 }
 
@@ -208,13 +214,13 @@ allFitnessEffects <- function(rT = NULL,
         long.epistasis <- to.long.epist.order(epistasis, ":")
         epiNames <- unique(unlist(lapply(long.epistasis, function(x) x$ids)))
     } else {
-        long.epistasis <- NULL
+        long.epistasis <- list()
     }
     if(!is.null(orderEffects)) {
         long.orderEffects <- to.long.epist.order(orderEffects, ">")
         orNames <- unique(unlist(lapply(long.orderEffects, function(x) x$ids)))
     } else {
-        long.orderEffects <- NULL
+        long.orderEffects <- list()
     }
     allModuleNames <- unique(c(rtNames, epiNames, orNames))
     if(is.null(geneToModule)) {
@@ -239,17 +245,17 @@ allFitnessEffects <- function(rT = NULL,
         checkRT(rT)
         long.rt <- to.long.rt(rT, idm)
     } else {
-        long.rt <- NULL
+        long.rt <- list() ## yes, we want an object of length 0
     }
 
     ## Append the numeric ids to epistasis and order
     if(!is.null(epistasis)) {
         long.epistasis <- lapply(long.epistasis,
-                                 function(x) addIntID.epist.order(x, idm))
+                                 function(x) addIntID.epist.order(x, idm, TRUE))
     }
     if(!is.null(orderEffects)) {
         long.orderEffects <- lapply(long.orderEffects,
-                                 function(x) addIntID.epist.order(x, idm))
+                                 function(x) addIntID.epist.order(x, idm, FALSE))
     }
     
     
@@ -267,13 +273,13 @@ allFitnessEffects <- function(rT = NULL,
                                 GeneNumID = gnum,
                                 s = noIntGenes)
     } else {
-        geneNoInt <- NULL
+        geneNoInt <- data.frame()
     }
     out <- list(long.rt = long.rt,
                 geneModule = geneModule,
                 long.epistasis = long.epistasis,
                 long.orderEffects = long.orderEffects,
-                geneNoInt = geneNoInt,
+                long.geneNoInt = geneNoInt,
                 gMOneToOne = gMOneToOne)
     class(out) <- c("fitnessEffects")
     return(out)
@@ -397,11 +403,18 @@ allFitnessEffects(m0, epistasis = epistm1,
                   orderEffects = oeffects1,
                   noIntGenes = c(0.1, 0, 0.2))
 
+
+## FIXME make sure to test with 0 size elements: rT, epist, order
+
+
 ## We do something somewhat silly: we accept as input a set of
 ## restrictions and then find modules, etc. But it is probably better to
 ## simply take restrictions and modules separately, which minimizes the
 ## checking. And simplifies the code. But then, it is already there, and
 ## is more flexible now. But epistasis and order only as modules.
+
+
+
 
 
 
