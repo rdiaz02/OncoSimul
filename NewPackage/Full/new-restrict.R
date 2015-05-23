@@ -172,6 +172,10 @@ to.long.epist.order <- function(epor, sep) {
 
 
 addIntID.epist.order <- function(z, idm, sort, sign) {
+    if( sort && (!sign))
+        warning("sort is TRUE but sign is FALSE. You sure?")
+    if((!sort) && sign)
+        warning("sort is FALSE but sign is TRUE. You sure?")
     ## Adds the integer, but takes care of sign if sign = TRUE
     if(!sign) {
         z$NumID <- idm[z$ids]
@@ -400,12 +404,14 @@ oeffects1 <- c("d>a" = 0.4, "c > d" = -0.3)
 
 epineg <- c("-a:d" = 0.2, "a:d" = 0.3, "d:c" = 0.3)
 epineg2 <- c("-a:d" = 0.2, "b:c" = 0.3)
+epineg3 <- c("a:-d" = 0.2, "b:c" = 0.3)
 
 
 allFitnessEffects(epistasis = epineg, geneToModule = NULL)
 
 allFitnessEffects(epistasis = epineg2, geneToModule = NULL)
 
+allFitnessEffects(epistasis = epineg3, geneToModule = NULL)
 
 gme <- c("Root" = "Root", "a" = "1, 2", "d" = 3, "c" = 4)
 
