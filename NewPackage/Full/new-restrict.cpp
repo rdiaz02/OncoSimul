@@ -81,7 +81,7 @@ struct fitnessEffectsAll {
   bool gMOneToOne;
   // Here to place new mutations in their correct place. Only one is needed.
   // Use the one that is presumably always shorter
-  std::vector<int> allOrderG;
+  std::vector<int> allOrderG; // Modules. And these are genes if one-to-one.
   // std::vector<int> allEpistRTG;
   std::vector<geneDeps> Poset;
   std::vector<epistasis> Epistasis;
@@ -197,6 +197,7 @@ std::vector<geneToModule> rGM_GeneModule(Rcpp::List rGM) {
 }
 
 
+
 std::vector<int> DrvToModule(const std::vector<int>& Drv,
 			     const 
 			     std::vector<geneToModule>& geneModules) {
@@ -303,33 +304,46 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
 // It is simple to write specialized functions for when
 // there are no restrictions or no order effects , etc.
 Genotype createNewGenotype(const Genotype& parent,
-				  const std::vector<int>& mutations,
-				  const fitnessEffectsAll& fe,
-				  std::mt19937& ran_gen) {
+			   const std::vector<int>& mutations,
+			   const fitnessEffectsAll& fe,
+			   std::mt19937& ran_gen) {
   Genotype newGenot = parent;
-  std::vector<int> tempOrder;
+  std::vector<int> tempOrder; // holder for multiple muts if order.
   bool sort_rest = false;
   bool sort_epist = false;
+
+  // Order of ifs: I suspect order effects rare. No idea about
+  // non-interaction genes, but if common the action is simple.
   for(auto g : mutations) {
-    if( g >= fe.genesNoInt.shift ) {
-      newGenot.rest.push_back(g);
-      sort_rest = true;
-    } else {
-      if( binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), g) ) {
-	tempOrder.push_back(g);
+    if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+      // We can be dealing with modules
+      int m; 
+      if(fe.gMOneToOne) {
+	m = g; 
       } else {
+	m = fe.geneModules[g].ModuleNumID;
+      }
+      if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
 	newGenot.epistRtEff.push_back(g);
 	sort_epist = true;
+      } else {
+	tempOrder.push_back(g);
       }
+    } else {
+      // No interaction genes so no module stuff
+      newGenot.rest.push_back(g);
+      sort_rest = true;
     }
-  }
+  }    
 
-  // With chromothripsis and order, we just randomly insert them
+  // If there is order but multiple simultaneous mutations
+  // (chromothripsis), we randomly insert them
   if(tempOrder.size() > 1)
     shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
   for(auto g : tempOrder)
     newGenot.orderEff.push_back(g);
 
+  // Sorting done at end, in case multiple mutations
   if(sort_rest)
     sort(newGenot.rest.begin(), newGenot.rest.end());
   if(sort_epist)
@@ -338,8 +352,14 @@ Genotype createNewGenotype(const Genotype& parent,
   return newGenot;
 }
 
+// FIXME: Prepare specialized functions: 
+// Specialized functions:
+// Never interactions: push into rest and sort. Identify by shift == 1.
+// Never no interactions: remove the if. shift == -9.
 
-Genotype convertGenotype(Rcpp::List rGE) {
+
+
+Genotype convertGenotypeFromR(Rcpp::List rGE) {
 
   Genotype g;
 			
@@ -361,10 +381,8 @@ Genotype convertGenotype(Rcpp::List rGE) {
 std::vector<double> genotypeFitness(const Genotype& Ge,
 					   const fitnessEffectsAll& fe){
   std::vector<double> s;
-  std::vector<int> r1 (Ge.epistRtEff);
-  r1.insert( r1.end(), Ge.orderEff.begin(), Ge.orderEff.end());
-  sort(r1.begin(), r1.end()); // yes, for rT checking
 
+  // Genes without any restriction or epistasis are just genes. No modules.
   if(fe.genesNoInt.shift > 0) {
     int shift = fe.genesNoInt.shift;
     for(auto  r : Ge.rest ) {
@@ -372,8 +390,27 @@ std::vector<double> genotypeFitness(const Genotype& Ge,
     }
   }
 
-  // rT checking: with the r1 vector, call something like checkConstraints
+  // For the rest, there might be modules. Three different effects on
+  // fitness possible: as encoded in Poset, general epistasis, order effects.
+  
+  // rT checking: first, create the vector of all that are needed
+  std::vector<int> rg (Ge.epistRtEff);
+  rg.insert( rg.end(), Ge.orderEff.begin(), Ge.orderEff.end());
+  sort(rg.begin(), rg.end()); 
 
+
+  std::vector<int> mutatedModules;
+  if(Ge.gMOneToOne) {
+    mutatedModules = Drv;
+  } else {
+    mutatedModules = DrvToModule(Drv, Ge.geneToModules);
+  }
+
+  std::vector<double> sr =
+    checkConstraints(mutatedModules, Ge.Poset, Ge.geneModules);
+  
+  // epistasis checking
+  
   // finally, order checking
   return s;
 }
@@ -385,44 +422,39 @@ std::vector<double> genotypeFitness(const Genotype& Ge,
 // faster? As well, note that number of drivers is automatically known
 // from this table of constraints.
 
-static void checkConstraints(const std::vector<int>& Drv,
-			     const std::vector<geneDeps>& Poset,
-			     const std::vector<geneToModule>& geneToModules,
-			     std::vector<double>& s_vector,
-			     std::vector<double>& sh_vector) {
+std::vector<double> checkConstraints(const std::vector<int>& mutatedModules,
+				     const std::vector<geneDeps>& Poset,
+				     const std::vector<geneToModule>& geneToModules) {
   size_t numDeps;
   size_t sumDepsMet = 0;
   int parent_module_mutated = 0;
   std::vector<int> mutatedModules;
-
+  
+  std::vector<double> s;
+  
   // Map mutated genes to modules (mutatedModules) and then examine, for
   // each mutatedModule, if its dependencies (in terms of modules) are met.
 
-  mutatedModules = DrvToModule(Drv, geneToModules);
 
   for(auto it_mutatedModule = mutatedModules.begin();
       it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
     if( (Poset[(*it_mutatedModule)].parentsNumID.size() == 1) &&
 	(Poset[(*it_mutatedModule)].parentsNumID[0] == 0) ) { //Depends only on root.
       // FIXME: isn't it enough to check the second condition?
-      s_vector.push_back(Poset[(*it_mutatedModule)].s);
+      s.push_back(Poset[(*it_mutatedModule)].s);
     } else {
       sumDepsMet = 0;
       numDeps = Poset[(*it_mutatedModule)].parentsNumID.size();
       for(auto it_Parents = Poset[(*it_mutatedModule)].parentsNumID.begin();
 	  it_Parents != Poset[(*it_mutatedModule)].parentsNumID.end();
 	  ++it_Parents) {
-	// if sorted, could use binary search
-	// FIXME: try a set or sort mutatedModules?
 
-	//parent_module_mutated =
-	//std::binary_search(mutatedModules.begin(), mutatedModules.end(),
-	//(*it_Parents))
-
-	parent_module_mutated = 
-	  (std::find(mutatedModules.begin(), 
-		     mutatedModules.end(), 
-		     (*it_Parents)) != mutatedModules.end());
+	parent_module_mutated = binary_search(mutatedModules.begin(), 
+					      mutatedModules.end(),
+					      (*it_Parents));
+	  // (std::find(mutatedModules.begin(), 
+	  // 	     mutatedModules.end(), 
+	  // 	     (*it_Parents)) != mutatedModules.end());
 	if(parent_module_mutated)  {
 	  ++sumDepsMet;
 	  if( Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone)
@@ -433,12 +465,13 @@ static void checkConstraints(const std::vector<int>& Drv,
 	   (sumDepsMet)) ||
 	  ((Poset[(*it_mutatedModule)].typeDep == Dependency::monotone) && 
 	   (sumDepsMet == numDeps)) ) {
-	s_vector.push_back(Poset[(*it_mutatedModule)].s);
+	s.push_back(Poset[(*it_mutatedModule)].s);
       } else {
-	sh_vector.push_back(Poset[(*it_mutatedModule)].sh);
+	s.push_back(Poset[(*it_mutatedModule)].sh);
       }
     }
   }
+  return s;
 }
 
 
@@ -756,6 +789,63 @@ void readFitnessEffects(Rcpp::List rFE,
 
 
 
+// static void checkConstraints(const std::vector<int>& Drv,
+// 			     const std::vector<geneDeps>& Poset,
+// 			     const std::vector<geneToModule>& geneToModules,
+// 			     std::vector<double>& s_vector,
+// 			     std::vector<double>& sh_vector) {
+//   size_t numDeps;
+//   size_t sumDepsMet = 0;
+//   int parent_module_mutated = 0;
+//   std::vector<int> mutatedModules;
+  
+
+//   // Map mutated genes to modules (mutatedModules) and then examine, for
+//   // each mutatedModule, if its dependencies (in terms of modules) are met.
+
+//   mutatedModules = DrvToModule(Drv, geneToModules);
+
+//   for(auto it_mutatedModule = mutatedModules.begin();
+//       it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
+//     if( (Poset[(*it_mutatedModule)].parentsNumID.size() == 1) &&
+// 	(Poset[(*it_mutatedModule)].parentsNumID[0] == 0) ) { //Depends only on root.
+//       // FIXME: isn't it enough to check the second condition?
+//       s_vector.push_back(Poset[(*it_mutatedModule)].s);
+//     } else {
+//       sumDepsMet = 0;
+//       numDeps = Poset[(*it_mutatedModule)].parentsNumID.size();
+//       for(auto it_Parents = Poset[(*it_mutatedModule)].parentsNumID.begin();
+// 	  it_Parents != Poset[(*it_mutatedModule)].parentsNumID.end();
+// 	  ++it_Parents) {
+// 	// if sorted, could use binary search
+// 	// FIXME: try a set or sort mutatedModules?
+
+// 	//parent_module_mutated =
+// 	//std::binary_search(mutatedModules.begin(), mutatedModules.end(),
+// 	//(*it_Parents))
+
+// 	parent_module_mutated = 
+// 	  (std::find(mutatedModules.begin(), 
+// 		     mutatedModules.end(), 
+// 		     (*it_Parents)) != mutatedModules.end());
+// 	if(parent_module_mutated)  {
+// 	  ++sumDepsMet;
+// 	  if( Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone)
+// 	    break;
+// 	}
+//       }
+//       if( ((Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone) && 
+// 	   (sumDepsMet)) ||
+// 	  ((Poset[(*it_mutatedModule)].typeDep == Dependency::monotone) && 
+// 	   (sumDepsMet == numDeps)) ) {
+// 	s_vector.push_back(Poset[(*it_mutatedModule)].s);
+//       } else {
+// 	sh_vector.push_back(Poset[(*it_mutatedModule)].sh);
+//       }
+//     }
+//   }
+  
+// }
 
 
 
