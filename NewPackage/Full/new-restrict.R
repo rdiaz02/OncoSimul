@@ -1,3 +1,4 @@
+# - Say that a user can use a "0" as a gene name, but that is BAD idea.
 library(data.table)
 library(Rcpp)
 ## setwd("../../")
@@ -158,16 +159,44 @@ to.long.epist.order <- function(epor, sep) {
     return(long)
 }
 
-addIntID.epist.order <- function(z, idm, sort) {
-    z$NumID <- idm[z$ids]
+## addIntID.epist.order <- function(z, idm, sort) {
+##     z$NumID <- idm[z$ids]
+##     if(sort) {
+##         ## essential for epistasis, but never do for order effects
+##         o <- order(z$NumID)
+##         z$NumID <- z$NumID[o]
+##         z$ids <- z$ids[o]
+##     }
+##     return(z)
+## }
+
+
+addIntID.epist.order <- function(z, idm, sort, sign) {
+    ## Adds the integer, but takes care of sign if sign = TRUE
+    if(!sign) {
+        z$NumID <- idm[z$ids]
+        signs <- grep("^-", z$ids)
+        if(length(signs))
+            stop("You have a negative sign and you said sign = FALSE")
+    } else {
+        unsigned <- setdiff(unlist(lapply(z$ids,
+                                          function(z) strsplit(z, "^-"))), "")
+        NumID <- idm[unsigned]
+        signs <- grep("^-", z$ids)
+        if(length(signs)) {
+            NumID[signs] <- -1 * NumID[signs]
+        }
+        z$NumID <- NumID
+    }
     if(sort) {
-        ## essential for epistasis, but never do for order effects
+        ## Essential for epistasis, but never do for order effects
         o <- order(z$NumID)
         z$NumID <- z$NumID[o]
         z$ids <- z$ids[o]
     }
     return(z)
 }
+
 
 checkRT <- function(mdeps) {
     if(ncol(mdeps) != 5)
@@ -213,7 +242,14 @@ allFitnessEffects <- function(rT = NULL,
 
     if(!is.null(epistasis)) {
         long.epistasis <- to.long.epist.order(epistasis, ":")
-        epiNames <- unique(unlist(lapply(long.epistasis, function(x) x$ids)))
+        ## epiNames <- unique(unlist(lapply(long.epistasis, function(x) x$ids)))
+        ## deal with the possible negative signs
+        epiNames <- setdiff(unique(
+            unlist(lapply(long.epistasis,
+                          function(x) lapply(x$ids,
+                                             function(z) strsplit(z, "^-"))))),
+                            "")
+        
     } else {
         long.epistasis <- list()
     }
@@ -229,7 +265,7 @@ allFitnessEffects <- function(rT = NULL,
         geneToModule <- geneModuleNull(allModuleNames)
     } else {
         gMOneToOne <- FALSE
-        if(any(is.na(match(names(geneToModule), allModuleNames))))
+        if(any(is.na(match(setdiff(names(geneToModule), "Root"), allModuleNames))))
             stop(paste("Some values in geneToModule not present in any of",
                        " rT, epistasis, or order effects"))
         if(any(is.na(match(allModuleNames, names(geneToModule)))))
@@ -252,11 +288,17 @@ allFitnessEffects <- function(rT = NULL,
     ## Append the numeric ids to epistasis and order
     if(!is.null(epistasis)) {
         long.epistasis <- lapply(long.epistasis,
-                                 function(x) addIntID.epist.order(x, idm, TRUE))
+                                 function(x)
+                                     addIntID.epist.order(x, idm,
+                                                          sort = TRUE,
+                                                          sign = TRUE))
     }
     if(!is.null(orderEffects)) {
         long.orderEffects <- lapply(long.orderEffects,
-                                 function(x) addIntID.epist.order(x, idm, FALSE))
+                                    function(x)
+                                        addIntID.epist.order(x, idm,
+                                                             sort = FALSE,
+                                                             sign = FALSE))
     }
     
     
@@ -349,6 +391,32 @@ wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm, echo = TRUE) {
     ##                    tt$gMOneToOne,
     ##                    echo = TRUE)
 }
+
+epistm1 <- c("a:d" = 0.2, "d:c" = 0.3)
+epistm1b <- data.frame(ids = c("a:d", "c:d"), s = c(0.2, 0.3))
+oeffects1 <- c("d>a" = 0.4, "c > d" = -0.3)
+
+
+
+epineg <- c("-a:d" = 0.2, "a:d" = 0.3, "d:c" = 0.3)
+epineg2 <- c("-a:d" = 0.2, "b:c" = 0.3)
+
+
+allFitnessEffects(epistasis = epineg, geneToModule = NULL)
+
+allFitnessEffects(epistasis = epineg2, geneToModule = NULL)
+
+
+gme <- c("Root" = "Root", "a" = "1, 2", "d" = 3, "c" = 4)
+
+gme2 <- c("Root" = "Root", "a" = "1, 2", "d" = 3, "b" = "5, 6", "c" = 4)
+
+allFitnessEffects(epistasis = epineg, geneToModule = gme)
+allFitnessEffects(epistasis = epineg2, geneToModule = gme2)
+
+allFitnessEffects(m0, epistasis = epineg, geneToModule = gM3)
+allFitnessEffects(m0, epistasis = epineg2, geneToModule = gM3)
+
 
 
 oa <- allFitnessEffects(m0, epistm1,
