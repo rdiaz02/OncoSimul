@@ -11,13 +11,15 @@ using namespace Rcpp ;
 int seed = 1; 
 std::mt19937 ran_gen(seed);
 
-enum class Dependency {monotone, semimonotone, NA}; // monotone, semimonotone
+enum class Dependency {monotone, semimonotone, xmpn, NA}; // monotone, semimonotone
 
 inline static Dependency stringToDep(const std::string& dep) {
   if(dep == "monotone")
     return Dependency::monotone;
   else if(dep == "semimonotone")
     return Dependency::semimonotone;
+  else if(dep == "xmpn")
+    return Dependency::xmpn;
   else 
     throw std::out_of_range("Not a valid typeDep");
 }
@@ -25,9 +27,11 @@ inline static Dependency stringToDep(const std::string& dep) {
 inline static std::string depToString(const Dependency dep) {
   switch(dep) {
   case Dependency::monotone:
-    return "monotone";
+    return "CMPN or monotone";
   case Dependency::semimonotone:
-    return "semimonotone";
+    return "DMPN or semimonotone";
+  case Dependency::xmpn:
+    return "XMPN (XOR)";
   case Dependency::NA:
     return "NA";
   default:
@@ -35,16 +39,16 @@ inline static std::string depToString(const Dependency dep) {
   }
 }
 
-struct Gene_Module_str {
+struct Gene_Module_struct {
   std::string GeneName;
   std::string ModuleName;
   int GeneNumID;
   int ModuleNumID;
 };
 
-struct geneDeps {
+struct Poset_struct {
   Dependency typeDep;
-  int childNumID; //redundant, but leave
+  int childNumID; //Not redundant
   double s;
   double sh;
   std::vector<int> parentsNumID;
@@ -79,22 +83,37 @@ struct genesWithoutInt {
 
 struct fitnessEffectsAll {
   bool gMOneToOne;
-  // Here to place new mutations in their correct place. Only one is needed.
-  // Use the one that is presumably always shorter
-  std::vector<int> allOrderG; // Modules. And these are genes if one-to-one.
+  
+  // We use allOrderG or allEpistRTG to place new mutations in their
+  // correct place (orderEff or epistRtEff). Only one is needed.  Use the
+  // one that is presumably always shorter which is allOrderG.
+
+  std::vector<int> allOrderG; // Modules or genes if one-to-one.
   // std::vector<int> allEpistRTG;
-  std::vector<geneDeps> Poset;
+
+  // This makes it faster to run evalPosetConstraints
+  std::vector<int> allPosetG; //Modules or genes if one-to-one
+  std::vector<Poset_struct> Poset;
   std::vector<epistasis> Epistasis;
   std::vector<epistasis> orderE;
-  // std::vector<Gene_Module_str> Gene_Module_tabl;
-  std::vector<Gene_Module_str> Gene_Module_tabl;
+  // std::vector<Gene_Module_struct> Gene_Module_tabl;
+  std::vector<Gene_Module_struct> Gene_Module_tabl;
   genesWithoutInt genesNoInt;
 };
 
 
-// No, there are no shared genes in order and epist.  Yes, any gene in
-// orderEff can also be in the posets, but orderEff is for only for those
-// that have order effects.
+// There are no shared genes in order and epist.  Any gene in orderEff can
+// also be in the posets or general epistasis, but orderEff is only for
+// those that have order effects.
+
+// For all genes for which there are no order effects, any permutation of
+// the same mutations is the same genotype, and has the same fitness. That
+// is why we separate orderEff, which is strictly in the order in which
+// mutations accumulate, and thus usorted, from the other effects, that
+// are always kept sorted.
+
+// rest are those genes that have no interactions. Evaluating their
+// fitness is simple, and there can be no modules here.
 struct Genotype {
   std::vector<int> orderEff;
   std::vector<int> epistRtEff; //always sorted
@@ -105,14 +124,14 @@ struct Genotype {
 // For users: if something depends on 0, that is it. No further deps.
 // And do not touch the 0 in Gene_Module_table.
 
-std::vector<geneDeps> rTable_to_Poset(Rcpp::List rt) { 
+std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) { 
 
   // The restriction table, or Poset, has a first element
   // with nothing, so that all references by mutated gene
   // are simply accessing the Poset[mutated gene] without
   // having to remember to add 1, etc.
 
-  std::vector<geneDeps> Poset;
+  std::vector<Poset_struct> Poset;
   
   Poset.resize(rt.size() + 1);
   Poset[0].child = "0"; //should this be Root?? I don't think so.
@@ -136,12 +155,13 @@ std::vector<geneDeps> rTable_to_Poset(Rcpp::List rt) {
     Poset[i].s = as<double>(rt_element["s"]);
     Poset[i].sh = as<double>(rt_element["sh"]);
 
-    if(i != Poset[i].childNumID) {
-      // Rcpp::Rcout << "\n childNumID, original = " << as<int>(rt_element["childNumID"]);
-      // Rcpp::Rcout << "\n childNumID, Poset = " << Poset[i].childNumID;
-      // Rcpp::Rcout << "\n i = " << i << std::endl;
-      throw std::logic_error("childNumID != index");
-    }
+    // if(i != Poset[i].childNumID) {
+    // Nope: this assumes we only deal with posets.
+    //   // Rcpp::Rcout << "\n childNumID, original = " << as<int>(rt_element["childNumID"]);
+    //   // Rcpp::Rcout << "\n childNumID, Poset = " << Poset[i].childNumID;
+    //   // Rcpp::Rcout << "\n i = " << i << std::endl;
+    //   throw std::logic_error("childNumID != index");
+    // }
     // Rcpp::IntegerVector parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
     // Rcpp::CharacterVector parents = as<Rcpp::CharacterVector>(rt_element["parents"]);
 
@@ -171,9 +191,9 @@ std::vector<geneDeps> rTable_to_Poset(Rcpp::List rt) {
 
 
 
-std::vector<Gene_Module_str> R_GeneModuleToGeneModule(Rcpp::List rGM) {
+std::vector<Gene_Module_struct> R_GeneModuleToGeneModule(Rcpp::List rGM) {
 
-  std::vector<Gene_Module_str> geneModule;
+  std::vector<Gene_Module_struct> geneModule;
 
   Rcpp::IntegerVector GeneNumID = rGM["GeneNumID"];
   Rcpp::IntegerVector ModuleNumID = rGM["ModuleNumID"];
@@ -197,24 +217,32 @@ std::vector<Gene_Module_str> R_GeneModuleToGeneModule(Rcpp::List rGM) {
 }
 
 
-
-
 std::vector<int> GeneToModule(const std::vector<int>& Drv,
 			     const 
-			     std::vector<Gene_Module_str>& Gene_Module_tabl) {
+			      std::vector<Gene_Module_struct>& Gene_Module_tabl,
+			      const bool sort, const bool unique) {
   
   std::vector<int>  mutatedModules;
   
   for(auto it = Drv.begin(); it != Drv.end(); ++it) {
     mutatedModules.push_back(Gene_Module_tabl[(*it)].ModuleNumID);
   }
-  sort( mutatedModules.begin(), mutatedModules.end() );
-  mutatedModules.erase( unique( mutatedModules.begin(), 
-				mutatedModules.end() ), 
-			mutatedModules.end() );
-    // That is sorted. So use binary search below. But shouldn't I use a set?
+  // sort and unique returns a single element of each. unique only removes
+  // successive duplicates. sort without unique is just useful for knowing
+  // what happens for stats, etc. Neither sort nor unique for keeping
+  // track of order of module events.
+  if(sort) {
+    sort( mutatedModules.begin(), mutatedModules.end() );
+  }
+  if(unique) {
+    mutatedModules.erase( unique( mutatedModules.begin(), 
+				  mutatedModules.end() ), 
+			  mutatedModules.end() );
+  }
   return mutatedModules;
 }
+
+
 
 
 genesWithoutInt convertNoInts(Rcpp::List nI) {
@@ -265,6 +293,19 @@ std::vector<int> sortedAllOrder(std::vector<epistasis>& E) {
   return allG;
 }
 
+std::vector<int> sortedAllPoset(std::vector<Poset_struct>& Poset) {
+  // Yes, this could be done inside rTable_to_Poset but this is cleaner
+  // and will only add very little time. 
+  std::vector<int> allG;
+  for(auto p : Poset) {
+    allG.push(p.childNumID)
+  }
+  sort(allG.begin(), allG.end());
+  allG.erase( unique( allG.begin(), allG.end()),
+		      allG.end());
+  return allG; 
+}
+
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   // Yes, some of the things below are data.frames in R, but for
   // us that is used just as a list.
@@ -295,7 +336,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   }
   fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
   fe.allOrderG = sortedAllOrder(fe.orderE);
-  // sort(fe.allEpistRTG.begin(), fe.allEpistRTG.end());
+  fe.allPosetG = sortedAllPoset(fe.Poset);
   fe.gMOneToOne = rone;
 
   return fe;
@@ -380,47 +421,8 @@ Genotype convertGenotypeFromR(Rcpp::List rGE) {
 
 
 
-std::vector<double> evalGenotypeFitness(const Genotype& Ge,
-					   const fitnessEffectsAll& fe){
-  std::vector<double> s;
-
-  // Genes without any restriction or epistasis are just genes. No modules.
-  // So simple we do it here.
-  if(fe.genesNoInt.shift > 0) {
-    int shift = fe.genesNoInt.shift;
-    for(auto  r : Ge.rest ) {
-      s.push_back(fe.genesNoInt.s[r - shift]);
-    }
-  }
-
-  // For the rest, there might be modules. Three different effects on
-  // fitness possible: as encoded in Poset, general epistasis, order effects.
-  
-  // Epistatis and poset are checked against all mutations. Create single
-  // sorted vector with all mutations and map to modules, if needed. Then
-  // eval.
-  std::vector<int> mutG (Ge.epistRtEff);
-  mutG.insert( mutG.end(), Ge.orderEff.begin(), Ge.orderEff.end());
-  sort(mutG.begin(), mutG.end()); 
-  std::vector<int> mutatedModules;
-  if(Ge.gMOneToOne) {
-    mutatedModules = mutG;
-  } else {
-    mutatedModules = GeneToModule(mutG, Ge.Gene_Module_tabl);
-  }
-  std::vector<double> srt =
-    evalPosetConstraints(mutatedModules, Ge.Poset);
-  std::vector<double> se =
-    evalEpistasis(mutatedModules, Ge.Epistasis);
-  
-
-  
-  // finally, order checking
-  return s;
-}
-
-bool check_order(std::vector<int> O, std::vector<int> G) {
-
+bool match_order_effects(std::vector<int> O, std::vector<int> G) {
+  //As the name sayes: we check if the order effect is matched
   if(G.size() < O.size()) return false;
   
   std::vector<int>::iterator p;
@@ -448,6 +450,17 @@ bool check_order(std::vector<int> O, std::vector<int> G) {
   }
 }
 
+std::vector<double> evalOrderEffects(const std::vector<int>& mutatedM,
+				     const std::vector<epistasis>& OE) {
+  std::vector<double> s;
+  for(auto o : OE) {
+    if(match_order_effects(o.NumID, mutatedM))
+      s.push_back(o.s);
+  }
+  return s;
+}
+
+
 bool match_negative_epist(std::vector<int> E, std::vector<int> G) {
   // When we have things like -1, 2 in epistasis. We need to check 2 is
   // present and 1 is not present. E is the vector of epistatic coeffs,
@@ -469,7 +482,7 @@ bool match_negative_epist(std::vector<int> E, std::vector<int> G) {
 
 
 std::vector<double> evalEpistasis(const std::vector<int>& mutatedModules,
-				   const std::vector<epistasis>& Epistasis) {
+				  const std::vector<epistasis>& Epistasis) {
   std::vector<double> s;
 
   for(auto p : Epistasis ) {
@@ -502,19 +515,96 @@ std::vector<double> evalEpistasis(const std::vector<int>& mutatedModules,
 // faster? As well, note that number of drivers is automatically known
 // from this table of constraints.
 
+// int getPosetByChild(const int child,
+// 		    const std::vector<Poset_struct>& Poset) {
+  
+// }
+
 std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
-					 const std::vector<geneDeps>& Poset) {
+					 const std::vector<Poset_struct>& Poset,
+					 const std::vector<int>& allPosetG) {
 
   size_t numDeps;
   size_t sumDepsMet = 0;
   int parent_module_mutated = 0;
-  std::vector<int> mutatedModules;
+  
+  std::vector<double> s;
+
+  //This works reverted w.r.t. to evalOrderEffects and evalEpistasis:
+  //there, I examine if the effect is present in the genotype. Here, I
+  //examine if the genotype satisfies the constraints.
+
+  std::vector<int> MPintersect(allPosetG.size());
+  std::set_intersection(allPosetG.begin(), allPosetG.end(),
+			mutatedModules.begin(), mutatedModules.end(),
+			std::back_inserter(MPintersect.begin));
+  
+  // std::vector<int>::iterator it;
+  // it = std::set_intersection (allPosetG.begin(), allPosetG.end(),
+  // 			      mutatedModules.begin(), mutatedModules.end(),
+  // 			      MPintersect.begin());
+  // MPintersect.resize(it - MPintersect.begin());
+  
+  // We know MPintersect is sorted, so we can avoid an O(n*n) loop
+  int i = 0;
+  for(auto m : MPintersect) {
+    while ( Poset[i].childNumID != m) ++i;
+    if(Poset[i].parentsNumID[0])
+
+  }
+  
+  for(auto it_mutatedModule = mutatedModules.begin();
+      it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
+    if( (Poset[(*it_mutatedModule)].parentsNumID.size() == 1) &&
+	(Poset[(*it_mutatedModule)].parentsNumID[0] == 0) ) { //Depends only on root.
+      // FIXME: isn't it enough to check the second condition?
+      s.push_back(Poset[(*it_mutatedModule)].s);
+    } else {
+      sumDepsMet = 0;
+      numDeps = Poset[(*it_mutatedModule)].parentsNumID.size();
+      for(auto it_Parents = Poset[(*it_mutatedModule)].parentsNumID.begin();
+	  it_Parents != Poset[(*it_mutatedModule)].parentsNumID.end();
+	  ++it_Parents) {
+
+	parent_module_mutated = binary_search(mutatedModules.begin(), 
+					      mutatedModules.end(),
+					      (*it_Parents));
+	  // (std::find(mutatedModules.begin(), 
+	  // 	     mutatedModules.end(), 
+	  // 	     (*it_Parents)) != mutatedModules.end());
+	if(parent_module_mutated)  {
+	  ++sumDepsMet;
+	  if( Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone)
+	    break;
+	}
+      }
+      if( ((Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone) && 
+	   (sumDepsMet)) ||
+	  ((Poset[(*it_mutatedModule)].typeDep == Dependency::monotone) && 
+	   (sumDepsMet == numDeps)) ) {
+	s.push_back(Poset[(*it_mutatedModule)].s);
+      } else {
+	s.push_back(Poset[(*it_mutatedModule)].sh);
+      }
+    }
+  }
+  return s;
+}
+
+std::vector<double> evalPosetConstraints0(const std::vector<int>& mutatedModules,
+					 const std::vector<Poset_struct>& Poset) {
+
+  size_t numDeps;
+  size_t sumDepsMet = 0;
+  int parent_module_mutated = 0;
+  // std::vector<int> mutatedModules;
   
   std::vector<double> s;
   
   // Map mutated genes to modules (mutatedModules) and then examine, for
   // each mutatedModule, if its dependencies (in terms of modules) are met.
 
+  
 
   for(auto it_mutatedModule = mutatedModules.begin();
       it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
@@ -555,13 +645,65 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
 }
 
 
+std::vector<double> evalGenotypeFitness(const Genotype& ge,
+					const fitnessEffectsAll& F){
+  std::vector<double> s;
+
+  // Genes without any restriction or epistasis are just genes. No modules.
+  // So simple we do it here.
+  if(F.genesNoInt.shift > 0) {
+    int shift = F.genesNoInt.shift;
+    for(auto  r : ge.rest ) {
+      s.push_back(F.genesNoInt.s[r - shift]);
+    }
+  }
+
+  // For the rest, there might be modules. Three different effects on
+  // fitness possible: as encoded in Poset, general epistasis, order effects.
+  
+  // Epistatis and poset are checked against all mutations. Create single
+  // sorted vector with all mutations and map to modules, if needed. Then
+  // eval.
+  std::vector<int> mutG (ge.epistRtEff);
+  mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
+  std::vector<int> mutatedModules;
+  if(F.gMOneToOne) {
+    sort(mutG.begin(), mutG.end()); 
+    mutatedModules = mutG;
+  } else {
+    mutatedModules = GeneToModule(mutG, F.Gene_Module_tabl, true, true);
+  }
+  std::vector<double> srt =
+    evalPosetConstraints(mutatedModules, F.Poset);
+  std::vector<double> se =
+    evalEpistasis(mutatedModules, F.Epistasis);
+  
+  // For order effects we need a new vector of mutatedModules:
+  if(F.gMOneToOne) {
+    mutatedModules = ge.orderEff;
+  } else {
+    mutatedModules = GeneToModule(ge.orderEff, F.Gene_Module_tabl, false, true);
+  }
+  std::vector<double> so =
+    evalOrderEffects(mutatedModules, F.orderE);
+
+  // I keep s, srt, se, so separate for now for debugging.
+  s.insert(s.end(), srt.begin(), srt.end());
+  s.insert(s.end(), se.begin(), se.end());
+  s.insert(s.end(), so.begin(), so.end());
+  
+  return s;
+}
 
 
-void printPoset(const std::vector<geneDeps>& Poset) {
+
+
+
+void printPoset(const std::vector<Poset_struct>& Poset) {
 
   int counterInfs = 0;
   int counterNegInfs = 0;
-  Rcpp::Rcout << "\n **********  Restriction table (internal) *******" 
+  Rcpp::Rcout << "\n **********  Poset or Restriction table (internal) *******" 
 	      << std::endl;
   if(!Poset.size()) {
     Rcpp::Rcout << "No posets: restriction table of size 0"<< std::endl;
@@ -588,7 +730,7 @@ void printPoset(const std::vector<geneDeps>& Poset) {
       Rcpp::Rcout << std::endl;
       Rcpp::Rcout << "\t\t\t Parents names: ";
       for(auto c : Poset[i].parents)
-	Rcpp::Rcout << '(' << c << ')' << "; ";
+	Rcpp::Rcout << c << "; ";
       Rcpp::Rcout << std::endl;
     
       // for(size_t j = 0; j != Poset[i].deps.size(); ++j) {
@@ -607,7 +749,7 @@ void printPoset(const std::vector<geneDeps>& Poset) {
 }
 
 void printGene_Module_table(const 
-		       std::vector<Gene_Module_str>& Gene_Module_tabl,
+		       std::vector<Gene_Module_struct>& Gene_Module_tabl,
 		       const bool gMOneToOne) {
   // Rcpp::Rcout << 
   //   "\n\n******** geneModule table (internal) *******:\nGene name\t Gene NumID\t Module name\t Module NumID\n";
@@ -636,7 +778,7 @@ void printGene_Module_table(const
 void printOtherEpistasis(const std::vector<epistasis>& Epistasis,
 				const std::string effectName,
 				const std::string sepstr) {
-  Rcpp::Rcout << "\n **********  General epistatic effects (internal) *******"
+  Rcpp::Rcout << "\n **********  General " << effectName << "s (internal) *******"
 	      << std::endl;
   if(!Epistasis.size()) {
     Rcpp::Rcout << "No general " << effectName << std::endl;
@@ -676,7 +818,7 @@ void printNoInteractionGenes(const genesWithoutInt& genesNoInt) {
 }
 
 void printAllOrderG(const std::vector<int> ge) {
-  Rcpp::Rcout << "\n **********  NumID of genes in either the poset or the order or the epist (internal) *******"
+  Rcpp::Rcout << "\n **********  NumID of genes/modules in the order restrict. (internal) *******"
 	      << std::endl;
   for(auto g : ge)
     Rcpp::Rcout << g << " ";
@@ -709,7 +851,7 @@ void readFitnessEffects(Rcpp::List rFE,
 
 // // [[Rcpp::export]]
 // void wrap_test_rt(Rcpp::List rtR, Rcpp::DataFrame rGM) {
-//   std::vector<geneDeps> Poset;
+//   std::vector<Poset_struct> Poset;
 //   std::vector<geneToModule> geneModules;
 //   std::vector<geneToModuleLong> geneModules;
 
@@ -751,7 +893,7 @@ void readFitnessEffects(Rcpp::List rFE,
 //   std::vector<double> s_vector;
 //   std::vector<double> sh_vector;
 
-//   std::vector<geneDeps> Poset = rTable_to_Poset(rtR);
+//   std::vector<Poset_struct> Poset = rTable_to_Poset(rtR);
 //   geneModules = R_GeneModuleToGeneModule(rGM, geneModules, geneModules);
 
 
@@ -806,7 +948,7 @@ void readFitnessEffects(Rcpp::List rFE,
 // 			Rcpp::IntegerVector gMOneToOne) {
 
    
-//   std::vector<geneDeps> Poset;
+//   std::vector<Poset_struct> Poset;
 //   std::vector<geneToModule> geneModules;
 //   std::vector<geneToModuleLong> geneModules;
 
@@ -825,7 +967,7 @@ void readFitnessEffects(Rcpp::List rFE,
 // 			       Rcpp::DataFrame rGM,
 // 			       Rcpp::DataFrame geneNoInt,
 // 			       Rcpp::IntegerVector gMOneToOne,
-// 			       std::vector<geneDeps>&  Poset,
+// 			       std::vector<Poset_struct>&  Poset,
 // 			       std::vector<geneToModule>& geneModules,
 // 			       std::vector<geneToModuleLong>& geneModules
 // 			       // return objects
@@ -870,7 +1012,7 @@ void readFitnessEffects(Rcpp::List rFE,
 
 
 // static void evalPosetConstraints(const std::vector<int>& Drv,
-// 			     const std::vector<geneDeps>& Poset,
+// 			     const std::vector<Poset_struct>& Poset,
 // 			     const std::vector<geneToModule>& geneToModules,
 // 			     std::vector<double>& s_vector,
 // 			     std::vector<double>& sh_vector) {

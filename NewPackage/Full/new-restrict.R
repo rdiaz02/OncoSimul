@@ -1,4 +1,5 @@
-# - Say that a user can use a "0" as a gene name, but that is BAD idea.
+## - Say that a user can use a "0" as a gene name, but that is BAD idea.
+## - Modules and order effects can be kind of funny?
 library(data.table)
 library(Rcpp)
 ## setwd("../../")
@@ -61,7 +62,10 @@ list.of.deps <- function(x) {
     lookupTypeDep <- c("MN" = "monotone",
                        "monotone" = "monotone",
                        "SM" = "semimonotone",
-                       "semimonotone" = "semimonotone")
+                       "semimonotone" = "semimonotone",
+                       "XOR" = "xmpn",
+                       "xmpn" = "xmpn",
+                       "XMPN" = "xmpn")
     ## FIXME: check values of typeDep
 
     if(length(x) > 1) {
@@ -563,7 +567,21 @@ wrap.readFitnessEffects(m0, epistm1,
 gM3 <- c("Root" = "Root", "d" = "d9, d8",
          "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
 
-wrap.readFitnessEffects(m0, epistm1,
+m00 <- data.frame(parent = c("Root", "c"),
+                 child  = c("c", "b"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+
+m000 <- data.frame(parent = c("Root", "d", "c", "b"),
+                 child  = c("c", "a", "a", "d"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+
+wrap.readFitnessEffects(m000, epistm1,
                         oeffects1, c(0.1, 0.1, 0.2),
                         gM3)
 
@@ -1502,90 +1520,91 @@ rt2 <- data.frame(parent = c(
 
 
 
-list.of.deps1 <- function(x) {
-    ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
-    ##                 "SM" = 2, "semimonotone" = 2)
-    lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
-                       "SM" = "SM", "semimonotone" = "SM")
-    ## FIXME: check values of typeDep
+## list.of.deps1 <- function(x) {
+##     ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
+##     ##                 "SM" = 2, "semimonotone" = 2)
+##     lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
+##                        "SM" = "SM", "semimonotone" = "SM",
+##                        "XM" = "XM", "xmpn" = "XM")
+##     ## FIXME: check values of typeDep
 
-    if(length(x) == 1)
-        return(list(
-            child = unique(as.integer(unlist(strsplit(x$child, ",")))),
-            s = x$s,
-            sh = x$sh,
-            typeDep = lookupTypeDep[x$typeDep],
-            parent = list(
-                as.integer(unlist(strsplit(x$parent, ","))))))
-    else {
-        if(length(unique(x$s))!= 1)
-            stop("Not all s identical within a child")
-        if(length(unique(x$sh))!= 1)
-            stop("Not all sh identical within a child")
-        if(length(unique(x$typeDep))!= 1)
-            stop("Not all typeDep identical within a child")
-        return(list(
-            child = unique(as.integer(unlist(strsplit(x$child, ",")))),
-            s = x$s[1],
-            sh = x$sh[1],
-            typeDep = lookupTypeDep[x$typeDep[1]],
-            parent = lapply(strsplit(x$parent, ","), as.integer)))
-    }
-}
-
-
-
+##     if(length(x) == 1)
+##         return(list(
+##             child = unique(as.integer(unlist(strsplit(x$child, ",")))),
+##             s = x$s,
+##             sh = x$sh,
+##             typeDep = lookupTypeDep[x$typeDep],
+##             parent = list(
+##                 as.integer(unlist(strsplit(x$parent, ","))))))
+##     else {
+##         if(length(unique(x$s))!= 1)
+##             stop("Not all s identical within a child")
+##         if(length(unique(x$sh))!= 1)
+##             stop("Not all sh identical within a child")
+##         if(length(unique(x$typeDep))!= 1)
+##             stop("Not all typeDep identical within a child")
+##         return(list(
+##             child = unique(as.integer(unlist(strsplit(x$child, ",")))),
+##             s = x$s[1],
+##             sh = x$sh[1],
+##             typeDep = lookupTypeDep[x$typeDep[1]],
+##             parent = lapply(strsplit(x$parent, ","), as.integer)))
+##     }
+## }
 
 
 
 
 
 
-list.of.deps0 <- function(x) {
-    ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
-    ##                 "SM" = 2, "semimonotone" = 2)
-    lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
-                       "SM" = "SM", "semimonotone" = "SM")
-    ## FIXME: check values of typeDep
-    if(length(x) == 1)
-        return(list(
-            child = x$child,
-            s = x$s,
-            sh = x$sh,
-            typeDep = lookupTypeDep[x$typeDep],
-            parent = list(
-                as.integer(unlist(strsplit(x$parent, ","))))))
-    else {
-        if(length(unique(x$s))!= 1)
-            stop("Not all s identical within a child")
-        if(length(unique(x$sh))!= 1)
-            stop("Not all sh identical within a child")
-        if(length(unique(x$typeDep))!= 1)
-            stop("Not all typeDep identical within a child")
-        return(list(
-            child = x$child[1],
-            s = x$s[1],
-            sh = x$sh[1],
-            typeDep = lookupTypeDep[x$typeDep[1]],
-            parent = lapply(strsplit(x$parent, ","), as.integer)))
-    }
-}
 
 
-to.long.rt0 <- function(rt, verbosity = 0) {
-    if(is.numeric(rt$parent))
-        rt$parent <- as.character(rt$parent)
-    srt <- rt[order(rt$child), ]
-    ## check all childs
-    if(!identical(as.integer(sort(unique(rt$child))),
-                  seq.int(max(rt$child))))
-        stop("Not all children present")
-    if(verbosity >= 4)
-        message("Setting number of drivers to ",
-                max(rt$child))
-    ## splitted <- split(srt, srt$child)
-    return(lapply(split(srt, srt$child), list.of.deps0))
-}
+
+## list.of.deps0 <- function(x) {
+##     ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
+##     ##                 "SM" = 2, "semimonotone" = 2)
+##     lookupTypeDep <- c("MN" = "MN", "monotone" = "MN",
+##                        "SM" = "SM", "semimonotone" = "SM")
+##     ## FIXME: check values of typeDep
+##     if(length(x) == 1)
+##         return(list(
+##             child = x$child,
+##             s = x$s,
+##             sh = x$sh,
+##             typeDep = lookupTypeDep[x$typeDep],
+##             parent = list(
+##                 as.integer(unlist(strsplit(x$parent, ","))))))
+##     else {
+##         if(length(unique(x$s))!= 1)
+##             stop("Not all s identical within a child")
+##         if(length(unique(x$sh))!= 1)
+##             stop("Not all sh identical within a child")
+##         if(length(unique(x$typeDep))!= 1)
+##             stop("Not all typeDep identical within a child")
+##         return(list(
+##             child = x$child[1],
+##             s = x$s[1],
+##             sh = x$sh[1],
+##             typeDep = lookupTypeDep[x$typeDep[1]],
+##             parent = lapply(strsplit(x$parent, ","), as.integer)))
+##     }
+## }
+
+
+## to.long.rt0 <- function(rt, verbosity = 0) {
+##     if(is.numeric(rt$parent))
+##         rt$parent <- as.character(rt$parent)
+##     srt <- rt[order(rt$child), ]
+##     ## check all childs
+##     if(!identical(as.integer(sort(unique(rt$child))),
+##                   seq.int(max(rt$child))))
+##         stop("Not all children present")
+##     if(verbosity >= 4)
+##         message("Setting number of drivers to ",
+##                 max(rt$child))
+##     ## splitted <- split(srt, srt$child)
+##     return(lapply(split(srt, srt$child), list.of.deps0))
+## }
 
 
 
