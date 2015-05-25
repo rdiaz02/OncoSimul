@@ -342,7 +342,7 @@ allFitnessEffects <- function(rT = NULL,
                 long.geneNoInt = geneNoInt,
                 geneModule = geneModule,
                 gMOneToOne = gMOneToOne)
-    class(out) <- c("fitnessEffects")
+    ## class(out) <- c("fitnessEffects")
     return(out)
 }
 
@@ -473,6 +473,10 @@ evalGenotype <- function(genotype, fitnessEffects, verbose = FALSE) {
     }
     evalRGenotype(genotype, fitnessEffects, verbose)
 }
+
+
+evalGenotype(c("d8", "2", "6"), oa, verbose = TRUE)
+
 
 ## For multiple genotypes, lapply the matching.
 internal.convert_genotypes <- function(genotypes, gm) {
