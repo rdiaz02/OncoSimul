@@ -30,6 +30,7 @@ nice.vector.eo <- function(z, sep) {
 }
 
 gm.to.geneModuleL <- function(gm) {
+    ## the table will be sorted by gene name
     check.gm(gm)
     ## the named vector with the mapping into the long geneModule df
     geneMod <- as.data.frame(rbindlist(lapply(gm, gtm2)))
@@ -40,12 +41,14 @@ gm.to.geneModuleL <- function(gm) {
     ## geneMod$Module <- as.character(geneMod$Module) ## already a char
     geneMod <- geneMod[c(1, order(geneMod$Gene[-1]) + 1), ] 
     geneMod$GeneNumID <- 0:(nrow(geneMod) - 1)
-    rlem <- rle(geneMod$Module)
-    geneMod$ModuleNumID <- rep( 0:(length(rlem$values) - 1), rlem$lengths)
-    ## idm <- seq.int(length(gm) - 1)
-    ## idm <- c("0" = 0L, idm)
-    ## names(idm) <- names(gm)
-    ## geneMod$ModuleNumID <- idm[geneMod[, "Module"]]
+
+    ## this assumes sorted! and they need not be
+    ## rlem <- rle(geneMod$Module)
+    ## geneMod$ModuleNumID <- rep( 0:(length(rlem$values) - 1), rlem$lengths)
+    idm <- seq.int(length(gm) - 1)
+    idm <- c("Root" = 0L, idm)
+    names(idm) <- names(gm)
+    geneMod$ModuleNumID <- idm[geneMod[, "Module"]]
     rownames(geneMod) <- 1:nrow(geneMod)
     geneMod   
 }
@@ -339,7 +342,7 @@ allFitnessEffects <- function(rT = NULL,
                 long.geneNoInt = geneNoInt,
                 geneModule = geneModule,
                 gMOneToOne = gMOneToOne)
-    ## class(out) <- c("fitnessEffects")
+    class(out) <- c("fitnessEffects")
     return(out)
 }
 
@@ -463,12 +466,25 @@ microbenchmark(allFitnessEffects(m0, epistm1,
           times = 100)
 
 
-
-
-evalGenotype <- function(rt, genotype) {
-    lrt <- to.long.rt(rt)
-    eval_Genotype(lrt$long.rt, lrt$geneModule,  genotype)
+evalGenotype <- function(genotype, fitnessEffects, verbose = FALSE) {
+    if(!is.integer(genotype)) {
+        gm <- fitnessEffects$geneModule
+        genotype <- gm$GeneNumID[match(genotype, gm$Gene)]
+    }
+    evalRGenotype(genotype, fitnessEffects, verbose)
 }
+
+## For multiple genotypes, lapply the matching.
+internal.convert_genotypes <- function(genotypes, gm) {
+    genotypes <- lapply(lg, function(x) gm$GeneNumID[match(x, gm$Gene)])
+}
+
+
+## evalGenotype <- function(genotype, fitnessEffects, FALSE) {
+##     eval_Genotype(genotype, fitnessEffects,  genotype)
+## }
+
+
 
 print.genotToFitness <- function(x) {
     print(x$rt)
@@ -584,10 +600,13 @@ m000 <- data.frame(parent = c("Root", "d", "c", "b"),
                  typeDep = "MN",
                  stringsAsFactors = FALSE)
 
+## good to check geneModule table is OK
+gM4 <- c("Root" = "Root", "d" = "d9, d8, a, z9",
+         "a" = "z700, u43, 78", "b" = "2, 3, 4, 5", "c" = "1, b, 6")
 
 wrap.readFitnessEffects(m000, epistm1,
                         oeffects1, c(0.1, 0.1, 0.2),
-                        gM3)
+                        gM4)
 
 ## a complex one with originally disordered parents and children and weird
 ## dep on 0 and others.
