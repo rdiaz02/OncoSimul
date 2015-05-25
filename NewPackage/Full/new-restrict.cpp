@@ -88,8 +88,8 @@ struct fitnessEffectsAll {
   
   // We use allOrderG or allEpistRTG to place new mutations in their
   // correct place (orderEff or epistRtEff). Only one is needed.  Use the
-  // one that is presumably always shorter which is allOrderG.
-
+  // one that is presumably always shorter which is allOrderG. And this is
+  // sorted.
   std::vector<int> allOrderG; // Modules or genes if one-to-one.
   // std::vector<int> allEpistRTG;
 
@@ -218,6 +218,7 @@ std::vector<Gene_Module_struct> R_GeneModuleToGeneModule(Rcpp::List rGM) {
     geneModule[i].GeneName = GeneName[i];
     geneModule[i].ModuleName = ModuleName[i];
   }
+ 
   return geneModule;
 }
 
@@ -406,22 +407,64 @@ Genotype createNewGenotype(const Genotype& parent,
 
 
 
-Genotype convertGenotypeFromR(Rcpp::List rGE) {
+Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
+			      fitnessEffectsAll& fe) {
+  // A genotype is of one kind or another depending on what genes are of
+  // what type.
 
-  Genotype g;
-			
-  Rcpp::IntegerVector oe = rGE["orderEffGenes"];
-  Rcpp::IntegerVector ert = rGE["epistRTGenes"];
-  Rcpp::IntegerVector rest = rGE["noInteractionGenes"];
+  vector<int> gg = Rcpp::as<std::vector<int> > (rG);
+  Genotype newGenot;
 
-  g.orderEff = Rcpp::as<std::vector<int> > (oe);
-  g.epistRtEff = Rcpp::as<std::vector<int> > (ert);
-  g.rest = Rcpp::as<std::vector<int> > (rest);
-  sort(g.epistRtEff.begin(), g.epistRtEff.end());
-  sort(g.rest.begin(), g.rest.end());
+  // Very similar to logic in createNewGenotype for placing each gene in
+  // its correct place, which needs to look at module mapping.
+  for(auto g : gg) {
+    if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+      // We can be dealing with modules
+      int m; 
+      if(fe.gMOneToOne) {
+	m = g; 
+      } else {
+	m = fe.Gene_Module_tabl[g].ModuleNumID;
+      }
+      if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
+	newGenot.epistRtEff.push_back(g);
+	sort_epist = true;
+      } else {
+	newGenot.orderEff.push_back(g);
+      }
+    } else {
+      // No interaction genes so no module stuff
+      newGenot.rest.push_back(g);
+      sort_rest = true;
+    }
+  }    
 
-  return g;
+  if(sort_rest)
+    sort(newGenot.rest.begin(), newGenot.rest.end());
+  if(sort_epist)
+    sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
+  
+  return newGenot;
 }
+
+
+
+// Genotype convertGenotypeFromR(Rcpp::List rGE) {
+
+//   Genotype g;
+			
+//   Rcpp::IntegerVector oe = rGE["orderEffGenes"];
+//   Rcpp::IntegerVector ert = rGE["epistRTGenes"];
+//   Rcpp::IntegerVector rest = rGE["noInteractionGenes"];
+
+//   g.orderEff = Rcpp::as<std::vector<int> > (oe);
+//   g.epistRtEff = Rcpp::as<std::vector<int> > (ert);
+//   g.rest = Rcpp::as<std::vector<int> > (rest);
+//   sort(g.epistRtEff.begin(), g.epistRtEff.end());
+//   sort(g.rest.begin(), g.rest.end());
+
+//   return g;
+// }
 
 
 
@@ -659,7 +702,16 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   return s;
 }
 
+// No logs because of log(<=0)
+inline double prodFitness(vector<double> s) {
+  return accumulate(s.begin(), s.end(), 1.0,
+		    [](double x, double y) {return (x * (1 + y));});
+}
 
+// inline double logSumFitness(vector<double> s) {
+//   return accumulate(s.begin(), s.end(), 1.0,
+// 		    [](double x, double y) {return (x * (1 + y));})
+// }
 
 
 
@@ -811,6 +863,20 @@ void readFitnessEffects(Rcpp::List rFE,
   }
 }
 
+
+
+// [[Rcpp::export]]
+double evalRGenotype(Rcpp::List rG, Rcpp::List rFE, bool verbose) {
+  fitnessEffectsAll F = convertFitnessEffects(rFE);
+  Genotype g = convertGenotypeFromR(rG, F);
+  vector<double> s = evalGenotypeFitness(g, F);
+  if(verbose) {
+    Rcpp::Rcout << "\n Individual s terms are :";
+    for(auto i : s) Rcpp::Rcout << " " << i;
+    Rcpp::Rcout << std::endl;
+  }
+  return prodFitness(s);
+}
 
 
 // // [[Rcpp::export]]
