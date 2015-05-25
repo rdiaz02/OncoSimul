@@ -131,6 +131,10 @@ to.long.rt <- function(rt, idm, verbosity = 0) {
                        "of a module.)"))
             
         }
+        ## sort the parents, always.
+        o <- order(z$parentsNumID)
+        z$parentsNumID <- z$parentsNumID[o]
+        z$parents <- z$parents[o]
         return(z)
     }
     long.rt <- lapply(long.rt, function(x) addIntID(x, idm = idm))
@@ -584,6 +588,21 @@ m000 <- data.frame(parent = c("Root", "d", "c", "b"),
 wrap.readFitnessEffects(m000, epistm1,
                         oeffects1, c(0.1, 0.1, 0.2),
                         gM3)
+
+## a complex one with originally disordered parents and children and weird
+## dep on 0 and others.
+m4 <- data.frame(parent = c(rep("Root", 7), "d", "c", "b", "g", "h", "d", "c", "c", "e"),
+                 child  = c(letters[2:8], rep("a", 5), rep("b", 2), rep("g", 2)),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+wrap.readFitnessEffects(m4, epistm1,
+                        oeffects1, c(0.1, 0.1, 0.2), NULL)
+
+
+wrap.readFitnessEffects(m4, epineg,
+                        oeffects1, c(0.1, 0.1, 0.2), NULL)
 
 
 

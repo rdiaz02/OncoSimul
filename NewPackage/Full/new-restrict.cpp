@@ -6,6 +6,8 @@
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
 
 using namespace Rcpp ;
+using std::vector;
+using std::back_inserter;
 
 // FIXME: move this later
 int seed = 1; 
@@ -179,6 +181,10 @@ std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) {
       // Poset[i].parents.push_back(tmpname);
     }
 
+    // Should not be needed if R always does what is should. Disable later?
+    if(! is_sorted(Poset[i].parentsNumID.begin(), Poset[i].parentsNumID.end()) )
+      throw std::logic_error("ParentsNumID not sorted");
+    
     if(isinf(Poset[i].s))
       Rcpp::Rcout << "WARNING: at least one s is infinite" 
 		  << std::endl;
@@ -188,7 +194,6 @@ std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) {
   }
   return Poset;
 }
-
 
 
 std::vector<Gene_Module_struct> R_GeneModuleToGeneModule(Rcpp::List rGM) {
@@ -220,21 +225,21 @@ std::vector<Gene_Module_struct> R_GeneModuleToGeneModule(Rcpp::List rGM) {
 std::vector<int> GeneToModule(const std::vector<int>& Drv,
 			     const 
 			      std::vector<Gene_Module_struct>& Gene_Module_tabl,
-			      const bool sort, const bool unique) {
+			      const bool sortout, const bool uniqueout) {
   
   std::vector<int>  mutatedModules;
   
   for(auto it = Drv.begin(); it != Drv.end(); ++it) {
     mutatedModules.push_back(Gene_Module_tabl[(*it)].ModuleNumID);
   }
-  // sort and unique returns a single element of each. unique only removes
-  // successive duplicates. sort without unique is just useful for knowing
-  // what happens for stats, etc. Neither sort nor unique for keeping
+  // sortout and uniqueout returns a single element of each. uniqueout only removes
+  // successive duplicates. sortout without unique is just useful for knowing
+  // what happens for stats, etc. Neither sortout nor uniqueout for keeping
   // track of order of module events.
-  if(sort) {
+  if(sortout) {
     sort( mutatedModules.begin(), mutatedModules.end() );
   }
-  if(unique) {
+  if(uniqueout) {
     mutatedModules.erase( unique( mutatedModules.begin(), 
 				  mutatedModules.end() ), 
 			  mutatedModules.end() );
@@ -298,7 +303,7 @@ std::vector<int> sortedAllPoset(std::vector<Poset_struct>& Poset) {
   // and will only add very little time. 
   std::vector<int> allG;
   for(auto p : Poset) {
-    allG.push(p.childNumID)
+    allG.push_back(p.childNumID);
   }
   sort(allG.begin(), allG.end());
   allG.erase( unique( allG.begin(), allG.end()),
@@ -485,6 +490,10 @@ std::vector<double> evalEpistasis(const std::vector<int>& mutatedModules,
 				  const std::vector<epistasis>& Epistasis) {
   std::vector<double> s;
 
+  // check_disable_later
+  if(! is_sorted(mutatedModules.begin(), mutatedModules.end()))
+    throw std::logic_error("mutatedModules not sorted in evalEpistasis");
+  
   for(auto p : Epistasis ) {
     if(p.NumID[0] > 0 ) {
       if(includes(mutatedModules.begin(), mutatedModules.end(),
@@ -524,125 +533,80 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
 					 const std::vector<Poset_struct>& Poset,
 					 const std::vector<int>& allPosetG) {
 
+  // check_disable_later
+  if(! is_sorted(mutatedModules.begin(), mutatedModules.end()))
+    throw std::logic_error("mutatedModules not sorted in evalPosetConstraints");
+
   size_t numDeps;
   size_t sumDepsMet = 0;
-  int parent_module_mutated = 0;
-  
+  Dependency deptype;
+  std::vector<int> parent_matches;
   std::vector<double> s;
 
   //This works reverted w.r.t. to evalOrderEffects and evalEpistasis:
   //there, I examine if the effect is present in the genotype. Here, I
   //examine if the genotype satisfies the constraints.
 
+
+  // Since the genotype can contain genes not in the poset, first find
+  // those that are mutated in the genotype AND are in the poset. Then
+  // check if the mutated have restrictions satisfied.
+  
   std::vector<int> MPintersect(allPosetG.size());
   std::set_intersection(allPosetG.begin(), allPosetG.end(),
 			mutatedModules.begin(), mutatedModules.end(),
-			std::back_inserter(MPintersect.begin));
-  
-  // std::vector<int>::iterator it;
-  // it = std::set_intersection (allPosetG.begin(), allPosetG.end(),
-  // 			      mutatedModules.begin(), mutatedModules.end(),
-  // 			      MPintersect.begin());
-  // MPintersect.resize(it - MPintersect.begin());
+			std::back_inserter(MPintersect));
   
   // We know MPintersect is sorted, so we can avoid an O(n*n) loop
-  int i = 0;
+  size_t i = 0;
   for(auto m : MPintersect) {
     while ( Poset[i].childNumID != m) ++i;
-    if(Poset[i].parentsNumID[0])
-
-  }
-  
-  for(auto it_mutatedModule = mutatedModules.begin();
-      it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
-    if( (Poset[(*it_mutatedModule)].parentsNumID.size() == 1) &&
-	(Poset[(*it_mutatedModule)].parentsNumID[0] == 0) ) { //Depends only on root.
-      // FIXME: isn't it enough to check the second condition?
-      s.push_back(Poset[(*it_mutatedModule)].s);
+    // Not to catch the twisted case of an XOR with a 0 and something else
+    // as parents
+    if( (Poset[i].parentsNumID[0] == 0) &&
+	(Poset[i].parentsNumID.size() == 1)) {
+      s.push_back(Poset[i].s);
     } else {
-      sumDepsMet = 0;
-      numDeps = Poset[(*it_mutatedModule)].parentsNumID.size();
-      for(auto it_Parents = Poset[(*it_mutatedModule)].parentsNumID.begin();
-	  it_Parents != Poset[(*it_mutatedModule)].parentsNumID.end();
-	  ++it_Parents) {
+      parent_matches.clear();
+      std::set_intersection(mutatedModules.begin(), mutatedModules.end(),
+			    Poset[i].parentsNumID.begin(),
+			    Poset[i].parentsNumID.end(),
+			    back_inserter(parent_matches));
+      sumDepsMet = parent_matches.size();
+      numDeps = Poset[i].parentsNumID.size();
+      deptype = Poset[i].typeDep;
 
-	parent_module_mutated = binary_search(mutatedModules.begin(), 
-					      mutatedModules.end(),
-					      (*it_Parents));
-	  // (std::find(mutatedModules.begin(), 
-	  // 	     mutatedModules.end(), 
-	  // 	     (*it_Parents)) != mutatedModules.end());
-	if(parent_module_mutated)  {
-	  ++sumDepsMet;
-	  if( Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone)
-	    break;
-	}
-      }
-      if( ((Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone) && 
+      if( ((deptype == Dependency::semimonotone) &&
 	   (sumDepsMet)) ||
-	  ((Poset[(*it_mutatedModule)].typeDep == Dependency::monotone) && 
-	   (sumDepsMet == numDeps)) ) {
-	s.push_back(Poset[(*it_mutatedModule)].s);
+	  ((deptype == Dependency::monotone) &&
+	   (sumDepsMet == numDeps)) ||
+	  ((deptype == Dependency::xmpn) &&
+	   (sumDepsMet == 1)) ) {
+	s.push_back(Poset[i].s);
       } else {
-	s.push_back(Poset[(*it_mutatedModule)].sh);
+	s.push_back(Poset[i].sh);
       }
     }
   }
+      // for(auto parent : Poset[i].parentsNumID ) {
+      // 	parent_module_mutated = binary_search(mutatedModules.begin(), 
+      // 					      mutatedModules.end(),
+      // 					      parent);
+      // 	if(parent_module_mutated) {
+      // 	  ++sumDepsMet;
+      // 	  if( deptype == Dependency::semimonotone ) {
+      // 	    known = true;
+      // 	    break;
+      // 	  }
+      // 	  if( (deptype == Dependency::xmpn && (sumDepsMet > 1))) {
+      // 	    knwon = true;
+      // 	    break;
+      // 	  }
+      // 	}
+      // }
   return s;
 }
-
-std::vector<double> evalPosetConstraints0(const std::vector<int>& mutatedModules,
-					 const std::vector<Poset_struct>& Poset) {
-
-  size_t numDeps;
-  size_t sumDepsMet = 0;
-  int parent_module_mutated = 0;
-  // std::vector<int> mutatedModules;
   
-  std::vector<double> s;
-  
-  // Map mutated genes to modules (mutatedModules) and then examine, for
-  // each mutatedModule, if its dependencies (in terms of modules) are met.
-
-  
-
-  for(auto it_mutatedModule = mutatedModules.begin();
-      it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
-    if( (Poset[(*it_mutatedModule)].parentsNumID.size() == 1) &&
-	(Poset[(*it_mutatedModule)].parentsNumID[0] == 0) ) { //Depends only on root.
-      // FIXME: isn't it enough to check the second condition?
-      s.push_back(Poset[(*it_mutatedModule)].s);
-    } else {
-      sumDepsMet = 0;
-      numDeps = Poset[(*it_mutatedModule)].parentsNumID.size();
-      for(auto it_Parents = Poset[(*it_mutatedModule)].parentsNumID.begin();
-	  it_Parents != Poset[(*it_mutatedModule)].parentsNumID.end();
-	  ++it_Parents) {
-
-	parent_module_mutated = binary_search(mutatedModules.begin(), 
-					      mutatedModules.end(),
-					      (*it_Parents));
-	  // (std::find(mutatedModules.begin(), 
-	  // 	     mutatedModules.end(), 
-	  // 	     (*it_Parents)) != mutatedModules.end());
-	if(parent_module_mutated)  {
-	  ++sumDepsMet;
-	  if( Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone)
-	    break;
-	}
-      }
-      if( ((Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone) && 
-	   (sumDepsMet)) ||
-	  ((Poset[(*it_mutatedModule)].typeDep == Dependency::monotone) && 
-	   (sumDepsMet == numDeps)) ) {
-	s.push_back(Poset[(*it_mutatedModule)].s);
-      } else {
-	s.push_back(Poset[(*it_mutatedModule)].sh);
-      }
-    }
-  }
-  return s;
-}
 
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
@@ -674,7 +638,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
     mutatedModules = GeneToModule(mutG, F.Gene_Module_tabl, true, true);
   }
   std::vector<double> srt =
-    evalPosetConstraints(mutatedModules, F.Poset);
+    evalPosetConstraints(mutatedModules, F.Poset, F.allPosetG);
   std::vector<double> se =
     evalEpistasis(mutatedModules, F.Epistasis);
   
@@ -1070,4 +1034,57 @@ void readFitnessEffects(Rcpp::List rFE,
 // }
 
 
+
+// std::vector<double> evalPosetConstraints0(const std::vector<int>& mutatedModules,
+// 					 const std::vector<Poset_struct>& Poset) {
+
+//   size_t numDeps;
+//   size_t sumDepsMet = 0;
+//   int parent_module_mutated = 0;
+//   // std::vector<int> mutatedModules;
+  
+//   std::vector<double> s;
+  
+//   // Map mutated genes to modules (mutatedModules) and then examine, for
+//   // each mutatedModule, if its dependencies (in terms of modules) are met.
+
+  
+
+//   for(auto it_mutatedModule = mutatedModules.begin();
+//       it_mutatedModule != mutatedModules.end(); ++it_mutatedModule) {
+//     if( (Poset[(*it_mutatedModule)].parentsNumID.size() == 1) &&
+// 	(Poset[(*it_mutatedModule)].parentsNumID[0] == 0) ) { //Depends only on root.
+//       // FIXME: isn't it enough to check the second condition?
+//       s.push_back(Poset[(*it_mutatedModule)].s);
+//     } else {
+//       sumDepsMet = 0;
+//       numDeps = Poset[(*it_mutatedModule)].parentsNumID.size();
+//       for(auto it_Parents = Poset[(*it_mutatedModule)].parentsNumID.begin();
+// 	  it_Parents != Poset[(*it_mutatedModule)].parentsNumID.end();
+// 	  ++it_Parents) {
+
+// 	parent_module_mutated = binary_search(mutatedModules.begin(), 
+// 					      mutatedModules.end(),
+// 					      (*it_Parents));
+// 	  // (std::find(mutatedModules.begin(), 
+// 	  // 	     mutatedModules.end(), 
+// 	  // 	     (*it_Parents)) != mutatedModules.end());
+// 	if(parent_module_mutated)  {
+// 	  ++sumDepsMet;
+// 	  if( Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone)
+// 	    break;
+// 	}
+//       }
+//       if( ((Poset[(*it_mutatedModule)].typeDep == Dependency::semimonotone) && 
+// 	   (sumDepsMet)) ||
+// 	  ((Poset[(*it_mutatedModule)].typeDep == Dependency::monotone) && 
+// 	   (sumDepsMet == numDeps)) ) {
+// 	s.push_back(Poset[(*it_mutatedModule)].s);
+//       } else {
+// 	s.push_back(Poset[(*it_mutatedModule)].sh);
+//       }
+//     }
+//   }
+//   return s;
+// }
 
