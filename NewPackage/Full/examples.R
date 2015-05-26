@@ -1,7 +1,13 @@
+source("new-restrict.R")
+m0 <- data.frame(parent = c("Root", "a", "b"),
+                 child  = c("a", "b", "c"),
+                 s = 0.1, sh = -1,
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
 epistm1 <- c("a:d" = 0.2, "d:c" = 0.3)
 epistm1b <- data.frame(ids = c("a:d", "c:d"), s = c(0.2, 0.3))
 oeffects1 <- c("d>a" = 0.4, "c > d" = -0.3)
-
 
 
 epineg <- c("-a:d" = 0.2, "a:d" = 0.3, "d:c" = 0.3)
@@ -22,13 +28,37 @@ gme2 <- c("Root" = "Root", "a" = "1, 2", "d" = 3, "b" = "5, 6", "c" = 4)
 allFitnessEffects(epistasis = epineg, geneToModule = gme)
 allFitnessEffects(epistasis = epineg2, geneToModule = gme2)
 
+gM3 <- c("Root" = "Root", "d" = "d9, d8",
+         "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
+
+
+
 allFitnessEffects(m0, epistasis = epineg, geneToModule = gM3)
 allFitnessEffects(m0, epistasis = epineg2, geneToModule = gM3)
 
 
+oo <- allFitnessEffects(m0)
 
 oa <- allFitnessEffects(m0, epistm1,
                         oeffects1, c(0.1, 0.1, 0.2), gM3)
+
+## this should not crash the code
+ovalRGenotype(0, oa, verbose = TRUE)
+
+ovalRGenotype(c(1, 2), oa, verbose = TRUE)
+
+evalGenotype(c("d8", "2", "6"), oa, verbose = TRUE)
+
+
+## errors are caught in genotype specification
+
+evalGenotype(c("d8898", "2", "6"), oa, verbose = TRUE)
+
+
+
+
+
+
 
 oa2 <- allFitnessEffects(m0, epistm1,
                         oeffects1, runif(1000), gM3)
@@ -60,13 +90,10 @@ evalGenotype(c("d8", "2", "6"), oa, verbose = TRUE)
 
 
 
+
+
 ### examples here
 
-m0 <- data.frame(parent = c("Root", "a", "b"),
-                 child  = c("a", "b", "c"),
-                 s = 0.1, sh = -1,
-                 typeDep = "MN",
-                 stringsAsFactors = FALSE)
 
 
 
@@ -141,8 +168,6 @@ wrap.readFitnessEffects(m0, epistm1,
                         oeffects1, c(0.1, 0.1, 0.2),
                         gM2)
 
-gM3 <- c("Root" = "Root", "d" = "d9, d8",
-         "a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
 
 m00 <- data.frame(parent = c("Root", "c"),
                  child  = c("c", "b"),
