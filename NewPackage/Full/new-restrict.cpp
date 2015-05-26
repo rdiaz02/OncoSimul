@@ -5,6 +5,8 @@
 
 #define DP1(x) {Rcpp::Rcout << "\n DEBUG2: I am at " << x << std::endl;}
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
+// #define DP1(x)
+// #define DP2(x)
 
 using namespace Rcpp ;
 using std::vector;
@@ -489,7 +491,6 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
   // Very similar to logic in createNewGenotype for placing each gene in
   // its correct place, which needs to look at module mapping.
   for(auto g : gg) {
-    DP2(g);
     if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
       // We can be dealing with modules
       int m; 
@@ -664,31 +665,14 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
   
   std::vector<int> MPintersect;
 
-  DP1("allPosetG");
-  for(auto ap : allPosetG)
-    DP2(ap);
-  DP1("mutatedModules");
-  for(auto mmm : mutatedModules)
-    DP2(mmm);
-
-  
   
   std::set_intersection(allPosetG.begin(), allPosetG.end(),
 			mutatedModules.begin(), mutatedModules.end(),
 			std::back_inserter(MPintersect));
-  DP1("B11");
-  Rcpp::Rcout << "MPIintersect is " << std::endl;
-  for(auto ii : MPintersect)
-    Rcpp::Rcout << " one element = " << ii << std::endl;
-  DP1("done with MPintersect");
-
-  DP2(Poset.size());
     
   // We know MPintersect is sorted, so we can avoid an O(n*n) loop
   size_t i = 0;
   for(auto m : MPintersect) {
-    DP2(m);
-    DP2(i);
     while ( Poset[i].childNumID != m) ++i;
     // Not to catch the twisted case of an XOR with a 0 and something else
     // as parents
@@ -760,7 +744,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   if(F.genesNoInt.shift > 0) {
     int shift = F.genesNoInt.shift;
     for(auto  r : ge.rest ) {
-      DP2(r);
       s.push_back(F.genesNoInt.s[r - shift]);
     }
   }
@@ -772,7 +755,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // sorted vector with all mutations and map to modules, if needed. Then
   // eval.
 
-  DP1("A");
   std::vector<int> mutG (ge.epistRtEff);
   mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
   std::vector<int> mutatedModules;
@@ -782,22 +764,18 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   } else {
     mutatedModules = GeneToModule(mutG, F.Gene_Module_tabl, true, true);
   }
-    DP1("B");
   std::vector<double> srt =
     evalPosetConstraints(mutatedModules, F.Poset, F.allPosetG);
-
-    DP1("B2");
-
   std::vector<double> se =
     evalEpistasis(mutatedModules, F.Epistasis);
-    DP1("C");
+
   // For order effects we need a new vector of mutatedModules:
   if(F.gMOneToOne) {
     mutatedModules = ge.orderEff;
   } else {
     mutatedModules = GeneToModule(ge.orderEff, F.Gene_Module_tabl, false, true);
   }
-    DP1("D");
+  
   std::vector<double> so =
     evalOrderEffects(mutatedModules, F.orderE);
 
@@ -992,162 +970,162 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
 }
 
 
-// [[Rcpp::export]]
-void ovalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
-  const Rcpp::List rF(rFE);
-  fitnessEffectsAll F = convertFitnessEffects(rF);
-  Genotype g = convertGenotypeFromR(rG, F);
-  vector<double> s = evalGenotypeFitness(g, F);
-  // if(verbose) {
-  //   Rcpp::Rcout << "\n Individual s terms are :";
-  //   for(auto i : s) Rcpp::Rcout << " " << i;
-  //   Rcpp::Rcout << std::endl;
-  // }
-}
+// // [[Rcpp::export]]
+// void ovalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
+//   const Rcpp::List rF(rFE);
+//   fitnessEffectsAll F = convertFitnessEffects(rF);
+//   Genotype g = convertGenotypeFromR(rG, F);
+//   vector<double> s = evalGenotypeFitness(g, F);
+//   // if(verbose) {
+//   //   Rcpp::Rcout << "\n Individual s terms are :";
+//   //   for(auto i : s) Rcpp::Rcout << " " << i;
+//   //   Rcpp::Rcout << std::endl;
+//   // }
+// }
 
-// [[Rcpp::export]]
-void dummyconvertFitnessEffects(Rcpp::List rFE) {
-  // Yes, some of the things below are data.frames in R, but for
-  // us that is used just as a list.
+// // [[Rcpp::export]]
+// void dummyconvertFitnessEffects(Rcpp::List rFE) {
+//   // Yes, some of the things below are data.frames in R, but for
+//   // us that is used just as a list.
 
-  fitnessEffectsAll fe;
+//   fitnessEffectsAll fe;
   
-  Rcpp::List rrt = rFE["long.rt"];
-  Rcpp::List re = rFE["long.epistasis"];
-  Rcpp::List ro = rFE["long.orderEffects"];
-  Rcpp::List rgi = rFE["long.geneNoInt"];
-  Rcpp::List rgm = rFE["geneModule"];
-  bool rone = rFE["gMOneToOne"];
+//   Rcpp::List rrt = rFE["long.rt"];
+//   Rcpp::List re = rFE["long.epistasis"];
+//   Rcpp::List ro = rFE["long.orderEffects"];
+//   Rcpp::List rgi = rFE["long.geneNoInt"];
+//   Rcpp::List rgm = rFE["geneModule"];
+//   bool rone = rFE["gMOneToOne"];
   
 
-  // if(rrt.size()) {
-  //   fe.Poset = rTable_to_Poset(rrt);
-  // } 
-  // if(re.size()) {
-  //   fe.Epistasis = convertEpiOrderEff(re);
-  // } 
-  // if(ro.size()) {
-  //   fe.orderE = convertEpiOrderEff(ro);
-  // } 
-  if(rgi.size()) {
-    fe.genesNoInt = convertNoInts(rgi);
-  } else {
-    fe.genesNoInt.shift = -9L;
-  }
-  // fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
-  // fe.allOrderG = sortedAllOrder(fe.orderE);
-  // fe.allPosetG = sortedAllPoset(fe.Poset);
-  // fe.gMOneToOne = rone;
+//   // if(rrt.size()) {
+//   //   fe.Poset = rTable_to_Poset(rrt);
+//   // } 
+//   // if(re.size()) {
+//   //   fe.Epistasis = convertEpiOrderEff(re);
+//   // } 
+//   // if(ro.size()) {
+//   //   fe.orderE = convertEpiOrderEff(ro);
+//   // } 
+//   if(rgi.size()) {
+//     fe.genesNoInt = convertNoInts(rgi);
+//   } else {
+//     fe.genesNoInt.shift = -9L;
+//   }
+//   // fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
+//   // fe.allOrderG = sortedAllOrder(fe.orderE);
+//   // fe.allPosetG = sortedAllPoset(fe.Poset);
+//   // fe.gMOneToOne = rone;
 
-  //return fe;
-}
+//   //return fe;
+// }
 
 
 
-// [[Rcpp::export]]
-void dummy(Rcpp::List rt) { 
+// // [[Rcpp::export]]
+// void dummy(Rcpp::List rt) { 
 
-  // The restriction table, or Poset, has a first element
-  // with nothing, so that all references by mutated gene
-  // are simply accessing the Poset[mutated gene] without
-  // having to remember to add 1, etc.
+//   // The restriction table, or Poset, has a first element
+//   // with nothing, so that all references by mutated gene
+//   // are simply accessing the Poset[mutated gene] without
+//   // having to remember to add 1, etc.
 
-  std::vector<Poset_struct> Poset;
+//   std::vector<Poset_struct> Poset;
   
-  Poset.resize(rt.size() + 1);
-  Poset[0].child = "0"; //should this be Root?? I don't think so.
-  Poset[0].childNumID = 0;
-  Poset[0].typeDep = Dependency::NA;
-  Poset[0].s = std::numeric_limits<double>::quiet_NaN();
-  Poset[0].sh = std::numeric_limits<double>::quiet_NaN();
-  Poset[0].parents.resize(0);
-  Poset[0].parentsNumID.resize(0);
+//   Poset.resize(rt.size() + 1);
+//   Poset[0].child = "0"; //should this be Root?? I don't think so.
+//   Poset[0].childNumID = 0;
+//   Poset[0].typeDep = Dependency::NA;
+//   Poset[0].s = std::numeric_limits<double>::quiet_NaN();
+//   Poset[0].sh = std::numeric_limits<double>::quiet_NaN();
+//   Poset[0].parents.resize(0);
+//   Poset[0].parentsNumID.resize(0);
 
-  Rcpp::List rt_element;
-  // std::string tmpname;
-  Rcpp::IntegerVector parentsid;
-  Rcpp::CharacterVector parents;
+//   Rcpp::List rt_element;
+//   // std::string tmpname;
+//   Rcpp::IntegerVector parentsid;
+//   Rcpp::CharacterVector parents;
 
-  for(int i = 1; i != (rt.size() + 1); ++i) {
-    rt_element = rt[i - 1];
-    Poset[i].child = Rcpp::as<std::string>(rt_element["child"]);
-    Poset[i].childNumID = as<int>(rt_element["childNumID"]);
-    Poset[i].typeDep = stringToDep(as<std::string>(rt_element["typeDep"]));
-    Poset[i].s = as<double>(rt_element["s"]);
-    Poset[i].sh = as<double>(rt_element["sh"]);
+//   for(int i = 1; i != (rt.size() + 1); ++i) {
+//     rt_element = rt[i - 1];
+//     Poset[i].child = Rcpp::as<std::string>(rt_element["child"]);
+//     Poset[i].childNumID = as<int>(rt_element["childNumID"]);
+//     Poset[i].typeDep = stringToDep(as<std::string>(rt_element["typeDep"]));
+//     Poset[i].s = as<double>(rt_element["s"]);
+//     Poset[i].sh = as<double>(rt_element["sh"]);
 
-    // if(i != Poset[i].childNumID) {
-    // Nope: this assumes we only deal with posets.
-    //   // Rcpp::Rcout << "\n childNumID, original = " << as<int>(rt_element["childNumID"]);
-    //   // Rcpp::Rcout << "\n childNumID, Poset = " << Poset[i].childNumID;
-    //   // Rcpp::Rcout << "\n i = " << i << std::endl;
-    //   throw std::logic_error("childNumID != index");
-    // }
-    // Rcpp::IntegerVector parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
-    // Rcpp::CharacterVector parents = as<Rcpp::CharacterVector>(rt_element["parents"]);
+//     // if(i != Poset[i].childNumID) {
+//     // Nope: this assumes we only deal with posets.
+//     //   // Rcpp::Rcout << "\n childNumID, original = " << as<int>(rt_element["childNumID"]);
+//     //   // Rcpp::Rcout << "\n childNumID, Poset = " << Poset[i].childNumID;
+//     //   // Rcpp::Rcout << "\n i = " << i << std::endl;
+//     //   throw std::logic_error("childNumID != index");
+//     // }
+//     // Rcpp::IntegerVector parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
+//     // Rcpp::CharacterVector parents = as<Rcpp::CharacterVector>(rt_element["parents"]);
 
-    parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
-    parents = as<Rcpp::CharacterVector>(rt_element["parents"]);
+//     parentsid = as<Rcpp::IntegerVector>(rt_element["parentsNumID"]);
+//     parents = as<Rcpp::CharacterVector>(rt_element["parents"]);
 
-    if( parentsid.size() != parents.size() ) {
-      throw std::logic_error("parents size != parentsNumID size");
-    }
+//     if( parentsid.size() != parents.size() ) {
+//       throw std::logic_error("parents size != parentsNumID size");
+//     }
 
-    for(int j = 0; j != parentsid.size(); ++j) {
-      Poset[i].parentsNumID.push_back(parentsid[j]);
-      Poset[i].parents.push_back( (Rcpp::as< std::string >(parents[j])) );
-      // tmpname = Rcpp::as< std::string >(parents[j]);
-      // Poset[i].parents.push_back(tmpname);
-    }
+//     for(int j = 0; j != parentsid.size(); ++j) {
+//       Poset[i].parentsNumID.push_back(parentsid[j]);
+//       Poset[i].parents.push_back( (Rcpp::as< std::string >(parents[j])) );
+//       // tmpname = Rcpp::as< std::string >(parents[j]);
+//       // Poset[i].parents.push_back(tmpname);
+//     }
 
-    // Should not be needed if R always does what is should. Disable later?
-    if(! is_sorted(Poset[i].parentsNumID.begin(), Poset[i].parentsNumID.end()) )
-      throw std::logic_error("ParentsNumID not sorted");
+//     // Should not be needed if R always does what is should. Disable later?
+//     if(! is_sorted(Poset[i].parentsNumID.begin(), Poset[i].parentsNumID.end()) )
+//       throw std::logic_error("ParentsNumID not sorted");
     
-    if(isinf(Poset[i].s))
-      Rcpp::Rcout << "WARNING: at least one s is infinite" 
-		  << std::endl;
-    if(isinf(Poset[i].sh) && (Poset[i].sh > 0))
-      Rcpp::Rcout << "WARNING: at least one sh is positive infinite" 
-		  << std::endl;
-  }
-}
+//     if(isinf(Poset[i].s))
+//       Rcpp::Rcout << "WARNING: at least one s is infinite" 
+// 		  << std::endl;
+//     if(isinf(Poset[i].sh) && (Poset[i].sh > 0))
+//       Rcpp::Rcout << "WARNING: at least one sh is positive infinite" 
+// 		  << std::endl;
+//   }
+// }
 
-// [[Rcpp::export]]
-void dummy2(Rcpp::List rFE) {
-  // Yes, some of the things below are data.frames in R, but for
-  // us that is used just as a list.
+// // [[Rcpp::export]]
+// void dummy2(Rcpp::List rFE) {
+//   // Yes, some of the things below are data.frames in R, but for
+//   // us that is used just as a list.
 
-  fitnessEffectsAll fe;
+//   fitnessEffectsAll fe;
   
-  Rcpp::List rrt = rFE["long.rt"];
-  Rcpp::List re = rFE["long.epistasis"];
-  Rcpp::List ro = rFE["long.orderEffects"];
-  Rcpp::List rgi = rFE["long.geneNoInt"];
-  Rcpp::List rgm = rFE["geneModule"];
-  bool rone = rFE["gMOneToOne"];
+//   Rcpp::List rrt = rFE["long.rt"];
+//   Rcpp::List re = rFE["long.epistasis"];
+//   Rcpp::List ro = rFE["long.orderEffects"];
+//   Rcpp::List rgi = rFE["long.geneNoInt"];
+//   Rcpp::List rgm = rFE["geneModule"];
+//   bool rone = rFE["gMOneToOne"];
   
 
-  if(rrt.size()) {
-    fe.Poset = rTable_to_Poset(rrt);
-  } 
-  if(re.size()) {
-    fe.Epistasis = convertEpiOrderEff(re);
-  } 
-  if(ro.size()) {
-    fe.orderE = convertEpiOrderEff(ro);
-  } 
-  // if(rgi.size()) {
-  //   fe.genesNoInt = convertNoInts(rgi);
-  // } else {
-  //   fe.genesNoInt.shift = -9L;
-  // }
+//   if(rrt.size()) {
+//     fe.Poset = rTable_to_Poset(rrt);
+//   } 
+//   if(re.size()) {
+//     fe.Epistasis = convertEpiOrderEff(re);
+//   } 
+//   if(ro.size()) {
+//     fe.orderE = convertEpiOrderEff(ro);
+//   } 
+//   // if(rgi.size()) {
+//   //   fe.genesNoInt = convertNoInts(rgi);
+//   // } else {
+//   //   fe.genesNoInt.shift = -9L;
+//   // }
   
-  // fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
-  // fe.allOrderG = sortedAllOrder(fe.orderE);
-  // fe.allPosetG = sortedAllPoset(fe.Poset);
-  fe.gMOneToOne = rone;
-}
+//   // fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
+//   // fe.allOrderG = sortedAllOrder(fe.orderE);
+//   // fe.allPosetG = sortedAllPoset(fe.Poset);
+//   fe.gMOneToOne = rone;
+// }
 
 
 // // [[Rcpp::export]]

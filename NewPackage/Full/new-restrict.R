@@ -1,4 +1,4 @@
-## - Say that a user can use a "0" as a gene name, but that is BAD idea.
+# - Say that a user can use a "0" as a gene name, but that is BAD idea.
 ## - Modules and order effects can be kind of funny?
 library(data.table)
 library(Rcpp)
@@ -30,7 +30,7 @@ nice.vector.eo <- function(z, sep) {
                                     function(u) strsplit(u, sep))), "")
 }
 
-gm.to.geneModuleL <- function(gm) {
+gm.to.geneModuleL <- function(gm, one.to.one) {
     ## the table will be sorted by gene name
     check.gm(gm)
     ## the named vector with the mapping into the long geneModule df
@@ -46,10 +46,16 @@ gm.to.geneModuleL <- function(gm) {
     ## this assumes sorted! and they need not be
     ## rlem <- rle(geneMod$Module)
     ## geneMod$ModuleNumID <- rep( 0:(length(rlem$values) - 1), rlem$lengths)
-    idm <- seq.int(length(gm) - 1)
-    idm <- c("Root" = 0L, idm)
-    names(idm) <- names(gm)
-    geneMod$ModuleNumID <- idm[geneMod[, "Module"]]
+    if(one.to.one) {
+        geneMod$ModuleNumID <- geneMod$GeneNumID
+        if(!(identical(geneMod$Gene, geneMod$Module)))
+            stop("Impossible: we are supposed to be in one-to-one for Module-Gene.")
+    } else {
+        idm <- seq.int(length(gm) - 1)
+        idm <- c("Root" = 0L, idm)
+        names(idm) <- names(gm)
+        geneMod$ModuleNumID <- idm[geneMod[, "Module"]]
+    }
     rownames(geneMod) <- 1:nrow(geneMod)
     geneMod   
 }
@@ -288,11 +294,10 @@ allFitnessEffects <- function(rT = NULL,
             stop(paste("Some values in rT, epistasis, ",
                        "or order effects not in geneToModule"))
     }
-    geneModule <- gm.to.geneModuleL(geneToModule)
+    geneModule <- gm.to.geneModuleL(geneToModule, one.to.one = gMOneToOne)
 
     idm <- unique(geneModule$ModuleNumID)
     names(idm) <- unique(geneModule$Module)
-
 
     if(!is.null(rT)) {
         checkRT(rT)
@@ -474,23 +479,22 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
     }
     genotNums <- list.of.vectors(genotNums)
     genotNames <- unlist(lapply(list.of.vectors(genotNames),
-                         function(z) paste(z, collapse = ", ")))
+                                function(z) paste(z,
+                                                  collapse = if(order){" > "} else {", "})))
     
     allf <- vapply(genotNums,
                    function(x) evalRGenotype(x, fitnessEffects, FALSE),
                    1.1)
-    df <- data.frame(Genotype = genotNames, Fitness = allf)
+    df <- data.frame(Genotype = genotNames, Fitness = allf,
+                     stringsAsFactors = FALSE)
     return(df)
 }
 
 
-## evalGenotype <- function(genotype, fitnessEffects, FALSE) {
-##     eval_Genotype(genotype, fitnessEffects,  genotype)
-## }
 
 print.genotToFitness <- function(x) {
     print(x$rt)
-    
+
 }
 
 

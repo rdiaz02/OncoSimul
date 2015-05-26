@@ -1,4 +1,21 @@
 source("new-restrict.R")
+
+sd <- 0.1
+sdp <- 0.15
+sp <- 0.05
+bauer <- data.frame(parent = c("Root", rep("p", 5)),
+                    child = c("p", paste0("s", 1:5)),
+                    s = c(sd, rep(sdp, 5)),
+                    sh = c(0, rep(sp, 5)),
+                    typeDep = "MN",
+                    stringsAsFactors = FALSE)
+
+b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
+b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
+
+
+
+
 m0 <- data.frame(parent = c("Root", "a", "b"),
                  child  = c("a", "b", "c"),
                  s = 0.1, sh = -1,
@@ -21,6 +38,8 @@ allFitnessEffects(epistasis = epineg2, geneToModule = NULL)
 
 allFitnessEffects(epistasis = epineg3, geneToModule = NULL)
 
+
+
 gme <- c("Root" = "Root", "a" = "1, 2", "d" = 3, "c" = 4)
 
 gme2 <- c("Root" = "Root", "a" = "1, 2", "d" = 3, "b" = "5, 6", "c" = 4)
@@ -38,6 +57,10 @@ allFitnessEffects(m0, epistasis = epineg2, geneToModule = gM3)
 
 
 oo <- allFitnessEffects(m0)
+oo2 <- allFitnessEffects(m0, epistm1)
+
+evalAllGenotypes(oo2)
+
 
 oa <- allFitnessEffects(m0, epistm1,
                         oeffects1, c(0.1, 0.1, 0.2), gM3)
