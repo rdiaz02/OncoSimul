@@ -3,6 +3,7 @@
 #include <algorithm>    
 #include <random>
 
+#define DP1(x) {Rcpp::Rcout << "\n DEBUG2: I am at " << x << std::endl;}
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
 
 using namespace Rcpp ;
@@ -256,11 +257,12 @@ genesWithoutInt convertNoInts(Rcpp::List nI) {
   genesWithoutInt genesNoInt;
   // FIXME: I think I want to force Gene in long.geneNoInt to be a char.vector
   // to avoid this transformation.
-  Rcpp::CharacterVector names = nI["Gene"];
+  // Rcpp::CharacterVector names = nI["Gene"];
   // Rcpp::IntegerVector id = nI["GeneNumID"];
   // Rcpp::NumericVector s1 = nI["s"];
   
-  genesNoInt.names = Rcpp::as<std::vector<std::string> >(names);
+  // genesNoInt.names = Rcpp::as<std::vector<std::string> >(names);
+  genesNoInt.names = Rcpp::as<std::vector<std::string> >(nI["Gene"]);
   genesNoInt.NumID = Rcpp::as<std::vector<int> >(nI["GeneNumID"]);
   genesNoInt.s = Rcpp::as<std::vector<double> >(nI["s"]);
   genesNoInt.shift = genesNoInt.NumID[0]; // FIXME: we assume mutations always
@@ -407,6 +409,70 @@ Genotype createNewGenotype(const Genotype& parent,
 // Never interactions: push into rest and sort. Identify by shift == 1.
 // Never no interactions: remove the if. shift == -9.
 
+vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
+  std::vector<int> g0;
+  for(auto a : F.Gene_Module_tabl) {
+    g0.push_back(a.GeneNumID);
+  }
+  for(auto b: F.genesNoInt.NumID) {
+    g0.push_back(b);
+  }
+  sort(g0.begin(), g0.end());
+  return g0;
+}
+
+vector<int> allGenesinGenotype(const Genotype& ge){
+  std::vector<int> allgG;
+  for(auto g1 : ge.orderEff)
+    allgG.push_back(g1);
+  for(auto g2 : ge.epistRtEff)
+    allgG.push_back(g2);
+  for(auto g3 : ge.rest)
+    allgG.push_back(g3);
+  sort(allgG.begin(), allgG.end());
+  return allgG;
+}
+
+void breakingGeneDiff(const vector<int> genotype,
+		      const vector<int> fitness) {
+  std::vector<int> diffg;
+  set_difference(genotype.begin(), genotype.end(),
+		 fitness.begin(), fitness.end(),
+		 back_inserter(diffg));
+  if(diffg.size()) {
+    Rcpp::Rcout << "Offending genes :";
+    for(auto gx : diffg) {
+      Rcpp::Rcout << " " << gx;
+    }
+    Rcpp::Rcout << "\n ";
+    throw std::logic_error("\n At least one gene in the genotype not in fitness effects");
+  }
+}
+
+void checkNoNegZeroGene(const vector<int>& ge) {
+  if( ge[0] <= 0 )
+    throw std::logic_error("\n Genotype cannot contain negative values or 0");
+}
+
+void checkLegitGenotype(const Genotype& ge,
+			const fitnessEffectsAll& F) {
+
+  vector<int> g0 = allGenesinFitness(F);
+  vector<int> allgG = allGenesinGenotype(ge);
+  checkNoNegZeroGene(allgG);
+  breakingGeneDiff(allgG, g0);
+}
+
+void checkLegitGenotype(const vector<int>& ge,
+			const fitnessEffectsAll& F) {
+  std::vector<int> g0 = allGenesinFitness(F);
+  std::vector<int> allgG (ge);
+  sort(allgG.begin(), allgG.end());
+  checkNoNegZeroGene(allgG);
+  breakingGeneDiff(allgG, g0);
+}
+
+
 
 Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
 			      fitnessEffectsAll& fe) {
@@ -416,10 +482,14 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
   std::vector<int> gg = Rcpp::as<std::vector<int> > (rG);
   Genotype newGenot;
 
+  // check_disable_later
+  checkLegitGenotype(gg, fe);
+
 
   // Very similar to logic in createNewGenotype for placing each gene in
   // its correct place, which needs to look at module mapping.
   for(auto g : gg) {
+    DP2(g);
     if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
       // We can be dealing with modules
       int m; 
@@ -592,14 +662,33 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
   // those that are mutated in the genotype AND are in the poset. Then
   // check if the mutated have restrictions satisfied.
   
-  std::vector<int> MPintersect(allPosetG.size());
+  std::vector<int> MPintersect;
+
+  DP1("allPosetG");
+  for(auto ap : allPosetG)
+    DP2(ap);
+  DP1("mutatedModules");
+  for(auto mmm : mutatedModules)
+    DP2(mmm);
+
+  
+  
   std::set_intersection(allPosetG.begin(), allPosetG.end(),
 			mutatedModules.begin(), mutatedModules.end(),
 			std::back_inserter(MPintersect));
-  
+  DP1("B11");
+  Rcpp::Rcout << "MPIintersect is " << std::endl;
+  for(auto ii : MPintersect)
+    Rcpp::Rcout << " one element = " << ii << std::endl;
+  DP1("done with MPintersect");
+
+  DP2(Poset.size());
+    
   // We know MPintersect is sorted, so we can avoid an O(n*n) loop
   size_t i = 0;
   for(auto m : MPintersect) {
+    DP2(m);
+    DP2(i);
     while ( Poset[i].childNumID != m) ++i;
     // Not to catch the twisted case of an XOR with a 0 and something else
     // as parents
@@ -646,18 +735,32 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
       // }
   return s;
 }
-  
+
+
 
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 					const fitnessEffectsAll& F){
+
+  // check_disable_later
+  checkLegitGenotype(ge, F);
+
   std::vector<double> s;
+  if( (ge.orderEff.size() + ge.epistRtEff.size() + ge.rest.size()) == 0) {
+    Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
+    s.push_back(1.0);
+    return s;
+  }
+    
+  
+  
 
   // Genes without any restriction or epistasis are just genes. No modules.
   // So simple we do it here.
   if(F.genesNoInt.shift > 0) {
     int shift = F.genesNoInt.shift;
     for(auto  r : ge.rest ) {
+      DP2(r);
       s.push_back(F.genesNoInt.s[r - shift]);
     }
   }
@@ -668,6 +771,8 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // Epistatis and poset are checked against all mutations. Create single
   // sorted vector with all mutations and map to modules, if needed. Then
   // eval.
+
+  DP1("A");
   std::vector<int> mutG (ge.epistRtEff);
   mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
   std::vector<int> mutatedModules;
@@ -677,17 +782,22 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   } else {
     mutatedModules = GeneToModule(mutG, F.Gene_Module_tabl, true, true);
   }
+    DP1("B");
   std::vector<double> srt =
     evalPosetConstraints(mutatedModules, F.Poset, F.allPosetG);
+
+    DP1("B2");
+
   std::vector<double> se =
     evalEpistasis(mutatedModules, F.Epistasis);
-  
+    DP1("C");
   // For order effects we need a new vector of mutatedModules:
   if(F.gMOneToOne) {
     mutatedModules = ge.orderEff;
   } else {
     mutatedModules = GeneToModule(ge.orderEff, F.Gene_Module_tabl, false, true);
   }
+    DP1("D");
   std::vector<double> so =
     evalOrderEffects(mutatedModules, F.orderE);
 
@@ -864,6 +974,11 @@ void readFitnessEffects(Rcpp::List rFE,
 
 // [[Rcpp::export]]
 double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
+  if(rG.size() == 0) {
+    Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
+    return 1;
+  }
+    
   const Rcpp::List rF(rFE);
   fitnessEffectsAll F = convertFitnessEffects(rF);
   Genotype g = convertGenotypeFromR(rG, F);
@@ -875,6 +990,58 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
   }
   return prodFitness(s);
 }
+
+
+// [[Rcpp::export]]
+void ovalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
+  const Rcpp::List rF(rFE);
+  fitnessEffectsAll F = convertFitnessEffects(rF);
+  Genotype g = convertGenotypeFromR(rG, F);
+  vector<double> s = evalGenotypeFitness(g, F);
+  // if(verbose) {
+  //   Rcpp::Rcout << "\n Individual s terms are :";
+  //   for(auto i : s) Rcpp::Rcout << " " << i;
+  //   Rcpp::Rcout << std::endl;
+  // }
+}
+
+// [[Rcpp::export]]
+void dummyconvertFitnessEffects(Rcpp::List rFE) {
+  // Yes, some of the things below are data.frames in R, but for
+  // us that is used just as a list.
+
+  fitnessEffectsAll fe;
+  
+  Rcpp::List rrt = rFE["long.rt"];
+  Rcpp::List re = rFE["long.epistasis"];
+  Rcpp::List ro = rFE["long.orderEffects"];
+  Rcpp::List rgi = rFE["long.geneNoInt"];
+  Rcpp::List rgm = rFE["geneModule"];
+  bool rone = rFE["gMOneToOne"];
+  
+
+  // if(rrt.size()) {
+  //   fe.Poset = rTable_to_Poset(rrt);
+  // } 
+  // if(re.size()) {
+  //   fe.Epistasis = convertEpiOrderEff(re);
+  // } 
+  // if(ro.size()) {
+  //   fe.orderE = convertEpiOrderEff(ro);
+  // } 
+  if(rgi.size()) {
+    fe.genesNoInt = convertNoInts(rgi);
+  } else {
+    fe.genesNoInt.shift = -9L;
+  }
+  // fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
+  // fe.allOrderG = sortedAllOrder(fe.orderE);
+  // fe.allPosetG = sortedAllPoset(fe.Poset);
+  // fe.gMOneToOne = rone;
+
+  //return fe;
+}
+
 
 
 // [[Rcpp::export]]
