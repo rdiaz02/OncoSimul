@@ -428,8 +428,11 @@ wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm, echo = TRUE) {
 
 evalGenotype <- function(genotype, fitnessEffects, verbose = FALSE) {
     if(!is.integer(genotype)) {
-        gm <- fitnessEffects$geneModule
-        genotype <- gm$GeneNumID[match(genotype, gm$Gene)]
+        all.g.nums <- c(fitnessEffects$geneModule$GeneNumID,
+                        fitnessEffects$long.geneNoInt$GeneNumID)
+        all.g.names <- c(fitnessEffects$geneModule$Gene,
+                         fitnessEffects$long.geneNoInt$Gene)
+        genotype <- all.g.nums[match(genotype, all.g.names)]
     }
     if(any(is.na(genotype)))
         stop("genotype contains NAs or genes not in fitnessEffects")
@@ -450,7 +453,7 @@ evalGenotype <- function(genotype, fitnessEffects, verbose = FALSE) {
 
 
 evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
-
+    
     if(order)
         tot <- function(n) {sum(sapply(seq.int(n),
                                        function(x) choose(n, x) * factorial(x)))}
@@ -466,34 +469,28 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
     }
     if(order) {
         f1 <- function(n) {
-            lapply(seq.int(n), function(x) permutations(n = n, r = x))}
-        f2 <- function(names) {
-            n <- length(names)
-            lapply(seq.int(n), function(x) permutations(n = n, r = x, v = names))
+            lapply(seq.int(n), function(x) permutations(n = n, r = x))
         }
     } else {
         f1 <- function(n) {
             lapply(seq.int(n), function(x) combinations(n = n, r = x))}
-        f2 <- function(names) {
-            n <- length(names)
-            lapply(seq.int(n), function(x) combinations(n = n, r = x, v = names))
-        } 
+        
     }
     genotNums <- f1(nn)
-    names <- c(fitnessEffects$geneModule$Gene[-1],
-               fitnessEffects$long.geneNoInt$Gene)
-    genotNames <- f2(names)
-
     list.of.vectors <- function(y) {
         ## there's got to be a simpler way
         lapply(unlist(lapply(y, function(x) {apply(x, 1, list)}), recursive = FALSE),
                function(m) m[[1]])
     }
     genotNums <- list.of.vectors(genotNums)
-    genotNames <- unlist(lapply(list.of.vectors(genotNames),
-                                function(z) paste(z,
-                                                  collapse = if(order){" > "} else {", "})))
-    
+    names <- c(fitnessEffects$geneModule$Gene[-1],
+               fitnessEffects$long.geneNoInt$Gene)
+
+    genotNames <- unlist(lapply(lapply(genotNums, function(x) names[x]),
+                         function(z)
+                             paste(z,
+                                   collapse = if(order){" > "} else {", "} )))
+
     allf <- vapply(genotNums,
                    function(x) evalRGenotype(x, fitnessEffects, FALSE),
                    1.1)
