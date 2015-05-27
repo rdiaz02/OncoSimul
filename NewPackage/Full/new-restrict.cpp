@@ -16,7 +16,7 @@ using std::back_inserter;
 int seed = 1; 
 std::mt19937 ran_gen(seed);
 
-enum class Dependency {monotone, semimonotone, xmpn, NA}; // monotone, semimonotone
+enum class Dependency {monotone, semimonotone, xmpn, NA}; 
 
 inline static Dependency stringToDep(const std::string& dep) {
   if(dep == "monotone")
