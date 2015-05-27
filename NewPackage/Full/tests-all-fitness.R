@@ -129,16 +129,24 @@ test_that("No interaction genes, 2", {
 })
 
 
-## bug here
 
-f1 <- allFitnessEffects(
-    orderEffects = c("A>B" = -0.2, "B > A" = 0.3),
-    noIntGenes = c(0.05, -.2, .1))
+foi1 <- allFitnessEffects(
+    orderEffects = c("D>B" = -0.2, "B > D" = 0.3),
+    noIntGenes = c("A" = 0.05, "C" = -.2, "E" = .1))
+agoi1 <- evalAllGenotypes(foi1,  max = 325)
 
-## problem is mapping, as the gene not in gm$Gene
-evalGenotype("3", f1, FALSE)
+rownames(agoi1) <- agoi1[, 1]
+agoi1[LETTERS[1:5], ]
+all(agoi1[LETTERS[1:5], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1))
+## orders that do not involve all. D > A;   B > C;
 
-ovalRGenotype("3", f1, FALSE)
+rn <- rownames(agoi1)
+agoi1[grep("^A > [BD]$", rn), ]
+
+
+
+
+
 
 
 af1 <- evalAllGenotypes(f1, max = 325)

@@ -253,7 +253,36 @@ is the number of possible genotypes):
 
 <<>>=
 agoi1 <- evalAllGenotypes(foi1,  max = 325)
+head(agoi1)
 @ 
+
+To make comparisons simpler, and since the order was not ideal:
+
+<<>>=
+rownames(agoi1) <- agoi1[, 1]
+@ 
+
+Now:
+<<>>=
+agoi1[LETTERS[1:5], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1)
+@ 
+
+According to the fitness effects we have specified, we also know that any
+genotype with only two mutations, one of which is either ``A'', ``C'' or
+``E'' and the other is ``B'' or ``D'' will have the fitness corresponding
+to ``A'', ``C'' or ``E'', respectively:
+
+<<>>=
+rn <- rownames(agoi1) ## make some expression shorter below
+agoi1[grep("^A > [BD]$", rn), "Fitness"] == 1.05
+agoi1[grep("^C > [BD]$", rn), "Fitness"] == 0.8
+agoi1[grep("^E > [BD]$", rn), "Fitness"] == 1.1
+agoi1[grep("^[BD] > A$", rn), "Fitness"] == 1.05
+agoi1[grep("^[BD] > C$", rn), "Fitness"] == 0.8
+agoi1[grep("^[BD] > E$", rn), "Fitness"] == 1.1
+@ 
+
+
 
 \subsection{Bauer et al}
 
