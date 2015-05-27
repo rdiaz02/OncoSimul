@@ -141,6 +141,14 @@ to.long.rt <- function(rt, idm, verbosity = 0) {
                        "of a module.)"))
             
         }
+        ## These checks could be somewhere else instead of here.
+        if(length(unique(z$parentsNumID)) != length(z$parentsNumID))
+            stop("No node can have the same parent multiple times")
+        if(length(unique(z$parents)) != length(z$parents))
+            stop("No node can have the same parent multiple times")
+        if(length(z$child) > 1)
+            stop("Child nodes can have one, and only one, member")
+        
         ## sort the parents, always.
         o <- order(z$parentsNumID)
         z$parentsNumID <- z$parentsNumID[o]
@@ -216,6 +224,10 @@ addIntID.epist.order <- function(z, idm, sort, sign) {
         z$NumID <- z$NumID[o]
         z$ids <- z$ids[o]
     }
+    if(length(unique(z$NumID)) != length(z$NumID))
+        stop("No node can have the same id multiple times")
+    if(length(unique(z$ids)) != length(z$ids))
+        stop("No node can have the same id multiple times")
     return(z)
 }
 
