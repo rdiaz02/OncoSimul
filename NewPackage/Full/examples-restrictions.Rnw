@@ -331,7 +331,13 @@ to four, three, and two mutation genotypes.
 
 
 
-\subsection{Synthetic viability}
+
+
+\subsection{Synthetic viability}\label{sv}
+
+Synthetic viability and synthetic lethality \cite{xx} are just special
+cases of epistasis (section \ref{epi}) but we deal with them here
+separately. 
 
 \subsubsection{A simple synthetic viability example}
 A simple example of synthetic viability \cite{xx} is shown in the
@@ -376,13 +382,291 @@ evalAllGenotypes(sv, order = TRUE, addwt = TRUE)
 
 \subsubsection{Synthetic viability, non-zero fitness and modules}
 
-This is a slightly more elaborate case, where there are modules and the
+This is a slightly more elaborate case, where there is one module and the
 single mutants have different fitness between themselves, which is
 non-zero. Without the modules, this is the same as in Misra et
 al. \cite{xx}, Figure 1b.
 
 
+\begin{tabular} {c c c}
+  A & B & Fitness \\
+  \hline
+  wt&wt& 1 \\
+  wt&M& $1 + s_b$0 \\
+  M&wt& $1 + s_a$\\
+  M&M& $1 + s_{ab}$\\
+  \hline
+\end{tabular}
 
+where $s_a, s_b < 0$ but $s_{ab} > 0$. 
+
+
+<<>>=
+sa <- -0.1
+sb <- -0.2
+sab <- 0.25
+sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                             "A : -B" = sa,
+                             "A:B" = sab),
+                         geneToModule = c(
+                             "Root" = "Root",
+                             "A" = "a1, a2",
+                             "B" = "b"))
+evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
+@ 
+
+And if we look at order, of course it makes no difference:
+
+<<>>=
+evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
+@ 
+
+
+\subsection{Synthetic mortality}
+
+This is like a revert pattern with respect to synthetic viability \ref{sv}.
+\begin{tabular} {c c c}
+  A & B & Fitness \\
+  \hline
+  wt&wt& 1 \\
+  wt&M& $1 + s_b$0 \\
+  M&wt& $1 + s_a$\\
+  M&M& $1 + s_{ab}$\\
+  \hline
+\end{tabular}
+
+where $s_a, s_b > 0$ but $s_{ab} << 0$. 
+
+
+<<>>=
+sa <- 0.1
+sb <- 0.2
+sab <- -0.8
+sm1 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                             "A : -B" = sa,
+                             "A:B" = sab))
+evalAllGenotypes(sm1, order = FALSE, addwt = TRUE)
+
+@ 
+
+And if we look at order, of course it makes no difference:
+
+<<>>=
+evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)
+@ 
+
+
+\subsection{Epistasis: two alternative specifications}\label{e2}
+
+We want this
+
+\begin{tabular} {c c c}
+  A & B & Fitness \\
+  \hline
+  wt&wt& 1 \\
+  wt&M& $1 + s_b$0 \\
+  M&wt& $1 + s_a$\\
+  M&M& $1 + s_{ab}$\\
+  \hline
+\end{tabular}
+ 
+Suppose that the actual numerical values are $s_a = 0.2, s_b = 0.3, s_{ab}
+= 0.7$.
+
+We specify the above as follows: 
+<<>>=
+sa <- 0.2
+sb <- 0.3
+sab <- 0.7
+
+e2 <- allFitnessEffects(epistasis =
+                            c("A: -B" = sa,
+                              "-A:B" = sb,
+                              "A : B" = sab))
+evalAllGenotypes(e2, order = FALSE, addwt = TRUE)
+
+@ 
+
+That uses the ``-'' specification, so we explicitly exclude some patterns. 
+
+But we can also use a specification where we do not use the ``-''. That
+requires rewriting the interaction term as genotype ``A is mutant, B is
+mutant'' will incorporate the effects of ``A mutant'', ``B mutant'' and
+``both A and B mutants''. We can define a new $s_2$ that satisfies
+$(1 + s_2) = (1 + s_{ab})/((1 + s_a) (1 + s_b))$ and therefore specify as:
+
+<<>>=
+s2 <- ((1 + sab)/((1 + sa) * (1 + sb))) - 1
+
+e3 <- allFitnessEffects(epistasis =
+                            c("A" = sa,
+                              "B" = sb,
+                              "A : B" = s2))
+evalAllGenotypes(e3, order = FALSE, addwt = TRUE)
+
+@ 
+
+Note that this is the way you would specify effects with FFPopsim
+\cite{xx}. Whether this specification or the previous one with ``-'' is
+simpler will depend on the model. For synthetic mortality and viability, I
+think the one using ``-'' is simpler to map genotype tables to fitness
+effects. See also section \ref{theminus} and \ref{e3}.
+
+
+
+\subsection{Epistasis with three genes and two alternative specifications}\label{e3}
+
+Suppose we have 
+
+\begin{tabular} {c c c}
+  A & B & C & Fitness \\
+  \hline
+  M & wt & wt & $1 + s_a$ \\
+  wt& M & wt& $1 + s_b$ \\
+  wt & wt & M & $1 + s_c$ \\
+  M & M & wt & $1 + s_{ab}$ \\
+  wt& M & M& $1 + s_{bc}$ \\
+  M & wt & M & $(1 + s_a) (1 + s_c)$ \\
+  M & M & M & $1 + s_{abc}$ \\
+  \hline
+\end{tabular}
+
+where missing rows have a fitness of 1 (they have been deleted for
+conciseness). Note that the mutant for exactly A and C has a fitness that
+is the product of the individual terms (so there is no epistasis in that case).
+
+
+<<>>=
+sa <- 0.1
+sb <- 0.15
+sc <- 0.2
+sab <- 0.3
+sbc <- -0.25
+sabc <- 0.4
+
+sac <- (1 + sa) * (1 + sc) - 1
+
+E3A <- allFitnessEffects(epistasis =
+                            c("A:-B:-C" = sa,
+                              "-A:B:-C" = sb,
+                              "-A:-B:C" = sc,
+                              "A:B:-C" = sab,
+                              "-A:B:C" = sbc,
+                              "A:-B:C" = sac,
+                              "A : B : C" = sabc)
+                                                )
+
+evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
+
+
+@ 
+
+We needed to pass the $s_{ac}$ coefficient explicitly, even if it that
+term was just the product. We can try to avoid using the ``-'', however
+(but we will need to do other calculations). For simplicity, I use capital
+``S'' in what follows where the letters differ:
+
+
+<<>>=
+
+sa <- 0.1
+sb <- 0.15
+sc <- 0.2
+sab <- 0.3
+Sab <- ( (1 + sab)/((1 + sa) * (1 + sb))) - 1
+Sbc <- ( (1 + sbc)/((1 + sb) * (1 + sc))) - 1
+Sabc <- ( (1 + sabc)/( (1 + sa) * (1 + sb) * (1 + sc) * (1 + Sab) * (1 + Sbc) ) ) - 1
+
+E3B <- allFitnessEffects(epistasis =
+                             c("A" = sa,
+                               "B" = sb,
+                               "C" = sc,
+                               "A:B" = Sab,
+                               "B:C" = Sbc,
+                               ## "A:C" = sac,
+                               "A : B : C" = Sabc)
+                                                )
+evalAllGenotypes(E3B, order = FALSE, addwt = FALSE)
+
+@ 
+
+The above two are, of course, identical:
+
+<<>>=
+all(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE) == 
+    evalAllGenotypes(E3B, order = FALSE, addwt = FALSE))
+@ 
+
+We avoid specifying the ``A:C'', as it just follows from the individual
+``A'' and ``C'' terms, but given a specified genotype table, we need to do
+a little bit of addition and multiplication to get the coefficients. 
+
+
+\subsection{Why can we specify some effects with a ``-''?}\label{theminus}
+Let's think we want to specify the synthetic viability example seen before:
+
+\begin{tabular} {c c c}
+  A & B & Fitness \\
+  \hline
+  wt&wt& 1 \\
+  wt&M& 0 \\
+  M&wt& 0\\
+  M&M& (1 + s)\\
+  \hline
+\end{tabular}
+where ``wt'' denotes wild type and ``M'' denotes mutant.
+
+If you want to directly map the above table to the fitness table for the
+program, to specify the genotype ``A is wt, B is a mutant'' you can
+specify it as \texttt{``-A,B''}, not just as \texttt{``B''}. Why? Because
+just the presence of a ``B'' is also compatible with genotype ``A is
+mutant and B is mutant''.  If you use ``-'' you are explicitly saying what
+should not be there. Otherwise, you need to carefully add coefficients.
+Depending on what you are trying to model, different specifications might
+be simpler. See the examples in section \ref{e2} and \ref{e3}. You have
+both options.
+
+
+
+
+\subsection{Epistasis: modules}
+There is nothing conceptually new, but we will show an example here:
+
+<<>>=
+
+sa <- 0.2
+sb <- 0.3
+sab <- 0.7
+
+em <- allFitnessEffects(epistasis =
+                            c("A: -B" = sa,
+                              "-A:B" = sb,
+                              "A : B" = sab),
+                        geneToModule = c("Root" = "Root",
+                                         "A" = "a1, a2",
+                                         "B" = "b1, b2"))
+evalAllGenotypes(em, order = FALSE, addwt = TRUE)
+@ 
+
+
+Of course, we can do the same thing without using the ``-'', as in section \ref{e2}:
+
+<<>>=
+s2 <- ((1 + sab)/((1 + sa) * (1 + sb))) - 1
+
+em2 <- allFitnessEffects(epistasis =
+                            c("A" = sa,
+                              "B" = sb,
+                              "A : B" = s2),
+                         geneToModule = c("Root" = "Root",
+                                         "A" = "a1, a2",
+                                         "B" = "b1, b2")
+                         )
+evalAllGenotypes(em2, order = FALSE, addwt = TRUE)
+
+@ 
+
+\section{Some examples from the literature}
 \subsection{Bauer et al}
 
 In the model of \cite[p.\ 54]{Bauer2014} ``For cells without the primary
