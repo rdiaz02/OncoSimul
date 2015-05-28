@@ -452,7 +452,8 @@ evalGenotype <- function(genotype, fitnessEffects, verbose = FALSE) {
 ## }
 
 
-evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
+evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
+                             addwt = FALSE) {
     
     if(order)
         tot <- function(n) {sum(sapply(seq.int(n),
@@ -496,6 +497,10 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
                    1.1)
     df <- data.frame(Genotype = genotNames, Fitness = allf,
                      stringsAsFactors = FALSE)
+    if(addwt)
+        df <- rbind(data.frame(Genotype = "wt", Fitness = 1,
+                               stringsAsFactors = FALSE),
+                    df)
     return(df)
 }
 
