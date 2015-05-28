@@ -1,28 +1,48 @@
-sd <- 0.1
-sdp <- 0.15
-sp <- 0.05
 
-bauer <- data.frame(parent = c("Root", rep("p", 5)),
-                    child = c("p", paste0("s", 1:5)),
-                    s = c(sd, rep(sdp, 5)),
-                    sh = c(0, rep(sp, 5)),
-                    typeDep = "MN",
-                    stringsAsFactors = FALSE)
-
-b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
-b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
 
 test_that("Bauer example: correct number of fitness classes", {
+    sd <- 0.1
+    sdp <- 0.15
+    sp <- 0.05
+    bauer <- data.frame(parent = c("Root", rep("p", 5)),
+                        child = c("p", paste0("s", 1:5)),
+                        s = c(sd, rep(sdp, 5)),
+                        sh = c(0, rep(sp, 5)),
+                        typeDep = "MN",
+                        stringsAsFactors = FALSE)
+    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
+    b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
     expect_equal(length(unique(b1$Fitness)), 11)
     expect_equal(length(unique(b2$Fitness)), 11)
 } )
 
 test_that("Bauer example: identical values fitness classes, unorder and ord", {
+    sd <- 0.1
+    sdp <- 0.15
+    sp <- 0.05
+    bauer <- data.frame(parent = c("Root", rep("p", 5)),
+                        child = c("p", paste0("s", 1:5)),
+                        s = c(sd, rep(sdp, 5)),
+                        sh = c(0, rep(sp, 5)),
+                        typeDep = "MN",
+                        stringsAsFactors = FALSE)
+    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
+    b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
     expect_equal(unique(b1$Fitness), unique(b2$Fitness))
 } )
 
 
 test_that("Bauer example: identical values fitness classes, rename", {
+    sd <- 0.1
+    sdp <- 0.15
+    sp <- 0.05
+    bauer <- data.frame(parent = c("Root", rep("p", 5)),
+                        child = c("p", paste0("s", 1:5)),
+                        s = c(sd, rep(sdp, 5)),
+                        sh = c(0, rep(sp, 5)),
+                        typeDep = "MN",
+                        stringsAsFactors = FALSE)
+    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     bauer3 <- data.frame(parent = c("Root", rep("u", 5)),
                          child = c("u", paste0("s", 1:5)),
                          s = c(sd, rep(sdp, 5)),
@@ -35,6 +55,16 @@ test_that("Bauer example: identical values fitness classes, rename", {
 
 
 test_that("Bauer example: identical values fitness classes, diff. order", {
+    sd <- 0.1
+    sdp <- 0.15
+    sp <- 0.05
+    bauer <- data.frame(parent = c("Root", rep("p", 5)),
+                        child = c("p", paste0("s", 1:5)),
+                        s = c(sd, rep(sdp, 5)),
+                        sh = c(0, rep(sp, 5)),
+                        typeDep = "MN",
+                        stringsAsFactors = FALSE)
+    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     bauer3 <- data.frame(parent = c(rep("u", 5), "Root"),
                          child = c(paste0("s", 1:5), "u"),
                          s = c(sd, rep(sdp, 5)),
@@ -45,6 +75,8 @@ test_that("Bauer example: identical values fitness classes, diff. order", {
     expect_equal(unique(b1$Fitness), unique(b3$Fitness))
 } )
 
+
+### Order effects
 
 
 test_that("Order effects, entry of labels and separation", {
@@ -82,6 +114,53 @@ test_that("Order effects, modules 2", {
     expect_true(all(ag2[grep("^f.*d.*", ag2[, 1]), "Fitness"] == 0.7))
     expect_true(all(ag2[-oe, "Fitness"] == 1))
 })
+
+
+
+test_that("Order effects, twisted module names", {
+    o1 <- evalAllGenotypes(allFitnessEffects(
+      orderEffects = c("F > D" = -0.3, "D > F" = 0.4),  
+        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")))
+    o2 <- evalAllGenotypes(allFitnessEffects(
+      orderEffects = c("D>F" = 0.4, "F >D" = -0.3),  
+        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")))
+    o1s <- o1[order(o1$Genotype),   ]
+    o2s <- o2[order(o2$Genotype),   ]
+    expect_equal(o1s, o2s)
+    expect_true(all(o1[, "Fitness"] == c(1, 1, 0.7, 1.4)))
+})
+
+
+
+test_that("Order effects, three-gene-orders and modules 1", {
+    o3 <- allFitnessEffects(orderEffects = c(
+                                  "F > D > M" = -0.3,
+                                  "D > F > M" = 0.4,
+                                  "D > M > F" = 0.2,
+                                  "D > M"     = 0.1,
+                                  "M > D"     = 0.5
+    ),
+                              geneToModule =
+                                  c("Root" = "Root",
+                                    "M" = "m",
+                                    "F" = "f",
+                                    "D" = "d") )
+    ag <- evalAllGenotypes(o3)
+    expect_true(all(ag[, "Fitness"] ==
+                        c(rep(1, 4),
+                          1.1,
+                          1, 1,
+                          1.5,
+                          1,
+                          1.4 * 1.1,
+                          1.2 * 1.1,
+                          0.7 * 1.1,
+                          rep(1.5, 3))))
+})
+
+
+
+################ No interaction
 
 
 test_that("No interaction genes, 1", {
@@ -129,52 +208,137 @@ test_that("No interaction genes, 2", {
 })
 
 
+## to the above, resort gene names
 
-foi1 <- allFitnessEffects(
-    orderEffects = c("D>B" = -0.2, "B > D" = 0.3),
-    noIntGenes = c("A" = 0.05, "C" = -.2, "E" = .1))
-agoi1 <- evalAllGenotypes(foi1,  max = 325)
+test_that("No interaction genes, 3", {
+    
+    ai3 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1)), order = FALSE)
+    
+    ai4 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1)), order = TRUE)
+    
+    expect_true(all(ai3[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
+       (1 + .05) * (1 - .2),
+       (1 + .05) * (1 + .1),
+       (1 - .2) * (1 + .1),
+       (1 + .05) * (1 - .2) * (1 + .1))))
 
-rownames(agoi1) <- agoi1[, 1]
-agoi1[LETTERS[1:5], ]
-all(agoi1[LETTERS[1:5], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1))
-## orders that do not involve all. D > A;   B > C;
+    expect_true(all(ai4[, "Fitness"] == c((1 + .05), (1 - .2), (1 + .1),
+                           1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
+                           1.05 * 1.1, 1.1 * .8,
+                           rep(1.05 * .8 * 1.1, 6) )))
 
-rn <- rownames(agoi1)
-agoi1[grep("^A > [BD]$", rn), ]
-
-
-
-
-
-
-
-af1 <- evalAllGenotypes(f1, max = 325)
-
-agoi1 <- evalAllGenotypes(allFitnessEffects(
-    orderEffects = c("A>B" = -0.2, "B > A" = 0.3),
-    noIntGenes = c(0.05, -.2, .1)), max = 325)
-
-
-gm1 <- c("Root" = "Root", "F" = "f1, f2", "D" = "d1, d2, d3")
-gm.twisted1 <- c("Root" = "Root", "F" = "d", "D" = "f")
-gm.twisted2 <- c("Root" = "Root", "F" = "d1, d2", "D" = "f1, f2, f3")
-
-
-    ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
-                              geneToModule =
-                                  c("Root" = "Root",
-                                    "F" = "f1, f2, f3",
-                                    "D" = "d1, d2") )
+})
 
 
 
-## to the above, add genes with no interactions and see they have no effect
 
-## add three gene order restrictions
+test_that("No interaction genes and order effects, 1", {
+    foi1 <- allFitnessEffects(
+        orderEffects = c("D>B" = -0.3, "B > D" = 0.3),
+        noIntGenes = c("A" = 0.05, "C" = -.2, "E" = .1))
+    agoi1 <- evalAllGenotypes(foi1,  max = 325)
+    rn <- 1:nrow(agoi1)
+    names(rn) <- agoi1[, 1]
+    expect_true(all(agoi1[rn[LETTERS[1:5]], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1)))
+    ## orders that do not involve all. D > A;   B > C;
+    expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 1.05))
+    expect_true(all(agoi1[grep("^C > [BD]$", names(rn)), "Fitness"] == 0.8))
+    expect_true(all(agoi1[grep("^E > [BD]$", names(rn)), "Fitness"] == 1.1))
+    expect_true(all(agoi1[grep("^[BD] > A$", names(rn)), "Fitness"] == 1.05))
+    expect_true(all(agoi1[grep("^[BD] > C$", names(rn)), "Fitness"] == 0.8))
+    expect_true(all(agoi1[grep("^[BD] > E$", names(rn)), "Fitness"] == 1.1))
+    expect_true(all.equal(agoi1[230:253, "Fitness"] ,
+                          rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 24)))
+    expect_true(all.equal(agoi1[c(260:265, 277, 322, 323, 325), "Fitness"] ,
+              rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 10)))
+    expect_true(all.equal(agoi1[c(206:229, 254:259, 266:267), "Fitness"] ,
+              rep((1 + 0.3) * 1.05 * 0.8 * 1.1, 32)))
+    ## some of four, one of which either D or B. 
+    expect_true(all.equal(agoi1[c(203:205, 191), "Fitness"] ,
+              rep(1.05 * 0.8 * 1.1, 4)))
+    ##  a few of three, A, C, and ether D or B
+    expect_true(all.equal(agoi1[c(42, 45, 30, 33), "Fitness"] ,
+              rep(1.05 * 0.8, 4)))
+})
 
 
-## add differences in module names or something similar
+## like above, but change order of names
+test_that("No interaction genes and order effects, 2", {
+    foi1 <- allFitnessEffects(
+        orderEffects = c("D>B" = -0.3, "B > D" = 0.3),
+        noIntGenes = c("M" = 0.05, "A" = -.2, "J" = .1))
+    agoi1 <- evalAllGenotypes(foi1,  max = 325)
+    rn <- 1:nrow(agoi1)
+    names(rn) <- agoi1[, 1]
+    expect_true(all(agoi1[rn[c("B", "D", "M", "A", "J")], "Fitness"] == c(1, 1, 1.05, 0.8, 1.1)))
+    ## orders that do not involve all. D > A;   B > C;
+    expect_true(all(agoi1[grep("^M > [BD]$", names(rn)), "Fitness"] == 1.05))
+    expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 0.8))
+    expect_true(all(agoi1[grep("^J > [BD]$", names(rn)), "Fitness"] == 1.1))
+    expect_true(all(agoi1[grep("^[BD] > M$", names(rn)), "Fitness"] == 1.05))
+    expect_true(all(agoi1[grep("^[BD] > A$", names(rn)), "Fitness"] == 0.8))
+    expect_true(all(agoi1[grep("^[BD] > J$", names(rn)), "Fitness"] == 1.1))
+    expect_true(all.equal(agoi1[230:253, "Fitness"] ,
+                          rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 24)))
+    expect_true(all.equal(agoi1[c(260:265, 277, 322, 323, 325), "Fitness"] ,
+              rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 10)))
+    expect_true(all.equal(agoi1[c(206:229, 254:259, 266:267), "Fitness"] ,
+              rep((1 + 0.3) * 1.05 * 0.8 * 1.1, 32)))
+    ## some of four, one of which either D or B. 
+    expect_true(all.equal(agoi1[c(203:205, 191), "Fitness"] ,
+              rep(1.05 * 0.8 * 1.1, 4)))
+    ##  a few of three, A, C, and ether D or B
+    expect_true(all.equal(agoi1[c(42, 45, 30, 33), "Fitness"] ,
+              rep(1.05 * 0.8, 4)))
+})
+
+
+
+### synthetic viability
+test_that("synthetic viability, 1", {
+    s <- 0.2
+    sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
+                                "A : -B" = -1,
+                                "A:B" = s))
+    expect_true( all(
+        evalAllGenotypes(sv,
+                         order = FALSE, addwt = TRUE)[, "Fitness"] == c(1, 0, 0, 1.2)))
+    expect_true( all(
+        evalAllGenotypes(sv,
+                         order = TRUE, addwt = TRUE)[, "Fitness"] == c(1, 0, 0, 1.2, 1.2)))
+})
+
+
+
+### epistasis
+
+test_that("Epistasis, 1", {
+
+    e1 <- allFitnessEffects(epistasis =
+                                c("c:d" = 0.1, "a:c" = 0.2,
+                                  ""))
+    
+    fe1 <- evalAllGenotypes(allFitnessEffects(
+        epistasis = noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1)), order = FALSE)
+    
+    fe2 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1)), order = TRUE)
+    
+    expect_true(all(ai3[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
+       (1 + .05) * (1 - .2),
+       (1 + .05) * (1 + .1),
+       (1 - .2) * (1 + .1),
+       (1 + .05) * (1 - .2) * (1 + .1))))
+
+    expect_true(all(ai4[, "Fitness"] == c((1 + .05), (1 - .2), (1 + .1),
+                           1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
+                           1.05 * 1.1, 1.1 * .8,
+                           rep(1.05 * .8 * 1.1, 6) )))
+
+})
+
 
 
 ## how is table geneModule with no ints? are they there?

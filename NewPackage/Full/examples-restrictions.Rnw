@@ -93,6 +93,37 @@ want to avoid you shooting yourself in the foot having a gene that is not
 root but is called ``Root'', etc).
 
 
+\subsection{Order effects: three-gene orders}
+
+Consider this case, where three specific three-gene-orders and two
+two-gene orders (one of them a subset of one of the three) lead to
+different fitness compared to the wild-type. We add also modules, to show
+it usage (but just limit ourselves to using one gene per module here):
+
+<<>>=
+
+o3 <- allFitnessEffects(orderEffects = c(
+                            "F > D > M" = -0.3,
+                            "D > F > M" = 0.4,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.1,
+                            "M > D"     = 0.5),
+                        geneToModule =
+                            c("Root" = "Root",
+                              "M" = "m",
+                              "F" = "f",
+                              "D" = "d") )
+
+
+(ag <- evalAllGenotypes(o3))
+@ The values for the first nine genotypes come directly from the fitness
+specifications. The 10th genotype matches ``D > F > M'' ($= (1 + 0.4)$)
+but also ``D > M'' ($(1 + 0.1)$). The 11th matches ``D > M > F'' and ``D >
+M''. The 12th matches ``F > D > M'' but also ``D > M''. Etc.
+
+
+
+
 \subsection{Order effects and modules}
 
 Consider the following case:
@@ -256,15 +287,15 @@ agoi1 <- evalAllGenotypes(foi1,  max = 325)
 head(agoi1)
 @ 
 
-To make comparisons simpler, and since the order was not ideal:
 
-<<>>=
-rownames(agoi1) <- agoi1[, 1]
-@ 
 
 Now:
 <<>>=
-agoi1[LETTERS[1:5], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1)
+rn <- 1:nrow(agoi1)
+names(rn) <- agoi1[, 1]
+
+agoi1[rn[LETTERS[1:5]], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1)
+
 @ 
 
 According to the fitness effects we have specified, we also know that any
@@ -273,14 +304,82 @@ genotype with only two mutations, one of which is either ``A'', ``C'' or
 to ``A'', ``C'' or ``E'', respectively:
 
 <<>>=
-rn <- rownames(agoi1) ## make some expression shorter below
-agoi1[grep("^A > [BD]$", rn), "Fitness"] == 1.05
-agoi1[grep("^C > [BD]$", rn), "Fitness"] == 0.8
-agoi1[grep("^E > [BD]$", rn), "Fitness"] == 1.1
-agoi1[grep("^[BD] > A$", rn), "Fitness"] == 1.05
-agoi1[grep("^[BD] > C$", rn), "Fitness"] == 0.8
-agoi1[grep("^[BD] > E$", rn), "Fitness"] == 1.1
+agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 1.05
+agoi1[grep("^C > [BD]$", names(rn)), "Fitness"] == 0.8
+agoi1[grep("^E > [BD]$", names(rn)), "Fitness"] == 1.1
+agoi1[grep("^[BD] > A$", names(rn)), "Fitness"] == 1.05
+agoi1[grep("^[BD] > C$", names(rn)), "Fitness"] == 0.8
+agoi1[grep("^[BD] > E$", names(rn)), "Fitness"] == 1.1
 @ 
+
+
+We will not be doing many additional games with regular expressions, but
+let us check those that start with ``D'' and have all the other mutations,
+which occupy rows 230 to 253; fitness should be equal (within numerical
+error, because of the non-commutativity of floating point
+multiplication) to the order effect of having ``D'' before ``B''  times
+the other effects $(1 - 0.3) * 1.05 * 0.8 * 1.1 = 0.7392$
+
+<<>>=
+all.equal(agoi1[230:253, "Fitness"] , rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 24))
+@ 
+and that will also be the value of any genotype with the five mutations
+where ``D'' comes before ``B'' such as those in rows 260 to 265, 277, or
+322 and 323, but it will be equal to $(1 + 0.3) * 1.05 * 0.8 * 1.1 =
+1.2012$ in those where ``B'' comes before ``D''. Analogous arguments apply
+to four, three, and two mutation genotypes.
+
+
+
+\subsection{Synthetic viability}
+
+\subsubsection{A simple synthetic viability example}
+A simple example of synthetic viability \cite{xx} is shown in the
+following table:
+
+
+\begin{tabular} {c c c}
+  A & B & Fitness \\
+  \hline
+  wt&wt& 1 \\
+  wt&M& 0 \\
+  M&wt& 0\\
+  M&M& (1 + s)\\
+  \hline
+\end{tabular}
+where ``wt'' denotes wild type and ``M'' denotes mutant.
+
+
+We can specify this (setting $s = 0.2$) as (I play around with spaces, to
+show there is a certain flexibility with them):
+
+<<>>=
+s <- 0.2
+sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
+                                      "A : -B" = -1,
+                                      "A:B" = s))
+@ 
+
+Now, let's look at all the genotypes (we use ``addwt'' to also get the wt,
+which by decree has fitness of 1), and disregard order:
+
+<<>>=
+(asv <- evalAllGenotypes(sv, order = FALSE, addwt = TRUE))
+@ 
+
+Asking the program to consider the order of mutations of course makes no
+difference:
+
+<<>>=
+evalAllGenotypes(sv, order = TRUE, addwt = TRUE)
+@ 
+
+\subsubsection{Synthetic viability, non-zero fitness and modules}
+
+This is a slightly more elaborate case, where there are modules and the
+single mutants have different fitness between themselves, which is
+non-zero. Without the modules, this is the same as in Misra et
+al. \cite{xx}, Figure 1b.
 
 
 
@@ -328,6 +427,7 @@ length(table(b2))
 @ 
 
 \subsubsection{Bauer et al.\ specified only via epistatic interactions}
+Yes, do it: as -p,s1, and -p,s2, etc.
 
 \subsubsection{Adding modules to Bauer et al.}
 
