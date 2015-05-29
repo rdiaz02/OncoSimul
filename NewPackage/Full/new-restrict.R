@@ -453,7 +453,7 @@ evalGenotype <- function(genotype, fitnessEffects,
     ## string) with genes separated by "," or ">"
     
     if(echo)
-        cat(paste("Genotype: ", genotype, "\n. Fitness: "))
+        cat(paste("Genotype: ", genotype))
     if(!is.integer(genotype)) {
         if(length(grep(">", genotype))) {
             genotype <- nice.vector.eo(genotype, ">")
@@ -474,7 +474,11 @@ evalGenotype <- function(genotype, fitnessEffects,
         stop(paste("genotypes cannot contain negative values.",
                    "If you see this message, you found a bug."))
     }
-    evalRGenotype(genotype, fitnessEffects, verbose)
+    ff <- evalRGenotype(genotype, fitnessEffects, verbose)
+    if(echo)
+        cat(" Fitness: ", ff, "\n")
+    else
+        ff
 }
 
 ## For multiple genotypes, lapply the matching.
