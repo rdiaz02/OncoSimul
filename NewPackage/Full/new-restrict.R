@@ -1,5 +1,7 @@
 # - Say that a user can use a "0" as a gene name, but that is BAD idea.
 ## - Modules and order effects can be kind of funny?
+
+## Gene names can contain no spaces, commas, or ">"
 library(data.table)
 library(Rcpp)
 library(gtools) ## for permutations
@@ -55,6 +57,12 @@ gm.to.geneModuleL <- function(gm, one.to.one) {
         idm <- c("Root" = 0L, idm)
         names(idm) <- names(gm)
         geneMod$ModuleNumID <- idm[geneMod[, "Module"]]
+    }
+    if(length(unique(geneMod$Gene)) != nrow(geneMod)) {
+        stop("Are there identical gene names in different modules?")
+    }
+    if(length(unique(geneMod$GeneNumID)) != nrow(geneMod)) {
+        stop("Are there identical gene names in different modules?")
     }
     rownames(geneMod) <- 1:nrow(geneMod)
     geneMod   
@@ -437,8 +445,21 @@ wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm, echo = TRUE) {
     ##                    echo = TRUE)
 }
 
-evalGenotype <- function(genotype, fitnessEffects, verbose = FALSE) {
+evalGenotype <- function(genotype, fitnessEffects,
+                         verbose = FALSE,
+                         echo = FALSE) {
+    ## genotype can be a vector of integers, that are the exact same in
+    ## the table of fitnessEffects or a vector of strings, or a vector (a
+    ## string) with genes separated by "," or ">"
+    
+    if(echo)
+        cat(paste("Genotype: ", genotype, "\n. Fitness: "))
     if(!is.integer(genotype)) {
+        if(length(grep(">", genotype))) {
+            genotype <- nice.vector.eo(genotype, ">")
+        } else if(length(grep(",", genotype))) {
+            genotype <- nice.vector.eo(genotype, ",")
+        }
         all.g.nums <- c(fitnessEffects$geneModule$GeneNumID,
                         fitnessEffects$long.geneNoInt$GeneNumID)
         all.g.names <- c(fitnessEffects$geneModule$Gene,
