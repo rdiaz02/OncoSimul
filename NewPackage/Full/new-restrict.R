@@ -75,7 +75,9 @@ list.of.deps <- function(x) {
                        "semimonotone" = "semimonotone",
                        "XOR" = "xmpn",
                        "xmpn" = "xmpn",
-                       "XMPN" = "xmpn")
+                       "XMPN" = "xmpn",
+                       "--"   = "--",
+                       "-" = "--")
     ## FIXME: check values of typeDep
 
     if(length(x) > 1) {
@@ -98,12 +100,17 @@ list.of.deps <- function(x) {
 }
 
 to.long.rt <- function(rt, idm, verbosity = 0) {
-    if(is.numeric(rt$parent))
-        rt$parent <- as.character(rt$parent)
+    ## We now do this inconditionally, so that we do not need to use the
+    ## "stringsAsFactors = FALSE". This is now done before
+    ## if(is.numeric(rt$parent))
+    ##     rt$parent <- as.character(rt$parent)
+    ## if(is.numeric(rt$child))
+    ##     rt$child <- as.character(rt$child)
+   
+    
     if(!("Root" %in% rt$parent))
         stop("Root must be one parent node")
-    if(is.numeric(rt$child))
-        rt$child <- as.character(rt$child)
+
     ## rt$parent <- unlist(lapply(rt$parent, nice.string))
     ## rt$child <- unlist(lapply(rt$child, nice.string))
    
@@ -271,9 +278,13 @@ allFitnessEffects <- function(rT = NULL,
     rtNames <- NULL
     epiNames <- NULL
     orNames <- NULL
-    if(!is.null(rT))
+    if(!is.null(rT)) {
+        ## This is really ugly, but to prevent the stringsAsFactors I need it here:
+        rT$parent <- as.character(rT$parent)
+        rT$child <- as.character(rT$child)
+        rT$typeDep <- as.character(rT$typeDep)
         rtNames <- unique(c(rT$parent, rT$child))
-
+    }
     if(!is.null(epistasis)) {
         long.epistasis <- to.long.epist.order(epistasis, ":")
         ## epiNames <- unique(unlist(lapply(long.epistasis, function(x) x$ids)))

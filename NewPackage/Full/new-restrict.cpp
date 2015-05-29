@@ -16,7 +16,7 @@ using std::back_inserter;
 int seed = 1; 
 std::mt19937 ran_gen(seed);
 
-enum class Dependency {monotone, semimonotone, xmpn, NA}; 
+enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
 
 inline static Dependency stringToDep(const std::string& dep) {
   if(dep == "monotone")
@@ -25,8 +25,11 @@ inline static Dependency stringToDep(const std::string& dep) {
     return Dependency::semimonotone;
   else if(dep == "xmpn")
     return Dependency::xmpn;
+  else if(dep == "--")
+    return Dependency::single;
   else 
     throw std::out_of_range("Not a valid typeDep");
+  // We never create the NA from entry data. NA is reserved for Root.
 }
 
 inline static std::string depToString(const Dependency dep) {
@@ -37,8 +40,8 @@ inline static std::string depToString(const Dependency dep) {
     return "DMPN or semimonotone";
   case Dependency::xmpn:
     return "XMPN (XOR)";
-  case Dependency::NA:
-    return "NA";
+  case Dependency::single:
+    return "--";
   default:
     throw std::out_of_range("Not a valid dependency");
   }
