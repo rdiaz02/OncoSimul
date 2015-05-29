@@ -417,7 +417,7 @@ test_that("Epistasis, with and without -, three terms", {
 })
 
 
-test_that("Epistasis, with and without -, two alternative specs", {
+test_that("Epistasis, three, with and without -, two alternative specs", {
     sa <- 0.1
     sb <- 0.15
     sc <- 0.2
@@ -453,8 +453,79 @@ test_that("Epistasis, with and without -, two alternative specs", {
 })
 
 
-## check order makes no difference above
 
+
+test_that("Epistasis, three, with and without -, two alternative specs, order makes no diff", {
+    sa <- 0.1
+    sb <- 0.15
+    sc <- 0.2
+    sab <- 0.3
+    sbc <- -0.25
+    sabc <- 0.4
+    sac <- (1 + sa) * (1 + sc) - 1
+    E3A <- allFitnessEffects(epistasis =
+                                 c("A:-B:-C" = sa,
+                                   "-A:B:-C" = sb,
+                                   "-A:-B:C" = sc,
+                                   "A:B:-C" = sab,
+                                   "-A:B:C" = sbc,
+                                   "A:-B:C" = sac,
+                                   "A : B : C" = sabc)
+                             )
+    ge3a <- evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
+    ge3ao <- evalAllGenotypes(E3A, order = TRUE, addwt = FALSE)
+    Sab <- ( (1 + sab)/((1 + sa) * (1 + sb))) - 1
+    Sbc <- ( (1 + sbc)/((1 + sb) * (1 + sc))) - 1
+    Sabc <- ( (1 + sabc)/( (1 + sa) * (1 + sb) * (1 + sc) * (1 + Sab) * (1 + Sbc) ) ) - 1
+    E3B <- allFitnessEffects(epistasis =
+                                 c("A" = sa,
+                                   "B" = sb,
+                                   "C" = sc,
+                                   "A:B" = Sab,
+                                   "B:C" = Sbc,
+                                   ## "A:C" = sac,
+                                   "A : B : C" = Sabc)
+                             )
+    ge3b <- evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
+    ge3bo <- evalAllGenotypes(E3A, order = TRUE, addwt = FALSE)
+    expect_true(identical(ge3ao, ge3bo))
+    ## get names that can be matched against the non-ordered
+    nn <- ge3ao[, 1]
+    nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
+                                               collapse = ", ")))
+    ## Verify all of the same name have same value
+    ## Beware this could fail for numerical issues.
+    expect_true(all( tapply(ge3ao$Fitness, nnn,
+                            function(x) length(unique(x))) == 1))
+    ## Is the value identical to the unordered?
+    mo <- tapply(ge3ao$Fitness, nnn, mean)
+    mu <- tapply(ge3a$Fitness, ge3a[, 1], mean)
+    expect_true(all.equal(mo, mu))
+})
+
+
+
+
+## this is an error as CBN
+c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                 sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+fc1 <- allFitnessEffects(c1)
+
+
+## now OK
+c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                 sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+fc1 <- allFitnessEffects(c1)
 
 
 
@@ -465,7 +536,7 @@ test_that("Epistasis, with and without -, two alternative specs", {
 
 ## check it breaks if same ID
 
-
+## check breaks if in restriction and no interactions
 
 
 

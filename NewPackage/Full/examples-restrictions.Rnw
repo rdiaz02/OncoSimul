@@ -93,7 +93,67 @@ want to avoid you shooting yourself in the foot having a gene that is not
 root but is called ``Root'', etc).
 
 
-\subsection{Order effects: three-gene orders}
+
+\subsection{Order restrictions as posets}
+
+\subsubsection{A conjunction example}
+
+Let's try a first attempt
+<<>>=
+
+c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                 sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+fc1 <- allFitnessEffects(c1)
+@ 
+
+That is an error because the ``sh'' varies within a child, and that is not
+possible (arbitrary values are better coded using order effects as in
+section \ref{oe} and epistasis as in section \ref{epi}).
+
+zz: plot the poset!
+
+
+We fix that:
+
+<<>>=
+
+c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                 sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
+                 typeDep = "MN",
+                 stringsAsFactors = FALSE)
+
+fc1 <- allFitnessEffects(c1)
+
+@ 
+
+What is the fitness of all possible genotypes? Here, order of events
+\textit{per se} does not matter, beyond that considered in the poset. In
+other words, the fitness of genotype ``a, b, c'' is the same no matter how
+we got to ``a, b, c''. What matters is whether or not the genes on which
+each of ``a'', ``b'', and ``c'' are present or not. 
+
+<<>>=
+evalAllGenotypes(fc1, order = FALSE)
+@ 
+
+
+Of course, if we were to look at genotypes but taking into account order
+of occurrence of mutations, we would see no differences
+
+<<>>=
+evalAllGenotypes(fc1, order = TRUE)
+@ 
+
+
+\subsection{Order effects} \label{oe}
+\subsubsection{Order effects: three-gene orders}
 
 Consider this case, where three specific three-gene-orders and two
 two-gene orders (one of them a subset of one of the three) lead to
@@ -124,7 +184,7 @@ M''. The 12th matches ``F > D > M'' but also ``D > M''. Etc.
 
 
 
-\subsection{Order effects and modules}
+\subsubsection{Order effects and modules}
 
 Consider the following case:
 <<>>=
@@ -190,7 +250,7 @@ all(ag[53:64, "Fitness"] == 0.7)
 
 
 
-\subsubsection{Another example of order and modules}
+\subsubsection{Order and modules with 325 genotypes}
 We can of course have more than two genes per module. This just repeats
 the above, with five genes (there are 325 genotypes, and that is why we
 pass the ``max'' argument, to allow for more than the default 256).
@@ -219,7 +279,7 @@ oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
 all(ag2[-oe, "Fitness"] == 1)
 @ 
 
-\subsection{Genes without interactions}
+\subsection{Genes without interactions}\label{noint}
 
 Let's use three genes. We know there are no order effects, but we will
 also see what happens if we examine genotypes as ordered.
@@ -455,8 +515,9 @@ And if we look at order, of course it makes no difference:
 evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)
 @ 
 
+\subsection{Epistasis}\label{epi}
 
-\subsection{Epistasis: two alternative specifications}\label{e2}
+\subsubsection{Epistasis: two alternative specifications}\label{e2}
 
 We want this
 
@@ -514,7 +575,7 @@ effects. See also section \ref{theminus} and \ref{e3}.
 
 
 
-\subsection{Epistasis with three genes and two alternative specifications}\label{e3}
+\subsubsection{Epistasis with three genes and two alternative specifications}\label{e3}
 
 Suppose we have 
 
@@ -602,7 +663,7 @@ We avoid specifying the ``A:C'', as it just follows from the individual
 a little bit of addition and multiplication to get the coefficients. 
 
 
-\subsection{Why can we specify some effects with a ``-''?}\label{theminus}
+\subsubsection{Why can we specify some effects with a ``-''?}\label{theminus}
 Let's think we want to specify the synthetic viability example seen before:
 
 \begin{tabular} {c c c}
@@ -629,7 +690,7 @@ both options.
 
 
 
-\subsection{Epistasis: modules}
+\subsubsection{Epistasis: modules}
 There is nothing conceptually new, but we will show an example here:
 
 <<>>=
