@@ -96,7 +96,7 @@ root but is called ``Root'', etc).
 
 \subsection{Order restrictions as posets}
 
-\subsubsection{A conjunction example}
+\subsubsection{A conjunction example}\label{cbn1}
 
 Let's try a first attempt
 <<>>=
@@ -105,29 +105,46 @@ c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                  sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
-                 typeDep = "MN",
-                 stringsAsFactors = FALSE)
+                 typeDep = "MN")
 
 fc1 <- allFitnessEffects(c1)
 @ 
 
-That is an error because the ``sh'' varies within a child, and that is not
-possible (arbitrary values are better coded using order effects as in
-section \ref{oe} and epistasis as in section \ref{epi}).
+That is an error because the ``sh'' varies within a child, and we do not
+allow that for a poset-type specification, as it can lead to
+ambiguities. If you need arbitrary fitness values for arbitrary
+combinations of genotypes, you can specify them using epistatic effects as
+in section \ref{epi} and order effects as in section \ref{oe}.
+
+
+(By the way, yes, we convert all factors to strings in the parent, child,
+and typeDep columns, so no need to specify \texttt{stringsAsFactor = TRUE}).
+
 
 zz: plot the poset!
 
 
-We fix that:
+We fix the error in our specification. Notice that the ``sh'' is not set
+to $-1$ in these examples. If you want strict compliance with the poset
+restrictions, you should set $sh = -1$, but having an $sh > -1$ will lead
+to fitnesses that are $> 0$ and, thus, is a way of modeling small
+deviations from the poset (see discussion in \cite{xx: paper BMCBionfo}).
+
+In these examples, the reason to set ``sh'' to values larger than $-1$ and
+different among the genes is to allow us to easily see the actual,
+different, terms that enter into the multiplication of the fitness effects
+(and, also, to make it easier to catch bugs).
+
+Note also that for those nodes that depend only on ``Root'' the type of
+dependency is irrelevant.
 
 <<>>=
 
 c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
-                 sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
-                 typeDep = "MN",
-                 stringsAsFactors = FALSE)
+                 sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
+                 typeDep = "MN")
 
 fc1 <- allFitnessEffects(c1)
 
@@ -137,10 +154,12 @@ What is the fitness of all possible genotypes? Here, order of events
 \textit{per se} does not matter, beyond that considered in the poset. In
 other words, the fitness of genotype ``a, b, c'' is the same no matter how
 we got to ``a, b, c''. What matters is whether or not the genes on which
-each of ``a'', ``b'', and ``c'' are present or not. 
+each of ``a'', ``b'', and ``c'' are present or not (I only show the first
+10 genotypes)
 
 <<>>=
-evalAllGenotypes(fc1, order = FALSE)
+gfc1 <- evalAllGenotypes(fc1, order = FALSE)
+gfc1[1:10, ]
 @ 
 
 
@@ -148,8 +167,192 @@ Of course, if we were to look at genotypes but taking into account order
 of occurrence of mutations, we would see no differences
 
 <<>>=
-evalAllGenotypes(fc1, order = TRUE)
+gfc1o <- evalAllGenotypes(fc1, order = TRUE, max = 1956)
+gfc1o[1:10, ]
 @ 
+
+You can check the output and verify things are as they should. For instance:
+
+<<>>=
+all.equal(
+        gfc1[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
+        c(1.01, 1.02, 0.1, 1.03, 1.04, 0.05,
+          1.01 * c(1.02, 0.1, 1.03, 1.04, 0.05),
+          1.02 * c(0.10, 1.03, 1.04, 0.05),
+          0.1 * c(1.03, 1.04, 0.05),
+          1.03 * c(1.04, 0.05),
+          1.04 * 0.05,
+          1.01 * 1.02 * 1.1,
+          1.01 * 0.1 * 0.05,
+          1.03 * 1.04 * 0.05,
+          1.01 * 1.02 * 1.1 * 0.05,
+          1.03 * 1.04 * 1.2 * 0.1, ## notice this
+          1.01 * 1.02 * 1.03 * 1.04 * 1.1 * 1.2
+          ))
+@ 
+
+A particular one that is important to understand is
+
+<<>>=
+gfc1[56, ] ## this is d, e, g, c
+gfc1[56, "Fitness"] == 1.03 * 1.04 * 1.2 * 0.10
+@ 
+
+where ``g'' is taken as if its dependencies are satisfied (as ``c'',
+``d'', and ``e'' are present) even when the dependencies of ``c'' are not
+satisfied (and that is why the term for ``c'' is 0.9).
+
+
+\subsubsection{A semimonotone or ``OR'' example}\label{mn1}
+
+We will reuse the above example, changing the type of relationship:
+<<>>=
+
+s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                 sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
+                 typeDep = "SM")
+
+fs1 <- allFitnessEffects(s1)
+gfs1 <- evalAllGenotypes(fs1, order = FALSE)
+
+@ 
+
+Now, having just one parental dependency satisfied is enough, in contrast
+to what happened before. For instance:
+
+<<>>=
+gfc1[c(8, 12, 22), ]
+gfs1[c(8, 12, 22), ]
+
+gfc1[c(20:21, 28), ]
+gfs1[c(20:21, 28), ]
+@ 
+
+
+\subsubsection{An ``XMPN'' or ``XOR'' example}\label{xor1}
+
+Again, we reuse the example above, changing the type of relationship:
+
+<<>>=
+
+x1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                 sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
+                 typeDep = "XMPN")
+
+fx1 <- allFitnessEffects(x1)
+gfx1 <- evalAllGenotypes(fx1, order = FALSE)
+
+@ 
+
+
+Whenever ``c'' is present with both ``a'' and ``b'', the fitness component
+for ``c'' will be $(1 - 0.1)$. Similarly for ``g'' (if more than one of
+``d'', ``e'', or ``c'' is present, it will show as $(1 - 0.05)$). For example:
+
+<<>>=
+gfx1[c(22, 41), ] 
+c(1.01 * 1.02 * 0.1, 1.03 * 1.04 * 0.05)
+@ 
+
+However, having just both ``a'' and ``b'' is identical to the case with
+CBN and the monotone relationship (see sections \ref{cbn1} and
+\ref{mn1}). If you want the joint presence of ``a'' and ``b'' to result in
+different fitness, you can specify that using general epistatic effects
+(section \ref{epi}); XOR relationships of these kind are, actually,
+examples of synthetic lethality, which are shown in section \ref{sl}.
+
+
+We also see a very different pattern compared to CBN (section \ref{cbn1})
+here:
+<<>>=
+gfx1[28, ] 
+1.01 * 1.1 * 1.2
+@ as ``c'' is satisfied by one, and ``g'' too, this is in the
+``semimonotone'' situatione.
+
+But 
+<<>>=
+gfx1[44, ] 
+1.01 * 1.02 * 0.1 * 1.2
+@ 
+is the result of a $0.1$ for ``c'' (and a $1.2$ for ``g'' that has exactly
+one of its dependencies satisfied).
+
+
+\subsubsection{Posets: the three types of relationships}\label{p3}
+
+<<>>=
+
+p3 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c", "f"),
+                  child = c("a", "b", "d", "e", "c", "c", "f", "f", "g", "g"),
+                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
+                  sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
+                  typeDep = c(rep("--", 4), 
+                      "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
+fp3 <- allFitnessEffects(p3)
+gfp3 <- evalAllGenotypes(fp3, order = FALSE)
+
+@ 
+
+zz: plot the relationship
+
+Let's look at a few:
+<<>>=
+gfp3[c(9, 24, 29, 59, 60, 66, 119, 120, 126, 127), ]
+
+c(1.01 * 1.1, 1.03 * .05, 1.01 * 1.02 * 0.1, 0.1 * 0.05 * 1.3,
+  1.03 * 1.04 * 1.2, 1.01 * 1.02 * 0.1 * 0.05,
+  0.1 * 1.03 * 1.04 * 1.2 * 1.3,
+  1.01 * 1.02 * 0.1 * 1.03 * 1.04 * 1.2,
+  1.02 * 1.1 * 1.03 * 1.04 * 1.2 * 1.3,
+  1.01 * 1.02 * 1.03 * 1.04 * 0.1 * 1.2 * 1.3)
+
+@ 
+
+As before, looking at the order of mutations makes no difference (look at
+the test directory to see a test that verifies this assertion).
+
+
+\subsubsection{Posets: the three types of relationships and modules}\label{pm3}
+
+We can of course add modules. Beware that the number of genotypes is
+starting to grow quite fast, though. We use the same specification of
+poset, but add modules. To keep it manageable, we only add a few genes for
+some modules, and have some modules with a single gene. We capitalize to
+differentiate modules (capital letters) from genes (lowercase with a number).
+
+
+<<>>=
+p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
+                  child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
+                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
+                  sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
+                  typeDep = c(rep("--", 4), 
+                      "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
+fp4m <- allFitnessEffects(p4,
+                          geneToModule = c("Root" = "Root", "A" = "a1",
+                              "B" = c("b1, b2"), "C" = "c1",
+                              "D" = c("d1, d2"), "E" = "e1",
+                              "F" = c("f1, f2"), "G" = "g1"))
+gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
+@ 
+
+Let's look at a few of those:
+<<>>=
+gfp4[c(12, 20, 21, 40, 41, 46, 50, 55, 64, 92, 155, 157, 163, 372, 632, 828), ]
+
+c(1.01 * 1.02, 1.02, 1.02 * 1.1, 0.1 * 1.3, 1.03, 
+  1.03 * 1.04, 1.04 * 0.05, 0.05 * 1.3,  
+  1.01 * 1.02 * 0.1, 1.02 * 1.1, 0.1 * 0.05 * 1.3,
+  1.03 * 0.05, 1.03 * 0.05, 1.03 * 1.04 * 1.2, 1.03 * 1.04 * 1.2, 
+  1.02 * 1.1 * 1.03 * 1.04 * 1.2 * 1.3)
+
+@ 
+
 
 
 \subsection{Order effects} \label{oe}
@@ -482,7 +685,7 @@ evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
 @ 
 
 
-\subsection{Synthetic mortality}
+\subsection{Synthetic mortality or synthetic lethality}\label{sl}
 
 This is like a revert pattern with respect to synthetic viability \ref{sv}.
 \begin{tabular} {c c c}
@@ -727,6 +930,63 @@ evalAllGenotypes(em2, order = FALSE, addwt = TRUE)
 
 @ 
 
+
+\subsection{Poset, epistasis, synthetic mortality and viability, order
+  effects and genes without interactions, with some modules}\label{exlong}
+
+We will now put together a complex example. We will use the poset from
+section \ref{pm3} but will also add:
+\begin{itemize}
+\item Order effects that involve genes in the poset. In this case, if C
+  happens before F, fitness decreases by $1 - 0.1$. If it happens the
+  other way around, there is no effect on fitness beyond their individual
+  contributions. %%  but if it happens the
+  %% other way around it increases by $1 + 0.13$.
+\item Order effects that involve two new modules, ``H'' and ``I'' (with
+  genes ``h1, h2'' and ``i1'', respectively), so that if H happens before
+  I fitness increases by $1 + 0.12$.
+\item Synthetic mortality between modules ``I'' (already present in the
+  epistatic interaction) and ``K'' (with genes ``k1'' and ``k2''): the
+  joint presence of these modules leads to cell death (fitness of 0).
+\item Synthetic viability between modules ``L'' and ``M'' (with genes
+  ``l1'', ``l2'' and ``m1'', respectively), so that only their joint
+  presence is viable but adds nothing to fitness (i.e., mutation of both
+  has fitness $1$, but of each one without the other leads to fitness of
+  0).
+\item A set of 5 driver genes ($n1, \ldots, n5$) with fitness that comes
+  from an exponential distribution.
+\end{itemize}
+
+
+
+As we are specifying very many different things, we will start by writing
+each set of effects separately:
+
+
+<<>>=
+p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
+                 child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
+                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
+                 sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
+                 typeDep = c(rep("--", 4), 
+                     "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
+
+oe <- c("C > F" = -0.1, "H > I" = 0.12)
+sm <- c("I:K"  = -1)
+sv <- c("-L:M" = -1, "L:-M" = -1)
+epist <- c(sm, sv)
+
+modules <- c("Root" = "Root", "A" = "a1",
+             "B" = c("b1, b2"), "C" = "c1",
+             "D" = c("d1, d2"), "E" = "e1",
+             "F" = c("f1, f2"), "G" = "g1")
+
+
+
+@ 
+
+
+
 \section{Some examples from the literature}
 \subsection{Bauer et al}
 
@@ -770,6 +1030,7 @@ table(b2)
 length(table(b1))
 length(table(b2))
 @ 
+
 
 \subsubsection{Bauer et al.\ specified only via epistatic interactions}
 Yes, do it: as -p,s1, and -p,s2, etc.

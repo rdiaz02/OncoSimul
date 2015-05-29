@@ -311,7 +311,7 @@ test_that("synthetic viability, 1", {
 })
 
 
-test_that("synthetic viability, 2", {
+test_that("synthetic viability, with modules, 2", {
     sa <- -0.1
     sb <- -0.2
     sab <- 0.25
@@ -506,33 +506,241 @@ test_that("Epistasis, three, with and without -, two alternative specs, order ma
 
 
 
-## this is an error as CBN
-c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
-                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
-                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
-                 sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
-                 typeDep = "MN",
-                 stringsAsFactors = FALSE)
 
-fc1 <- allFitnessEffects(c1)
+## posets
+test_that("Error if not same sh within child", {
+    c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                     child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                     s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                     sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
+                     typeDep = "MN",
+                     stringsAsFactors = FALSE)
+    expect_error(allFitnessEffects(c1))
+})
 
+
+### Note for the testing below: I use values far from 0, to easily see
+### differences.
 
 ## now OK
-c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
-                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
-                 s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
-                 sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
-                 typeDep = "MN",
-                 stringsAsFactors = FALSE)
+test_that("Poset, CBN, values and order no changes", {
+    c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                     child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                     s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                     sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
+                     typeDep = "MN")
+    fc1 <- allFitnessEffects(c1)
+    gfc1 <- evalAllGenotypes(fc1, order = FALSE)
+    gfc1o <- evalAllGenotypes(fc1, order = TRUE, max = 1956)
+    expect_true(all.equal(
+        gfc1[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
+        c(1.01, 1.02, 0.9, 1.03, 1.04, 0.95,
+          1.01 * c(1.02, 0.9, 1.03, 1.04, 0.95),
+          1.02 * c(0.90, 1.03, 1.04, 0.95),
+          0.9 * c(1.03, 1.04, 0.95),
+          1.03 * c(1.04, 0.95),
+          1.04 * 0.95,
+          1.01 * 1.02 * 1.1,
+          1.01 * 0.9 * 0.95,
+          1.03 * 1.04 * 0.95,
+          1.01 * 1.02 * 1.1 * 0.95,
+          1.03 * 1.04 * 1.2 * 0.9, ## notice this
+          1.01 * 1.02 * 1.03 * 1.04 * 1.1 * 1.2
+          )))
+    ## Verify all of the same name have same value
+    ## Beware this could fail for numerical issues.
+    nn <- gfc1o[, 1]
+    nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
+                                               collapse = ", ")))
+    expect_true(all( tapply(gfc1o$Fitness, nnn,
+                            function(x) length(unique(x))) == 1))
+    mo <- tapply(gfc1o$Fitness, nnn, mean)
+    mu <- tapply(gfc1$Fitness, gfc1[, 1], mean)
+    expect_true(all.equal(mo, mu))
+    ## type of dep for those from root does not matter
+    c1b <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                      child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                      sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
+                      typeDep = c("-", "--", "SM", "XMPN", rep("MN",5)))
+    fc1b <- allFitnessEffects(c1b)
+    gfc1b <- evalAllGenotypes(fc1b, order = FALSE)
+    expect_true(all.equal(gfc1, gfc1b))
+})
 
-fc1 <- allFitnessEffects(c1)
+
+## OR:
+
+test_that("Poset, OR, values and order no changes", {
+    s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                     child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                     s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                     sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
+                     typeDep = "SM")
+    fs1 <- allFitnessEffects(s1)
+    gfs1 <- evalAllGenotypes(fs1, order = FALSE)
+    gfs1o <- evalAllGenotypes(fs1, order = TRUE, max = 1956)
+    expect_true(all.equal(
+        gfs1[c(1:21, 22, 28, 41, 44, 56, 63, 39 ) , "Fitness"],
+        c(1.01, 1.02, 0.9, 1.03, 1.04, 0.95,
+          1.01 * c(1.02, 1.1, 1.03, 1.04, 0.95),
+          1.02 * c(1.1, 1.03, 1.04, 0.95),
+          0.9 * c(1.03, 1.04, 1.2),
+          1.03 * c(1.04, 1.2),
+          1.04 * 1.2,
+          1.01 * 1.02 * 1.1,
+          1.01 * 1.1 * 1.2, ## 28
+          1.03 * 1.04 * 1.2, ## 41
+          1.01 * 1.02 * 1.1 * 1.2, ## 44
+          0.9 * 1.03 * 1.04 * 1.2, ## notice this: 56
+          1.01 * 1.02 * 1.03 * 1.04 * 1.1 * 1.2,
+          0.9 * 1.03 * 1.2
+          )))
+    nn <- gfs1o[, 1]
+    nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
+                                               collapse = ", ")))
+    expect_true(all( tapply(gfs1o$Fitness, nnn,
+                            function(x) length(unique(x))) == 1))
+    mo <- tapply(gfs1o$Fitness, nnn, mean)
+    mu <- tapply(gfs1$Fitness, gfs1[, 1], mean)
+    expect_true(all.equal(mo, mu))
+    zzz <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                      child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                      sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
+                      typeDep = c("-", "--", "SM", "XMPN", rep("SM", 5)))
+    zzz <- allFitnessEffects(zzz)
+    zzz <- evalAllGenotypes(zzz, order = FALSE)
+    expect_true(all.equal(gfs1, zzz))
+})
+
+
+
+
+test_that("Poset, XOR, values and order no changes", {
+    x1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                     s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                     sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
+                     typeDep = "XMPN")
+    fx1 <- allFitnessEffects(x1)
+    gfx1 <- evalAllGenotypes(fx1, order = FALSE)
+    gfx1o <- evalAllGenotypes(fx1, order = TRUE, max = 1956)
+    expect_true(all.equal(
+        gfx1[c(1:21, 22, 28, 41, 44, 56, 63, 39 ) , "Fitness"],
+        c(1.01, 1.02, 0.1, 1.03, 1.04, 0.05,
+          1.01 * c(1.02, 1.1, 1.03, 1.04, 0.05),
+          1.02 * c(1.1, 1.03, 1.04, 0.05),
+          0.1 * c(1.03, 1.04, 1.2),
+          1.03 * c(1.04, 1.2),
+          1.04 * 1.2,
+          1.01 * 1.02 * 0.1, ## 22
+          1.01 * 1.1 * 1.2, ## 28
+          1.03 * 1.04 * 0.05, ## 41
+          1.01 * 1.02 * 0.1 * 1.2, ## 44
+          0.1 * 1.03 * 1.04 * 0.05, ## notice this: 56
+          1.01 * 1.02 * 1.03 * 1.04 * 0.1 * 0.05,
+          0.1 * 1.03 * 0.05
+          )))
+    nn <- gfx1o[, 1]
+    nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
+                                               collapse = ", ")))
+    expect_true(all( tapply(gfx1o$Fitness, nnn,
+                            function(x) length(unique(x))) == 1))
+    mo <- tapply(gfx1o$Fitness, nnn, mean)
+    mu <- tapply(gfx1$Fitness, gfx1[, 1], mean)
+    expect_true(all.equal(mo, mu))
+    zzz <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                      child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
+                      sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
+                      typeDep = c("SM", "-", "--", "XMPN", rep("XMPN", 5))) 
+    zzz <- allFitnessEffects(zzz)
+    zzz <- evalAllGenotypes(zzz, order = FALSE)
+    expect_true(all.equal(gfx1, zzz))
+})
+
+
+## this order thing gets boring. A function from now on
+
+fouo <- function(fe) {
+    uo <- evalAllGenotypes(fe, order = FALSE, max = 50000)
+    oo <- evalAllGenotypes(fe, order = TRUE, max = 50000)
+    nn <- oo[, 1]
+    nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
+                                               collapse = ", ")))
+    expect_true(all( tapply(oo$Fitness, nnn,
+                            function(x) length(unique(x))) == 1))
+    mo <- tapply(oo$Fitness, nnn, mean)
+    mu <- tapply(uo$Fitness, uo[, 1], mean)
+    ## expect_true(all.equal(mo, mu))
+    return(list(mu, mo))
+}
+
+test_that("Poset, all three effects", {
+    p3 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c", "f"),
+                  child = c("a", "b", "d", "e", "c", "c", "f", "f", "g", "g"),
+                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
+                  sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
+                  typeDep = c(rep("--", 4), 
+                      "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
+    fp3 <- allFitnessEffects(p3)
+    gfp3 <- evalAllGenotypes(fp3, order = FALSE)
+    expect_true(all.equal(gfp3[c(9, 24, 29, 59, 60, 66, 119, 120, 126, 127),
+                               "Fitness"],
+                          c(1.01 * 1.1, 1.03 * .05, 1.01 * 1.02 * 0.1, 0.1 * 0.05 * 1.3,
+                            1.03 * 1.04 * 1.2, 1.01 * 1.02 * 0.1 * 0.05,
+                            0.1 * 1.03 * 1.04 * 1.2 * 1.3,
+                            1.01 * 1.02 * 0.1 * 1.03 * 1.04 * 1.2,
+                            1.02 * 1.1 * 1.03 * 1.04 * 1.2 * 1.3,
+                            1.01 * 1.02 * 1.03 * 1.04 * 0.1 * 1.2 * 1.3)))
+    ouo <- fouo(fp3)
+    expect_true(all.equal(ouo[[1]], ouo[[2]]))
+})
+
+test_that("poset with all effects and modules, 1", {
+    p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
+                  child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
+                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
+                  sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
+                  typeDep = c(rep("--", 4), 
+                      "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
+    fp4m <- allFitnessEffects(p4,
+                              geneToModule = c("Root" = "Root", "A" = "a1",
+                              "B" = c("b1, b2"), "C" = "c1",
+                              "D" = c("d1, d2"), "E" = "e1",
+                              "F" = c("f1, f2"), "G" = "g1"))
+    gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
+    expect_true(all.equal(gfp4[c(12, 20, 21, 40, 41, 46,
+                                 50, 55, 64, 92, 155, 157,
+                                 163, 372, 632, 828), "Fitness"],
+                          c(1.01 * 1.02, 1.02, 1.02 * 1.1, 0.1 * 1.3, 1.03, 
+                            1.03 * 1.04, 1.04 * 0.05, 0.05 * 1.3,  
+                            1.01 * 1.02 * 0.1, 1.02 * 1.1, 0.1 * 0.05 * 1.3,
+                            1.03 * 0.05, 1.03 * 0.05,
+                            1.03 * 1.04 * 1.2, 1.03 * 1.04 * 1.2, 
+                            1.02 * 1.1 * 1.03 * 1.04 * 1.2 * 1.3)))
+})
+
+
+test_that("breaks if not all modules", {
+    p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
+                     child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
+                     s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
+                     sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
+                     typeDep = c(rep("--", 4), 
+                         "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
+    expect_error(allFitnessEffects(p4,
+                                   geneToModule = c("Root" = "Root", "A" = "a1",
+                                       "B" = c("b1, b2"), "C" = "c1",
+                                       "D" = c("d1, d2"), "E" = "e1",
+                                       "F" = c("f1, f2"))))
+})
+
 
 
 
 ## how is table geneModule with no ints? are they there?
-
-
-
 
 ## check it breaks if same ID
 
