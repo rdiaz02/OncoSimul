@@ -323,9 +323,7 @@ We can of course add modules. Beware that the number of genotypes is
 starting to grow quite fast, though. We use the same specification of
 poset, but add modules. To keep it manageable, we only add a few genes for
 some modules, and have some modules with a single gene. We capitalize to
-differentiate modules (capital letters) from genes (lowercase with a number).
-
-
+fferentiate modules (capital letters) from genes (lowercase with a number).
 <<>>=
 p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                   child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
@@ -335,9 +333,9 @@ p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                       "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
 fp4m <- allFitnessEffects(p4,
                           geneToModule = c("Root" = "Root", "A" = "a1",
-                              "B" = c("b1, b2"), "C" = "c1",
-                              "D" = c("d1, d2"), "E" = "e1",
-                              "F" = c("f1, f2"), "G" = "g1"))
+                              "B" = "b1, b2", "C" = "c1",
+                              "D" = "d1, d2", "E" = "e1",
+                              "F" = "f1, f2", "G" = "g1"))
 gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
 @ 
 
@@ -946,24 +944,24 @@ section \ref{pm3} but will also add:
   genes ``h1, h2'' and ``i1'', respectively), so that if H happens before
   I fitness increases by $1 + 0.12$.
 \item Synthetic mortality between modules ``I'' (already present in the
-  epistatic interaction) and ``K'' (with genes ``k1'' and ``k2''): the
+  epistatic interaction) and ``J'' (with genes ``j1'' and ``j2''): the
   joint presence of these modules leads to cell death (fitness of 0).
-\item Synthetic viability between modules ``L'' and ``M'' (with genes
-  ``l1'', ``l2'' and ``m1'', respectively), so that only their joint
-  presence is viable but adds nothing to fitness (i.e., mutation of both
-  has fitness $1$, but of each one without the other leads to fitness of
-  0).
+\item Synthetic viability between modules ``K'' and ``M'' (with genes
+  ``k1'', ``k2'' and ``m1'', respectively), so that their joint presence
+  is viable but adds nothing to fitness (i.e., mutation of both has
+  fitness $1$), whereas each single mutant has a fitness of $1 - 0.5$.
 \item A set of 5 driver genes ($n1, \ldots, n5$) with fitness that comes
   from an exponential distribution.
 \end{itemize}
 
 
 
-As we are specifying very many different things, we will start by writing
-each set of effects separately:
+As we are specifying many different things, we will start by writing each
+set of effects separately:
 
 
 <<>>=
+
 p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                  child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
@@ -972,20 +970,96 @@ p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
 
 oe <- c("C > F" = -0.1, "H > I" = 0.12)
-sm <- c("I:K"  = -1)
-sv <- c("-L:M" = -1, "L:-M" = -1)
+sm <- c("I:J"  = -1)
+sv <- c("-K:M" = -.5, "K:-M" = -.5)
 epist <- c(sm, sv)
 
 modules <- c("Root" = "Root", "A" = "a1",
-             "B" = c("b1, b2"), "C" = "c1",
-             "D" = c("d1, d2"), "E" = "e1",
-             "F" = c("f1, f2"), "G" = "g1")
+             "B" = "b1, b2", "C" = "c1",
+             "D" = "d1, d2", "E" = "e1",
+             "F" = "f1, f2", "G" = "g1",
+             "H" = "h1, h2", "I" = "i1",
+             "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
 
+set.seed(1) ## for repeatability
+noint <- rexp(5, 10)
+names(noint) <- paste0("n", 1:5)
 
+fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
+                         noIntGenes = noint, geneToModule = modules)
 
 @ 
 
+We will not evaluate the fitness of all genotypes, since the number of all
+order genotypes is $> 7*10^{22}$. We will look at some specific genotypes:
 
+<<>>=
+evalGenotype("k1 > i1 > h2", fea) ## 0.5
+evalGenotype("k1 > h1 > i1", fea) ## 0.5 * 1.12
+
+evalGenotype("k2 > m1 > h1 > i1", fea) ## 1.12
+
+evalGenotype("k2 > m1 > h1 > i1 > c1 > n3 > f2", fea) 
+## 1.12 * 0.1 * (1 + noint[3]) * 0.05 * 0.9
+
+@ 
+
+Finally, let's generate some genotypes randomly:
+
+<<>>=
+
+randomGenotype <- function(fe, ns = NULL) {
+    gn <- setdiff(c(fe$geneModule$Gene,
+                    fe$long.geneNoInt$Gene), "Root")
+    if(is.null(ns)) ns <- sample(length(gn), 1)
+    return(paste(sample(gn, ns), collapse = " > "))
+}
+
+set.seed(2) ## for reproducibility
+
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  k2 > i1 > c1 > n1 > m1
+##  Individual s terms are : 0.0755182 -0.9
+##  Fitness:  0.107552 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  n2 > h1 > h2
+##  Individual s terms are : 0.118164
+##  Fitness:  1.11816 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  d2 > k2 > c1 > f2 > n4 > m1 > n3 > f1 > b1 > g1 > n5 > h1 > j2
+##  Individual s terms are : 0.0145707 0.0139795 0.0436069 0.02 0.1 0.03 -0.95 0.3 -0.1
+##  Fitness:  0.0725829 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  h2 > c1 > f1 > n2 > b2 > a1 > n1 > i1
+##  Individual s terms are : 0.0755182 0.118164 0.01 0.02 -0.9 -0.95 -0.1 0.12
+##  Fitness:  0.00624418 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  h2 > j1 > m1 > d2 > i1 > b2 > k2 > d1 > b1 > n3 > n1 > g1 > h1 > c1 > k1 > e1 > a1 > f1 > n5 > f2
+##  Individual s terms are : 0.0755182 0.0145707 0.0436069 0.01 0.02 -0.9 0.03 0.04 0.2 0.3 -1 -0.1 0.12
+##  Fitness:  0 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  n1 > m1 > n3 > i1 > j1 > n5 > k1
+##  Individual s terms are : 0.0755182 0.0145707 0.0436069 -1
+##  Fitness:  0 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  d2 > n1 > g1 > f1 > f2 > c1 > b1 > d1 > k1 > a1 > b2 > i1 > n4 > h2 > n2
+##  Individual s terms are : 0.0755182 0.118164 0.0139795 0.01 0.02 -0.9 0.03 -0.95 0.3 -0.5
+##  Fitness:  0.00420528 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  j1 > f1 > j2 > a1 > n4 > c1 > n3 > k1 > d1 > h1
+##  Individual s terms are : 0.0145707 0.0139795 0.01 0.1 0.03 -0.95 -0.5
+##  Fitness:  0.0294308 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  n5 > f2 > f1 > h2 > n4 > c1 > n3 > b1
+##  Individual s terms are : 0.0145707 0.0139795 0.0436069 0.02 0.1 -0.95
+##  Fitness:  0.0602298 
+evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
+## Genotype:  h1 > d1 > f2
+##  Individual s terms are : 0.03 -0.95
+##  Fitness:  0.0515 
+
+
+@ 
 
 \section{Some examples from the literature}
 \subsection{Bauer et al}
