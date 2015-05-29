@@ -85,6 +85,16 @@ BiocStyle::latex()
 \tableofcontents
 
 
+%%FIXME remove later!
+<<>>=
+library(OncoSimulR)
+library(graph)
+
+source("new-restrict.R")
+
+@ 
+
+\section{Specifying fitness effects}
 \subsection{Specifying modules}
 
 Why do we force you to specify ``Root'' = ``Root''? We could check for it,
@@ -98,6 +108,8 @@ root but is called ``Root'', etc).
 
 \subsubsection{A conjunction example}\label{cbn1}
 
+
+
 Let's try a first attempt
 <<>>=
 
@@ -107,7 +119,8 @@ c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
                  typeDep = "MN")
 
-fc1 <- allFitnessEffects(c1)
+try(fc1 <- allFitnessEffects(c1))
+
 @ 
 
 That is an error because the ``sh'' varies within a child, and we do not
@@ -128,7 +141,7 @@ We fix the error in our specification. Notice that the ``sh'' is not set
 to $-1$ in these examples. If you want strict compliance with the poset
 restrictions, you should set $sh = -1$, but having an $sh > -1$ will lead
 to fitnesses that are $> 0$ and, thus, is a way of modeling small
-deviations from the poset (see discussion in \cite{xx: paper BMCBionfo}).
+deviations from the poset (see discussion in xx: paperBMC\cite{xx:paper_BMCBionfo}).
 
 In these examples, the reason to set ``sh'' to values larger than $-1$ and
 different among the genes is to allow us to easily see the actual,
@@ -271,7 +284,8 @@ here:
 <<>>=
 gfx1[28, ] 
 1.01 * 1.1 * 1.2
-@ as ``c'' is satisfied by one, and ``g'' too, this is in the
+@ 
+as ``c'' is satisfied by one, and ``g'' too, this is in the
 ``semimonotone'' situatione.
 
 But 
@@ -377,7 +391,9 @@ o3 <- allFitnessEffects(orderEffects = c(
 
 
 (ag <- evalAllGenotypes(o3))
-@ The values for the first nine genotypes come directly from the fitness
+@ 
+
+The values for the first nine genotypes come directly from the fitness
 specifications. The 10th genotype matches ``D > F > M'' ($= (1 + 0.4)$)
 but also ``D > M'' ($(1 + 0.1)$). The 11th matches ``D > M > F'' and ``D >
 M''. The 12th matches ``F > D > M'' but also ``D > M''. Etc.
@@ -685,7 +701,9 @@ evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
 
 \subsection{Synthetic mortality or synthetic lethality}\label{sl}
 
-This is like a revert pattern with respect to synthetic viability \ref{sv}.
+This is like a revert pattern with respect to synthetic viability in
+section \ref{sv}.
+
 \begin{tabular} {c c c}
   A & B & Fitness \\
   \hline
@@ -696,7 +714,7 @@ This is like a revert pattern with respect to synthetic viability \ref{sv}.
   \hline
 \end{tabular}
 
-where $s_a, s_b > 0$ but $s_{ab} << 0$. 
+where $s_a, s_b > 0$ but $s_{ab} < 0$. 
 
 
 <<>>=
@@ -780,7 +798,7 @@ effects. See also section \ref{theminus} and \ref{e3}.
 
 Suppose we have 
 
-\begin{tabular} {c c c}
+\begin{tabular} {c c c c}
   A & B & C & Fitness \\
   \hline
   M & wt & wt & $1 + s_a$ \\
@@ -845,7 +863,7 @@ E3B <- allFitnessEffects(epistasis =
                                "C" = sc,
                                "A:B" = Sab,
                                "B:C" = Sbc,
-                               ## "A:C" = sac,
+                               ## "A:C" = sac, ## not needed now
                                "A : B : C" = Sabc)
                                                 )
 evalAllGenotypes(E3B, order = FALSE, addwt = FALSE)
@@ -876,6 +894,8 @@ Let's think we want to specify the synthetic viability example seen before:
   M&M& (1 + s)\\
   \hline
 \end{tabular}
+
+
 where ``wt'' denotes wild type and ``M'' denotes mutant.
 
 If you want to directly map the above table to the fitness table for the
@@ -1114,15 +1134,16 @@ Yes, do it: as -p,s1, and -p,s2, etc.
 Can we use modules in this module? Sure, as in any other.
 
 
-\subsection{Testing of mappings}
+%% \subsection{Testing of mappings}
 
-The mapping of restriction tables, epistasis, and order effects to
-fitness, especially when there are modules, is a delicate part of the
-code: reasonable cases are straightforward to deal with, but there are
-many ways to shoot oneself in the foot. That is why we have placed lots of
-pre- and post-condition checks in the code (both R and C++), and we have a
-comprehensive set of tests in file zz. You are welcome to suggest more
-tricky scenarios (and tests for them).
+%% The mapping of restriction tables, epistasis, and order effects to
+%% fitness, especially when there are modules, is a delicate part of the
+%% code: reasonable cases are straightforward to deal with, but there are
+%% many ways to shoot oneself in the foot. That is why we have placed lots of
+%% pre- and post-condition checks in the code (both R and C++), and we have a
+%% comprehensive set of tests in file zz. You are welcome to suggest more
+%% tricky scenarios (and tests for them).
+
 
 %% \section{Introduction}
 
