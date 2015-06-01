@@ -257,7 +257,7 @@ checkRT <- function(mdeps) {
 
 
 
-
+## get this to return a graph object ready for plotting.
 
 allFitnessEffects <- function(rT = NULL,
                               epistasis = NULL,
@@ -549,6 +549,27 @@ print.genotToFitness <- function(x) {
 
 
 
+
+## plotting 
+require(igraph)
+uu <- graph.data.frame(c1)
+uuu <- igraph.to.graphNEL(uu)
+plot(uu, layout = layout.reingold.tilford(uu, root = "Root"))
+plot(uuu) ## this is simpler to see?
+
+
+p4g <- graph.data.frame(p4)
+plot(p4g, layout = layout.reingold.tilford(p4g, root = "Root"))
+E(p4g)$typeDep
+
+## this conversion will take arguments: the colors
+E(p4g)$color <- "black"
+E(p4g)$color[E(p4g)$typeDep == "SM"] <- "blue"
+E(p4g)$color[E(p4g)$typeDep == "XMPN"] <- "red"
+
+plot(p4g, layout = layout.reingold.tilford(p4g, root = "Root"))
+
+
 ## FIXME
 ## - print.genotToFitness?
 ## - wrap.test.rt and evalGenotype
@@ -559,3 +580,16 @@ print.genotToFitness <- function(x) {
 
 
 
+fitnessEffectsToigraph <- function(rT, epistasis, orderEffects,
+                                   geneToModule) {
+
+    df0 <- data.frame()
+    if(!is.null(rT)) {
+        df0 <- rT
+    }
+    if(!is.null(epistatis)) {
+        df1 <- 
+    }
+
+
+}
