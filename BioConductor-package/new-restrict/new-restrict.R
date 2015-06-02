@@ -27,11 +27,11 @@ gtm2 <- function(x) {
     data.frame(cbind(nice.vector.eo(x, ","), x))
 }
 
-nice.vector.eo <- function(z, sep) {
-    ## with epistasis, maybe we want sorted?
-    setdiff(unlist(lapply(strsplit(z, " "),
-                                    function(u) strsplit(u, sep))), "")
-}
+## nice.vector.eo <- function(z, sep) {
+##     ## with epistasis, maybe we want sorted?
+##     setdiff(unlist(lapply(strsplit(z, " "),
+##                                     function(u) strsplit(u, sep))), "")
+## }
 
 nice.vector.eo <- function(z, sep, rm.sign = FALSE) {
     ## with epistasis, maybe we want sorted?
@@ -433,8 +433,9 @@ allFitnessEffects <- function(rT = NULL,
                 long.geneNoInt = geneNoInt,
                 geneModule = geneModule,
                 gMOneToOne = gMOneToOne,
-                graph = fitnessEffectsToIgraph(rT, epistasis, orderEffects,
-                                               geneToModule))
+                geneToModule = geneToModule,
+                graph = fitnessEffectsToIgraph(rT, epistasis, orderEffects)
+                )
     class(out) <- c("fitnessEffects")
     return(out)
 }
@@ -591,14 +592,12 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
                      stringsAsFactors = FALSE)
     if(addwt)
         df <- rbind(data.frame(Genotype = "wt", Fitness = 1,
-                               stringsAsFactors = FALSE),
-                    df)
+                               stringsAsFactors = FALSE), df)
     return(df)
 }
 
 
-fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects,
-                                   geneToModule) {
+fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects) {
 
     df0 <- df1 <- df2 <- data.frame()
              
@@ -629,14 +628,23 @@ fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects,
 
 
 plotFitnessEffects <- function(fe, type = "graphNEL",
-                               layout = NULL) {
+                               layout = NULL,
+                               expandModules = FALSE) {
     ## some other layouts I find OK
     ## layout.circle
     ## layout.reingold.tilford if really a tree
     ## o.w. it will use the default
     g <- fe$graph
-    if(type == "igraph")
+
+    
+    if(type == "igraph") {
+        if(expandModules && (!fe$gMOneToOne)) {
+            ## vlabels <- fe$geneToModule[vertex.attributes(g)$name]
+            vlabels <- fe$geneToModule[V(g)$name]
+            V(g)$label <- vlabels
+        }
         plot(g, layout = layout)
+    }
     else if (type == "graphNEL") {
         g1 <- igraph.to.graphNEL(g)
         c1 <- unlist(lapply(edgeData(g1), function(x) x$color))
@@ -648,12 +656,18 @@ plotFitnessEffects <- function(fe, type = "graphNEL",
         lwd <- s1
         lwd[lwd == 2] <- 2 ## o.w. too thin
         lwd[lwd == 3] <- 2 ## o.w. too thin
+        nAttrs <- list()
+        if(expandModules && (!fe$gMOneToOne)) {
+            nnodes <- fe$geneToModule[nodes(g1)]
+            names(nnodes) <- nodes(g1)
+            nAttrs$label <- nnodes
+        }
         plot(g1, edgeAttrs = list(arrowsize = a1, lty = s1, lwd = lwd,
-                     color = c1))
+                     color = c1),
+             nodeAttrs = nAttrs)
     } else {
         stop("plot type not recognized")
     }
 }
-
 
 plot.fitnessEffects <- plotFitnessEffects

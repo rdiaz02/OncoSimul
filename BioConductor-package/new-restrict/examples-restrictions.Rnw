@@ -386,6 +386,7 @@ starting to grow quite fast, though. We use the same specification of
 poset, but add modules. To keep it manageable, we only add a few genes for
 some modules, and have some modules with a single gene. We capitalize to
 fferentiate modules (capital letters) from genes (lowercase with a number).
+
 <<>>=
 p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                   child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
@@ -398,6 +399,29 @@ fp4m <- allFitnessEffects(p4,
                               "B" = "b1, b2", "C" = "c1",
                               "D" = "d1, d2", "E" = "e1",
                               "F" = "f1, f2", "G" = "g1"))
+@ 
+
+Plotting is simple
+<<>>=
+plot(fp4m)
+@ 
+
+and we can show the gene names instead of the module names:
+
+<<>>=
+plot(fp4m, expandModules = TRUE)
+@ 
+
+or
+
+<<>>=
+plot(fp4m, "igraph", layout = layout.reingold.tilford, 
+     expandModules = TRUE)
+
+@ 
+
+We obtain the fitness of all genotypes in the usual way:
+<<>>=
 gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
 @ 
 
@@ -1077,6 +1101,18 @@ or
 <<>>=
 plot(fea, "igraph")
 @ 
+
+
+We can, if we want, expand the modules using a ``graphNEL'' graph
+<<>>=
+plot(fea, expandModules = TRUE)
+@ 
+
+or an ``igraph'' one:g
+<<>>=
+plot(fea, "igraph", expandModules = TRUE)
+@ 
+
 
 We will not evaluate the fitness of all genotypes, since the number of all
 order genotypes is $> 7*10^{22}$. We will look at some specific genotypes:
