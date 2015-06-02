@@ -1,3 +1,0 @@
-# combine with standard arguments for R
-PKG_CPPFLAGS = -fno-inline `${R_HOME}/bin/Rscript -e "RcppGSL:::CFlags()"` -I../inst/include -fno-inline -Wall -O0 -g
-PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` ` ${R_HOME}/bin/Rscript -e "RcppGSL:::LdFlags()"` $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -lgmpxx -lgmp
