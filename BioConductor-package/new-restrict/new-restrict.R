@@ -6,6 +6,7 @@ library(data.table)
 library(Rcpp)
 library(gtools) ## for permutations
 ## setwd("../../")
+library(igraph)
 
 sourceCpp("new-restrict.cpp", verbose = TRUE)
 ## sourceCpp("t1.cpp", verbose = TRUE)
@@ -31,6 +32,17 @@ nice.vector.eo <- function(z, sep) {
     setdiff(unlist(lapply(strsplit(z, " "),
                                     function(u) strsplit(u, sep))), "")
 }
+
+nice.vector.eo <- function(z, sep, rm.sign = FALSE) {
+    ## with epistasis, maybe we want sorted?
+    if(! rm.sign)
+        return(setdiff(unlist(lapply(strsplit(z, " "),
+                              function(u) strsplit(u, sep))), ""))
+    else ## remove the " ", the -, and the sep
+        return(setdiff(unlist(lapply(strsplit(z, " "), function(u)
+            strsplit(unlist(strsplit(u, "-")), sep))), ""))
+}
+
 
 gm.to.geneModuleL <- function(gm, one.to.one) {
     ## the table will be sorted by gene name
@@ -183,19 +195,59 @@ to.long.rt <- function(rt, idm, verbosity = 0) {
 }
 
 
-epist.order.element <- function(x, y, sep) {
-    list(ids = nice.vector.eo(x, sep = sep), s = y)
+epist.order.element <- function(x, y, sep, rm.sign = FALSE) {
+    list(ids = nice.vector.eo(x, sep = sep, rm.sign = rm.sign), s = y)
+}
+
+oe.to.df <- function(x) {
+    ma <- matrix(ncol = 2, nrow = 1 + length(x) - 2)
+    if(length(x) == 2) {
+        ma[1, 1] <- x[1]
+        ma[1, 2] <- x[2]
+    } else {
+        ma[, 1] <- x[-length(x)]
+        ma[, 2] <- x[-1]
+    }
+    return(data.frame(ma, stringsAsFactors = FALSE))
 }
 
 
-to.long.epist.order <- function(epor, sep) {
-    if(is.vector(epor))
-        long <- Map(function(x, y) epist.order.element(x, y, sep),
-                       names(epor), epor)
-    else if(is.data.frame(epor)) 
-        long <- Map(function(x, y) epist.order.element(x, y, sep),
-                    as.character(epor$ids),
-                    epor$s)
+epist.order.to.pairs.modules <- function(x, sep, rm.sign = TRUE) {
+    ## We discard, do not even accept, the coefficient
+    tmp <- epist.order.element(x, -99, sep = sep, rm.sign = rm.sign)$ids
+    if(sep == ":")
+        return(data.frame(combinations(n = length(tmp), r = 2, v = tmp),
+                          stringsAsFactors = FALSE))
+    else if(sep == ">") {
+        return(oe.to.df(tmp))
+    }
+}
+
+to.pairs.modules <- function(x, sep, rm.sign = TRUE) {
+    df <- data.frame(rbindlist(
+        lapply(names(x),
+               function(z) epist.order.to.pairs.modules(z, sep))))
+    colnames(df) <- c("parent", "child")
+    if(sep == ":")
+        df$typeDep <- "epistasis"
+    else if(sep == ">")
+        df$typeDep <- "orderEffect"
+    return(unique(df))
+}
+
+
+
+to.long.epist.order <- function(epor, sep, rm.sign = FALSE) {
+    ## just vectors for now
+    long <- Map(function(x, y) epist.order.element(x, y, sep, rm.sign),
+                names(epor), epor)
+    ## if(is.vector(epor))
+    ##     long <- Map(function(x, y) epist.order.element(x, y, sep, rm.sign),
+    ##                    names(epor), epor)
+    ## else if(is.data.frame(epor)) 
+    ##     long <- Map(function(x, y) epist.order.element(x, y, sep, rm.sign),
+    ##                 as.character(epor$ids),
+    ##                 epor$s)
     names(long) <- NULL
     return(long)
 }
@@ -374,15 +426,19 @@ allFitnessEffects <- function(rT = NULL,
     if( (length(long.rt) + length(long.epistasis) + length(long.orderEffects) +
              nrow(geneNoInt)) == 0)
         stop("You have specified nothing!")
+    
     out <- list(long.rt = long.rt,
                 long.epistasis = long.epistasis,
                 long.orderEffects = long.orderEffects,
                 long.geneNoInt = geneNoInt,
                 geneModule = geneModule,
-                gMOneToOne = gMOneToOne)
+                gMOneToOne = gMOneToOne,
+                graph = fitnessEffectsToIgraph(rT, epistasis, orderEffects,
+                                               geneToModule))
     class(out) <- c("fitnessEffects")
     return(out)
 }
+
 
 
 rtAndGeneModule <- function(mdeps, gM = NULL) {
@@ -541,55 +597,63 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
 }
 
 
-
-print.genotToFitness <- function(x) {
-    print(x$rt)
-
-}
-
-
-
-
-## plotting 
-require(igraph)
-uu <- graph.data.frame(c1)
-uuu <- igraph.to.graphNEL(uu)
-plot(uu, layout = layout.reingold.tilford(uu, root = "Root"))
-plot(uuu) ## this is simpler to see?
-
-
-p4g <- graph.data.frame(p4)
-plot(p4g, layout = layout.reingold.tilford(p4g, root = "Root"))
-E(p4g)$typeDep
-
-## this conversion will take arguments: the colors
-E(p4g)$color <- "black"
-E(p4g)$color[E(p4g)$typeDep == "SM"] <- "blue"
-E(p4g)$color[E(p4g)$typeDep == "XMPN"] <- "red"
-
-plot(p4g, layout = layout.reingold.tilford(p4g, root = "Root"))
-
-
-## FIXME
-## - print.genotToFitness?
-## - wrap.test.rt and evalGenotype
-## - getting epistatis and order in C++
-## - testing of examples in C++: several genotypes with evalGenotype
-##      - see below for synthetic lethality, etc, examples
-##      - add XOR example: it is done via epistasis code.
-
-
-
-fitnessEffectsToigraph <- function(rT, epistasis, orderEffects,
+fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects,
                                    geneToModule) {
 
-    df0 <- data.frame()
+    df0 <- df1 <- df2 <- data.frame()
+             
     if(!is.null(rT)) {
-        df0 <- rT
+        df0 <- rT[, c("parent", "child", "typeDep")]
     }
-    if(!is.null(epistatis)) {
-        df1 <- 
+    if(!is.null(epistasis)) {
+        df1 <- to.pairs.modules(epistasis, ":")
     }
-
-
+    if(!is.null(orderEffects)) {
+        df2 <- to.pairs.modules(orderEffects, ">")
+    }
+    df <- rbind(df0, df1, df2)
+    g1 <- graph.data.frame(df)
+    E(g1)$color <- "black"
+    E(g1)$color[E(g1)$typeDep == "SM"] <- "blue"
+    E(g1)$color[E(g1)$typeDep == "XMPN"] <- "red"
+    E(g1)$color[E(g1)$typeDep == "epistasis"] <- "orange"
+    E(g1)$color[E(g1)$typeDep == "orderEffect"] <- "orange"
+    E(g1)$lty <- 1
+    E(g1)$lty[E(g1)$typeDep == "epistasis"] <- 2
+    E(g1)$lty[E(g1)$typeDep == "orderEffect"] <- 3
+    E(g1)$arrow.mode <- 2
+    E(g1)$arrow.mode[E(g1)$typeDep == "epistasis"] <- 0
+    E(g1)$arrow.mode[E(g1)$typeDep == "orderEffect"] <- 2
+    return(g1)
 }
+
+
+plotFitnessEffects <- function(fe, type = "graphNEL",
+                               layout = NULL) {
+    ## some other layouts I find OK
+    ## layout.circle
+    ## layout.reingold.tilford if really a tree
+    ## o.w. it will use the default
+    g <- fe$graph
+    if(type == "igraph")
+        plot(g, layout = layout)
+    else if (type == "graphNEL") {
+        g1 <- igraph.to.graphNEL(g)
+        c1 <- unlist(lapply(edgeData(g1), function(x) x$color))
+        names(c1) <- sub("|", "~", names(c1), fixed = TRUE)
+        s1 <- unlist(lapply(edgeData(g1), function(x) x$lty))
+        names(s1) <- names(c1)
+        a1 <- unlist(lapply(edgeData(g1), function(x) max(x$arrow.mode - 1, 0)))
+        names(a1) <- names(c1)
+        lwd <- s1
+        lwd[lwd == 2] <- 2 ## o.w. too thin
+        lwd[lwd == 3] <- 2 ## o.w. too thin
+        plot(g1, edgeAttrs = list(arrowsize = a1, lty = s1, lwd = lwd,
+                     color = c1))
+    } else {
+        stop("plot type not recognized")
+    }
+}
+
+
+plot.fitnessEffects <- plotFitnessEffects

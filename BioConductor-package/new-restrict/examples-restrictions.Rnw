@@ -134,8 +134,6 @@ in section \ref{epi} and order effects as in section \ref{oe}.
 and typeDep columns, so no need to specify \texttt{stringsAsFactor = TRUE}).
 
 
-zz: plot the poset!
-
 
 We fix the error in our specification. Notice that the ``sh'' is not set
 to $-1$ in these examples. If you want strict compliance with the poset
@@ -162,6 +160,19 @@ c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
 fc1 <- allFitnessEffects(c1)
 
 @ 
+
+We can get a graphical representation using the default ``graphNEL''
+<<>>=
+plot(fc1)
+@ 
+
+or one using ``igraph'':
+<<>>=
+plot(fc1, "igraph", layout = layout.reingold.tilford)
+@ 
+
+(since this is a tree, the reingold.tilford layout is probably the best here).
+
 
 What is the fitness of all possible genotypes? Here, order of events
 \textit{per se} does not matter, beyond that considered in the poset. In
@@ -228,6 +239,16 @@ s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  typeDep = "SM")
 
 fs1 <- allFitnessEffects(s1)
+
+@ 
+
+It looks like this:
+<<>>=
+plot(fs1)
+@ 
+
+
+<<>>=
 gfs1 <- evalAllGenotypes(fs1, order = FALSE)
 
 @ 
@@ -257,6 +278,17 @@ x1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  typeDep = "XMPN")
 
 fx1 <- allFitnessEffects(x1)
+
+@ 
+
+
+It looks like this:
+<<>>=
+plot(fx1)
+@ 
+
+<<>>=
+
 gfx1 <- evalAllGenotypes(fx1, order = FALSE)
 
 @ 
@@ -308,11 +340,27 @@ p3 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c", "f"),
                   typeDep = c(rep("--", 4), 
                       "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
 fp3 <- allFitnessEffects(p3)
+@ 
+
+This is how it looks like:
+<<>>=
+plot(fp3)
+@ 
+
+We can also use ``igraph'':
+
+<<>>=
+plot(fp3, "igraph", layout.reingold.tilford)
+@ 
+
+
+<<>>=
+
 gfp3 <- evalAllGenotypes(fp3, order = FALSE)
 
 @ 
 
-zz: plot the relationship
+
 
 Let's look at a few:
 <<>>=
@@ -698,6 +746,13 @@ And if we look at order, of course it makes no difference:
 evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
 @ 
 
+%% And it looks like:
+
+%% <<>>=
+%% plot(sv2)
+%% @ 
+
+%% a fairly simple plot.
 
 \subsection{Synthetic mortality or synthetic lethality}\label{sl}
 
@@ -1010,6 +1065,19 @@ fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
 
 @ 
 
+
+How does it look?
+
+<<>>=
+plot(fea)
+@ 
+
+or
+
+<<>>=
+plot(fea, "igraph")
+@ 
+
 We will not evaluate the fitness of all genotypes, since the number of all
 order genotypes is $> 7*10^{22}$. We will look at some specific genotypes:
 
@@ -1105,16 +1173,24 @@ bauer <- data.frame(parent = c("Root", rep("p", 5)),
                     typeDep = "MN",
                     stringsAsFactors = FALSE)
 
+fb <- allFitnessEffects(bauer)
 @ 
 
+It looks like this:
 <<>>=
-b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
+plot(fb)
+@ 
+
+
+
+<<>>=
+b1 <- evalAllGenotypes(fb, order = FALSE)
 @ 
 
 Order makes no difference
 
 <<>>=
-b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
+b2 <- evalAllGenotypes(fb, order = TRUE, max = 2000)
 @ 
 
 And number of levels is right one: 11
