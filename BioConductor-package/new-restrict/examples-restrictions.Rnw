@@ -385,7 +385,7 @@ We can of course add modules. Beware that the number of genotypes is
 starting to grow quite fast, though. We use the same specification of
 poset, but add modules. To keep it manageable, we only add a few genes for
 some modules, and have some modules with a single gene. We capitalize to
-fferentiate modules (capital letters) from genes (lowercase with a number).
+differentiate modules (capital letters) from genes (lowercase with a number).
 
 <<>>=
 p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
