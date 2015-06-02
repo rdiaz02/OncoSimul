@@ -1,3 +1,0 @@
-useDynLib(OncoSimulT)
-## exportPattern("^[[:alpha:]]+")
-exportPattern("^[^\\.]") ## anything that does not start with a period
