@@ -95,6 +95,69 @@ source("new-restrict.R")
 @ 
 
 \section{Specifying fitness effects}
+
+\subsection{Introduction}
+
+With OncoSimulR you can specify different types of effects on fitness:
+
+\begin{itemize}
+\item General epistatic effects (e.g., section \ref{epi}), including
+  synthetic viability (e.g., section \ref{sv}) and synthetic
+  lethality/mortality (e.g., section \ref{sl}).
+  
+  
+\item Effects where the order in which mutations are acquired matter, as
+  illustrated in section \ref{oe}. There is, in fact, empirical evidence
+  of these effects \cite{xx}. For instance, the fitness of genotype ``A,
+  B'' would differ depending on whether A or B was acquired first. 
+
+\item A special type of epistatic effects that is particularly amenable to
+  be represented as a graph. In this graph, having, say, ``B'' be a child
+  of ``A'' means that B can only accumulate if A is already present.  This
+  is what OT, CBN, etc, blablablabla.
+  
+  Note that this is not an order effect. If the restrictions in the graph
+  are satisfied, how they were satisfied is irrelevant.
+
+\item Genes that have independent effects on fitness.
+  
+\end{itemize}
+
+
+\subsubsection{How to specify those effects}
+
+A guiding design principle of OncoSimulR is to try to make the
+specification of those effects as simple as possible but also as flexible
+as possible. 
+
+Conceptually, the simplest way is to specify the mapping of genotypes to
+fitness explicitly. This can be done with OncoSimulR (e.g., see sections
+\ref{e2}, \ref{e3} and \ref{theminus} or the example in \ref{weis1b}), but
+this only works well for subsets of the genes or for very small genotypes,
+as you probably do not want to be explicit about the mapping of $2^k$
+genotypes to fitness when $k$ is larger than, say, four or five, and
+definitely not when $k$ is 10.
+
+
+An alternative general approach followed in many genetic simulators is to
+specify how particular combinations of alleles modify the wildtype
+genotype or the genotype that contains the individual effects of the
+interacting genes (e.g., see equation 1 in the supplementary material for
+FFPopSim ).  For example, if we specify that ``A'' adds 0.04, ``B'' adds
+0.03, and ``A:B'' adds 0.1, that means that the fitness of the ``A, B''
+genotype is that of the wildtype (1, by default), plus the effects of A,
+plus the effects of B, plus the effects of ``A:B''. 
+
+
+As we will see in the examples (e.g., see sections\ref{e2}, \ref{e3},
+\ref{exlong}) OncoSimulR makes it simple to be explicit about the mapping
+of specific genotypes, while also useing the ``how this specific effects
+modifies previous effects'' logic, leading to a flexible
+specification. This also means that in many cases, the same fitness
+effects can be specified in very different ways.
+
+
+
 \subsection{Specifying modules}
 
 Why do we force you to specify ``Root'' = ``Root''? We could check for it,
@@ -106,11 +169,58 @@ root but is called ``Root'', etc).
 
 \subsection{Order restrictions as posets}
 
-\subsubsection{A conjunction example}\label{cbn1}
+
+\subsubsection{A first conjunction example}\label{cbn1}
+
+<<>>=
+
+cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = 0.1,
+                 sh = -0.9,
+                 typeDep = "MN")
+
+fcs <- allFitnessEffects(cs)
+
+@ 
+
+We can get a graphical representation using the default ``graphNEL''
+<<>>=
+plot(fcs)
+@ 
+
+or one using ``igraph'':
+<<>>=
+plot(fcs, "igraph", layout = layout.reingold.tilford)
+@ 
+
+(since this is a tree, the reingold.tilford layout is probably the best here).
+
+
+And what is the fitness of all genotypes?
+
+<<>>=
+
+gfs <- evalAllGenotypes(fcs, order = FALSE)
+
+gfs[1:15, ]
+@
+
+You can verify that for each genotype, if a mutation is present without
+all of its dependencies present, you get a $(1 - 0.9)$ multiplier, and you
+get a $(1 + 0.1)$ multiplier for all the rest with its direct parents
+satisfied. For example, genotypes ``a'', or ``b'', or ``d'', or ``e'' have
+fitness $(1 + 0.1)$, genotype ``a, b, c'' has fitness $(1 + 0.1)^3$, but
+genotype ``a, c'' has fitness $(1 + 0.1) (1 - 0.9) = 0.11$.
 
 
 
-Let's try a first attempt
+\subsubsection{A second conjunction example}\label{cbn2}
+
+
+
+Let's try a first attempt at a somewhat more complex example, where the
+fitness consequences of different genes differ.
 <<>>=
 
 c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
@@ -173,6 +283,8 @@ plot(fc1, "igraph", layout = layout.reingold.tilford)
 
 (since this is a tree, the reingold.tilford layout is probably the best here).
 
+This figures, of course, are the same as in the example in section
+\ref{cbn1}, since the structure has not changed, only the numeric values.
 
 What is the fitness of all possible genotypes? Here, order of events
 \textit{per se} does not matter, beyond that considered in the poset. In
@@ -304,14 +416,14 @@ c(1.01 * 1.02 * 0.1, 1.03 * 1.04 * 0.05)
 @ 
 
 However, having just both ``a'' and ``b'' is identical to the case with
-CBN and the monotone relationship (see sections \ref{cbn1} and
+CBN and the monotone relationship (see sections \ref{cbn2} and
 \ref{mn1}). If you want the joint presence of ``a'' and ``b'' to result in
 different fitness, you can specify that using general epistatic effects
 (section \ref{epi}); XOR relationships of these kind are, actually,
 examples of synthetic lethality, which are shown in section \ref{sl}.
 
 
-We also see a very different pattern compared to CBN (section \ref{cbn1})
+We also see a very different pattern compared to CBN (section \ref{cbn2})
 here:
 <<>>=
 gfx1[28, ] 
@@ -729,6 +841,9 @@ difference:
 evalAllGenotypes(sv, order = TRUE, addwt = TRUE)
 @ 
 
+Another example is shown in section \ref{misra1b}.
+
+
 \subsubsection{Synthetic viability, non-zero fitness and modules}
 
 This is a slightly more elaborate case, where there is one module and the
@@ -869,9 +984,13 @@ Note that this is the way you would specify effects with FFPopsim
 \cite{xx}. Whether this specification or the previous one with ``-'' is
 simpler will depend on the model. For synthetic mortality and viability, I
 think the one using ``-'' is simpler to map genotype tables to fitness
-effects. See also section \ref{theminus} and \ref{e3}.
+effects. See also section \ref{theminus} and \ref{e3} and the example in
+section \ref{weis1b}.
 
 
+Finally, note that we can also specify some of these effects by combining
+the graph and the epistasis, as shown in section \ref{misra1a} or
+\ref{weis1b}.
 
 \subsubsection{Epistasis with three genes and two alternative specifications}\label{e3}
 
@@ -1193,31 +1312,38 @@ driver mutation, each secondary driver mutation leads to a change in the
 cell's fitness by $s_P$. For cells with the primary driver mutation, the
 fitness advantage obtained with each secondary driver mutation is $s_{DP}$.''
 
-They set apopsotis as 1 - proliferation. So, forgetting constants such as
-$1/2$, we can set a table as:
+The proliferation probability is given as $(1 + s_p)^k$ when there are $k$
+secondary drivers mutated and no primary diver. If the primary driver is
+mutated, then the expression is $\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$.
+They set apoptosis as $1 - proliferation$.  So, forgetting constants such
+as $1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a
+table as (for a largest $k$ of 5 in this example, but can make it
+arbitrarily large):
 
-typeDep is irrelevant
 <<>>=
+
+K <- 5
 sd <- 0.1
 sdp <- 0.15
 sp <- 0.05
-
-bauer <- data.frame(parent = c("Root", rep("p", 5)),
-                    child = c("p", paste0("s", 1:5)),
-                    s = c(sd, rep(sdp, 5)),
-                    sh = c(0, rep(sp, 5)),
+bauer <- data.frame(parent = c("Root", rep("p", K)),
+                    child = c("p", paste0("s", 1:K)),
+                    s = c(sd, rep(sdp, K)),
+                    sh = c(0, rep(sp, K)),
                     typeDep = "MN",
                     stringsAsFactors = FALSE)
-
 fb <- allFitnessEffects(bauer)
+
 @ 
 
-It looks like this:
+Note that what we specify as ``typeDep'' is irrelevant (MN, SMN, or XMPN
+make no difference).
+
+
+The fitness effects figure looks like this:
 <<>>=
 plot(fb)
 @ 
-
-
 
 <<>>=
 b1 <- evalAllGenotypes(fb, order = FALSE)
@@ -1231,19 +1357,375 @@ b2 <- evalAllGenotypes(fb, order = TRUE, max = 2000)
 
 And number of levels is right one: 11
 <<>>=
-table(b1)
-table(b2)
-length(table(b1))
-length(table(b2))
+length(table(b1$Fitness))
+length(table(b2$Fitness))
 @ 
 
 
 \subsubsection{Bauer et al.\ specified only via epistatic interactions}
-Yes, do it: as -p,s1, and -p,s2, etc.
+Yes, do it: as -p,s1, and -p,s2, etc. But much more of a mess.
 
 \subsubsection{Adding modules to Bauer et al.}
 
 Can we use modules in this module? Sure, as in any other.
+
+
+
+\subsection{Misra et al., 2014}\label{misra}
+
+In \cite{xx} present in Figure 1 three scenarios which are different types
+of epistasis. 
+
+\subsubsection{Example 1.a}\label{misra1a}
+<<echo=FALSE>>=
+df1 <- data.frame(x = c(1, 1.2, 1.4), f = c(1, 1.2, 1.2),
+                 names = c("wt", "A", "B"))
+plot(df1[, 2] ~ df1[, 1], axes = FALSE)
+segments(1, 1, 1.2, 1.2)
+segments(1, 1, 1.4, 1.2)
+text(1, 1, "wt", pos = 4)
+text(1.2, 1.2, "A", pos = 2)
+text(1.4, 1.2, "B", pos = 2)
+
+@ 
+
+
+In that figure it is evident that the fitness effect of ``A'' and ``B''
+are the same. There are two different models depending on whether ``AB''
+is just the product of both, or there is epistasis. In the first case
+probably the simplest is:
+
+<<>>=
+s <- 0.1 ## or whatever number
+m1a1 <- allFitnessEffects(data.frame(parent = c("Root", "Root"),
+                                     child = c("A", "B"),
+                                     s = s,
+                                     sh = 0,
+                                     typeDep = "MN"))
+evalAllGenotypes(m1a1, order = FALSE, addwt = TRUE)
+@ 
+
+
+If the double mutant shows epistasis, as we saw before (section \ref{e2})
+we have a range of options. For example:
+
+<<>>=
+s <- 0.1
+sab <- 0.3
+m1a2 <- allFitnessEffects(epistasis = c("A:-B" = s,
+                                        "-A:B" = s,
+                                        "A:B" = sab))
+evalAllGenotypes(m1a2, order = FALSE, addwt = TRUE)
+@ 
+
+But we could also modify the graph dependency structure, and we have to
+change the value of the coefficient, since that is what multiplies each of
+the terms for ``A'' and ``B'': $(1 + s_{AB}) = (1 + s)^2(1 + s_{AB3}) $
+
+<<>>=
+sab3 <- ((1 + sab)/((1 + s)^2)) - 1
+m1a3 <- allFitnessEffects(data.frame(parent = c("Root", "Root"),
+                                     child = c("A", "B"),
+                                     s = s,
+                                     sh = 0,
+                                     typeDep = "MN"),
+                          epistasis = c("A:B" = sab3))
+evalAllGenotypes(m1a3, order = FALSE, addwt = TRUE)
+@ 
+
+And, obviously
+<<>>=
+all.equal(evalAllGenotypes(m1a2, order = FALSE, addwt = TRUE),
+          evalAllGenotypes(m1a3, order = FALSE, addwt = TRUE))
+@ 
+
+
+\subsubsection{Example 1.b}\label{misra1b}
+
+This is a specific case of synthetic viability (see also section \ref{sv}):
+
+<<echo=FALSE>>=
+
+df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 0.4, 0.3, 1.3),
+                 names = c("wt", "A", "B", "AB"))
+plot(df1[, 2] ~ df1[, 1], axes = FALSE)
+segments(1, 1, 1.2, 0.4)
+segments(1, 1, 1.2, 0.3)
+segments(1.2, 0.4, 1.4, 1.3)
+segments(1.2, 0.3, 1.4, 1.3)
+text(x = df1[, 1], y = df1[, 2], labels = df1[, "names"], pos = 2)
+## text(1, 1, "wt", pos = 4)
+## text(1.2, 1.2, "A", pos = 2)
+## text(1.4, 1.2, "B", pos = 2)
+@ 
+
+
+Here, $S_A, S_B < 0$, $S_B < 0$, $S_{AB} > 0$ and $(1 + S_{AB}) (1 + S_A) (1 +
+S_B) > 1$.
+
+As before, we can specify this in several different ways. The simplest is
+to specify all genotypes:
+<<>>=
+sa <- -0.6
+sb <- -0.7
+sab <- 0.3
+m1b1 <- allFitnessEffects(epistasis = c("A:-B" = sa,
+                                        "-A:B" = sb,
+                                        "A:B" = sab))
+evalAllGenotypes(m1b1, order = FALSE, addwt = TRUE)
+@ 
+
+We could also use a tree and modify the ``sab'' for the epistasis, as
+before (\ref{misra1a}).
+
+
+
+\subsubsection{Example 1.c}\label{misra1c}
+
+The final case, in figure 1.c, is just epistasis, where a mutation in one
+of the genes is deleterious (possibly only mildly), in the other is
+beneficial, and the double mutation has fitness larger than any of the
+other two.
+
+
+<<echo=FALSE>>=
+
+df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 1.2, 0.7, 1.5),
+                 names = c("wt", "A", "B", "AB"))
+plot(df1[, 2] ~ df1[, 1], axes = FALSE)
+segments(1, 1, 1.2, 1.2)
+segments(1, 1, 1.2, 0.7)
+segments(1.2, 1.2, 1.4, 1.5)
+segments(1.2, 0.7, 1.4, 1.5)
+text(x = df1[, 1], y = df1[, 2], labels = df1[, "names"], pos = 2)
+## text(1, 1, "wt", pos = 4)
+## text(1.2, 1.2, "A", pos = 2)
+## text(1.4, 1.2, "B", pos = 2)
+@ 
+
+Here we have that $S_A > 0$, $S_B < 0$, $(1 + S_{AB}) (1 + S_A) (1 +
+S_B) > (1 + S_{AB})$ so $S_{AB} > \frac{-S_B}{1 + S_B}$
+
+
+As before, we can specify this in several different ways. The simplest is
+to specify all genotypes:
+<<>>=
+sa <- 0.2
+sb <- -0.3
+sab <- 0.5
+m1c1 <- allFitnessEffects(epistasis = c("A:-B" = sa,
+                                        "-A:B" = sb,
+                                        "A:B" = sab))
+evalAllGenotypes(m1c1, order = FALSE, addwt = TRUE)
+@ 
+
+We could also use a tree and modify the ``sab'' for the epistasis, as
+before (\ref{misra1a}).
+
+
+
+\subsection{Ochs and Desai, 2015}\label{ochsdesai}
+
+In \cite{xx} Ochs and Desai present a model that we can represent as (the
+actual numerical values are arbitrarily set by me):
+
+
+<<echo=FALSE>>=
+
+df1 <- data.frame(x = c(1, 2, 3, 4), f = c(1.1, 1, 0.95, 1.2),
+                 names = c("u", "wt", "i", "v"))
+plot(df1[, 2] ~ df1[, 1], axes = FALSE, xlab = "", ylab = "")
+par(las = 1)
+axis(2)
+axis(1, at = c(1, 2, 3, 4), labels = df1[, "names"], ylab = "")
+box()
+arrows(c(2, 2, 3), c(1, 1, 0.95),
+       c(1, 3, 4), c(1.1, 0.95, 1.2))
+## text(1, 1, "wt", pos = 4)
+## text(1.2, 1.2, "A", pos = 2)
+## text(1.4, 1.2, "B", pos = 2)
+@
+
+In their model, $S_u > 0$, $S_v > S_u$, $S_i < 0$, we can only arrive at
+$v$ from $i$, and the mutants ``ui'' and ``uv'' can never appear as their
+fitness is 0, or $-\infty$, so $S_{ui} = S_{uv} = -1$.
+
+We can specify this combining a graph and epistasis specifications:
+
+<<>>=
+su <- 0.1
+si <- -0.05
+fvi <- 1.2 ## the fitnes of the vi mutant
+sv <- (fvi/(1 + si)) - 1
+sui <- suv <- -1
+od <- allFitnessEffects(
+    data.frame(parent = c("Root", "Root", "i"),
+               child = c("u", "i", "v"),
+               s = c(su, si, sv),
+               sh = -1,
+               typeDep = "MN"),
+    epistasis = c(
+        "u:i" = sui,
+        "u:v" = suv))
+@ 
+
+A figure showing that model is
+<<>>=
+plot(od)
+@ 
+
+And the fitness of all genotype is
+<<>>=
+evalAllGenotypes(od, order = FALSE, addwt = TRUE)
+@ 
+
+
+\subsection{Weissman et al., 20xx}
+In their figure 1a, Weisman et al. \cite{xx} present this model
+
+\subsubsection{Figure 1.a}
+
+<<echo=FALSE>>=
+df1 <- data.frame(x = c(1, 2, 3), f = c(1, 0.95, 1.2),
+                 names = c("wt", "1", "2"))
+plot(df1[, 2] ~ df1[, 1], axes = FALSE, xlab = "", ylab = "")
+par(las = 1)
+axis(2)
+axis(1, at = c(1, 2, 3), labels = df1[, "names"], ylab = "")
+box()
+segments(c(1, 2), c(1, 0.95),
+       c(2, 3), c(0.95, 1.2))
+## text(1, 1, "wt", pos = 4)
+## text(1.2, 1.2, "A", pos = 2)
+## text(1.4, 1.2, "B", pos = 2)
+@
+
+where the ``1'' and ``2'' refer to the number of mutations in two
+different loci. This is, therefore, very similar to the example in section
+\ref{misra1b}. Here we have $\delta_1 < 0$, fitness of single ``A'' or
+single ``B'' = $1 + \delta_1$, $S_{AB} > 0$,
+$(1 + S_{AB})(1 + \delta_1)^2 > 1$.
+
+
+\subsubsection{Figure 1.b}\label{weis1b}
+
+In their figure 1b they show
+
+<<echo=FALSE>>=
+df1 <- data.frame(x = c(1, 2, 3, 4), f = c(1, 0.95, 0.92, 1.2),
+                 names = c("wt", "1", "2", "3"))
+plot(df1[, 2] ~ df1[, 1], axes = FALSE, xlab = "", ylab = "")
+par(las = 1)
+axis(2)
+axis(1, at = c(1, 2, 3, 4), labels = df1[, "names"], ylab = "")
+box()
+segments(c(1, 2, 3), c(1, 0.95, 0.92),
+       c(2, 3, 4), c(0.95, 0.92, 1.2))
+## text(1, 1, "wt", pos = 4)
+## text(1.2, 1.2, "A", pos = 2)
+## text(1.4, 1.2, "B", pos = 2)
+@
+
+Where, as before, 1, 2, 3, denote the number of mutations in three
+different loci and $\delta_1 < 0$, $\delta_2 < 0$, fitness of single
+mutant is $(1 + \delta_1)$, of double mutant is $(1 + \delta_2)$ so that
+$(1 + \delta_2) = (1 + \delta_1)^2 (1 + s_2)$ and of triple mutant is
+$(1 + \delta_3)$, so that
+$(1 + \delta_3) = (1 + \delta_1)^3 (1 + s_2)^3 (1 + s_3)$.
+
+
+We can specify this combining a graph with epistasis:
+
+<<>>=
+
+d1 <- -0.05 ## single mutant fitness 0.95
+d2 <- -0.08 ## double mutant fitness 0.92
+d3 <- 0.2   ## triple mutant fitness 1.2
+
+s2 <- ((1 + d2)/(1 + d1)^2) - 1
+s3 <- ( (1 + d3)/((1 + d1)^3 * (1 + s2)^3) ) - 1
+
+w <- allFitnessEffects(
+    data.frame(parent = c("Root", "Root", "Root"),
+               child = c("A", "B", "C"),
+               s = d1,
+               sh = -1,
+               typeDep = "MN"),
+    epistasis = c(
+        "A:B" = s2,
+        "A:C" = s2,
+        "B:C" = s2,
+        "A:B:C" = s3))
+@ 
+
+The model can be shown graphically as:
+<<>>=
+plot(w)
+@ 
+
+And fitness of all genotypes is:
+
+<<>>=
+evalAllGenotypes(w, order = FALSE, addwt = TRUE)
+@ 
+
+
+
+Alternative, we can directly specify what each genotype adds to the
+fitness, given the included genotype. This is basically replacing the
+graph by giving each of ``A'', ``B'', and ``C'' directly:
+
+<<>>=
+wb <- allFitnessEffects(
+    epistasis = c(
+        "A" = d1,
+        "B" = d1,
+        "C" = d1,
+        "A:B" = s2,
+        "A:C" = s2,
+        "B:C" = s2,
+        "A:B:C" = s3))
+
+evalAllGenotypes(wb, order = FALSE, addwt = TRUE)
+@ 
+
+The plot, of course, is not very revealing:
+
+<<>>=
+plot(wb)
+@ 
+
+As we have seen several times already (sections \ref{e2}, \ref{e3},
+\ref{theminus}) we can also give the genotypes directly and, consequently,
+the fitness of each genotype (not the added contribution):
+
+<<>>=
+wc <- allFitnessEffects(
+    epistasis = c(
+        "A:-B:-C" = d1,
+        "B:-C:-A" = d1,
+        "C:-A:-B" = d1,
+        "A:B:-C" = d2,
+        "A:C:-B" = d2,
+        "B:C:-A" = d2,
+        "A:B:C" = d3))
+evalAllGenotypes(wc, order = FALSE, addwt = TRUE)
+@ 
+
+
+
+
+
+\section{xx: FIXME to add}
+
+\begin{itemize}
+\item Some of the module examples of Raphael
+\item The model in McFarland
+\item Some model from Gerstung, PLoS ONE
+\item Ditto for bionifo
+\item Some model for the Polaris, Caprese, and Capri examples.
+\item Some model for Farahani
+\end{itemize}
 
 
 %% \subsection{Testing of mappings}
