@@ -7,6 +7,7 @@ library(Rcpp)
 library(gtools) ## for permutations
 ## setwd("../../")
 library(igraph)
+library(Rgraphviz)
 
 sourceCpp("new-restrict.cpp", verbose = TRUE)
 ## sourceCpp("t1.cpp", verbose = TRUE)
@@ -215,11 +216,15 @@ oe.to.df <- function(x) {
 epist.order.to.pairs.modules <- function(x, sep, rm.sign = TRUE) {
     ## We discard, do not even accept, the coefficient
     tmp <- epist.order.element(x, -99, sep = sep, rm.sign = rm.sign)$ids
-    if(sep == ":")
-        return(data.frame(combinations(n = length(tmp), r = 2, v = tmp),
-                          stringsAsFactors = FALSE))
-    else if(sep == ">") {
-        return(oe.to.df(tmp))
+    if(length(tmp) > 1) {
+        ## if a single gene, as when we specify all genotypes, we do not
+        ## want this
+        if(sep == ":")
+            return(data.frame(combinations(n = length(tmp), r = 2, v = tmp),
+                              stringsAsFactors = FALSE))
+        else if(sep == ">") {
+            return(oe.to.df(tmp))
+        }
     }
 }
 
@@ -426,6 +431,12 @@ allFitnessEffects <- function(rT = NULL,
     if( (length(long.rt) + length(long.epistasis) + length(long.orderEffects) +
              nrow(geneNoInt)) == 0)
         stop("You have specified nothing!")
+
+    if((length(long.rt) + length(long.epistasis) + length(long.orderEffects)) > 1) {
+        graphE <- fitnessEffectsToIgraph(rT, epistasis, orderEffects)
+    } else {
+        graphE <- NULL
+    }
     
     out <- list(long.rt = long.rt,
                 long.epistasis = long.epistasis,
@@ -434,7 +445,7 @@ allFitnessEffects <- function(rT = NULL,
                 geneModule = geneModule,
                 gMOneToOne = gMOneToOne,
                 geneToModule = geneToModule,
-                graph = fitnessEffectsToIgraph(rT, epistasis, orderEffects)
+                graph = graphE
                 )
     class(out) <- c("fitnessEffects")
     return(out)
