@@ -369,6 +369,8 @@ Genotype createNewGenotype(const Genotype& parent,
   bool sort_rest = false;
   bool sort_epist = false;
 
+  // FIXME: we need to create the mutations!
+
   // Order of ifs: I suspect order effects rare. No idea about
   // non-interaction genes, but if common the action is simple.
   for(auto g : mutations) {
