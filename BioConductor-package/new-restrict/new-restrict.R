@@ -682,3 +682,6 @@ plotFitnessEffects <- function(fe, type = "graphNEL",
 }
 
 plot.fitnessEffects <- plotFitnessEffects
+
+## FIXME: in the help: say we cannot properly show 3- or higher order
+## interactions.
