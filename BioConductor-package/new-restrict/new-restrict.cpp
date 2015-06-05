@@ -132,7 +132,7 @@ struct Genotype {
 bool operator==(const Genotype& lhs, const Genotype& rhs) {
   return (lhs.orderEff == rhs.orderEff) &&
     (lhs.epistRtEff == rhs.epistRtEff) &&
-    ()lhs.rest == rhs.rest);
+    (lhs.rest == rhs.rest);
 }
 
 // For users: if something depends on 0, that is it. No further deps.
