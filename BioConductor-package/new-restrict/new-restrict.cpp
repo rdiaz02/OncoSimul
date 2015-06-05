@@ -91,7 +91,7 @@ struct genesWithoutInt {
 
 struct fitnessEffectsAll {
   bool gMOneToOne;
-  
+  int genomeSize; 
   // We use allOrderG or allEpistRTG to place new mutations in their
   // correct place (orderEff or epistRtEff). Only one is needed.  Use the
   // one that is presumably always shorter which is allOrderG. And this is
@@ -106,6 +106,7 @@ struct fitnessEffectsAll {
   std::vector<epistasis> orderE;
   // std::vector<Gene_Module_struct> Gene_Module_tabl;
   std::vector<Gene_Module_struct> Gene_Module_tabl;
+  std::vector<int> allGenes; //used whenever a mutation created
   genesWithoutInt genesNoInt;
 };
 
@@ -128,6 +129,11 @@ struct Genotype {
   std::vector<int> rest; // always sorted
 };
 
+bool operator==(const Genotype& lhs, const Genotype& rhs) {
+  return (lhs.orderEff == rhs.orderEff) &&
+    (lhs.epistRtEff == rhs.epistRtEff) &&
+    ()lhs.rest == rhs.rest);
+}
 
 // For users: if something depends on 0, that is it. No further deps.
 // And do not touch the 0 in Gene_Module_table.
@@ -353,7 +359,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   fe.allOrderG = sortedAllOrder(fe.orderE);
   fe.allPosetG = sortedAllPoset(fe.Poset);
   fe.gMOneToOne = rone;
-
+  fe.allGenes = allGenesinFitness(ge);
+  fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.size();
   return fe;
 }
 

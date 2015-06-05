@@ -997,6 +997,30 @@ static void fitness(spParamsP& tmpP,
 // }
 
 
+// is this really any faster than the one below?
+inline void new_sp_v(unsigned int& sp,
+		     const Genotype& newGenotype,
+		     const std::vector<Genotype> Genotypes) {
+  sp = 0;
+  for(sp = 0; sp < Genotypes.size(); ++sp) {
+    if( newGenotype == Genotypes[sp] )
+      break;
+  }
+}
+
+unsigned int new_sp(const Genotype& newGenotype,
+		    const std::vector<Genotype> Genotypes) {
+  for(unsigned int sp = 0; sp < Genotypes.size(); ++sp) {
+    if( newGenotype == Genotypes[sp] ) {
+      return sp;
+    }
+  }
+  return Genotypes.size();
+}
+
+
+
+
 static inline void new_sp_bitset(unsigned int& sp, const Genotype64& newGenotype,
 			  const std::vector<Genotype64>& Genotypes) {
   sp = 0;
@@ -1008,62 +1032,61 @@ static inline void new_sp_bitset(unsigned int& sp, const Genotype64& newGenotype
 }
 
 
-
-static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
-				 //gsl_rng *r,
-				 std::mt19937& ran_generator, 
-				 std::vector<int>& mutablePos,
-				 const Genotype64& nextMutantGenotype,
-				 // const int& nextMutant,
-				 // const std::vector<Genotype64>& Genotypes,
-				 const int& numGenes) {
-  // We want mutatedPos and numMutablePosParent
-
-  // Note: impossible to have a second recorded mutation in
-  // the same gene.  
-
-  // Remember numMutablePosParent is the number of mutable positions in
-  // the parent!  so after mutation is one less, but we do not decrease it
-  // here.
-  
-  numMutablePosParent = 0;
-  for(int i = 0; i < numGenes; ++i) {
-    if( !nextMutantGenotype.test(i) ) { 
-      mutablePos[numMutablePosParent] = i;
-      ++numMutablePosParent;
-    }
-  }
-  
-  if(numMutablePosParent > 1) {
-    std::uniform_int_distribution<int> unif(0, numMutablePosParent - 1);
-    mutatedPos = mutablePos[unif(ran_generator)];
-  } else {
-    mutatedPos = mutablePos[0];
-  } 
-
-  // if(numMutablePosParent > 1) {
-  //   mutatedPos = mutablePos[gsl_rng_uniform_int(r, numMutablePosParent)];
-  // } else {
-  //   mutatedPos = mutablePos[0];
-  // } 
-
-
-#ifdef DEBUGV
-      Rcpp::Rcout << "\n numMutablePosParent = " << numMutablePosParent;
-      Rcpp::Rcout << "\n mutatedPos = " << mutatedPos  << "\n";
-      
-#endif
-
-  // if(numMutablePos > 1) {
-  //   mutatedPos = mutablePos[gsl_rng_uniform_int(r, numMutablePos)];
-  // } else if (numMutablePos == 1) {
-  //   mutatedPos = mutablePos[0];
-  // } else {
-  //   // Should never happen, as mutation = 0 if no mutable positions.
-  //   throw std::out_of_range("Algo5: run out of mutable places!!??");
-  // }
-
+void obtainMutations(const Genotype& parent,
+		     const fitnessEffectsAll& fe,
+		     int& numMutablePosParent,
+		     std::vector<int>& newMutations,
+		     std::mt19937& ran_gen) {
+  //Ugly: we return the mutations AND the numMutablePosParent
+  std::vector<int> mutations;
+  std::vector<int> sortedparent = allGenesinGenotype(parent);
+  std::vector<int> nonmutated;
+  set_difference(fe.allGenes.begin(), fe.allGenes.end(),
+		 sortedparent.begin(), sortedparent.end(),
+		 back_inserter(nonmutated));
+  std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+  mutations.push_back(nonmutated[rpos(ran_gen)]);
 }
+
+
+// // FIXME: change this for mutation
+// static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
+// 				 //gsl_rng *r,
+// 				 std::mt19937& ran_generator, 
+// 				 std::vector<int>& mutablePos,
+// 				 const Genotype64& nextMutantGenotype,
+// 				 // const int& nextMutant,
+// 				 // const std::vector<Genotype64>& Genotypes,
+// 				 const int& numGenes) {
+//   // We want mutatedPos and numMutablePosParent
+
+//   // Note: impossible to have a second recorded mutation in
+//   // the same gene.  
+
+//   // Remember numMutablePosParent is the number of mutable positions in
+//   // the parent!  so after mutation is one less, but we do not decrease it
+//   // here.
+  
+//   numMutablePosParent = 0;
+//   for(int i = 0; i < numGenes; ++i) {
+//     if( !nextMutantGenotype.test(i) ) { 
+//       mutablePos[numMutablePosParent] = i;
+//       ++numMutablePosParent;
+//     }
+//   }
+  
+//   if(numMutablePosParent > 1) {
+//     std::uniform_int_distribution<int> unif(0, numMutablePosParent - 1);
+//     mutatedPos = mutablePos[unif(ran_generator)];
+//   } else {
+//     mutatedPos = mutablePos[0];
+//   } 
+// #ifdef DEBUGV
+//       Rcpp::Rcout << "\n numMutablePosParent = " << numMutablePosParent;
+//       Rcpp::Rcout << "\n mutatedPos = " << mutatedPos  << "\n";
+      
+// #endif
+// }
 
 static inline void mapTimes_updateP(std::multimap<double, int>& mapTimes,
 			     std::vector<spParamsP>& popParams,
@@ -1681,6 +1704,7 @@ static void innerBNB(const int& numGenes,
   double timeNextPopSample;
   double tSample;
 
+  std::vector<int> newMutations;
   int nextMutant;
   unsigned int numSpecies = 0;
   int numMutablePosParent = 0;
@@ -2172,19 +2196,41 @@ static void innerBNB(const int& numGenes,
 
       
 	// ************   5.5   ***************
-	getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
-			     ran_generator,
-			     mutablePos,
-			     Genotypes[nextMutant], 
-			     numGenes);
+
+	newMutations.clear();
+	obtainMutations(Genotypes[nextMutant],
+			fe,
+			numMutablePosParent,
+			newMutations,
+			ran_generator);
+	// nr_change
+	// getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
+	// 		     ran_generator,
+	// 		     mutablePos,
+	// 		     Genotypes[nextMutant], 
+	// 		     numGenes);
       
 	// ************   5.6   ***************
 
-	newGenotype = Genotypes[nextMutant];
-	newGenotype.set(mutatedPos);
+	newGenoytpe = createNewGenotype(Genotypes[nextMutant],
+					newMutations,
+					fe,
+					ran_gen);
+	// nr_change
+	// newGenotype = Genotypes[nextMutant];
+	// newGenotype.set(mutatedPos);
 	// newGenotype[mutatedPos] = 1;
-      
-	new_sp_bitset(sp, newGenotype, Genotypes);
+
+	// FIXME
+	// any speed diff between a) and b)?
+	// a)
+	new_sp_v(sp, newGenotype, Genotypes);
+	// b)
+	// sp = 0;
+	// sp = new_sp(newGenotype, Genotypes);
+	
+	// nr_change
+	// new_sp_bitset(sp, newGenotype, Genotypes);
 
 	if(sp == numSpecies) {// New species
 	  ++numSpecies;
@@ -2972,7 +3018,15 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
 
 
+// void Mutation(const double mu, const double chromothripsis) {
+//   if(chromothripsis) {
+//     do something;
+//   } else {
+//     pointMutation();
+//   }
+
+// }
 
 
 
-
+// FIXME: get into dealing with fitness!
