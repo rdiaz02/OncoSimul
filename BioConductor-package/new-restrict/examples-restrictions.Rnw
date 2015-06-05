@@ -165,6 +165,48 @@ and add it if it is not present. But we want you to be explicit (and we
 want to avoid you shooting yourself in the foot having a gene that is not
 root but is called ``Root'', etc).
 
+\subsection{What does a module provide}\label{module-what-for}
+
+%% \begin{tabular} {c c c}
+%%   A & B & Fitness \\
+%%   \hline
+%%   wt&wt& 1 \\
+%%   wt&M& sb \\
+%%   M&wt& sa\\
+%%   M&M& sab)\\
+%%   \hline
+%% \end{tabular}
+
+with A being 1, 2, and B 3, 4.
+
+and having in a tree A depends on Root and B depends on A
+
+
+
+\begin{tabular} {c c}
+  model & Fitness satisfied & fitness not satisf\\
+  \hline
+  0 , 1 & s \\
+  0 , 2 & s \\
+
+  1 , 3 & s3 & sm \\
+  2 , 3 & s3 & sm \\
+
+  1 , 4 & s3 & sm \\
+  2 , 4 & s3 & sm \\
+  
+  1 : 2 & s12 \\
+  3:  4 & s34
+  
+
+  \hline
+\end{tabular}
+
+just give the specification, the full one.
+
+
+and write equivalendes of s12 as a function of Sa, S34 as a function of
+Sb, etc.
 
 
 \subsection{Order restrictions as posets}
@@ -1101,10 +1143,10 @@ program, to specify the genotype ``A is wt, B is a mutant'' you can
 specify it as \texttt{``-A,B''}, not just as \texttt{``B''}. Why? Because
 just the presence of a ``B'' is also compatible with genotype ``A is
 mutant and B is mutant''.  If you use ``-'' you are explicitly saying what
-should not be there. Otherwise, you need to carefully add coefficients.
-Depending on what you are trying to model, different specifications might
-be simpler. See the examples in section \ref{e2} and \ref{e3}. You have
-both options.
+should not be there so that ``-A,B'' is NOT compatible with ``A, B''
+. Otherwise, you need to carefully add coefficients.  Depending on what
+you are trying to model, different specifications might be simpler. See
+the examples in section \ref{e2} and \ref{e3}. You have both options.
 
 
 
