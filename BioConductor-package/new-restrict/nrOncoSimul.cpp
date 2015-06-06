@@ -1469,6 +1469,17 @@ static inline void create_returnGenotypes(Rcpp::IntegerMatrix& returnGenotypes,
 }
 
 // FIXME: change this, now that we keep a count of drivers?
+// see the new function in new-restrict.cpp: countDrivers
+
+// Yes, we do want to count drivers. For instance, stopping in cancer can
+// be related to this. So:
+
+// In R, the user says which are the drivers. If does not say anuthing,
+// the default (NULL) then drivers are all in poset, epist, restrict. The
+// user can pass a vector with the names of the genes (not modules). Allow
+// also for empty, so this is faster if not needed. And check that if we
+// use a stopping rule based on drivers that drv vectors is not empty.
+
 static inline void count_NumDrivers(int& maxNumDrivers, 
 				    std::vector<int>& countByDriver,
 				    Rcpp::IntegerMatrix& returnGenotypes,
@@ -3030,3 +3041,30 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
 
 // FIXME: get into dealing with fitness!
+
+
+
+
+// Creating return object:
+
+
+// The 0, 1 representation is how most of the work is done in R: do I want
+// to change that?
+
+
+// Order: beware of two things: order is important for the "true"
+// genotypes, but is not immediately observable. So for 0,1
+// representation, not needed or used. Thus, maybe I want two
+// representations.
+
+
+// I do not need all the ulong thing: I can always work directly with the
+// Genotype struct, everywhere. And then return, to R either the 0,1 or
+// the vector of mutated positions, or both.
+
+// Yes, the full Genotye structure is only used when assigning fitness. So
+// could we use a collapsed one with: order + rest? Nope, as whenever I'd
+// create a child from a genotype, I'd need like deconvolve, and go back
+// to the three piece structure. This seems much more expensive than the
+// overloaded == and the usage of the overloaded < (this is only used at
+// the end, when producing the output objects)

@@ -129,11 +129,32 @@ struct Genotype {
   std::vector<int> rest; // always sorted
 };
 
-bool operator==(const Genotype& lhs, const Genotype& rhs) {
+inline bool operator==(const Genotype& lhs, const Genotype& rhs) {
   return (lhs.orderEff == rhs.orderEff) &&
     (lhs.epistRtEff == rhs.epistRtEff) &&
     (lhs.rest == rhs.rest);
 }
+
+inline bool operator<(const Genotype& lhs, const Genotype& rhs) {
+ //  // ll = order + sorted rest
+ //  // rr = order + sorted rest
+ //  // if ll.size() < rr.size() return true;
+ //  // else if ll.size() > rr.size() return false;
+ // else {
+ //   for(size_t i = 0; i != ll.size; ++i) {
+ //     if( ll[i] < rr[i] ) return true;
+ //   }
+ //   return false;
+ // }
+}
+
+inline bool operator>(const Genotype& lhs, const Genotype& rhs) {
+  return operator< (rhs, lhs);
+}
+
+
+
+
 
 // For users: if something depends on 0, that is it. No further deps.
 // And do not touch the 0 in Gene_Module_table.
@@ -947,6 +968,16 @@ void printFitnessEffects(const fitnessEffectsAll& fe) {
   printNoInteractionGenes(fe.genesNoInt);
   printAllOrderG(fe.allOrderG);
 }
+
+
+// FIXME: write this.  drv comes from R, and it is the vector with the
+// numbers of the genes, not modules.
+int countDrivers(const Genotype& ge, const vector<int>& drv) {
+  // sort gentype so all genes
+  // return intersection(drv, all.Genes). size().
+}
+// FIXME: the count_NumDrivers counts for each driver. Write that too.
+
 
 
 // [[Rcpp::export]]
