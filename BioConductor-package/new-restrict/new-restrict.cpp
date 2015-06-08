@@ -403,6 +403,23 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   return fe;
 }
 
+void obtainMutations(const Genotype& parent,
+		     const fitnessEffectsAll& fe,
+		     int& numMutablePosParent,
+		     std::vector<int>& newMutations,
+		     std::mt19937& ran_gen) {
+  //Ugly: we return the mutations AND the numMutablePosParent
+  std::vector<int> mutations;
+  std::vector<int> sortedparent = allGenesinGenotype(parent);
+  std::vector<int> nonmutated;
+  set_difference(fe.allGenes.begin(), fe.allGenes.end(),
+		 sortedparent.begin(), sortedparent.end(),
+		 back_inserter(nonmutated));
+  std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+  mutations.push_back(nonmutated[rpos(ran_gen)]);
+}
+
+
 
 // It is simple to write specialized functions for when
 // there are no restrictions or no order effects , etc.
@@ -463,6 +480,7 @@ Genotype createNewGenotype(const Genotype& parent,
 // Never no interactions: remove the if. shift == -9.
 
 vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
+  // Sorted
   std::vector<int> g0;
   for(auto a : F.Gene_Module_tabl) {
     g0.push_back(a.GeneNumID);
@@ -841,7 +859,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 // No logs because of log(<=0)
 inline double prodFitness(vector<double> s) {
   return accumulate(s.begin(), s.end(), 1.0,
-		    [](double x, double y) {return (x * (1 + y));});
+		    [](double x, double y) {return (x * max(0, (1 + y)));});
 }
 
 
@@ -1011,12 +1029,24 @@ void printFitnessEffects(const fitnessEffectsAll& fe) {
   printAllOrderG(fe.allOrderG);
 }
 
+vector<int> presentDrivers(const Genotype& ge, const vector<int>& drv) {
+  // Returns the actual mutated drivers in a genotype.
+  // drv comes from R, and it is the vector with the
+  // numbers of the genes, not modules.
+  vector<int> presentDrv;
+  vector<int> og = allGenesinGenotype(ge);
+  set_intersection(og.begin(), og.end(),
+		   drv.begin(), drv.end(),
+		   back_inserter(presentDrv));
+  return presentDrv;
+}
 
-// FIXME: write this.  drv comes from R, and it is the vector with the
-// numbers of the genes, not modules.
-int countDrivers(const Genotype& ge, const vector<int>& drv) {
-  // sort gentype so all genes
-  // return intersection(drv, all.Genes). size().
+// FIXME: we do this often. Why not just keep it in the struct?
+int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
+  // Counts the number of mutated drivers in a genotype.
+  // drv comes from R, and it is the vector with the
+  // numbers of the genes, not modules.
+  return presentDrivers(ge, drv).size();
 }
 // FIXME: the count_NumDrivers counts for each driver. Write that too.
 

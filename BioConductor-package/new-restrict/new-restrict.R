@@ -1,5 +1,13 @@
 ## With Bozic: check no s > 1.
 
+## Say which are drivers: populate the drv vector.
+## // In R, the user says which are the drivers. If does not say anuthing,
+## // the default (NULL) then drivers are all in poset, epist, restrict. The
+## // user can pass a vector with the names of the genes (not modules). Allow
+## // also for empty, so this is faster if not needed. And check that if we
+## // use a stopping rule based on drivers that drv vectors is not empty.
+
+
 ## - Say that a user can use a "0" as a gene name, but that is BAD idea.
 ## - Modules and order effects can be kind of funny?
 
@@ -318,11 +326,17 @@ checkRT <- function(mdeps) {
 
 ## get this to return a graph object ready for plotting.
 
+getDrv <- function(geneModule, drv) {
+    indices <- sort(match( drv, geneModule$Gene))
+    return(geneModule$GeneNumID[indices])
+}
+
 allFitnessEffects <- function(rT = NULL,
                               epistasis = NULL,
                               orderEffects = NULL,
                               noIntGenes = NULL,
-                              geneToModule = NULL) {
+                              geneToModule = NULL,
+                              drvNames = NULL) {
     ## restrictions: the usual rt
 
     ## epistasis: as it says, with the ":"
@@ -412,7 +426,6 @@ allFitnessEffects <- function(rT = NULL,
                                                              sign = FALSE))
     }
     
-    
     if(!is.null(noIntGenes)) {
         mg <- max(geneModule[, "GeneNumID"])
         gnum <- seq_along(noIntGenes) + mg
@@ -439,6 +452,12 @@ allFitnessEffects <- function(rT = NULL,
     } else {
         graphE <- NULL
     }
+
+    if(!is.null(drvNames)) {
+        drv <- getDrv(geneModule, drvNames)
+    } else {
+        drv <- geneModule$GeneNumID[-1]
+    }
     
     out <- list(long.rt = long.rt,
                 long.epistasis = long.epistasis,
@@ -447,7 +466,8 @@ allFitnessEffects <- function(rT = NULL,
                 geneModule = geneModule,
                 gMOneToOne = gMOneToOne,
                 geneToModule = geneToModule,
-                graph = graphE
+                graph = graphE,
+                drv = drv
                 )
     class(out) <- c("fitnessEffects")
     return(out)

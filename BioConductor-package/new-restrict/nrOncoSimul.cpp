@@ -591,107 +591,46 @@ static double Algo3_st(const spParamsP& spP, const double& t){
 
 
 
+static void precissionLoss(){
+  // We are storing population sizes as doubles.
+  // Should not loose any precission up to 2^53 - 1
+  // (e.g., http://stackoverflow.com/a/1848762)
+  // but double check if optims break it.
+  // Note that the original code by Mather stores it as int.
 
+  // Problems are likely to arise sooner, with 4.5e15, because
+  // of rbinom. See notes in example-binom-problems.cpp
+  // We warn about that if totPopSize > 4e15
+  double a, b, c, d;
+  int e, f;
+  a = pow(2, 52) + 1.0;	
+  b = pow(2, 52); // 2^53 a little over 9*1e15
+  c = (9.0 * 1e15) + 1.0;
+  d = (9.0 * 1e15);
 
+  e = static_cast<int>(a - b);
+  f = static_cast<int>(c - d);
 
-
-
-
-
-
-
-
-
-
-
-
-
-//#define DEBUGZ
-// #define DEBUGV
-//#define DEBUGW
-
-#ifdef DEBUGW
-#define ASSERT(x) {							\
-    if (! (x)) {							\
-      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
-	Rcpp::Rcout << " on line " << __LINE__  << "\n\n";		\
-    }									\
-  }
-#else
-#define ASSERT(x);
-//#define ARMA_NO_DEBUG
-#endif
-
-
-#ifdef DEBUGW
-#define STOPASSERT(x) {							\
-    if (! (x)) {							\
-      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
-	Rcpp::Rcout << " on line " << __LINE__  << std::endl;		\
-	throw std::out_of_range("STOPASSERT");				\
-    }									\
-  }
-#else
-#define STOPASSERT(x);
-#endif
-
-
-#define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
-//#define DP2(x);
-
-#ifdef DEBUGV
-#define DP(x) {Rcpp::Rcout << "\n DEBUG: Value of " << #x << " = " << x << std::endl;}
-#else
-#define DP(x);
-#endif
-
-// To track if mutation is really much smaller than birth/death
-#define MIN_RATIO_MUTS
-#ifdef MIN_RATIO_MUTS
-// There is really no need for these to be globals?
-// Unless I wanted to use them inside some function. So leave as globals.
-double g_min_birth_mut_ratio = DBL_MAX;
-double g_min_death_mut_ratio = DBL_MAX;
-double g_tmp1 = DBL_MAX;
-#endif
-
-
-
-// Simple custom exception for exceptions that lead to re-runs.
-class rerunExcept: public std::runtime_error {
-public:
-  rerunExcept(const std::string &s) :
-    std::runtime_error(s) {}
-};
-
-
-void here(std::string x) {
-  Rcpp::Rcout << "\n DEBUG: HERE at " << x << std::endl;
+  if( a == b) Rcpp::Rcout << "WARNING!!!! \n Precission loss: a == b\n";
+  if( !(a > b)) Rcpp::Rcout << "WARNING!!!! \n Precission loss: !(a > b)\n";
+  if(c == d) Rcpp::Rcout << "WARNING!!!! \n Precission loss: c == d\n";
+  if( !(c > d)) Rcpp::Rcout << "WARNING!!!! \n Precission loss: !(c > d)\n";
+  if( e != 1 ) Rcpp::Rcout << "WARNING!!!! \n Precission loss: e != 1\n";
+  if( f != 1 ) Rcpp::Rcout << "WARNING!!!! \n Precission loss: f != 1\n";
 }
 
-typedef std::bitset<64> Genotype64;
+static void init_tmpP(spParamsP& tmpParam) {
+  tmpParam.popSize = -std::numeric_limits<double>::infinity();
+  tmpParam.birth = -std::numeric_limits<double>::infinity();
+  tmpParam.death = -std::numeric_limits<double>::infinity();
+  tmpParam.W = -std::numeric_limits<double>::infinity();
+  tmpParam.R = -std::numeric_limits<double>::infinity();
+  tmpParam.mutation = -std::numeric_limits<double>::infinity();
+  tmpParam.timeLastUpdate = std::numeric_limits<double>::infinity();
+  tmpParam.absfitness = -std::numeric_limits<double>::infinity();
+  tmpParam.numMutablePos = -999999;
+}
 
-
-
-
-
-// Format of restrictTable
-// - mutations in columns
-// - first row, the number
-// - second row, the number of dependencies
-//   - rest of rows, the id of the dependency
-//   - past number of dependencies: a -9
-// In fact, the first row is redundant. Leave it, just in case.
-
-
-// Genotypes: the first (or column 0) genotype is the all ceros.
-// would not be needed, but makes Algo5 a lot simpler.
-
-// But mutatedPos start at 0. 
-// Will need to add 1 when plotting and analyzing with R.
-
-// Ojo: typeCBN is going to be an int.
-// But from R we pass a string, and that determined the integer.
 
 
 // this is the log of the ratio of death rates
@@ -850,6 +789,146 @@ static void updateRatesBeeren(std::vector<spParamsP>& popParams,
 }
 
 
+
+static inline void mapTimes_updateP(std::multimap<double, int>& mapTimes,
+			     std::vector<spParamsP>& popParams,
+			     const int index,
+			     const double time) {
+  // Update the map times <-> indices
+  // First, remove previous entry, then insert.
+  // But if we just created the species, nothing to remove from the map.
+  if(popParams[index].timeLastUpdate > -1)
+    mapTimes.erase(popParams[index].pv);
+  popParams[index].pv = mapTimes.insert(std::make_pair(time, index));
+}
+
+
+static inline void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
+			     const std::multimap<double, int>& mapTimes) {
+  // we want minNextMutationTime and nextMutant
+  nextMutant = mapTimes.begin()->second;
+  minNextMutationTime = mapTimes.begin()->first;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#define DEBUGZ
+// #define DEBUGV
+//#define DEBUGW
+
+#ifdef DEBUGW
+#define ASSERT(x) {							\
+    if (! (x)) {							\
+      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
+	Rcpp::Rcout << " on line " << __LINE__  << "\n\n";		\
+    }									\
+  }
+#else
+#define ASSERT(x);
+//#define ARMA_NO_DEBUG
+#endif
+
+
+#ifdef DEBUGW
+#define STOPASSERT(x) {							\
+    if (! (x)) {							\
+      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
+	Rcpp::Rcout << " on line " << __LINE__  << std::endl;		\
+	throw std::out_of_range("STOPASSERT");				\
+    }									\
+  }
+#else
+#define STOPASSERT(x);
+#endif
+
+
+#define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
+//#define DP2(x);
+
+#ifdef DEBUGV
+#define DP(x) {Rcpp::Rcout << "\n DEBUG: Value of " << #x << " = " << x << std::endl;}
+#else
+#define DP(x);
+#endif
+
+// To track if mutation is really much smaller than birth/death
+#define MIN_RATIO_MUTS
+#ifdef MIN_RATIO_MUTS
+// There is really no need for these to be globals?
+// Unless I wanted to use them inside some function. So leave as globals.
+double g_min_birth_mut_ratio = DBL_MAX;
+double g_min_death_mut_ratio = DBL_MAX;
+double g_tmp1 = DBL_MAX;
+#endif
+
+
+
+// Simple custom exception for exceptions that lead to re-runs.
+class rerunExcept: public std::runtime_error {
+public:
+  rerunExcept(const std::string &s) :
+    std::runtime_error(s) {}
+};
+
+
+void here(std::string x) {
+  Rcpp::Rcout << "\n DEBUG: HERE at " << x << std::endl;
+}
+
+
+
+// typedef std::bitset<64> Genotype64;
+
+
+
+
+
+// Format of restrictTable
+// - mutations in columns
+// - first row, the number
+// - second row, the number of dependencies
+//   - rest of rows, the id of the dependency
+//   - past number of dependencies: a -9
+// In fact, the first row is redundant. Leave it, just in case.
+
+
+// Genotypes: the first (or column 0) genotype is the all ceros.
+// would not be needed, but makes Algo5 a lot simpler.
+
+// But mutatedPos start at 0. 
+// Will need to add 1 when plotting and analyzing with R.
+
+// Ojo: typeCBN is going to be an int.
+// But from R we pass a string, and that determined the integer.
+
+
+
 static void nr_fitness(spParamsP& tmpP,
 		       const spParamsP& parentP,
 		       const Genotype& ge,
@@ -911,8 +990,6 @@ static void nr_fitness(spParamsP& tmpP,
 }
 
 
-
-
 // is this really any faster than the one below?
 inline void new_sp_v(unsigned int& sp,
 		     const Genotype& newGenotype,
@@ -934,106 +1011,14 @@ unsigned int new_sp(const Genotype& newGenotype,
   return Genotypes.size();
 }
 
-
-
-
-static inline void new_sp_bitset(unsigned int& sp, const Genotype64& newGenotype,
-			  const std::vector<Genotype64>& Genotypes) {
-  sp = 0;
-
-  for(sp = 0; sp < Genotypes.size(); ++sp) {
-    if( newGenotype == Genotypes[sp] )
-      break;
-  }
-}
-
-
-void obtainMutations(const Genotype& parent,
-		     const fitnessEffectsAll& fe,
-		     int& numMutablePosParent,
-		     std::vector<int>& newMutations,
-		     std::mt19937& ran_gen) {
-  //Ugly: we return the mutations AND the numMutablePosParent
-  std::vector<int> mutations;
-  std::vector<int> sortedparent = allGenesinGenotype(parent);
-  std::vector<int> nonmutated;
-  set_difference(fe.allGenes.begin(), fe.allGenes.end(),
-		 sortedparent.begin(), sortedparent.end(),
-		 back_inserter(nonmutated));
-  std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
-  mutations.push_back(nonmutated[rpos(ran_gen)]);
-}
-
-
-// // FIXME: change this for mutation
-// static void getMutatedPos_bitset(int& mutatedPos, int& numMutablePosParent,
-// 				 //gsl_rng *r,
-// 				 std::mt19937& ran_generator, 
-// 				 std::vector<int>& mutablePos,
-// 				 const Genotype64& nextMutantGenotype,
-// 				 // const int& nextMutant,
-// 				 // const std::vector<Genotype64>& Genotypes,
-// 				 const int& numGenes) {
-//   // We want mutatedPos and numMutablePosParent
-
-//   // Note: impossible to have a second recorded mutation in
-//   // the same gene.  
-
-//   // Remember numMutablePosParent is the number of mutable positions in
-//   // the parent!  so after mutation is one less, but we do not decrease it
-//   // here.
-  
-//   numMutablePosParent = 0;
-//   for(int i = 0; i < numGenes; ++i) {
-//     if( !nextMutantGenotype.test(i) ) { 
-//       mutablePos[numMutablePosParent] = i;
-//       ++numMutablePosParent;
-//     }
-//   }
-  
-//   if(numMutablePosParent > 1) {
-//     std::uniform_int_distribution<int> unif(0, numMutablePosParent - 1);
-//     mutatedPos = mutablePos[unif(ran_generator)];
-//   } else {
-//     mutatedPos = mutablePos[0];
-//   } 
-// #ifdef DEBUGV
-//       Rcpp::Rcout << "\n numMutablePosParent = " << numMutablePosParent;
-//       Rcpp::Rcout << "\n mutatedPos = " << mutatedPos  << "\n";
-      
-// #endif
-// }
-
-static inline void mapTimes_updateP(std::multimap<double, int>& mapTimes,
-			     std::vector<spParamsP>& popParams,
-			     const int index,
-			     const double time) {
-  // Update the map times <-> indices
-  // First, remove previous entry, then insert.
-  // But if we just created the species, nothing to remove from the map.
-  if(popParams[index].timeLastUpdate > -1)
-    mapTimes.erase(popParams[index].pv);
-  popParams[index].pv = mapTimes.insert(std::make_pair(time, index));
-}
-
-
-static inline void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
-			     const std::multimap<double, int>& mapTimes) {
-  // we want minNextMutationTime and nextMutant
-  nextMutant = mapTimes.begin()->second;
-  minNextMutationTime = mapTimes.begin()->first;
-}
-
-static void remove_zero_sp_v7(std::vector<int>& sp_to_remove,
-			      std::vector<Genotype64>& Genotypes,
+static void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
+			      std::vector<Genotype>& Genotypes,
 			      std::vector<spParamsP>& popParams,
 			      std::multimap<double, int>& mapTimes) {
-  //  here("entering remove_zero_sp_v7");
   std::vector<spParamsP>::iterator popParams_begin = popParams.begin();
-  std::vector<Genotype64>::iterator Genotypes_begin = Genotypes.begin();
+  std::vector<Genotype>::iterator Genotypes_begin = Genotypes.begin();
   std::vector<int>::reverse_iterator r = sp_to_remove.rbegin();
   int remove_this;
-  // for(r = sp_to_remove.rbegin(); r != sp_to_remove.rend(); ++r) {
   while(r != sp_to_remove.rend() ) {
     remove_this = *r;
     mapTimes.erase(popParams[remove_this].pv);
@@ -1041,29 +1026,7 @@ static void remove_zero_sp_v7(std::vector<int>& sp_to_remove,
     Genotypes.erase(Genotypes_begin + remove_this);
     ++r;
   }
-  // here("exiting remove_zero_sp_v7");
-
 }
-
-static inline int count_NDrivers(const Genotype64& Genotype,
-				 const int& NumDrivers) {
-  int totalDr = 0;
-  for(int i = 0; i < NumDrivers; ++i)
-    totalDr += Genotype[i];
-  return totalDr;
-}
-
-// static inline double popSize_over_m_dr(const int& dr,
-// 				       const Genotype64& Genotype,
-// 				       const int& NumDrivers,
-// 				       const std::vector<spParamsP>& popParams) {
-//   double psize = 0.0;
-//   for(size_t i = 0; i < popParams.size(); ++i) {
-//     if( count_NDrivers(Genotypes[i], NumDrivers) >= dr)
-//       psize += popParams[i].popSize;
-//   }
-//   return psize;
-// }
 
 
 
@@ -1120,7 +1083,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     totPopSize += popParams[i].popSize;
-    tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers);
+    tmp_ndr = nr_count_NDrivers(Genotypes[i], drv);
     if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
     if(tmp_ndr >= detectionDrivers) popSizeOverDDr += popParams[i].popSize;
   }
@@ -1232,7 +1195,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
       
       if(popParams[i].popSize > l_pop_s) {
 	l_pop_s = popParams[i].popSize;
-	ndr_lp = count_NDrivers(Genotypes[i], NumDrivers);
+	ndr_lp = nr_count_NDrivers(Genotypes[i], drv);
       }
     }
     sampleTotPopSize.push_back(totPopSize);
@@ -1396,25 +1359,24 @@ static inline void create_returnGenotypes(Rcpp::IntegerMatrix& returnGenotypes,
 // also for empty, so this is faster if not needed. And check that if we
 // use a stopping rule based on drivers that drv vectors is not empty.
 
-static inline void count_NumDrivers(int& maxNumDrivers, 
+static inline void nr_count_NumDrivers(int& maxNumDrivers, 
 				    std::vector<int>& countByDriver,
 				    Rcpp::IntegerMatrix& returnGenotypes,
-				    const int& numDrivers){
-  //				    Rcpp::IntegerVector& totDrivers){
+				    const vector<int>& drv){
+  // Fill up the "countByDriver" table and return the maximum number of
+  // mutated drivers in any genotype.
 
-  // At the end, over all genotypes
-  // Using a returnGenotypes object as input
-  // Redundant? 
+  // Difference w.r.t. to former is passing drv
+
   maxNumDrivers = 0;
   int tmpdr = 0;
   
   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
     tmpdr = 0;
-    for(int i = 0; i < numDrivers; ++i) {
-      tmpdr += returnGenotypes(i, j);
-      countByDriver[i] += returnGenotypes(i, j);
+    for(int i : drv) {
+      tmpdr += returnGenotypes(i - 1, j);
+      countByDriver[i] += returnGenotypes(i - 1, j);
     }
-    // totDrivers(j) = tmpdr;
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
 }
@@ -1504,49 +1466,10 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
 
 
 
-static void precissionLoss(){
-  // We are storing population sizes as doubles.
-  // Should not loose any precission up to 2^53 - 1
-  // (e.g., http://stackoverflow.com/a/1848762)
-  // but double check if optims break it.
-  // Note that the original code by Mather stores it as int.
-
-  // Problems are likely to arise sooner, with 4.5e15, because
-  // of rbinom. See notes in example-binom-problems.cpp
-  // We warn about that if totPopSize > 4e15
-  double a, b, c, d;
-  int e, f;
-  a = pow(2, 52) + 1.0;	
-  b = pow(2, 52); // 2^53 a little over 9*1e15
-  c = (9.0 * 1e15) + 1.0;
-  d = (9.0 * 1e15);
-
-  e = static_cast<int>(a - b);
-  f = static_cast<int>(c - d);
-
-  if( a == b) Rcpp::Rcout << "WARNING!!!! \n Precission loss: a == b\n";
-  if( !(a > b)) Rcpp::Rcout << "WARNING!!!! \n Precission loss: !(a > b)\n";
-  if(c == d) Rcpp::Rcout << "WARNING!!!! \n Precission loss: c == d\n";
-  if( !(c > d)) Rcpp::Rcout << "WARNING!!!! \n Precission loss: !(c > d)\n";
-  if( e != 1 ) Rcpp::Rcout << "WARNING!!!! \n Precission loss: e != 1\n";
-  if( f != 1 ) Rcpp::Rcout << "WARNING!!!! \n Precission loss: f != 1\n";
-}
-
-static void init_tmpP(spParamsP& tmpParam) {
-  tmpParam.popSize = -std::numeric_limits<double>::infinity();
-  tmpParam.birth = -std::numeric_limits<double>::infinity();
-  tmpParam.death = -std::numeric_limits<double>::infinity();
-  tmpParam.W = -std::numeric_limits<double>::infinity();
-  tmpParam.R = -std::numeric_limits<double>::infinity();
-  tmpParam.mutation = -std::numeric_limits<double>::infinity();
-  tmpParam.timeLastUpdate = std::numeric_limits<double>::infinity();
-  tmpParam.absfitness = -std::numeric_limits<double>::infinity();
-  tmpParam.numMutablePos = -999999;
-}
 
 
 
-static void innerBNB(const int& numGenes,
+static void nr_innerBNB(const int& numGenes,
 		     const double& initSize,
 		     const double& K,
 		     const double& alpha,
@@ -1890,7 +1813,7 @@ static void innerBNB(const int& numGenes,
 
     sampleTotPopSize.push_back(popParams[0].popSize);
     sampleLargestPopSize.push_back(popParams[0].popSize);
-    sampleMaxNDr.push_back(count_NDrivers(Genotypes[0], numDrivers));
+    sampleMaxNDr.push_back(nr_count_NDrivers(Genotypes[0], drv));
     sampleNDrLargestPop.push_back(sampleMaxNDr[0]);
   }
   // FIXME: why next line and not just genot_out.push_back(Genotypes[i]);
@@ -2300,7 +2223,7 @@ static void innerBNB(const int& numGenes,
       timeNextPopSample += sampleEvery;
       
       if(sp_to_remove.size())
-	remove_zero_sp_v7(sp_to_remove, Genotypes, popParams, mapTimes);
+	remove_zero_sp_nr(sp_to_remove, Genotypes, popParams, mapTimes);
 
       numSpecies = popParams.size();
       
@@ -2855,8 +2778,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // IntegerVector totDrivers(returnGenotypes.ncol());
   // count_NumDrivers(maxNumDrivers, returnGenotypes, numDrivers,
   // 		   totDrivers);
-  count_NumDrivers(maxNumDrivers, countByDriver,
-		   returnGenotypes, numDrivers);
+  nr_count_NumDrivers(maxNumDrivers, countByDriver,
+		   returnGenotypes, drv);
 
   whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
 
