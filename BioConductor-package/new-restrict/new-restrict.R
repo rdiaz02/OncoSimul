@@ -1,4 +1,6 @@
-# - Say that a user can use a "0" as a gene name, but that is BAD idea.
+## With Bozic: check no s > 1.
+
+## - Say that a user can use a "0" as a gene name, but that is BAD idea.
 ## - Modules and order effects can be kind of funny?
 
 ## Gene names can contain no spaces, commas, or ">"

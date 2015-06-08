@@ -1242,7 +1242,11 @@ static void fitness(spParamsP& tmpP,
   // FIXME: why not just pass the birth and death rates, and combine them
   // in arbitrary ways? Might even allow to pass on death and birth rates
   // from R. Only need care when any are density dependent.
-  
+
+
+  // Beware: doing it this way with Bozic1 is kind of questionable because
+  // if birth = 1, there is no immediate extinction. In fact, there never
+  // is.
   if((sh < 0) && sumDriversNoMet) {
     tmpP.absfitness = 0.0;
     tmpP.death = 1.0;

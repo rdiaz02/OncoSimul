@@ -19,70 +19,15 @@
 
 using namespace Rcpp;
 
-//#define DEBUGZ
-// #define DEBUGV
-//#define DEBUGW
-
-#ifdef DEBUGW
-#define ASSERT(x) {							\
-    if (! (x)) {							\
-      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
-	Rcpp::Rcout << " on line " << __LINE__  << "\n\n";		\
-    }									\
-  }
-#else
-#define ASSERT(x);
-//#define ARMA_NO_DEBUG
-#endif
 
 
-#ifdef DEBUGW
-#define STOPASSERT(x) {							\
-    if (! (x)) {							\
-      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
-	Rcpp::Rcout << " on line " << __LINE__  << std::endl;		\
-	throw std::out_of_range("STOPASSERT");				\
-    }									\
-  }
-#else
-#define STOPASSERT(x);
-#endif
-
-
-#define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
-//#define DP2(x);
-
-#ifdef DEBUGV
-#define DP(x) {Rcpp::Rcout << "\n DEBUG: Value of " << #x << " = " << x << std::endl;}
-#else
-#define DP(x);
-#endif
-
-// To track if mutation is really much smaller than birth/death
-#define MIN_RATIO_MUTS
-#ifdef MIN_RATIO_MUTS
-// There is really no need for these to be globals?
-// Unless I wanted to use them inside some function. So leave as globals.
-double g_min_birth_mut_ratio = DBL_MAX;
-double g_min_death_mut_ratio = DBL_MAX;
-double g_tmp1 = DBL_MAX;
-#endif
-
-
-
-// Simple custom exception for exceptions that lead to re-runs.
-class rerunExcept: public std::runtime_error {
-public:
-  rerunExcept(const std::string &s) :
-    std::runtime_error(s) {}
-};
-
-
-void here(std::string x) {
-  Rcpp::Rcout << "\n DEBUG: HERE at " << x << std::endl;
-}
-
-typedef std::bitset<64> Genotype64;
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+/////////////////                                /////////////////////
+/////////////////      Not changed common stuff  /////////////////////
+/////////////////                                /////////////////////
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
 
 struct spParamsP {
   double popSize;
@@ -646,6 +591,90 @@ static double Algo3_st(const spParamsP& spP, const double& t){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//#define DEBUGZ
+// #define DEBUGV
+//#define DEBUGW
+
+#ifdef DEBUGW
+#define ASSERT(x) {							\
+    if (! (x)) {							\
+      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
+	Rcpp::Rcout << " on line " << __LINE__  << "\n\n";		\
+    }									\
+  }
+#else
+#define ASSERT(x);
+//#define ARMA_NO_DEBUG
+#endif
+
+
+#ifdef DEBUGW
+#define STOPASSERT(x) {							\
+    if (! (x)) {							\
+      Rcpp::Rcout << "\n\nERROR!! Assertion  " << #x << " failed\n";	\
+	Rcpp::Rcout << " on line " << __LINE__  << std::endl;		\
+	throw std::out_of_range("STOPASSERT");				\
+    }									\
+  }
+#else
+#define STOPASSERT(x);
+#endif
+
+
+#define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
+//#define DP2(x);
+
+#ifdef DEBUGV
+#define DP(x) {Rcpp::Rcout << "\n DEBUG: Value of " << #x << " = " << x << std::endl;}
+#else
+#define DP(x);
+#endif
+
+// To track if mutation is really much smaller than birth/death
+#define MIN_RATIO_MUTS
+#ifdef MIN_RATIO_MUTS
+// There is really no need for these to be globals?
+// Unless I wanted to use them inside some function. So leave as globals.
+double g_min_birth_mut_ratio = DBL_MAX;
+double g_min_death_mut_ratio = DBL_MAX;
+double g_tmp1 = DBL_MAX;
+#endif
+
+
+
+// Simple custom exception for exceptions that lead to re-runs.
+class rerunExcept: public std::runtime_error {
+public:
+  rerunExcept(const std::string &s) :
+    std::runtime_error(s) {}
+};
+
+
+void here(std::string x) {
+  Rcpp::Rcout << "\n DEBUG: HERE at " << x << std::endl;
+}
+
+typedef std::bitset<64> Genotype64;
+
+
+
+
+
 // Format of restrictTable
 // - mutations in columns
 // - first row, the number
@@ -821,180 +850,67 @@ static void updateRatesBeeren(std::vector<spParamsP>& popParams,
 }
 
 
-static void fitness(spParamsP& tmpP,
-		    const spParamsP& parentP,
-		    const int& mutatedPos, 
-		    Rcpp::IntegerMatrix restrictTable,
-		    const std::string& typeCBN,
-		    const Genotype64& newGenotype,
-		    const double& birthRate, 
-		    const double& s,
-		    // const double& death,
-		    const int& numDrivers,
-		    const std::string& typeFitness,
-		    const double& genTime,
-		    const double& adjust_fitness_B,
-		    const double& sh,
-		    const double& adjust_fitness_MF) {
+static void nr_fitness(spParamsP& tmpP,
+		       const spParamsP& parentP,
+		       const Genotype& ge,
+		       const fitnessEffectsAll& F,
+		       const std::string& typeFitness,
+		       const double& genTime,
+		       const double& adjust_fitness_B,
+		       const double& adjust_fitness_MF) {
 
-  using namespace Rcpp;
-  // Two pieces: split into two functions??
-  //    - checking restrictions
-  //    - returning actual fitness according
+  // We want a way to signal immediate non-viability of a clone. For
+  // "birth-based" models that happens when any s = -1, as the fitness is
+  // 0. By setting birth = 0.0 we ensure this clone does not get added and
+  // we never reach into algo2, etc, leading to numerical problems.
 
+  // With Bozic models, which are "death-based", it is different. For
+  // bozic2, birth is bounded, so any death > 2 would lead to birth <
+  // 0. For bozic1, deaths of around 50 lead to numerical issues.  The
+  // general rule is: set those mutations to -90, so prodDeathFitness
+  // immediately returns a 99.0 for death, and that is recognized as "no
+  // viability".
 
-  int numDependencies;
-  int sumDriversMet = 0;
-  int sumDriversNoMet = 0;
-  int sumDependenciesMet = 0;
+  // The ones often used are bozic1, exp, mcfarlandlog
 
-  // set appropriate defaults. Change only needed stuff.
-  tmpP.birth = parentP.birth;
-  tmpP.death = parentP.death;
-  tmpP.absfitness = parentP.absfitness;
-
-
-
-
-
-  //      **** Are driver constraints met? ***
-
-
-  // Two cases: same s, sh, sp or different ones. If same, return three
-  // integers: sumDriversMet, sumDriversNoMet, sumPassengers.  If
-  // different, return three vectors, filled with the non-zero
-  // entries. These vectors then are combined as dictated by the fintness
-  // functions.
-
-  // If same single s, sh, sp: function takes three integers. O.w. it
-  // takes three integer vectors.
-
-  
-
-  if(mutatedPos >= numDrivers) { //the new mutation is a passenger
-    return;
+  if(typeFitness == "bozic1") {
+    tmpP.death = prodDeathFitness(evalGenotyeFitness(ge, F));
+    if( tmp.death > 50) {
+      tmpP.birth = 0.0; 
+    }
+  } else if (typeFitness == "bozic2") {
+    double pp = prodDeathFitness(evalGenotyeFitness(ge, F));
+    tmpP.birth = std::max(0, (1.0/genTime) * (1.0 - 0.5 * pp ));
+    tmpP.death = (0.5/genTime) * pp;
   } else {
-    for(int m = 0; m < numDrivers; ++m) {
-      if( newGenotype[m] ) { // this m is mutated
-	const Rcpp::IntegerMatrix::Column thisRestrict = 
-	  restrictTable(_, m);
-	numDependencies = thisRestrict[1];
-	if(!numDependencies) { // this driver has no dependencies
-	  sumDriversMet++;
-#ifdef DEBUGZ
-	  Rcpp::Rcout << "\n No dependencies:  ";
-	  DP2(sumDriversMet);
-#endif
-
-	}
-	else {
-	  sumDependenciesMet = 0;
-	  for(int i = 2; i < (2 + numDependencies); i++) {
-	    sumDependenciesMet += newGenotype[ thisRestrict[i] ];
-	  }
-	  if( ( (typeCBN == "Multiple") && (sumDependenciesMet) ) ||
-	      ( (typeCBN == "CBN") && (sumDependenciesMet == numDependencies) )) {
-	    sumDriversMet++;   
-	  } else {
-	    sumDriversNoMet++;
-	  }
-	}
+    double fitness = prodFitness(evalGenotyeFitness(ge, F));
+    if( fitness <= 0.0) {
+      tmpP.absfitness = 0.0;
+      tmpP.death = 1.0;
+      tmpP.birth = 0.0; 
+    } else{
+      // Set appropriate defaults and change only as needed
+      tmpP.death = parentP.death;
+      tmpP.absfitness = parentP.absfitness;
+      tmpP.birth = fitness;
+      // exp, mcfarland, and mcfarlandlog as above. Next are the two exceptions.
+      if(typeFitness == "beerenwinkel") {
+	tmpP.absfitness = fitness; 
+	tmpP.birth = adjust_fitness_B * tmpP.absfitness;
+      } else if(typeFitness == "mcfarland0") {
+	tmpP.absfitness = fitness;
+	tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
       }
     }
   }
-
-#ifdef DEBUGZ
-  DP2(sumDriversMet);
-  DP2(sumDriversNoMet);
-  DP2(sh);
-  DP2(typeFitness);
-#endif
-
-  // if sh < 0 : we do not allow any unment dependencies.  
-  // if sh = 0: no penalty for unmet dependencies
-
-
-  // FIXME: why not just pass the birth and death rates, and combine them
-  // in arbitrary ways? Might even allow to pass on death and birth rates
-  // from R. Only need care when any are density dependent.
-  
-  if((sh < 0) && sumDriversNoMet) {
-    tmpP.absfitness = 0.0;
-    tmpP.death = 1.0;
-    tmpP.birth = 0.0; // this is what really matters so that
-    // the pop does not get added.
-    // Line with comment "fitness is 0"
-  } else {
-    if(typeFitness == "bozic1") {
-      tmpP.death = pow( 1.0 - s, sumDriversMet) * 
-	pow( 1.0 + sh, sumDriversNoMet);
-      tmpP.birth = 1.0;
-    } else if (typeFitness == "bozic2") {
-      double pp = pow( 1.0 - s, sumDriversMet) * 
-	pow( 1.0 + sh, sumDriversNoMet);
-      tmpP.birth = (1.0/genTime) * (1.0 - 0.5 * pp );
-      tmpP.death = (0.5/genTime) * pp;
-    } else if(typeFitness == "beerenwinkel") {
-      // like Datta et al., 2013
-      tmpP.absfitness = pow(1.0 + s, sumDriversMet) * 
-	pow( 1.0 - sh, sumDriversNoMet);
-      tmpP.birth = adjust_fitness_B * tmpP.absfitness;
-    } else if(typeFitness == "mcfarland0") {
-      tmpP.absfitness = pow(1.0 + s, sumDriversMet) / 
-	pow( 1.0 + sh, sumDriversNoMet);
-      tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
-    } else if(typeFitness == "mcfarland") {
-      tmpP.birth = pow(1.0 + s, sumDriversMet) / 
-	pow( 1.0 + sh, sumDriversNoMet);
-    } else if(typeFitness == "mcfarlandlog") {
-      tmpP.birth = pow(1.0 + s, sumDriversMet) / 
-	pow( 1.0 + sh, sumDriversNoMet);
-    } else if (typeFitness == "exp") { 
-      // Also like Datta et al., 2013 An additional driver gene mutation
-      // increases a cell’s fitness by a factor of (1+sd), whereas an
-      // additional housekeeper gene mutation decreases fitness by a
-      // factor of (1-sh) and the effect of multiple mutations is
-      // multiplicative
-      tmpP.birth = pow(1.0 + s, sumDriversMet) * 
-	pow( 1.0 - sh, sumDriversNoMet);
-
-#ifdef DEBUGZ
-      double posi = pow(1.0 + s, sumDriversMet);
-      double negi = pow( 1.0 - sh, sumDriversNoMet);
-      DP2(posi);
-      DP2(negi);
-#endif
-
-    } else if (typeFitness == "log") {
-      tmpP.birth = birthRate + s * log1p(sumDriversMet) - 
-	sh * log(1 + sumDriversNoMet);
-    } else { // linear
-      tmpP.birth = birthRate + s * static_cast<double>(sumDriversMet) - 
-	sh * static_cast<double>(sumDriversNoMet);
-    } 
-  }
+  // Exp and McFarland and McFarlandlog are also like Datta et al., 2013
+  // An additional driver gene mutation increases a cell’s fitness by a
+  // factor of (1+sd), whereas an additional housekeeper gene mutation
+  // decreases fitness by a factor of (1-sh) and the effect of multiple
+  // mutations is multiplicative
 }
-// Notice: if restriction is 3 -> 4 -> 5
-// and one has 5 and 4, only 4 is unmet. Beware of that.
-// So we talk about the immediate dependency or restriction.
-// Not the whole transitive closure.
-
-// When birth == 0, popSize should become 0 immediately. 
-// No evaluation through random numbers, etc.
-// This is how we do it.
-
-// How small can they get?
-// d1 <- function(s, mut) { (1 - s)^mut}
-// d2 <- function(s, mut) {  (0.5/4) * ((1 - s)^mut) }
 
 
-// limited benchmarks suggest the following is slower
-// static inline void new_sp_bitset2(unsigned int& sp, const Genotype64& newGenotype,
-// 			   const std::vector<Genotype64>& Genotypes) {
-//   sp = std::distance(Genotypes.begin(),
-// 		     std::find(Genotypes.begin(), 
-// 			       Genotypes.end(), newGenotype));
-// }
 
 
 // is this really any faster than the one below?
@@ -1740,9 +1656,9 @@ static void innerBNB(const int& numGenes,
   int u_1 = -99;
   int u_2 = -99;
 
-  Genotype64 newGenotype;
-  std::vector<Genotype64> Genotypes(1);
-  Genotypes[0].reset();
+  Genotype newGenotype;
+  std::vector<Genotype> Genotypes(1);
+  Genotypes[0] = wtGenotype(); //Not needed, but be explicit.
   
   std::vector<spParamsP> popParams(1);
 
@@ -1834,7 +1750,14 @@ static void innerBNB(const int& numGenes,
   // anything. FIXME!!
   if(initMutant >= 0) {
     popParams[0].numMutablePos = numGenes - 1;
-    Genotypes[0].set(initMutant);
+    Genotypes[0] = createNewGenotype(wtgenotype(),
+				     initMutant,
+				     fitnessEffects,
+				     ran_gen); // FIXME: nr, here. What is a "wt
+					// genotype"? Does it have "0"
+					// mutated, or nothing. Nothing.
+    
+    Genotypes[0].set(initMutant); // FIXME nr: this is not done this way now!!
     if(typeFitness == "beerenwinkel") {
       popParams[0].death = 1.0; //note same is in McFarland.
       // But makes sense here; adjustment in beerenwinkel is via fitness
@@ -1877,10 +1800,11 @@ static void innerBNB(const int& numGenes,
     } 
     if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
 	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
-      fitness(popParams[0], tmpParam, initMutant, restrictTable,
-	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
-	      typeFitness, genTime, adjust_fitness_B, sh,
-	      adjust_fitness_MF);
+      nr_fitness(popParams[0], tmpParam,
+		 Genotypes[0],
+		 fitnessEffects,
+		 typeFitness, genTime,
+		 adjust_fitness_B, adjust_fitness_MF);
     // we pass as the parent the tmpParam; it better initialize
     // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
@@ -2225,7 +2149,7 @@ static void innerBNB(const int& numGenes,
 
 	newGenoytpe = createNewGenotype(Genotypes[nextMutant],
 					newMutations,
-					fe,
+					fitnessEffects,
 					ran_gen);
 	// nr_change
 	// newGenotype = Genotypes[nextMutant];
@@ -2254,11 +2178,11 @@ static void innerBNB(const int& numGenes,
 	
 	  tmpParam.popSize = 1;
 
-	  fitness(tmpParam, popParams[nextMutant], mutatedPos, 
-		  restrictTable,
-		  typeCBN, newGenotype, birthRate, s,
-		  numDrivers, typeFitness, genTime,
-		  adjust_fitness_B, sh, adjust_fitness_MF);
+	  nr_fitness(tmpParam, popParams[nextMutant],
+		     newGenotype,
+		     fitnessEffects,
+		     typeFitness, genTime,
+		     adjust_fitness_B, adjust_fitness_MF);
 	
 
 	  if(tmpParam.birth > 0.0) {
@@ -2531,32 +2455,31 @@ static void innerBNB(const int& numGenes,
 // [[Rcpp::export]]
 Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double mu_,
-			SEXP initSize_,
-		     SEXP sampleEvery_,
-		     SEXP detectionSize_,
-		     SEXP finalTime_,
-		     SEXP initSize_species_,
-		     SEXP initSize_iter_,
-		     SEXP seed_gsl_,
-		     SEXP verbose_,
-		     SEXP speciesFS_,
-		     SEXP ratioForce_,
-		     SEXP typeFitness_,
-		     SEXP maxram_,
-		     SEXP mutatorGenotype_,
-		     SEXP initMutant_,
-		     SEXP maxWallTime_,
-		     SEXP keepEvery_,
-		     SEXP alpha_,
-		     SEXP sh_,
-		     SEXP K_,
-		     SEXP detectionDrivers_,
-		     SEXP onlyCancer_,
-		     SEXP errorHitWallTime_,
-		     SEXP maxNumTries_,
-		     SEXP errorHitMaxTries_,
-		     SEXP minDDrPopSize_,
-		     SEXP extraTime_
+			double initSize_,
+			double sampleEvery_,
+			double detectionSize_,
+			double finalTime_,
+			int initSize_species_,
+			int initSize_iter_,
+			int seed_,
+			int verbose_,
+			int speciesFS_,
+			double ratioForce_,
+			Rcpp::CharacterVector typeFitness_,
+			int maxram_,
+			int mutatorGenotype_,
+			int initMutant_,
+			double maxWallTime_,
+			double keepEvery_,
+			double alpha_,
+			 double K_,
+			int detectionDrivers_,
+			bool onlyCancer_,
+			bool errorHitWallTime_,
+			int maxNumTries_,
+			bool errorHitMaxTries_,
+			double minDDrPopSize_,
+			double extraTime_
 		     ) {  
   // SEXP endTimeEvery_,
 
@@ -2569,7 +2492,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   const int numDrivers = as<int>(numDrivers_);
   const int numGenes = as<int>(numGenes_);
   const std::string typeCBN = as<std::string>(typeCBN_);
-  const std::string typeFitness = as<std::string>(typeFitness_);
+  // const std::string typeFitness = as<std::string>(typeFitness_);
+  const std::string typeFitness = Rcpp::as<std::string>(typeFitness_); // no need to do [0]
+  
   // birth and death are irrelevant with Bozic
   const double birthRate = as<double>(birthRate_);
   const double death = as<double>(death_);
@@ -2587,7 +2512,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // detectionSize, force a sampling to prevent going too far.
   int speciesFS = as<int>(speciesFS_); // to force sampling when too many 
   // species
-  const int seed = as<int>(seed_gsl_);
+  const int seed = as<int>(seed_);
   const long maxram = as<int>(maxram_);
   const int mutatorGenotype = as<int>(mutatorGenotype_);
   const int initMutant = as<int>(initMutant_);

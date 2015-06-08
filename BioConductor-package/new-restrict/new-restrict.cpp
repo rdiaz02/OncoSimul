@@ -129,6 +129,24 @@ struct Genotype {
   std::vector<int> rest; // always sorted
 };
 
+
+Genotype wtGenotype() {
+  // Not needed but to make it explicit
+  Genotype g;
+  g.orderEff.resize(0);
+  g.epistRtEff.resize(0);
+  g.rest.resize(0);
+}
+
+vector<int> genotypeSingleVector(const Genotype& ge) {
+  std::vector<int> allgG;
+  allgG.insert(allgG.end(), ge.orderEff.begin(), ge.orderEff.end());
+  allgG.insert(allgG.end(), ge.epistRtEff.begin(), ge.epistRtEff.end());
+  allgG.insert(allgG.end(), ge.rest.begin(), ge.rest.end());
+  return allgG;
+}
+
+
 inline bool operator==(const Genotype& lhs, const Genotype& rhs) {
   return (lhs.orderEff == rhs.orderEff) &&
     (lhs.epistRtEff == rhs.epistRtEff) &&
@@ -136,21 +154,21 @@ inline bool operator==(const Genotype& lhs, const Genotype& rhs) {
 }
 
 inline bool operator<(const Genotype& lhs, const Genotype& rhs) {
- //  // ll = order + sorted rest
- //  // rr = order + sorted rest
- //  // if ll.size() < rr.size() return true;
- //  // else if ll.size() > rr.size() return false;
- // else {
- //   for(size_t i = 0; i != ll.size; ++i) {
- //     if( ll[i] < rr[i] ) return true;
- //   }
- //   return false;
- // }
+  vector<int> lh = genotypeSingleVector(lhs);
+  vector<int> rh = genotypeSingleVector(rhs);
+  if( lh.size() < rh.size() ) return true;
+  else if ( lh.size() > rh.size() ) return false;
+  else {
+    for(size_t i = 0; i != ll.size; ++i) {
+      if( lh[i] < rh[i] ) return true;
+    }
+    return false;
+  }
 }
 
-inline bool operator>(const Genotype& lhs, const Genotype& rhs) {
-  return operator< (rhs, lhs);
-}
+// inline bool operator>(const Genotype& lhs, const Genotype& rhs) {
+//   return operator< (rhs, lhs);
+// }
 
 
 
@@ -468,6 +486,9 @@ vector<int> allGenesinGenotype(const Genotype& ge){
   return allgG;
 }
 
+
+
+
 void breakingGeneDiff(const vector<int> genotype,
 		      const vector<int> fitness) {
   std::vector<int> diffg;
@@ -768,9 +789,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
     s.push_back(1.0);
     return s;
   }
-    
-  
-  
 
   // Genes without any restriction or epistasis are just genes. No modules.
   // So simple we do it here.
@@ -824,6 +842,30 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 inline double prodFitness(vector<double> s) {
   return accumulate(s.begin(), s.end(), 1.0,
 		    [](double x, double y) {return (x * (1 + y));});
+}
+
+
+// I am looping twice
+// inline double prodDeathFitness(vector<double> s) {
+//   // For Bozic's
+//   if( *min_element( s.begin(), s.end()) <= 99.0 ) {
+//     return -99.0;
+//   } else {
+//     return accumulate(s.begin(), s.end(), 1.0,
+// 		      [](double x, double y) {return (x * (1 - y));});
+//   }
+// }
+
+inline double prodDeathFitness(vector<double> s) {
+  double f = 1.0;
+  for(auto si : s) {
+    if( si <= -90.0 ) {
+      return 99.0;
+    } else {
+      f *= (1 - si);
+    }
+  }
+  return f;
 }
 
 // inline double logSumFitness(vector<double> s) {

@@ -157,6 +157,32 @@ specification. This also means that in many cases, the same fitness
 effects can be specified in very different ways.
 
 
+\subsection{Numeric values of fitness effects: no viability and models}
+
+\red{FIXME}
+
+For all models where fitness affects directly the birth rate (for now, all
+except Bozic), if you specify some ``s = -1'', if that event happens
+fitness becomes immediately zero, and that clone does not even get
+created. It is not viable.
+
+Models based on Boziz, however, have a birth rate of 1 (beware, not
+bozic2!) and a death rate that is a product blablabla.
+
+In this case, a death rate larger than birth rate, per se, does not signal
+immediate extinction and, moreover, even for death rates that are a few
+times larger than birth rates, the clone could mutate before becoming
+extinct\footnote{We said ``a few times''. For a clone of population size 1
+  ---which is the size at which all clones start from mutation---, if
+  death rate is, say, 50 but birth rate is 1, the probability of mutating
+  before becoming extinct is essentially zero for all reasonable values of
+  mutation rate}. How do we signal immediate extinction, no viability? You
+can set the value of $s = -\infty$. Setting a value of $s < -90$ has the
+same effect.
+
+So, if you want to identify some mutations or some combinations of
+mutations as leading to immediate extinction, no viability, of the
+affected clone, set ``s'' to some value $<= -90$, or set it to $-\infty$.
 
 \subsection{Specifying modules}
 
