@@ -18,7 +18,7 @@
 #include <stdexcept>
 
 using namespace Rcpp;
-
+using std::vector;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -811,27 +811,19 @@ static inline void getMinNextMutationTime4(int& nextMutant, double& minNextMutat
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+static inline void whichDrivers(int& totalPresentDrivers,
+				std::string& strDrivers,
+				const std::vector<int>& countByDriver){
+  std::string comma = "";
+  for(size_t i = 0; i < countByDriver.size(); ++i) {
+    if(countByDriver[i] > 0) {
+      strDrivers += (comma + std::to_string(i + 1)); 
+      comma = ", ";
+      ++totalPresentDrivers;
+    }
+  }
+  if(totalPresentDrivers == 0) strDrivers = "NA";
+}
 
 
 
@@ -1314,38 +1306,69 @@ inline void reshape_to_outNS(Rcpp::NumericMatrix& outNS,
     outNS(j, 0) = time_out[j];
 }
 
-static inline void find_unique_genotypes(std::set<unsigned long long>& uniqueGenotypes,
-				  const std::vector<unsigned long long>& genot_out_l) {
-  for(size_t i = 0; i < genot_out_l.size(); ++i) 
-    uniqueGenotypes.insert( genot_out_l[i] );
+// FIXME: when creating the 0/1, collapse those that are the same
+
+vector< vector<int> > uniqueGenot_vector(vector<Genotype>& genot_out) {
+  // From genot_out we want the unique genotypes, but each as a single
+  // vector. Convert to the vector, then use a set to give unique sorted
+  // vector.
+  std::vector<std::vector<int> > genot_out_nr;
+  std::transform(genout_out.begin(), genot_out.end(),
+		 back_inserter(genout_out_nr),
+		 genotypeSingleVector);
+  std::set<std::vector<int> > uniqueGenotypes_nr(genot_out_nr.begin(), genot_out_nr.end());
+  std::vector<std::vector<int> > uniqueGenotypes_vector_nr (uniqueGenotypes_nr.begin(),
+							    uniqueGenotypes_nr.end());
+  return uniqueGenotypes_vector_nr;
 }
 
-static inline void genot_out_to_ullong(std::vector<unsigned long long>& go_l,
-			       const std::vector<Genotype64>& go) {
-  for(size_t i = 0; i < go.size(); ++i)
-    go_l[i] = go[i].to_ullong();
-}
+
+// std::set<std::vector<int> > nr_find_unique_genotypes(const std::vector<unsigned long long>& genot_out_l) {
+//   std::set<std::vector<int> > uniqueGenotypes;
+//   for( auto gg : genot_out_nr)
+//     uniqueGenotypes.insert(gg);
+//   return uniqueGenotypes;
+// }
 
 
-static inline void uniqueGenotypes_to_vector(std::vector<unsigned long long>& ugV,
-				      const std::set<unsigned long long>& uniqueGenotypes) {
-  ugV.assign(uniqueGenotypes.begin(), uniqueGenotypes.end() );
-}
+
+// static inline void genot_out_to_ullong(std::vector<unsigned long long>& go_l,
+// 			       const std::vector<Genotype64>& go) {
+//   for(size_t i = 0; i < go.size(); ++i)
+//     go_l[i] = go[i].to_ullong();
+// }
+
+// std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go) {
+//   std::vector<std::vector<int> > go_l;
+//   std::transform(go.begin(), go.end(), back_inserter(go_l), genotypeSingleVector);
+//   // for(auto g : go) {
+//   //   go_l.push_back(genotypeSingleVector(g));
+//   // }
+//   return go_l;
+// }
 
 
-static inline void create_returnGenotypes(Rcpp::IntegerMatrix& returnGenotypes,
-					  const int& numGenes,
-					  const std::vector<unsigned long long>& uniqueGenotypesV){
-  // In C++, as the original were bitsets, pos 0 is at the right
-  // In R, pos 0 is at the left
+// std::vector<std::vector<int> > nr_uniqueGenotypes_to_vector(const std::set< std::vector<int> >& uniqueGenotypes_nr) {
+//   std::vector<std::vector<int> > ugV(uniqueGenotypes_nr.begin(),
+// 				     uniqueGenotypes_nr.end());
+//   return ugV;
+// }
 
+
+Rcpp::IntegerMatrix nr_create_returnGenotypes(const int& numGenes,
+					      const std::vector< vector<int> >& uniqueGenotypesV){
+  // We loose order here. Thus, there might be several identical columns.
+  Rcpp::IntegerMatrix returnGenotypes(numGenes, uniqueGenotypesV.size());
   for(size_t i = 0; i < uniqueGenotypesV.size(); ++i) {
-    Genotype64 tmpbs(uniqueGenotypesV[i]);
-    for(int j = 0; j < numGenes; ++j) {
-      returnGenotypes(j, i) = tmpbs[j];
+    for(int j : uniqueGenotypesV[i]) {
+      returnGenotypes(j - 1, i) = 1;
     }
   }
+  return returnGenotypes;
 }
+
+Rcpp::List 
+
 
 // FIXME: change this, now that we keep a count of drivers?
 // see the new function in new-restrict.cpp: countDrivers
@@ -1381,41 +1404,22 @@ static inline void nr_count_NumDrivers(int& maxNumDrivers,
   }
 }
       
-static inline void whichDrivers(int& totalPresentDrivers,
-				std::string& strDrivers,
-				const std::vector<int>& countByDriver){
-  std::string comma = "";
-  for(size_t i = 0; i < countByDriver.size(); ++i) {
-    if(countByDriver[i] > 0) {
-      strDrivers += (comma + std::to_string(i + 1)); //SSTR(i + 1));
-      comma = ", ";
-      ++totalPresentDrivers;
-    }
-  }
-  if(totalPresentDrivers == 0) strDrivers = "NA";
-}
 
-static void sample_all_pop_P(std::vector<int>& sp_to_remove,
-			     std::vector<spParamsP>& popParams,
-			     // next only used with DEBUGV
-			     const std::vector<Genotype64>& Genotypes,
-			     const double& tSample){
-
-  // here("entering sample_all_pop_P");
-  // currentTime = tSample;
+static void sample_all_pop_P_nr(std::vector<int>& sp_to_remove,
+				std::vector<spParamsP>& popParams,
+				// next only used with DEBUGV
+				const std::vector<Genotype>& Genotypes,
+				const double& tSample){
   sp_to_remove.clear();
-  // sp_to_remove.push_back(0);
-  // sp_to_remove[0] = 0;
 
   for(size_t i = 0; i < popParams.size(); i++) {
-    //STOPASSERT(popParams[i].Flag == false);
     STOPASSERT(popParams[i].timeLastUpdate >= 0.0);
     STOPASSERT(tSample - popParams[i].timeLastUpdate >= 0.0);
 #ifdef DEBUGV
     Rcpp::Rcout << "\n\n     ********* 5.9 ******\n " 
 	      << "     Species  = " << i 
-	      << "\n      Genotype = " << Genotypes[i]
-	      << "\n      sp_id = " << Genotypes[i].to_ullong() // sp_id[i]  
+	      << "\n      Genotype = " << genotypeSingleVector(Genotypes[i])
+      //	      << "\n      sp_id = " << genotypeSingleVector(Genotypes[i]) // sp_id[i]  
 	      << "\n      pre-update popSize = " 
 	      << popParams[i].popSize 
 	      << "\n      time of sample = " << tSample 
@@ -1427,8 +1431,6 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
 	      << " \n     species W " << popParams[i].W
 	      << " \n     species death " << popParams[i].death
 	      << " \n     species birth " << popParams[i].birth;
-    // << " \n     species nextMutationTime " 
-    // << popParams[i].nextMutationTime;
 #endif
 
     // Account for forceSampling. When 
@@ -1441,27 +1443,20 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
     if( popParams[i].popSize <=  0.0 ) {
       // this i has never been non-zero in any sampling time
       // eh??
-
       // If it is 0 here, remove from _current_ population. Anything that
       // has had a non-zero size at sampling time is preserved (if it
       // needs to be preserved, because it is keepEvery time).
-
-      // sp_to_remove[0]++;
       sp_to_remove.push_back(i);
-      // sp_to_remove[sp_to_remove[0]] = i;
 #ifdef DEBUGV
       Rcpp::Rcout << "\n\n     Removing species i = " << i 
-		<< " with sp_id = " << Genotypes[i].to_ullong(); //sp_id[i];
+		  << " with genotype = " << genotypeSingleVector(Genotypes[i]);
 #endif
-    } // else {
-    //   popParams[i].Flag = true;
-    // }
+    } 
 #ifdef DEBUGV
     Rcpp::Rcout << "\n\n   post-update popSize = " 
 	      << popParams[i].popSize << "\n";
 #endif
   }
-  // here("exiting sample_all_pop_P");
 }
 
 
@@ -2218,7 +2213,7 @@ static void nr_innerBNB(const int& numGenes,
       if(verbosity >= 3)
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() << "\n";
 
-      sample_all_pop_P(sp_to_remove, 
+      sample_all_pop_P_nr(sp_to_remove, 
 		       popParams, Genotypes, tSample);
       timeNextPopSample += sampleEvery;
       
@@ -2723,16 +2718,37 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   // FIXME: all this is ugly and could be a single function
   // up to call to IntegerMatrix
-  std::set<unsigned long long> uniqueGenotypes;
-  std::vector<unsigned long long> genot_out_ullong(genot_out.size());
-  genot_out_to_ullong(genot_out_ullong, genot_out);
-  find_unique_genotypes(uniqueGenotypes, genot_out_ullong);
-  std::vector<unsigned long long> uniqueGenotypes_vector(uniqueGenotypes.size());
-  uniqueGenotypes_to_vector(uniqueGenotypes_vector, uniqueGenotypes);
+
+  // Do I use genot_out_nr for anything else? FIXME
+  // Put into a single function?? FIXME
+
+  // // Go from genot_out (the vector of Genotype) to a vector of vectors of
+  // // the genotypes, through a set.
+
+  // // V1
+  // std::vector<std::vector<int> > genot_out_nr;
+  // std::transform(genout_out.begin(), genot_out.end(), back_inserter(genout_out_nr),
+  // 		 genotypeSingleVector);
+  // std::set<std::vector<int> > uniqueGenotypes_nr
+  // for( auto gg : genot_out_nr ) uniqueGenotypes_nr.insert(gg);
+  // std::vector<std::vector<int> > uniqueGenotypes_vector_nr (uniqueGenotypes_nr.begin(),
+  // 							    uniqueGenotypes_nr.end());
+
+
+  // // v2
+  // std::vector<std::vector<int> > genot_out_nr = genot_to_vectorg(genot_out);
+  // std::set<std::vector<int> > uniqueGenotypes_nr =  nr_find_unique_genotypes(genot_out_nr);
+  // std::vector<std::vector<int> > uniqueGenotypes_vector_nr = nr_uniqueGenotypes_to_vector(uniqueGenotypes_nr);
+
+
+  // v3
+  std::vector<std::vector<int> > uniqueGenotypes_vector_nr  =
+    uniqueGenot_vector(genot_out);
+  
   // IntegerMatrix returnGenotypes(uniqueGenotypes_vector.size(), numGenes);
-  IntegerMatrix returnGenotypes(numGenes, uniqueGenotypes_vector.size());
-  // here("after creating returnGenotypes");
-  create_returnGenotypes(returnGenotypes, numGenes, uniqueGenotypes_vector);
+  IntegerMatrix returnGenotypes = 
+    nr_create_returnGenotypes(numGenes, uniqueGenotypes_vector_nr);
+  
   // here("after call to create_returnGenotypes_to_vector");
 
   // The out.ns in R code; holder of popSizes over time
@@ -2817,12 +2833,14 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // here("after precomp");
   // here("*******************************************");
 
-
+  // Rcpp::List returnGenotypesO = Rcpp::wrap(uniqueGenotypesV);
+  
   return 
     List::create(Named("pops.by.time") = outNS,
 		 Named("NumClones") = uniqueGenotypes.size(), 
 		 Named("TotalPopSize") = totPopSize,
 		 Named("Genotypes") = returnGenotypes,
+		 Named("GenotypesOrder") = Rcpp::wrap(uniqueGenotypes_vector_nr), 
 		 Named("MaxNumDrivers") = maxNumDrivers,
 		 // Named("MaxDrivers_PerSample") = wrap(sampleMaxNDr),
 		 // Named("NumDriversLargestPop_PerSample") = sampleNDrLargestPop,

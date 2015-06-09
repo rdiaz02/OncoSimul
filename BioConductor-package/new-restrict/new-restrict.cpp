@@ -107,7 +107,9 @@ struct fitnessEffectsAll {
   // std::vector<Gene_Module_struct> Gene_Module_tabl;
   std::vector<Gene_Module_struct> Gene_Module_tabl;
   std::vector<int> allGenes; //used whenever a mutation created
+  std::vector<int> drv;
   genesWithoutInt genesNoInt;
+  
 };
 
 
@@ -139,6 +141,7 @@ Genotype wtGenotype() {
 }
 
 vector<int> genotypeSingleVector(const Genotype& ge) {
+  // orderEff in the order they occur. All others are sorted.
   std::vector<int> allgG;
   allgG.insert(allgG.end(), ge.orderEff.begin(), ge.orderEff.end());
   allgG.insert(allgG.end(), ge.epistRtEff.begin(), ge.epistRtEff.end());
@@ -378,7 +381,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List rgi = rFE["long.geneNoInt"];
   Rcpp::List rgm = rFE["geneModule"];
   bool rone = rFE["gMOneToOne"];
-  
+  Rcpp::IntegerVector drv = rFE["drv"];
 
   if(rrt.size()) {
     fe.Poset = rTable_to_Poset(rrt);
@@ -400,6 +403,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   fe.gMOneToOne = rone;
   fe.allGenes = allGenesinFitness(ge);
   fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.size();
+  fe.drv = as<std::vector<int> > (drv);
   return fe;
 }
 
