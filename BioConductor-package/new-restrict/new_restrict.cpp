@@ -1,12 +1,12 @@
+#include "new_restrict.hpp"
+#include "debug_common.h"
 #include <Rcpp.h>
 #include <iomanip> // for setw
-#include <algorithm>    
+#include <algorithm>
 #include <random>
 
-#include "debug_common.h"
 
-
-using namespace Rcpp ;
+using namespace Rcpp;
 using std::vector;
 using std::back_inserter;
 
@@ -14,129 +14,6 @@ using std::back_inserter;
 int seed = 1; 
 std::mt19937 ran_gen(seed);
 
-enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
-
-inline static Dependency stringToDep(const std::string& dep) {
-  if(dep == "monotone")
-    return Dependency::monotone;
-  else if(dep == "semimonotone")
-    return Dependency::semimonotone;
-  else if(dep == "xmpn")
-    return Dependency::xmpn;
-  else if(dep == "--")
-    return Dependency::single;
-  else 
-    throw std::out_of_range("Not a valid typeDep");
-  // We never create the NA from entry data. NA is reserved for Root.
-}
-
-inline static std::string depToString(const Dependency dep) {
-  switch(dep) {
-  case Dependency::monotone:
-    return "CMPN or monotone";
-  case Dependency::semimonotone:
-    return "DMPN or semimonotone";
-  case Dependency::xmpn:
-    return "XMPN (XOR)";
-  case Dependency::single:
-    return "--";
-  default:
-    throw std::out_of_range("Not a valid dependency");
-  }
-}
-
-struct Gene_Module_struct {
-  std::string GeneName;
-  std::string ModuleName;
-  int GeneNumID;
-  int ModuleNumID;
-};
-
-struct Poset_struct {
-  Dependency typeDep;
-  int childNumID; //Not redundant
-  double s;
-  double sh;
-  std::vector<int> parentsNumID;
-  // The next two are clearly redundant but a triple check
-  std::string child;
-  std::vector<std::string> parents;
-};
-
-
-// We use same structure for epistasis and order effects. With order
-// effects, NumID is NOT sorted, but reflects the order of the
-// restriction. And checking is done using that fact.
-struct epistasis {
-  double s;
-  std::vector<int> NumID; //a set instead? nope.using includes with epistasis
-  std::vector<std::string> names; // will remove later
-};
-
-
-struct genesWithoutInt {
-  int shift; // access the s as s[index of mutation or index of mutated
-	     // gene in genome - shift]. shift is the min. of NumID, given
-	     // how that is numbered from R. We assume mutations always
-	     // indexed 1 to something. Not 0 to something.
-  // If shift is -9, no elements
-  // The next first two are not really needed. Will remove later
-  std::vector<int> NumID;
-  std::vector<std::string> names;
-  std::vector<double> s;
-};
-
-
-struct fitnessEffectsAll {
-  bool gMOneToOne;
-  int genomeSize; 
-  // We use allOrderG or allEpistRTG to place new mutations in their
-  // correct place (orderEff or epistRtEff). Only one is needed.  Use the
-  // one that is presumably always shorter which is allOrderG. And this is
-  // sorted.
-  std::vector<int> allOrderG; // Modules or genes if one-to-one.
-  // std::vector<int> allEpistRTG;
-
-  // This makes it faster to run evalPosetConstraints
-  std::vector<int> allPosetG; //Modules or genes if one-to-one
-  std::vector<Poset_struct> Poset;
-  std::vector<epistasis> Epistasis;
-  std::vector<epistasis> orderE;
-  // std::vector<Gene_Module_struct> Gene_Module_tabl;
-  std::vector<Gene_Module_struct> Gene_Module_tabl;
-  std::vector<int> allGenes; //used whenever a mutation created
-  std::vector<int> drv;
-  genesWithoutInt genesNoInt;
-  
-};
-
-
-// There are no shared genes in order and epist.  Any gene in orderEff can
-// also be in the posets or general epistasis, but orderEff is only for
-// those that have order effects.
-
-// For all genes for which there are no order effects, any permutation of
-// the same mutations is the same genotype, and has the same fitness. That
-// is why we separate orderEff, which is strictly in the order in which
-// mutations accumulate, and thus usorted, from the other effects, that
-// are always kept sorted.
-
-// rest are those genes that have no interactions. Evaluating their
-// fitness is simple, and there can be no modules here.
-struct Genotype {
-  std::vector<int> orderEff;
-  std::vector<int> epistRtEff; //always sorted
-  std::vector<int> rest; // always sorted
-};
-
-
-Genotype wtGenotype() {
-  // Not needed but to make it explicit
-  Genotype g;
-  g.orderEff.resize(0);
-  g.epistRtEff.resize(0);
-  g.rest.resize(0);
-}
 
 vector<int> genotypeSingleVector(const Genotype& ge) {
   // orderEff in the order they occur. All others are sorted.
@@ -147,37 +24,34 @@ vector<int> genotypeSingleVector(const Genotype& ge) {
   return allgG;
 }
 
-
-inline bool operator==(const Genotype& lhs, const Genotype& rhs) {
-  return (lhs.orderEff == rhs.orderEff) &&
-    (lhs.epistRtEff == rhs.epistRtEff) &&
-    (lhs.rest == rhs.rest);
-}
-
-inline bool operator<(const Genotype& lhs, const Genotype& rhs) {
-  vector<int> lh = genotypeSingleVector(lhs);
-  vector<int> rh = genotypeSingleVector(rhs);
-  if( lh.size() < rh.size() ) return true;
-  else if ( lh.size() > rh.size() ) return false;
-  else {
-    for(size_t i = 0; i != ll.size; ++i) {
-      if( lh[i] < rh[i] ) return true;
-    }
-    return false;
+vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
+  // Sorted
+  std::vector<int> g0;
+  for(auto a : F.Gene_Module_tabl) {
+    g0.push_back(a.GeneNumID);
   }
+  for(auto b: F.genesNoInt.NumID) {
+    g0.push_back(b);
+  }
+  sort(g0.begin(), g0.end());
+  return g0;
 }
 
-// inline bool operator>(const Genotype& lhs, const Genotype& rhs) {
-//   return operator< (rhs, lhs);
-// }
-
-
-
+vector<int> allGenesinGenotype(const Genotype& ge){
+  std::vector<int> allgG;
+  for(auto g1 : ge.orderEff)
+    allgG.push_back(g1);
+  for(auto g2 : ge.epistRtEff)
+    allgG.push_back(g2);
+  for(auto g3 : ge.rest)
+    allgG.push_back(g3);
+  sort(allgG.begin(), allgG.end());
+  return allgG;
+}
 
 
 // For users: if something depends on 0, that is it. No further deps.
 // And do not touch the 0 in Gene_Module_table.
-
 std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) { 
 
   // The restriction table, or Poset, has a first element
@@ -399,8 +273,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   fe.allOrderG = sortedAllOrder(fe.orderE);
   fe.allPosetG = sortedAllPoset(fe.Poset);
   fe.gMOneToOne = rone;
-  fe.allGenes = allGenesinFitness(ge);
-  fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.size();
+  fe.allGenes = allGenesinFitness(fe);
+  fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.s.size();
   fe.drv = as<std::vector<int> > (drv);
   return fe;
 }
@@ -410,15 +284,18 @@ void obtainMutations(const Genotype& parent,
 		     int& numMutablePosParent,
 		     std::vector<int>& newMutations,
 		     std::mt19937& ran_gen) {
-  //Ugly: we return the mutations AND the numMutablePosParent
-  std::vector<int> mutations;
+  //Ugly: we return the mutations AND the numMutablePosParent This is
+  // almost ready to accept multiple mutations. And it returns a vector,
+  // newMutations.
   std::vector<int> sortedparent = allGenesinGenotype(parent);
   std::vector<int> nonmutated;
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
   std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
-  mutations.push_back(nonmutated[rpos(ran_gen)]);
+  newMutations.push_back(nonmutated[rpos(ran_gen)]);
+  numMutablePosParent = nonmutated.size();
+  // numMutablePosParent = fe.genomeSize() - sortedparent.size();
 }
 
 
@@ -481,30 +358,6 @@ Genotype createNewGenotype(const Genotype& parent,
 // Never interactions: push into rest and sort. Identify by shift == 1.
 // Never no interactions: remove the if. shift == -9.
 
-vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
-  // Sorted
-  std::vector<int> g0;
-  for(auto a : F.Gene_Module_tabl) {
-    g0.push_back(a.GeneNumID);
-  }
-  for(auto b: F.genesNoInt.NumID) {
-    g0.push_back(b);
-  }
-  sort(g0.begin(), g0.end());
-  return g0;
-}
-
-vector<int> allGenesinGenotype(const Genotype& ge){
-  std::vector<int> allgG;
-  for(auto g1 : ge.orderEff)
-    allgG.push_back(g1);
-  for(auto g2 : ge.epistRtEff)
-    allgG.push_back(g2);
-  for(auto g3 : ge.rest)
-    allgG.push_back(g3);
-  sort(allgG.begin(), allgG.end());
-  return allgG;
-}
 
 
 
@@ -859,39 +712,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 }
 
 // No logs because of log(<=0)
-inline double prodFitness(vector<double> s) {
-  return accumulate(s.begin(), s.end(), 1.0,
-		    [](double x, double y) {return (x * max(0, (1 + y)));});
-}
-
-
-// I am looping twice
-// inline double prodDeathFitness(vector<double> s) {
-//   // For Bozic's
-//   if( *min_element( s.begin(), s.end()) <= 99.0 ) {
-//     return -99.0;
-//   } else {
-//     return accumulate(s.begin(), s.end(), 1.0,
-// 		      [](double x, double y) {return (x * (1 - y));});
-//   }
-// }
-
-inline double prodDeathFitness(vector<double> s) {
-  double f = 1.0;
-  for(auto si : s) {
-    if( si <= -90.0 ) {
-      return 99.0;
-    } else {
-      f *= (1 - si);
-    }
-  }
-  return f;
-}
-
-// inline double logSumFitness(vector<double> s) {
-//   return accumulate(s.begin(), s.end(), 1.0,
-// 		    [](double x, double y) {return (x * (1 + y));})
-// }
 
 
 
