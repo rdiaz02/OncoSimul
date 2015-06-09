@@ -509,7 +509,6 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 
 
 static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
-			const int& numGenes,
 			const double& initSize,
 		     const double& K,
 		     const double& alpha,
@@ -520,12 +519,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     const double& death,
 		     const double& keepEvery,
 		     const double& sampleEvery,		     
-		     const int& initMutant,
+			const std::vector<int>& initMutant,
 		     const time_t& start_time,
 		     const double& maxWallTime,
 		     const double& finalTime,
 		     const double& detectionSize,
-		     // const double& endTimeEvery,
 		     const int& detectionDrivers,
 		     const double& minDDrPopSize,
 		     const double& extraTime,
@@ -554,6 +552,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
 
+  const int numGenes = fitnessEffects.genomeSize;
   double dummyMutationRate = std::max(mu/1000, 1e-13);
   // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero
@@ -704,7 +703,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
-  if(initMutant >= 0) {
+  if(initMutant.size() > 0) {
     
     popParams[0].numMutablePos = numGenes - 1;
     Genotypes[0] = createNewGenotype(wtGenotype(),
@@ -754,9 +753,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     } else if (typeFitness == "exp") {
       tmpParam.birth =  -99;
       tmpParam.death = death;
-    } else { // linear or log
-      tmpParam.birth =  -99;
-      tmpParam.death = death;
+    } else {
+      throw std::invalid_argument("this ain't a valid typeFitness");
     } 
     if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
 	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
@@ -1107,7 +1105,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       
 	// ************   5.6   ***************
 
-	newGenoytpe = createNewGenotype(Genotypes[nextMutant],
+	newGenotype = createNewGenotype(Genotypes[nextMutant],
 					newMutations,
 					fitnessEffects,
 					ran_gen);
@@ -1416,33 +1414,33 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 // [[Rcpp::export]]
 Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
-			double mu_,
-			double initSize_,
-			double sampleEvery_,
-			double detectionSize_,
-			double finalTime_,
-			int initSize_species_,
-			int initSize_iter_,
-			int seed_,
-			int verbose_,
-			int speciesFS_,
-			double ratioForce_,
+			double mu,
+			double death,
+			double initSize,
+			double sampleEvery,
+			double detectionSize,
+			double finalTime,
+			int initSp,
+			int initIt,
+			int seed,
+			int verbosity,
+			int speciesFS,
+			double ratioForce,
 			Rcpp::CharacterVector typeFitness_,
-			int maxram_,
-			int mutatorGenotype_,
-			int initMutant_,
-			double maxWallTime_,
-			double keepEvery_,
-			double alpha_,
-			 double K_,
-			int detectionDrivers_,
-			bool onlyCancer_,
-			bool errorHitWallTime_,
-			int maxNumTries_,
-			bool errorHitMaxTries_,
-			double minDDrPopSize_,
-			double extraTime_
-		     ) {  
+			int maxram,
+			int mutatorGenotype,
+			Rcpp::IntegerVector initMutant_, 
+			double maxWallTime,
+			double keepEvery,
+			double alpha,
+			double K,
+			int detectionDrivers,
+			bool onlyCancer,
+			bool errorHitWallTime,
+			int maxNumTries,
+			bool errorHitMaxTries,
+			double minDDrPopSize,
+			double extraTime) {  
   // SEXP endTimeEvery_,
 
 
@@ -1450,47 +1448,46 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   //  BEGIN_RCPP
   // using namespace Rcpp;
   precissionLoss();
+  const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   // const std::string typeFitness = as<std::string>(typeFitness_);
   const std::string typeFitness = Rcpp::as<std::string>(typeFitness_); // no need to do [0]
   
   // birth and death are irrelevant with Bozic
-  const double death = as<double>(death_);
-  const double s = as<double>(s_);
-  const double mu = as<double>(mu_);
-  const double initSize = as<double>(initSize_);
-  const double sampleEvery = as<double>(sampleEvery_);
-  const double detectionSize = as<double>(detectionSize_);
-  const double finalTime = as<double>(finalTime_);
-  const int initSp = as<int>(initSize_species_);
-  const int initIt = as<int>(initSize_iter_); // FIXME: this is a misnomer
-  const int verbosity = as<int>(verbose_);
-  // const double minNonZeroMut = mu * 0.01;  // to avoid == 0.0 comparisons
-  double ratioForce = as<double>(ratioForce_); // If a single species this times
-  // detectionSize, force a sampling to prevent going too far.
-  int speciesFS = as<int>(speciesFS_); // to force sampling when too many 
-  // species
-  const int seed = as<int>(seed_);
-  const long maxram = as<int>(maxram_);
-  const int mutatorGenotype = as<int>(mutatorGenotype_);
-  const int initMutant = as<int>(initMutant_);
-  const double maxWallTime = as<double>(maxWallTime_);
-  const double keepEvery = as<double>(keepEvery_);
+  // const double death = as<double>(death_);
+  // const double mu = as<double>(mu_);
+  // const double initSize = as<double>(initSize_);
+  // const double sampleEvery = as<double>(sampleEvery_);
+  // const double detectionSize = as<double>(detectionSize_);
+  // const double finalTime = as<double>(finalTime_);
+  // const int initSp = as<int>(initSize_species_);
+  // const int initIt = as<int>(initSize_iter_); // FIXME: this is a misnomer
+  // const int verbosity = as<int>(verbose_);
+  // // const double minNonZeroMut = mu * 0.01;  // to avoid == 0.0 comparisons
+  // double ratioForce = as<double>(ratioForce_); // If a single species this times
+  // // detectionSize, force a sampling to prevent going too far.
+  // int speciesFS = as<int>(speciesFS_); // to force sampling when too many 
+  // // species
+  // const int seed = as<int>(seed_);
+  // const long maxram = as<int>(maxram_);
+  // const int mutatorGenotype = as<int>(mutatorGenotype_);
+  // const int initMutant = as<int>(initMutant_);
+  // const double maxWallTime = as<double>(maxWallTime_);
+  // const double keepEvery = as<double>(keepEvery_);
 
   
-  const double alpha = as<double>(alpha_);
-  const double sh = as<double>(sh_); // coeff for fitness
-  // if a driver without dependencies. Like in Datta et al., 2013.
-  const double K = as<double>(K_); //for McFarland
-  //const double endTimeEvery = as<double>(endTimeEvery_); 
-  const int detectionDrivers = as<int>(detectionDrivers_); 
+  // const double alpha = as<double>(alpha_);
+  // // if a driver without dependencies. Like in Datta et al., 2013.
+  // const double K = as<double>(K_); //for McFarland
+  // //const double endTimeEvery = as<double>(endTimeEvery_); 
+  // const int detectionDrivers = as<int>(detectionDrivers_); 
   const double genTime = 4.0; // should be a parameter. For Bozic only.
   // const bool errorFinalTime = as<bool>(errorFinalTime_);
-  const bool errorHitWallTime = as<bool>(errorHitWallTime_);
-  const bool onlyCancer = as<bool>(onlyCancer_);
-  const int maxNumTries = as<int>(maxNumTries_);
-  const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
-  const double minDDrPopSize = as<double>(minDDrPopSize_);
-  const double extraTime = as<double>(extraTime_);
+  // const bool errorHitWallTime = as<bool>(errorHitWallTime_);
+  // const bool onlyCancer = as<bool>(onlyCancer_);
+  // const int maxNumTries = as<int>(maxNumTries_);
+  // const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
+  // const double minDDrPopSize = as<double>(minDDrPopSize_);
+  // const double extraTime = as<double>(extraTime_);
   
   std::mt19937 ran_gen(seed);
 
@@ -1503,7 +1500,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   bool runAgain = true;
   bool reachDetection = false;
   //Output
-  std::vector<Genotype64> genot_out;
+  std::vector<Genotype> genot_out;
   std::vector<double> popSizes_out;
   std::vector<int> index_out; 
   std::vector<double> time_out; //only one entry per period!
@@ -1617,10 +1614,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       // start of innerBNB now that we do multiple runs if onlyCancer = true.
       nr_innerBNB(
 		  fitnessEffects,
-	       initSize,
+		  initSize,
 	       K,
 	       alpha,
-	       typeCBN,
 	       genTime,
 	       typeFitness,
 	       mutatorGenotype,
@@ -1628,13 +1624,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       death,
 	       keepEvery,
 	       sampleEvery,		     
-	       numDrivers,
 	       initMutant,
 	       start_time,
 	       maxWallTime,
 	       finalTime,
 	       detectionSize,
-	       //endTimeEvery,
 	       detectionDrivers,
 	       minDDrPopSize,
 	       extraTime,
@@ -1778,22 +1772,23 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   
   // IntegerMatrix returnGenotypes(uniqueGenotypes_vector.size(), numGenes);
   IntegerMatrix returnGenotypes = 
-    nr_create_returnGenotypes(numGenes, uniqueGenotypes_vector_nr);
+    nr_create_returnGenotypes(fitnessEffects.genomeSize,
+			      uniqueGenotypes_vector_nr);
   
   Rcpp::NumericMatrix outNS = create_outNS(uniqueGenotypes_vector_nr,
 					   genot_out_v,
-					   posSizes_out,
+					   popSizes_out,
 					   index_out, time_out,
 					   outNS_i, maxram);
   
 
   int maxNumDrivers = 0;
   int totalPresentDrivers = 0;
-  std::vector<int>countByDriver(numDrivers, 0);
+  std::vector<int>countByDriver(fitnessEffects.drv.size(), 0);
   std::string occurringDrivers;
 
   nr_count_NumDrivers(maxNumDrivers, countByDriver,
-		      returnGenotypes, drv);
+		      returnGenotypes, fitnessEffects.drv);
 
   whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
 
@@ -1835,10 +1830,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   
   return 
     List::create(Named("pops.by.time") = outNS,
-		 Named("NumClones") = uniqueGenotypes.size(), 
+		 Named("NumClones") = uniqueGenotypes_vector_nr.size(), 
 		 Named("TotalPopSize") = totPopSize,
 		 Named("Genotypes") = returnGenotypes,
-		 Named("GenotypesOrder") = Rcpp::wrap(uniqueGenotypes_vector_nr), 
+		 Named("GenotypesWithOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr), 
 		 Named("MaxNumDrivers") = maxNumDrivers,
 		 // Named("MaxDrivers_PerSample") = wrap(sampleMaxNDr),
 		 // Named("NumDriversLargestPop_PerSample") = sampleNDrLargestPop,
