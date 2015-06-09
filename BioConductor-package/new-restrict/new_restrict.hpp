@@ -202,4 +202,7 @@ Genotype createNewGenotype(const Genotype& parent,
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 					const fitnessEffectsAll& F);
 
+
+fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE);
+std::vector<int> presentDrivers(const Genotype& ge, const std::vector<int>& drv);
 #endif

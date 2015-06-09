@@ -10,9 +10,9 @@ using namespace Rcpp;
 using std::vector;
 using std::back_inserter;
 
-// FIXME: move this later
-int seed = 1; 
-std::mt19937 ran_gen(seed);
+// // FIXME: move this later
+// int seed = 1; 
+// std::mt19937 ran_gen(seed);
 
 
 vector<int> genotypeSingleVector(const Genotype& ge) {

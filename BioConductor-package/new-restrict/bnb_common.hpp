@@ -2,7 +2,7 @@
 #define _BNB_COMMON_H_
 
 #include<Rcpp.h>
-#include"debug_common.h"
+#include"debug_common.hpp"
 
 
 // Simple custom exception for exceptions that lead to re-runs.

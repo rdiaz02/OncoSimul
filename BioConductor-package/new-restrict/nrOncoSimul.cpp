@@ -1,13 +1,12 @@
 // #include "OncoSimul.h"
 #include "debug_common.hpp"
 #include "bnb_common.hpp"
-#include "new_restrict.h"
+#include "new_restrict.hpp"
 #include <Rcpp.h>
 #include <limits>
 #include <iostream>
 // #include <gsl/gsl_rng.h> // here? in the .h
 #include <random>
-#include <bitset>
 #include <set>
 #include <iterator>
 #include <map>
@@ -58,16 +57,16 @@ static void nr_fitness(spParamsP& tmpP,
   // The ones often used are bozic1, exp, mcfarlandlog
 
   if(typeFitness == "bozic1") {
-    tmpP.death = prodDeathFitness(evalGenotyeFitness(ge, F));
-    if( tmp.death > 50) {
+    tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F));
+    if( tmpP.death > 50) {
       tmpP.birth = 0.0; 
     }
   } else if (typeFitness == "bozic2") {
-    double pp = prodDeathFitness(evalGenotyeFitness(ge, F));
-    tmpP.birth = std::max(0, (1.0/genTime) * (1.0 - 0.5 * pp ));
+    double pp = prodDeathFitness(evalGenotypeFitness(ge, F));
+    tmpP.birth = std::max(0.0, (1.0/genTime) * (1.0 - 0.5 * pp ));
     tmpP.death = (0.5/genTime) * pp;
   } else {
-    double fitness = prodFitness(evalGenotyeFitness(ge, F));
+    double fitness = prodFitness(evalGenotypeFitness(ge, F));
     if( fitness <= 0.0) {
       tmpP.absfitness = 0.0;
       tmpP.death = 1.0;
@@ -133,6 +132,46 @@ static void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
   }
 }
 
+// FIXME: change this, now that we keep a count of drivers?
+// see the new function in new-restrict.cpp: countDrivers
+
+// Yes, we do want to count drivers. For instance, stopping in cancer can
+// be related to this. So:
+
+// In R, the user says which are the drivers. If does not say anuthing,
+// the default (NULL) then drivers are all in poset, epist, restrict. The
+// user can pass a vector with the names of the genes (not modules). Allow
+// also for empty, so this is faster if not needed. And check that if we
+// use a stopping rule based on drivers that drv vectors is not empty.
+
+static inline void nr_count_NumDrivers(int& maxNumDrivers, 
+				    std::vector<int>& countByDriver,
+				    Rcpp::IntegerMatrix& returnGenotypes,
+				    const vector<int>& drv){
+  // Fill up the "countByDriver" table and return the maximum number of
+  // mutated drivers in any genotype.
+  // Difference w.r.t. to former is passing drv
+  maxNumDrivers = 0;
+  int tmpdr = 0;
+  
+  for(int j = 0; j < returnGenotypes.ncol(); ++j) {
+    tmpdr = 0;
+    for(int i : drv) {
+      tmpdr += returnGenotypes(i - 1, j);
+      countByDriver[i] += returnGenotypes(i - 1, j);
+    }
+    if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
+  }
+}
+      
+// FIXME: we do this often. Why not just keep it in the struct?
+int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
+  // Counts the number of mutated drivers in a genotype.
+  // drv comes from R, and it is the vector with the
+  // numbers of the genes, not modules.
+  return presentDrivers(ge, drv).size();
+}
+// FIXME: the count_NumDrivers counts for each driver. Write that too.
 
 
 static void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
@@ -154,7 +193,6 @@ static void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const std::vector<Genotype>& Genotypes,
 					    const std::vector<spParamsP>& popParams, 
 					    const double& currentTime,
-					    const int& NumDrivers,
 					    const double& keepEvery,
 					    const double& detectionSize,
 					    const double& finalTime,
@@ -284,7 +322,7 @@ inline void nr_reshape_to_outNS(Rcpp::NumericMatrix& outNS,
 
   int column;
 
-  for(size_t i = 0; i < genot_out_ul.size(); ++i) {
+  for(size_t i = 0; i < genot_out_v.size(); ++i) {
     column = std::distance(fbeg, lower_bound(fbeg, fend, genot_out_v[i]) );
     outNS(index_out[i], column + 1) =  popSizes_out[i];
   }
@@ -298,7 +336,7 @@ Rcpp::NumericMatrix create_outNS(const vector<vector<int> >& uniqueGenotypes,
 				 const vector<vector<int> >& genot_out_v,
 				 const vector<double>& popSizes_out,
 				 const vector<int>& index_out,
-				 const vector<double>& time_out
+				 const vector<double>& time_out,
 				 const int outNS_i, const int maxram) {
   // The out.ns in R code; holder of popSizes over time
   // The first row is time, then the genotypes (in column major)
@@ -408,46 +446,6 @@ Rcpp::IntegerMatrix nr_create_returnGenotypes(const int& numGenes,
 
 
 
-// FIXME: change this, now that we keep a count of drivers?
-// see the new function in new-restrict.cpp: countDrivers
-
-// Yes, we do want to count drivers. For instance, stopping in cancer can
-// be related to this. So:
-
-// In R, the user says which are the drivers. If does not say anuthing,
-// the default (NULL) then drivers are all in poset, epist, restrict. The
-// user can pass a vector with the names of the genes (not modules). Allow
-// also for empty, so this is faster if not needed. And check that if we
-// use a stopping rule based on drivers that drv vectors is not empty.
-
-static inline void nr_count_NumDrivers(int& maxNumDrivers, 
-				    std::vector<int>& countByDriver,
-				    Rcpp::IntegerMatrix& returnGenotypes,
-				    const vector<int>& drv){
-  // Fill up the "countByDriver" table and return the maximum number of
-  // mutated drivers in any genotype.
-  // Difference w.r.t. to former is passing drv
-  maxNumDrivers = 0;
-  int tmpdr = 0;
-  
-  for(int j = 0; j < returnGenotypes.ncol(); ++j) {
-    tmpdr = 0;
-    for(int i : drv) {
-      tmpdr += returnGenotypes(i - 1, j);
-      countByDriver[i] += returnGenotypes(i - 1, j);
-    }
-    if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
-  }
-}
-      
-// FIXME: we do this often. Why not just keep it in the struct?
-int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
-  // Counts the number of mutated drivers in a genotype.
-  // drv comes from R, and it is the vector with the
-  // numbers of the genes, not modules.
-  return presentDrivers(ge, drv).size();
-}
-// FIXME: the count_NumDrivers counts for each driver. Write that too.
 
 
 
@@ -510,18 +508,16 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 
 
 
-static void nr_innerBNB(const fitnessEffects& FitnessEffects,
+static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const int& numGenes,
 			const double& initSize,
 		     const double& K,
 		     const double& alpha,
-		     const std::string& typeCBN,
 		     const double& genTime,
 		     const std::string& typeFitness,
 		     const int& mutatorGenotype,
 		     const double& mu,
 		     const double& death,
-		     const double& birthRate,
 		     const double& keepEvery,
 		     const double& sampleEvery,		     
 		     const int& initMutant,
@@ -552,10 +548,9 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
 		     std::vector<int>& sampleMaxNDr,
 		     std::vector<int>& sampleNDrLargestPop,
 		     bool& reachDetection,
-		     std::mt19937& ran_generator,
+		     std::mt19937& ran_gen,
 		     double& runningWallTime,
-		     bool& hittedWallTime,
-		     Rcpp::IntegerMatrix restrictTable) {
+		     bool& hittedWallTime) {
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
 
@@ -597,8 +592,7 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
   int nextMutant;
   unsigned int numSpecies = 0;
   int numMutablePosParent = 0;
-  int mutatedPos = 0;
-  //int indexMutatedPos = 0;
+
 
   unsigned int sp = 0;
   //int type_resize = 0;
@@ -711,16 +705,16 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
   if(initMutant >= 0) {
+    
     popParams[0].numMutablePos = numGenes - 1;
-    Genotypes[0] = createNewGenotype(wtgenotype(),
+    Genotypes[0] = createNewGenotype(wtGenotype(),
 				     initMutant,
 				     fitnessEffects,
 				     ran_gen); // FIXME: nr, here. What is a "wt
 					// genotype"? Does it have "0"
 					// mutated, or nothing. Nothing.
-    
-    Genotypes[0].set(initMutant); // FIXME nr: this is not done this way now!!
     if(typeFitness == "beerenwinkel") {
+      
       popParams[0].death = 1.0; //note same is in McFarland.
       // But makes sense here; adjustment in beerenwinkel is via fitness
       
@@ -728,7 +722,8 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
       // when no mutator. O.w., the defaults
       if(!mutatorGenotype)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0 + s;
+      popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
+								fitnessEffects));
       updateRatesBeeren(popParams, adjust_fitness_B, initSize,
 			currentTime, alpha, initSize, 
 			mutatorGenotype, mu);
@@ -737,16 +732,19 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
       popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
       if(!mutatorGenotype)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0 + s;
+      popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
+								fitnessEffects));
       updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
 			    totPopSize,
 			    mutatorGenotype, mu);
     } else if(typeFitness == "mcfarland") {
       popParams[0].death = totPopSize/K;
-      popParams[0].birth = 1.0 + s;
+      popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+								fitnessEffects));
     } else if(typeFitness == "mcfarlandlog") {
       popParams[0].death = log1p(totPopSize/K);
-      popParams[0].birth = 1.0 + s;
+      popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+								fitnessEffects));
     } else if(typeFitness == "bozic1") {
       tmpParam.birth =  1.0;
       tmpParam.death = -99.9;
@@ -808,7 +806,7 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
       popParams[0].birth = 1.0;
       popParams[0].death = death;
     } else {
-      throw std::invalid_argument("this ain't a valid typeFitness")
+      throw std::invalid_argument("this ain't a valid typeFitness");
     }
   }
 
@@ -851,7 +849,8 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
 
     sampleTotPopSize.push_back(popParams[0].popSize);
     sampleLargestPopSize.push_back(popParams[0].popSize);
-    sampleMaxNDr.push_back(nr_count_NDrivers(Genotypes[0], drv));
+    sampleMaxNDr.push_back(nr_count_NDrivers(Genotypes[0],
+					     fitnessEffects.drv));
     sampleNDrLargestPop.push_back(sampleMaxNDr[0]);
   }
   // FIXME: why next line and not just genot_out.push_back(Genotypes[i]);
@@ -1095,13 +1094,13 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
 
 	newMutations.clear();
 	obtainMutations(Genotypes[nextMutant],
-			fe,
+			fitnessEffects,
 			numMutablePosParent,
 			newMutations,
-			ran_generator);
+			ran_gen);
 	// nr_change
 	// getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
-	// 		     ran_generator,
+	// 		     ran_gen,
 	// 		     mutablePos,
 	// 		     Genotypes[nextMutant], 
 	// 		     numGenes);
@@ -1178,36 +1177,38 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
 	    --numSpecies;
 	    to_update = 1;
 	  }
-	  //#ifdef DEBUGV	
-	  if(verbosity >= 3) {
+	  #ifdef DEBUGV	
+	  //if(verbosity >= 3) {
 	    Rcpp::Rcout << " \n\n\n Looking at NEW species " << sp << " at creation";
-	    Rcpp::Rcout << "\n Genotype = " << newGenotype; //Genotypes[sp];
-	    Rcpp::Rcout << "\n sp_id = " << newGenotype.to_ullong() ;
+	    Rcpp::Rcout << "\n Genotype = " << genotypeSingleVector(newGenotype); //Genotypes[sp];
 	    //Genotypes[sp].to_ullong();
 	    Rcpp::Rcout << "\n birth of sp = " << tmpParam.birth;
 	    Rcpp::Rcout << "\n death of sp = " << tmpParam.death;
 	    Rcpp::Rcout << "\n s = " << s;
 	    Rcpp::Rcout << "\n parent birth = " << popParams[nextMutant].birth;
 	    Rcpp::Rcout << "\n parent death = " << popParams[nextMutant].death;
-	    Rcpp::Rcout << "\n parent Genotype = " << Genotypes[nextMutant];
+	    Rcpp::Rcout << "\n parent Genotype = " << genotypeSingleVector(Genotypes[nextMutant]);
 	    print_spP(tmpParam);
-	  }
-	  //#endif
+	    //}
+	  #endif
 	} else {	// A mutation to pre-existing species
 #ifdef DEBUGW
 	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0)
 	    throw std::out_of_range("currentTime - timeLastUpdate out of range"); 
 #endif
 	
-	  if(verbosity >= 2) {
+	  // if(verbosity >= 2) {
+#ifdef DEBUGV
 	    Rcpp::Rcout <<"\n     Mutated to existing species " << sp 
-			<< " (Genotype = " << Genotypes[sp] 
-			<< "; sp_id = " << Genotypes[sp].to_ullong() << ")"
+			<< " (Genotype = " << genotypeSingleVector(Genotypes[sp]) 
+	      // << "; sp_id = " << Genotypes[sp].to_ullong()
+			<< ")"
 			<< "\n from species "  <<   nextMutant
-			<< " (Genotypes = " << Genotypes[nextMutant] 
-			<< "; sp_id = " << Genotypes[sp].to_ullong() << ")";
-	  }
-
+			<< " (Genotypes = " << genotypeSingleVector(Genotypes[nextMutant]) 
+	      // << "; sp_id = " << Genotypes[sp].to_ullong()
+			<< ")";
+	    // }
+#endif
 	  // FIXME00: the if can be removed??
 	  if(popParams[sp].popSize > 0.0) {
 	    popParams[sp].popSize = 1.0 + 
@@ -1279,16 +1280,15 @@ static void nr_innerBNB(const fitnessEffects& FitnessEffects,
 				      done_at,
 				      Genotypes, popParams, 
 				      currentTime,
-				      numDrivers,
 				      keepEvery,
 				      detectionSize,
 				      finalTime,
 				      //endTimeEvery,
 				      detectionDrivers,
 				      verbosity,
-				      minDDrPopSize,
+					 minDDrPopSize,
 					 extraTime,
-					 drv); //keepEvery is for thinning
+					 fitnessEffects.drv); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -1450,15 +1450,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   //  BEGIN_RCPP
   // using namespace Rcpp;
   precissionLoss();
-  const IntegerMatrix restrictTable(restrictTable_);
-  const int numDrivers = as<int>(numDrivers_);
-  const int numGenes = as<int>(numGenes_);
-  const std::string typeCBN = as<std::string>(typeCBN_);
   // const std::string typeFitness = as<std::string>(typeFitness_);
   const std::string typeFitness = Rcpp::as<std::string>(typeFitness_); // no need to do [0]
   
   // birth and death are irrelevant with Bozic
-  const double birthRate = as<double>(birthRate_);
   const double death = as<double>(death_);
   const double s = as<double>(s_);
   const double mu = as<double>(mu_);
@@ -1497,18 +1492,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   const double minDDrPopSize = as<double>(minDDrPopSize_);
   const double extraTime = as<double>(extraTime_);
   
-  // C++11 random number
-  std::mt19937 ran_generator(seed);
+  std::mt19937 ran_gen(seed);
 
   // some checks. Do this systematically
   // FIXME: do only if mcfarland!
   if(K < 1 )
     throw std::range_error("K < 1.");
-
-
   fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
-
-
   
   bool runAgain = true;
   bool reachDetection = false;
@@ -1636,7 +1626,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       mutatorGenotype,
 	       mu,
 	       death,
-	       birthRate,
 	       keepEvery,
 	       sampleEvery,		     
 	       numDrivers,
@@ -1668,10 +1657,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       sampleMaxNDr,
 	       sampleNDrLargestPop,
 	       reachDetection,
-	       ran_generator,
+	       ran_gen,
 	       runningWallTime,
-	       hittedWallTime,
-	       restrictTable);
+	       hittedWallTime);
       ++numRuns;
       forceRerun = false;
     } catch (rerunExcept &e) {
