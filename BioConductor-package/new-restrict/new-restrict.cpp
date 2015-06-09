@@ -3,10 +3,8 @@
 #include <algorithm>    
 #include <random>
 
-#define DP1(x) {Rcpp::Rcout << "\n DEBUG2: I am at " << x << std::endl;}
-#define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
-// #define DP1(x)
-// #define DP2(x)
+#include "debug_common.h"
+
 
 using namespace Rcpp ;
 using std::vector;
