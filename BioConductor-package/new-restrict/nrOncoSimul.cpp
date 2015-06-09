@@ -34,28 +34,6 @@ double g_tmp1_nr = DBL_MAX;
 #endif
 
 
-
-
-// Format of restrictTable
-// - mutations in columns
-// - first row, the number
-// - second row, the number of dependencies
-//   - rest of rows, the id of the dependency
-//   - past number of dependencies: a -9
-// In fact, the first row is redundant. Leave it, just in case.
-
-
-// Genotypes: the first (or column 0) genotype is the all ceros.
-// would not be needed, but makes Algo5 a lot simpler.
-
-// But mutatedPos start at 0. 
-// Will need to add 1 when plotting and analyzing with R.
-
-// Ojo: typeCBN is going to be an int.
-// But from R we pass a string, and that determined the integer.
-
-
-
 static void nr_fitness(spParamsP& tmpP,
 		       const spParamsP& parentP,
 		       const Genotype& ge,
@@ -532,8 +510,9 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 
 
 
-static void nr_innerBNB(const int& numGenes,
-		     const double& initSize,
+static void nr_innerBNB(const fitnessEffects& FitnessEffects,
+			const int& numGenes,
+			const double& initSize,
 		     const double& K,
 		     const double& alpha,
 		     const std::string& typeCBN,
@@ -541,13 +520,10 @@ static void nr_innerBNB(const int& numGenes,
 		     const std::string& typeFitness,
 		     const int& mutatorGenotype,
 		     const double& mu,
-		     const double& sh,
-		     const double& s,
 		     const double& death,
 		     const double& birthRate,
 		     const double& keepEvery,
 		     const double& sampleEvery,		     
-		     const int& numDrivers,
 		     const int& initMutant,
 		     const time_t& start_time,
 		     const double& maxWallTime,
@@ -567,7 +543,7 @@ static void nr_innerBNB(const int& numGenes,
 		     int& speciesFS,
 		     int& outNS_i,
 		     int& iter,
-		     std::vector<Genotype64>& genot_out,
+		     std::vector<Genotype>& genot_out,
 		     std::vector<double>& popSizes_out,
 		     std::vector<int>& index_out,
 		     std::vector<double>& time_out,
@@ -720,10 +696,10 @@ static void nr_innerBNB(const int& numGenes,
   int lastMaxDr = 0;
   double done_at = -9;
 
-#ifdef MIN_RATIO_MUTS
-  g_min_birth_mut_ratio = DBL_MAX;
-  g_min_death_mut_ratio = DBL_MAX;
-  g_tmp1 = DBL_MAX;
+#ifdef MIN_RATIO_MUTS_NR
+  g_min_birth_mut_ratio_nr = DBL_MAX;
+  g_min_death_mut_ratio_nr = DBL_MAX;
+  g_tmp1_nr = DBL_MAX;
 #endif
 
       // // FIXME debug
@@ -831,9 +807,8 @@ static void nr_innerBNB(const int& numGenes,
     } else if (typeFitness == "exp") {
       popParams[0].birth = 1.0;
       popParams[0].death = death;
-    } else { // linear or log
-      popParams[0].birth = birthRate;
-      popParams[0].death = death;
+    } else {
+      throw std::invalid_argument("this ain't a valid typeFitness")
     }
   }
 
@@ -1192,11 +1167,11 @@ static void nr_innerBNB(const int& numGenes,
 	    Genotypes.push_back(newGenotype);
 	    to_update = 2;
 #ifdef MIN_RATIO_MUTS
-	    g_tmp1 = tmpParam.birth/tmpParam.mutation;
-	    if(g_tmp1 < g_min_birth_mut_ratio) g_min_birth_mut_ratio = g_tmp1;
+	    g_tmp1_nr = tmpParam.birth/tmpParam.mutation;
+	    if(g_tmp1_nr < g_min_birth_mut_ratio_nr) g_min_birth_mut_ratio_nr = g_tmp1_nr;
 	  
-	    g_tmp1 = tmpParam.death/tmpParam.mutation;
-	    if(g_tmp1 < g_min_death_mut_ratio) g_min_death_mut_ratio = g_tmp1;	
+	    g_tmp1_nr = tmpParam.death/tmpParam.mutation;
+	    if(g_tmp1_nr < g_min_death_mut_ratio_nr) g_min_death_mut_ratio_nr = g_tmp1_nr;	
 #endif	  
 	  } else {// fitness is 0, so we do not add it
 	    --sp;
@@ -1386,11 +1361,11 @@ static void nr_innerBNB(const int& numGenes,
       // could go inside sample_all_pop but here we are sure death, etc, current
       // But I catch them when they are created. Is this really needed?
       for(size_t i = 0; i < popParams.size(); i++) {
-	g_tmp1 = popParams[i].birth/popParams[i].mutation;
-	if(g_tmp1 < g_min_birth_mut_ratio) g_min_birth_mut_ratio = g_tmp1;
+	g_tmp1_nr = popParams[i].birth/popParams[i].mutation;
+	if(g_tmp1_nr < g_min_birth_mut_ratio_nr) g_min_birth_mut_ratio_nr = g_tmp1_nr;
 	
-	g_tmp1 = popParams[i].death/popParams[i].mutation;
-	if(g_tmp1 < g_min_death_mut_ratio) g_min_death_mut_ratio = g_tmp1;
+	g_tmp1_nr = popParams[i].death/popParams[i].mutation;
+	if(g_tmp1_nr < g_min_death_mut_ratio_nr) g_min_death_mut_ratio_nr = g_tmp1_nr;
       }
 #endif
       
@@ -1529,13 +1504,12 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // FIXME: do only if mcfarland!
   if(K < 1 )
     throw std::range_error("K < 1.");
-  // verify we are OK with usigned long long
-  if( !(static_cast<double>(std::numeric_limits<unsigned long long>::max()) 
-  	>= pow(2, 64)) )
-    throw std::range_error("The size of unsigned long long is too short.");
-  if(numGenes > 64)  
-    throw std::range_error("This version only accepts up to 64 genes.");
 
+
+  fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
+
+
+  
   bool runAgain = true;
   bool reachDetection = false;
   //Output
@@ -1624,7 +1598,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 // #ifdef MIN_RATIO_MUTS
 //   g_min_birth_mut_ratio = DBL_MAX;
 //   g_min_death_mut_ratio = DBL_MAX;
-//   g_tmp1 = DBL_MAX;
+//   g_tmp = DBL_MAX;
 // #endif
 
   
@@ -1651,8 +1625,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
     try {
       // it is CRUCIAL that several entries are zeroed (or -1) at the
       // start of innerBNB now that we do multiple runs if onlyCancer = true.
-      innerBNB(
-	       numGenes,
+      nr_innerBNB(
+		  fitnessEffects,
 	       initSize,
 	       K,
 	       alpha,
@@ -1661,8 +1635,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       typeFitness,
 	       mutatorGenotype,
 	       mu,
-	       sh,
-	       s,
 	       death,
 	       birthRate,
 	       keepEvery,
@@ -1913,9 +1885,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 					       Named("errorMF_n_0") = n_0,
 #ifdef MIN_RATIO_MUTS
 					       Named("minDMratio") =
-					       g_min_death_mut_ratio,
+					       g_min_death_mut_ratio_nr,
 					       Named("minBMratio") =
-					       g_min_birth_mut_ratio,      
+					       g_min_birth_mut_ratio_nr,      
 #else
 					       Named("minDMratio") = -99,
 					       Named("minBMratio") = -99,
