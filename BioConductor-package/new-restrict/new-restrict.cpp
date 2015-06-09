@@ -1045,16 +1045,6 @@ vector<int> presentDrivers(const Genotype& ge, const vector<int>& drv) {
   return presentDrv;
 }
 
-// FIXME: we do this often. Why not just keep it in the struct?
-int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
-  // Counts the number of mutated drivers in a genotype.
-  // drv comes from R, and it is the vector with the
-  // numbers of the genes, not modules.
-  return presentDrivers(ge, drv).size();
-}
-// FIXME: the count_NumDrivers counts for each driver. Write that too.
-
-
 
 // [[Rcpp::export]]
 void readFitnessEffects(Rcpp::List rFE,

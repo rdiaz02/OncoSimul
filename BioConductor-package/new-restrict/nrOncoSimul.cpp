@@ -827,8 +827,21 @@ static inline void whichDrivers(int& totalPresentDrivers,
 
 
 
+static inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
+			       const std::vector<double>& sampleTotPopSize,
+			       const std::vector<double>& sampleLargestPopSize,
+			       const std::vector<double>& sampleLargestPopProp,
+			       const std::vector<int>& sampleMaxNDr,
+			       const std::vector<int>& sampleNDrLargestPop){
 
-
+  for(size_t i = 0; i < sampleTotPopSize.size(); ++i) {
+    perSampleStats(i, 0) = sampleTotPopSize[i];
+    perSampleStats(i, 1) = sampleLargestPopSize[i]; // Never used in R FIXME: remove!!
+    perSampleStats(i, 2) = sampleLargestPopProp[i]; // Never used in R
+    perSampleStats(i, 3) = static_cast<double>(sampleMaxNDr[i]);
+    perSampleStats(i, 4) = static_cast<double>(sampleNDrLargestPop[i]);
+  }
+}
 
 //#define DEBUGZ
 // #define DEBUGV
@@ -1022,10 +1035,10 @@ static void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
 
 
 
-static void totPopSize_and_fill_out_crude_P(int& outNS_i,
+static void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    double& totPopSize, 
 					    double& lastStoredSample,
-					    std::vector<Genotype64>& genot_out,
+					    std::vector<Genotype>& genot_out,
 					    //std::vector<unsigned long long>& sp_id_out,
 					    std::vector<double>& popSizes_out,
 					    std::vector<int>& index_out,
@@ -1038,7 +1051,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    bool& reachDetection,
 					    int& lastMaxDr,
 					    double& done_at,
-					    const std::vector<Genotype64>& Genotypes,
+					    const std::vector<Genotype>& Genotypes,
 					    const std::vector<spParamsP>& popParams, 
 					    const double& currentTime,
 					    const int& NumDrivers,
@@ -1050,6 +1063,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const int& verbosity,
 					    const double& minDDrPopSize,
 					    const double& extraTime,
+					       const vector<int>& drv,
 					    const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
@@ -1062,12 +1076,6 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
   bool storeThis = false;
   totPopSize = 0.0;
   
-   // DP2(lastMaxDr);
-  // DP2(detectionDrivers);
-  // DP2(currentTime);
-  // DP2((lastStoredSample + endTimeEvery));
-  // DP2(detectionSize);
-
   // this could all be part of popSize_over_m_dr, with a better name
   int tmp_ndr = 0;
   int max_ndr = 0;
@@ -1092,14 +1100,6 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
     simulsDone = true;
   }
 
-
-  // if( (totPopSize >= detectionSize) ||
-  //     ( (lastMaxDr >= detectionDrivers) &&
-  //       (popSizeOverDDr >= minDDrPopSize) ) ) {
-  //   simulsDone = true;
-  //   reachDetection = true;
-  // }
-
   if(extraTime > 0) {
     if(done_at <  0) {
       if( (totPopSize >= detectionSize) ||
@@ -1117,51 +1117,6 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
     simulsDone = true;
     reachDetection = true; 
   }
-  
- 
-
-    
-  // This is no longer used.
-  // // Beware: this can lead to never stopping if
-  // // decreases in popSize or drivers
-
-  // // Logic: if a period k you meet any condition, recheck again at k +
-  // // endTimeEvery, and if conditions met exit. Prevents exiting if you
-  // // reach the cancer state almost by chance. But this is way too
-  // // paranoid. The idea is of application mainly for McF and Beeren
-  // // models, so we do not bail out as soon as just a single cell with one
-  // // new driver. But this makes things very slow.
-
-  // // Thus, never pass an endTimeEvery > 0, but use detectionDrivers = 1 +
-  // // intended final Drivers.
-
-  // // FIXME
-  // // Ideally, we would check, for McFL, that popsize of the pop with
-  // // required number of drivers is at least, say, > initSize.
-  // // But that is not trivial, as requires more accounting. Do later.
-
-  
-  // if(endTimeEvery > 0) {
-  //   if(done_at <= 0 ) {
-  //     if( (totPopSize >= detectionSize) ||
-  // 	   (lastMaxDr >= detectionDrivers)  )
-  // 	done_at = currentTime + endTimeEvery;
-  //   } else if (currentTime >= done_at) {
-  //     if( (totPopSize >= detectionSize) ||
-  // 	  (lastMaxDr >= detectionDrivers)  ) {
-  // 	simulsDone = true;
-  // 	reachDetection = true;
-  //     }
-  //     else
-  // 	done_at = -9;
-  //   }
-  // } else if( (totPopSize >= detectionSize) ||
-  // 	     (lastMaxDr >= detectionDrivers) )  {
-    
-  //     simulsDone = true;
-  //     reachDetection = true;
-  // }
-
   
   if(totPopSize >= fatalPopSize) {
     Rcpp::Rcout << "\n\totPopSize > " << fatalPopSize
@@ -1195,59 +1150,6 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
     sampleMaxNDr.push_back(max_ndr);
     sampleNDrLargestPop.push_back(ndr_lp);
   } 
-
-
-  
-  // if( storeThis ) {
-  //   lastStoredSample = currentTime;
-  //   outNS_i++;
-  //   int tmp_ndr = 0;
-  //   int max_ndr = 0;
-  //   int ndr_lp = 0;
-  //   double l_pop_s = 0.0;
-    
-  //   time_out.push_back(currentTime);
-    
-  //   for(size_t i = 0; i < popParams.size(); ++i) {
-  //     genot_out.push_back(Genotypes[i]);
-  //     popSizes_out.push_back(popParams[i].popSize);
-  //     index_out.push_back(outNS_i);
-  //     // I have to repeat the counting of drivers here.
-  //     tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers); 
-  //     if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
-  //     if(popParams[i].popSize > l_pop_s) {
-  // 	l_pop_s = popParams[i].popSize;
-  // 	ndr_lp = tmp_ndr;
-  // 	// ndr_lp = count_NDrivers(Genotypes[i], NumDrivers); 
-  //     }
-  //     // lastMaxDr = max_ndr; // and this should have been out of the
-  //     // popParams.size() loop
-  //   }
-  //   // lastMaxDr = max_ndr;
-  //   sampleTotPopSize.push_back(totPopSize);
-  //   sampleLargestPopSize.push_back(l_pop_s);
-  //   sampleMaxNDr.push_back(max_ndr);
-  //   sampleNDrLargestPop.push_back(ndr_lp);
-  // }//  else if (keepEvery < 0) {
-  //   // FIXME keepEvery
-  //   // must keep track of results to bail out
-
-  //   // FIXME counting max drivers should be done always, like counting
-  //   // totPopSize.
-    
-  //   int tmp_ndr = 0;
-  //   int max_ndr = 0;
-   
-  //   for(size_t i = 0; i < popParams.size(); ++i) {
-  //     tmp_ndr = count_NDrivers(Genotypes[i], NumDrivers);
-  //     if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
-  //     // lastMaxDr = max_ndr;
-  //   }
-  //   lastMaxDr = max_ndr;
-  // }
-
-  
-    
   
   if( !std::isfinite(totPopSize) ) {
     throw std::range_error("totPopSize not finite");
@@ -1268,37 +1170,22 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 // and count_NumDrivers
 
 
-static inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
-			       const std::vector<double>& sampleTotPopSize,
-			       const std::vector<double>& sampleLargestPopSize,
-			       const std::vector<double>& sampleLargestPopProp,
-			       const std::vector<int>& sampleMaxNDr,
-			       const std::vector<int>& sampleNDrLargestPop){
 
-  for(size_t i = 0; i < sampleTotPopSize.size(); ++i) {
-    perSampleStats(i, 0) = sampleTotPopSize[i];
-    perSampleStats(i, 1) = sampleLargestPopSize[i]; // Never used in R FIXME: remove!!
-    perSampleStats(i, 2) = sampleLargestPopProp[i]; // Never used in R
-    perSampleStats(i, 3) = static_cast<double>(sampleMaxNDr[i]);
-    perSampleStats(i, 4) = static_cast<double>(sampleNDrLargestPop[i]);
-  }
-}
 
-inline void reshape_to_outNS(Rcpp::NumericMatrix& outNS,
-			     const std::vector<unsigned long long>& uniqueGenotV,
-			     const std::vector<unsigned long long>& genot_out_ul,
-			     const std::vector<double>& popSizes_out,
-			     const std::vector<int>& index_out,
-			     const std::vector<double>& time_out){
+inline void nr_reshape_to_outNS(Rcpp::NumericMatrix& outNS,
+				const vector<vector<int> >& uniqueGenotV,
+				const vector<vector<int> >& genot_out_v,
+				const vector<double>& popSizes_out,
+				const vector<int>& index_out,
+				const vector<double>& time_out){
   
-  std::vector<unsigned long long>::const_iterator fbeg = uniqueGenotV.begin();
-  std::vector<unsigned long long>::const_iterator fend = uniqueGenotV.end();
+  vector<vector<int> >::const_iterator fbeg = uniqueGenotV.begin();
+  vector<vector<int> >::const_iterator fend = uniqueGenotV.end();
 
   int column;
 
   for(size_t i = 0; i < genot_out_ul.size(); ++i) {
-    column = std::distance(fbeg, lower_bound(fbeg, fend, genot_out_ul[i]) );
-    // here("   looping over i ");
+    column = std::distance(fbeg, lower_bound(fbeg, fend, genot_out_v[i]) );
     outNS(index_out[i], column + 1) =  popSizes_out[i];
   }
 
@@ -1306,17 +1193,72 @@ inline void reshape_to_outNS(Rcpp::NumericMatrix& outNS,
     outNS(j, 0) = time_out[j];
 }
 
+
+Rcpp::NumericMatrix create_outNS(const vector<vector<int> >& uniqueGenotypes,
+				 const vector<vector<int> >& genot_out_v,
+				 const vector<double>& popSizes_out,
+				 const vector<int>& index_out,
+				 const vector<double>& time_out
+				 const int outNS_i, const int maxram) {
+  // The out.ns in R code; holder of popSizes over time
+  // The first row is time, then the genotypes (in column major)
+  // here("after uniqueGenotypes_to_vector");
+
+  int outNS_r, outNS_c, create_outNS;
+  if( ( (uniqueGenotypes.size() + 1) *  (outNS_i + 1) ) > ( pow(2, 31) - 1 ) ) {
+    Rcpp::Rcout << "\nWARNING: Return outNS object > 2^31 - 1. Not created.\n";
+    outNS_r = 1;
+    outNS_c = 1;
+    create_outNS = 0;
+  } else if ( 
+	     static_cast<long>((uniqueGenotypes.size()+1) * (outNS_i+1)) * 8 > 
+	     (maxram * (1024*1024) ) ) {
+    Rcpp::Rcout << "\nWARNING: Return outNS object > maxram. Not created.\n";
+    outNS_r = 1;
+    outNS_c = 1;
+    create_outNS = 0;
+  } else {
+    outNS_r = outNS_i + 1;
+    outNS_c = uniqueGenotypes.size() + 1;
+    create_outNS = 1;
+  }
+  Rcpp::NumericMatrix outNS(outNS_r, outNS_c);  
+  if(create_outNS) {
+    nr_reshape_to_outNS(outNS, uniqueGenotypes,
+			genot_out_v, 
+			popSizes_out, 
+			index_out, time_out);
+    
+  } else {
+    outNS(0, 0) = -99;
+  }
+  return outNS;
+}
+
+
+
 // FIXME: when creating the 0/1, collapse those that are the same
 
-vector< vector<int> > uniqueGenot_vector(vector<Genotype>& genot_out) {
+// vector< vector<int> > uniqueGenot_vector(vector<Genotype>& genot_out) {
+//   // From genot_out we want the unique genotypes, but each as a single
+//   // vector. Convert to the vector, then use a set to give unique sorted
+//   // vector.
+//   std::vector<std::vector<int> > genot_out_nr;
+//   std::transform(genout_out.begin(), genot_out.end(),
+// 		 back_inserter(genout_out_nr),
+// 		 genotypeSingleVector);
+//   std::set<std::vector<int> > uniqueGenotypes_nr(genot_out_nr.begin(), genot_out_nr.end());
+//   std::vector<std::vector<int> > uniqueGenotypes_vector_nr (uniqueGenotypes_nr.begin(),
+// 							    uniqueGenotypes_nr.end());
+//   return uniqueGenotypes_vector_nr;
+// }
+
+vector< vector<int> > uniqueGenot_vector(vector<vector<int> >& genot_out) {
   // From genot_out we want the unique genotypes, but each as a single
   // vector. Convert to the vector, then use a set to give unique sorted
   // vector.
-  std::vector<std::vector<int> > genot_out_nr;
-  std::transform(genout_out.begin(), genot_out.end(),
-		 back_inserter(genout_out_nr),
-		 genotypeSingleVector);
-  std::set<std::vector<int> > uniqueGenotypes_nr(genot_out_nr.begin(), genot_out_nr.end());
+  std::set<std::vector<int> > uniqueGenotypes_nr(genot_out.begin(),
+						 genot_out.end());
   std::vector<std::vector<int> > uniqueGenotypes_vector_nr (uniqueGenotypes_nr.begin(),
 							    uniqueGenotypes_nr.end());
   return uniqueGenotypes_vector_nr;
@@ -1338,14 +1280,11 @@ vector< vector<int> > uniqueGenot_vector(vector<Genotype>& genot_out) {
 //     go_l[i] = go[i].to_ullong();
 // }
 
-// std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go) {
-//   std::vector<std::vector<int> > go_l;
-//   std::transform(go.begin(), go.end(), back_inserter(go_l), genotypeSingleVector);
-//   // for(auto g : go) {
-//   //   go_l.push_back(genotypeSingleVector(g));
-//   // }
-//   return go_l;
-// }
+std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go) {
+  std::vector<std::vector<int> > go_l;
+  std::transform(go.begin(), go.end(), back_inserter(go_l), genotypeSingleVector);
+  return go_l;
+}
 
 
 // std::vector<std::vector<int> > nr_uniqueGenotypes_to_vector(const std::set< std::vector<int> >& uniqueGenotypes_nr) {
@@ -1367,7 +1306,6 @@ Rcpp::IntegerMatrix nr_create_returnGenotypes(const int& numGenes,
   return returnGenotypes;
 }
 
-Rcpp::List 
 
 
 // FIXME: change this, now that we keep a count of drivers?
@@ -1388,9 +1326,7 @@ static inline void nr_count_NumDrivers(int& maxNumDrivers,
 				    const vector<int>& drv){
   // Fill up the "countByDriver" table and return the maximum number of
   // mutated drivers in any genotype.
-
   // Difference w.r.t. to former is passing drv
-
   maxNumDrivers = 0;
   int tmpdr = 0;
   
@@ -1404,8 +1340,18 @@ static inline void nr_count_NumDrivers(int& maxNumDrivers,
   }
 }
       
+// FIXME: we do this often. Why not just keep it in the struct?
+int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
+  // Counts the number of mutated drivers in a genotype.
+  // drv comes from R, and it is the vector with the
+  // numbers of the genes, not modules.
+  return presentDrivers(ge, drv).size();
+}
+// FIXME: the count_NumDrivers counts for each driver. Write that too.
 
-static void sample_all_pop_P_nr(std::vector<int>& sp_to_remove,
+
+
+static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 				std::vector<spParamsP>& popParams,
 				// next only used with DEBUGV
 				const std::vector<Genotype>& Genotypes,
@@ -2213,7 +2159,7 @@ static void nr_innerBNB(const int& numGenes,
       if(verbosity >= 3)
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() << "\n";
 
-      sample_all_pop_P_nr(sp_to_remove, 
+      nr_sample_all_pop_P(sp_to_remove, 
 		       popParams, Genotypes, tSample);
       timeNextPopSample += sampleEvery;
       
@@ -2222,7 +2168,7 @@ static void nr_innerBNB(const int& numGenes,
 
       numSpecies = popParams.size();
       
-      totPopSize_and_fill_out_crude_P(outNS_i, totPopSize, 
+      nr_totPopSize_and_fill_out_crude_P(outNS_i, totPopSize, 
 				      lastStoredSample,
 				      genot_out, 
 				      //sp_id_out,
@@ -2244,7 +2190,8 @@ static void nr_innerBNB(const int& numGenes,
 				      detectionDrivers,
 				      verbosity,
 				      minDDrPopSize,
-				      extraTime); //keepEvery is for thinning
+					 extraTime,
+					 drv); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -2742,60 +2689,29 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
 
   // v3
+  // Need the two below
+  std::vector<std::vector<int> > genot_out_v = genot_to_vectorg(genot_out);
   std::vector<std::vector<int> > uniqueGenotypes_vector_nr  =
-    uniqueGenot_vector(genot_out);
+    uniqueGenot_vector(genot_out_v);
   
   // IntegerMatrix returnGenotypes(uniqueGenotypes_vector.size(), numGenes);
   IntegerMatrix returnGenotypes = 
     nr_create_returnGenotypes(numGenes, uniqueGenotypes_vector_nr);
   
-  // here("after call to create_returnGenotypes_to_vector");
-
-  // The out.ns in R code; holder of popSizes over time
-  // The first row is time, then the genotypes (in column major)
-  // here("after uniqueGenotypes_to_vector");
- 
-
-  int outNS_r, outNS_c, create_outNS;
-  if( ( (uniqueGenotypes.size() + 1) *  (outNS_i + 1) ) > ( pow(2, 31) - 1 ) ) {
-    Rcpp::Rcout << "\nWARNING: Return outNS object > 2^31 - 1. Not created.\n";
-    outNS_r = 1;
-    outNS_c = 1;
-    create_outNS = 0;
-  } else if ( 
-	     static_cast<long>((uniqueGenotypes.size()+1) * (outNS_i+1)) * 8 > 
-	     (maxram * (1024*1024) ) ) {
-    Rcpp::Rcout << "\nWARNING: Return outNS object > maxram. Not created.\n";
-    outNS_r = 1;
-    outNS_c = 1;
-    create_outNS = 0;
-  } else {
-    outNS_r = outNS_i + 1;
-    outNS_c = uniqueGenotypes.size() + 1;
-    create_outNS = 1;
-  }
-  NumericMatrix outNS(outNS_r, outNS_c);  
-  if(create_outNS) {
-    reshape_to_outNS(outNS, uniqueGenotypes_vector, genot_out_ullong, 
-		     popSizes_out, 
-		     index_out, time_out);
-    
-  } else {
-    outNS(0, 0) = -99;
-  }
+  Rcpp::NumericMatrix outNS = create_outNS(uniqueGenotypes_vector_nr,
+					   genot_out_v,
+					   posSizes_out,
+					   index_out, time_out,
+					   outNS_i, maxram);
+  
 
   int maxNumDrivers = 0;
   int totalPresentDrivers = 0;
   std::vector<int>countByDriver(numDrivers, 0);
   std::string occurringDrivers;
-  
 
-  // here("before count_NumDrivers");
-  // IntegerVector totDrivers(returnGenotypes.ncol());
-  // count_NumDrivers(maxNumDrivers, returnGenotypes, numDrivers,
-  // 		   totDrivers);
   nr_count_NumDrivers(maxNumDrivers, countByDriver,
-		   returnGenotypes, drv);
+		      returnGenotypes, drv);
 
   whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
 
