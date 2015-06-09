@@ -19,7 +19,7 @@ library(gtools) ## for permutations
 library(igraph)
 library(Rgraphviz)
 
-sourceCpp("new-restrict.cpp", verbose = TRUE)
+sourceCpp("nrOncoSimul.cpp", verbose = TRUE)
 ## sourceCpp("t1.cpp", verbose = TRUE)
 
 
@@ -323,8 +323,6 @@ checkRT <- function(mdeps) {
 }
 
 
-
-## get this to return a graph object ready for plotting.
 
 getDrv <- function(geneModule, drv) {
     indices <- sort(match( drv, geneModule$Gene))
@@ -707,3 +705,69 @@ plot.fitnessEffects <- plotFitnessEffects
 
 ## FIXME: in the help: say we cannot properly show 3- or higher order
 ## interactions.
+
+
+
+nr_oncoSimul.internal <- function(fitnessEffects, 
+                                  birth, 
+                                  death,
+                                  mu,
+                                  initSize,
+                                  sampleEvery,
+                                  detectionSize,
+                                  finalTime,
+                                  initSize_species,
+                                  initSize_iter,
+                                  seed,
+                                  verbosity,
+                                  speciesFS,
+                                  ratioForce,
+                                  typeFitness,
+                                  max.memory,
+                                  mutatorGenotype,
+                                  initMutant,
+                                  max.wall.time,
+                                  keepEvery,
+                                  alpha,
+                                  K,
+                                  detectionDrivers,
+                                  onlyCancer,
+                                  errorHitWallTime,
+                                  max.num.tries,
+                                  errorHitMaxTries,
+                                  minDDrPopSize,
+                                  extraTime) {
+
+    if(!is.null(initMutant)) {
+        initMutant <- getDrv(fitnessEffects$geneModule, initMutant)
+    }
+    
+    nr_BNB_Algo5(fitnessEffects = fitnessEffects,
+                 mu = mu,
+                 death = death,
+                 initSize = initSize,
+                 sampleEvery = sampleEvery,
+                 detectionSize = detectionSize,
+                 finalTime = finalTime,
+                 initSp = initSize_species,
+                 initIt = initSize_iter,
+                 seed = seed,
+                 verbosity = verbosity,
+                 speciesFS = speciesFS,
+                 ratioForce = ratioForce,
+                 typeFitness_ = typeFitness,
+                 maxram = max.memory,
+                 mutatorGenotype = mutatorGenotype,
+                 initMutant_ = initMutant, 
+                 maxWallTime = max.wall.time,
+                 keepEvery = keepEvery,
+                 alpha = alpha,
+                 K = K,
+                 detectionDrivers = detectionDrivers,
+                 onlyCancer = onlyCancer,
+                 errorHitWallTime = errorHitWallTime,
+                 maxNumTries = max.num.tries,
+                 errorHitMaxTries = errorHitMaxTries,
+                 minDDrPopSize = minDDrPopSize,
+                 extraTime = extraTime)
+}
