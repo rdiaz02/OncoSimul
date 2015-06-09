@@ -1,6 +1,6 @@
 // #include "OncoSimul.h"
-#include "debug_common.h"
-#include "bnb_common.h"
+#include "debug_common.hpp"
+#include "bnb_common.hpp"
 #include "new_restrict.h"
 #include <Rcpp.h>
 #include <limits>

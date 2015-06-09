@@ -1,4 +1,4 @@
-#include "bnb_common.h"
+#include "bnb_common.hpp"
 #include <Rcpp.h>
 
 void print_spP(const spParamsP& spP) {

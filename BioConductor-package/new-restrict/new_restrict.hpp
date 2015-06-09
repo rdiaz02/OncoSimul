@@ -2,7 +2,7 @@
 #define _NEW_RESTRICT_H__
 
 #include<Rcpp.h>
-#include"debug_common.h"
+#include"debug_common.hpp"
 
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
@@ -130,6 +130,7 @@ inline Genotype wtGenotype() {
   g.rest.resize(0);
   return g;
 }
+std::vector<int> genotypeSingleVector(const Genotype& ge);
 
 inline bool operator==(const Genotype& lhs, const Genotype& rhs) {
   return (lhs.orderEff == rhs.orderEff) &&
@@ -138,8 +139,8 @@ inline bool operator==(const Genotype& lhs, const Genotype& rhs) {
 }
 
 inline bool operator<(const Genotype& lhs, const Genotype& rhs) {
-  vector<int> lh = genotypeSingleVector(lhs);
-  vector<int> rh = genotypeSingleVector(rhs);
+  std::vector<int> lh = genotypeSingleVector(lhs);
+  std::vector<int> rh = genotypeSingleVector(rhs);
   if( lh.size() < rh.size() ) return true;
   else if ( lh.size() > rh.size() ) return false;
   else {
@@ -152,7 +153,7 @@ inline bool operator<(const Genotype& lhs, const Genotype& rhs) {
 
 
 
-inline double prodFitness(vector<double> s) {
+inline double prodFitness(std::vector<double> s) {
   return accumulate(s.begin(), s.end(), 1.0,
 		    [](double x, double y) {return (x * std::max(0.0, (1 + y)));});
 }
@@ -169,7 +170,7 @@ inline double prodFitness(vector<double> s) {
 //   }
 // }
 
-inline double prodDeathFitness(vector<double> s) {
+inline double prodDeathFitness(std::vector<double> s) {
   double f = 1.0;
   for(auto si : s) {
     if( si <= -90.0 ) {

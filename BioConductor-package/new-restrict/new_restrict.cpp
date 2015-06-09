@@ -1,5 +1,5 @@
 #include "new_restrict.hpp"
-#include "debug_common.h"
+#include "debug_common.hpp"
 #include <Rcpp.h>
 #include <iomanip> // for setw
 #include <algorithm>
