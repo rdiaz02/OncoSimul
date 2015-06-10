@@ -439,12 +439,6 @@ oncoSimulIndiv <- function(fitnessEffects = NULL,
     if(mu < 0) {
         stop("mutation rate (mu) is negative")
     }
-    if(initSize_species < 10) {
-        warning("initSize_species too small?")
-    }
-    if(initSize_iter < 100) {
-        warning("initSize_iter too small?")
-    }
 
     if(is.null(seed)) {## passing a null creates a random seed
         ## name is a legacy. This is really the seed for the C++ generator.
@@ -521,7 +515,7 @@ oncoSimulIndiv <- function(fitnessEffects = NULL,
                                      errorHitMaxTries = errorHitMaxTries),
                   silent = !verbosity)
     } else {
-        op <- try(nr_oncoSimul.internal(fitnessEffects = fitnessEffects, 
+        op <- try(nr_oncoSimul.internal(rFE = fitnessEffects, 
                                         birth = birth,
                                         death = death,  
                                         mu =  mu,  
@@ -883,7 +877,15 @@ oncoSimul.internal <- function(poset, ## restrict.table,
     
     if(numGenes > 64)
         stop("Largest possible number of genes is 64")
+
     
+    if(initSize_species < 10) {
+        warning("initSize_species too small?")
+    }
+    if(initSize_iter < 100) {
+        warning("initSize_iter too small?")
+    }
+
     ## numDrivers <- nrow(restrict.table)
     if(length(unique(restrict.table[, 1])) != numDrivers)
         stop("BAIL OUT NOW: length(unique(restrict.table[, 1])) != numDrivers)")

@@ -1,4 +1,5 @@
 ## With Bozic: check no s > 1.
+## evalAllGenotypes for Bozic!!
 
 ## Say which are drivers: populate the drv vector.
 ## // In R, the user says which are the drivers. If does not say anuthing,
@@ -708,7 +709,7 @@ plot.fitnessEffects <- plotFitnessEffects
 
 
 
-nr_oncoSimul.internal <- function(fitnessEffects, 
+nr_oncoSimul.internal <- function(rFE, 
                                   birth, 
                                   death,
                                   mu,
@@ -739,10 +740,36 @@ nr_oncoSimul.internal <- function(fitnessEffects,
                                   extraTime) {
 
     if(!is.null(initMutant)) {
-        initMutant <- getDrv(fitnessEffects$geneModule, initMutant)
+        initMutant <- getDrv(rFE$geneModule, initMutant)
+    } else {
+        initMutant <- vector(mode = "integer")
     }
-    
-    nr_BNB_Algo5(fitnessEffects = fitnessEffects,
+    if(initSize_species < 10) {
+        warning("initSize_species too small?")
+    }
+    if(initSize_iter < 100) {
+        warning("initSize_iter too small?")
+    }
+
+    if(typeFitness %in% c("bozic1", "bozic2") {
+        thesh <- unlist(lapply(rFE$long.rt, function(x) x$sh))
+        thes <- unlist(lapply(rFE$long.rt, function(x) x$s))
+        if(any(thes > 1 )) {
+            m <- paste("You are using a Bozic model with",
+                       "the new restriction specification, and you have",
+                       "at least one s > 1."
+                       "But that is not allowed because you would obtain",
+                       "negative death rates.")
+            stop(m)
+        }
+        if(any(thesh == -1)) {
+            m <- paste("You are using a Bozic model with",
+                       "the new restriction specification, and you have",
+                       "at least one sh of -1. Maybe you mean -Inf?")
+            warning(m)
+        }
+    }
+    nr_BNB_Algo5(rFE = rFE,
                  mu = mu,
                  death = death,
                  initSize = initSize,
