@@ -184,6 +184,12 @@ So, if you want to identify some mutations or some combinations of
 mutations as leading to immediate extinction, no viability, of the
 affected clone, set ``s'' to some value $<= -90$, or set it to $-\infty$.
 
+
+Most examples below evaluate fitness by its effects on the birth rate. You
+can see one where we do it both ways in Section \ref{fit-neg-pos}.
+
+
+
 \subsection{Specifying modules}
 
 Why do we force you to specify ``Root'' = ``Root''? We could check for it,
@@ -910,6 +916,58 @@ evalAllGenotypes(sv, order = TRUE, addwt = TRUE)
 @ 
 
 Another example is shown in section \ref{misra1b}.
+
+
+\subsubsection{Synthetic viability and using Bozic model}\label{fit-neg-pos}
+
+If we were to use the above specification with Bozic's models, we might
+not get what we want:
+
+<<>>=
+evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic")
+@
+
+What gives here? The simulation code would alert you of this (see section
+\ref{fit-neg-pos-sim}) in this particular case because there are ``-1'',
+which might indicate that this is not what you want. The problem is that
+you probably want the Death rate to be infinity (the birth rate was 0, so
+no clone viability, when we used birth rates).
+
+Let us say so explicitly:
+
+<<>>=
+s <- 0.2
+svB <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
+                                      "A : -B" = -Inf,
+                                      "A:B" = s))
+evalAllGenotypes(svB, order = FALSE, addwt = TRUE, model = "Bozic")
+@
+
+
+Likewise, values of $s$ larger than one have no effect beyond setting $s =
+1$ (a single term of $(1 - 1)$ will drive the product to 0, and as we
+cannot allow negative death rates, negative values are set to 0):
+
+
+<<>>=
+
+s <- 1
+evalAllGenotypes(allFitnessEffects(epistasis = c("-A : B" = -Inf,
+                                       "A : -B" = -Inf,
+                                       "A:B" = s)),
+                  order = FALSE, addwt = TRUE, model = "Bozic")
+
+
+s <- 3
+evalAllGenotypes(allFitnessEffects(epistasis = c("-A : B" = -Inf,
+                                       "A : -B" = -Inf,
+                                       "A:B" = s)),
+                  order = FALSE, addwt = TRUE, model = "Bozic")
+
+@
+Of course, death rates of 0.0 are likely to lead to trouble down the road,
+when we actually conduct simulations (see section \ref{ex-0-death}).
+
 
 
 \subsubsection{Synthetic viability, non-zero fitness and modules}

@@ -1,13 +1,11 @@
 #ifndef _NEW_RESTRICT_H__
 #define _NEW_RESTRICT_H__
 
-#include<Rcpp.h>
+#include <Rcpp.h>
 #include"debug_common.hpp"
-
+#include <limits>
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
-
-
 
 inline Dependency stringToDep(const std::string& dep) {
   if(dep == "monotone")
@@ -171,6 +169,7 @@ inline double prodFitness(std::vector<double> s) {
 }
 
 
+
 // I am looping twice
 // inline double prodDeathFitness(vector<double> s) {
 //   // For Bozic's
@@ -182,17 +181,26 @@ inline double prodFitness(std::vector<double> s) {
 //   }
 // }
 
+// But using infinity deals with this. See below
+// inline double prodDeathFitness(std::vector<double> s) {
+//   double f = 1.0;
+//   for(auto si : s) {
+//     if( si <= -90.0 ) {
+//       return 99.0;
+//     } else {
+//       f *= (1 - si);
+//     }
+//   }
+//   return f;
+// }
+
+
 inline double prodDeathFitness(std::vector<double> s) {
-  double f = 1.0;
-  for(auto si : s) {
-    if( si <= -90.0 ) {
-      return 99.0;
-    } else {
-      f *= (1 - si);
-    }
-  }
-  return f;
+  return accumulate(s.begin(), s.end(), 1.0,
+		    [](double x, double y) {return (x * std::max(0.0, (1 - y)));});
 }
+
+
 
 // inline double logSumFitness(vector<double> s) {
 //   return accumulate(s.begin(), s.end(), 1.0,
@@ -220,4 +228,6 @@ std::vector<int> presentDrivers(const Genotype& ge, const std::vector<int>& drv)
 void print_Genotype(const Genotype& ge);
 
 fitness_as_genes feGenes(const fitnessEffectsAll& fe);
+
 #endif
+

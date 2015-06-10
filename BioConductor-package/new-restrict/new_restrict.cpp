@@ -15,6 +15,10 @@ using std::back_inserter;
 // std::mt19937 ran_gen(seed);
 
 
+// double Inf = std::numeric_limits<double>::infinity();
+// double NegInf = -std::numeric_limits<double>::infinity();
+
+
 void print_Genotype(const Genotype& ge) {
   Rcpp::Rcout << "\n Printing Genotype";
   Rcpp::Rcout << "\n\t\t order effects genes:";
@@ -962,7 +966,8 @@ void readFitnessEffects(Rcpp::List rFE,
 
 
 // [[Rcpp::export]]
-double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
+double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
+		     bool verbose, bool prodNeg) {
   if(rG.size() == 0) {
     Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
     return 1;
@@ -977,8 +982,12 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
     for(auto i : s) Rcpp::Rcout << " " << i;
     Rcpp::Rcout << std::endl;
   }
-  return prodFitness(s);
+  if(!prodNeg)
+    return prodFitness(s);
+  else 
+    return prodDeathFitness(s);;
 }
+
 
 
 // // [[Rcpp::export]]
@@ -1413,4 +1422,3 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose) {
 //   }
 //   return s;
 // }
-

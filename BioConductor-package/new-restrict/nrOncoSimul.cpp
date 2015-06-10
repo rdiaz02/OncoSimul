@@ -58,7 +58,7 @@ static void nr_fitness(spParamsP& tmpP,
 
   if(typeFitness == "bozic1") {
     tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F));
-    if( tmpP.death > 50) {
+    if( tmpP.death > 99) {
       tmpP.birth = 0.0; 
     } else {
       tmpP.birth = 1.0;

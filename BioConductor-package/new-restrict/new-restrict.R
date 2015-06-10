@@ -1,5 +1,7 @@
-## With Bozic: check no s > 1.
 ## evalAllGenotypes for Bozic!!
+
+## alternatig signs: make sure no problem
+
 
 ## Say which are drivers: populate the drv vector.
 ## // In R, the user says which are the drivers. If does not say anuthing,
@@ -536,7 +538,8 @@ wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm, echo = TRUE) {
 
 evalGenotype <- function(genotype, fitnessEffects,
                          verbose = FALSE,
-                         echo = FALSE) {
+                         echo = FALSE,
+                         model = "") {
     ## genotype can be a vector of integers, that are the exact same in
     ## the table of fitnessEffects or a vector of strings, or a vector (a
     ## string) with genes separated by "," or ">"
@@ -563,11 +566,21 @@ evalGenotype <- function(genotype, fitnessEffects,
         stop(paste("genotypes cannot contain negative values.",
                    "If you see this message, you found a bug."))
     }
-    ff <- evalRGenotype(genotype, fitnessEffects, verbose)
-    if(echo)
-        cat(" Fitness: ", ff, "\n")
+    if(model %in% c("Bozic", "bozic1", "bozic2") )
+        prodNeg <- TRUE
     else
-        ff
+        prodNeg <- FALSE
+    ff <- evalRGenotype(genotype, fitnessEffects, verbose, prodNeg)
+
+
+    if(echo) {
+        if(!prodNeg)
+            cat(" Fitness: ", ff, "\n")
+        else
+            cat(" Death rate: ", ff, "\n")
+    } else {
+        return(ff)
+    }
 }
 
 ## For multiple genotypes, lapply the matching.
@@ -578,7 +591,8 @@ evalGenotype <- function(genotype, fitnessEffects,
 
 
 evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
-                             addwt = FALSE) {
+                             addwt = FALSE,
+                             model = "") {
     
     if(order)
         tot <- function(n) {sum(sapply(seq.int(n),
@@ -616,15 +630,23 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
                          function(z)
                              paste(z,
                                    collapse = if(order){" > "} else {", "} )))
-
+    ## This ain't the best, as we repeatedly read and convert
+    ## fitnessEffects.  If this were slow, prepare C++ function that takes
+    ## vectors of genotypes and uses same fitnessEffects.
+    if(model %in% c("Bozic", "bozic1", "bozic2") )
+        prodNeg <- TRUE
+    else
+        prodNeg <- FALSE
     allf <- vapply(genotNums,
-                   function(x) evalRGenotype(x, fitnessEffects, FALSE),
+                   function(x) evalRGenotype(x, fitnessEffects, FALSE, prodNeg),
                    1.1)
     df <- data.frame(Genotype = genotNames, Fitness = allf,
                      stringsAsFactors = FALSE)
     if(addwt)
         df <- rbind(data.frame(Genotype = "wt", Fitness = 1,
                                stringsAsFactors = FALSE), df)
+    if(prodNeg)
+        colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
     return(df)
 }
 
@@ -751,15 +773,17 @@ nr_oncoSimul.internal <- function(rFE,
         warning("initSize_iter too small?")
     }
 
-    if(typeFitness %in% c("bozic1", "bozic2") {
+    if(typeFitness %in% c("bozic1", "bozic2")) {
         thesh <- unlist(lapply(rFE$long.rt, function(x) x$sh))
         thes <- unlist(lapply(rFE$long.rt, function(x) x$s))
         if(any(thes > 1 )) {
             m <- paste("You are using a Bozic model with",
                        "the new restriction specification, and you have",
-                       "at least one s > 1."
-                       "But that is not allowed because you would obtain",
-                       "negative death rates.")
+                       "at least one s > 1.",
+                       "But that is the same as setting that to 1:",
+                       "we obviously cannot allow negative death rates,",
+                       "nor problems derived from multiplying odd or even",
+                       "numbers of negative numbers.")
             stop(m)
         }
         if(any(thesh == -1)) {
@@ -798,3 +822,4 @@ nr_oncoSimul.internal <- function(rFE,
                  minDDrPopSize = minDDrPopSize,
                  extraTime = extraTime)
 }
+

@@ -1,6 +1,7 @@
 #include "bnb_common.hpp"
 #include <Rcpp.h>
 
+
 void print_spP(const spParamsP& spP) {
   Rcpp::Rcout <<"\n this is spP\n" 
 	    <<"\n popSize = " << spP.popSize
