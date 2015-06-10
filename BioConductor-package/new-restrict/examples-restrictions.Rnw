@@ -1781,6 +1781,24 @@ evalAllGenotypes(wc, order = FALSE, addwt = TRUE)
 @ 
 
 
+\section{Running the simulations}
+
+This comes from \ref{cbn1}
+
+<<>>=
+
+cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = 0.1,
+                 sh = -0.9,
+                 typeDep = "MN")
+fcs <- allFitnessEffects(cs)
+gfs <- evalAllGenotypes(fcs, order = FALSE)
+gfs[1:15, ]
+@
+
+
+
 
 
 
