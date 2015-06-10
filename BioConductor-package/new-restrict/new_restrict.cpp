@@ -15,6 +15,17 @@ using std::back_inserter;
 // std::mt19937 ran_gen(seed);
 
 
+void print_Genotype(const Genotype& ge) {
+  Rcpp::Rcout << "\n Printing Genotype";
+  Rcpp::Rcout << "\n\t\t order effects genes:";
+  for(auto oo : ge.orderEff) Rcpp::Rcout << " " << oo;
+  Rcpp::Rcout << "\n\t\t epistasis and restriction effects genes:";
+  for(auto oo : ge.epistRtEff) Rcpp::Rcout << " " << oo;
+  Rcpp::Rcout << "\n\t\t non interaction genes :";
+  for(auto oo : ge.rest) Rcpp::Rcout << " " << oo;
+  Rcpp::Rcout << std::endl;
+}
+
 vector<int> genotypeSingleVector(const Genotype& ge) {
   // orderEff in the order they occur. All others are sorted.
   std::vector<int> allgG;
@@ -24,16 +35,29 @@ vector<int> genotypeSingleVector(const Genotype& ge) {
   return allgG;
 }
 
+
 vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
   // Sorted
   std::vector<int> g0;
-  for(auto a : F.Gene_Module_tabl) {
-    g0.push_back(a.GeneNumID);
+
+  if(F.Gene_Module_tabl.size()) {
+    if( F.Gene_Module_tabl[0].GeneNumID != 0 )
+      throw std::logic_error("\n Gene module table's first element must be 0");
+    // for(vector<Gene_Module_struct>::size_type i = 1;
+    //     i != F.Gene_Module_tabl.size(); i++) {
+    for(decltype(F.Gene_Module_tabl.size()) i = 1;
+  	i != F.Gene_Module_tabl.size(); i++) {
+      g0.push_back(F.Gene_Module_tabl[i].GeneNumID);
+    }
   }
+  // for(auto a : F.Gene_Module_tabl) {
+  //    if(a.GeneNumID != 0) g0.push_back(a.GeneNumID);
+  // }
   for(auto b: F.genesNoInt.NumID) {
     g0.push_back(b);
   }
   sort(g0.begin(), g0.end());
+  
   return g0;
 }
 
@@ -276,6 +300,10 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   fe.allGenes = allGenesinFitness(fe);
   fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.s.size();
   fe.drv = as<std::vector<int> > (drv);
+  // check_disable_later
+  if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
+    throw std::logic_error("\n genomeSize != allGenes.size()");
+  }
   return fe;
 }
 
@@ -292,12 +320,64 @@ void obtainMutations(const Genotype& parent,
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
+  // DP1("obtainMutations");
+  // for(auto ag : fe.allGenes) Rcpp::Rcout << " ag " << ag;
+  // Rcpp::Rcout << std::endl;
+  // for(auto pp : sortedparent) Rcpp::Rcout << " pp " << pp;
+  // Rcpp::Rcout << std::endl;
+  // for(auto m : nonmutated) Rcpp::Rcout << " m " << m;
+  // Rcpp::Rcout << std::endl;
+  
   std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
   newMutations.push_back(nonmutated[rpos(ran_gen)]);
   numMutablePosParent = nonmutated.size();
   // numMutablePosParent = fe.genomeSize() - sortedparent.size();
 }
 
+
+// std::vector<int> genesInOrderModules(const fitnessEffectsAll& fe) {
+//   vector<int> genes;
+//   if(fe.gMOneToOne)
+//     genes = fe.alOrderG;
+//   else {
+//     for(auto m : fe.allOrderG) {
+//       genes.push_back()
+//     }
+
+//   }
+//   return genes;  
+// }
+
+
+fitness_as_genes feGenes(const fitnessEffectsAll& fe) {
+  // Extract the noInt. Then those in order effects by creating a multimap
+  // to go from map to genes. Then all remaining genes are those only in
+  // poset. By set_difference.
+  fitness_as_genes fg;
+
+  fg.noInt = fe.genesNoInt.NumID;
+
+  std::multimap<int, int> MG;
+  for( auto mt : fe.Gene_Module_tabl) {
+    MG.insert({mt.ModuleNumID, mt.GeneNumID});
+  }
+  for (auto o : fe.allOrderG) {
+    for(auto pos = MG.lower_bound(o); pos != MG.upper_bound(o); ++pos) 
+      fg.orderG.push_back(pos->second);
+  }
+  sort(fg.orderG.begin(), fg.orderG.end());
+
+  std::vector<int> tmpv = fg.orderG;
+  tmpv.insert(tmpv.end(),fg.noInt.begin(), fg.noInt.end());
+  sort(tmpv.begin(), tmpv.end()); // should not be needed
+  
+  set_difference(fe.allGenes.begin(), fe.allGenes.end(),
+		 tmpv.begin(), tmpv.end(),
+		 back_inserter(fg.posetEpistG));
+  // fg.posetEpistG.sort(fg.posetEpistG.begin(),
+  // 		      fg.posetEpistG.end());
+  return fg;
+}
 
 
 // It is simple to write specialized functions for when
@@ -379,8 +459,10 @@ void breakingGeneDiff(const vector<int> genotype,
 }
 
 void checkNoNegZeroGene(const vector<int>& ge) {
-  if( ge[0] <= 0 )
-    throw std::logic_error("\n Genotype cannot contain negative values or 0");
+  if( ge[0] == 0 )
+    throw std::logic_error("\n Genotype cannot contain 0");
+  else if(ge[0] < 0)
+    throw std::logic_error("\n Genotype cannot contain negative values");
 }
 
 void checkLegitGenotype(const Genotype& ge,
@@ -653,6 +735,8 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 					const fitnessEffectsAll& F){
 
+
+  // print_Genotype(ge);
   // check_disable_later
   checkLegitGenotype(ge, F);
 

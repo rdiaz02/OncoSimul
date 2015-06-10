@@ -91,18 +91,30 @@ struct fitnessEffectsAll {
   // std::vector<int> allEpistRTG;
 
   // This makes it faster to run evalPosetConstraints
-  std::vector<int> allPosetG; //Modules or genes if one-to-one
+  std::vector<int> allPosetG; //Modules or genes if one-to-one. Only
+			      //poset. Not epist.
   std::vector<Poset_struct> Poset;
   std::vector<epistasis> Epistasis;
   std::vector<epistasis> orderE;
   // std::vector<Gene_Module_struct> Gene_Module_tabl;
   std::vector<Gene_Module_struct> Gene_Module_tabl;
-  std::vector<int> allGenes; //used whenever a mutation created
+  std::vector<int> allGenes; //used whenever a mutation created. Genes,
+			     //not modules. Sorted.
   std::vector<int> drv;
   genesWithoutInt genesNoInt;
   
 };
 
+struct fitness_as_genes {
+  // fitnessEffectsAll in terms of genes.  Useful for output
+  // conversions. There could be genes that are both in orderG and
+  // posetEpistG. In such a case, only in orderG.
+  // We only use a small part for now.
+  // All are ordered vectors.
+  std::vector<int> orderG;
+  std::vector<int> posetEpistG;
+  std::vector<int> noInt;
+};
 
 // There are no shared genes in order and epist.  Any gene in orderEff can
 // also be in the posets or general epistasis, but orderEff is only for
@@ -205,4 +217,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE);
 std::vector<int> presentDrivers(const Genotype& ge, const std::vector<int>& drv);
+void print_Genotype(const Genotype& ge);
+
+fitness_as_genes feGenes(const fitnessEffectsAll& fe);
 #endif

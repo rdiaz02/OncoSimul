@@ -60,6 +60,8 @@ static void nr_fitness(spParamsP& tmpP,
     tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F));
     if( tmpP.death > 50) {
       tmpP.birth = 0.0; 
+    } else {
+      tmpP.birth = 1.0;
     }
   } else if (typeFitness == "bozic2") {
     double pp = prodDeathFitness(evalGenotypeFitness(ge, F));
@@ -432,6 +434,57 @@ std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go)
 // }
 
 
+std::string vectorGenotypeToString(const std::vector<int>& genotypeV,
+				   const fitness_as_genes& fg) {
+  
+  std::string strGenotype;
+
+  std::vector<int> order_int;
+  std::vector<int> rest_int;
+
+  for(auto g : genotypeV) {
+    if( binary_search(fg.orderG.begin(), fg.orderG.end(), g)) {
+      order_int.push_back(g);
+    } else {
+      rest_int.push_back(g);
+    }
+  }
+
+  std::string order_sep = "_";
+  std::string order_part;
+  std::string rest;
+  std::string comma = "";
+  for(auto g : order_int) {
+    order_part += (comma + std::to_string(g));
+    comma = ", ";
+  }
+  comma = "";
+  for(auto g : rest_int) {
+    rest += (comma + std::to_string(g));
+    comma = ", ";
+  }
+  if(fg.orderG.size()) {
+    strGenotype = order_part + order_sep + rest;
+  } else {
+    strGenotype = rest;
+  }
+  return strGenotype;
+}
+
+
+std::vector<std::string> genotypesToString(const std::vector< vector<int> >& uniqueGenotypesV,
+					   const fitnessEffectsAll& F) {
+  fitness_as_genes fg = feGenes(F);
+  std::vector<std::string> gs;
+
+  for(auto v: uniqueGenotypesV ) gs.push_back(vectorGenotypeToString(v, fg));
+
+  // exercise: do it with lambdas
+  // std::transform(uniqueGenotypesV.begin(), uniqueGenotypesV.end(),
+  // 		 back_inserter(gs), vectorGenotypeToString);
+  return gs;
+}
+
 Rcpp::IntegerMatrix nr_create_returnGenotypes(const int& numGenes,
 					      const std::vector< vector<int> >& uniqueGenotypesV){
   // We loose order here. Thus, there might be several identical columns.
@@ -552,6 +605,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
 
+ 
   const int numGenes = fitnessEffects.genomeSize;
   double dummyMutationRate = std::max(mu/1000, 1e-13);
   // double dummyMutationRate = 1e-10;
@@ -626,7 +680,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   const int sp_per_period = 5000;
   popParams.reserve(sp_per_period);
   Genotypes.reserve(sp_per_period);
-
 
       // // FIXME debug
       // Rcpp::Rcout << "\n popSize[0]  at 01 ";
@@ -1109,6 +1162,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 					newMutations,
 					fitnessEffects,
 					ran_gen);
+
 	// nr_change
 	// newGenotype = Genotypes[nextMutant];
 	// newGenotype.set(mutatedPos);
@@ -1142,7 +1196,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     typeFitness, genTime,
 		     adjust_fitness_B, adjust_fitness_MF);
 	
-
 	  if(tmpParam.birth > 0.0) {
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
 	    if(mutatorGenotype)
@@ -1175,20 +1228,24 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    --numSpecies;
 	    to_update = 1;
 	  }
-	  #ifdef DEBUGV	
-	  //if(verbosity >= 3) {
+	  // #ifdef DEBUGV	
+	  if(verbosity >= 3) {
 	    Rcpp::Rcout << " \n\n\n Looking at NEW species " << sp << " at creation";
-	    Rcpp::Rcout << "\n Genotype = " << genotypeSingleVector(newGenotype); //Genotypes[sp];
+	    Rcpp::Rcout << "\n New Genotype :";
+	    print_Genotype(newGenotype);
+	    Rcpp::Rcout << "\n Parent Genotype :";
+	    print_Genotype(Genotypes[nextMutant]);
+	    // Rcpp::Rcout << "\n Genotype = " << genotypeSingleVector(newGenotype); //Genotypes[sp];
 	    //Genotypes[sp].to_ullong();
 	    Rcpp::Rcout << "\n birth of sp = " << tmpParam.birth;
 	    Rcpp::Rcout << "\n death of sp = " << tmpParam.death;
-	    Rcpp::Rcout << "\n s = " << s;
+	    // Rcpp::Rcout << "\n s = " << s;
 	    Rcpp::Rcout << "\n parent birth = " << popParams[nextMutant].birth;
 	    Rcpp::Rcout << "\n parent death = " << popParams[nextMutant].death;
-	    Rcpp::Rcout << "\n parent Genotype = " << genotypeSingleVector(Genotypes[nextMutant]);
+	    // Rcpp::Rcout << "\n parent Genotype = " << genotypeSingleVector(Genotypes[nextMutant]);
 	    print_spP(tmpParam);
-	    //}
-	  #endif
+	    }
+	  // #endif
 	} else {	// A mutation to pre-existing species
 #ifdef DEBUGW
 	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0)
@@ -1490,7 +1547,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // const double extraTime = as<double>(extraTime_);
   
   std::mt19937 ran_gen(seed);
-
+  // DP2(seed);
+  
   // some checks. Do this systematically
   // FIXME: do only if mcfarland!
   if(K < 1 )
@@ -1804,7 +1862,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   NumericMatrix perSampleStats(outNS_i + 1, 5);
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
 	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
-  
+
+  std::vector<std::string> genotypesLabels =
+    genotypesToString(uniqueGenotypes_vector_nr, fitnessEffects);
   // error in mcfarland's
   // if((typeFitness == "mcfarland0") || (typeFitness == "mcfarlandlog"))
   //   e1r = log(e1);
@@ -1833,7 +1893,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		 Named("NumClones") = uniqueGenotypes_vector_nr.size(), 
 		 Named("TotalPopSize") = totPopSize,
 		 Named("Genotypes") = returnGenotypes,
-		 Named("GenotypesWithOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr), 
+		 Named("GenotypesWDistinctOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr),
+		 Named("GenotypesLabels") = Rcpp::wrap(genotypesLabels),
 		 Named("MaxNumDrivers") = maxNumDrivers,
 		 // Named("MaxDrivers_PerSample") = wrap(sampleMaxNDr),
 		 // Named("NumDriversLargestPop_PerSample") = sampleNDrLargestPop,
