@@ -1723,7 +1723,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // tps_1 = totPopSize;
 
 
-
+    DP1("before try");
     try {
       // it is CRUCIAL that several entries are zeroed (or -1) at the
       // start of innerBNB now that we do multiple runs if onlyCancer = true.
@@ -1878,18 +1878,19 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // std::set<std::vector<int> > uniqueGenotypes_nr =  nr_find_unique_genotypes(genot_out_nr);
   // std::vector<std::vector<int> > uniqueGenotypes_vector_nr = nr_uniqueGenotypes_to_vector(uniqueGenotypes_nr);
 
-
+  DP1("before v3");
   // v3
   // Need the two below
   std::vector<std::vector<int> > genot_out_v = genot_to_vectorg(genot_out);
   std::vector<std::vector<int> > uniqueGenotypes_vector_nr  =
     uniqueGenot_vector(genot_out_v);
-  
+   DP1("before v3b");
   // IntegerMatrix returnGenotypes(uniqueGenotypes_vector.size(), numGenes);
   IntegerMatrix returnGenotypes = 
     nr_create_returnGenotypes(fitnessEffects.genomeSize,
 			      uniqueGenotypes_vector_nr);
   
+  DP1("before v3c");
   Rcpp::NumericMatrix outNS = create_outNS(uniqueGenotypes_vector_nr,
 					   genot_out_v,
 					   popSizes_out,
@@ -1902,6 +1903,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   std::vector<int>countByDriver(fitnessEffects.drv.size(), 0);
   std::string occurringDrivers;
 
+   DP1("before v3d");
   nr_count_NumDrivers(maxNumDrivers, countByDriver,
 		      returnGenotypes, fitnessEffects.drv);
 
@@ -1909,6 +1911,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   std::vector<double> sampleLargestPopProp(outNS_i + 1);
 
+  DP1("x4");
+  
   if((outNS_i + 1) != static_cast<int>(sampleLargestPopSize.size()))
     throw std::length_error("outNS_i + 1 != sampleLargestPopSize.size");
   std::transform(sampleLargestPopSize.begin(), sampleLargestPopSize.end(),
@@ -1920,6 +1924,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
 	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
+  DP1("x5");
   std::vector<std::string> genotypesLabels =
     genotypesToString(uniqueGenotypes_vector_nr, fitnessEffects, true);
   // error in mcfarland's
@@ -1944,58 +1949,49 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // here("*******************************************");
 
   // Rcpp::List returnGenotypesO = Rcpp::wrap(uniqueGenotypesV);
+
+  DP1("x6");
+  DP2(outNS_i);
+  DP1("x7");
   
   return 
-    List::create(Named("pops.by.time") = outNS,
-		 Named("NumClones") = uniqueGenotypes_vector_nr.size(), 
-		 Named("TotalPopSize") = totPopSize,
-		 Named("Genotypes") = returnGenotypes,
-		 Named("GenotypesWDistinctOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr),
-		 Named("GenotypesLabels") = Rcpp::wrap(genotypesLabels),
-		 Named("MaxNumDrivers") = maxNumDrivers,
-		 // Named("MaxDrivers_PerSample") = wrap(sampleMaxNDr),
-		 // Named("NumDriversLargestPop_PerSample") = sampleNDrLargestPop,
-		 // Named("TotPopSize_PerSample") = sampleTotPopSize,
-		 // Named("LargestPopSize_PerSample") = sampleLargestPopSize,
-		 // Named("PropLargestPopSize_PerSample") = sampleLargestPopProp,
-		 Named("MaxDriversLast") = sampleMaxNDr[outNS_i],
-		 Named("NumDriversLargestPop") =  sampleNDrLargestPop[outNS_i],
-		 Named("LargestClone") = sampleLargestPopSize[outNS_i],
-		 Named("PropLargestPopLast") = sampleLargestPopProp[outNS_i],
-		 // Named("totDrivers") = totDrivers,
-		 Named("FinalTime") = currentTime,
-		 Named("NumIter") = iter,
-		 //		 Named("outi") = outNS_i + 1, // silly. Use the real number of samples. FIXME
-		 Named("HittedWallTime") = hittedWallTime, // (runningWallTime > maxWallTime),
-		 Named("HittedMaxTries") = hittedMaxTries,
-		 // Named("iRunningWallTime") = runningWallTime,
-		 // Named("oRunningWallTime") = difftime(time(NULL), start_time),
-		 // Named("ti_dbl_min") = ti_dbl_min,
-		 // Named("ti_e3") = ti_e3,
-		 Named("TotalPresentDrivers") = totalPresentDrivers,
-		 Named("CountByDriver") = countByDriver,
-		 // FIXME: OccurringDrivers underestimates true occurring
-		 // drivers if keepEvery < 0, so we only return the last.
-		 Named("OccurringDrivers") = occurringDrivers,
-		 Named("PerSampleStats") = perSampleStats,
-		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
-					       Named("errorMF") = 
-					       returnMFE(e1, K, 
-							 typeFitness),
-					       Named("errorMF_size") = e1,
-					       Named("errorMF_n_0") = n_0,
-#ifdef MIN_RATIO_MUTS
-					       Named("minDMratio") =
-					       g_min_death_mut_ratio_nr,
-					       Named("minBMratio") =
-					       g_min_birth_mut_ratio_nr,      
-#else
-					       Named("minDMratio") = -99,
-					       Named("minBMratio") = -99,
-#endif
-					       Named("errorMF_n_1") = n_1,
-					       Named("UnrecoverExcept") = false)
-		 );
+    List::create(Named("pops.by.time") = outNS);
+		 // Named("NumClones") = uniqueGenotypes_vector_nr.size(), 
+		 // Named("TotalPopSize") = totPopSize,
+		 // Named("Genotypes") = returnGenotypes,
+		 // Named("GenotypesWDistinctOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr),
+		 // Named("GenotypesLabels") = Rcpp::wrap(genotypesLabels),
+		 // Named("MaxNumDrivers") = maxNumDrivers,
+		 //Named("MaxDriversLast") = sampleMaxNDr[outNS_i],
+		 //Named("NumDriversLargestPop") =  sampleNDrLargestPop[outNS_i],
+		 //Named("LargestClone") = sampleLargestPopSize[outNS_i],
+		 //Named("PropLargestPopLast") = sampleLargestPopProp[outNS_i],
+// 		 Named("FinalTime") = currentTime,
+// 		 Named("NumIter") = iter,
+// 		 Named("HittedWallTime") = hittedWallTime, 
+// 		 Named("HittedMaxTries") = hittedMaxTries,
+// 		 Named("TotalPresentDrivers") = totalPresentDrivers,
+// 		 Named("CountByDriver") = countByDriver,
+// 		 Named("OccurringDrivers") = occurringDrivers,
+// 		 Named("PerSampleStats") = perSampleStats,
+// 		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
+// 					       Named("errorMF") = 
+// 					       returnMFE(e1, K, 
+// 							 typeFitness),
+// 					       Named("errorMF_size") = e1,
+// 					       Named("errorMF_n_0") = n_0,
+// #ifdef MIN_RATIO_MUTS
+// 					       Named("minDMratio") =
+// 					       g_min_death_mut_ratio_nr,
+// 					       Named("minBMratio") =
+// 					       g_min_birth_mut_ratio_nr,      
+// #else
+// 					       Named("minDMratio") = -99,
+// 					       Named("minBMratio") = -99,
+// #endif
+// 					       Named("errorMF_n_1") = n_1,
+//					       Named("UnrecoverExcept") = false)
+//		 );
 
   //  END_RCPP
     
