@@ -1430,8 +1430,8 @@ evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
 
 @ 
 
-\section{Some examples from the literature}
-\subsection{Bauer et al}
+\section{Specifying fitness effects: some examples from the literature}
+\subsection{Bauer et al}\label{bauer}
 
 In the model of \cite[p.\ 54]{Bauer2014} ``For cells without the primary
 driver mutation, each secondary driver mutation leads to a change in the
