@@ -663,6 +663,7 @@ M''. The 12th matches ``F > D > M'' but also ``D > M''. Etc.
 
 Consider the following case:
 <<>>=
+
 ofe1 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
                           geneToModule =
                               c("Root" = "Root",
@@ -952,17 +953,20 @@ cannot allow negative death rates, negative values are set to 0):
 <<>>=
 
 s <- 1
-evalAllGenotypes(allFitnessEffects(epistasis = c("-A : B" = -Inf,
+svB1 <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
                                        "A : -B" = -Inf,
-                                       "A:B" = s)),
-                  order = FALSE, addwt = TRUE, model = "Bozic")
+                                       "A:B" = s))
+
+evalAllGenotypes(svB1, order = FALSE, addwt = TRUE, model = "Bozic")
 
 
 s <- 3
-evalAllGenotypes(allFitnessEffects(epistasis = c("-A : B" = -Inf,
+svB3 <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
                                        "A : -B" = -Inf,
-                                       "A:B" = s)),
-                  order = FALSE, addwt = TRUE, model = "Bozic")
+                                       "A:B" = s))
+
+evalAllGenotypes(svB3, order = FALSE, addwt = TRUE, model = "Bozic")
+
 
 @
 Of course, death rates of 0.0 are likely to lead to trouble down the road,
@@ -1839,21 +1843,79 @@ evalAllGenotypes(wc, order = FALSE, addwt = TRUE)
 @ 
 
 
-\section{Running the simulations}
-
-This comes from \ref{cbn1}
+\subsection{Gerstung et al., pancreatic cancer poset}\label{pancreas}
+Similar to what we did in v.1 (see section \ref{poset}) we can specify the
+pancreatic cancer poset in Gerstung et al.\ \cite{Gerstung2011} (their
+figure 2B, left). We use directly the names of the genes, since that is
+immediately supported by the new version.
 
 <<>>=
 
-cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
-                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
-                 s = 0.1,
-                 sh = -0.9,
-                 typeDep = "MN")
-fcs <- allFitnessEffects(cs)
-gfs <- evalAllGenotypes(fcs, order = FALSE)
-gfs[1:15, ]
-@
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                                          "TP53", "TP53", "MLL3"),
+                                      child = c("KRAS","SMAD4", "CDNK2A", 
+                                          "TP53", "MLL3",
+                                          rep("PXDN", 3), rep("TGFBR2", 2)),
+                                      s = 0.1,
+                                      sh = -0.9,
+                                      typeDep = "MN"))
+
+
+@ 
+
+Of course the ``s'' and ``sh'' are set arbitrarily here.
+
+
+\section{Running the simulations}\label{simul}
+
+We will use several of the previous examples. Most of them are in file
+\Robject{examplesFitnessEffects}, where they are stored inside a list,
+with named components (names the same as in the examples above):
+
+<<>>=
+data(examplesFitnessEffects)
+names(examplesFitnessEffects)
+@ 
+
+
+\subsection{Simulation with a conjunction example}\label{s-cbn1}
+
+We will simulat
+<<>>=
+load("examplesFitnessEffects.RData")
+
+set.seed(1)
+tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
+                       model = "McFL", 
+                       mu = 5e-7,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 2,
+                       sampleEvery = 0.025,
+                       initSize = 2000,
+                       onlyCancer = FALSE)
+
+
+
+tmp <-  oncoSimulIndiv(fE = cbn1,
+                       model = "McFL", numPassengers = 0, mu = 1e-6,
+                       detectionSize = 1e8, detectionDrivers = 4,
+                       sampleEvery = sampleEvery,
+                       initSize = initSize, s = 5, sh = -1,
+                       K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                       minDDrPopSize = "auto",
+                       extraTime = 0,
+                       finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
+                       max.memory = 2000, max.wall.time = 200,
+                       max.num.tries = 500,
+                       errorHitWallTime = TRUE,
+                       errorHitMaxTries = TRUE,
+                       verbosity = 0,
+                       seed = NULL)
+
+@ 
+
+
+
 
 
 

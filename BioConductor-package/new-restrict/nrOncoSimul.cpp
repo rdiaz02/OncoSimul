@@ -434,8 +434,10 @@ std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go)
 // }
 
 
-std::string vectorGenotypeToString(const std::vector<int>& genotypeV,
+std::string vectorGenotypeToIntString(const std::vector<int>& genotypeV,
 				   const fitness_as_genes& fg) {
+  
+  // The genotype vectors are returned as a string of ints.
   
   std::string strGenotype;
 
@@ -454,6 +456,8 @@ std::string vectorGenotypeToString(const std::vector<int>& genotypeV,
   std::string order_part;
   std::string rest;
   std::string comma = "";
+
+  
   for(auto g : order_int) {
     order_part += (comma + std::to_string(g));
     comma = ", ";
@@ -471,14 +475,67 @@ std::string vectorGenotypeToString(const std::vector<int>& genotypeV,
   return strGenotype;
 }
 
+std::string vectorGenotypeToNameString(const std::vector<int>& genotypeV,
+				       const fitness_as_genes& fg,
+				       const std::map<int, std::string> intName) {
+  
+  // The genotype vectors are returned as a string of names. Similar to
+  // the Int version, but we map here to names.
+  
+  
+  std::string strGenotype;
+
+  std::vector<int> order_int;
+  std::vector<int> rest_int;
+
+   
+  for(auto g : genotypeV) {
+    if( binary_search(fg.orderG.begin(), fg.orderG.end(), g)) {
+      order_int.push_back(g);
+    } else {
+      rest_int.push_back(g);
+    }
+  }
+
+  std::string order_sep = "_";
+  std::string order_part;
+  std::string rest;
+  std::string comma = "";
+  
+  for(auto g : order_int) {
+    order_part += (comma + intName.at(g));
+    comma = ", ";
+  }
+  comma = "";
+  for(auto g : rest_int) {
+    rest += (comma + intName.at(g));
+    comma = ", ";
+  }
+  if(fg.orderG.size()) {
+    strGenotype = order_part + order_sep + rest;
+  } else {
+    strGenotype = rest;
+  }
+  return strGenotype;
+}
+
+
 
 std::vector<std::string> genotypesToString(const std::vector< vector<int> >& uniqueGenotypesV,
-					   const fitnessEffectsAll& F) {
+					   const fitnessEffectsAll& F,
+					   bool names = true) {
   fitness_as_genes fg = feGenes(F);
   std::vector<std::string> gs;
 
-  for(auto v: uniqueGenotypesV ) gs.push_back(vectorGenotypeToString(v, fg));
-
+  if(names) {
+    std::map<int, std::string> intName = mapGenesIntToNames(F);
+    for(auto v: uniqueGenotypesV )
+      gs.push_back(vectorGenotypeToNameString(v, fg, intName));
+  } else {
+      for(auto v: uniqueGenotypesV )
+	gs.push_back(vectorGenotypeToIntString(v, fg));
+  }
+  
   // exercise: do it with lambdas
   // std::transform(uniqueGenotypesV.begin(), uniqueGenotypesV.end(),
   // 		 back_inserter(gs), vectorGenotypeToString);
@@ -1864,7 +1921,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
   std::vector<std::string> genotypesLabels =
-    genotypesToString(uniqueGenotypes_vector_nr, fitnessEffects);
+    genotypesToString(uniqueGenotypes_vector_nr, fitnessEffects, true);
   // error in mcfarland's
   // if((typeFitness == "mcfarland0") || (typeFitness == "mcfarlandlog"))
   //   e1r = log(e1);

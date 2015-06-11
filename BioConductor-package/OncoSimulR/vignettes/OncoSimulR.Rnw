@@ -193,6 +193,7 @@ storage.mode(pancreaticCancerPoset) <- "integer"
 plotPoset(pancreaticCancerPoset,
           names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
                     "MLL3","PXDN", "TGFBR2"))
+
 @
 \section{Simulating cancer progression}\label{simul}
 

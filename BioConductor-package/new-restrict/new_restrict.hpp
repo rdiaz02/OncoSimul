@@ -37,12 +37,6 @@ inline std::string depToString(const Dependency dep) {
   }
 }
 
-struct Gene_Module_struct {
-  std::string GeneName;
-  std::string ModuleName;
-  int GeneNumID;
-  int ModuleNumID;
-};
 
 struct Poset_struct {
   Dependency typeDep;
@@ -70,13 +64,19 @@ struct genesWithoutInt {
 	     // gene in genome - shift]. shift is the min. of NumID, given
 	     // how that is numbered from R. We assume mutations always
 	     // indexed 1 to something. Not 0 to something.
-  // If shift is -9, no elements
-  // The next first two are not really needed. Will remove later
+  // If shift is -9, no elements The next first two are not really
+  // needed. Will remove later. Nope! we use them to provide nice output.
   std::vector<int> NumID;
   std::vector<std::string> names;
   std::vector<double> s;
 };
 
+struct Gene_Module_struct {
+  std::string GeneName;
+  std::string ModuleName;
+  int GeneNumID;
+  int ModuleNumID;
+};
 
 struct fitnessEffectsAll {
   bool gMOneToOne;
@@ -228,6 +228,8 @@ std::vector<int> presentDrivers(const Genotype& ge, const std::vector<int>& drv)
 void print_Genotype(const Genotype& ge);
 
 fitness_as_genes feGenes(const fitnessEffectsAll& fe);
+
+std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe);
 
 #endif
 

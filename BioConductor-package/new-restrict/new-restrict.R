@@ -1,6 +1,5 @@
-## evalAllGenotypes for Bozic!!
-
 ## alternatig signs: make sure no problem
+## summary of simulated object: change?
 
 
 ## Say which are drivers: populate the drv vector.
@@ -823,3 +822,206 @@ nr_oncoSimul.internal <- function(rFE,
                  extraTime = extraTime)
 }
 
+
+
+
+
+## here until all in a single package
+
+oncoSimulIndiv <- function(fE = NULL,
+                           poset = NULL,
+                           model = "Bozic",
+                           numPassengers = 30,
+                           mu = 1e-6,
+                           detectionSize = 1e8,
+                           detectionDrivers = 4,
+                           sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
+                               0.025),
+                           initSize = 500,
+                           s = 0.1,
+                           sh = -1,
+                           K = initSize/(exp(1) - 1),
+                           keepEvery = sampleEvery,
+                           minDDrPopSize = "auto",
+                           extraTime = 0,
+                           ## used to be this
+                           ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
+                           ##                     5 * sampleEvery),
+                           finalTime = 0.25 * 25 * 365,
+                           onlyCancer = TRUE,
+                           max.memory = 2000,
+                           max.wall.time = 200,
+                           max.num.tries = 500,
+                           errorHitWallTime = TRUE,
+                           errorHitMaxTries = TRUE,
+                           verbosity = 0,
+                           seed = NULL
+                           ) {
+    call <- match.call()
+    ## legacies from poor name choices
+    typeFitness <- switch(model,
+                          "Bozic" = "bozic1",
+                          "Exp" = "exp",
+                          "McFarlandLog" = "mcfarlandlog",
+                          "McFL" = "mcfarlandlog",
+                          stop("No valid value for model")
+                          )
+
+    if(typeFitness == "exp") {
+        death <- 1
+        mutatorGenotype <- 1
+    } else {
+        death <- -99
+        mutatorGenotype <- 0
+    }
+    birth <- -99
+
+    if( (typeFitness == "mcfarlandlog") &&
+       (sampleEvery > 0.05)) {
+        warning("With the McFarland model you often want smaller sampleEvery")
+    }
+
+    if(minDDrPopSize == "auto") {
+        if(model %in% c("Bozic", "Exp") )
+            minDDrPopSize <- 0
+        else if (model %in% c("McFL", "McFarlandLog"))
+            minDDrPopSize <- eFinalMf(initSize, s, detectionDrivers)
+        else
+            stop("Unknown model")
+    }
+
+    if(mu < 0) {
+        stop("mutation rate (mu) is negative")
+    }
+
+    if(is.null(seed)) {## passing a null creates a random seed
+        ## name is a legacy. This is really the seed for the C++ generator.
+        seed <- as.integer(round(runif(1, min = 0, max = 2^16)))
+    }
+    if(verbosity >= 2)
+        cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
+
+    if( (keepEvery > 0) & (keepEvery < sampleEvery)) {
+        keepEvery <- sampleEvery
+        warning("setting keepEvery <- sampleEvery")
+    }
+
+    if( (typeFitness == "bozic1") && (mutatorGenotype) )
+        warning("Using fitness bozic1 with mutatorGenotype;",
+                "this will have no effect.")
+
+    if( (typeFitness == "exp") && (death != 1) )
+        warning("Using fitness exp with death != 1")
+
+    
+    if(is.null(fE)) {
+        if(any(unlist(lapply(list(poset, numGenes,
+                                  numPassengers,
+                                  s, sh), is.null)))) {
+            m <- paste("You are using the old poset format.",
+                       "You must specify all of poset, numPassengers",
+                       "s, and sh.")
+            stop(m)
+            if(length(initMutant) > 1)
+                stop("With the old poset, initMutant can take a single value.")
+        }
+        
+        message("You are using the old poset format. Consider using the new one.")
+   
+    
+        ## A simulation stops if cancer or finalTime appear, the first
+        ## one. But if we set onlyCnacer = FALSE, we also accept simuls
+        ## without cancer (or without anything)
+        
+        op <- try(oncoSimul.internal(poset = poset, ## restrict.table = rt,
+                                     ## numGenes = numGenes,
+                                     numPassengers = numPassengers,
+                                     typeCBN = "CBN",
+                                     birth = birth,
+                                     s = s,
+                                     death = death,  
+                                     mu =  mu,  
+                                     initSize =  initSize, 
+                                     sampleEvery =  sampleEvery,  
+                                     detectionSize =  detectionSize, 
+                                     finalTime = finalTime, 
+                                     initSize_species = 2000, 
+                                     initSize_iter = 500, 
+                                     seed = seed, 
+                                     verbosity = verbosity, 
+                                     speciesFS = 40000,  
+                                     ratioForce = 2,
+                                     typeFitness = typeFitness,
+                                     max.memory = max.memory,
+                                     mutatorGenotype = mutatorGenotype,                                   
+                                     initMutant = -1, 
+                                     max.wall.time = max.wall.time,
+                                     max.num.tries = max.num.tries,
+                                     keepEvery = keepEvery,  
+                                     alpha = 0.0015,  
+                                     sh = sh,
+                                     K = K, 
+                                     minDDrPopSize = minDDrPopSize,
+                                     extraTime = extraTime,
+                                     detectionDrivers = detectionDrivers,
+                                     onlyCancer = onlyCancer,
+                                     errorHitWallTime = errorHitWallTime,
+                                     errorHitMaxTries = errorHitMaxTries),
+                  silent = !verbosity)
+    } else {
+        op <- try(nr_oncoSimul.internal(rFE = fE, 
+                                        birth = birth,
+                                        death = death,  
+                                        mu =  mu,  
+                                        initSize =  initSize, 
+                                        sampleEvery =  sampleEvery,  
+                                        detectionSize =  detectionSize, 
+                                        finalTime = finalTime, 
+                                        initSize_species = 2000, 
+                                        initSize_iter = 500, 
+                                        seed = seed, 
+                                        verbosity = verbosity, 
+                                        speciesFS = 40000,  
+                                        ratioForce = 2,
+                                        typeFitness = typeFitness,
+                                        max.memory = max.memory,
+                                        mutatorGenotype = mutatorGenotype,                                   
+                                        initMutant = -1, 
+                                        max.wall.time = max.wall.time,
+                                        max.num.tries = max.num.tries,
+                                        keepEvery = keepEvery,  
+                                        alpha = 0.0015,  
+                                        K = K, 
+                                        minDDrPopSize = minDDrPopSize,
+                                        extraTime = extraTime,
+                                        detectionDrivers = detectionDrivers,
+                                        onlyCancer = onlyCancer,
+                                        errorHitWallTime = errorHitWallTime,
+                                        errorHitMaxTries = errorHitMaxTries),
+                  silent = !verbosity)
+    }
+    
+    if(inherits(op, "try-error")) {
+        ##         if(length(grep("BAIL OUT NOW", op)))
+        stop("Unrecoverable error")
+    }
+    if(verbosity >= 2) {
+        cat("\n ... finished this run:")
+        cat("\n       Total Pop Size = ", op$TotalPopSize)
+        cat("\n       Drivers Last = ", op$MaxDriversLast)
+        cat("\n       Final Time = ", op$FinalTime, "\n")
+    }
+    class(op) <- "oncosimul"
+    attributes(op)$call <- call
+    return(op)
+}
+
+
+eFinalMf <- function(initSize, s, j) {
+    ## Expected final sizes for McF, when K is set to the default.
+    # j is number of drivers
+    ## as it says, with no passengers
+    ## Set B(d) = D(N)
+    K <- initSize/(exp(1) - 1)
+    return(K * (exp( (1 + s)^j) - 1))
+}

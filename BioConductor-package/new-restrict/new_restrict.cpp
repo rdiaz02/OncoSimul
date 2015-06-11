@@ -1,7 +1,7 @@
 #include "new_restrict.hpp"
 #include "debug_common.hpp"
 #include <Rcpp.h>
-#include <iomanip> // for setw
+#include <iomanip> 
 #include <algorithm>
 #include <random>
 
@@ -354,6 +354,8 @@ void obtainMutations(const Genotype& parent,
 
 
 fitness_as_genes feGenes(const fitnessEffectsAll& fe) {
+  // Given the fitnessEffects in terms of genes, not modules.
+  
   // Extract the noInt. Then those in order effects by creating a multimap
   // to go from map to genes. Then all remaining genes are those only in
   // poset. By set_difference.
@@ -383,6 +385,26 @@ fitness_as_genes feGenes(const fitnessEffectsAll& fe) {
   return fg;
 }
 
+
+std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
+  // This is a convenience, used in the creation of output.
+  // Sure, we could do this when reading the data in.
+  // The noInt in convertNoInts.
+  std::map<int, std::string> gg;
+
+  for(auto mt : fe.Gene_Module_tabl) {
+    gg.insert({mt.GeneNumID, mt.GeneName});
+  }
+  // this is pedantic, as what is the size_type of NumID and of names? 
+  // for(decltype(fe.genesNoInt.s.size()) i = 0;
+  //     i != fe.genesNoInt.s.size(); ++i)
+
+  for(size_t i = 0;
+      i != fe.genesNoInt.NumID.size(); ++i){
+    gg.insert({fe.genesNoInt.NumID[i], fe.genesNoInt.names[i]});
+  }
+  return gg;
+}
 
 // It is simple to write specialized functions for when
 // there are no restrictions or no order effects , etc.

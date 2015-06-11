@@ -374,7 +374,7 @@ oncoSimulPop <- function(Nindiv,
 ## where is the default K coming from? Here:
 ## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
 
-oncoSimulIndiv <- function(fitnessEffects = NULL,
+oncoSimulIndiv <- function(fE = NULL,
                            poset = NULL,
                            model = "Bozic",
                            numPassengers = 30,
@@ -460,7 +460,7 @@ oncoSimulIndiv <- function(fitnessEffects = NULL,
         warning("Using fitness exp with death != 1")
 
     
-    if(is.null(fitnessEffects)) {
+    if(is.null(fE)) {
         if(any(unlist(lapply(list(poset, numGenes,
                                   numPassengers,
                                   s, sh), is.null)))) {
@@ -515,7 +515,7 @@ oncoSimulIndiv <- function(fitnessEffects = NULL,
                                      errorHitMaxTries = errorHitMaxTries),
                   silent = !verbosity)
     } else {
-        op <- try(nr_oncoSimul.internal(rFE = fitnessEffects, 
+        op <- try(nr_oncoSimul.internal(rFE = fE, 
                                         birth = birth,
                                         death = death,  
                                         mu =  mu,  

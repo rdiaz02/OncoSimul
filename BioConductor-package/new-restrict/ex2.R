@@ -75,7 +75,8 @@ tmp <- nr_oncoSimul.internal(fcs,
 ## dim(tmp[[1]])
 
 
-
+initSize <- 500
+sampleEvery <- 1
 p701nr <- allFitnessEffects(data.frame(parent = c("Root", rep("1", 4), 2, 3, 4, 4, 5),
                                        child = c(1, 2, 3, 4, 5, 6, 6, 6, 7, 7),
                                        s = 0.1,
@@ -83,7 +84,7 @@ p701nr <- allFitnessEffects(data.frame(parent = c("Root", rep("1", 4), 2, 3, 4, 
                                        typeDep = "MN"))
 evalAllGenotypes(p701nr, order = FALSE)
 
-tmp <-  oncoSimulIndiv(fitnessEffects = p701nr,
+tmp <-  oncoSimulIndiv(fE = p701nr,
                        model = "Bozic", numPassengers = 0, mu = 1e-6,
                        detectionSize = 1e8, detectionDrivers = 4,
                        sampleEvery = sampleEvery,
