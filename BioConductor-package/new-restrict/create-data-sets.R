@@ -168,8 +168,8 @@ p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
 
 oe <- c("C > F" = -0.1, "H > I" = 0.12)
 sm <- c("I:J"  = -1)
-sv <- c("-K:M" = -.5, "K:-M" = -.5)
-epist <- c(sm, sv)
+svx <- c("-K:M" = -.5, "K:-M" = -.5)
+epist <- c(sm, svx)
 
 modules <- c("Root" = "Root", "A" = "a1",
              "B" = "b1, b2", "C" = "c1",
@@ -195,21 +195,20 @@ bauer <- data.frame(parent = c("Root", rep("p", K)),
                     child = c("p", paste0("s", 1:K)),
                     s = c(sd, rep(sdp, K)),
                     sh = c(0, rep(sp, K)),
-                    typeDep = "MN",
-                    stringsAsFactors = FALSE)
-
+                    typeDep = "MN")
+fbauer <- allFitnessEffects(bauer)
 
 
 
 su <- 0.1
 si <- -0.05
 fvi <- 1.2 ## the fitnes of the vi mutant
-sv <- (fvi/(1 + si)) - 1
+svz <- (fvi/(1 + si)) - 1
 sui <- suv <- -1
 od <- allFitnessEffects(
     data.frame(parent = c("Root", "Root", "i"),
                child = c("u", "i", "v"),
-               s = c(su, si, sv),
+               s = c(su, si, svz),
                sh = -1,
                typeDep = "MN"),
     epistasis = c(
@@ -267,7 +266,7 @@ examplesFitnessEffects <- list(
     E3A,
     em,
     fea,
-    bauer,
+    fbauer,
     w,
     pancr)
 
@@ -291,7 +290,7 @@ names(examplesFitnessEffects)  <- c(
     "E3A",
     "em",
     "fea",
-    "bauer",
+    "fbauer",
     "w",
     "pancr")
 

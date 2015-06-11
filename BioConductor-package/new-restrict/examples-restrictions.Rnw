@@ -1460,9 +1460,8 @@ bauer <- data.frame(parent = c("Root", rep("p", K)),
                     child = c("p", paste0("s", 1:K)),
                     s = c(sd, rep(sdp, K)),
                     sh = c(0, rep(sp, K)),
-                    typeDep = "MN",
-                    stringsAsFactors = FALSE)
-fb <- allFitnessEffects(bauer)
+                    typeDep = "MN")
+fbauer <- allFitnessEffects(bauer)
 
 @ 
 
@@ -1472,17 +1471,17 @@ make no difference).
 
 The fitness effects figure looks like this:
 <<>>=
-plot(fb)
+plot(fbauer)
 @ 
 
 <<>>=
-b1 <- evalAllGenotypes(fb, order = FALSE)
+b1 <- evalAllGenotypes(fbauer, order = FALSE)
 @ 
 
 Order makes no difference
 
 <<>>=
-b2 <- evalAllGenotypes(fb, order = TRUE, max = 2000)
+b2 <- evalAllGenotypes(fbauer, order = TRUE, max = 2000)
 @ 
 
 And number of levels is right one: 11

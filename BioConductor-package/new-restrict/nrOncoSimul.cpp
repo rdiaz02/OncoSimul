@@ -504,7 +504,7 @@ std::string vectorGenotypeToNameString(const std::vector<int>& genotypeV,
   std::string order_part;
   std::string rest;
   std::string comma = "";
-  
+
   for(auto g : order_int) {
     order_part += (comma + intName.at(g));
     comma = ", ";
@@ -1559,9 +1559,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double minDDrPopSize,
 			double extraTime) {  
   // SEXP endTimeEvery_,
-
-
-  
   //  BEGIN_RCPP
   // using namespace Rcpp;
   precissionLoss();
@@ -1611,10 +1608,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   
   // some checks. Do this systematically
   // FIXME: do only if mcfarland!
+
   if(K < 1 )
     throw std::range_error("K < 1.");
   fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
-  
+
   bool runAgain = true;
   bool reachDetection = false;
   //Output
@@ -1638,7 +1636,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   sampleLargestPopSize.reserve(initIt);
   sampleMaxNDr.reserve(initIt);
   sampleNDrLargestPop.reserve(initIt);
-
 
   int outNS_i = -1; // the column in the outNS
   // time limits
@@ -1881,6 +1878,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   // v3
   // Need the two below
+
   std::vector<std::vector<int> > genot_out_v = genot_to_vectorg(genot_out);
   std::vector<std::vector<int> > uniqueGenotypes_vector_nr  =
     uniqueGenot_vector(genot_out_v);
@@ -1894,7 +1892,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   					   index_out, time_out,
   					   outNS_i, maxram);
   
-
   int maxNumDrivers = 0;
   int totalPresentDrivers = 0;
   std::vector<int>countByDriver(fitnessEffects.drv.size(), 0);
@@ -1922,7 +1919,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
     genotypesToString(uniqueGenotypes_vector_nr, fitnessEffects, true);
 
 
-  
   // // // debuggin: precompute things
   // DP2(simulsDone);
   // DP2(maxWallTime);

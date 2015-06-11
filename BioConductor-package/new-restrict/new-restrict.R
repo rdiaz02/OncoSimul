@@ -759,7 +759,10 @@ nr_oncoSimul.internal <- function(rFE,
                                   errorHitMaxTries,
                                   minDDrPopSize,
                                   extraTime) {
-
+    if(!inherits(rFE, "fitnessEffects"))
+        stop(paste("rFE must be an object of class fitnessEffects",
+                   "as created, for instance, with function",
+                   "allFitnessEffects"))
     if(!is.null(initMutant)) {
         initMutant <- getDrv(rFE$geneModule, initMutant)
     } else {
@@ -855,6 +858,7 @@ oncoSimulIndiv <- function(fE = NULL,
                            errorHitWallTime = TRUE,
                            errorHitMaxTries = TRUE,
                            verbosity = 0,
+                           initMutant = NULL,
                            seed = NULL
                            ) {
     call <- match.call()
@@ -923,7 +927,7 @@ oncoSimulIndiv <- function(fE = NULL,
                        "s, and sh.")
             stop(m)
             if(length(initMutant) > 1)
-                stop("With the old poset, initMutant can take a single value.")
+                stop("With the old poset, initMutant can only take a single value.")
         }
         
         message("You are using the old poset format. Consider using the new one.")
@@ -986,7 +990,7 @@ oncoSimulIndiv <- function(fE = NULL,
                                         typeFitness = typeFitness,
                                         max.memory = max.memory,
                                         mutatorGenotype = mutatorGenotype,                                   
-                                        initMutant = -1, 
+                                        initMutant = initMutant, 
                                         max.wall.time = max.wall.time,
                                         max.num.tries = max.num.tries,
                                         keepEvery = keepEvery,  
@@ -1000,10 +1004,9 @@ oncoSimulIndiv <- function(fE = NULL,
                                         errorHitMaxTries = errorHitMaxTries),
                   silent = !verbosity)
     }
-    
     if(inherits(op, "try-error")) {
         ##         if(length(grep("BAIL OUT NOW", op)))
-        stop("Unrecoverable error")
+        stop(paste("Unrecoverable error:", op ))
     }
     if(verbosity >= 2) {
         cat("\n ... finished this run:")
