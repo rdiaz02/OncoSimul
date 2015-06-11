@@ -94,6 +94,76 @@ inline void whichDrivers(int& totalPresentDrivers,
   if(totalPresentDrivers == 0) strDrivers = "NA";
 }
 
+// inline void whichDrivers(int& totalPresentDrivers,
+// 				std::string& strDrivers,
+// 				const std::vector<int>& countByDriver){
+//   std::string comma = "";
+//   DP2(countByDriver.size());
+  
+//   for(size_t i = 0; i < countByDriver.size(); ++i) {
+//     DP1(" v 1");
+//     DP2(i);
+//     DP2( i + 1 );
+//     DP1(" v 2");
+//     int ii = i + 1;
+//     DP2(ii);
+//     DP1(" v 3");
+//     std::string uu =  std::to_string(ii);
+//     DP1(" v 4");
+//     DP1(" v 5");
+//     DP1(" v 6");
+//     if(countByDriver[i] > 0) {
+//       DP1("v 7");
+//       DP2(countByDriver[i]);
+//       DP1("v8");
+//       DP1("v9");
+//       int iii = i + 1;
+//       DP1("v10");
+//       std::string uuu = std::to_string(iii);
+//       DP1("v11");
+//       DP1("v12");
+//       strDrivers += (comma + std::to_string(i + 1)); 
+//       comma = ", ";
+//       ++totalPresentDrivers;
+//     }
+//   }
+//   if(totalPresentDrivers == 0) strDrivers = "NA";
+// }
+
+// inline void whichDrivers(int& totalPresentDrivers,
+// 			 std::string& strDrivers,
+// 			 const std::vector<int>& countByDriver){
+//   DP1("w 1");
+//   std::string comma = "";
+//   std::string uu;
+//   int ui;
+//   for(size_t i = 0; i < countByDriver.size(); ++i) {
+//     DP2(i);
+//     DP2( i + 1);
+//     ui = static_cast<int>(i) + 1;
+//     DP1("after ui");
+//     DP2(ui);
+    
+//     uu = std::to_string(ui);
+//     DP1("w 2");
+//     DP2(i);
+//     if(countByDriver[i] > 0) {
+//       DP1("w 3");
+//       DP2(countByDriver[i]);
+//        DP1("w 3 a");
+//        std::string uu = std::to_string(i + 1);
+//       strDrivers += (comma + std::to_string(i + 1));
+//        DP1("w 3 aa");
+//       comma = ", ";
+//        DP1("w 3 ab");
+//       ++totalPresentDrivers;
+//       DP1("w3b");
+//     }
+//   }
+//   DP1("w 4");
+//   if(totalPresentDrivers == 0) strDrivers = "NA";
+// }
+
 
 
 inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,

@@ -1797,20 +1797,21 @@ static inline void count_NumDrivers(int& maxNumDrivers,
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
 }
-      
+
 static inline void whichDrivers(int& totalPresentDrivers,
 				std::string& strDrivers,
 				const std::vector<int>& countByDriver){
   std::string comma = "";
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {
-      strDrivers += (comma + std::to_string(i + 1)); //SSTR(i + 1));
+      strDrivers += (comma + std::to_string(i + 1)); 
       comma = ", ";
       ++totalPresentDrivers;
     }
   }
   if(totalPresentDrivers == 0) strDrivers = "NA";
 }
+
 
 static void sample_all_pop_P(std::vector<int>& sp_to_remove,
 			     std::vector<spParamsP>& popParams,

@@ -304,6 +304,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   fe.allGenes = allGenesinFitness(fe);
   fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.s.size();
   fe.drv = as<std::vector<int> > (drv);
+  sort(fe.drv.begin(), fe.drv.end()); //should not be needed, but just in case
+  // cannot trust R gives it sorted
   // check_disable_later
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size()");
@@ -324,18 +326,10 @@ void obtainMutations(const Genotype& parent,
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
-  // DP1("obtainMutations");
-  // for(auto ag : fe.allGenes) Rcpp::Rcout << " ag " << ag;
-  // Rcpp::Rcout << std::endl;
-  // for(auto pp : sortedparent) Rcpp::Rcout << " pp " << pp;
-  // Rcpp::Rcout << std::endl;
-  // for(auto m : nonmutated) Rcpp::Rcout << " m " << m;
-  // Rcpp::Rcout << std::endl;
   
   std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
   newMutations.push_back(nonmutated[rpos(ran_gen)]);
   numMutablePosParent = nonmutated.size();
-  // numMutablePosParent = fe.genomeSize() - sortedparent.size();
 }
 
 

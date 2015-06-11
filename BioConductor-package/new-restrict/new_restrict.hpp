@@ -98,7 +98,7 @@ struct fitnessEffectsAll {
   std::vector<Gene_Module_struct> Gene_Module_tabl;
   std::vector<int> allGenes; //used whenever a mutation created. Genes,
 			     //not modules. Sorted.
-  std::vector<int> drv;
+  std::vector<int> drv; // Sorted.
   genesWithoutInt genesNoInt;
   
 };

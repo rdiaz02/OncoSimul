@@ -33,7 +33,7 @@ double g_tmp1_nr = DBL_MAX;
 #endif
 
 
-static void nr_fitness(spParamsP& tmpP,
+void nr_fitness(spParamsP& tmpP,
 		       const spParamsP& parentP,
 		       const Genotype& ge,
 		       const fitnessEffectsAll& F,
@@ -117,7 +117,7 @@ unsigned int new_sp(const Genotype& newGenotype,
   return Genotypes.size();
 }
 
-static void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
+void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
 			      std::vector<Genotype>& Genotypes,
 			      std::vector<spParamsP>& popParams,
 			      std::multimap<double, int>& mapTimes) {
@@ -146,26 +146,29 @@ static void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
 // also for empty, so this is faster if not needed. And check that if we
 // use a stopping rule based on drivers that drv vectors is not empty.
 
-static inline void nr_count_NumDrivers(int& maxNumDrivers, 
-				    std::vector<int>& countByDriver,
-				    Rcpp::IntegerMatrix& returnGenotypes,
-				    const vector<int>& drv){
+inline void nr_count_NumDrivers(int& maxNumDrivers, 
+				std::vector<int>& countByDriver,
+				Rcpp::IntegerMatrix& returnGenotypes,
+				const vector<int>& drv){
   // Fill up the "countByDriver" table and return the maximum number of
   // mutated drivers in any genotype.
+  // This is in how many genotypes each driver is present. Is this relevant?
   // Difference w.r.t. to former is passing drv
   maxNumDrivers = 0;
   int tmpdr = 0;
-  
+  int driver_indx;
   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
     tmpdr = 0;
     for(int i : drv) {
-      tmpdr += returnGenotypes(i - 1, j);
-      countByDriver[i] += returnGenotypes(i - 1, j);
+      driver_indx = i - 1;
+      tmpdr += returnGenotypes(driver_indx, j);
+      countByDriver[driver_indx] += returnGenotypes(driver_indx, j);
     }
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
 }
-      
+
+
 // FIXME: we do this often. Why not just keep it in the struct?
 int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
   // Counts the number of mutated drivers in a genotype.
@@ -176,7 +179,7 @@ int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
 // FIXME: the count_NumDrivers counts for each driver. Write that too.
 
 
-static void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
+void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    double& totPopSize, 
 					    double& lastStoredSample,
 					    std::vector<Genotype>& genot_out,
@@ -1722,8 +1725,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // e1 = 0.0;
   // tps_1 = totPopSize;
 
-
-    DP1("before try");
     try {
       // it is CRUCIAL that several entries are zeroed (or -1) at the
       // start of innerBNB now that we do multiple runs if onlyCancer = true.
@@ -1878,63 +1879,50 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // std::set<std::vector<int> > uniqueGenotypes_nr =  nr_find_unique_genotypes(genot_out_nr);
   // std::vector<std::vector<int> > uniqueGenotypes_vector_nr = nr_uniqueGenotypes_to_vector(uniqueGenotypes_nr);
 
-  DP1("before v3");
   // v3
   // Need the two below
   std::vector<std::vector<int> > genot_out_v = genot_to_vectorg(genot_out);
   std::vector<std::vector<int> > uniqueGenotypes_vector_nr  =
     uniqueGenot_vector(genot_out_v);
-   DP1("before v3b");
-  // IntegerMatrix returnGenotypes(uniqueGenotypes_vector.size(), numGenes);
   IntegerMatrix returnGenotypes = 
     nr_create_returnGenotypes(fitnessEffects.genomeSize,
-			      uniqueGenotypes_vector_nr);
+  			      uniqueGenotypes_vector_nr);
   
-  DP1("before v3c");
   Rcpp::NumericMatrix outNS = create_outNS(uniqueGenotypes_vector_nr,
-					   genot_out_v,
-					   popSizes_out,
-					   index_out, time_out,
-					   outNS_i, maxram);
+  					   genot_out_v,
+  					   popSizes_out,
+  					   index_out, time_out,
+  					   outNS_i, maxram);
   
 
   int maxNumDrivers = 0;
   int totalPresentDrivers = 0;
   std::vector<int>countByDriver(fitnessEffects.drv.size(), 0);
-  std::string occurringDrivers;
+  std::string occurringDrivers = "";
 
-   DP1("before v3d");
   nr_count_NumDrivers(maxNumDrivers, countByDriver,
-		      returnGenotypes, fitnessEffects.drv);
+    		      returnGenotypes, fitnessEffects.drv);
 
   whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
 
   std::vector<double> sampleLargestPopProp(outNS_i + 1);
 
-  DP1("x4");
-  
   if((outNS_i + 1) != static_cast<int>(sampleLargestPopSize.size()))
     throw std::length_error("outNS_i + 1 != sampleLargestPopSize.size");
   std::transform(sampleLargestPopSize.begin(), sampleLargestPopSize.end(),
-		 sampleTotPopSize.begin(),
-		 sampleLargestPopProp.begin(),
-		 std::divides<double>());
+  		 sampleTotPopSize.begin(),
+  		 sampleLargestPopProp.begin(),
+  		 std::divides<double>());
 
   NumericMatrix perSampleStats(outNS_i + 1, 5);
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
-	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
+  	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
-  DP1("x5");
   std::vector<std::string> genotypesLabels =
     genotypesToString(uniqueGenotypes_vector_nr, fitnessEffects, true);
-  // error in mcfarland's
-  // if((typeFitness == "mcfarland0") || (typeFitness == "mcfarlandlog"))
-  //   e1r = log(e1);
-  // if(typeFitness == "mcfarland")
-  //   e1r = (1.0/K) * e1;
 
-  // here("before return");
 
+  
   // // // debuggin: precompute things
   // DP2(simulsDone);
   // DP2(maxWallTime);
@@ -1950,48 +1938,45 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   // Rcpp::List returnGenotypesO = Rcpp::wrap(uniqueGenotypesV);
 
-  DP1("x6");
-  DP2(outNS_i);
-  DP1("x7");
-  
-  return 
-    List::create(Named("pops.by.time") = outNS);
-		 // Named("NumClones") = uniqueGenotypes_vector_nr.size(), 
-		 // Named("TotalPopSize") = totPopSize,
-		 // Named("Genotypes") = returnGenotypes,
-		 // Named("GenotypesWDistinctOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr),
-		 // Named("GenotypesLabels") = Rcpp::wrap(genotypesLabels),
-		 // Named("MaxNumDrivers") = maxNumDrivers,
-		 //Named("MaxDriversLast") = sampleMaxNDr[outNS_i],
-		 //Named("NumDriversLargestPop") =  sampleNDrLargestPop[outNS_i],
-		 //Named("LargestClone") = sampleLargestPopSize[outNS_i],
-		 //Named("PropLargestPopLast") = sampleLargestPopProp[outNS_i],
-// 		 Named("FinalTime") = currentTime,
-// 		 Named("NumIter") = iter,
-// 		 Named("HittedWallTime") = hittedWallTime, 
-// 		 Named("HittedMaxTries") = hittedMaxTries,
-// 		 Named("TotalPresentDrivers") = totalPresentDrivers,
-// 		 Named("CountByDriver") = countByDriver,
-// 		 Named("OccurringDrivers") = occurringDrivers,
-// 		 Named("PerSampleStats") = perSampleStats,
-// 		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
-// 					       Named("errorMF") = 
-// 					       returnMFE(e1, K, 
-// 							 typeFitness),
-// 					       Named("errorMF_size") = e1,
-// 					       Named("errorMF_n_0") = n_0,
-// #ifdef MIN_RATIO_MUTS
-// 					       Named("minDMratio") =
-// 					       g_min_death_mut_ratio_nr,
-// 					       Named("minBMratio") =
-// 					       g_min_birth_mut_ratio_nr,      
-// #else
-// 					       Named("minDMratio") = -99,
-// 					       Named("minBMratio") = -99,
-// #endif
-// 					       Named("errorMF_n_1") = n_1,
-//					       Named("UnrecoverExcept") = false)
-//		 );
+ 
+  return
+    List::create(Named("pops.by.time") = outNS,
+		 Named("NumClones") = uniqueGenotypes_vector_nr.size(), 
+		 Named("TotalPopSize") = totPopSize,
+		 Named("Genotypes") = returnGenotypes,
+		 Named("GenotypesWDistinctOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr),
+		 Named("GenotypesLabels") = Rcpp::wrap(genotypesLabels),
+		 Named("MaxNumDrivers") = maxNumDrivers,
+		 Named("MaxDriversLast") = sampleMaxNDr[outNS_i],
+		 Named("NumDriversLargestPop") =  sampleNDrLargestPop[outNS_i],
+		 Named("LargestClone") = sampleLargestPopSize[outNS_i],
+		 Named("PropLargestPopLast") = sampleLargestPopProp[outNS_i],
+		 Named("FinalTime") = currentTime,
+		 Named("NumIter") = iter,
+		 Named("HittedWallTime") = hittedWallTime, 
+		 Named("HittedMaxTries") = hittedMaxTries,
+		 Named("TotalPresentDrivers") = totalPresentDrivers,
+		 Named("CountByDriver") = countByDriver,
+		 Named("OccurringDrivers") = occurringDrivers,
+		 Named("PerSampleStats") = perSampleStats,
+		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
+					       Named("errorMF") = 
+					       returnMFE(e1, K, 
+							 typeFitness),
+					       Named("errorMF_size") = e1,
+					       Named("errorMF_n_0") = n_0,
+#ifdef MIN_RATIO_MUTS
+					       Named("minDMratio") =
+					       g_min_death_mut_ratio_nr,
+					       Named("minBMratio") =
+					       g_min_birth_mut_ratio_nr,      
+#else
+					       Named("minDMratio") = -99,
+					       Named("minBMratio") = -99,
+#endif
+					       Named("errorMF_n_1") = n_1,
+					       Named("UnrecoverExcept") = false)
+		 );
 
   //  END_RCPP
     
