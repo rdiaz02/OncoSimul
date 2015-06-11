@@ -254,18 +254,18 @@ cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  sh = -0.9,
                  typeDep = "MN")
 
-fcs <- allFitnessEffects(cs)
+cbn1 <- allFitnessEffects(cs)
 
 @ 
 
 We can get a graphical representation using the default ``graphNEL''
 <<>>=
-plot(fcs)
+plot(cbn1)
 @ 
 
 or one using ``igraph'':
 <<>>=
-plot(fcs, "igraph", layout = layout.reingold.tilford)
+plot(cbn1, "igraph", layout = layout.reingold.tilford)
 @ 
 
 (since this is a tree, the reingold.tilford layout is probably the best here).
@@ -275,7 +275,7 @@ And what is the fitness of all genotypes?
 
 <<>>=
 
-gfs <- evalAllGenotypes(fcs, order = FALSE)
+gfs <- evalAllGenotypes(cbn1, order = FALSE)
 
 gfs[1:15, ]
 @
@@ -341,18 +341,18 @@ c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
                  typeDep = "MN")
 
-fc1 <- allFitnessEffects(c1)
+cbn2 <- allFitnessEffects(c1)
 
 @ 
 
 We can get a graphical representation using the default ``graphNEL''
 <<>>=
-plot(fc1)
+plot(cbn2)
 @ 
 
 or one using ``igraph'':
 <<>>=
-plot(fc1, "igraph", layout = layout.reingold.tilford)
+plot(cbn2, "igraph", layout = layout.reingold.tilford)
 @ 
 
 (since this is a tree, the reingold.tilford layout is probably the best here).
@@ -368,8 +368,8 @@ each of ``a'', ``b'', and ``c'' are present or not (I only show the first
 10 genotypes)
 
 <<>>=
-gfc1 <- evalAllGenotypes(fc1, order = FALSE)
-gfc1[1:10, ]
+gcbn2 <- evalAllGenotypes(cbn2, order = FALSE)
+gcbn2[1:10, ]
 @ 
 
 
@@ -377,15 +377,15 @@ Of course, if we were to look at genotypes but taking into account order
 of occurrence of mutations, we would see no differences
 
 <<>>=
-gfc1o <- evalAllGenotypes(fc1, order = TRUE, max = 1956)
-gfc1o[1:10, ]
+gcbn2o <- evalAllGenotypes(cbn2, order = TRUE, max = 1956)
+gcbn2o[1:10, ]
 @ 
 
 You can check the output and verify things are as they should. For instance:
 
 <<>>=
 all.equal(
-        gfc1[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
+        gcbn2[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
         c(1.01, 1.02, 0.1, 1.03, 1.04, 0.05,
           1.01 * c(1.02, 0.1, 1.03, 1.04, 0.05),
           1.02 * c(0.10, 1.03, 1.04, 0.05),
@@ -404,8 +404,8 @@ all.equal(
 A particular one that is important to understand is
 
 <<>>=
-gfc1[56, ] ## this is d, e, g, c
-gfc1[56, "Fitness"] == 1.03 * 1.04 * 1.2 * 0.10
+gcbn2[56, ] ## this is d, e, g, c
+gcbn2[56, "Fitness"] == 1.03 * 1.04 * 1.2 * 0.10
 @ 
 
 where ``g'' is taken as if its dependencies are satisfied (as ``c'',
@@ -424,18 +424,18 @@ s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
                  typeDep = "SM")
 
-fs1 <- allFitnessEffects(s1)
+smn1 <- allFitnessEffects(s1)
 
 @ 
 
 It looks like this:
 <<>>=
-plot(fs1)
+plot(smn1)
 @ 
 
 
 <<>>=
-gfs1 <- evalAllGenotypes(fs1, order = FALSE)
+gsmn1 <- evalAllGenotypes(smn1, order = FALSE)
 
 @ 
 
@@ -443,11 +443,11 @@ Now, having just one parental dependency satisfied is enough, in contrast
 to what happened before. For instance:
 
 <<>>=
-gfc1[c(8, 12, 22), ]
-gfs1[c(8, 12, 22), ]
+gcbn2[c(8, 12, 22), ]
+gsmn1[c(8, 12, 22), ]
 
-gfc1[c(20:21, 28), ]
-gfs1[c(20:21, 28), ]
+gcbn2[c(20:21, 28), ]
+gsmn1[c(20:21, 28), ]
 @ 
 
 
@@ -463,19 +463,19 @@ x1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
                  typeDep = "XMPN")
 
-fx1 <- allFitnessEffects(x1)
+xor1 <- allFitnessEffects(x1)
 
 @ 
 
 
 It looks like this:
 <<>>=
-plot(fx1)
+plot(xor1)
 @ 
 
 <<>>=
 
-gfx1 <- evalAllGenotypes(fx1, order = FALSE)
+gxor1 <- evalAllGenotypes(xor1, order = FALSE)
 
 @ 
 
@@ -485,7 +485,7 @@ for ``c'' will be $(1 - 0.1)$. Similarly for ``g'' (if more than one of
 ``d'', ``e'', or ``c'' is present, it will show as $(1 - 0.05)$). For example:
 
 <<>>=
-gfx1[c(22, 41), ] 
+gxor1[c(22, 41), ] 
 c(1.01 * 1.02 * 0.1, 1.03 * 1.04 * 0.05)
 @ 
 
@@ -500,7 +500,7 @@ examples of synthetic lethality, which are shown in section \ref{sl}.
 We also see a very different pattern compared to CBN (section \ref{cbn2})
 here:
 <<>>=
-gfx1[28, ] 
+gxor1[28, ] 
 1.01 * 1.1 * 1.2
 @ 
 as ``c'' is satisfied by one, and ``g'' too, this is in the
@@ -508,7 +508,7 @@ as ``c'' is satisfied by one, and ``g'' too, this is in the
 
 But 
 <<>>=
-gfx1[44, ] 
+gxor1[44, ] 
 1.01 * 1.02 * 0.1 * 1.2
 @ 
 is the result of a $0.1$ for ``c'' (and a $1.2$ for ``g'' that has exactly
@@ -2149,6 +2149,28 @@ gfs[1:15, ]
 %% You can of course rename the columns of the output matrix to something
 %% else if you want so the names of the nodes will reflect those potentially
 %% more meaningful names.
+
+
+\section{Simulating data}
+For simplicity, most of the fitness effects specifications have been
+stored in file \Robject{exampleFitnessEffects.RData}.
+
+zz: FIXME do later
+
+
+
+
+
+
+
+\section{Using v.1 posets and simulations}\label{v1}
+
+It is strongly recommended that you use the new (v.2) procedures for
+specifying fitness effects. However, the former v.1 procedures are still
+available, with only very minor changes to function calls. What follows
+below is the former vignette.
+
+zz: FIXME
 
 
 \section{Session info and packages used}
