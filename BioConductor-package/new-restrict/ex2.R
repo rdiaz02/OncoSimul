@@ -1,3 +1,54 @@
+for(i in 1:length(examplesFitnessEffects)) {
+    cat(paste("\n Doing i = ", i , " name = ",
+              names(examplesFitnessEffects)[i], "\n"))
+    if(i %in% c(11, 20)) next
+    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
+                           model = "Bozic", 
+                           mu = 1e-6,
+                           detectionSize = 1e8, 
+                           detectionDrivers = 4,
+                           sampleEvery = 2,
+                           max.num.tries = 100,
+                           initSize = 2000,
+                           onlyCancer = TRUE)
+}
+
+for(i in 1:length(examplesFitnessEffects)) {
+    cat(paste("\n Doing i = ", i , " name = ",
+              names(examplesFitnessEffects)[i], "\n"))
+    if(i %in% c(11, 20)) next
+    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
+                           model = "Exp", 
+                           mu = 1e-6,
+                           detectionSize = 1e8, 
+                           detectionDrivers = 4,
+                           sampleEvery = 2,
+                           max.num.tries = 100,
+                           initSize = 2000,
+                           onlyCancer = TRUE)
+}
+
+
+for(i in 1:length(examplesFitnessEffects)) {
+    cat(paste("\n Doing i = ", i , " name = ",
+              names(examplesFitnessEffects)[i], "\n"))
+    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
+                           model = "McFL", 
+                           mu = 5e-7,
+                           detectionSize = 1e8, 
+                           detectionDrivers = 2,
+                           sampleEvery = 0.025,
+                           max.num.tries = 50,
+                           initSize = 2000,
+                           onlyCancer = TRUE)
+}
+
+
+
+
+
+
+
 cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                  s = 0.1,

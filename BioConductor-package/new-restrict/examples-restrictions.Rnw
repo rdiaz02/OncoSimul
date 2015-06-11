@@ -1882,9 +1882,9 @@ names(examplesFitnessEffects)
 
 We will simulat
 <<>>=
-load("examplesFitnessEffects.RData")
+load("examplesFitnessEffects.RData") ## FIXME remove later, when as data.
 
-set.seed(1)
+evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE)[1:10, ]
 tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
                        model = "McFL", 
                        mu = 5e-7,
@@ -1892,15 +1892,13 @@ tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
                        detectionDrivers = 2,
                        sampleEvery = 0.025,
                        initSize = 2000,
-                       onlyCancer = FALSE)
+                       onlyCancer = TRUE)
+summary(tmp)
 
 
-load("examplesFitnessEffects.RData")
-## seeds 1 and 9 do it
-for(i in 1:20) {
-    cat(paste(" i = ", i, "\n"))
-    set.seed(i)
-    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
+evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
+                 model = "Bozic")[1:10, ]
+tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
                        model = "Bozic", 
                        mu = 1e-6,
                        detectionSize = 1e8, 
@@ -1908,27 +1906,7 @@ for(i in 1:20) {
                        sampleEvery = 2,
                        initSize = 2000,
                        onlyCancer = TRUE)
-}
-
-
-
-
-tmp <-  oncoSimulIndiv(fE = cbn1,
-                       model = "McFL", numPassengers = 0, mu = 1e-6,
-                       detectionSize = 1e8, detectionDrivers = 4,
-                       sampleEvery = sampleEvery,
-                       initSize = initSize, s = 5, sh = -1,
-                       K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                       minDDrPopSize = "auto",
-                       extraTime = 0,
-                       finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
-                       max.memory = 2000, max.wall.time = 200,
-                       max.num.tries = 500,
-                       errorHitWallTime = TRUE,
-                       errorHitMaxTries = TRUE,
-                       verbosity = 0,
-                       seed = NULL)
-
+summary(tmp)
 @ 
 
 

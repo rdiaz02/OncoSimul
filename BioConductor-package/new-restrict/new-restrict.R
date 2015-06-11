@@ -1025,3 +1025,25 @@ eFinalMf <- function(initSize, s, j) {
     K <- initSize/(exp(1) - 1)
     return(K * (exp( (1 + s)^j) - 1))
 }
+
+summary.oncosimul <- function(object, ...) {
+    tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
+                    "MaxNumDrivers", "MaxDriversLast",
+                    "NumDriversLargestPop", "TotalPresentDrivers",
+                    "FinalTime", "NumIter", "HittedWallTime")]
+    tmp$errorMF <- object$other$errorMF
+    tmp$minDMratio <- object$other$minDMratio
+    tmp$minBMratio <- object$other$minBMratio
+    if(tmp$errorMF == -99) tmp$errorMF <- NA
+    if(tmp$minDMratio == -99) tmp$minDMratio <- NA
+    if(tmp$minBMratio == -99) tmp$minBMratio <- NA
+    tmp$OccurringDrivers <- object$OccurringDrivers
+    return(as.data.frame(tmp))
+}
+
+print.oncosimul <- function(x, ...) {
+    cat("\nIndividual OncoSimul trajectory with call:\n ")
+    print(attributes(x)$call)
+    cat("\n")
+    print(summary(x))
+}

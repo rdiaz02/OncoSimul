@@ -1276,7 +1276,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    popParams.push_back(tmpParam);
 	    Genotypes.push_back(newGenotype);
 	    to_update = 2;
-#ifdef MIN_RATIO_MUTS
+#ifdef MIN_RATIO_MUTS_NR
 	    g_tmp1_nr = tmpParam.birth/tmpParam.mutation;
 	    if(g_tmp1_nr < g_min_birth_mut_ratio_nr) g_min_birth_mut_ratio_nr = g_tmp1_nr;
 	  
@@ -1472,7 +1472,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			     K, totPopSize);
       }
       
-#ifdef MIN_RATIO_MUTS
+#ifdef MIN_RATIO_MUTS_NR
       // could go inside sample_all_pop but here we are sure death, etc, current
       // But I catch them when they are created. Is this really needed?
       for(size_t i = 0; i < popParams.size(); i++) {
@@ -1700,7 +1700,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
     // Initialize a bunch of things
     
-// #ifdef MIN_RATIO_MUTS
+// #ifdef MIN_RATIO_MUTS_NR
 //   g_min_birth_mut_ratio = DBL_MAX;
 //   g_min_death_mut_ratio = DBL_MAX;
 //   g_tmp = DBL_MAX;
@@ -1965,7 +1965,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 							 typeFitness),
 					       Named("errorMF_size") = e1,
 					       Named("errorMF_n_0") = n_0,
-#ifdef MIN_RATIO_MUTS
+#ifdef MIN_RATIO_MUTS_NR
 					       Named("minDMratio") =
 					       g_min_death_mut_ratio_nr,
 					       Named("minBMratio") =
