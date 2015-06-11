@@ -81,8 +81,10 @@ inline void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime
 
 
 inline void whichDrivers(int& totalPresentDrivers,
-				std::string& strDrivers,
-				const std::vector<int>& countByDriver){
+			 std::string& strDrivers,
+			 const std::vector<int>& countByDriver){
+  // Does two things: return a string with the drivers and give the total
+  // presentDrivers.
   std::string comma = "";
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {

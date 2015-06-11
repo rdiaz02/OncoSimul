@@ -224,12 +224,13 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 
 
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE);
-std::vector<int> presentDrivers(const Genotype& ge, const std::vector<int>& drv);
+std::vector<int> getGenotypeDrivers(const Genotype& ge, const std::vector<int>& drv);
 void print_Genotype(const Genotype& ge);
 
-fitness_as_genes feGenes(const fitnessEffectsAll& fe);
+fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe);
 
 std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe);
 
+std::vector<int> getGenotypeDrivers(const Genotype& ge, const std::vector<int>& drv);
 #endif
 

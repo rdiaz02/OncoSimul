@@ -146,17 +146,46 @@ void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
 // also for empty, so this is faster if not needed. And check that if we
 // use a stopping rule based on drivers that drv vectors is not empty.
 
-inline void nr_count_NumDrivers(int& maxNumDrivers, 
-				std::vector<int>& countByDriver,
-				Rcpp::IntegerMatrix& returnGenotypes,
-				const vector<int>& drv){
-  // Fill up the "countByDriver" table and return the maximum number of
-  // mutated drivers in any genotype.
-  // This is in how many genotypes each driver is present. Is this relevant?
-  // Difference w.r.t. to former is passing drv
+// inline void nr_count_NumDrivers(int& maxNumDrivers, 
+// 				std::vector<int>& countByDriver,
+// 				Rcpp::IntegerMatrix& returnGenotypes,
+// 				const vector<int>& drv){
+//   // Fill up the "countByDriver" table and return the maximum number of
+//   // mutated drivers in any genotype.
+//   // This is in how many genotypes each driver is present. Is this relevant?
+//   // Difference w.r.t. to former is passing drv
+//   maxNumDrivers = 0;
+//   int tmpdr = 0;
+//   int driver_indx;
+//   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
+//     tmpdr = 0;
+//     for(int i : drv) {
+//       driver_indx = i - 1;
+//       tmpdr += returnGenotypes(driver_indx, j);
+//       countByDriver[driver_indx] += returnGenotypes(driver_indx, j);
+//     }
+//     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
+//   }
+// }
+
+
+inline void driverCounts(int& maxNumDrivers,
+			 int& totalPresentDrivers,
+			 std::vector<int>& countByDriver,
+			 std::vector<int>& presentDrivers,
+			 Rcpp::IntegerMatrix& returnGenotypes,
+			 const vector<int>& drv){
+  // Fill up the "countByDriver" table, how many genotypes each driver is
+  // present.  Return the maximum number of mutated drivers in any
+  // genotype, the vector with just the present drivers, and the total
+  // number of present drivers.
+
+  // We used to do count_NumDrivers and then whichDrivers
+  
   maxNumDrivers = 0;
   int tmpdr = 0;
   int driver_indx;
+  
   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
     tmpdr = 0;
     for(int i : drv) {
@@ -166,17 +195,27 @@ inline void nr_count_NumDrivers(int& maxNumDrivers,
     }
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
+  
+  for(size_t i = 0; i < countByDriver.size(); ++i) {
+    if(countByDriver[i] > 0) presentDrivers.push_back(i + 1);
+    ++totalPresentDrivers;
+  }
 }
 
+
+
+// FIXME: why not keep the number of present drivers in the genotype? We
+// call often the getGenotypeDrivers(ge, drv).size()
 
 // FIXME: we do this often. Why not just keep it in the struct?
-int nr_count_NDrivers(const Genotype& ge, const vector<int>& drv) {
-  // Counts the number of mutated drivers in a genotype.
-  // drv comes from R, and it is the vector with the
-  // numbers of the genes, not modules.
-  return presentDrivers(ge, drv).size();
-}
-// FIXME: the count_NumDrivers counts for each driver. Write that too.
+// We do not call this one-liner, but we call the internal thing. Three places.
+// int nr_count_genotype_NDrivers(const Genotype& ge, const vector<int>& drv) {
+//   // Counts the number of mutated drivers in a genotype.
+//   // drv comes from R, and it is the vector with the
+//   // numbers of the genes, not modules.
+//   return getGenotypeDrivers(ge, drv).size();
+// }
+
 
 
 void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
@@ -226,7 +265,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     totPopSize += popParams[i].popSize;
-    tmp_ndr = nr_count_NDrivers(Genotypes[i], drv);
+    tmp_ndr = getGenotypeDrivers(Genotypes[i], drv).size();
     if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
     if(tmp_ndr >= detectionDrivers) popSizeOverDDr += popParams[i].popSize;
   }
@@ -285,7 +324,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
       
       if(popParams[i].popSize > l_pop_s) {
 	l_pop_s = popParams[i].popSize;
-	ndr_lp = nr_count_NDrivers(Genotypes[i], drv);
+	ndr_lp = getGenotypeDrivers(Genotypes[i], drv).size();
       }
     }
     sampleTotPopSize.push_back(totPopSize);
@@ -436,8 +475,19 @@ std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go)
 //   return ugV;
 // }
 
+std::string driversToNameString(const std::vector<int>& presentDrivers,
+			    const std::map<int, std::string>& intName) {
+  std::string strDrivers;
+  std::string comma = "";
+  for(auto g : presentDrivers) {
+    strDrivers += (comma + intName.at(g));
+    comma = ", ";
+  }
+  return strDrivers;
+}
 
-std::string vectorGenotypeToIntString(const std::vector<int>& genotypeV,
+
+std::string genotypeToIntString(const std::vector<int>& genotypeV,
 				   const fitness_as_genes& fg) {
   
   // The genotype vectors are returned as a string of ints.
@@ -478,13 +528,17 @@ std::string vectorGenotypeToIntString(const std::vector<int>& genotypeV,
   return strGenotype;
 }
 
-std::string vectorGenotypeToNameString(const std::vector<int>& genotypeV,
+
+std::string genotypeToNameString(const std::vector<int>& genotypeV,
 				       const fitness_as_genes& fg,
-				       const std::map<int, std::string> intName) {
+				       const std::map<int, std::string>& intName) {
   
   // The genotype vectors are returned as a string of names. Similar to
   // the Int version, but we map here to names.
-  
+
+  // As the fitness is stored in terms of modules, not genes, we need to
+  // check if a _gene_ is in the order part or not by mapping back to
+  // modules. That is the fitness_as_genes argument.
   
   std::string strGenotype;
 
@@ -504,7 +558,7 @@ std::string vectorGenotypeToNameString(const std::vector<int>& genotypeV,
   std::string order_part;
   std::string rest;
   std::string comma = "";
-
+  // FIXME: when sure no problems, remove at if needed for speed.
   for(auto g : order_int) {
     order_part += (comma + intName.at(g));
     comma = ", ";
@@ -523,27 +577,37 @@ std::string vectorGenotypeToNameString(const std::vector<int>& genotypeV,
 }
 
 
-
-std::vector<std::string> genotypesToString(const std::vector< vector<int> >& uniqueGenotypesV,
-					   const fitnessEffectsAll& F,
-					   bool names = true) {
-  fitness_as_genes fg = feGenes(F);
+std::vector<std::string> genotypesToNameString(const std::vector< vector<int> >& uniqueGenotypesV,
+					       const fitnessEffectsAll& F,
+					       const std::map<int, std::string>& intName) {
+  fitness_as_genes fg = fitnessAsGenes(F);
   std::vector<std::string> gs;
-
-  if(names) {
-    std::map<int, std::string> intName = mapGenesIntToNames(F);
-    for(auto v: uniqueGenotypesV )
-      gs.push_back(vectorGenotypeToNameString(v, fg, intName));
-  } else {
-      for(auto v: uniqueGenotypesV )
-	gs.push_back(vectorGenotypeToIntString(v, fg));
-  }
-  
-  // exercise: do it with lambdas
-  // std::transform(uniqueGenotypesV.begin(), uniqueGenotypesV.end(),
-  // 		 back_inserter(gs), vectorGenotypeToString);
+  for(auto v: uniqueGenotypesV )
+      gs.push_back(genotypeToNameString(v, fg, intName));
   return gs;
 }
+
+
+// std::vector<std::string> genotypesToString(const std::vector< vector<int> >& uniqueGenotypesV,
+// 					   const fitnessEffectsAll& F,
+// 					   bool names = true) {
+//   fitness_as_genes fg = fitnessAsGenes(F);
+//   std::vector<std::string> gs;
+
+//   if(names) {
+//     std::map<int, std::string> intName = mapGenesIntToNames(F);
+//     for(auto v: uniqueGenotypesV )
+//       gs.push_back(genotypeToNameString(v, fg, intName));
+//   } else {
+//       for(auto v: uniqueGenotypesV )
+// 	gs.push_back(genotypeToIntString(v, fg));
+//   }
+  
+//   // exercise: do it with lambdas
+//   // std::transform(uniqueGenotypesV.begin(), uniqueGenotypesV.end(),
+//   // 		 back_inserter(gs), vectorGenotypeToString);
+//   return gs;
+// }
 
 Rcpp::IntegerMatrix nr_create_returnGenotypes(const int& numGenes,
 					      const std::vector< vector<int> >& uniqueGenotypesV){
@@ -960,8 +1024,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
     sampleTotPopSize.push_back(popParams[0].popSize);
     sampleLargestPopSize.push_back(popParams[0].popSize);
-    sampleMaxNDr.push_back(nr_count_NDrivers(Genotypes[0],
-					     fitnessEffects.drv));
+    sampleMaxNDr.push_back(getGenotypeDrivers(Genotypes[0],
+					      fitnessEffects.drv).size());
     sampleNDrLargestPop.push_back(sampleMaxNDr[0]);
   }
   // FIXME: why next line and not just genot_out.push_back(Genotypes[i]);
@@ -1832,60 +1896,14 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 #endif
     
   } // runAgain loop
-  // FIXME: zz
-  // untilcancer
-  // inner loop ends above
-  // The return objects only created if needed
-
-  
-  // If we hit wallTime, we can get done without going through
-  // totPopSize.... Problem if sampling at end
-  // if ( hittedWallTime ) {
-  //   // hitted wall time. So we need to sample at the very end.
-  // Nope! Just ensure if hittedWallTime you always sample properly!
-  // }
     
-
   
-  // FIXME: do I want to move this right after out_crude
-  // and do it incrementally? I'd have also a counter of total unique species
-
-  // here("right after simuls done");
-
-  // FIXME: all this is ugly and could be a single function
-  // up to call to IntegerMatrix
-
-  // Do I use genot_out_nr for anything else? FIXME
-  // Put into a single function?? FIXME
-
-  // // Go from genot_out (the vector of Genotype) to a vector of vectors of
-  // // the genotypes, through a set.
-
-  // // V1
-  // std::vector<std::vector<int> > genot_out_nr;
-  // std::transform(genout_out.begin(), genot_out.end(), back_inserter(genout_out_nr),
-  // 		 genotypeSingleVector);
-  // std::set<std::vector<int> > uniqueGenotypes_nr
-  // for( auto gg : genot_out_nr ) uniqueGenotypes_nr.insert(gg);
-  // std::vector<std::vector<int> > uniqueGenotypes_vector_nr (uniqueGenotypes_nr.begin(),
-  // 							    uniqueGenotypes_nr.end());
-
-
-  // // v2
-  // std::vector<std::vector<int> > genot_out_nr = genot_to_vectorg(genot_out);
-  // std::set<std::vector<int> > uniqueGenotypes_nr =  nr_find_unique_genotypes(genot_out_nr);
-  // std::vector<std::vector<int> > uniqueGenotypes_vector_nr = nr_uniqueGenotypes_to_vector(uniqueGenotypes_nr);
-
-  // v3
-  // Need the two below
-
   std::vector<std::vector<int> > genot_out_v = genot_to_vectorg(genot_out);
   std::vector<std::vector<int> > uniqueGenotypes_vector_nr  =
     uniqueGenot_vector(genot_out_v);
   IntegerMatrix returnGenotypes = 
     nr_create_returnGenotypes(fitnessEffects.genomeSize,
   			      uniqueGenotypes_vector_nr);
-  
   Rcpp::NumericMatrix outNS = create_outNS(uniqueGenotypes_vector_nr,
   					   genot_out_v,
   					   popSizes_out,
@@ -1894,29 +1912,35 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   
   int maxNumDrivers = 0;
   int totalPresentDrivers = 0;
-  std::vector<int>countByDriver(fitnessEffects.drv.size(), 0);
-  std::string occurringDrivers = "";
+  std::vector<int> countByDriver(fitnessEffects.drv.size(), 0);
+  std::vector<int> presentDrivers;
+  driverCounts(maxNumDrivers, totalPresentDrivers,
+	       countByDriver, presentDrivers,
+	       returnGenotypes, fitnessEffects.drv);
+  
+  // nr_count_NumDrivers(maxNumDrivers, countByDriver,
+  //   		      returnGenotypes, fitnessEffects.drv);
 
-  nr_count_NumDrivers(maxNumDrivers, countByDriver,
-    		      returnGenotypes, fitnessEffects.drv);
+  // whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
 
-  whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
+  std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
+  std::vector<std::string> genotypesAsStrings =
+    genotypesToNameString(uniqueGenotypes_vector_nr, fitnessEffects, intName);
+  std::string driversAsString =
+    driversToNameString(presentDrivers, intName);
 
+  
   std::vector<double> sampleLargestPopProp(outNS_i + 1);
-
   if((outNS_i + 1) != static_cast<int>(sampleLargestPopSize.size()))
     throw std::length_error("outNS_i + 1 != sampleLargestPopSize.size");
   std::transform(sampleLargestPopSize.begin(), sampleLargestPopSize.end(),
   		 sampleTotPopSize.begin(),
   		 sampleLargestPopProp.begin(),
   		 std::divides<double>());
-
   NumericMatrix perSampleStats(outNS_i + 1, 5);
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
   	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
-  std::vector<std::string> genotypesLabels =
-    genotypesToString(uniqueGenotypes_vector_nr, fitnessEffects, true);
 
 
   // // // debuggin: precompute things
@@ -1941,7 +1965,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		 Named("TotalPopSize") = totPopSize,
 		 Named("Genotypes") = returnGenotypes,
 		 Named("GenotypesWDistinctOrderEff") = Rcpp::wrap(uniqueGenotypes_vector_nr),
-		 Named("GenotypesLabels") = Rcpp::wrap(genotypesLabels),
+		 Named("GenotypesLabels") = Rcpp::wrap(genotypesAsStrings),
 		 Named("MaxNumDrivers") = maxNumDrivers,
 		 Named("MaxDriversLast") = sampleMaxNDr[outNS_i],
 		 Named("NumDriversLargestPop") =  sampleNDrLargestPop[outNS_i],
@@ -1953,7 +1977,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		 Named("HittedMaxTries") = hittedMaxTries,
 		 Named("TotalPresentDrivers") = totalPresentDrivers,
 		 Named("CountByDriver") = countByDriver,
-		 Named("OccurringDrivers") = occurringDrivers,
+		 Named("OccurringDrivers") = driversAsString,
 		 Named("PerSampleStats") = perSampleStats,
 		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
 					       Named("errorMF") = 

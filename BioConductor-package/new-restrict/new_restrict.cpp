@@ -347,7 +347,7 @@ void obtainMutations(const Genotype& parent,
 // }
 
 
-fitness_as_genes feGenes(const fitnessEffectsAll& fe) {
+fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   // Given the fitnessEffects in terms of genes, not modules.
   
   // Extract the noInt. Then those in order effects by creating a multimap
@@ -955,7 +955,7 @@ void printFitnessEffects(const fitnessEffectsAll& fe) {
   printAllOrderG(fe.allOrderG);
 }
 
-vector<int> presentDrivers(const Genotype& ge, const vector<int>& drv) {
+vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
   // Returns the actual mutated drivers in a genotype.
   // drv comes from R, and it is the vector with the
   // numbers of the genes, not modules.
