@@ -631,7 +631,7 @@ c(1.01 * 1.02, 1.02, 1.02 * 1.1, 0.1 * 1.3, 1.03,
 Consider this case, where three specific three-gene-orders and two
 two-gene orders (one of them a subset of one of the three) lead to
 different fitness compared to the wild-type. We add also modules, to show
-it usage (but just limit ourselves to using one gene per module here):
+its usage (but just limit ourselves to using one gene per module here):
 
 <<>>=
 
@@ -969,6 +969,7 @@ evalAllGenotypes(svB3, order = FALSE, addwt = TRUE, model = "Bozic")
 
 
 @
+
 Of course, death rates of 0.0 are likely to lead to trouble down the road,
 when we actually conduct simulations (see section \ref{ex-0-death}).
 
@@ -1890,9 +1891,11 @@ tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
                        detectionSize = 1e8, 
                        detectionDrivers = 2,
                        sampleEvery = 0.025,
+                       keepEvery = 5,
                        initSize = 2000,
                        onlyCancer = TRUE)
 summary(tmp)
+# plot(tmp)
 
 
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
@@ -1908,10 +1911,115 @@ tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
 summary(tmp)
 @ 
 
+\subsection{Simulation with order effects and some clonal competition}
+Interesting to show effects of order: o3
+
+Increase mutation rate, so does not take forever
+<<>>=
+
+tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.025,
+                       max.num.tries = 10,
+                       keepEvery = -9,
+                       initSize = 2000,
+                       finalTime = 8000,
+                       onlyCancer = TRUE); 
+
+tmp
+
+tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+                       model = "Bozic", 
+                       mu = 5e-5,
+                       detectionSize = 1e6, 
+                       detectionDrivers = 4,
+                       sampleEvery = 2,
+                       max.num.tries = 100,
+                       keepEvery = -9,
+                       initSize = 2000,
+                       onlyCancer = TRUE)
+tmp
+
+@ 
+
+<<>>=
+
+set.seed(3)
+tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.025,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 2000,
+                       finalTime = 8000,
+                       onlyCancer = FALSE); 
+plot(tmp, addtot = TRUE, lwdClone = 0.4, log = "")
+
+@ 
+Interesting, because lots of clonal interference and num drivers says
+little, as fitness is very different and does not increase simply and a
+lot with drivers:
+
+<<>>=
+evalAllGenotypes(examplesFitnessEffects[["o3"]])
+@ 
 
 
 
+<<>>=
+set.seed(9) ## 2
+tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.015,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 2000,
+                       finalTime = 10000,
+                       onlyCancer = FALSE,
+                       extraTime = 10)
+tmp
+plot(tmp, addtot = TRUE, lwdClone = 0.4, log = "")
 
+@ 
+
+
+But in other configurations, we do not reach the three gene mutant and
+continue with clone competition for a long time:
+
+<<>>=
+
+set.seed(2)
+tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.015,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 2000,
+                       finalTime = 20000,
+                       onlyCancer = FALSE,
+                       extraTime = 1000)
+tmp
+plot(tmp, addtot = TRUE, lwdClone = 0.4, log = "")
+
+@
+
+(Instead of specifying ``extraTime'' we can set the detectionDrivers to
+larger than the number of existing possible drivers, and it will run until
+finalTime.)
+
+FIXME: plot a popSimul
 
 
 

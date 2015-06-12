@@ -5,7 +5,6 @@
 #include <Rcpp.h>
 #include <limits>
 #include <iostream>
-// #include <gsl/gsl_rng.h> // here? in the .h
 #include <random>
 #include <set>
 #include <iterator>
@@ -13,10 +12,7 @@
 #include <sstream>
 #include <string>
 #include <ctime>
-// #include <sys/resource.h> 
 #include <sys/time.h> 
-
-// #include <exception>
 #include <stdexcept>
 
 using namespace Rcpp;
@@ -50,9 +46,9 @@ void nr_fitness(spParamsP& tmpP,
   // With Bozic models, which are "death-based", it is different. For
   // bozic2, birth is bounded, so any death > 2 would lead to birth <
   // 0. For bozic1, deaths of around 50 lead to numerical issues.  The
-  // general rule is: set those mutations to -90, so prodDeathFitness
-  // immediately returns a 99.0 for death, and that is recognized as "no
-  // viability".
+  // general rule is: set those mutations to -inf, so prodDeathFitness
+  // returns an inf for death, and that is recognized as "no
+  // viability" (anything with death > 99)
 
   // The ones often used are bozic1, exp, mcfarlandlog
 
@@ -107,7 +103,7 @@ inline void new_sp_v(unsigned int& sp,
   }
 }
 
-unsigned int new_sp(const Genotype& newGenotype,
+inline unsigned int new_sp(const Genotype& newGenotype,
 		    const std::vector<Genotype> Genotypes) {
   for(unsigned int sp = 0; sp < Genotypes.size(); ++sp) {
     if( newGenotype == Genotypes[sp] ) {
@@ -1331,7 +1327,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    if (tmpParam.mutation > 1 )
 	      Rcpp::Rcout << "WARNING: mutation > 1\n";
 	    if (numMutablePosParent == 1) {
-	      Rcpp::Rcout << "Note: mutation = 0; no positions left for mutation\n";
+	      if(verbosity >= 1)
+		Rcpp::Rcout << "Note: mutation = 0; no positions left for mutation\n";
 	      tmpParam.mutation = dummyMutationRate; // dummy mutation here. Set some mu.
 	    }
 	    W_f_st(tmpParam);
@@ -1416,7 +1413,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	u_1 = nextMutant;
 	u_2 = -99;
 	// FIXME: do this conditionally on flag
-	Rcpp::Rcout << "Note: updating in null mutation\n";
+	if(verbosity >= 1)
+	  Rcpp::Rcout << "Note: updating in null mutation\n";
 	// Rcpp::Rcout << "\n null mutation; after popSize" << std::endl;
 	// DP2(popParams[nextMutant].popSize);
 	// Rcpp::Rcout << "\n done null mutation; after popSize ********" << std::endl;

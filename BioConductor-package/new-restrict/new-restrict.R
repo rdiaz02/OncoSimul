@@ -336,7 +336,8 @@ allFitnessEffects <- function(rT = NULL,
                               orderEffects = NULL,
                               noIntGenes = NULL,
                               geneToModule = NULL,
-                              drvNames = NULL) {
+                              drvNames = NULL,
+                              keepInput = TRUE) {
     ## restrictions: the usual rt
 
     ## epistasis: as it says, with the ":"
@@ -458,7 +459,9 @@ allFitnessEffects <- function(rT = NULL,
     } else {
         drv <- geneModule$GeneNumID[-1]
     }
-    
+    if(!keepInput) {
+        rT <- epistasis <- orderEffects <- noIntGenes <- NULL
+    }
     out <- list(long.rt = long.rt,
                 long.epistasis = long.epistasis,
                 long.orderEffects = long.orderEffects,
@@ -467,7 +470,11 @@ allFitnessEffects <- function(rT = NULL,
                 gMOneToOne = gMOneToOne,
                 geneToModule = geneToModule,
                 graph = graphE,
-                drv = drv
+                drv = drv,
+                rT = rT,
+                epistasis = epistasis,
+                orderEffects = orderEffects,
+                noIntGenes = noIntGenes                
                 )
     class(out) <- c("fitnessEffects")
     return(out)
@@ -1014,7 +1021,11 @@ oncoSimulIndiv <- function(fE = NULL,
         cat("\n       Drivers Last = ", op$MaxDriversLast)
         cat("\n       Final Time = ", op$FinalTime, "\n")
     }
-    class(op) <- "oncosimul"
+
+    if(!is.null(fE))
+        class(op) <- c("oncosimul", "oncosimul2")
+    else
+        class(op) <- "oncosimul"
     attributes(op)$call <- call
     return(op)
 }
@@ -1030,18 +1041,25 @@ eFinalMf <- function(initSize, s, j) {
 }
 
 summary.oncosimul <- function(object, ...) {
-    tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
-                    "MaxNumDrivers", "MaxDriversLast",
-                    "NumDriversLargestPop", "TotalPresentDrivers",
-                    "FinalTime", "NumIter", "HittedWallTime")]
-    tmp$errorMF <- object$other$errorMF
-    tmp$minDMratio <- object$other$minDMratio
-    tmp$minBMratio <- object$other$minBMratio
-    if(tmp$errorMF == -99) tmp$errorMF <- NA
-    if(tmp$minDMratio == -99) tmp$minDMratio <- NA
-    if(tmp$minBMratio == -99) tmp$minBMratio <- NA
-    tmp$OccurringDrivers <- object$OccurringDrivers
-    return(as.data.frame(tmp))
+
+    if(object$HittedWallTime || object$HittedMaxTries ||
+       object$other$UnrecoverExcept)
+        return(NA)
+    else {
+        tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
+                        "MaxNumDrivers", "MaxDriversLast",
+                        "NumDriversLargestPop", "TotalPresentDrivers",
+                        "FinalTime", "NumIter", "HittedWallTime")]
+ 
+        tmp$errorMF <- object$other$errorMF
+        tmp$minDMratio <- object$other$minDMratio
+        tmp$minBMratio <- object$other$minBMratio
+        if( (tmp$errorMF == -99)) tmp$errorMF <- NA
+        if( (tmp$minDMratio == -99)) tmp$minDMratio <- NA
+        if( (tmp$minBMratio == -99)) tmp$minBMratio <- NA
+        tmp$OccurringDrivers <- object$OccurringDrivers
+        return(as.data.frame(tmp))
+    }
 }
 
 print.oncosimul <- function(x, ...) {
@@ -1050,3 +1068,23 @@ print.oncosimul <- function(x, ...) {
     cat("\n")
     print(summary(x))
 }
+
+
+print.oncosimul <- function(x, ...) {
+    cat("\nIndividual OncoSimul trajectory with call:\n ")
+    print(attributes(x)$call)
+    cat("\n")
+    print(summary(x))
+
+    if(inherits(x, "oncosimul2")) {
+        ## we know small object
+        cat("\n")
+        cat("Final population composition:\n")
+        df <- data.frame(Genotype = tmp$GenotypesLabels,
+                         N = tmp$pops.by.time[nrow(tmp$pops.by.time), -1])
+        print(df)
+    }
+}
+
+
+
