@@ -663,9 +663,14 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
 
     if(thinData)
         x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
-    
-    ndr <- apply(x$Genotypes[1:x$NumDrivers, , drop = FALSE], 2, sum)
 
+    ## uvx
+    if(!inherits(x, "oncosimul2"))
+        ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
+    else {
+        ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+    }
+    
     if(is.null(yl)) {
         if(log %in% c("y", "xy", "yx") )
             yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
@@ -691,6 +696,7 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
     
     if(plotDrivers){
         plotDrivers0(x,
+                     ndr,
                      timescale = 1,
                      trim.no.drivers = FALSE,
                      xlab = "", ylab = "",
@@ -933,7 +939,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
     
     ## return the matching call? call <- match.call()
     ## and then return(c(.Call(), call))
-    call <- match.call()
+    ## call <- match.call()
     return(c(.Call(
         ## "Algorithm5",
       "C_BNB_Algo5",
@@ -998,8 +1004,9 @@ create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
 } 
 
 
-create.drivers.by.time <- function(tmp, numDrivers) {
-    CountNumDrivers <- apply(tmp$Genotypes[1:numDrivers, ,drop = FALSE], 2, sum)
+create.drivers.by.time <- function(tmp, ndr) {
+    ## CountNumDrivers <- apply(tmp$Genotypes[1:numDrivers, ,drop = FALSE], 2, sum)
+    CountNumDrivers <- ndr
     if(tmp$NumClones >= 1) {
         if(tmp$NumClones == 1) {
             if(ncol(tmp$pops.by.time) != 2)
@@ -1080,6 +1087,7 @@ plotClones <- function(z, ndr = NULL, na.subs = TRUE,
 
 
 plotDrivers0 <- function(x,
+                         ndr,
                          timescale = 4,
                          trim.no.drivers = TRUE,
                          addtot = TRUE,
@@ -1088,8 +1096,8 @@ plotDrivers0 <- function(x,
                          lty = 1:9, col = c(8, "orange", 6:1),
                          lwd = 2,
                          ...) {
-
-    z <- create.drivers.by.time(x, x$NumDrivers)
+    ## z <- create.drivers.by.time(x, numDrivers)
+    z <- create.drivers.by.time(x, ndr)
     if(trim.no.drivers && x$MaxDriversLast) {
         fi <- which(apply(z[, -c(1, 2), drop = FALSE], 1,
                           function(x) sum(x) > 0))[1]

@@ -239,7 +239,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    // const double& endTimeEvery,
 					    const int& detectionDrivers,
 					    const int& verbosity,
-					    const double& minDDrPopSize,
+					    const double& minDetectDrvCloneSz,
 					    const double& extraTime,
 					       const vector<int>& drv,
 					    const double& fatalPopSize = 1e15) {
@@ -282,7 +282,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     if(done_at <  0) {
       if( (totPopSize >= detectionSize) ||
 	  ( (lastMaxDr >= detectionDrivers) &&
-	    (popSizeOverDDr >= minDDrPopSize) ) ) {
+	    (popSizeOverDDr >= minDetectDrvCloneSz) ) ) {
 	done_at = currentTime + extraTime;
       }
     } else if (currentTime >= done_at) {
@@ -291,7 +291,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
       }
   } else if( (totPopSize >= detectionSize) ||
 	     ( (lastMaxDr >= detectionDrivers) &&
-	       (popSizeOverDDr >= minDDrPopSize) ) ) {
+	       (popSizeOverDDr >= minDetectDrvCloneSz) ) ) {
     simulsDone = true;
     reachDetection = true; 
   }
@@ -698,7 +698,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     const double& finalTime,
 		     const double& detectionSize,
 		     const int& detectionDrivers,
-		     const double& minDDrPopSize,
+		     const double& minDetectDrvCloneSz,
 		     const double& extraTime,
 		     const int& verbosity,
 		     double& totPopSize,
@@ -1463,7 +1463,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 				      //endTimeEvery,
 				      detectionDrivers,
 				      verbosity,
-					 minDDrPopSize,
+					 minDetectDrvCloneSz,
 					 extraTime,
 					 fitnessEffects.drv); //keepEvery is for thinning
       if(verbosity >= 3) {
@@ -1587,7 +1587,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 // 		     SEXP errorHitWallTime_,
 // 		     SEXP maxNumTries_,
 // 		     SEXP errorHitMaxTries_,
-// 		     SEXP minDDrPopSize_,
+// 		     SEXP minDetectDrvCloneSz_,
 // 		     SEXP extraTime_
 // 		     ) {
 
@@ -1618,7 +1618,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			bool errorHitWallTime,
 			int maxNumTries,
 			bool errorHitMaxTries,
-			double minDDrPopSize,
+			double minDetectDrvCloneSz,
 			double extraTime) {  
   // SEXP endTimeEvery_,
   //  BEGIN_RCPP
@@ -1662,7 +1662,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // const bool onlyCancer = as<bool>(onlyCancer_);
   // const int maxNumTries = as<int>(maxNumTries_);
   // const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
-  // const double minDDrPopSize = as<double>(minDDrPopSize_);
+  // const double minDetectDrvCloneSz = as<double>(minDetectDrvCloneSz_);
   // const double extraTime = as<double>(extraTime_);
   
   std::mt19937 ran_gen(seed);
@@ -1805,7 +1805,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       finalTime,
 	       detectionSize,
 	       detectionDrivers,
-	       minDDrPopSize,
+	       minDetectDrvCloneSz,
 	       extraTime,
 	       verbosity,
 	       totPopSize,
@@ -1832,7 +1832,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       ++numRuns;
       forceRerun = false;
     } catch (rerunExcept &e) {
-      Rcpp::Rcout << "\n Exception " << e.what() 
+      Rcpp::Rcout << "\n Recoverable exception " << e.what() 
 		  << ". Rerunning.";
       forceRerun = true;
     } catch (const std::exception &e) {

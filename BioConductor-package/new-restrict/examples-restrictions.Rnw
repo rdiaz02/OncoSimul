@@ -258,6 +258,9 @@ cbn1 <- allFitnessEffects(cs)
 
 @ 
 
+(We skip one letter, just to show that names need not be consecutive or
+have any particular order.)
+
 We can get a graphical representation using the default ``graphNEL''
 <<>>=
 plot(cbn1)
@@ -1876,6 +1879,91 @@ with named components (names the same as in the examples above):
 data(examplesFitnessEffects)
 names(examplesFitnessEffects)
 @ 
+
+
+\subsection{McFl parameterization}\label{mcfl}
+
+
+In the original McFarland model zz.  As I have $(1 + s)$, the new
+$s = -s_p/(1 + s_p)$ (see in Chris' thesis, p. 9, in eq. 2.1)
+
+
+<<>>=
+
+set.seed(456)
+nd <- 70  
+np <- 5000 
+s <- 0.1  
+sp <- 1e-3 
+spp <- -sp/(1 + sp)
+mcf1 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
+                          drv = seq.int(nd))
+mcf1s <-  oncoSimulIndiv(fE = mcf1,
+                         model = "McFL", 
+                         mu = 1e-7,
+                         detectionSize = 1e8, 
+                         detectionDrivers = 100,
+                         sampleEvery = 0.02,
+                         keepEvery = 2,
+                         initSize = 2000,
+                         finalTime = 1000,
+                         onlyCancer = FALSE)
+plot(mcf1s, addtot = TRUE, lwdClone = 0.6, log = "")
+summary(mcf1s)
+@ 
+
+
+The next is too slow and too big to run in a vignette, because we keep
+track of over 4000 different clones (which leads to a result object of
+over 800 MB):
+
+<<eval=FALSE>>=
+
+set.seed(123)
+nd <- 70  
+np <- 50000 
+s <- 0.1  
+sp <- 1e-4 ## as we have many more passengers
+spp <- -sp/(1 + sp)
+mcfL <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
+                          drv = seq.int(nd))
+mcfLs <-  oncoSimulIndiv(fE = mcfL,
+                         model = "McFL", 
+                         mu = 1e-7,
+                         detectionSize = 1e8, 
+                         detectionDrivers = 100,
+                         sampleEvery = 0.02,
+                         keepEvery = 2,
+                         initSize = 1000,
+                         finalTime = 2000,
+                         onlyCancer = FALSE)
+plot(mcfLs, addtot = TRUE, lwdClone = 0.4, log = "")
+summary(mcfLs)
+
+## number of passengers per clone
+summary(colSums(mcfLs$Genotypes[-(1:70), ]))
+
+@ 
+
+But you can access the pre-stored results and plot them (beware: this
+object has been trimmed by removing empty passenger rows in the Genotype matrix)
+
+<<>>=
+data(mcfLs)
+plot(mcfLs, addtot = TRUE, lwdClone = 0.4, log = "")
+summary(mcfLs)
+@ 
+
+
+%% %% The problem is the Genotype matrix. We remove empty passenger rows.
+%% <<>>=
+%% g1 <- mcfLs$Genotypes[1:nd, ]
+%% g2 <- mcfLs$Genotypes[(nd+1):(nd+np), ]
+%% rs <- rowSums(g2)
+%% g3 <- g2[which(rs == 0), ]
+%% g4 <- rbind(g1, g3)
+%% @ 
+
 
 
 \subsection{Simulation with a conjunction example}\label{s-cbn1}

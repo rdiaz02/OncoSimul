@@ -25,7 +25,7 @@
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                minDDrPopSize = "auto",
+                minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
@@ -40,7 +40,7 @@
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
-                minDDrPopSize = "auto",
+                minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 max.memory = 2000, max.wall.time = 200,
@@ -64,7 +64,7 @@ oncoSimulSample(Nindiv,
                 s = 0.1,
                 sh = -1,
                 K = initSize/(exp(1) - 1),
-                minDDrPopSize = "auto",
+                minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365,
                 onlyCancer = TRUE,
@@ -177,14 +177,14 @@ oncoSimulSample(Nindiv,
 %%   can result in the simulations taking a long time to finish or hitting
 %%   the wall time limit.}
 
-\item{minDDrPopSize}{
+\item{minDetectDrvCloneSz}{
 
   A value of 0 or larger than 0 (by default equal to
   \code{initSize} in the McFarland model). If larger than 0, when
   checking if we are done with a simulation, we verify that the sum of
   the population sizes of all clones that have a number of mutated
   drivers larger or equal to \code{detectionDrivers} is larger or equal
-  to this \code{minDDrPopSize}.
+  to this \code{minDetectDrvCloneSz}.
 
   The reason for this parameter is to ensure that, say, a clone with a
   certain number of drivers that would cause the simulation to end has
@@ -202,7 +202,7 @@ oncoSimulSample(Nindiv,
 
   The reason for this setting is to prevent the McFL models from always
   exiting at a time when one clone is increasing its size quickly (see
-  \code{minDDrPopSize}). By setting an \code{extraTime} larger than 0,
+  \code{minDetectDrvCloneSz}). By setting an \code{extraTime} larger than 0,
   we can sample at points when we are at the plateau.
   
 
@@ -215,10 +215,14 @@ oncoSimulSample(Nindiv,
 \item{onlyCancer}{
   Return only simulations that reach cancer?
 
-  If set to TRUE, only simulations that satisfy the detectionDrivers or
-  the detectionSize will be returned (i.e., the simulation will be
-  repeated until one which meets that cancer requirements is
-  met). Otherwise, the simulation is returned regardless of final
+  If set to TRUE, only simulations that satisfy the
+  \code{detectionDrivers} or the \code{detectionSize} requirements will
+  be returned: the simulation will be repeated, within the limits set by
+  \code{max.num.tries} and \code{max.wall.time} (and, for
+  \code{oncoSimulSample} also \code{max.num.tries.total} and
+  \code{max.wall.time.total}), until one which meets the
+  \code{detectionDrivers} or \code{detectionSize} is
+  obtained. Otherwise, the simulation is returned regardless of final
   population size or number of drivers in any clone and this includes
   simulations where the population goes extinct.
 
@@ -239,12 +243,40 @@ oncoSimulSample(Nindiv,
   probability of reaching cancer for a set of simulations to be
   accepted.}
 
+\item{max.wall.time}{
+  Maximum wall time for each individual simulation run. If the
+  simulation is not done in this time, it is aborted.
+
+}
+
+\item{max.wall.time.total}{
+
+  Maximum wall time for all the simulations (when using
+  \code{oncoSimulSample}), in seconds. If the simulation is not
+  completed in this time, it is aborted. To prevent problems from a
+  single individual simulation going wild, this limit is also enforced
+  per simulation (so the run can be aborted directly from C++).
+
+}
+
 \item{errorHitMaxTries}{ If TRUE (the default) a simulation that reaches
   the maximum number of repetitions allowed is considered not to have
   succesfully finished and, thus, an error, and no output from it will
-  be reported. This is often what you want. But if you want to see what
-  is happening for some set of parameters that seem to never finish, set
-  this to FALSE, and check what the output looks like.  }
+  be reported. This is often what you want.%%  But if you want to see
+  %% what is happening for some set of parameters that seem to never
+  %% finish, set this to FALSE, and check what the output looks like.
+  See  \code{Details}.
+}
+
+\item{errorHitWallTime}{
+  If TRUE (the default) a simulation that reaches the maximum wall time
+  is considered not to have succesfully finished and, thus, an error,
+  and no output from it will be reported. This is often what you
+  want. %% But if you want to see what is happening for some set of
+  %% parameters that seem to never finish, set this to FALSE, and check
+  %% what the output looks like.
+  See \code{Details}.
+}
 
 
 
@@ -255,29 +287,10 @@ oncoSimulSample(Nindiv,
   will return an enormous object.
 
 }
-\item{max.wall.time}{
-  Maximum wall time for each individual simulation run. If the
-  simulation is not done in this time, it is aborted.
-
-}
-
-\item{max.wall.time.total}{ Maximum wall time for all the simulations
-  (when using \code{oncoSimulSample}), in seconds. If the simulation is not completed in
-  this time, it is aborted. To prevent problems from a single individual
-  simulation going wild, this limit is also enforced per simulation (so
-  the run can be aborted directly from C++).
-
-}
 
 
-\item{errorHitWallTime}{
-  If TRUE (the default) a simulation that reaches the maximum wall time
-  is considered not to have succesfully finished and, thus, an error,
-  and no output from it will be reported. This is often what you
-  want. But if you want to see what is happening for some set of
-  parameters that seem to never finish, set this to FALSE, and check
-  what the output looks like.
-}
+
+
 
 
 \item{verbosity}{
@@ -327,6 +340,19 @@ oncoSimulSample(Nindiv,
   values (see next) as a one-row (for class oncosimul) or multiple row
   (for class oncosimulpop) data frame.  The \code{print} methods for
   these classes simply print the summary.
+
+
+  Changing options \code{errorHitMaxTries} and \code{errorHitWallTime}
+  can be useful when conducting many simulations, as in the call to
+  \code{oncoSimulPop}: setting them to TRUE means nothing is recorded
+  for those simulations where ending conditions are not reached but
+  setting them to FALSE would allow you to record the output; this would
+  potentially result in a mixture where some simulations would not have
+  reached the ending condition, but this might sometimes be what you
+  want. Note, however, that \code{oncoSimulSample} always has both them
+  to TRUE, as it could not be otherwise.
+
+
 
 }
 \value{

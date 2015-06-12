@@ -326,9 +326,13 @@ checkRT <- function(mdeps) {
 
 
 
-getDrv <- function(geneModule, drv) {
-    indices <- sort(match( drv, geneModule$Gene))
-    return(geneModule$GeneNumID[indices])
+getDrv <- function(geneModule, geneNoInt, drv) {
+    indicesM <- sort(match( drv, geneModule$Gene))
+    indicesI <- sort(match( drv, geneNoInt$Gene))
+    return(c(
+        geneModule$GeneNumID[indicesM],
+        geneNoInt$GeneNumID[indicesI])
+    )
 }
 
 allFitnessEffects <- function(rT = NULL,
@@ -455,7 +459,7 @@ allFitnessEffects <- function(rT = NULL,
     }
 
     if(!is.null(drvNames)) {
-        drv <- getDrv(geneModule, drvNames)
+        drv <- getDrv(geneModule, geneNoInt, drvNames)
     } else {
         drv <- geneModule$GeneNumID[-1]
     }
@@ -764,7 +768,7 @@ nr_oncoSimul.internal <- function(rFE,
                                   errorHitWallTime,
                                   max.num.tries,
                                   errorHitMaxTries,
-                                  minDDrPopSize,
+                                  minDetectDrvCloneSz,
                                   extraTime) {
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
@@ -802,8 +806,10 @@ nr_oncoSimul.internal <- function(rFE,
             warning(m)
         }
     }
-    nr_BNB_Algo5(rFE = rFE,
-                 mu = mu,
+    call <- match.call()
+    return(c(
+        nr_BNB_Algo5(rFE = rFE,
+                     mu = mu,
                  death = death,
                  initSize = initSize,
                  sampleEvery = sampleEvery,
@@ -828,8 +834,9 @@ nr_oncoSimul.internal <- function(rFE,
                  errorHitWallTime = errorHitWallTime,
                  maxNumTries = max.num.tries,
                  errorHitMaxTries = errorHitMaxTries,
-                 minDDrPopSize = minDDrPopSize,
-                 extraTime = extraTime)
+                 minDetectDrvCloneSz = minDetectDrvCloneSz,
+                     extraTime = extraTime),
+        Drivers = list(rFE$drv)))
 }
 
 
@@ -852,7 +859,7 @@ oncoSimulIndiv <- function(fE = NULL,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
                            keepEvery = sampleEvery,
-                           minDDrPopSize = "auto",
+                           minDetectDrvCloneSz = "auto",
                            extraTime = 0,
                            ## used to be this
                            ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
@@ -892,11 +899,11 @@ oncoSimulIndiv <- function(fE = NULL,
         warning("With the McFarland model you often want smaller sampleEvery")
     }
 
-    if(minDDrPopSize == "auto") {
+    if(minDetectDrvCloneSz == "auto") {
         if(model %in% c("Bozic", "Exp") )
-            minDDrPopSize <- 0
+            minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog"))
-            minDDrPopSize <- eFinalMf(initSize, s, detectionDrivers)
+            minDetectDrvCloneSz <- eFinalMf(initSize, s, detectionDrivers)
         else
             stop("Unknown model")
     }
@@ -972,7 +979,7 @@ oncoSimulIndiv <- function(fE = NULL,
                                      alpha = 0.0015,  
                                      sh = sh,
                                      K = K, 
-                                     minDDrPopSize = minDDrPopSize,
+                                     minDetectDrvCloneSz = minDetectDrvCloneSz,
                                      extraTime = extraTime,
                                      detectionDrivers = detectionDrivers,
                                      onlyCancer = onlyCancer,
@@ -1003,7 +1010,7 @@ oncoSimulIndiv <- function(fE = NULL,
                                         keepEvery = keepEvery,  
                                         alpha = 0.0015,  
                                         K = K, 
-                                        minDDrPopSize = minDDrPopSize,
+                                        minDetectDrvCloneSz = minDetectDrvCloneSz,
                                         extraTime = extraTime,
                                         detectionDrivers = detectionDrivers,
                                         onlyCancer = onlyCancer,
@@ -1080,8 +1087,8 @@ print.oncosimul <- function(x, ...) {
         ## we know small object
         cat("\n")
         cat("Final population composition:\n")
-        df <- data.frame(Genotype = tmp$GenotypesLabels,
-                         N = tmp$pops.by.time[nrow(tmp$pops.by.time), -1])
+        df <- data.frame(Genotype = x$GenotypesLabels,
+                         N = x$pops.by.time[nrow(x$pops.by.time), -1])
         print(df)
     }
 }
