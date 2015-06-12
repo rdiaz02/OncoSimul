@@ -17,8 +17,10 @@ S3method(plot, fitnessEffects)
 
 importFrom("data.table", rbindlist, .rbind.data.table) 
 importFrom(Rcpp, evalCpp)
+## import(igraph)
+importFrom("igraph", igraph.to.graphNEL, graph.data.frame, V, E,
+           "V<-", "E<-", plot.igraph)
 import(graph)
-import(igraph)
 import(Rgraphviz)
 importFrom("parallel", mclapply, detectCores, mcMap)
 importFrom("gtools", combinations, permutations)

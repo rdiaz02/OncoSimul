@@ -713,7 +713,7 @@ plotFitnessEffects <- function(fe, type = "graphNEL",
             vlabels <- fe$geneToModule[V(g)$name]
             V(g)$label <- vlabels
         }
-        plot(g, layout = layout)
+        plot.igraph(g, layout = layout)
     }
     else if (type == "graphNEL") {
         g1 <- igraph.to.graphNEL(g)

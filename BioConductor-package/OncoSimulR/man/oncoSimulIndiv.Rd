@@ -429,10 +429,10 @@ oncoSimulSample(Nindiv,
   Academy of Sciences of the United States of America\/}, \bold{107},
   18545--18550.
   
-  Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
-  of mutations during tumor progression: effects of passenger mutations,
-  evolutionary models, and
-  sampling. \url{http://dx.doi.org/10.1101/005587}
+  Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
+  accumulation of mutations during tumor progression: effects of
+  passengers, evolutionary models, and sampling
+  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
   
   McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National

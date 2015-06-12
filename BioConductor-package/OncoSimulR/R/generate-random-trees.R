@@ -8,9 +8,9 @@
 ## require(OncoSimulR)
 
 simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
-                           multilevelParent = TRUE,
-                           removeIndirect = TRUE,
-                           rootName = "0") {
+                      multilevelParent = TRUE,
+                      removeDirectIndirect = TRUE,
+                      rootName = "Root") {
     ## Returns an adjacency matrix
     if(h > n)
         stop("h > n")
@@ -19,11 +19,11 @@ simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
         nparents <- 1
     if( nparents == 1) {
         ## indirect issues do not affect if nparents == 1
-        removeIndirect <- FALSE
+        removeDirectIndirect <- FALSE
     }
     if(h == 1) { ## obviously, since all just descend from root
         multilevelParent <- FALSE
-        removeIndirect <- FALSE
+        removeDirectIndirect <- FALSE
     }
 
     adj.mat <- matrix(0L, ncol = n + 1, nrow = n + 1)
@@ -61,7 +61,7 @@ simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
     
 
     ## Prune to remove indirect connections
-    if(multilevelParent & removeIndirect)
+    if(multilevelParent & removeDirectIndirect)
         adj.mat <- removeIndirectConnections(adj.mat)
     return(adj.mat)
 }
