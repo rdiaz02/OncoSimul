@@ -388,7 +388,7 @@ oncoSimulIndiv <- function(fE = NULL,
                            sh = -1,
                            K = initSize/(exp(1) - 1),
                            keepEvery = sampleEvery,
-                           minDDrPopSize = "auto",
+                           minDetectDrvCloneSz = "auto",
                            extraTime = 0,
                            ## used to be this
                            ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
@@ -401,6 +401,7 @@ oncoSimulIndiv <- function(fE = NULL,
                            errorHitWallTime = TRUE,
                            errorHitMaxTries = TRUE,
                            verbosity = 0,
+                           initMutant = NULL,
                            seed = NULL
                            ) {
     call <- match.call()
@@ -427,11 +428,11 @@ oncoSimulIndiv <- function(fE = NULL,
         warning("With the McFarland model you often want smaller sampleEvery")
     }
 
-    if(minDDrPopSize == "auto") {
+    if(minDetectDrvCloneSz == "auto") {
         if(model %in% c("Bozic", "Exp") )
-            minDDrPopSize <- 0
+            minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog"))
-            minDDrPopSize <- eFinalMf(initSize, s, detectionDrivers)
+            minDetectDrvCloneSz <- eFinalMf(initSize, s, detectionDrivers)
         else
             stop("Unknown model")
     }
@@ -469,7 +470,7 @@ oncoSimulIndiv <- function(fE = NULL,
                        "s, and sh.")
             stop(m)
             if(length(initMutant) > 1)
-                stop("With the old poset, initMutant can take a single value.")
+                stop("With the old poset, initMutant can only take a single value.")
         }
         
         message("You are using the old poset format. Consider using the new one.")
@@ -507,7 +508,7 @@ oncoSimulIndiv <- function(fE = NULL,
                                      alpha = 0.0015,  
                                      sh = sh,
                                      K = K, 
-                                     minDDrPopSize = minDDrPopSize,
+                                     minDetectDrvCloneSz = minDetectDrvCloneSz,
                                      extraTime = extraTime,
                                      detectionDrivers = detectionDrivers,
                                      onlyCancer = onlyCancer,
@@ -532,13 +533,13 @@ oncoSimulIndiv <- function(fE = NULL,
                                         typeFitness = typeFitness,
                                         max.memory = max.memory,
                                         mutatorGenotype = mutatorGenotype,                                   
-                                        initMutant = -1, 
+                                        initMutant = initMutant, 
                                         max.wall.time = max.wall.time,
                                         max.num.tries = max.num.tries,
                                         keepEvery = keepEvery,  
                                         alpha = 0.0015,  
                                         K = K, 
-                                        minDDrPopSize = minDDrPopSize,
+                                        minDetectDrvCloneSz = minDetectDrvCloneSz,
                                         extraTime = extraTime,
                                         detectionDrivers = detectionDrivers,
                                         onlyCancer = onlyCancer,
@@ -546,10 +547,9 @@ oncoSimulIndiv <- function(fE = NULL,
                                         errorHitMaxTries = errorHitMaxTries),
                   silent = !verbosity)
     }
-    
     if(inherits(op, "try-error")) {
         ##         if(length(grep("BAIL OUT NOW", op)))
-        stop("Unrecoverable error")
+        stop(paste("Unrecoverable error:", op ))
     }
     if(verbosity >= 2) {
         cat("\n ... finished this run:")
@@ -557,32 +557,54 @@ oncoSimulIndiv <- function(fE = NULL,
         cat("\n       Drivers Last = ", op$MaxDriversLast)
         cat("\n       Final Time = ", op$FinalTime, "\n")
     }
-    class(op) <- "oncosimul"
+
+    if(!is.null(fE))
+        class(op) <- c("oncosimul", "oncosimul2")
+    else
+        class(op) <- "oncosimul"
     attributes(op)$call <- call
     return(op)
 }
 
-
 summary.oncosimul <- function(object, ...) {
-    tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
-                    "MaxNumDrivers", "MaxDriversLast",
-                    "NumDriversLargestPop", "TotalPresentDrivers",
-                    "FinalTime", "NumIter", "HittedWallTime")]
-    tmp$errorMF <- object$other$errorMF
-    tmp$minDMratio <- object$other$minDMratio
-    tmp$minBMratio <- object$other$minBMratio
-    if(tmp$errorMF == -99) tmp$errorMF <- NA
-    if(tmp$minDMratio == -99) tmp$minDMratio <- NA
-    if(tmp$minBMratio == -99) tmp$minBMratio <- NA
-    tmp$OccurringDrivers <- object$OccurringDrivers
-    return(as.data.frame(tmp))
+
+    if(object$HittedWallTime || object$HittedMaxTries ||
+       object$other$UnrecoverExcept)
+        return(NA)
+    else {
+        tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
+                        "MaxNumDrivers", "MaxDriversLast",
+                        "NumDriversLargestPop", "TotalPresentDrivers",
+                        "FinalTime", "NumIter", "HittedWallTime")]
+ 
+        tmp$errorMF <- object$other$errorMF
+        tmp$minDMratio <- object$other$minDMratio
+        tmp$minBMratio <- object$other$minBMratio
+        if( (tmp$errorMF == -99)) tmp$errorMF <- NA
+        if( (tmp$minDMratio == -99)) tmp$minDMratio <- NA
+        if( (tmp$minBMratio == -99)) tmp$minBMratio <- NA
+        tmp$OccurringDrivers <- object$OccurringDrivers
+        return(as.data.frame(tmp))
+    }
 }
+
+
+
 
 print.oncosimul <- function(x, ...) {
     cat("\nIndividual OncoSimul trajectory with call:\n ")
     print(attributes(x)$call)
     cat("\n")
     print(summary(x))
+
+    if(inherits(x, "oncosimul2")) {
+        ## we know small object
+        cat("\n")
+        cat("Final population composition:\n")
+        df <- data.frame(Genotype = x$GenotypesLabels,
+                         N = x$pops.by.time[nrow(x$pops.by.time), -1])
+        print(df)
+    }
 }
 
 ## I want this to return things that are storable
@@ -940,10 +962,52 @@ oncoSimul.internal <- function(poset, ## restrict.table,
     ## return the matching call? call <- match.call()
     ## and then return(c(.Call(), call))
     ## call <- match.call()
-    return(c(.Call(
-        ## "Algorithm5",
-      "C_BNB_Algo5",
-        rtC,
+    ## return(c(
+    ##     .Call(
+    ##     ## "Algorithm5",
+    ##   "C_OncoSimulR_BNB_Algo5",
+    ##     rtC,
+    ##     numDrivers,
+    ##     numGenes,
+    ##     typeCBN,
+    ##     birth, 
+    ##     s, 
+    ##     death,
+    ##     mu,
+    ##     initSize,
+    ##     sampleEvery,
+    ##     detectionSize,
+    ##     finalTime,
+    ##     initSize_species,
+    ##     initSize_iter,
+    ##     seed_gsl,
+    ##     verbosity,
+    ##     speciesFS,
+    ##     ratioForce,
+    ##     typeFitness,
+    ##     max.memory,
+    ##     mutatorGenotype,
+    ##     initMutant,
+    ##     max.wall.time,
+    ##     keepEvery,
+    ##     alpha,
+    ##     sh,
+    ##     K,
+    ##     # endTimeEvery,
+    ##     detectionDrivers,
+    ##     onlyCancer,
+    ##     errorHitWallTime,
+    ##     max.num.tries,
+    ##     errorHitMaxTries,
+    ##     minDDrPopSize,
+    ##     extraTime
+    ## ),
+    ##          NumDrivers = numDrivers
+    ##          ))
+
+
+    return(c(
+        BNB_Algo5(rtC,
         numDrivers,
         numGenes,
         typeCBN,
@@ -981,6 +1045,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
     ),
              NumDrivers = numDrivers
              ))
+
 }
 
 
