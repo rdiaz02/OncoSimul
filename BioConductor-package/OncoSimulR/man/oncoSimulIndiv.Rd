@@ -419,7 +419,30 @@ oncoSimulSample(Nindiv,
   For \code{oncoSimulPop} a list of length \code{Nindiv}, and of class
   \code{"oncosimulpop"}, where each element of the list is itself a
   list, of class \code{oncosimul}, with components as described above.
-  
+
+
+  In v.2, the output is of both class "oncosimul" and "oncosimul2". The
+  oncoSimulIndiv return object differs in
+
+  \item{GenotypesWDistinctOrderEff}{The genotypes, with the numeric
+  codes, showing explicitly the order when it matters. So if you have
+  genes 1, 2, 7 for which order relationships are given, and genes 3, 4,
+  5, 6 for which other interactions exist, any mutations in 1, 2, 7 are
+  shown first, and in the order they occurred, before showing the rest
+  of the mutations.}
+
+  \item{GenotypesLabels}{The genotypes, as character vectors with the
+  original labels provided (i.e., not the integer codes). As before,
+  mutated genes, for those where order matters, come first, and are
+  separated by the rest by a "_".}
+
+  \item{OccurringDrivers}{This is the same as in v.1, but we use the
+  labels, not the numeric id codes. Of course, if you entered integers
+  as labels for the genes, you will see numbers (however, as a character
+  string).}
+
+
+
 
 }
 \references{
@@ -433,6 +456,9 @@ oncoSimulSample(Nindiv,
   accumulation of mutations during tumor progression: effects of
   passengers, evolutionary models, and sampling
   \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
+
+  Gerstung et al., 2011. The Temporal Order of Genetic and Pathway
+  Alterations in Tumorigenesis. \emph{PLoS ONE}, 6.
   
   McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National
@@ -452,11 +478,19 @@ oncoSimulSample(Nindiv,
 
 \seealso{
   \code{\link{plot.oncosimul}}, \code{\link{examplePosets}},
-  \code{\link{samplePop}}
+  \code{\link{samplePop}}, \code{\link{allFitnessEffects}}
   
 
 }
 \examples{
+
+#################################
+#####
+##### Examples using v.1
+#####
+#################################
+
+
 ## use poset p701
 data(examplePosets)
 p701 <- examplePosets[["p701"]]
@@ -501,6 +535,83 @@ p1 <- oncoSimulPop(4, p701,
 
 
 p2 <- oncoSimulSample(4, p701)
+
+
+#########################################
+######
+###### Examples using v.2:
+######
+#########################################
+
+
+
+#### A model similar to the one in McFarland. We use 5070 genes.
+
+set.seed(456)
+nd <- 70  
+np <- 5000 
+s <- 0.1  
+sp <- 1e-3 
+spp <- -sp/(1 + sp)
+mcf1 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
+                          drv = seq.int(nd))
+mcf1s <-  oncoSimulIndiv(mcf1,
+                         model = "McFL", 
+                         mu = 1e-7,
+                         detectionSize = 1e8, 
+                         detectionDrivers = 100,
+                         sampleEvery = 0.02,
+                         keepEvery = 2,
+                         initSize = 2000,
+                         finalTime = 1000,
+                         onlyCancer = FALSE)
+plot(mcf1s, addtot = TRUE, lwdClone = 0.6, log = "")
+summary(mcf1s)
+plot(mcf1s)
+
+
+#### Order effects with modules, and 5 genes without interactions
+#### with fitness effects from an exponential distribution
+
+oi <- allFitnessEffects(orderEffects =
+               c("F > D" = -0.3, "D > F" = 0.4),
+               noIntGenes = rexp(5, 10),
+                          geneToModule =
+                              c("Root" = "Root",
+                                "F" = "f1, f2, f3",
+                                "D" = "d1, d2") )
+
+oi_s1 <- oncoSimulIndiv(oi, model = "Exp")
+oi_s1$GenotypesLabels
+oi_s1   ## note the order and separation by "_"
+
+######## Using a poset for pancreatic cancer from Gerstung et al.
+###      (s and sh are made up for the example; only the structure
+###       and names come from Gerstung et al.)
+
+
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                                          "TP53", "TP53", "MLL3"),
+                                      child = c("KRAS","SMAD4", "CDNK2A", 
+                                          "TP53", "MLL3",
+                                          rep("PXDN", 3), rep("TGFBR2", 2)),
+                                      s = 0.1,
+                                      sh = -0.9,
+                                      typeDep = "MN"))
+plot(pancr)
+
+### Use an exponential growth model
+
+pancr_1 <- oncoSimulIndiv(pancr, model = "Exp")
+
+summary(pancr_1)
+plot(pancr_1)
+pancr_1$GenotypesLabels
+
+
+pancr.1 <- oncoSimulPop(4, pancr,
+                   keepEvery = 10,
+                   mc.cores = 2)
                       
 }
 \keyword{misc}

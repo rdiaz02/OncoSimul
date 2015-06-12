@@ -18,7 +18,7 @@
 \usage{
 
 \method{plot}{oncosimul}(x, col = c(8, "orange", 6:1), log = "y",
-                   ltyClone = 2:6, lwdClone = 0.2,
+                   ltyClone = 2:6, lwdClone = 0.7,
                    ltyDrivers = 1, lwdDrivers = 3,
                    xlab = "Time units",
                    ylab = "Number of cells", plotClones = TRUE,
@@ -28,7 +28,7 @@
 
 \method{plot}{oncosimulpop}(x, ask = TRUE, col = c(8, "orange", 6:1),
                       log = "y",
-                      ltyClone = 2:6, lwdClone = 0.2,
+                      ltyClone = 2:6, lwdClone = 0.7,
                       ltyDrivers = 1, lwdDrivers = 3,
                       xlab = "Time units",
                       ylab = "Number of cells", plotClones = TRUE,

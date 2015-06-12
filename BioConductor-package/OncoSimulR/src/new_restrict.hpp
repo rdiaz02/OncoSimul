@@ -8,13 +8,13 @@
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
 
 inline Dependency stringToDep(const std::string& dep) {
-  if(dep == "monotone")
+  if(dep == "monotone") // AND, CBN, CMPN
     return Dependency::monotone;
-  else if(dep == "semimonotone")
+  else if(dep == "semimonotone") // OR, SMN, DMPN
     return Dependency::semimonotone;
-  else if(dep == "xmpn")
+  else if(dep == "xmpn") // XOR, XMPN
     return Dependency::xmpn;
-  else if(dep == "--")
+  else if(dep == "--") // for root, for example
     return Dependency::single;
   else 
     throw std::out_of_range("Not a valid typeDep");

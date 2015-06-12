@@ -2159,6 +2159,51 @@ for(i in 1:length(examplesFitnessEffects)) {
 }
 @ 
 
+\subsection{Numerical issues with Bozic}
+
+<<>>=
+
+set.seed(987)
+ie3 <- allFitnessEffects(noIntGenes = rexp(3))
+evalAllGenotypes(ie3, order = FALSE, addwt = TRUE, 
+                 model = "Bozic")
+
+ie3_b <- oncoSimulIndiv(fE = ie3, model = "Bozic")
+
+evalAllGenotypes(ie3, order = FALSE, addwt = TRUE)
+
+ie3_e <- oncoSimulIndiv(fE = ie3, model = "Exp")
+
+@ 
+
+
+\section{Generating DAGs}\label{simo}
+
+Why this function? I searched for, and could not find any that did what I
+wanted, in particular bounding the number of parents, being able to
+specify the approximate depth\footnote{Where depth is defined in the usual
+  way to mean smallest number of nodes ---or edges--- to traverse to get
+  from the bottom to the top of the DAG.} of the graph, and optionally
+being able to have DAGs where no node is connected to another both
+directly (an edge between the two) and indirectly (there is a path between
+the two through other nodes). So I wrote my own code. The code is fairly
+simple to understand (all in file \texttt{generate-random-trees.R}). I
+would not be surprised if this way of generating random graphs has been
+proposed and named before; please let me know, best if with a reference.
+
+
+Should we remove direct connections if there are indirect? Or, should we
+set \texttt{removeDirectIndirect = TRUE}? Except for zz \cite{Farahani},
+none of the DAGs I've seen in the context of CBNs, oncogenetic trees, etc,
+include both direct and indirect connections between nodes. If these
+exist, reasoning about the model can be harder. For example, with CBN (AND
+or CMPN or monotone relationships) adding a direct connection makes no
+difference iff we assume that the relationships encoded in the DAG are
+fully respected (e.g., all $s_h = -\infty$). But it can make a difference
+if we allow for deviations from the monotonicity, specially if we only
+check for the satisfaction of the presence of the immediate ancestors. And
+things get even trickier if we combine XOR with AND. The code for
+computing fitness, however, should deal with all of this just fine.
 
 
 

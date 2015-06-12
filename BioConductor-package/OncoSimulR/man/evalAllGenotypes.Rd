@@ -1,125 +1,170 @@
 \name{evalAllGenotypes}
 \alias{evalAllGenotypes}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\alias{evalGenotype}
 \title{
-Evaluate fitness of all possible genotypes.
+Evaluate fitness of one or all possible genotypes.
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Given a fitnessEffects description, obtain the fitness of a single or
+  all genotypes.
 }
 \usage{
-evalAllGenotypes(fitnessEffects, order = TRUE, max = 256, addwt = FALSE, model = "")
+evalAllGenotypes(fitnessEffects, order = TRUE, max = 256, addwt = FALSE,
+model = "")
+
+evalGenotype(genotype, fitnessEffects, verbose = FALSE, echo = FALSE,
+model = "")
+
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{fitnessEffects}{
-%%     ~~Describe \code{fitnessEffects} here~~
-}
+  \item{genotype}{
+    
+    (For \code{evalGenotype}). A genotype, as a character vector, with
+    genes separated by "," or ">", or as a numeric vector. Use the same
+    integers or characters used in the fitnessEffects object. This is a
+    genotype in terms of genes, not modules.
+
+    Using "," or ">" makes no difference: the sequence is always taken
+  as the order in which mutations occurred. Whether order matters or not
+  is encoded in the \code{fitnessEffects} object.
+  }
+
+
+  \item{fitnessEffects}{A \code{fitnessEffects} object, as produced by \code{\link{fitnessEffects}}.}
   \item{order}{
-%%     ~~Describe \code{order} here~~
+    (For \code{evalAllGenotypes}). Does order matter? If it does, then generate not only all possible
+    combinations of the genes, but all possible permutations for each combination.
 }
-  \item{max}{
-%%     ~~Describe \code{max} here~~
+\item{max}{
+  (For \code{evalAllGenotypes}). By default, no output is shown if the
+  number of possible genotypes exceeds the max. Increase as needed.
 }
-  \item{addwt}{
-%%     ~~Describe \code{addwt} here~~
+\item{addwt}{
+  (For \code{evalAllGenotypes}). Add the wildtype (no mutations) explicitly?
 }
   \item{model}{
-%%     ~~Describe \code{model} here~~
+    Either nothing (the default) or "Bozic". If "Bozic" then the fitness
+    effects contribute to decreasing the Death rate. Otherwise Birth
+    rate is shown (and labeled as Fitness).
 }
+\item{verbose}{
+  (For \code{evalGenotype}). If set to TRUE, print out the individual terms
+  that are added to 1 (or subtracted from 1, if \code{model} is "Bozic").
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
+
+\item{echo}{
+  (For \code{evalGenotype}). If set to TRUE, show the input genotype and
+  print out a message with the death rate or fitness value. Useful for
+  some examples, as shown in the vignette.
+}
+
+
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
+For \code{evalGenotype} either the value of fitness or (if \code{verbose
+= TRUE}) the value of fitness and its individual components.
+
+For \code{evalAllGenotypes} a data frame with two columns, the Genotype
+and the Fitness  (or Death Rate, if Bozic).
+
 }
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+Ramon Diaz-Uriarte
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\note{ Fitness is used in a slight abuse of the language. Right now,
+  mutations contribute to the birth rate for all models except Bozic,
+  where they modify the death rate. The general expression for fitness
+  is the usual multiplicative one of \eqn{\prod (1 + s_i)}{(1 + s1) (1 +
+  s2) .. (1 + sn)}, where each \eqn{s_i}{s1,s2} refers to the fitness
+  effect of the given gene. When dealing with death rates, we use
+  \eqn{\prod (1 - s_i)}{(1 - s1) (1 - s2) .. (1 - sn)}.
+
+  Modules are, of course, taken into account if present (i.e., fitness
+  is specified in terms of modules, but the genotype is specified in
+  terms of genes).
+}
+
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{fitnessEffects}}.
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+# A three-gene epistasis example
+sa <- 0.1
+sb <- 0.15
+sc <- 0.2
+sab <- 0.3
+sbc <- -0.25
+sabc <- 0.4
 
-## The function is currently defined as
-function (fitnessEffects, order = TRUE, max = 256, addwt = FALSE, 
-    model = "") 
-{
-    if (order) 
-        tot <- function(n) {
-            sum(sapply(seq.int(n), function(x) choose(n, x) * 
-                factorial(x)))
-        }
-    else tot <- function(n) {
-        2^n
-    }
-    nn <- nrow(fitnessEffects$geneModule) - 1 + nrow(fitnessEffects$long.geneNoInt)
-    tnn <- tot(nn)
-    if (tnn > max) {
-        m <- paste("There are ", tnn, "genotypes.")
-        m <- paste(m, " This is larger than max.")
-        m <- paste(m, "Adjust max and rerun if you want")
-        stop(m)
-    }
-    if (order) {
-        f1 <- function(n) {
-            lapply(seq.int(n), function(x) permutations(n = n, 
-                r = x))
-        }
-    }
-    else {
-        f1 <- function(n) {
-            lapply(seq.int(n), function(x) combinations(n = n, 
-                r = x))
-        }
-    }
-    genotNums <- f1(nn)
-    list.of.vectors <- function(y) {
-        lapply(unlist(lapply(y, function(x) {
-            apply(x, 1, list)
-        }), recursive = FALSE), function(m) m[[1]])
-    }
-    genotNums <- list.of.vectors(genotNums)
-    names <- c(fitnessEffects$geneModule$Gene[-1], fitnessEffects$long.geneNoInt$Gene)
-    genotNames <- unlist(lapply(lapply(genotNums, function(x) names[x]), 
-        function(z) paste(z, collapse = if (order) {
-            " > "
-        }
-        else {
-            ", "
-        })))
-    if (model \%in\% c("Bozic", "bozic1", "bozic2")) 
-        prodNeg <- TRUE
-    else prodNeg <- FALSE
-    allf <- vapply(genotNums, function(x) evalRGenotype(x, fitnessEffects, 
-        FALSE, prodNeg), 1.1)
-    df <- data.frame(Genotype = genotNames, Fitness = allf, stringsAsFactors = FALSE)
-    if (addwt) 
-        df <- rbind(data.frame(Genotype = "wt", Fitness = 1, 
-            stringsAsFactors = FALSE), df)
-    if (prodNeg) 
-        colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
-    return(df)
-  }
+sac <- (1 + sa) * (1 + sc) - 1
+
+E3A <- allFitnessEffects(epistasis =
+                            c("A:-B:-C" = sa,
+                              "-A:B:-C" = sb,
+                              "-A:-B:C" = sc,
+                              "A:B:-C" = sab,
+                              "-A:B:C" = sbc,
+                              "A:-B:C" = sac,
+                              "A : B : C" = sabc)
+                                                )
+
+evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
+evalAllGenotypes(E3A, order = FALSE, addwt = FALSE, addwt = TRUE,  model = "Bozic")
+
+evalGenotype("B, C", E3A, verbose = TRUE)
+
+## Order effects and modules
+ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
+                          geneToModule =
+                              c("Root" = "Root",
+                                "F" = "f1, f2, f3",
+                                "D" = "d1, d2") )
+
+evalAllGenotypes(ofe2, max = 325)[1:15, ]
+
+## Next two are identical
+evalGenotype("d1 > d2 > f3", ofe2, verbose = TRUE)
+evalGenotype("d1 , d2 , f3", ofe2, verbose = TRUE)
+
+## This is different
+evalGenotype("f3 , d1 , d2", ofe2, verbose = TRUE)
+## but identical to this one
+evalGenotype("f3 > d1 > d2", ofe2, verbose = TRUE)
+
+
+## Restrictions in mutations as a graph. Modules present.
+
+p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
+                  child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
+                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
+                  sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
+                  typeDep = c(rep("--", 4), 
+                      "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
+fp4m <- allFitnessEffects(p4,
+                          geneToModule = c("Root" = "Root", "A" = "a1",
+                              "B" = "b1, b2", "C" = "c1",
+                              "D" = "d1, d2", "E" = "e1",
+                              "F" = "f1, f2", "G" = "g1"))
+
+evalAllGenotypes(fp4m, order = FALSE, max = 1024, addwt = TRUE)[1:15, ]
+
+evalGenotype("b1, b2, e1, f2, a1", fp4m, verbose = TRUE)
+
+## Of course, this is identical; b1 and b2 are same module
+## and order is not present here
+
+evalGenotype("a1, b2, e1, f2", fp4m, verbose = TRUE)
+
+evalGenotype("a1 > b2 > e1 > f2", fp4m, verbose = TRUE)
+
+## We can use the exact same integer numeric id codes as in the
+##   fitnessEffects geneModule component:
+
+evalGenotype(c(1L, 3L, 7L, 9L), fp4m, verbose = TRUE)
+
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+\keyword{ misc }
+

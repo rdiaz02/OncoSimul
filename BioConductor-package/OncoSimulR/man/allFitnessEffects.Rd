@@ -37,18 +37,24 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
       explicitly modeling deviatons from the restrictions in the graph,
       and is discussed in Diaz-Uriarte, 2015. }
     \item{typeDep}{The type of dependency. Three possible types of
-      relationship exist: monotone relationships, such as in CBN, where
-      all parent nodes must be present for a relationship to be
-      satisfied; this is specified as "MN" or as
-      "monotone". Semimonotone relationships, where having one parent is
-      enough for the dependency relationship to be satisfied; this is
-      specified as "SM" or "semimonotone". XOR relationships, or XMPN,
-      where the relationship is satisfied only if exactly one of the
-      parents is present; this is specified as "XOR", "xmpn", or
-      "XMPN". In addition, for the nodes that depend only on the root
-      node, you can use "--" or "-" if you want (though using any of the
-      other three would have the same effects).}
-    }
+      relationship exist:
+      \describe{
+	\item{AND, monotonic, or CMPN}{Like in the CBN model, all parent nodes
+	  must be present for a relationship to be satisfied. Specify it
+	  as "AND" or "MN" or "monotone".}
+	\item{OR, semimonotonic, or DMPN}{A single parent node is enough
+	  for a relationship to be satisfied. Specify it as "OR" or
+	  "SM" or "semimonotone".}
+	\item{XOR or XMPN}{Exactly one parent node must be mutated for a
+	  relationship to be satisfied. Specify it as "XOR" or "xmpn" or
+	  "XMPN".}
+      }
+
+      In addition, for the nodes that depend only on the root node, you
+      can use "--" or "-" if you want (though using any of the other
+      three would have the same effects if a node that connects to root
+      only connects to root).}
+  }
   }
   \item{epistasis}{
     A named numeric vector. The names identify the relationship, and the

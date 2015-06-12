@@ -26,7 +26,7 @@ simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
         removeDirectIndirect <- FALSE
     }
 
-    adj.mat <- matrix(0L, ncol = n + 1, nrow = n + 1)
+    adjMat <- matrix(0L, ncol = n + 1, nrow = n + 1)
     ## split into h groups
 
     ## each element in a level can be connected to one or more (if
@@ -48,22 +48,22 @@ simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
             } else {
                 parents <- grs[[i - 1]]
             }
-            adj.mat[ , grs[[i]] + 1 ] <- connect(parents, grs[[i]], conjunction,
+            adjMat[ , grs[[i]] + 1 ] <- connect(parents, grs[[i]], conjunction,
                                                  nparents, n) 
         }
         ## Those in the first group, the ones connected to root
-        adj.mat[1, grs[[1]] + 1 ] <- 1L
+        adjMat[1, grs[[1]] + 1 ] <- 1L
     } else { ## h = 1, so all connected to root
-        adj.mat[1, 2:(n+1) ] <- 1L
+        adjMat[1, 2:(n+1) ] <- 1L
     }
     
-    colnames(adj.mat) <- rownames(adj.mat) <- c(rootName, 1:n)
+    colnames(adjMat) <- rownames(adjMat) <- c(rootName, 1:n)
     
 
     ## Prune to remove indirect connections
     if(multilevelParent & removeDirectIndirect)
-        adj.mat <- removeIndirectConnections(adj.mat)
-    return(adj.mat)
+        adjMat <- removeIndirectConnections(adjMat)
+    return(adjMat)
 }
 
 ## simOG <- simOGraph
@@ -118,35 +118,42 @@ connectIndiv <- function(parents, nparents, n) {
 }
 
 ## Not used
-## findSuperParents <- function(x, adj.mat) {
-##     parents <- which(adj.mat[, x + 1]  == 1) - 1
-##     allP <- findAllParents(x, adj.mat)
+## findSuperParents <- function(x, adjMat) {
+##     parents <- which(adjMat[, x + 1]  == 1) - 1
+##     allP <- findAllParents(x, adjMat)
 ##     return(setdiff(allP, parents))
 ## }
 
-findAllParents <- function(x, adj.mat) {
+findAllParents <- function(x, adjMat) {
     if(x == 0)
         return(NULL)
     else{
-        p <- which(adj.mat[, x + 1] == 1) - 1
-        p1 <- unlist(lapply(p, function(x) findAllParents(x, adj.mat)))
+        p <- which(adjMat[, x + 1] == 1) - 1
+        p1 <- unlist(lapply(p, function(x) findAllParents(x, adjMat)))
         return(c(p, p1))
     }
 }
 
-repeatedParents <- function(x, adj.mat) {
-    ap <- findAllParents(x, adj.mat)
+repeatedParents <- function(x, adjMat) {
+    ap <- findAllParents(x, adjMat)
     dups <- duplicated(ap)
     dupP <- setdiff(ap[dups], 0)
     dupP
 }
 
 
-removeIndirectConnections <- function(adj.mat) {
-    for(i in ncol(adj.mat):2) {
-        dp <- repeatedParents( i - 1, adj.mat)
+removeIndirectConnections <- function(adjMat) {
+    ## This is a bad name: we remove the direct connections. How? We
+    ## search, for each node, for the set of all
+    ## parents/grandparents/grandgranparents. If any of those ancestors is
+    ## repeated, it means you go from that ancestor to the node in
+    ## question through at least two different routes. Thus, ensure the
+    ## direct is 0 (it might already be, no problem). Once you do that,
+    ## you know there are not both indirect AND direct connections.
+    for(i in ncol(adjMat):2) {
+        dp <- repeatedParents( i - 1, adjMat)
         if(length(dp))
-            adj.mat[cbind(dp + 1, i)] <- 0L
+            adjMat[cbind(dp + 1, i)] <- 0L
     }
-    return(adj.mat)
+    return(adjMat)
 }

@@ -1,11 +1,10 @@
 \name{simOGraph}
 \alias{simOGraph}
 \title{
-  Simulate oncogenetic/CBN trees
+  Simulate oncogenetic/CBN/XMPN DAGs.
 }
 \description{
-  Simulate trees that represent restrictions in the order of
-  accumulation of mutations.
+  Simulate DAGs that represent restrictions in the accumulation of mutations.
 }
 \usage{
 simOGraph(n, h = 4, conjunction = TRUE, nparents = 3, multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root")
@@ -31,7 +30,8 @@ simOGraph(n, h = 4, conjunction = TRUE, nparents = 3, multilevelParent = TRUE, r
   \item{removeDirectIndirect}{
     Ensure that no two nodes are connected both directly (i.e., with an
   edge between them) and indirectly, through intermediate nodes. If
-  TRUE, the direct connections are removed from the graph.
+  TRUE, the direct connections are removed from the graph starting from
+  the bottom.
 }
 \item{rootName}{
   The name you want to give the "Root" node.
@@ -52,6 +52,8 @@ simOGraph(n, h = 4, conjunction = TRUE, nparents = 3, multilevelParent = TRUE, r
   The actual depth of the graph can be smaller than \code{h} because
   nodes from a level might be connected to superior levels skipping
   intermediate ones.
+
+  See the vignette for further discussion about arguments. 
 
 }
 \value{

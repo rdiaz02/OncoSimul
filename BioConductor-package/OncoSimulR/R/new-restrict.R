@@ -109,9 +109,13 @@ list.of.deps <- function(x) {
     ## lookupTypeDep <- c("MN" = 1, "monotone" = 1,
     ##                 "SM" = 2, "semimonotone" = 2)
     lookupTypeDep <- c("MN" = "monotone",
+                       "AND" = "monotone",
                        "monotone" = "monotone",
+                       "CMPN" = "monotone",
+                       "OR" = "semimonotone",
                        "SM" = "semimonotone",
                        "semimonotone" = "semimonotone",
+                       "DMPN" = "semimonotone",
                        "XOR" = "xmpn",
                        "xmpn" = "xmpn",
                        "XMPN" = "xmpn",
@@ -129,11 +133,14 @@ list.of.deps <- function(x) {
         if(length(unique(x$child))!= 1)
             stop("child not unique")
     }
+    typeDep <- lookupTypeDep[unique(x$typeDep)]
+    if(any(is.na(typeDep)))
+        stop("typeDep value incorrect. Check spelling.")
     return(list(
         child = unique(x$child),
         s = unique(x$s),
         sh = unique(x$sh),
-        typeDep = lookupTypeDep[unique(x$typeDep)],
+        typeDep = ,
         parents = unlist(x$parent)))
 
 }
@@ -594,9 +601,10 @@ evalGenotype <- function(genotype, fitnessEffects,
             cat(" Fitness: ", ff, "\n")
         else
             cat(" Death rate: ", ff, "\n")
-    } else {
-        return(ff)
-    }
+    } ## else {
+    ##     return(ff)
+    ## }
+    return(ff)
 }
 
 ## For multiple genotypes, lapply the matching.

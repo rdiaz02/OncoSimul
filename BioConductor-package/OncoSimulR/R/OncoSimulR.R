@@ -21,7 +21,7 @@
 ## But this will change with the modules/genes
 
 oncoSimulSample <- function(Nindiv,
-                            poset,
+                            fp,
                             model = "Bozic",
                             numPassengers = 0,
                             mu = 1e-6,
@@ -131,7 +131,7 @@ oncoSimulSample <- function(Nindiv,
         
         possibleAttempts <- attemptsLeft - (numToRun - 1)
         ## I think I do not want a try here.
-        tmp <-  oncoSimulIndiv(poset = poset,
+        tmp <-  oncoSimulIndiv(fp = fp,
                                model = model,
                                numPassengers = numPassengers,
                                mu = mu,
@@ -306,7 +306,7 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
 
 
 oncoSimulPop <- function(Nindiv,
-                         poset,
+                         fp,
                          model = "Bozic",
                          numPassengers = 30,
                          mu = 1e-6,
@@ -342,7 +342,7 @@ oncoSimulPop <- function(Nindiv,
     pop <- mclapply(seq.int(Nindiv),
                     function(x)
                     oncoSimulIndiv(
-                        poset = poset,
+                        fp = fp,
                         model = model,
                         numPassengers = numPassengers,
                         mu = mu,
@@ -374,8 +374,7 @@ oncoSimulPop <- function(Nindiv,
 ## where is the default K coming from? Here:
 ## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
 
-oncoSimulIndiv <- function(fE = NULL,
-                           poset = NULL,
+oncoSimulIndiv <- function(fp = NULL,
                            model = "Bozic",
                            numPassengers = 30,
                            mu = 1e-6,
@@ -461,8 +460,8 @@ oncoSimulIndiv <- function(fE = NULL,
         warning("Using fitness exp with death != 1")
 
     
-    if(is.null(fE)) {
-        if(any(unlist(lapply(list(poset, numGenes,
+    if(!inherits(fp, "fitnessEffects")) {
+        if(any(unlist(lapply(list(fp, numGenes,
                                   numPassengers,
                                   s, sh), is.null)))) {
             m <- paste("You are using the old poset format.",
@@ -480,7 +479,7 @@ oncoSimulIndiv <- function(fE = NULL,
         ## one. But if we set onlyCnacer = FALSE, we also accept simuls
         ## without cancer (or without anything)
         
-        op <- try(oncoSimul.internal(poset = poset, ## restrict.table = rt,
+        op <- try(oncoSimul.internal(poset = fp, ## restrict.table = rt,
                                      ## numGenes = numGenes,
                                      numPassengers = numPassengers,
                                      typeCBN = "CBN",
@@ -516,7 +515,7 @@ oncoSimulIndiv <- function(fE = NULL,
                                      errorHitMaxTries = errorHitMaxTries),
                   silent = !verbosity)
     } else {
-        op <- try(nr_oncoSimul.internal(rFE = fE, 
+        op <- try(nr_oncoSimul.internal(rFE = fp, 
                                         birth = birth,
                                         death = death,  
                                         mu =  mu,  
@@ -625,7 +624,7 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                               col = c(8, "orange", 6:1),
                               log = "y",
                               ltyClone = 2:6,
-                              lwdClone = 0.2,
+                              lwdClone = 0.7,
                               ltyDrivers = 1,
                               lwdDrivers = 3,
                               xlab = "Time units",
@@ -667,7 +666,7 @@ plot.oncosimulpop <- function(x, ask = TRUE,
 plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
                            log = "y",
                            ltyClone = 2:6,
-                           lwdClone = 0.2,
+                           lwdClone = 0.7,
                            ltyDrivers = 1,
                            lwdDrivers = 3,
                            xlab = "Time units",
