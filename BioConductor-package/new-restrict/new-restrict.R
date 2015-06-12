@@ -78,9 +78,15 @@ gm.to.geneModuleL <- function(gm, one.to.one) {
         if(!(identical(geneMod$Gene, geneMod$Module)))
             stop("Impossible: we are supposed to be in one-to-one for Module-Gene.")
     } else {
+        ## Works, but does not give the most ordered module names. But
+        ## keeps implicit order given by user.
         idm <- seq.int(length(gm) - 1)
         idm <- c("Root" = 0L, idm)
         names(idm) <- names(gm)
+        ## This sorts by the names but is not optimal either
+        ## idm1 <- seq.int(length(gm) - 1)
+        ## idm <- c(0L, idm1)
+        ## names(idm) <- c("Root", sort(setdiff(names(gm), "Root")))
         geneMod$ModuleNumID <- idm[geneMod[, "Module"]]
     }
     if(length(unique(geneMod$Gene)) != nrow(geneMod)) {

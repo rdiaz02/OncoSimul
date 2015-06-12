@@ -1,31 +1,33 @@
 ## A minimal thing, to make sure no screw ups
 
+## We no longer accept data frames. Those checks disabled
+
 epistm1 <- c("a:d" = 0.2, "d:c" = 0.3)
-epistm1b <- data.frame(ids = c("a:d", "d:c"), s = c(0.2, 0.3))
+## epistm1b <- data.frame(ids = c("a:d", "d:c"), s = c(0.2, 0.3))
 
 oeffects1 <- c("d>a" = 0.4, "c > d" = -0.3)
-oeffects1b <- data.frame(ids = c("d>a", "c > d"),
-                         s = c(0.4, -0.3))
+## oeffects1b <- data.frame(ids = c("d>a", "c > d"),
+##                          s = c(0.4, -0.3))
 
-oeffects1c <- data.frame(ids = c("a>d", "c > d"),
-                         s = c(0.4, -0.3))
+## oeffects1c <- data.frame(ids = c("a>d", "c > d"),
+##                          s = c(0.4, -0.3))
 
 
 
-test_that("epist to long identical", {
-    expect_identical(to.long.epist.order(epistm1, ":"),
-                     to.long.epist.order(epistm1b, ":"))
-})
+## test_that("epist to long identical", {
+##     expect_identical(to.long.epist.order(epistm1, ":"),
+##                      to.long.epist.order(epistm1b, ":"))
+## })
 
-test_that("order effects to long identical", {
-    expect_identical(to.long.epist.order(oeffects1, ">"),
-                     to.long.epist.order(oeffects1b, ">"))
-})
+## test_that("order effects to long identical", {
+##     expect_identical(to.long.epist.order(oeffects1, ">"),
+##                      to.long.epist.order(oeffects1b, ">"))
+## })
 
-test_that("order effects to long different", {
-    expect_false(identical(to.long.epist.order(oeffects1, ">"),
-                     to.long.epist.order(oeffects1c, ">")))
-})
+## test_that("order effects to long different", {
+##     expect_false(identical(to.long.epist.order(oeffects1, ">"),
+##                      to.long.epist.order(oeffects1c, ">")))
+## })
 
 
 
@@ -67,34 +69,41 @@ out3 <- structure(list(Gene = c("Root", "1", "2", "3", "4", "5", "6"),
 
 out4 <- structure(list(Gene = c("Root", "a", "b", "mXy", "uVw", "vzt"
 ), Module = c("Root", "M", "M", "A", "B", "B"), GeneNumID = 0:5, 
-    ModuleNumID = c(0L, 1L, 1L, 2L, 3L, 3L)), .Names = c("Gene", 
+    ModuleNumID = c(0L, 1L, 1L, 3L, 2L, 2L)), .Names = c("Gene", 
+"Module", "GeneNumID", "ModuleNumID"), row.names = c(1L, 2L, 
+3L, 4L, 5L, 6L), class = "data.frame")
+
+
+out5 <- structure(list(Gene = c("Root", "a", "b", "mXy", "uVw", "vzt"
+), Module = c("Root", "M", "M", "A", "B", "B"), GeneNumID = 0:5, 
+    ModuleNumID = c(0L, 2L, 2L, 1L, 3L, 3L)), .Names = c("Gene", 
 "Module", "GeneNumID", "ModuleNumID"), row.names = c(1L, 2L, 
 3L, 4L, 5L, 6L), class = "data.frame")
 
 
 test_that("gm to geneModule, ex1", {
-    expect_identical(gm.to.geneModule(gM),
+    expect_identical(gm.to.geneModuleL(gM, FALSE),
                      out1)
 })
 
 test_that("gm to geneModule, ex2", {
-    expect_identical(gm.to.geneModule(gM2),
+    expect_identical(gm.to.geneModuleL(gM2, FALSE),
                      out2)
 })
 
 test_that("gm to geneModule, ex3", {
-    expect_identical(gm.to.geneModule(gM3),
+    expect_identical(gm.to.geneModuleL(gM3, FALSE),
                      out3)
 })
 
 test_that("gm to geneModule, ex4", {
-    expect_identical(gm.to.geneModule(gM4),
+    expect_identical(gm.to.geneModuleL(gM4, FALSE),
                      out4)
 })
 
 test_that("gm to geneModule, ex5", {
-    expect_identical(gm.to.geneModule(gM5),
-                     out4)
+    expect_identical(gm.to.geneModuleL(gM5, FALSE),
+                     out5)
 })
 
 
@@ -102,9 +111,11 @@ gb <- c("a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
 gb1 <- c("a" = "1, 2", "Root" = "Root", "b" = "3, 4, 5", "c" = "6")
 
 test_that("error if no root in gm", {
-             expect_error(gm.to.geneModule(gb))
+             expect_error(gm.to.geneModuleL(gb, FALSE))
           })
 
 test_that("error if root out of place in gm", {
-             expect_error(gm.to.geneModule(gb1))
+             expect_error(gm.to.geneModuleL(gb1, FALSE))
           })
+
+

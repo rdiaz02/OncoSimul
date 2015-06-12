@@ -789,7 +789,7 @@ test_that("long example OK", {
     expect_true(all.equal(evalGenotype("k1 > i1 > h2", fea), 0.5)) ## 0.5
     expect_true(all.equal(evalGenotype("k1 > h1 > i1", fea), 0.5 * 1.12)) ## 0.5 * 1.12
     expect_true(all.equal(evalGenotype("k2 > m1 > h1 > i1", fea), 1.12)) ## 1.12
-    nnn3 <- noint[3]; names(nnn) <- NULL
+    nnn <- noint[3]; names(nnn) <- NULL
     expect_true(all.equal(evalGenotype("k2 > m1 > h1 > i1 > c1 > n3 > f2", fea), (1 + nnn) * 0.1 * 0.05 * 0.9 * 1.12)) ## 1.12 * 0.1 * (1 + noint[3]) * 0.05 * 0.9
     randomGenotype <- function(fe, ns = NULL) {
         gn <- setdiff(c(fe$geneModule$Gene,
