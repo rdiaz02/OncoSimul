@@ -1950,7 +1950,7 @@ object has been trimmed by removing empty passenger rows in the Genotype matrix)
 
 <<>>=
 data(mcfLs)
-plot(mcfLs, addtot = TRUE, lwdClone = 0.4, log = "")
+plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "")
 summary(mcfLs)
 @ 
 
