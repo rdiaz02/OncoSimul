@@ -22,11 +22,11 @@ using std::back_inserter;
 void print_Genotype(const Genotype& ge) {
   Rcpp::Rcout << "\n Printing Genotype";
   Rcpp::Rcout << "\n\t\t order effects genes:";
-  for(auto oo : ge.orderEff) Rcpp::Rcout << " " << oo;
+  for(auto const &oo : ge.orderEff) Rcpp::Rcout << " " << oo;
   Rcpp::Rcout << "\n\t\t epistasis and restriction effects genes:";
-  for(auto oo : ge.epistRtEff) Rcpp::Rcout << " " << oo;
+  for(auto const &oo : ge.epistRtEff) Rcpp::Rcout << " " << oo;
   Rcpp::Rcout << "\n\t\t non interaction genes :";
-  for(auto oo : ge.rest) Rcpp::Rcout << " " << oo;
+  for(auto const &oo : ge.rest) Rcpp::Rcout << " " << oo;
   Rcpp::Rcout << std::endl;
 }
 
@@ -54,10 +54,10 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
       g0.push_back(F.Gene_Module_tabl[i].GeneNumID);
     }
   }
-  // for(auto a : F.Gene_Module_tabl) {
+  // for(auto const &a : F.Gene_Module_tabl) {
   //    if(a.GeneNumID != 0) g0.push_back(a.GeneNumID);
   // }
-  for(auto b: F.genesNoInt.NumID) {
+  for(auto const &b: F.genesNoInt.NumID) {
     g0.push_back(b);
   }
   sort(g0.begin(), g0.end());
@@ -67,11 +67,11 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
 
 vector<int> allGenesinGenotype(const Genotype& ge){
   std::vector<int> allgG;
-  for(auto g1 : ge.orderEff)
+  for(auto const &g1 : ge.orderEff)
     allgG.push_back(g1);
-  for(auto g2 : ge.epistRtEff)
+  for(auto const &g2 : ge.epistRtEff)
     allgG.push_back(g2);
-  for(auto g3 : ge.rest)
+  for(auto const &g3 : ge.rest)
     allgG.push_back(g3);
   sort(allgG.begin(), allgG.end());
   return allgG;
@@ -245,8 +245,8 @@ std::vector<epistasis> convertEpiOrderEff(Rcpp::List ep) {
 std::vector<int> sortedAllOrder(std::vector<epistasis>& E) {
   
   std::vector<int> allG;
-  for(auto ec : E) {
-    for(auto g : ec.NumID) {
+  for(auto const &ec : E) {
+    for(auto const &g : ec.NumID) {
       allG.push_back(g);
     }
   }
@@ -260,7 +260,7 @@ std::vector<int> sortedAllPoset(std::vector<Poset_struct>& Poset) {
   // Yes, this could be done inside rTable_to_Poset but this is cleaner
   // and will only add very little time. 
   std::vector<int> allG;
-  for(auto p : Poset) {
+  for(auto const &p : Poset) {
     allG.push_back(p.childNumID);
   }
   sort(allG.begin(), allG.end());
@@ -338,7 +338,7 @@ void obtainMutations(const Genotype& parent,
 //   if(fe.gMOneToOne)
 //     genes = fe.alOrderG;
 //   else {
-//     for(auto m : fe.allOrderG) {
+//     for(auto const &m : fe.allOrderG) {
 //       genes.push_back()
 //     }
 
@@ -358,10 +358,10 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   fg.noInt = fe.genesNoInt.NumID;
 
   std::multimap<int, int> MG;
-  for( auto mt : fe.Gene_Module_tabl) {
+  for( auto const &mt : fe.Gene_Module_tabl) {
     MG.insert({mt.ModuleNumID, mt.GeneNumID});
   }
-  for (auto o : fe.allOrderG) {
+  for (auto const &o : fe.allOrderG) {
     for(auto pos = MG.lower_bound(o); pos != MG.upper_bound(o); ++pos) 
       fg.orderG.push_back(pos->second);
   }
@@ -386,7 +386,7 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
   // The noInt in convertNoInts.
   std::map<int, std::string> gg;
 
-  for(auto mt : fe.Gene_Module_tabl) {
+  for(auto const &mt : fe.Gene_Module_tabl) {
     gg.insert({mt.GeneNumID, mt.GeneName});
   }
   // this is pedantic, as what is the size_type of NumID and of names? 
@@ -415,7 +415,7 @@ Genotype createNewGenotype(const Genotype& parent,
 
   // Order of ifs: I suspect order effects rare. No idea about
   // non-interaction genes, but if common the action is simple.
-  for(auto g : mutations) {
+  for(auto const &g : mutations) {
     if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
       // We can be dealing with modules
       int m; 
@@ -441,7 +441,7 @@ Genotype createNewGenotype(const Genotype& parent,
   // (chromothripsis), we randomly insert them
   if(tempOrder.size() > 1)
     shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
-  for(auto g : tempOrder)
+  for(auto const &g : tempOrder)
     newGenot.orderEff.push_back(g);
 
   // Sorting done at end, in case multiple mutations
@@ -470,7 +470,7 @@ void breakingGeneDiff(const vector<int> genotype,
 		 back_inserter(diffg));
   if(diffg.size()) {
     Rcpp::Rcout << "Offending genes :";
-    for(auto gx : diffg) {
+    for(auto const &gx : diffg) {
       Rcpp::Rcout << " " << gx;
     }
     Rcpp::Rcout << "\n ";
@@ -519,7 +519,7 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
 
   // Very similar to logic in createNewGenotype for placing each gene in
   // its correct place, which needs to look at module mapping.
-  for(auto g : gg) {
+  for(auto const &g : gg) {
     if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
       // We can be dealing with modules
       int m; 
@@ -575,7 +575,7 @@ bool match_order_effects(std::vector<int> O, std::vector<int> G) {
   
   auto itb = G.begin();
   
-  for(auto o : O) {
+  for(auto const &o : O) {
     p = find(G.begin(), G.end(), o);
     if( p == G.end() ) {
       return false;
@@ -598,7 +598,7 @@ bool match_order_effects(std::vector<int> O, std::vector<int> G) {
 std::vector<double> evalOrderEffects(const std::vector<int>& mutatedM,
 				     const std::vector<epistasis>& OE) {
   std::vector<double> s;
-  for(auto o : OE) {
+  for(auto const &o : OE) {
     if(match_order_effects(o.NumID, mutatedM))
       s.push_back(o.s);
   }
@@ -613,7 +613,7 @@ bool match_negative_epist(std::vector<int> E, std::vector<int> G) {
 
   if(G.size() < 1) return false;
    
-  for(auto e : E) {
+  for(auto const &e : E) {
     if(e < 0) {
       if(binary_search(G.begin(), G.end(), -e))
 	return false;
@@ -634,7 +634,7 @@ std::vector<double> evalEpistasis(const std::vector<int>& mutatedModules,
   if(! is_sorted(mutatedModules.begin(), mutatedModules.end()))
     throw std::logic_error("mutatedModules not sorted in evalEpistasis");
   
-  for(auto p : Epistasis ) {
+  for(auto const &p : Epistasis ) {
     if(p.NumID[0] > 0 ) {
       if(includes(mutatedModules.begin(), mutatedModules.end(),
 		   p.NumID.begin(), p.NumID.end()))
@@ -645,7 +645,7 @@ std::vector<double> evalEpistasis(const std::vector<int>& mutatedModules,
     }
   }
   // An alternative, but more confusing way
-  // for(auto p : Epistasis ) {
+  // for(auto const &p : Epistasis ) {
   //   if(p.NumID[0] > 0 ) {
   //     if(!includes(mutatedModules.begin(), mutatedModules.end(),
   // 		   p.NumID.begin(), p.NumID.end()))
@@ -701,7 +701,7 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
     
   // We know MPintersect is sorted, so we can avoid an O(n*n) loop
   size_t i = 0;
-  for(auto m : MPintersect) {
+  for(auto const &m : MPintersect) {
     while ( Poset[i].childNumID != m) ++i;
     // Not to catch the twisted case of an XOR with a 0 and something else
     // as parents
@@ -730,7 +730,7 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
       }
     }
   }
-      // for(auto parent : Poset[i].parentsNumID ) {
+      // for(auto const &parent : Poset[i].parentsNumID ) {
       // 	parent_module_mutated = binary_search(mutatedModules.begin(), 
       // 					      mutatedModules.end(),
       // 					      parent);
@@ -771,7 +771,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // So simple we do it here.
   if(F.genesNoInt.shift > 0) {
     int shift = F.genesNoInt.shift;
-    for(auto  r : ge.rest ) {
+    for(auto const & r : ge.rest ) {
       s.push_back(F.genesNoInt.s[r - shift]);
     }
   }
@@ -845,11 +845,11 @@ void printPoset(const std::vector<Poset_struct>& Poset) {
       Rcpp::Rcout << "\t\t Number of parent modules or genes = " << 
 	Poset[i].parents.size() << std::endl;
       Rcpp::Rcout << "\t\t\t Parents IDs: ";
-      for(auto c : Poset[i].parentsNumID)
+      for(auto const &c : Poset[i].parentsNumID)
 	Rcpp::Rcout << c << "; ";
       Rcpp::Rcout << std::endl;
       Rcpp::Rcout << "\t\t\t Parents names: ";
-      for(auto c : Poset[i].parents)
+      for(auto const &c : Poset[i].parents)
 	Rcpp::Rcout << c << "; ";
       Rcpp::Rcout << std::endl;
     
@@ -940,7 +940,7 @@ void printNoInteractionGenes(const genesWithoutInt& genesNoInt) {
 void printAllOrderG(const std::vector<int> ge) {
   Rcpp::Rcout << "\n **********  NumID of genes/modules in the order restrict. (internal) *******"
 	      << std::endl;
-  for(auto g : ge)
+  for(auto const &g : ge)
     Rcpp::Rcout << g << " ";
   Rcpp::Rcout << std::endl;
 }
@@ -995,7 +995,7 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
   vector<double> s = evalGenotypeFitness(g, F);
   if(verbose) {
     Rcpp::Rcout << "\n Individual s terms are :";
-    for(auto i : s) Rcpp::Rcout << " " << i;
+    for(auto const &i : s) Rcpp::Rcout << " " << i;
     Rcpp::Rcout << std::endl;
   }
   if(!prodNeg)

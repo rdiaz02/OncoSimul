@@ -475,7 +475,7 @@ std::string driversToNameString(const std::vector<int>& presentDrivers,
 			    const std::map<int, std::string>& intName) {
   std::string strDrivers;
   std::string comma = "";
-  for(auto g : presentDrivers) {
+  for(auto const &g : presentDrivers) {
     strDrivers += (comma + intName.at(g));
     comma = ", ";
   }
@@ -493,7 +493,7 @@ std::string genotypeToIntString(const std::vector<int>& genotypeV,
   std::vector<int> order_int;
   std::vector<int> rest_int;
 
-  for(auto g : genotypeV) {
+  for(auto const &g : genotypeV) {
     if( binary_search(fg.orderG.begin(), fg.orderG.end(), g)) {
       order_int.push_back(g);
     } else {
@@ -507,12 +507,12 @@ std::string genotypeToIntString(const std::vector<int>& genotypeV,
   std::string comma = "";
 
   
-  for(auto g : order_int) {
+  for(auto const &g : order_int) {
     order_part += (comma + std::to_string(g));
     comma = ", ";
   }
   comma = "";
-  for(auto g : rest_int) {
+  for(auto const &g : rest_int) {
     rest += (comma + std::to_string(g));
     comma = ", ";
   }
@@ -542,7 +542,7 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
   std::vector<int> rest_int;
 
    
-  for(auto g : genotypeV) {
+  for(auto const &g : genotypeV) {
     if( binary_search(fg.orderG.begin(), fg.orderG.end(), g)) {
       order_int.push_back(g);
     } else {
@@ -555,12 +555,12 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
   std::string rest;
   std::string comma = "";
   // FIXME: when sure no problems, remove at if needed for speed.
-  for(auto g : order_int) {
+  for(auto const &g : order_int) {
     order_part += (comma + intName.at(g));
     comma = ", ";
   }
   comma = "";
-  for(auto g : rest_int) {
+  for(auto const &g : rest_int) {
     rest += (comma + intName.at(g));
     comma = ", ";
   }
@@ -578,7 +578,7 @@ std::vector<std::string> genotypesToNameString(const std::vector< vector<int> >&
 					       const std::map<int, std::string>& intName) {
   fitness_as_genes fg = fitnessAsGenes(F);
   std::vector<std::string> gs;
-  for(auto v: uniqueGenotypesV )
+  for(auto const &v: uniqueGenotypesV )
       gs.push_back(genotypeToNameString(v, fg, intName));
   return gs;
 }
@@ -592,10 +592,10 @@ std::vector<std::string> genotypesToNameString(const std::vector< vector<int> >&
 
 //   if(names) {
 //     std::map<int, std::string> intName = mapGenesIntToNames(F);
-//     for(auto v: uniqueGenotypesV )
+//     for(auto const &v: uniqueGenotypesV )
 //       gs.push_back(genotypeToNameString(v, fg, intName));
 //   } else {
-//       for(auto v: uniqueGenotypesV )
+//       for(auto const &v: uniqueGenotypesV )
 // 	gs.push_back(genotypeToIntString(v, fg));
 //   }
   
