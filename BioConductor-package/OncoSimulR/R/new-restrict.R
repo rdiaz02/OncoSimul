@@ -140,7 +140,7 @@ list.of.deps <- function(x) {
         child = unique(x$child),
         s = unique(x$s),
         sh = unique(x$sh),
-        typeDep = ,
+        typeDep = typeDep,
         parents = unlist(x$parent)))
 
 }
@@ -817,6 +817,15 @@ nr_oncoSimul.internal <- function(rFE,
             m <- paste("You are using a Bozic model with",
                        "the new restriction specification, and you have",
                        "at least one sh of -1. Maybe you mean -Inf?")
+            warning(m)
+        }
+        if(any(thes == 1 )) {
+            m <- paste("You are using a Bozic model with",
+                       "the new restriction specification, and you have",
+                       "at least one s of 1. If that gene is mutated, ",
+                       "this will lead to a death rate of 0",
+                       "and the simulations will abort when you get a non finite",
+                       "value.")
             warning(m)
         }
     }

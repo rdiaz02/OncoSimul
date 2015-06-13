@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{OncoSimulR Overview}
+\VignetteIndexEntry{OncoSimulR Overview}
 %\VignetteDepends{OncoSimulR}
 %\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
 %\VignettePackage{OncoSimulR}
@@ -2159,8 +2159,7 @@ for(i in 1:length(examplesFitnessEffects)) {
 }
 @ 
 
-\subsection{Numerical issues with Bozic}
-
+\subsection{Numerical issues with Bozic}\label{ex-0-death}
 <<>>=
 
 set.seed(987)
@@ -2168,11 +2167,22 @@ ie3 <- allFitnessEffects(noIntGenes = rexp(3))
 evalAllGenotypes(ie3, order = FALSE, addwt = TRUE, 
                  model = "Bozic")
 
-ie3_b <- oncoSimulIndiv(fE = ie3, model = "Bozic")
+ie3_b <- oncoSimulIndiv(ie3, model = "Bozic")
 
 evalAllGenotypes(ie3, order = FALSE, addwt = TRUE)
 
-ie3_e <- oncoSimulIndiv(fE = ie3, model = "Exp")
+ie3_e <- oncoSimulIndiv(ie3, model = "Exp")
+
+@ 
+
+Even simpler
+<<>>=
+
+set.seed(987)
+i1 <- allFitnessEffects(noIntGenes = c(1))
+evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
+                 model = "Bozic")
+i1_b <- oncoSimulIndiv(i1, model = "Bozic")
 
 @ 
 

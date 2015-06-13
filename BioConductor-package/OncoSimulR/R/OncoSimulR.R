@@ -34,7 +34,7 @@ oncoSimulSample <- function(Nindiv,
                             s = 0.1,
                             sh = -1,
                             K = initSize/(exp(1) - 1),
-                            minDDrPopSize = "auto",
+                            minDetectDrvCloneSz = "auto",
                             extraTime = 0,
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
@@ -65,7 +65,7 @@ oncoSimulSample <- function(Nindiv,
     ## or give a warning
     params <- data.frame(seq.int(Nindiv),
                          extraTime = extraTime,
-                         minDDrPopSize = minDDrPopSize,
+                         minDetectDrvCloneSz = minDetectDrvCloneSz,
                          detectionSize = detectionSize,
                          detectionDrivers = detectionDrivers)[, -1, drop = FALSE]
 
@@ -142,7 +142,7 @@ oncoSimulSample <- function(Nindiv,
                                s = s,
                                sh = sh,
                                K = K,
-                               minDDrPopSize = params[indiv, "minDDrPopSize"],
+                               minDetectDrvCloneSz = params[indiv, "minDetectDrvCloneSz"],
                                extraTime = params[indiv, "extraTime"],
                                finalTime = finalTime,
                                max.memory = max.memory,
@@ -319,7 +319,7 @@ oncoSimulPop <- function(Nindiv,
                          sh = -1,
                          K = initSize/(exp(1) - 1),
                          keepEvery = sampleEvery, 
-                         minDDrPopSize = "auto",
+                         minDetectDrvCloneSz = "auto",
                          extraTime = 0,
                          ## used to be this
                          ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
@@ -354,7 +354,7 @@ oncoSimulPop <- function(Nindiv,
                         sh = sh,
                         K = K,
                         keepEvery = keepEvery,
-                        minDDrPopSize = minDDrPopSize,
+                        minDetectDrvCloneSz = minDetectDrvCloneSz,
                         extraTime = extraTime,
                         finalTime = finalTime,
                         onlyCancer = onlyCancer,
@@ -557,7 +557,7 @@ oncoSimulIndiv <- function(fp = NULL,
         cat("\n       Final Time = ", op$FinalTime, "\n")
     }
 
-    if(!is.null(fE))
+    if(!is.null(fp))
         class(op) <- c("oncosimul", "oncosimul2")
     else
         class(op) <- "oncosimul"
@@ -885,7 +885,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
                                errorHitWallTime,
                                max.num.tries,
                                errorHitMaxTries,
-                               minDDrPopSize,
+                               minDetectDrvCloneSz,
                                extraTime) {
 
     ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
@@ -998,7 +998,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
     ##     errorHitWallTime,
     ##     max.num.tries,
     ##     errorHitMaxTries,
-    ##     minDDrPopSize,
+    ##     minDetectDrvCloneSz,
     ##     extraTime
     ## ),
     ##          NumDrivers = numDrivers
@@ -1039,7 +1039,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         errorHitWallTime,
         max.num.tries,
         errorHitMaxTries,
-        minDDrPopSize,
+        minDetectDrvCloneSz,
         extraTime
     ),
              NumDrivers = numDrivers

@@ -1446,7 +1446,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    // const double& endTimeEvery,
 					    const int& detectionDrivers,
 					    const int& verbosity,
-					    const double& minDDrPopSize,
+					    const double& minDetectDrvCloneSz,
 					    const double& extraTime,
 					    const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
@@ -1493,7 +1493,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
 
   // if( (totPopSize >= detectionSize) ||
   //     ( (lastMaxDr >= detectionDrivers) &&
-  //       (popSizeOverDDr >= minDDrPopSize) ) ) {
+  //       (popSizeOverDDr >= minDetectDrvCloneSz) ) ) {
   //   simulsDone = true;
   //   reachDetection = true;
   // }
@@ -1502,7 +1502,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
     if(done_at <  0) {
       if( (totPopSize >= detectionSize) ||
 	  ( (lastMaxDr >= detectionDrivers) &&
-	    (popSizeOverDDr >= minDDrPopSize) ) ) {
+	    (popSizeOverDDr >= minDetectDrvCloneSz) ) ) {
 	done_at = currentTime + extraTime;
       }
     } else if (currentTime >= done_at) {
@@ -1511,7 +1511,7 @@ static void totPopSize_and_fill_out_crude_P(int& outNS_i,
       }
   } else if( (totPopSize >= detectionSize) ||
 	     ( (lastMaxDr >= detectionDrivers) &&
-	       (popSizeOverDDr >= minDDrPopSize) ) ) {
+	       (popSizeOverDDr >= minDetectDrvCloneSz) ) ) {
     simulsDone = true;
     reachDetection = true; 
   }
@@ -1912,7 +1912,7 @@ static void innerBNB(const int& numGenes,
 		     const double& detectionSize,
 		     // const double& endTimeEvery,
 		     const int& detectionDrivers,
-		     const double& minDDrPopSize,
+		     const double& minDetectDrvCloneSz,
 		     const double& extraTime,
 		     const int& verbosity,
 		     double& totPopSize,
@@ -2637,7 +2637,7 @@ static void innerBNB(const int& numGenes,
 				      //endTimeEvery,
 				      detectionDrivers,
 				      verbosity,
-				      minDDrPopSize,
+				      minDetectDrvCloneSz,
 				      extraTime); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
@@ -2758,7 +2758,7 @@ static void innerBNB(const int& numGenes,
 // 	       SEXP errorHitWallTime_,
 // 	       SEXP maxNumTries_,
 // 	       SEXP errorHitMaxTries_,
-// 	       SEXP minDDrPopSize_,
+// 	       SEXP minDetectDrvCloneSz_,
 // 	       SEXP extraTime_
 // 	       ) {
 
@@ -2796,7 +2796,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 		     bool errorHitWallTime,
 		     int maxNumTries,
 		     bool errorHitMaxTries,
-		     double minDDrPopSize,
+		     double minDetectDrvCloneSz,
 		     double extraTime
 	       ) {
   //BEGIN_RCPP
@@ -2848,7 +2848,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
   // const bool onlyCancer = as<bool>(onlyCancer_);
   // const int maxNumTries = as<int>(maxNumTries_);
   // const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
-  // const double minDDrPopSize = as<double>(minDDrPopSize_);
+  // const double minDetectDrvCloneSz = as<double>(minDetectDrvCloneSz_);
   // const double extraTime = as<double>(extraTime_);
   
   // C++11 random number
@@ -3004,7 +3004,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 	       detectionSize,
 	       //endTimeEvery,
 	       detectionDrivers,
-	       minDDrPopSize,
+	       minDetectDrvCloneSz,
 	       extraTime,
 	       verbosity,
 	       totPopSize,

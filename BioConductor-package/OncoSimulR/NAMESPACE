@@ -14,7 +14,7 @@ S3method(summary, oncosimulpop)
 S3method(print, oncosimulpop)
 S3method(plot, fitnessEffects)
 
-importFrom("parallel", clusterApplyLB, mclapply, stopCluster)
+
 importFrom("data.table", rbindlist, .rbind.data.table) 
 importFrom(Rcpp, evalCpp)
 ## import(igraph)
