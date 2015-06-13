@@ -85,3 +85,17 @@ fea2_s15_2x <- oncoSimulPop(50, fea2, model = "McFL",
                         mc.cores = 2)
 })
 ## auto const 282 and 216
+
+
+
+
+unix.time({
+set.seed(9999)
+fea2_s15z <- oncoSimulPop(5000, fea2, model = "Exp",
+                        keepEvery = 10,
+                        mc.cores = 1)
+set.seed(10000)
+fea2_s15zx <- oncoSimulPop(1000, fea2, model = "McFL",
+                        keepEvery = 10,
+                        mc.cores = 1)
+})

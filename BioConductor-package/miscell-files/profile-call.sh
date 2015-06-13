@@ -1,3 +1,7 @@
+## Look at p. 29 and ff. of http://dirk.eddelbuettel.com/papers/useR2010hpcTutorial.pdf
+
+## I also remember kcachegrind was nice to see output.
+
 ## Old example, with some confussed notes. But maybe a way to get going?
 
 ## using 2nd approach in Paul Johnson's help
