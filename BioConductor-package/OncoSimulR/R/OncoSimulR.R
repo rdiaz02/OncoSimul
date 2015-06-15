@@ -22,12 +22,23 @@
 
 oncoSimulSample <- function(Nindiv,
                             fp,
-                            model = "Bozic",
+                            model = "Exp",
                             numPassengers = 0,
                             mu = 1e-6,
-                            detectionSize = round(runif(Nindiv, 1e6, 1e8)),
-                            detectionDrivers = sample(3:round(0.75 * max(poset)),
-                                                      Nindiv, replace = TRUE),
+                            detectionSize = round(runif(Nindiv, 1e5, 1e8)),
+                            detectionDrivers = {
+                                if(inherits(fp, "fitnessEffects")) {
+                                    if(length(fp$drv)) {
+                                        nd <- (2: round(0.75 * length(fp$drv)))
+                                    } else {
+                                        nd <- 0
+                                    }
+                                } else {
+                                    nd <- (2 : round(0.75 * max(fp)))
+                                }
+                                sample(nd, Nindiv,
+                                       replace = TRUE)
+                            },
                             sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                 0.025),
                             initSize = 500,
@@ -307,7 +318,7 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
 
 oncoSimulPop <- function(Nindiv,
                          fp,
-                         model = "Bozic",
+                         model = "Exp",
                          numPassengers = 30,
                          mu = 1e-6,
                          detectionSize = 1e8,
@@ -375,7 +386,7 @@ oncoSimulPop <- function(Nindiv,
 ## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
 
 oncoSimulIndiv <- function(fp = NULL,
-                           model = "Bozic",
+                           model = "Exp",
                            numPassengers = 30,
                            mu = 1e-6,
                            detectionSize = 1e8,
@@ -461,7 +472,7 @@ oncoSimulIndiv <- function(fp = NULL,
 
     
     if(!inherits(fp, "fitnessEffects")) {
-        if(any(unlist(lapply(list(fp, numGenes,
+        if(any(unlist(lapply(list(fp, 
                                   numPassengers,
                                   s, sh), is.null)))) {
             m <- paste("You are using the old poset format.",
@@ -471,8 +482,8 @@ oncoSimulIndiv <- function(fp = NULL,
             if(length(initMutant) > 1)
                 stop("With the old poset, initMutant can only take a single value.")
         }
-        
-        message("You are using the old poset format. Consider using the new one.")
+        ## if(message.v1)
+        ##     message("You are using the old poset format. Consider using the new one.")
    
     
         ## A simulation stops if cancer or finalTime appear, the first
@@ -514,6 +525,7 @@ oncoSimulIndiv <- function(fp = NULL,
                                      errorHitWallTime = errorHitWallTime,
                                      errorHitMaxTries = errorHitMaxTries),
                   silent = !verbosity)
+        objClass <- "oncosimul"
     } else {
         op <- try(nr_oncoSimul.internal(rFE = fp, 
                                         birth = birth,
@@ -545,6 +557,7 @@ oncoSimulIndiv <- function(fp = NULL,
                                         errorHitWallTime = errorHitWallTime,
                                         errorHitMaxTries = errorHitMaxTries),
                   silent = !verbosity)
+        objClass <- c("oncosimul", "oncosimul2")
     }
     if(inherits(op, "try-error")) {
         ##         if(length(grep("BAIL OUT NOW", op)))
@@ -557,10 +570,7 @@ oncoSimulIndiv <- function(fp = NULL,
         cat("\n       Final Time = ", op$FinalTime, "\n")
     }
 
-    if(!is.null(fp))
-        class(op) <- c("oncosimul", "oncosimul2")
-    else
-        class(op) <- "oncosimul"
+    class(op) <- objClass
     attributes(op)$call <- call
     return(op)
 }
@@ -1020,7 +1030,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         finalTime,
         initSize_species,
         initSize_iter,
-        seed_gsl,
+        seed,
         verbosity,
         speciesFS,
         ratioForce,

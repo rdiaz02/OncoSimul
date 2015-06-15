@@ -257,12 +257,16 @@ to.pairs.modules <- function(x, sep, rm.sign = TRUE) {
     df <- data.frame(rbindlist(
         lapply(names(x),
                function(z) epist.order.to.pairs.modules(z, sep))))
-    colnames(df) <- c("parent", "child")
-    if(sep == ":")
-        df$typeDep <- "epistasis"
-    else if(sep == ">")
-        df$typeDep <- "orderEffect"
-    return(unique(df))
+    if(nrow(df) == 0L) { ## if only single genes in epist, we get nothing here.
+        return(df)
+    } else {
+        colnames(df) <- c("parent", "child")
+        if(sep == ":")
+            df$typeDep <- "epistasis"
+        else if(sep == ">")
+            df$typeDep <- "orderEffect"
+        return(unique(df))
+    }
 }
 
 

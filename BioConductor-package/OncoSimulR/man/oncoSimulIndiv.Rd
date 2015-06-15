@@ -532,7 +532,7 @@ plot(m1, addtot = TRUE, log = "")
 p1 <- oncoSimulPop(4, p701,
                    keepEvery = 10,
                    mc.cores = 2)
-
+summary(p1)
 
 p2 <- oncoSimulSample(4, p701)
 
@@ -580,10 +580,34 @@ oi <- allFitnessEffects(orderEffects =
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
+oiS1 <- oncoSimulIndiv(oi, model = "Exp")
+oiS1$GenotypesLabels
+oiS1   ## note the order and separation by "_"
 
-oi_s1 <- oncoSimulIndiv(oi, model = "Exp")
-oi_s1$GenotypesLabels
-oi_s1   ## note the order and separation by "_"
+
+oiP1 <- oncoSimulPop(4, oi,
+                     keepEvery = 10,
+                     mc.cores = 2)
+summary(oiP1) 
+
+
+## Even if order exists, this cannot reflect it;
+## G1 to G10 are d1, d2, f1..,f3, and the 5 genes without
+## interaction
+samplePop(oiP1)
+
+
+oiS1 <- oncoSimulSample(4, oi)
+
+## The output contains only the summary of the runs AND
+## the sample:
+oiS1 
+
+## And their sizes do differ
+object.size(oiS1)
+object.size(oiP1)
+
+
 
 ######## Using a poset for pancreatic cancer from Gerstung et al.
 ###      (s and sh are made up for the example; only the structure
@@ -595,23 +619,30 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
                                       child = c("KRAS","SMAD4", "CDNK2A", 
                                           "TP53", "MLL3",
                                           rep("PXDN", 3), rep("TGFBR2", 2)),
-                                      s = 0.1,
-                                      sh = -0.9,
+                                      s = 0.05,
+                                      sh = -0.3,
                                       typeDep = "MN"))
 plot(pancr)
 
 ### Use an exponential growth model
 
-pancr_1 <- oncoSimulIndiv(pancr, model = "Exp")
+pancr1 <- oncoSimulIndiv(pancr, model = "Exp")
+pancr1
+summary(pancr1)
+plot(pancr1)
+pancr1$GenotypesLabels
 
-summary(pancr_1)
-plot(pancr_1)
-pancr_1$GenotypesLabels
 
+## Pop and Sample
+pancrPop <- oncoSimulPop(4, pancr,
+                        keepEvery = 10,
+                       mc.cores = 2)
+summary(pancrPop)
+pancrSPop <- samplePop(pancrPop)
+pancrSPop
 
-pancr.1 <- oncoSimulPop(4, pancr,
-                   keepEvery = 10,
-                   mc.cores = 2)
+pancrSamp <- oncoSimulSample(4, pancr)
+pancrSamp
                       
 }
 \keyword{misc}

@@ -37,6 +37,10 @@
   number smaller than the largest number in the poset, is taken to be a
   node that depends on no one and on which no one depends. See examples
   below.
+
+  This specification of restrictions is for version 1. See
+  \code{\link{allFitnessEffects}} for a much more flexible one for
+  version 2. Both can be used with  \code{\link{oncoSimulIndiv}}.
 }
 
 \references{

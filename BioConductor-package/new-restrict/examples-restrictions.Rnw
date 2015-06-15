@@ -2187,6 +2187,124 @@ i1_b <- oncoSimulIndiv(i1, model = "Bozic")
 @ 
 
 
+\section{Sampling multiple simulations}
+
+You are obtaining genotypes, regardless of order.  When we use ``whole
+tumor sampling'', it is the frequency of the mutations in each gene that
+counts, not the order. So, for instance, ``c, d'' and ``c, d'' both
+contribute to the counts of ``c'' and ``d''. Similarly, when we use single
+cell sampling, we obtain a genotype defined in terms of mutations, but
+there might be multiple orders that give this genotype. For example, ``d >
+c'' and ``c > d'' both give you a genotype with ``c'' and ``d'' mutated.
+
+
+
+%% in an attempt to explain it, this just makes it too confusing. The
+%% above is enough.
+%% \subsection{What if there is order?}\label{sim-order}
+
+%% Consider the following example (I fix the seed and use a single core, so
+%% no parallelization, to make sure we can reproduce the results)
+
+%% <<>>=
+
+%% oe8 <- allFitnessEffects(orderEffects = c(
+%%                              "M > F > M" = 0,
+%%                              "D > F > M" = 0.1,
+%%                              "F > D > M" = 0.2
+%% ),
+%%                       epistasis = c("D" = 0.02, "M" = 0.02, "F" = 0.02),
+%%                         geneToModule =
+%%                             c("Root" = "Root",
+%%                               "M" = "m",
+%%                               "F" = "f",
+%%                               "D" = "d") )
+
+%% evalAllGenotypes(oe8)
+
+%% set.seed(678) 
+%% oe8P1 <- oncoSimulPop(8, oe8,
+%%                      model = "Exp", 
+%%                       detectionSize = 1e8, keepEvery = 10, mc.cores = 1)
+%% lapply(oe8P1, print)
+
+
+
+
+%% set.seed(678) 
+%% oe8P1 <- oncoSimulPop(1, oe8,
+%%                      model = "McFL", 
+%%                       detectionDrivers = 2, 
+%%                       keepEvery = 10, mc.cores = 1)
+%% lapply(oe8P1, print)
+
+%% @ 
+
+
+
+
+%% <<>>=
+
+%% o8 <- allFitnessEffects(orderEffects = c(
+%%                             "F > D" = 0,
+%%                             "D > F" = 0.14,
+%%                             "D > M" = 0.13,
+%%                             "F > M" = 0.12,
+%%                             "M > D" = 0.15),
+%%                       epistasis = c("D" = 0.01, "M" = 0.01, "F" = 0.02),
+%%                         geneToModule =
+%%                             c("Root" = "Root",
+%%                               "M" = "m",
+%%                               "F" = "f",
+%%                               "D" = "d") )
+
+%% evalAllGenotypes(o8)
+
+%% set.seed(678) 
+%% o8P1 <- oncoSimulPop(8, o8,
+%%                      model = "Exp", keepEvery = 10, mc.cores = 1)
+%% ## lapply(o8P1, print)
+%% @ 
+
+%% Now, if we look at the sixth population we see
+
+%% <<>>=
+%% o8P1[[6]]
+%% @ 
+
+%% Obviously, in terms of the genes that are mutated, both ``d, f, m'' and
+%% ``d, m, f'' have the same genes mutated so if we sample, for instance doing
+
+%% <<>>=
+
+%% @ 
+
+
+
+
+
+%% o9 <- allFitnessEffects(orderEffects = c(
+%%                             "F > D > M" = 0,
+%%                             "D > F > M" = 0.14,
+%%                             "D > M > F" = 0.13,
+%%                             "D > M"     = 0.12,
+%%                             "M > D"     = 0.15),
+%%                       epistasis = c("D:-M" = 0.05, "M:-D" = 0.04),
+%%                         geneToModule =
+%%                             c("Root" = "Root",
+%%                               "M" = "m",
+%%                               "F" = "f",
+%%                               "D" = "d") )
+
+
+%% set.seed(11)
+%% o9P1 <- oncoSimulPop(8, o9,
+%%                      model = "Exp", keepEvery = 10, mc.cores = 1)
+%% lapply(o9P1, print)
+
+
+%% @ 
+
 \section{Generating DAGs}\label{simo}
 
 Why this function? I searched for, and could not find any that did what I
