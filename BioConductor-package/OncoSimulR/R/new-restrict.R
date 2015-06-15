@@ -342,6 +342,13 @@ checkRT <- function(mdeps) {
 }
 
 
+getNamesID <- function(fp) {
+    ## Return a lookup table for names based on numeric IDs
+    idname <- c(fp$geneModule$GeneNumID,  fp$long.geneNoInt$GeneNumID)
+    names(idname) <- c(fp$geneModule$Gene, fp$long.geneNoInt$Gene)
+    return(idname[-1]) ## remove Root!!
+}
+
 
 getDrv <- function(geneModule, geneNoInt, drv) {
     indicesM <- sort(match( drv, geneModule$Gene))
@@ -833,7 +840,7 @@ nr_oncoSimul.internal <- function(rFE,
             warning(m)
         }
     }
-    call <- match.call()
+    ## call <- match.call()
     return(c(
         nr_BNB_Algo5(rFE = rFE,
                      mu = mu,
@@ -863,7 +870,9 @@ nr_oncoSimul.internal <- function(rFE,
                  errorHitMaxTries = errorHitMaxTries,
                  minDetectDrvCloneSz = minDetectDrvCloneSz,
                      extraTime = extraTime),
-        Drivers = list(rFE$drv)))
+        Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
+        geneNames = list(names(getNamesID(rFE)))
+    ))
 }
 
 

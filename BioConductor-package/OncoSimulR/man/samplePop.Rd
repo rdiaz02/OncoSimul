@@ -60,9 +60,16 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 }
 
 \value{
-  A matrix. Each row is a genotype, where 0 denotes no alteration and 1
-  alteration. To make it more clear that genes/laterations are in
-  columns, columns are named starting by "G."  (for "gene").
+
+  A matrix. Each row is a sample genotype, where 0 denotes no alteration
+  and 1 alteration. When using v.2, columns are named with the gene
+  names.
+
+  When not using single cell, a row (a sample genotype) need not be, of
+  course, any really existing genotype in a population as we are
+  genotyping a whole tumore.
+  %% To make it more clear that genes/laterations are in
+  %% columns, columns are named starting by "G."  (for "gene").
 }
 
 \references{

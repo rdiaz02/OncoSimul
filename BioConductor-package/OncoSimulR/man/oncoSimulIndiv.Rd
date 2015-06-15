@@ -533,6 +533,7 @@ p1 <- oncoSimulPop(4, p701,
                    keepEvery = 10,
                    mc.cores = 2)
 summary(p1)
+samplePop(p1)
 
 p2 <- oncoSimulSample(4, p701)
 

@@ -193,10 +193,15 @@ oncoSimulSample <- function(Nindiv,
             if(verbosity > 0)
                 message(paste("Successfully sampled ", Nindiv, " individuals"))
             class(pop) <- "oncosimulpop"
+            if(inherits(fp, "fitnessEffects")) {
+                geneNames <- names(getNamesID(fp))
+            } else {
+                geneNames <- NULL
+            }
             return(list(
                 popSummary = summary(pop),
                 popSample = samplePop(pop, typeSample = typeSample,
-                    thresholdWhole = thresholdWhole),
+                    thresholdWhole = thresholdWhole, geneNames = geneNames),
                 attemptsUsed = attemptsUsed,
                 probCancer = Nindiv/attemptsUsed,
                 HittedMaxTries = FALSE,
@@ -290,28 +295,37 @@ oncoSimulSample <- function(Nindiv,
 
 
 samplePop <- function(x, timeSample = "last", typeSample = "whole",
-                      thresholdWhole = 0.5) {
-    if(inherits(x, "oncosimulpop"))
+                      thresholdWhole = 0.5,
+                      geneNames = NULL) {
+    gN <- geneNames
+    if(inherits(x, "oncosimulpop")) {
         z <- do.call(rbind,
                      lapply(x,
                             get.mut.vector,
                             timeSample = timeSample,
                             typeSample = typeSample,
                             thresholdWhole = thresholdWhole))
-    else {
+        ## We need to check if the object is coming from v.2., to avoid
+        ## having to force passing a vector of names
+        if(is.null(gN) && (!is.null(x[[1]]$geneNames)))
+            gN <- x[[1]]$geneNames
+    } else {
         z <- get.mut.vector(x,
                             timeSample = timeSample,
                             typeSample = typeSample,
                             thresholdWhole = thresholdWhole)
         dim(z) <- c(1, length(z))
+        if(is.null(gN) && (!is.null(x$geneNames)))
+            gN <- geneNames
     }
     message("\n Subjects by Genes matrix of ",
         nrow(z), " subjects and ",
             ncol(z), " genes.\n")
-    ## FIXME why this?? To make it clear is the genes.  but I do not like
-    ##  it, since it is better to use the same names as in the entry for
-    ##  the adjacency matrix, or poset, or restriction table.
-    colnames(z) <- paste0("G.", seq_len(ncol(z)))
+
+    if(!is.null(gN)) {
+        colnames(z) <- gN
+    } 
+    ## colnames(z) <- paste0("G.", seq_len(ncol(z)))
     return(z)
 }
 
