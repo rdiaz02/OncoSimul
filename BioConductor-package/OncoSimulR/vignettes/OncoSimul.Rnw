@@ -23,6 +23,7 @@ opts_knit$set(concordance = TRUE)
 \newcommand{\cyan}[1]{{\textcolor {cyan} {#1}}}
 \newcommand{\blu}[1]{{\textcolor {blue} {#1}}}
 \newcommand{\Burl}[1]{\blu{\url{#1}}}
+\usepackage{gitinfo}
 
 
 %%\SweaveOpts{echo=TRUE}
@@ -33,7 +34,6 @@ opts_knit$set(concordance = TRUE)
 \usepackage[latin1]{inputenc}
 
 
-\usepackage{gitinfo2}
 
 %Uncomment for BioC
 %\usepackage{datetime}
@@ -73,11 +73,11 @@ BiocStyle::latex()
 %% \date{\the\year-\the\month-\the\day}
 %% \date{\mydate\today}
 
-\date{\gitAuthorDate\ {\footnotesize (Release\gitRels: Rev:
-    \gitAbbrevHash)}}
+%% \date{\gitAuthorDate\ {\footnotesize (Release\gitRels: Rev:
+%%     \gitAbbrevHash)}}
 
 
- %% \date{\gitAuthorDate\ {\footnotesize (Rev: \gitAbbrevHash)}}
+\date{\gitAuthorDate\ {\footnotesize (Rev: \gitAbbrevHash)}}
  
 \begin{document}
 \maketitle
