@@ -195,12 +195,12 @@ createAndConvert <- function(rangeNodes = 4:30,
         print(tp)
 
     
-    am1 <- OncoSimulR:::simOGraph(n = tp$nodes,
+    am1 <- OncoSimulR::simOGraph(n = tp$nodes,
                     h = tp$h,
                     nparents = tp$parents,
                     conjunction = TRUE,
                     multilevelParent = TRUE,
-                    removeIndirect = TRUE,
+                    removeDirectIndirect = TRUE,
                     rootName = "0"
                     )
     
@@ -286,12 +286,12 @@ checkAdjMatOGraph <- function(rangeNodes = 4:30,
         print(tp)
     
     
-    am1 <- OncoSimulR:::simOGraph(n = tp$nodes,
+    am1 <- simOGraph(n = tp$nodes,
                                   h = tp$h,
                     nparents = tp$parents,
                     conjunction = TRUE,
                     multilevelParent = TRUE,
-                    removeIndirect = TRUE,
+                    removeDirectIndirect = TRUE,
                     rootName = "0"
                                   )
     am1 <<- am1

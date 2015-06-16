@@ -145,7 +145,7 @@ list.of.deps <- function(x) {
 
 }
 
-to.long.rt <- function(rt, idm, verbosity = 0) {
+to.long.rt <- function(rt, idm) {
     ## We now do this inconditionally, so that we do not need to use the
     ## "stringsAsFactors = FALSE". This is now done before
     ## if(is.numeric(rt$parent))
@@ -210,12 +210,12 @@ to.long.rt <- function(rt, idm, verbosity = 0) {
     }
     long.rt <- lapply(long.rt, function(x) addIntID(x, idm = idm))
    
-    if(verbosity >= 4) {
-        message(paste("Number of drivers: ",
-                      length(unique(geneModule[, "Gene"]))))
-        message(paste("Number of modules: ",
-                      length(unique(geneModule[, "Module"]))))
-    }
+    ## if(verbosity >= 4) {
+    ##     message(paste("Number of drivers: ",
+    ##                   length(unique(geneModule[, "Gene"]))))
+    ##     message(paste("Number of modules: ",
+    ##                   length(unique(geneModule[, "Module"]))))
+    ## }
     return(long.rt)
     ## return(list(long.rt = long.rt, geneModule = geneModule))
 }
@@ -716,20 +716,21 @@ fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects) {
 }
 
 
-plotFitnessEffects <- function(fe, type = "graphNEL",
+plot.fitnessEffects <- function(x, type = "graphNEL",
                                layout = NULL,
-                               expandModules = FALSE) {
+                               expandModules = FALSE,
+                               ...) {
     ## some other layouts I find OK
     ## layout.circle
     ## layout.reingold.tilford if really a tree
     ## o.w. it will use the default
-    g <- fe$graph
+    g <- x$graph
 
     
     if(type == "igraph") {
-        if(expandModules && (!fe$gMOneToOne)) {
+        if(expandModules && (!x$gMOneToOne)) {
             ## vlabels <- fe$geneToModule[vertex.attributes(g)$name]
-            vlabels <- fe$geneToModule[V(g)$name]
+            vlabels <- x$geneToModule[V(g)$name]
             V(g)$label <- vlabels
         }
         plot.igraph(g, layout = layout)
@@ -746,8 +747,8 @@ plotFitnessEffects <- function(fe, type = "graphNEL",
         lwd[lwd == 2] <- 2 ## o.w. too thin
         lwd[lwd == 3] <- 2 ## o.w. too thin
         nAttrs <- list()
-        if(expandModules && (!fe$gMOneToOne)) {
-            nnodes <- fe$geneToModule[nodes(g1)]
+        if(expandModules && (!x$gMOneToOne)) {
+            nnodes <- x$geneToModule[nodes(g1)]
             names(nnodes) <- nodes(g1)
             nAttrs$label <- nnodes
         }
@@ -759,7 +760,7 @@ plotFitnessEffects <- function(fe, type = "graphNEL",
     }
 }
 
-plot.fitnessEffects <- plotFitnessEffects
+## plot.fitnessEffects <- plotFitnessEffects
 
 ## FIXME: in the help: say we cannot properly show 3- or higher order
 ## interactions.

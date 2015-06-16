@@ -32,7 +32,9 @@
                 max.num.tries = 500,
                 errorHitWallTime = TRUE,
                 errorHitMaxTries = TRUE,
-                verbosity = 0)
+                verbosity = 0,
+                initMutant = NULL,
+                seed = NULL)
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
@@ -55,7 +57,7 @@ oncoSimulSample(Nindiv,
                 model = "Exp",
                 numPassengers = 0,
                 mu = 1e-6,
-                detectionSize = round(runif(Nindiv, 1e6, 1e8)),
+                detectionSize = round(runif(Nindiv, 1e5, 1e8)),
 
                 detectionDrivers = {
                                 if(inherits(fp, "fitnessEffects")) {
@@ -125,13 +127,15 @@ oncoSimulSample(Nindiv,
 \item{mu}{
   Mutation rate.
 
-}
-\item{detectionSize}{
-  What is the minimal number of cells for cancer to be detected.
+} \item{detectionSize}{ What is the minimal number of cells for cancer
+to be detected.  For \code{oncoSimulSample} this can be a vector.
 
 }
 \item{detectionDrivers}{
-  The minimal number of drivers present in any clone for cancer to be detected.
+  The minimal number of drivers present in any clone for cancer to be
+  detected. For \code{oncoSimulSample} this can be a vector. The default
+  in this case is a vector of drivers from a uniform between 2 and 0.75
+  the total number of drivers
 
 }
 \item{sampleEvery}{
@@ -251,6 +255,15 @@ oncoSimulSample(Nindiv,
 
 }
 
+\item{seed}{The seed to use for the C++ random number generator. If not
+  passed explicitly (the default) then chosen from R.}
+
+\item{initMutant}{For v.2, a vector of the mutations of the initial
+  clone for the simulations. For v.1, the single mutation of the initial
+  clone for the simulations. The default (if you pass nothing) is to
+  start the simulation from the wildtype genotype with nothing mutated.}
+
+
 \item{max.num.tries}{Only applies when \code{onlyCancer = TRUE}. What is
   the maximum number of times, for an individual simulation, we can
   repeat the simulation for it to reach cancer? There are certain
@@ -340,6 +353,8 @@ oncoSimulSample(Nindiv,
 
 \item{mc.cores}{Number of cores to use when simulating more than one
   individual (i.e., when calling oncoSimulPop).}
+
+
 
 }
 \details{

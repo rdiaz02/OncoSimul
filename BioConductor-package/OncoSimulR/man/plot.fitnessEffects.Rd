@@ -9,13 +9,14 @@
   the order effects in a fitnessEffects object.
 }
 \usage{
-\method{plot}{fitnessEffects}(fe, type = "graphNEL", layout = NULL, expandModules = FALSE)
+\method{plot}{fitnessEffects}(x, type = "graphNEL", layout = NULL,
+expandModules = FALSE, ...)
 
 %%plotFitnessEffects(fe, type = "graphNEL", layout = NULL, expandModules = FALSE)
 }
 
 \arguments{
-  \item{fe}{A \code{fitnessEffects} object, as produced by \code{\link{fitnessEffects}}.
+  \item{x}{A \code{fitnessEffects} object, as produced by \code{\link{allFitnessEffects}}.
 }
 \item{type}{
   Whether you want a "graphNEL" or an "igraph" graph.
@@ -30,9 +31,10 @@
    If there are modules with multiple genes, if you set this to TRUE
   modules will be replaced by their genes.
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
+ \item{\dots}{
+    Other arguments passed to \code{plot}. Not used for now.
+  }
+
 }
 \value{A plot.
 
@@ -43,8 +45,6 @@
   type. Order relationships have an arrow from the earlier to the later
   event and have a different dotted line (lty 3).
 
-}
-\references{
 }
 \author{
 Ramon Diaz-Uriarte
@@ -61,7 +61,7 @@ Genes without interactions are not shown.
 }
 
 \seealso{
-  \code{\link{fitnessEffects}}
+  \code{\link{allFitnessEffects}}
 }
 \examples{
 

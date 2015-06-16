@@ -30,7 +30,7 @@ model = "")
   }
 
 
-  \item{fitnessEffects}{A \code{fitnessEffects} object, as produced by \code{\link{fitnessEffects}}.}
+  \item{fitnessEffects}{A \code{fitnessEffects} object, as produced by \code{\link{allFitnessEffects}}.}
   \item{order}{
     (For \code{evalAllGenotypes}). Does order matter? If it does, then generate not only all possible
     combinations of the genes, but all possible permutations for each combination.
@@ -87,7 +87,7 @@ Ramon Diaz-Uriarte
 
 
 \seealso{
-  \code{\link{fitnessEffects}}.
+  \code{\link{allFitnessEffects}}.
 }
 \examples{
 # A three-gene epistasis example
@@ -111,7 +111,7 @@ E3A <- allFitnessEffects(epistasis =
                                                 )
 
 evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
-evalAllGenotypes(E3A, order = FALSE, addwt = FALSE, addwt = TRUE,  model = "Bozic")
+evalAllGenotypes(E3A, order = FALSE, addwt = TRUE,  model = "Bozic")
 
 evalGenotype("B, C", E3A, verbose = TRUE)
 

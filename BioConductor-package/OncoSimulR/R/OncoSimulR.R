@@ -399,7 +399,7 @@ oncoSimulPop <- function(Nindiv,
 ## where is the default K coming from? Here:
 ## log( (K+N)/K  ) = 1; k + n = k * exp(1); k(exp - 1) = n; k = n/(exp - 1)
 
-oncoSimulIndiv <- function(fp = NULL,
+oncoSimulIndiv <- function(fp,
                            model = "Exp",
                            numPassengers = 30,
                            mu = 1e-6,

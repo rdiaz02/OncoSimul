@@ -3,11 +3,12 @@
 
 data(examplesFitnessEffects)
 
+## sometimes cancer is not reached. No problem.
 
 for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
-    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
+    tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Bozic", 
                            mu = 1e-6,
                            detectionSize = 1e8, 
@@ -15,14 +16,14 @@ for(i in 1:length(examplesFitnessEffects)) {
                            sampleEvery = 2,
                            max.num.tries = 100,
                            initSize = 2000,
-                           onlyCancer = TRUE)
+                           onlyCancer = FALSE)
     expect_true(inherits(tmp, "oncosimul2"))
 }
 
 for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
-    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
+    tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Exp", 
                            mu = 1e-6,
                            detectionSize = 1e8, 
@@ -30,7 +31,7 @@ for(i in 1:length(examplesFitnessEffects)) {
                            sampleEvery = 2,
                            max.num.tries = 100,
                            initSize = 2000,
-                           onlyCancer = TRUE)
+                           onlyCancer = FALSE)
     expect_true(inherits(tmp, "oncosimul2"))
 }
 
@@ -38,7 +39,7 @@ for(i in 1:length(examplesFitnessEffects)) {
 for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
-    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
+    tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "McFL", 
                            mu = 5e-6,
                            detectionSize = 1e8, 
@@ -47,7 +48,29 @@ for(i in 1:length(examplesFitnessEffects)) {
                            max.num.tries = 10,
                            initSize = 2000,
                            finalTime = 15000,
-                           onlyCancer = TRUE)
+                           onlyCancer = FALSE)
     expect_true(inherits(tmp, "oncosimul2"))
+}
+
+
+
+for(i in 1:length(examplesFitnessEffects)) {
+    cat(paste("\n Doing i = ", i , " name = ",
+              names(examplesFitnessEffects)[i], "\n"))
+    tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
+                            onlyCancer = FALSE)
+    expect_true(inherits(tmp, "list"))
+}
+
+
+
+for(i in 1:length(examplesFitnessEffects)) {
+    cat(paste("\n Doing i = ", i , " name = ",
+              names(examplesFitnessEffects)[i], "\n"))
+    tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
+                         onlyCancer = FALSE)
+    expect_true(inherits(tmp, "oncosimulpop"))
+    tmp2 <- samplePop(tmp)
+    expect_true(inherits(tmp2, "matrix"))
 }
 
