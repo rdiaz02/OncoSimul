@@ -19,7 +19,7 @@
   al., 2012.
 }
 \usage{
- oncoSimulIndiv(poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
+ oncoSimulIndiv(fp, model = "Exp", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -34,7 +34,7 @@
                 errorHitMaxTries = TRUE,
                 verbosity = 0)
 
- oncoSimulPop(Nindiv, poset, model = "Bozic", numPassengers = 30, mu = 1e-6,
+oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -51,13 +51,25 @@
 
 
 oncoSimulSample(Nindiv,
-                poset,
-                model = "Bozic",
+                fp,
+                model = "Exp",
                 numPassengers = 0,
                 mu = 1e-6,
                 detectionSize = round(runif(Nindiv, 1e6, 1e8)),
-                detectionDrivers = sample(3:round(0.75 * max(poset)),
-                                          Nindiv, replace = TRUE),
+
+                detectionDrivers = {
+                                if(inherits(fp, "fitnessEffects")) {
+                                    if(length(fp$drv)) {
+                                        nd <- (2: round(0.75 * length(fp$drv)))
+                                    } else {
+                                        nd <- 0
+                                    }
+                                } else {
+                                    nd <- (2 : round(0.75 * max(fp)))
+                                }
+                                sample(nd, Nindiv,
+                                       replace = TRUE)
+                            },
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                     0.025),
                 initSize = 500,
@@ -82,9 +94,15 @@ oncoSimulSample(Nindiv,
   
   \item{Nindiv}{Number of individuals or number of different
     trajectories to simulate.}
-  \item{poset}{
+  \item{fp}{
     
-    The poset that specifies the order restrictions. See \code{\link{poset}}.
+    Either a poset that specifies the order restrictions (see
+    \code{\link{poset}} if you want to use the specification as in
+    v.1. Otherwise, a fitnessEffects object (see
+    \code{\link{allFitnessEffects}}).
+
+    Other arguments below (s, sh) make sense only if you use a poset, as
+    they are included in the fitnessEffects object.
 
 }
 \item{model}{
@@ -133,9 +151,11 @@ oncoSimulSample(Nindiv,
   Initial population size.
 
 }
-\item{s}{
-  Selection coefficient for drivers.
 
+\item{s}{
+  Selection coefficient for drivers. 
+    Only relevant if using a poset as this is included in the
+  fitnessEffects object.
 }
 \item{sh}{
   Selection coefficient for drivers with restrictions not satisfied. A
@@ -143,6 +163,9 @@ oncoSimulSample(Nindiv,
   clone when its restrictions are not satisfied.
 
   To specify "sh=Inf" (in Diaz-Uriarte, 2014) use sh = -1.
+
+  Only relevant if using a poset as this is included in the
+  fitnessEffects object.
 
 }
 \item{K}{
@@ -354,6 +377,21 @@ oncoSimulSample(Nindiv,
 
 
 
+    \code{GenotyesWDistinctOrderEff} provides the information about
+    order effects that is missing from \code{Genotyoes}. When there are
+    order effects, the \code{Genotypes} matrix can contain genotypes
+    that are not distinguishable. Suppose there are two genes, the first
+    and the second. In the \code{Genotype} output you can get two
+    columns where there is a 1 in both genes: those two columns
+    correspond to the two possible orders (first gene mutated first, or
+    first gene mutated after the
+    second). \code{GenotypesWDistinctOrderEff} disambiguates this. The
+    same is done by \code{GenotypeLabels}; this is easier to decode for
+    a human (a string of gene labels) but a little bit harder to parse
+    automatically. 
+
+  
+
 }
 \value{
   
@@ -371,6 +409,7 @@ oncoSimulSample(Nindiv,
   \item{Genotypes}{A matrix of genotypes. For each of the clones in the
     pops.by.time matrix, its genotype, with a 0 if the gene is not
     mutated and a 1 if it is mutated.}
+
   
   \item{MaxNumDrivers}{The largest number of mutated driver genes ever
     seen in the simulation in any clone.}
@@ -424,17 +463,24 @@ oncoSimulSample(Nindiv,
   In v.2, the output is of both class "oncosimul" and "oncosimul2". The
   oncoSimulIndiv return object differs in
 
-  \item{GenotypesWDistinctOrderEff}{The genotypes, with the numeric
+  \item{GenotypesWDistinctOrderEff}{
+    A list
+  of vectors, where each vector corresponds to a genotype in the
+  \code{Genotypes}, showing (where it matters) the order of mutations.
+    Each vector shows the genotypes, with the numeric
   codes, showing explicitly the order when it matters. So if you have
   genes 1, 2, 7 for which order relationships are given, and genes 3, 4,
   5, 6 for which other interactions exist, any mutations in 1, 2, 7 are
   shown first, and in the order they occurred, before showing the rest
-  of the mutations.}
+  of the mutations.  See details.}
+  
+ 
+
 
   \item{GenotypesLabels}{The genotypes, as character vectors with the
   original labels provided (i.e., not the integer codes). As before,
   mutated genes, for those where order matters, come first, and are
-  separated by the rest by a "_".}
+  separated by the rest by a "_". See details.}
 
   \item{OccurringDrivers}{This is the same as in v.1, but we use the
   labels, not the numeric id codes. Of course, if you entered integers
@@ -581,9 +627,9 @@ oi <- allFitnessEffects(orderEffects =
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-oiS1 <- oncoSimulIndiv(oi, model = "Exp")
-oiS1$GenotypesLabels
-oiS1   ## note the order and separation by "_"
+oiI1 <- oncoSimulIndiv(oi, model = "Exp")
+oiI1$GenotypesLabels
+oiI1   ## note the order and separation by "_"
 
 
 oiP1 <- oncoSimulPop(4, oi,

@@ -7,8 +7,8 @@
 }
 \description{
   
-  Obtain a sample (a matrix of individuals by genes or, equivalently, a
-  vector of genotypes) from an oncosimulpop object (i.e., a simulation
+  Obtain a sample (a matrix of individuals/samples by genes or, equivalently, a
+  vector of "genotypes") from an oncosimulpop object (i.e., a simulation
   of multiple individuals) or a single oncosimul object. Sampling
   schemes include whole tumor and single cell sampling, and sampling at
   the end of the tumor progression or during the progression of the
@@ -17,7 +17,7 @@
 
 \usage{
 samplePop(x, timeSample = "last", typeSample = "whole",
-          thresholdWhole = 0.5)
+          thresholdWhole = 0.5, geneNames = NULL)
 }
 
 \arguments{
@@ -49,6 +49,13 @@ samplePop(x, timeSample = "last", typeSample = "whole",
     on thresholdWhole: a gene is considered mutated if it is altered in at
     least thresholdWhole proportion of the cells in that individual.
   }
+
+  \item{geneNames}{
+    
+    An optional vector of gene names so as to label the column names of
+    the output.
+  }  
+  
 }
 
 \details{
@@ -61,13 +68,18 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 
 \value{
 
-  A matrix. Each row is a sample genotype, where 0 denotes no alteration
+  A matrix. Each row is a "sample genotype", where 0 denotes no alteration
   and 1 alteration. When using v.2, columns are named with the gene
   names.
 
-  When not using single cell, a row (a sample genotype) need not be, of
-  course, any really existing genotype in a population as we are
-  genotyping a whole tumore.
+  We quote "sample genotype" because when not using single cell, a row
+  (a sample genotype) need not be, of course, any really existing
+  genotype in a population as we are genotyping a whole tumor. Suppose
+  there are really two genotypes present in the population, genotype A,
+  which has gene A mutated and genotype B, which has gene B
+  mutated. Genotype A has a frequency of 60\% (so B's frequency is
+  40\%). If you use whole tumor sampling with \code{thresholdWhole =
+  0.4} you will obtain a genotype with A and B mutated.
   %% To make it more clear that genes/laterations are in
   %% columns, columns are named starting by "G."  (for "gene").
 }
