@@ -534,6 +534,13 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 
 }
 
+
+\note{Please, note that the meaning of the fitness effects in the
+  McFarland model is not the same as in the original paper; the fitness
+  coefficients are transformed to allow for a simpler fitness function
+  as a product of terms. This differs with respect to v.1. See the
+  vignette for details.}
+
 \author{Ramon Diaz-Uriarte}
 
 

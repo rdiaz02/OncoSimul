@@ -142,7 +142,20 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   passengers, evolutionary models, and sampling
   \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
 
+    McFarland, C.~D. et al. (2013). Impact of deleterious passenger
+  mutations on cancer progression.  \emph{Proceedings of the National
+  Academy of Sciences of the United States of America\/}, \bold{110}(8),
+  2910--5.
+
+
 }
+
+\note{Please, note that the meaning of the fitness effects in the
+  McFarland model is not the same as in the original paper; the fitness
+  coefficients are transformed to allow for a simpler fitness function
+  as a product of terms. This differs with respect to v.1. See the
+  vignette for details.}
+
 \author{ Ramon Diaz-Uriarte
 }
 
