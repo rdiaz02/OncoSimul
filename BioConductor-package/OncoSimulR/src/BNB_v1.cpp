@@ -187,8 +187,8 @@
 
 
 // #include "BNB_v1.h"
-#include "debug_common.hpp"
-#include "bnb_common.hpp"
+#include "debug_common.h"
+#include "bnb_common.h"
 
 #include <limits>
 #include <iostream>

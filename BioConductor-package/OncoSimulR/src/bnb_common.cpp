@@ -1,4 +1,4 @@
-#include "bnb_common.hpp"
+#include "bnb_common.h"
 #include <Rcpp.h>
 
 

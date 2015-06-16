@@ -2,7 +2,7 @@
 #define _NEW_RESTRICT_H__
 
 #include <Rcpp.h>
-#include"debug_common.hpp"
+#include"debug_common.h"
 #include <limits>
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
