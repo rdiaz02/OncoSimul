@@ -324,8 +324,9 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
 
     if(!is.null(gN)) {
         colnames(z) <- gN
-    } 
-    ## colnames(z) <- paste0("G.", seq_len(ncol(z)))
+    } else {
+        colnames(z) <- seq_len(ncol(z))
+    }
     return(z)
 }
 

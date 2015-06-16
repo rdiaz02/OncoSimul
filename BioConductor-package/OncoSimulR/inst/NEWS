@@ -1,3 +1,14 @@
+Changes in version 1.99.0 (2015-06-17):
+	- Many MAJOR changes: we are done moving to v.2
+	  - New way of specifying restrictions (v.2) that allows
+	    arbitrary epistatic interactions and order effects, and
+	    very large (larger than 50000 genes) genomes.
+	  - When onlyCancer = TRUE, all iterations now in C++.
+	  - Many tests added.
+	  - Random DAG generation.
+	  - Some defaults for v.1 changed.
+
+
 Changes in version 99.1.14 (2015-04-23):
 	- Now are things OK (I messed up the repos)
 

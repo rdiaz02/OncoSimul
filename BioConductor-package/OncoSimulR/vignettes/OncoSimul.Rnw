@@ -1,4 +1,4 @@
-\VignetteIndexEntry{OncoSimulR Overview}
+%\VignetteIndexEntry{OncoSimulR Overview}
 %\VignetteDepends{OncoSimulR}
 %\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
 %\VignettePackage{OncoSimulR}
@@ -57,7 +57,8 @@ BiocStyle::latex()
 %%}
 
 
-\bioctitle{Using OncoSimulR: examples}
+\bioctitle{Using OncoSimulR: a package for simulating cancer progression data,
+  including drivers and passengers, and allowing for order restrictions.}
 
 %% \bioctitle{Using OncoSimulR: a package for simulating cancer progression data,
 %%   including drivers and passengers, and allowing for order restrictions.}
@@ -72,6 +73,7 @@ BiocStyle::latex()
 %% \date{\the\year-\the\month-\the\day}
 %% \date{\mydate\today}
  \date{\gitAuthorDate\ {\footnotesize (Rev: \gitAbbrevHash)}}
+ 
 \begin{document}
 \maketitle
 
@@ -85,16 +87,152 @@ BiocStyle::latex()
 \tableofcontents
 
 
-%%FIXME remove later!
+\section{Introduction}
+
+This vignette presents the OncoSimulR package. 
+
+
+OncoSimulR was originally developed to simulate tumor progression using
+several models of tumor progression with emphasis on restriction the
+accumulation of mutations as specified, for example, in Oncogenetic Tree
+(OT; \cite{Desper1999JCB, Szabo2008}) or Conjunctive Bayesian Network
+(CBN; \cite{Beerenwinkel2007, Gerstung2009, Gerstung2011})
+models. Moreover, you could add passenger mutations to the simulations.
+
+
+Since then, OncoSimulR has been vastly extended to allow you to specify,
+also, other types of restriction in the accumulation of genes, as specified
+by the ``semimonotone'' model of \cite{FarahaniLagergren2013} and the XOR
+models of \cite{Korsunsky2014}. 
+
+Moreover, different fitness effects related to the order in which
+mutations appear can also be incorporated, involving arbitrary numbers of
+genes. This is different from ``restrictions in the accumulation of
+mutations''. In this phenomenon, shown empirically in a recent paper
+\cite{Ortmann2015}, the effect of having both mutations ``A'' and ``B''
+differs depending on whether ``A'' appeared before or after
+``B''. OncoSimulR also allows now to specify arbitrary epistatic
+interactions between arbitrary collections of genes and to model, for
+example, synthetic mortality or synthetic viability (again, involving an
+arbitrary number of genes, some of which might also depend on other genes,
+or show order effects with other genes).
+
+Moreover, it is possible to specify the above interactions in terms of
+modules, not genes. This idea is discussed in, for example,
+\cite{Raphael2014a, Gerstung2011}: the restrictions encoded in, say, CBNs
+or OT can be considered to apply not to genes, but to modules, where each
+module is a set of genes (and the intersection between modules is the
+empty set). Modules, then, play the role of a ``union operation'' over
+sets of genes.
+
+
+Finally, arbitrary numbers of genes without interactions (and with fitness
+effects coming from any distribution you might want) are also possible.
+The models so far implemented are all continuous time models, which are
+simulated using the BNB algorithm of Mather et al.\ \cite{Mather2012}. The
+core of the code is implemented in C++, providing for fast
+execution. Finally, code to simulate random graphs of the kind often seen
+in CBN, OTs, etc, has also been added.
+
+
+Therefore, OncoSimulR is now a very general package for genetic
+simulation, with applicability well beyond tumor progression.
+
+
+
+This is a summary of some of the key features:
+
+
+\begin{itemize}
+  
+  \item You can specify arbitrary interactions between genes, with
+    arbitrary fitness effects, with  explicit support for:
+    \begin{itemize}
+    \item Restrictions in the accumulations of mutations, as specified by
+      Oncogenetic Trees (OTs), Conjunctive Bayesian Networks (CBNs),
+      semimonotone progression networks, and XOR relationships.
+      
+    \item Epistatic interactions, including, but not limited to, synthetic
+      viability and synthetic lethality.
+    \item Order effects.
+    \end{itemize}
+  \item You can add passenger mutations.
+    \item More generally, you can add arbitrary numbers of non-interacting
+      genes with arbitrary fitness effects.
+  
+    \item You can allow for deviations from the OT, CBN, semimonotone, and
+      XOR models, specifying a penalty for such deviations (the $s_h$
+      parameter).
+      
+    \item You can conduct multiple simulations, and sample from them with
+      different temporal schemes and using both whole tumor or single cell
+      sampling. 
+  
+    \item Right now, three different models are available, two that lead to
+      exponential growth, one of them loosely based on Bozic et al.\
+      \cite{Bozic2010}, and another that leads to logistic-like growth, based
+      on McFarland et al.\ \cite{McFarland2013}.
+      
+    \item Code in C++ is available (though not yet callable from R) for
+      using several other models, including the one from \cite{Beerenwinkel2007}.
+      
+    \item Simulations are generally very fast as I use the BNB algorithm
+      implemented in C++.
+\end{itemize}
+
+
+Further details about the motivation for wanting to simulate data this way
+can be found in \cite{Diaz-Uriarte2015}, where additional comments about
+model parameters and caveats are discussed. The Java program by
+\cite{Reiter2013a} offers somewhat similar functionality to the previous
+version of OncoSimulR, but it is restricted to at most four drivers, you
+cannot use arbitrary CBNs or OTs or XORs or semimonotone graphs to specify
+order restrictions, there is no allowance for passengers, and a single
+type of model (a discrete time Galton-Watson process) is implemented. The
+current functionality of OncoSimulR is much more general, allowing it to
+specify all models in, say, FFPopSim \cite{Zanini2012}, and some that, to
+our knowledge (e.g., order effects) are not available from any genetics
+simulator.
+
+
+
+\subsection{Steps in using OncoSimulR}
+
+
+
+Using this package will often involve the following steps:
+
+\begin{enumerate}
+\item Specify the fitness effects. restrictions in the order of mutations:
+  sections \ref{sepcfit} and \ref{litex}.
+\item Simulate cancer progression: section \ref{simul}. You can simulate
+  for a single subject or for a set of subjects. You will need to
+  \begin{itemize}
+  \item Decide on a model (e.g., Bozic or McFarland).
+  \item Specify the parameters of the model.
+  \end{itemize}
+  Of course, at least for initial playing around, you can use the defaults.
+  
+\item Sample from the simulated data: section \ref{sample}, and do
+  something with those simulated data (e.g., fit an OT model to
+  them). What you do with the data, however, is outside the scope of this
+  package.   
+\end{enumerate}
+
+
+Before anything else, let us load the package. We also explicitly load
+\Biocpkg{graph} and \CRANpkg{igraph} for the vignette to work (you do not
+need that for your usual interactive work).
+
 <<>>=
 library(OncoSimulR)
 library(graph)
-
-source("new-restrict.R")
-
+library(igraph)
 @ 
 
-\section{Specifying fitness effects}
+
+
+\section{Specifying fitness effects}\label{specfit}
 
 \subsection{Introduction}
 
@@ -159,7 +297,7 @@ effects can be specified in very different ways.
 
 \subsection{Numeric values of fitness effects: no viability and models}
 
-\red{FIXME}
+FIXME
 
 For all models where fitness affects directly the birth rate (for now, all
 except Bozic), if you specify some ``s = -1'', if that event happens
@@ -215,7 +353,7 @@ and having in a tree A depends on Root and B depends on A
 
 
 
-\begin{tabular} {c c}
+\begin{tabular} {c c c}
   model & Fitness satisfied & fitness not satisf\\
   \hline
   0 , 1 & s \\
@@ -228,7 +366,7 @@ and having in a tree A depends on Root and B depends on A
   2 , 4 & s3 & sm \\
   
   1 : 2 & s12 \\
-  3:  4 & s34
+  3:  4 & s34 \\
   
 
   \hline
@@ -242,6 +380,8 @@ Sb, etc.
 
 
 \subsection{Order restrictions as posets}
+
+FIXME: say something about the CBN, OR and XOR models.
 
 
 \subsubsection{A first conjunction example}\label{cbn1}
@@ -268,10 +408,19 @@ plot(cbn1)
 
 or one using ``igraph'':
 <<>>=
+plot(cbn1, "igraph")
+@ 
+
+%% The vignette crashes if I try to use the layout.
+
+Since this is a tree, the reingold.tilford layout is probably the best
+here, so you might want to use that:
+
+<<>>=
+library(igraph) ## to make the layout available
 plot(cbn1, "igraph", layout = layout.reingold.tilford)
 @ 
 
-(since this is a tree, the reingold.tilford layout is probably the best here).
 
 
 And what is the fitness of all genotypes?
@@ -1438,7 +1587,7 @@ evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
 
 @ 
 
-\section{Specifying fitness effects: some examples from the literature}
+\section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}
 
 In the model of \cite[p.\ 54]{Bauer2014} ``For cells without the primary
@@ -1898,7 +2047,7 @@ sp <- 1e-3
 spp <- -sp/(1 + sp)
 mcf1 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
                           drv = seq.int(nd))
-mcf1s <-  oncoSimulIndiv(fE = mcf1,
+mcf1s <-  oncoSimulIndiv(mcf1,
                          model = "McFL", 
                          mu = 1e-7,
                          detectionSize = 1e8, 
@@ -1927,7 +2076,7 @@ sp <- 1e-4 ## as we have many more passengers
 spp <- -sp/(1 + sp)
 mcfL <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
                           drv = seq.int(nd))
-mcfLs <-  oncoSimulIndiv(fE = mcfL,
+mcfLs <-  oncoSimulIndiv(mcfL,
                          model = "McFL", 
                          mu = 1e-7,
                          detectionSize = 1e8, 
@@ -1970,10 +2119,10 @@ summary(mcfLs)
 
 We will simulat
 <<>>=
-load("examplesFitnessEffects.RData") ## FIXME remove later, when as data.
+data(examplesFitnessEffects)
 
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE)[1:10, ]
-tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
+tmp <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
                        model = "McFL", 
                        mu = 5e-7,
                        detectionSize = 1e8, 
@@ -1988,7 +2137,7 @@ summary(tmp)
 
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
                  model = "Bozic")[1:10, ]
-tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects$cbn1,
+tmp <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
                        model = "Bozic", 
                        mu = 1e-6,
                        detectionSize = 1e8, 
@@ -2005,7 +2154,7 @@ Interesting to show effects of order: o3
 Increase mutation rate, so does not take forever
 <<>>=
 
-tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
                        mu = 5e-5,
                        detectionSize = 1e8, 
@@ -2019,7 +2168,7 @@ tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
 
 tmp
 
-tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "Bozic", 
                        mu = 5e-5,
                        detectionSize = 1e6, 
@@ -2036,7 +2185,7 @@ tmp
 <<>>=
 
 set.seed(3)
-tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
                        mu = 5e-5,
                        detectionSize = 1e8, 
@@ -2062,7 +2211,7 @@ evalAllGenotypes(examplesFitnessEffects[["o3"]])
 
 <<>>=
 set.seed(9) ## 2
-tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
                        mu = 5e-5,
                        detectionSize = 1e8, 
@@ -2086,7 +2235,7 @@ continue with clone competition for a long time:
 <<>>=
 
 set.seed(2)
-tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[["o3"]],
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
                        mu = 5e-5,
                        detectionSize = 1e8, 
@@ -2111,71 +2260,76 @@ FIXME: plot a popSimul
 
 
 
-\section{Running all}
+%% \section{Running all}
 
-<<>>=
-for(i in 1:length(examplesFitnessEffects)) {
-    cat(paste("\n Doing i = ", i , " name = ",
-              names(examplesFitnessEffects)[i], "\n"))
-    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
-                           model = "Bozic", 
-                           mu = 1e-6,
-                           detectionSize = 1e8, 
-                           detectionDrivers = 4,
-                           sampleEvery = 2,
-                           max.num.tries = 100,
-                           initSize = 2000,
-                           onlyCancer = TRUE)
-}
+%% <<>>=
+%% for(i in 1:length(examplesFitnessEffects)) {
+%%     cat(paste("\n Doing i = ", i , " name = ",
+%%               names(examplesFitnessEffects)[i], "\n"))
+%%     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
+%%                            model = "Bozic", 
+%%                            mu = 1e-6,
+%%                            detectionSize = 1e8, 
+%%                            detectionDrivers = 4,
+%%                            sampleEvery = 2,
+%%                            max.num.tries = 100,
+%%                            initSize = 2000,
+%%                            onlyCancer = TRUE)
+%% }
 
-for(i in 1:length(examplesFitnessEffects)) {
-    cat(paste("\n Doing i = ", i , " name = ",
-              names(examplesFitnessEffects)[i], "\n"))
-    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
-                           model = "Exp", 
-                           mu = 1e-6,
-                           detectionSize = 1e8, 
-                           detectionDrivers = 4,
-                           sampleEvery = 2,
-                           max.num.tries = 100,
-                           initSize = 2000,
-                           onlyCancer = TRUE)
-}
+%% for(i in 1:length(examplesFitnessEffects)) {
+%%     cat(paste("\n Doing i = ", i , " name = ",
+%%               names(examplesFitnessEffects)[i], "\n"))
+%%     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
+%%                            model = "Exp", 
+%%                            mu = 1e-6,
+%%                            detectionSize = 1e8, 
+%%                            detectionDrivers = 4,
+%%                            sampleEvery = 2,
+%%                            max.num.tries = 100,
+%%                            initSize = 2000,
+%%                            onlyCancer = TRUE)
+%% }
 
 
-for(i in 1:length(examplesFitnessEffects)) {
-    cat(paste("\n Doing i = ", i , " name = ",
-              names(examplesFitnessEffects)[i], "\n"))
-    tmp <-  oncoSimulIndiv(fE = examplesFitnessEffects[[i]],
-                           model = "McFL", 
-                           mu = 5e-7,
-                           detectionSize = 1e8, 
-                           detectionDrivers = 2,
-                           sampleEvery = 0.025,
-                           max.num.tries = 10,
-                           initSize = 2000,
-                           finalTime = 15000,
-                           onlyCancer = TRUE)
-}
-@ 
+%% for(i in 1:length(examplesFitnessEffects)) {
+%%     cat(paste("\n Doing i = ", i , " name = ",
+%%               names(examplesFitnessEffects)[i], "\n"))
+%%     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
+%%                            model = "McFL", 
+%%                            mu = 5e-7,
+%%                            detectionSize = 1e8, 
+%%                            detectionDrivers = 2,
+%%                            sampleEvery = 0.025,
+%%                            max.num.tries = 10,
+%%                            initSize = 2000,
+%%                            finalTime = 15000,
+%%                            onlyCancer = TRUE)
+%% }
+%% @ 
 
 \subsection{Numerical issues with Bozic}\label{ex-0-death}
-<<>>=
 
-set.seed(987)
-ie3 <- allFitnessEffects(noIntGenes = rexp(3))
-evalAllGenotypes(ie3, order = FALSE, addwt = TRUE, 
-                 model = "Bozic")
+As we mentioned above (section \ref{fit-neg-pos}) death rates of 0 can
+lead to trouble:
 
-ie3_b <- oncoSimulIndiv(ie3, model = "Bozic")
+%% <<>>=
 
-evalAllGenotypes(ie3, order = FALSE, addwt = TRUE)
+%% set.seed(987)
+%% ie3 <- allFitnessEffects(noIntGenes = rexp(3))
+%% evalAllGenotypes(ie3, order = FALSE, addwt = TRUE, 
+%%                  model = "Bozic")
 
-ie3_e <- oncoSimulIndiv(ie3, model = "Exp")
+%% ie3_b <- oncoSimulIndiv(ie3, model = "Bozic")
 
-@ 
+%% evalAllGenotypes(ie3, order = FALSE, addwt = TRUE)
 
-Even simpler
+%% ie3_e <- oncoSimulIndiv(ie3, model = "Exp")
+
+%% @ 
+
+%% Even simpler
+
 <<>>=
 
 set.seed(987)
@@ -2187,7 +2341,130 @@ i1_b <- oncoSimulIndiv(i1, model = "Bozic")
 @ 
 
 
-\section{Sampling multiple simulations}
+Of course, there is no trouble in using the above with other models:
+
+<<>>=
+evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
+                 model = "Exp")
+i1_e <- oncoSimulIndiv(i1, model = "Exp")
+summary(i1_e)
+@ 
+
+\section{Sampling multiple simulations}\label{sample}
+
+Often, you will want to simulate multiple runs of the same scenario, and
+do something with them. Conceptually, the first step is running multiple
+simulations and, then, sampling them.
+
+We will use the ``pancreas'' example, above \section{pancreas}
+<<>>=
+
+
+pancrPop <- oncoSimulPop(10, pancr,
+                         detectionSize = 1e7,
+                         keepEvery = 10,
+                         mc.cores = 2)
+
+summary(pancrPop)
+
+@ 
+
+The above runs the simulation process 10 times, and stores the
+results. We can then sample from them:
+
+<<>>=
+pancrSPop <- samplePop(pancrPop)
+pancrSPop
+@ 
+
+
+But if we are only interested in the final matrix of populations by
+mutations, the above is wasteful, because we store fully all of the
+simulations (in the call to \Rfunction{oncoSimulPop}) and then sample (in
+the call to \Rfunction{samplePop}). In particular, data from every
+sampling time (as given by \Rcode{sampleEvery}) is preserved. It is in the
+call to \Rfunction{samplePop} when we actually sample the data.
+
+
+An alternative approach is to use the function
+\Rfunction{oncoSimulSample}. The output is directly the matrix (and a
+little bit of summary from each run), and during the simulation it only
+stores one time point. 
+
+
+<<>>=
+pancrSamp <- oncoSimulSample(10, pancr)
+pancrSamp
+@ 
+
+
+
+\Rfunction{samplePop} provides two sampling times: ``last'' and
+``uniform''. "last" means to sample each individual in the very last time
+period of the simulation. "uniform" means sampling each
+individual at a time choosen uniformly from all the times recorded in the
+simulation between the time when the first driver appeared and the final
+time period. "unif" means that it is almost sure that different
+individuals will be sampled at different times. "last" does not guarantee
+that different individuals will be sample at the same time unit, only that
+all will be sampled in the last time unit of their simulation.
+
+
+
+With \Rfunction{oncoSimulSample} we obtain samples that correspond to
+\Rcode{timeSample = ``last''} in \Rfunction{samplePop} by specifying a
+unique value for \Rfunction{detectionSize} and
+\Rfunction{detectionDrivers}. The data from each simulation will
+correspond to the time point at which those are reached (analogous to
+\Rcode{timeSample = ``last''}). How about uniform sampling? We pass a
+vector of \Rfunction{detectionSize} and \Rfunction{detectionDrivers},
+where each value of the vector comes from a uniform distribution. This is
+not identical to the ``unifor'' sampling of  \Rfunction{oncoSimulSample},
+as we are not sampling uniformly over all time periods, but are stopping
+at uniformly distributed values of the stopping conditions. Arguably,
+however, the procedure in \Rfunction{samplePop} might be closer by what we
+mean with ``uniformly sampled over the course of the disease'' if that
+course is measured in terms of drivers or size of tumor.
+
+
+As an example, if you look at the output above, the object ``pancrSamp''
+contains some simulations that have only a few drivers because those
+simulations were set to run only until they had just a small number of
+cells.
+
+
+An additional advantage of \Rfunction{oncoSimulSample} is that we can
+specify arbitrary sampling schemes, just by passing the appropriate vector
+\Rfunction{detectionSize} and \Rfunction{detectionDrivers}. A disadvantage
+is that if we change the stopping conditions we can not just resample the
+data, but we need to run it again.
+
+
+There is no difference between \Rfunction{oncoSimulSample} and
+\Rfunction{oncoSimulPop} + \Rfunction{samplePop} in terms of the
+\Rcode{typeSample} argument (whole tumor or single cell).
+
+
+Finally, there are some additional differences between the two
+functions. \Rfunction{oncoSimulPop} can run parallelized (it uses
+\Rfunction{mclapply}). This is not done with \Rfunction{oncoSimulSample}
+because this function is designed for simulation experiments where you
+want to examine many different scenarios simultaneously. Thus, we provide
+additional stopping criteria (\Rcode{max.wall.time.total} and
+\Rcode{max.num.tries.total}) to determine whether to continue running the
+simulations, that bounds the total running time of all the simulations in
+a call to \Rfunction{oncoSimulSample}. And, if you are running multiple
+different scenarios, you might want to make multiple, separate,
+independent calls (e.g., from different R processes) to
+\Rfunction{oncoSimulSample}, instead of relying in \Rfunction{mclapply},
+since this is likely to lead to better usage of multiple cores/CPUs if you
+are examining a large number of different scenarios.
+
+
+
+
+
+\subsection{Whole tumor sampling and genotypes}\label{wtsampl}
 
 You are obtaining genotypes, regardless of order.  When we use ``whole
 tumor sampling'', it is the frequency of the mutations in each gene that
@@ -2305,7 +2582,22 @@ c'' and ``c > d'' both give you a genotype with ``c'' and ``d'' mutated.
 
 %% @ 
 
-\section{Generating DAGs}\label{simo}
+\section{Generating random DAGs for restrictions}\label{simo}
+
+You might want to randomly generate DAGs like those often found in the
+literature on oncogenetic trees et al. Function \Rfunction{simOGraph}
+might help here. 
+
+<<>>=
+(a1 <- simOGraph(10))
+library(graph) ## for simple plotting
+plot(as(a1, "graphNEL"))
+@ 
+
+Once you obtain the adjacency matrices, it is for now up to you to convert
+them into appropriate posets or fitnessEffects objects.
+
+
 
 Why this function? I searched for, and could not find any that did what I
 wanted, in particular bounding the number of parents, being able to
@@ -2333,18 +2625,6 @@ check for the satisfaction of the presence of the immediate ancestors. And
 things get even trickier if we combine XOR with AND. The code for
 computing fitness, however, should deal with all of this just fine.
 
-
-
-\section{xx: FIXME to add}
-
-\begin{itemize}
-\item Some of the module examples of Raphael
-\item The model in McFarland
-\item Some model from Gerstung, PLoS ONE
-\item Ditto for bionifo
-\item Some model for the Polaris, Caprese, and Capri examples.
-\item Some model for Farahani
-\end{itemize}
 
 
 %% \subsection{Testing of mappings}
@@ -2626,11 +2906,6 @@ computing fitness, however, should deal with all of this just fine.
 %% more meaningful names.
 
 
-\section{Simulating data}
-For simplicity, most of the fitness effects specifications have been
-stored in file \Robject{exampleFitnessEffects.RData}.
-
-zz: FIXME do later
 
 
 
@@ -2643,9 +2918,212 @@ zz: FIXME do later
 It is strongly recommended that you use the new (v.2) procedures for
 specifying fitness effects. However, the former v.1 procedures are still
 available, with only very minor changes to function calls. What follows
-below is the former vignette.
+below is the former vignette. You might want to use v.1 because for
+certain models (e.g., small number of genes, with restrictions as
+specified by a simple poset) simulations might be faster with v.1 (fitness
+evaluation is much simpler ---we are working on further improving speed).
 
 zz: FIXME
+
+
+
+\subsection{Specifying restrictions: posets}\label{poset}
+
+How to specify the restrictions is shown in the help for
+\Rfunction{poset}. It is often useful, to make sure you did not make any
+mistakes, to plot the poset. This is from the examples (we use an ``L''
+after a number so that the numbers are integers, not doubles; we could
+alternatively have modified \texttt{storage.mode}).
+
+<<fig.height=3>>=
+## Node 2 and 3 depend on 1, and 4 depends on no one
+p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L))
+plotPoset(p1, addroot = TRUE)
+@ 
+
+<<fig.height=3>>=
+## A simple way to create a poset where no gene (in a set of 15) depends
+## on any other.
+p4 <- cbind(0L, 15L)
+plotPoset(p4, addroot = TRUE)
+@ 
+
+
+
+Specifying posets is actually straightforward. For instance, we can
+specify the pancreatic cancer poset in Gerstung et al.\
+\cite{Gerstung2011} (their figure 2B, left). We specify the poset using
+numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2,
+etc). This example is also in the help for \Rfunction{poset}:
+
+<<fig.height=3>>=
+pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
+                               c(2, 3, 4, 5, 6, 6, 6, 7, 7))
+storage.mode(pancreaticCancerPoset) <- "integer"
+plotPoset(pancreaticCancerPoset,
+          names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
+                    "MLL3","PXDN", "TGFBR2"))
+
+@
+\subsection{Simulating cancer progression}\label{simul1}
+
+
+We can simulate the progression in a single subject. Using an example
+very similar to the one in the help:
+
+
+<<echo=FALSE,results='hide',error=FALSE>>=
+options(width=60)
+@ 
+
+<<>>=
+## use poset p1101
+data(examplePosets)
+p1101 <- examplePosets[["p1101"]]
+
+## Bozic Model
+b1 <- oncoSimulIndiv(p1101, keepEvery = 15)
+summary(b1)
+@ 
+
+
+The first thing we do is make it simpler (for future examples) to use a
+set of restrictions. In this case, those encoded in poset p1101. Then, we
+run the simulations and look at a simple summary and a plot. %% We explicitly
+%% set \texttt{silent = TRUE} to prevent the vignette from filling up with
+%% intermediate output.
+
+If you want to plot the trajectories, it is better to keep more frequent
+samples,  so you can see when clones appear:
+
+<<fig.height=5, fig.width=5>>=
+b2 <- oncoSimulIndiv(p1101, keepEvery = 1)
+                    
+summary(b2)
+plot(b2)
+@ 
+
+
+The following is an example where we do not care about passengers, but we
+want to use a different graph, and we want a few more drivers before
+considering cancer has been reached. And we allow it to run for longer.
+Note that in the McF model \texttt{detectionSize} really plays no
+role. Note also how we pass the poset: it is the same as before, but now
+we directly access the poset in the list of posets.
+
+<<>>=
+
+m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL", 
+                     numPassengers = 0, detectionDrivers = 8, 
+                     mu = 5e-7, initSize = 4000, 
+                     sampleEvery = 0.025,
+                     finalTime = 25000, keepEvery = 5, 
+                     detectionSize = 1e6) 
+plot(m2, addtot = TRUE, log = "")
+
+@ 
+
+
+The default is to simulate progression until a simulation reaches cancer
+(i.e., only simulations that satisfy the detectionDrivers or the
+detectionSize will be returned). If you use the McF model with large
+enough \texttt{initSize} this will often be the case but not if you use
+very small \texttt{initSize}. Likewise, most of the Bozic runs do not
+reach cancer. Lets try a few:
+
+<<>>=
+b3 <- oncoSimulIndiv(p1101, onlyCancer = FALSE)
+summary(b3)
+
+b4 <- oncoSimulIndiv(p1101, onlyCancer = FALSE)
+summary(b4)
+@ 
+
+Plot those runs:
+
+<<fig.width=8, fig.height=4>>=
+par(mfrow = c(1, 2))
+par(cex = 0.8) ## smaller font
+plot(b3)
+plot(b4)
+@ 
+
+
+\subsubsection{Simulating progression in several subjects}
+
+To simulate the progression in a bunch of subjects (we will use only
+four, so as not to fill the vignette with plots) we can do, with the same
+settings as above:
+
+<<>>=
+p1 <- oncoSimulPop(4, p1101)
+par(mfrow = c(2, 2))
+plot(p1)
+@ 
+
+
+\subsection{Sampling from a set of simulated subjects}\label{sample-1}
+\label{sec:sampling-from-set}
+
+You will often want to do something with the simulated data. For instance,
+sample the simulated data. Here we will obtain the trajectories for 100
+subjects in a scenario without passengers. Then we will sample with the
+default options and store that as a vector of genotypes (or a matrix of
+subjects by genes):
+
+
+<<>>=
+
+m1 <- oncoSimulPop(100, examplePosets[["p1101"]], 
+                   numPassengers = 0)
+
+@ 
+
+The function \Rfunction{samplePop} samples that object, and also gives you
+some information about the output:
+
+<<>>=
+genotypes <- samplePop(m1)
+@ 
+
+
+
+What can you do with it? That is up to you. As an example, let us try to
+infer an oncogenetic tree (and plot it) using the \CRANpkg{Oncotree}
+package \cite{Oncotree} after getting a quick look at the marginal
+frequencies of events:
+
+<<fig.width=4, fig.height=4>>=
+colSums(genotypes)/nrow(genotypes)
+
+require(Oncotree)
+ot1 <- oncotree.fit(genotypes)
+plot(ot1)
+@ 
+
+Your run will likely differ from mine, but with the defaults (detection
+size of $10^8$) it is likely that events down the tree will never
+appear. You can set \texttt{detectionSize = 1e9} and you will see that
+events down the tree are now found in the cross-sectional sample.
+
+
+Alternatively, you can use single cell sampling and that, sometimes,
+recovers one or a couple more events.
+
+<<fig.width=4, fig.height=4>>=
+genotypesSC <- samplePop(m1, typeSample = "single")
+colSums(genotypesSC)/nrow(genotypesSC)
+
+ot2 <- oncotree.fit(genotypesSC)
+plot(ot2)
+@ 
+
+You can of course rename the columns of the output matrix to something
+else if you want so the names of the nodes will reflect those potentially
+more meaningful names.
+
+
+
 
 
 \section{Session info and packages used}

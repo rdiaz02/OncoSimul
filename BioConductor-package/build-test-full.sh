@@ -29,7 +29,7 @@ rm ./Full/OncoSimulR/vignettes/*.blg
 
 
 
-time $V_R CMD build --keep-empty-dirs --no-resave-data Full/OncoSimulR
+time $V_R CMD build --keep-empty-dirs --resave-data Full/OncoSimulR
 
 time $V_R CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 
