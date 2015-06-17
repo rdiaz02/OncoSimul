@@ -106,7 +106,7 @@ simulations.
 
 
 Since then, OncoSimulR has been vastly extended to allow you to specify,
-also, other types of restriction in the accumulation of genes, as
+also, other types of restrictions in the accumulation of genes, as
 specified by the ``semimonotone'' model of Farahani and Lagergren
 \cite{FarahaniLagergren2013} and the XOR models of Korsunsky and
 collaborators \cite{Korsunsky2014}. Moreover, different fitness effects
@@ -127,9 +127,9 @@ restrictions encoded in, say, CBNs or OT can be considered to apply not to
 genes, but to modules, where each module is a set of genes (and the
 intersection between modules is the empty set) that performs a specific
 biological function. Modules, then, play the role of a ``union operation''
-over sets of genes. In addition, arbitrary numbers of genes without
-interactions (and with fitness effects coming from any distribution you
-might want) are also possible.
+over the set of genes in a module. In addition, arbitrary numbers of genes
+without interactions (and with fitness effects coming from any
+distribution you might want) are also possible.
 
 
 The models so far implemented are all continuous time models, which are
@@ -312,7 +312,7 @@ of the ``A, B'' genotype is that of the wildtype (1, by default), plus
 (times) the effects of B, plus (times) the effects of ``A:B''.
 
 
-As we will see in the examples (e.g., see sections\ref{e2}, \ref{e3},
+As we will see in the examples (e.g., see sections \ref{e2}, \ref{e3},
 \ref{exlong}) OncoSimulR makes it simple to be explicit about the mapping
 of specific genotypes, while also using the ``how this specific effects
 modifies previous effects'' logic, leading to a flexible
@@ -490,7 +490,7 @@ plot(cbn1)
 @ 
 
 or one using ``igraph'':
-<<fig.height=3>>=
+<<fig.height=5>>=
 plot(cbn1, "igraph")
 @ 
 
@@ -499,7 +499,7 @@ plot(cbn1, "igraph")
 Since this is a tree, the reingold.tilford layout is probably the best
 here, so you might want to use that:
 
-<<fig.height=3>>=
+<<fig.height=5>>=
 library(igraph) ## to make the layout available
 plot(cbn1, "igraph", layout = layout.reingold.tilford)
 @ 
@@ -584,7 +584,7 @@ plot(cbn2)
 @ 
 
 or one using ``igraph'':
-<<fig.height=3>>=
+<<fig.height=5>>=
 plot(cbn2, "igraph", layout = layout.reingold.tilford)
 @ 
 
@@ -661,7 +661,8 @@ smn1 <- allFitnessEffects(s1)
 
 @ 
 
-It looks like this:
+It looks like this (where edges are shown in blue to denote the
+semimonotone relationship):
 <<fig.height=3>>=
 plot(smn1)
 @ 
@@ -701,7 +702,7 @@ xor1 <- allFitnessEffects(x1)
 @ 
 
 
-It looks like this:
+It looks like this (edges in red to denote the ``XOR'' relationship):
 <<fig.height=3>>=
 plot(xor1)
 @ 
@@ -768,7 +769,7 @@ plot(fp3)
 
 We can also use ``igraph'':
 
-<<fig.height=3>>=
+<<fig.height=5>>=
 plot(fp3, "igraph", layout.reingold.tilford)
 @ 
 
@@ -963,7 +964,7 @@ plot(fp4m, expandModules = TRUE)
 
 or
 
-<<fig.height=3>>=
+<<fig.height=6>>=
 plot(fp4m, "igraph", layout = layout.reingold.tilford, 
      expandModules = TRUE)
 
@@ -1259,8 +1260,9 @@ Synthetic viability and synthetic lethality (e.g., \cite{Ashworth2011,
 but we deal with them here separately.
 
 \subsubsection{A simple synthetic viability example}
-A simple example of synthetic viability is shown in the
-following table:
+A simple and extreme example of synthetic viability is shown in the
+following table, where the joint mutant has fitness larger than the wild
+type, but each single mutant is lethal.
 
 
 \begin{tabular} {c c c}
@@ -1363,14 +1365,14 @@ when we actually conduct simulations (see section \ref{ex-0-death}).
 This is a slightly more elaborate case, where there is one module and the
 single mutants have different fitness between themselves, which is
 non-zero. Without the modules, this is the same as in Misra et
-al. \cite{Misra2014}, Figure 1b.
+al. \cite{Misra2014}, Figure 1b, which we go over in section \ref{misra}.
 
 
 \begin{tabular} {c c c}
   A & B & Fitness \\
   \hline
   wt&wt& 1 \\
-  wt&M& $1 + s_b$0 \\
+  wt&M& $1 + s_b$ \\
   M&wt& $1 + s_a$\\
   M&M& $1 + s_{ab}$\\
   \hline
@@ -1409,14 +1411,13 @@ evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
 
 \subsection{Synthetic mortality or synthetic lethality}\label{sl}
 
-This is like a revert pattern with respect to synthetic viability in
-section \ref{sv}.
+In contrast to section \ref{sv}, the joint mutant has decreased viability:
 
 \begin{tabular} {c c c}
   A & B & Fitness \\
   \hline
   wt&wt& 1 \\
-  wt&M& $1 + s_b$0 \\
+  wt&M& $1 + s_b$ \\
   M&wt& $1 + s_a$\\
   M&M& $1 + s_{ab}$\\
   \hline
@@ -1557,7 +1558,8 @@ evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
 We needed to pass the $s_{ac}$ coefficient explicitly, even if it that
 term was just the product. We can try to avoid using the ``-'', however
 (but we will need to do other calculations). For simplicity, I use capital
-``S'' in what follows where the letters differ:
+``S'' in what follows where the letters differ from the previous
+specification:
 
 
 <<>>=
@@ -1683,7 +1685,7 @@ section \ref{pm3} but will also add:
   is viable but adds nothing to fitness (i.e., mutation of both has
   fitness $1$), whereas each single mutant has a fitness of $1 - 0.5$.
 \item A set of 5 driver genes ($n1, \ldots, n5$) with fitness that comes
-  from an exponential distribution.
+  from an exponential distribution with rate of 10.
 \end{itemize}
 
 
@@ -1725,24 +1727,24 @@ fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
 
 How does it look?
 
-<<fig.height=4>>=
+<<fig.height=5.5>>=
 plot(fea)
 @ 
 
 or
 
-<<fig.height=4>>=
+<<fig.height=6.5>>=
 plot(fea, "igraph")
 @ 
 
 
 We can, if we want, expand the modules using a ``graphNEL'' graph
-<<fig.height=4>>=
+<<fig.height=5>>=
 plot(fea, expandModules = TRUE)
 @ 
 
 or an ``igraph'' one
-<<fig.height=4>>=
+<<fig.height=7>>=
 plot(fea, "igraph", expandModules = TRUE)
 @ 
 
@@ -1854,7 +1856,7 @@ make no difference).
 
 
 The fitness effects figure looks like this:
-<<fig.height=4>>=
+<<fig.height=3>>=
 plot(fbauer)
 @ 
 
@@ -1890,7 +1892,7 @@ Figure 1 of \cite{Misra2014} presents three scenarios which are different
 types of epistasis.
 
 \subsubsection{Example 1.a}\label{misra1a}
-<<echo=FALSE, fig.height=2, fig.width=3>>=
+<<echo=FALSE, fig.height=4, fig.width=4>>=
 
 df1 <- data.frame(x = c(1, 1.2, 1.4), f = c(1, 1.2, 1.2),
                  names = c("wt", "A", "B"))
@@ -1958,7 +1960,7 @@ all.equal(evalAllGenotypes(m1a2, order = FALSE, addwt = TRUE),
 
 This is a specific case of synthetic viability (see also section \ref{sv}):
 
-<<echo=FALSE, fig.width=3, fig.height=2>>=
+<<echo=FALSE, fig.width=4, fig.height=4>>=
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 0.4, 0.3, 1.3),
                  names = c("wt", "A", "B", "AB"))
@@ -2002,7 +2004,7 @@ beneficial, and the double mutation has fitness larger than any of the
 other two.
 
 
-<<echo=FALSE>>=
+<<echo=FALSE, fig.width=4, fig.height=4>>=
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 1.2, 0.7, 1.5),
                  names = c("wt", "A", "B", "AB"))
@@ -2045,7 +2047,7 @@ In \cite{Ochs2015} we find the a model that we can represent as (the
 actual numerical values are arbitrarily set by me):
 
 
-<<echo=FALSE, fig.width=3, fig.height=2>>=
+<<echo=FALSE, fig.width=4.5, fig.height=3.5>>=
 
 df1 <- data.frame(x = c(1, 2, 3, 4), f = c(1.1, 1, 0.95, 1.2),
                  names = c("u", "wt", "i", "v"))
@@ -2101,7 +2103,7 @@ In their figure 1a, Weisman et al. \cite{Weissman2009} present this model
 
 \subsubsection{Figure 1.a}
 
-<<echo=FALSE, fig.width=3, fig.height=2>>=
+<<echo=FALSE, fig.width=4, fig.height=3>>=
 
 df1 <- data.frame(x = c(1, 2, 3), f = c(1, 0.95, 1.2),
                  names = c("wt", "1", "2"))
@@ -2128,7 +2130,7 @@ $(1 + S_{AB})(1 + \delta_1)^2 > 1$.
 
 In their figure 1b they show
 
-<<echo=FALSE, fig.width=3, fig.height=2>>=
+<<echo=FALSE, fig.width=4, fig.height=3>>=
 
 df1 <- data.frame(x = c(1, 2, 3, 4), f = c(1, 0.95, 0.92, 1.2),
                  names = c("wt", "1", "2", "3"))
@@ -2177,7 +2179,7 @@ w <- allFitnessEffects(
 @ 
 
 The model can be shown graphically as:
-<<fig.width=3, fig.height=2>>=
+<<fig.width=4, fig.height=4>>=
 plot(w)
 @ 
 
@@ -2209,7 +2211,7 @@ evalAllGenotypes(wb, order = FALSE, addwt = TRUE)
 
 The plot, of course, is not very revealing:
 
-<<>>=
+<<, fig.width=3, fig.height=3>>=
 plot(wb)
 @ 
 
@@ -2239,15 +2241,16 @@ immediately supported by the new version.
 
 <<>>=
 
-pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
-                                          "TP53", "TP53", "MLL3"),
-                                      child = c("KRAS","SMAD4", "CDNK2A", 
-                                          "TP53", "MLL3",
-                                          rep("PXDN", 3), rep("TGFBR2", 2)),
-                                      s = 0.1,
-                                      sh = -0.9,
-                                      typeDep = "MN"))
-
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), 
+                   "SMAD4", "CDNK2A", 
+                   "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                   "TP53", "MLL3",
+                   rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.1,
+               sh = -0.9,
+               typeDep = "MN"))
 
 @ 
 
@@ -2265,7 +2268,7 @@ data(examplesFitnessEffects)
 names(examplesFitnessEffects)
 @ 
 
-<<>>=
+<<fig.width=6>>=
 
 set.seed(456)
 nd <- 70  
@@ -2285,7 +2288,7 @@ mcf1s <-  oncoSimulIndiv(mcf1,
                          initSize = 2000,
                          finalTime = 1000,
                          onlyCancer = FALSE)
-plot(mcf1s, addtot = TRUE, lwdClone = 0.6, log = "")
+plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "")
 summary(mcf1s)
 @ 
 
@@ -2314,21 +2317,17 @@ mcfLs <-  oncoSimulIndiv(mcfL,
                          initSize = 1000,
                          finalTime = 2000,
                          onlyCancer = FALSE)
-plot(mcfLs, addtot = TRUE, lwdClone = 0.4, log = "")
-summary(mcfLs)
-
-## number of passengers per clone
-summary(colSums(mcfLs$Genotypes[-(1:70), ]))
-
 @ 
 
 But you can access the pre-stored results and plot them (beware: this
 object has been trimmed by removing empty passenger rows in the Genotype matrix)
 
-<<>>=
+<<fig.width=6>>=
 data(mcfLs)
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "")
 summary(mcfLs)
+## number of passengers per clone
+summary(colSums(mcfLs$Genotypes[-(1:70), ]))
 @ 
 
 
@@ -2414,7 +2413,7 @@ summary(sb)
 
 (We use a somewhat large mutation rate, so that the simulation runs quickly.)
 
-<<>>=
+<<fig.width=6>>=
 
 set.seed(3)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -2446,7 +2445,7 @@ evalAllGenotypes(examplesFitnessEffects[["o3"]])
 Another run that shows clonal interference between clones with different
 numbers of drivers:
 
-<<>>=
+<<fig.width=6>>=
 
 set.seed(2)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -2462,14 +2461,14 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        onlyCancer = FALSE,
                        extraTime = 1000)
 tmp
-plot(tmp, addtot = TRUE, lwdClone = 0.4, log = "")
+plot(tmp, addtot = TRUE, log = "")
 
 @
 
 
 These patterns, however, are not always present
 
-<<>>=
+<<fig.width=6>>=
 
 set.seed(9) 
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -2485,7 +2484,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        onlyCancer = FALSE,
                        extraTime = 10)
 tmp
-plot(tmp, addtot = TRUE, lwdClone = 0.4, log = "")
+plot(tmp, addtot = TRUE, log = "")
 
 @ 
 
