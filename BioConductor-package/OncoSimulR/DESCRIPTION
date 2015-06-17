@@ -1,15 +1,20 @@
 Package: OncoSimulR
 Type: Package
-Title: Simulation of cancer progresion with order restrictions
+Title: Forward Genetic Simulation of Cancer Progresion with Epistasis 
 Version: 1.99.0
 Date: 2015-06-16
 Author: Ramon Diaz-Uriarte. 
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
-Description: Functions for simulating and plotting cancer progression
-    data, including drivers and passengers, and allowing for order
-    restrictions. Simulations use continuous-time models (based on Bozic
-    et al., 2010 and McFarland et al., 2013) and fitness functions account
-    for possible restrictions in the order of accumulation of mutations.
+Description: Functions for forward population genetic simulation in
+    asexual populations, with special focus on cancer progression.
+    Fitness can be an arbitrary function of genetic interactions between
+    multiple genes, including epistasis, order restrictions in mutation
+    accumulation, and order effects.  Simulations use continuous-time
+    models and can include driver and passenger genes.  Also included are
+    functions for simulating random DAGs of the type found in Oncogenetic
+    Tress, Conjunctive Bayesian Networks, and other tumor progression
+    models, and for plotting and sampling from single or multiple
+    realizations of the simulations.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 Depends: R (>= 3.1.0)
