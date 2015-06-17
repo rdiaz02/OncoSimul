@@ -7,37 +7,6 @@
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
 
-inline Dependency stringToDep(const std::string& dep) {
-  if(dep == "monotone") // AND, CBN, CMPN
-    return Dependency::monotone;
-  else if(dep == "semimonotone") // OR, SMN, DMPN
-    return Dependency::semimonotone;
-  else if(dep == "xmpn") // XOR, XMPN
-    return Dependency::xmpn;
-  else if(dep == "--") // for root, for example
-    return Dependency::single;
-  else 
-    throw std::out_of_range("Not a valid typeDep");
-  // We never create the NA from entry data. NA is reserved for Root.
-}
-
-
-inline std::string depToString(const Dependency dep) {
-  switch(dep) {
-  case Dependency::monotone:
-    return "CMPN or monotone";
-  case Dependency::semimonotone:
-    return "DMPN or semimonotone";
-  case Dependency::xmpn:
-    return "XMPN (XOR)";
-  case Dependency::single:
-    return "--";
-  default:
-    throw std::out_of_range("Not a valid dependency");
-  }
-}
-
-
 struct Poset_struct {
   Dependency typeDep;
   int childNumID; //Not redundant
@@ -132,6 +101,7 @@ struct Genotype {
   std::vector<int> rest; // always sorted
 };
 
+
 inline Genotype wtGenotype() {
   // Not needed but to make it explicit
   Genotype g;
@@ -140,72 +110,21 @@ inline Genotype wtGenotype() {
   g.rest.resize(0);
   return g;
 }
+
+
+
+
+
 std::vector<int> genotypeSingleVector(const Genotype& ge);
 
-inline bool operator==(const Genotype& lhs, const Genotype& rhs) {
-  return (lhs.orderEff == rhs.orderEff) &&
-    (lhs.epistRtEff == rhs.epistRtEff) &&
-    (lhs.rest == rhs.rest);
-}
+bool operator==(const Genotype& lhs, const Genotype& rhs);
 
-inline bool operator<(const Genotype& lhs, const Genotype& rhs) {
-  std::vector<int> lh = genotypeSingleVector(lhs);
-  std::vector<int> rh = genotypeSingleVector(rhs);
-  if( lh.size() < rh.size() ) return true;
-  else if ( lh.size() > rh.size() ) return false;
-  else {
-    for(size_t i = 0; i != lh.size(); ++i) {
-      if( lh[i] < rh[i] ) return true;
-    }
-    return false;
-  }
-}
+bool operator<(const Genotype& lhs, const Genotype& rhs);
 
 
+Dependency stringToDep(const std::string& dep):
 
-inline double prodFitness(std::vector<double> s) {
-  return accumulate(s.begin(), s.end(), 1.0,
-		    [](double x, double y) {return (x * std::max(0.0, (1 + y)));});
-}
-
-
-
-// I am looping twice
-// inline double prodDeathFitness(vector<double> s) {
-//   // For Bozic's
-//   if( *min_element( s.begin(), s.end()) <= 99.0 ) {
-//     return -99.0;
-//   } else {
-//     return accumulate(s.begin(), s.end(), 1.0,
-// 		      [](double x, double y) {return (x * (1 - y));});
-//   }
-// }
-
-// But using infinity deals with this. See below
-// inline double prodDeathFitness(std::vector<double> s) {
-//   double f = 1.0;
-//   for(auto si : s) {
-//     if( si <= -90.0 ) {
-//       return 99.0;
-//     } else {
-//       f *= (1 - si);
-//     }
-//   }
-//   return f;
-// }
-
-
-inline double prodDeathFitness(std::vector<double> s) {
-  return accumulate(s.begin(), s.end(), 1.0,
-		    [](double x, double y) {return (x * std::max(0.0, (1 - y)));});
-}
-
-
-
-// inline double logSumFitness(vector<double> s) {
-//   return accumulate(s.begin(), s.end(), 1.0,
-// 		    [](double x, double y) {return (x * (1 + y));})
-// }
+std::string depToString(const Dependency dep);
 
 
 void obtainMutations(const Genotype& parent,
@@ -232,5 +151,10 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe);
 std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe);
 
 std::vector<int> getGenotypeDrivers(const Genotype& ge, const std::vector<int>& drv);
+
+double prodFitness(std::vector<double> s);
+
+double prodDeathFitness(std::vector<double> s);
+
 #endif
 

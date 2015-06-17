@@ -18,6 +18,89 @@ using std::back_inserter;
 // double Inf = std::numeric_limits<double>::infinity();
 // double NegInf = -std::numeric_limits<double>::infinity();
 
+double prodFitness(std::vector<double> s) {
+  return accumulate(s.begin(), s.end(), 1.0,
+		    [](double x, double y) {return (x * std::max(0.0, (1 + y)));});
+}
+
+// This is a better idea? If yes, change code in nr_fitness so that
+// birth 0 is not extinction.
+double prodFitnessNegInf(std::vector<double> s) {
+  double f = 1.0;
+  for(auto y : s) {
+    if( y == -std::numeric_limits<double>::infinity()) {
+      return -std::numeric_limits<double>::infinity();
+    } else {
+      f *= std::max(0.0, (1 + y));
+    }
+  }
+}
+
+double prodDeathFitness(std::vector<double> s) {
+  return accumulate(s.begin(), s.end(), 1.0,
+		    [](double x, double y) {return (x * std::max(0.0, (1 - y)));});
+}
+
+
+
+// inline double logSumFitness(vector<double> s) {
+//   return accumulate(s.begin(), s.end(), 1.0,
+// 		    [](double x, double y) {return (x * (1 + y));})
+// }
+
+
+
+
+bool operator==(const Genotype& lhs, const Genotype& rhs) {
+  return (lhs.orderEff == rhs.orderEff) &&
+    (lhs.epistRtEff == rhs.epistRtEff) &&
+    (lhs.rest == rhs.rest);
+}
+
+bool operator<(const Genotype& lhs, const Genotype& rhs) {
+  std::vector<int> lh = genotypeSingleVector(lhs);
+  std::vector<int> rh = genotypeSingleVector(rhs);
+  if( lh.size() < rh.size() ) return true;
+  else if ( lh.size() > rh.size() ) return false;
+  else {
+    for(size_t i = 0; i != lh.size(); ++i) {
+      if( lh[i] < rh[i] ) return true;
+    }
+    return false;
+  }
+}
+
+
+
+Dependency stringToDep(const std::string& dep) {
+  if(dep == "monotone") // AND, CBN, CMPN
+    return Dependency::monotone;
+  else if(dep == "semimonotone") // OR, SMN, DMPN
+    return Dependency::semimonotone;
+  else if(dep == "xmpn") // XOR, XMPN
+    return Dependency::xmpn;
+  else if(dep == "--") // for root, for example
+    return Dependency::single;
+  else 
+    throw std::out_of_range("Not a valid typeDep");
+  // We never create the NA from entry data. NA is reserved for Root.
+}
+
+std::string depToString(const Dependency dep) {
+  switch(dep) {
+  case Dependency::monotone:
+    return "CMPN or monotone";
+  case Dependency::semimonotone:
+    return "DMPN or semimonotone";
+  case Dependency::xmpn:
+    return "XMPN (XOR)";
+  case Dependency::single:
+    return "--";
+  default:
+    throw std::out_of_range("Not a valid dependency");
+  }
+}
+
 
 void print_Genotype(const Genotype& ge) {
   Rcpp::Rcout << "\n Printing Genotype";
