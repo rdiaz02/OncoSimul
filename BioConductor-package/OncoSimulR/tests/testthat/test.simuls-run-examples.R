@@ -68,7 +68,8 @@ for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
     tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
-                         onlyCancer = FALSE)
+                         onlyCancer = FALSE,
+                         mc.cores = 2)
     expect_true(inherits(tmp, "oncosimulpop"))
     tmp2 <- samplePop(tmp)
     expect_true(inherits(tmp2, "matrix"))

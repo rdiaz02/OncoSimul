@@ -137,7 +137,7 @@ The models so far implemented are all continuous time models, which are
 simulated using the BNB algorithm of Mather et al.\ \cite{Mather2012}. The
 core of the code is implemented in C++, providing for fast
 execution. Finally, code to simulate random graphs of the kind often seen
-in CBN, OTs, etc, has also been added.
+in CBN, OTs, etc, is also available.
 
 
 Therefore, OncoSimulR is now a very general package for genetic
@@ -2214,14 +2214,14 @@ names(examplesFitnessEffects)
 In the original McFarland model \cite{McFarland2013}, the effects of
 drivers contribute to the numerator of the birth rate, and those of the
 (deleterious) passengers to the denominator as:
-$\frac{1 + s}^d/(1 - s_p)^p$. However, we can map from this ratio to the
+$\frac{(1 + s)^d}{(1 - s_p)^p}$. However, we can map from this ratio to the
 usual product of terms by using a different value of $s_p$, that we will
 call $s_{pp} = -s_p/(1 + s_p)$ (see \cite{McFarland2014-phd}, his eq. 2.1
 in p.\ 9). 
 
 
-Note that in v.1 we use the same parameterization as in
-\cite{McFarland2013}. This reparameterization applies to v.2.
+This reparameterization applies to v.2. In v.1 we use the same
+parameterization as in \cite{McFarland2013}.
 
 <<>>=
 

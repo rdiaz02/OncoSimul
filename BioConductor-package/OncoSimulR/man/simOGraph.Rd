@@ -7,7 +7,8 @@
   Simulate DAGs that represent restrictions in the accumulation of mutations.
 }
 \usage{
-simOGraph(n, h = 4, conjunction = TRUE, nparents = 3, multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root")
+simOGraph(n, h = 4, conjunction = TRUE, nparents = 3,
+multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root")
 }
 
 \arguments{
