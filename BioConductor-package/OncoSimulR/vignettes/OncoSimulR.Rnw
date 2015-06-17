@@ -460,8 +460,18 @@ allow deviations from the DAG with a corresponding penalization that is,
 however, not identical to setting fitness to 0 (again, see
 \cite{Diaz-Uriarte2015}). This we can do by being explicit about the
 fitness effects of these deviations from the restrictions encoded in the
-DAG. (See also \ref{numfit} for the details about the meaning of the
+DAG. We will use, below a column of \texttt{s} for the fitness effect when
+the restrictions are satisfied and a column of \texttt{sh} when they are
+not. (See also \ref{numfit} for the details about the meaning of the
 fitness effects).
+
+
+That way of specifying fitness effects makes it also trivial to use the
+model in \cite{Hjelm2006} where all mutations might be allowed to occur,
+but the presence of some mutations increases the probability of occurrence
+of other mutations. For example, the values of \texttt{sh} could be all
+small positive ones (or for mildly deleterious effects, small negative
+numbers), while the values of \texttt{s} are much larger positive numbers.
 
 
 
@@ -1453,7 +1463,7 @@ We want the following mapping of genotypes to fitness:
   A & B & Fitness \\
   \hline
   wt&wt& 1 \\
-  wt&M& $1 + s_b$0 \\
+  wt&M& $1 + s_b$ \\
   M&wt& $1 + s_a$\\
   M&M& $1 + s_{ab}$\\
   \hline

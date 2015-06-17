@@ -1,1 +1,762 @@
-/home/ramon/Mendeley-pdfs/library.bib
+
+
+@article{Desper1999JCB,
+  address =       {Department of Mathematics, Rutgers University,
+                   Piscataway, New Jersey, USA.
+                   r.desper@dfkz-heidelberg.de},
+  author =        {Desper, R and Jiang, F and Kallioniemi, O P and
+                   Moch, H and Papadimitriou, C H and Sch\"{a}ffer, A A},
+  journal =       {J Comput Biol},
+  number =        {1},
+  pages =         {37--51},
+  title =         {{Inferring tree models for oncogenesis from
+                   comparative genome hybridization data.}},
+  volume =        {6},
+  year =          {1999},
+  abstract =      {Comparative genome hybridization (CGH) is a
+                   laboratory method to measure gains and losses of
+                   chromosomal regions in tumor cells. It is believed
+                   that DNA gains and losses in tumor cells do not occur
+                   entirely at random, but partly through some flow of
+                   causality. Models that relate tumor progression to
+                   the occurrence of DNA gains and losses could be very
+                   useful in hunting cancer genes and in cancer
+                   diagnosis. We lay some mathematical foundations for
+                   inferring a model of tumor progression from a CGH
+                   data set. We consider a class of tree models that are
+                   more general than a path model that has been
+                   developed for colorectal cancer. We derive a tree
+                   model inference algorithm based on the idea of a
+                   maximum-weight branching in a graph, and we show that
+                   under plausible assumptions our algorithm infers the
+                   correct tree. We have implemented our methods in
+                   software, and we illustrate with a CGH data set for
+                   renal cancer.},
+  issn =          {1066-5277},
+  url =           {http://view.ncbi.nlm.nih.gov/pubmed/10223663},
+}
+
+@incollection{Szabo2008,
+  author =        {Szabo, A and Boucher, Kenneth M},
+  booktitle =     {Handbook of cancer models with applications},
+  chapter =       {1},
+  editor =        {Tan, W-Y and Hanin, L},
+  pages =         {1--24},
+  publisher =     {World Scientific},
+  title =         {{Oncogenetic trees}},
+  year =          {2008},
+  url =           {http://www.worldscibooks.com/lifesci/6677.html},
+}
+
+@article{Beerenwinkel2007,
+  author =        {Beerenwinkel, Niko and Eriksson, Nicholas and
+                   Sturmfels, Bernd},
+  journal =       {Bernoulli},
+  month =         nov,
+  number =        {4},
+  pages =         {893--909},
+  title =         {{Conjunctive Bayesian networks}},
+  volume =        {13},
+  year =          {2007},
+  doi =           {10.3150/07-BEJ6133},
+  issn =          {1350-7265},
+  url =           {http://projecteuclid.org/euclid.bj/1194625594},
+}
+
+@article{Gerstung2009,
+  author =        {Gerstung, Moritz and Baudis, Michael and Moch, Holger and
+                   Beerenwinkel, Niko},
+  journal =       {Bioinformatics (Oxford, England)},
+  month =         nov,
+  number =        {21},
+  pages =         {2809--2815},
+  title =         {{Quantifying cancer progression with conjunctive
+                   Bayesian networks.}},
+  volume =        {25},
+  year =          {2009},
+  abstract =      {MOTIVATION: Cancer is an evolutionary process
+                   characterized by accumulating mutations. However, the
+                   precise timing and the order of genetic alterations
+                   that drive tumor progression remain enigmatic.
+                   RESULTS: We present a specific probabilistic
+                   graphical model for the accumulation of mutations and
+                   their interdependencies. The Bayesian network models
+                   cancer progression by an explicit unobservable
+                   accumulation process in time that is separated from
+                   the observable but error-prone detection of
+                   mutations. Model parameters are estimated by an
+                   Expectation-Maximization algorithm and the underlying
+                   interaction graph is obtained by a simulated
+                   annealing procedure. Applying this method to
+                   cytogenetic data for different cancer types, we find
+                   multiple complex oncogenetic pathways deviating
+                   substantially from simplified models, such as linear
+                   pathways or trees. We further demonstrate how the
+                   inferred progression dynamics can be used to improve
+                   genetics-based survival predictions which could
+                   support diagnostics and prognosis. AVAILABILITY: The
+                   software package ct-cbn is available under a GPL
+                   license on the web site cbg.ethz.ch/software/ct-cbn
+                   CONTACT: moritz.gerstung@bsse.ethz.ch.},
+  doi =           {10.1093/bioinformatics/btp505},
+  issn =          {1367-4811},
+  url =           {http://dx.doi.org/10.1093/bioinformatics/btp505 http://
+                  www.bsse.ethz.ch/cbg/software/ct-cbn},
+}
+
+@article{Gerstung2011,
+  author =        {Gerstung, Moritz and Eriksson, Nicholas and
+                   Lin, Jimmy and Vogelstein, Bert and
+                   Beerenwinkel, Niko},
+  journal =       {PLoS ONE},
+  month =         nov,
+  number =        {11},
+  pages =         {e27136},
+  title =         {{The Temporal Order of Genetic and Pathway
+                   Alterations in Tumorigenesis}},
+  volume =        {6},
+  year =          {2011},
+  doi =           {10.1371/journal.pone.0027136},
+  issn =          {1932-6203},
+  url =           {http://dx.plos.org/10.1371/journal.pone.0027136 http://
+                  www.bsse.ethz.ch/cbg/software/ct-cbn},
+}
+
+@article{FarahaniLagergren2013,
+  author =        {Farahani, Hossein Shahrabi and Lagergren, Jens},
+  journal =       {PloS one},
+  month =         jan,
+  number =        {6},
+  pages =         {e65773},
+  title =         {{Learning oncogenetic networks by reducing to mixed
+                   integer linear programming.}},
+  volume =        {8},
+  year =          {2013},
+  abstract =      {Cancer can be a result of accumulation of different
+                   types of genetic mutations such as copy number
+                   aberrations. The data from tumors are cross-sectional
+                   and do not contain the temporal order of the genetic
+                   events. Finding the order in which the genetic events
+                   have occurred and progression pathways are of vital
+                   importance in understanding the disease. In order to
+                   model cancer progression, we propose Progression
+                   Networks, a special case of Bayesian networks, that
+                   are tailored to model disease progression.
+                   Progression networks have similarities with
+                   Conjunctive Bayesian Networks (CBNs) [1],a variation
+                   of Bayesian networks also proposed for modeling
+                   disease progression. We also describe a learning
+                   algorithm for learning Bayesian networks in general
+                   and progression networks in particular. We reduce the
+                   hard problem of learning the Bayesian and progression
+                   networks to Mixed Integer Linear Programming (MILP).
+                   MILP is a Non-deterministic Polynomial-time complete
+                   (NP-complete) problem for which very good heuristics
+                   exists. We tested our algorithm on synthetic and real
+                   cytogenetic data from renal cell carcinoma. We also
+                   compared our learned progression networks with the
+                   networks proposed in earlier publications. The
+                   software is available on the website
+                   https://bitbucket.org/farahani/diprog.},
+  doi =           {10.1371/journal.pone.0065773},
+  issn =          {1932-6203},
+  url =           {http://www.pubmedcentral.nih.gov/
+  articlerender.fcgi?artid=3683041\&tool=pmcentrez\&rendertype=abstract},
+}
+
+@article{Korsunsky2014,
+  author =        {Korsunsky, Ilya and Ramazzotti, Daniele and
+                   Caravagna, Giulio and Mishra, Bud},
+  month =         aug,
+  pages =         {1--29},
+  title =         {{Inference of Cancer Progression Models with
+                   Biological Noise}},
+  year =          {2014},
+  url =           {http://arxiv.org/abs/1408.6032v1 http://biorxiv.org/content/
+                  early/2014/08/25/00832},
+}
+
+@article{Ortmann2015,
+  author =        {Ortmann, Christina a. and Kent, David G. and
+                   Nangalia, Jyoti and Silber, Yvonne and
+                   Wedge, David C. and Grinfeld, Jacob and
+                   Baxter, E. Joanna and Massie, Charles E. and
+                   Papaemmanuil, Elli and Menon, Suraj and
+                   Godfrey, Anna L. and Dimitropoulou, Danai and
+                   Guglielmelli, Paola and Bellosillo, Beatriz and
+                   Besses, Carles and D\"{o}hner, Konstanze and
+                   Harrison, Claire N. and Vassiliou, George S. and
+                   Vannucchi, Alessandro and Campbell, Peter J. and
+                   Green, Anthony R.},
+  journal =       {New England Journal of Medicine},
+  pages =         {601--612},
+  title =         {{Effect of Mutation Order on Myeloproliferative
+                   Neoplasms}},
+  volume =        {372},
+  year =          {2015},
+  doi =           {10.1056/NEJMoa1412098},
+  issn =          {0028-4793},
+  url =           {http://www.nejm.org/doi/abs/10.1056/NEJMoa1412098 http://
+                  www.newscientist.com/article/
+  mg22530094.600-mutation-order-reveals-what-cancer-will-do-next.html\#.VO8Tx1vMLmF},
+}
+
+@article{Raphael2014a,
+  author =        {Raphael, Benjamin J and Vandin, Fabio},
+  journal =       {Journal of Computational Biology},
+  number =        {00},
+  pages =         {250--264},
+  title =         {{Simultaneous Inference of Cancer Pathways and Tumor
+                   Progression from Cross-Sectional Mutation Data}},
+  volume =        {22},
+  year =          {2015},
+  doi =           {10.1089/cmb.2014.0161},
+  isbn =          {1557-8666 (Electronic) 1066-5277 (Linking)},
+  issn =          {1066-5277},
+}
+
+@article{Mather2012,
+  author =        {Mather, William H and Hasty, Jeff and
+                   Tsimring, Lev S},
+  journal =       {Bioinformatics (Oxford, England)},
+  month =         mar,
+  number =        {9},
+  pages =         {1230--1238},
+  title =         {{Fast stochastic algorithm for simulating
+                   evolutionary population dynamics.}},
+  volume =        {28},
+  year =          {2012},
+  abstract =      {MOTIVATION: Many important aspects of evolutionary
+                   dynamics can only be addressed through simulations.
+                   However, accurate simulations of realistically large
+                   populations over long periods of time needed for
+                   evolution to proceed are computationally expensive.
+                   Mutant can be present in very small numbers and yet
+                   (if they are more fit than others) be the key part of
+                   the evolutionary process. This leads to significant
+                   stochasticity that needs to be accounted for.
+                   Different evolutionary events occur at very different
+                   time scales: mutations are typically much rarer than
+                   reproduction and deaths. RESULTS: We introduce a new
+                   exact algorithm for fast fully stochastic simulations
+                   of evolutionary dynamics that include birth, death,
+                   and mutation events. It produces a significant
+                   speedup compared to the direct stochastic simulations
+                   in a typical case when the population size is large
+                   and the mutation rates are much smaller than birth
+                   and death rates. The algorithm performance is
+                   illustrated by several examples that include
+                   evolution on a smooth and rugged fitness landscape.
+                   We also show how this algorithm can be adapted for
+                   approximate simulations of more complex evolutionary
+                   problems and illustrate it by simulations of a
+                   stochastic competitive growth model. CONTACT:
+                   ltsimring@ucsd.edu.},
+  doi =           {10.1093/bioinformatics/bts130},
+  issn =          {1367-4811},
+  url =           {http://www.ncbi.nlm.nih.gov/pubmed/22437850},
+}
+
+@article{Bozic2010,
+  author =        {Bozic, Ivana and Antal, Tibor and Ohtsuki, Hisashi and
+                   Carter, Hannah and Kim, Dewey and Chen, Sining and
+                   Karchin, Rachel and Kinzler, Kenneth W and
+                   Vogelstein, Bert and Nowak, Martin A},
+  journal =       {Proceedings of the National Academy of Sciences of
+                   the United States of America},
+  month =         sep,
+  pages =         {18545--18550},
+  title =         {{Accumulation of driver and passenger mutations
+                   during tumor progression.}},
+  volume =        {107},
+  year =          {2010},
+  abstract =      {Major efforts to sequence cancer genomes are now
+                   occurring throughout the world. Though the emerging
+                   data from these studies are illuminating, their
+                   reconciliation with epidemiologic and clinical
+                   observations poses a major challenge. In the current
+                   study, we provide a mathematical model that begins to
+                   address this challenge. We model tumors as a discrete
+                   time branching process that starts with a single
+                   driver mutation and proceeds as each new driver
+                   mutation leads to a slightly increased rate of clonal
+                   expansion. Using the model, we observe tremendous
+                   variation in the rate of tumor development-providing
+                   an understanding of the heterogeneity in tumor sizes
+                   and development times that have been observed by
+                   epidemiologists and clinicians. Furthermore, the
+                   model provides a simple formula for the number of
+                   driver mutations as a function of the total number of
+                   mutations in the tumor. Finally, when applied to
+                   recent experimental data, the model allows us to
+                   calculate the actual selective advantage provided by
+                   typical somatic mutations in human tumors in situ.
+                   This selective advantage is surprisingly small-0.004
+                   ± 0.0004-and has major implications for experimental
+                   cancer research.},
+  doi =           {10.1073/pnas.1010978107},
+  issn =          {1091-6490},
+  url =           {http://www.ncbi.nlm.nih.gov/pubmed/20876136},
+}
+
+@article{McFarland2013,
+  author =        {McFarland, Christopher D and Korolev, Kirill S and
+                   Kryukov, Gregory V and Sunyaev, Shamil R and
+                   Mirny, Leonid A},
+  journal =       {Proceedings of the National Academy of Sciences of
+                   the United States of America},
+  month =         feb,
+  number =        {8},
+  pages =         {2910--5},
+  title =         {{Impact of deleterious passenger mutations on cancer
+                   progression.}},
+  volume =        {110},
+  year =          {2013},
+  abstract =      {Cancer progression is driven by the accumulation of a
+                   small number of genetic alterations. However, these
+                   few driver alterations reside in a cancer genome
+                   alongside tens of thousands of additional mutations
+                   termed passengers. Passengers are widely believed to
+                   have no role in cancer, yet many passengers fall
+                   within protein-coding genes and other functional
+                   elements that can have potentially deleterious
+                   effects on cancer cells. Here we investigate the
+                   potential of moderately deleterious passengers to
+                   accumulate and alter the course of neoplastic
+                   progression. Our approach combines evolutionary
+                   simulations of cancer progression with an analysis of
+                   cancer sequencing data. From simulations, we find
+                   that passengers accumulate and largely evade natural
+                   selection during progression. Although individually
+                   weak, the collective burden of passengers alters the
+                   course of progression, leading to several oncological
+                   phenomena that are hard to explain with a traditional
+                   driver-centric view. We then tested the predictions
+                   of our model using cancer genomics data and confirmed
+                   that many passengers are likely damaging and have
+                   largely evaded negative selection. Finally, we use
+                   our model to explore cancer treatments that exploit
+                   the load of passengers by either (i) increasing the
+                   mutation rate or (ii) exacerbating their deleterious
+                   effects. Though both approaches lead to cancer
+                   regression, the latter is a more effective therapy.
+                   Our results suggest a unique framework for
+                   understanding cancer progression as a balance of
+                   driver and passenger mutations.},
+  doi =           {10.1073/pnas.1213968110},
+  issn =          {1091-6490},
+  url =           {http://www.ncbi.nlm.nih.gov/pubmed/23388632},
+}
+
+@article{Diaz-Uriarte2015,
+  author =        {Diaz-Uriarte, R},
+  journal =       {BMC Bioinformatics},
+  number =        {41},
+  pages =         {0--36},
+  title =         {{Identifying restrictions in the order of
+                   accumulation of mutations during tumor progression:
+                   effects of passengers, evolutionary models, and
+                   sampling}},
+  volume =        {16},
+  year =          {2015},
+  doi =           {doi:10.1186/s12859-015-0466-7},
+  url =           {http://www.biomedcentral.com/1471-2105/16/41/abstract},
+}
+
+@incollection{Reiter2013a,
+  address =       {Berlin, Heidelberg},
+  author =        {Reiter, JG and Bozic, Ivana and
+                   Chatterjee, Krishnendu and Nowak, MA},
+  booktitle =     {Computer Aided Verification, Lecture Notes in
+                   Computer Science},
+  editor =        {Sharygina, Natasha and Veith, Helmut},
+  pages =         {101--106},
+  publisher =     {Springer-Verlag},
+  title =         {{TTP: tool for tumor progression}},
+  year =          {2013},
+  url =           {http://link.springer.com/chapter/10.1007/
+                  978-3-642-39799-8\_6 http://dx.doi.org/10.1007/
+                  978-3-642-39799-8\_6 http://pub.ist.ac.at/ttp/},
+}
+
+@article{Zanini2012,
+  author =        {Zanini, Fabio and Neher, Richard a.},
+  journal =       {Bioinformatics},
+  number =        {24},
+  pages =         {3332--3333},
+  title =         {{FFPopSim: An efficient forward simulation package
+                   for the evolution of large populations}},
+  volume =        {28},
+  year =          {2012},
+  abstract =      {MOTIVATION: The analysis of the evolutionary dynamics
+                   of a population with many polymorphic loci is
+                   challenging, as a large number of possible genotypes
+                   needs to be tracked. In the absence of analytical
+                   solutions, forward computer simulations are an
+                   important tool in multi-locus population genetics.
+                   The run time of standard algorithms to simulate
+                   sexual populations increases as 8(L) with the number
+                   of loci L, or with the square of the population size
+                   N.$\backslash$n$\backslash$nRESULTS: We have
+                   developed algorithms to simulate large populations
+                   with arbitrary genetic maps, including multiple
+                   crossovers, with a run time that scales as 3(L). If
+                   the number of crossovers is restricted to at most
+                   one, the run time is reduced to L2(L). The algorithm
+                   is based on an analogue of the Fast Fourier Transform
+                   (FFT) and allows for arbitrary fitness functions
+                   (i.e. any epistasis). In addition, we include a
+                   streamlined individual-based framework. The library
+                   is implemented as a collection of C++ classes and a
+                   Python interface.},
+  doi =           {10.1093/bioinformatics/bts633},
+  isbn =          {1010001000},
+  issn =          {13674803},
+  url =           {http://webdav.tuebingen.mpg.de/ffpopsim/ http://
+                  bioinformatics.oxfordjournals.org/content/28/24/3332 http://
+                  github.com/neherlab/ffpopsim/},
+}
+
+@article{Gillespie1993,
+  author =        {Gillespie, J. H.},
+  journal =       {Genetics},
+  number =        {3},
+  pages =         {971--981},
+  title =         {{Substitution processes in molecular evolution. I.
+                   Uniform and clustered substitutions in a haploid
+                   model}},
+  volume =        {134},
+  year =          {1993},
+  abstract =      {A computer simulation of the process of nucleotide
+                   substitutions in a finite haploid population subject
+                   to selection in a randomly fluctuating environment
+                   provides a number of unexpected results. For rapidly
+                   fluctuating environments, substitutions are more
+                   regular than random. A small mutation-rate
+                   approximation is used to explain the regularity. The
+                   explanation does not depend heavily on the
+                   particulars of the haploid model, leading to the
+                   conjecture that many symmetrical models of molecular
+                   evolution with rapidly changing parameters may
+                   exhibit substitutions that are more regular than
+                   random. When fitnesses change very slowly, the
+                   simulation shows that substitutions are more clumped
+                   than random. Here a small-mutation approximation
+                   shows that the clustering is due to the increase in
+                   fitness that accompanies each successive substitution
+                   with a consequent lowering of the effective mutation
+                   rate. The two observations taken together suggest
+                   that the common observation that amino acid
+                   substitutions are clustered in time is due to the
+                   presence of parameters that change very slowly.},
+  issn =          {00166731},
+}
+
+@article{Datta2013,
+  author =        {Datta, Ruchira S and Gutteridge, Alice and
+                   Swanton, Charles and Maley, Carlo C and
+                   Graham, Trevor A},
+  journal =       {Evolutionary applications},
+  month =         jan,
+  number =        {1},
+  pages =         {20--33},
+  title =         {{Modelling the evolution of genetic instability
+                   during tumour progression.}},
+  volume =        {6},
+  year =          {2013},
+  abstract =      {The role of genetic instability in driving
+                   carcinogenesis remains controversial. Genetic
+                   instability should accelerate carcinogenesis by
+                   increasing the rate of advantageous driver mutations;
+                   however, genetic instability can also potentially
+                   retard tumour growth by increasing the rate of
+                   deleterious mutation. As such, it is unclear whether
+                   genetically unstable clones would tend to be more
+                   selectively advantageous than their genetically
+                   stable counterparts within a growing tumour. Here, we
+                   show the circumstances where genetic instability
+                   evolves during tumour progression towards cancer. We
+                   employ a Wright-Fisher type model that describes the
+                   evolution of tumour subclones. Clones can acquire
+                   both advantageous and deleterious mutations, and
+                   mutator mutations that increase a cell's intrinsic
+                   mutation rate. Within the model, cancers evolve with
+                   a mutator phenotype when driver mutations bestow only
+                   moderate increases in fitness: very strong or weak
+                   selection for driver mutations suppresses the
+                   evolution of a mutator phenotype. Genetic instability
+                   occurs secondarily to selectively advantageous driver
+                   mutations. Deleterious mutations have relatively
+                   little effect on the evolution of genetic instability
+                   unless selection for additional driver mutations is
+                   very weak or if deleterious mutations are very
+                   common. Our model provides a framework for studying
+                   the evolution of genetic instability in tumour
+                   progression. Our analysis highlights the central role
+                   of selection in shaping patterns of mutation in
+                   carcinogenesis.},
+  doi =           {10.1111/eva.12024},
+  issn =          {1752-4571},
+  url =           {http://www.pubmedcentral.nih.gov/
+  articlerender.fcgi?artid=3567468\&tool=pmcentrez\&rendertype=abstract},
+}
+
+@phdthesis{McFarland2014-phd,
+  author =        {McFarland, CD},
+  school =        {Harvard University},
+  title =         {{The role of deleterious passengers in cancer}},
+  year =          {2014},
+  url =           {http://nrs.harvard.edu/urn-3:HUL.InstRepos:13070047},
+}
+
+@article{Hjelm2006,
+  address =       {SBC and Dept. of Numerical Analysis and Computer
+                   Science, KTH, Stockholm, Sweden.},
+  author =        {Hjelm, M and H\"{o}glund, M and Lagergren, J},
+  journal =       {J Comput Biol},
+  month =         may,
+  number =        {4},
+  pages =         {853--865},
+  title =         {{New probabilistic network models and algorithms for
+                   oncogenesis.}},
+  volume =        {13},
+  year =          {2006},
+  abstract =      {Chromosomal aberrations in solid tumors appear in
+                   complex patterns. It is important to understand how
+                   these patterns develop, the dynamics of the process,
+                   the temporal or even causal order between
+                   aberrations, and the involved pathways. Here we
+                   present network models for chromosomal aberrations
+                   and algorithms for training models based on observed
+                   data. Our models are generative probabilistic models
+                   that can be used to study dynamical aspects of
+                   chromosomal evolution in cancer cells. They are well
+                   suited for a graphical representation that conveys
+                   the pathways found in a dataset. By allowing only
+                   pairwise dependencies and partition aberrations into
+                   modules, in which all aberrations are restricted to
+                   have the same dependencies, we reduce the number of
+                   parameters so that datasets sizes relevant to cancer
+                   applications can be handled.We apply our framework to
+                   a dataset of colorectal cancer tumor karyotypes. The
+                   obtained model explains the data significantly better
+                   than a model where independence between the
+                   aberrations is assumed. In fact, the obtained model
+                   performs very well with respect to several measures
+                   of goodness of fit and is, with respect to repetition
+                   of the training, more or less unique.},
+  doi =           {10.1089/cmb.2006.13.853},
+  issn =          {1066-5277},
+  url =           {http://dx.doi.org/10.1089/cmb.2006.13.853},
+}
+
+@article{Ashworth2011,
+  author =        {Ashworth, Alan and Lord, Christopher J and
+                   Reis-Filho, Jorge S},
+  journal =       {Cell},
+  number =        {1},
+  pages =         {30--38},
+  publisher =     {Elsevier Inc.},
+  title =         {{Genetic interactions in cancer progression and
+                   treatment.}},
+  volume =        {145},
+  year =          {2011},
+  abstract =      {As cancer cell genomes are unveiled at a breathtaking
+                   pace, the genetic principles at play in cancer are
+                   emerging in all their complexity, prompting the
+                   assessment of classical genetic interaction models.
+                   Here, we discuss the implications of these findings
+                   for cancer progression and heterogeneity and for the
+                   development of new therapeutic approaches.},
+  doi =           {10.1016/j.cell.2011.03.020},
+  isbn =          {1097-4172 (Electronic)$\backslash$r0092-8674
+                   (Linking)},
+  issn =          {00928674},
+  url =           {http://dx.doi.org/10.1016/j.cell.2011.03.020},
+}
+
+@article{Hartman2001,
+  author =        {Hartman, J L and Garvik, B and Hartwell, L},
+  journal =       {Science (New York, N.Y.)},
+  number =        {5506},
+  pages =         {1001--1004},
+  title =         {{Principles for the buffering of genetic variation.}},
+  volume =        {291},
+  year =          {2001},
+  abstract =      {Most genetic research has used inbred organisms and
+                   has not explored the complexity of natural genetic
+                   variation present in outbred populations. The
+                   translation of geno- type to phenotype is complicated
+                   by gene interactions observed as epistasis, canali-
+                   zation, robustness, or buffering. Analysis of double
+                   mutations in inbred experimental organisms suggests
+                   some principles for gene interaction that may apply
+                   to natural variation as well. The buffering of
+                   variation in one gene is most often due to a small
+                   number of other genes that function in the same
+                   biochemical process. However, buffering can also
+                   result from genes functioning in processes extrinsic
+                   to that of the primary gene.},
+  doi =           {10.1126/science.291.5506.1001},
+  isbn =          {0036-8075},
+  issn =          {00368075},
+}
+
+@article{Misra2014,
+  author =        {Misra, Navodit and Szczurek, Ewa and Vingron, Martin},
+  journal =       {Bioinformatics (Oxford, England)},
+  month =         may,
+  number =        {17},
+  pages =         {2456--2463},
+  title =         {{Inferring the paths of somatic evolution in
+                   cancer.}},
+  volume =        {30},
+  year =          {2014},
+  abstract =      {MOTIVATION: Cancer cell genomes acquire several
+                   genetic alterations during somatic evolution from a
+                   normal cell type. The relative order in which these
+                   mutations accumulate and contribute to cell fitness
+                   is affected by epistatic interactions. Inferring
+                   their evolutionary history is challenging because of
+                   the large number of mutations acquired by cancer
+                   cells as well as the presence of unknown epistatic
+                   interactions. RESULTS: We developed Bayesian Mutation
+                   Landscape (BML), a probabilistic approach for
+                   reconstructing ancestral genotypes from tumor samples
+                   for much larger sets of genes than previously
+                   feasible. BML infers the likely sequence of mutation
+                   accumulation for any set of genes that is recurrently
+                   mutated in tumor samples. When applied to tumor
+                   samples from colorectal, glioblastoma, lung and
+                   ovarian cancer patients, BML identifies the diverse
+                   evolutionary scenarios involved in tumor initiation
+                   and progression in greater detail, but broadly in
+                   agreement with prior results. AVAILABILITY AND
+                   IMPLEMENTATION: Source code and all datasets are
+                   freely available at bml.molgen.mpg.de CONTACT:
+                   misra@molgen.mpg.de Supplementary information:
+                   Supplementary data are available at Bioinformatics
+                   online.},
+  doi =           {10.1093/bioinformatics/btu319},
+  issn =          {1367-4811},
+  url =           {http://www.ncbi.nlm.nih.gov/pubmed/24812340},
+}
+
+@article{Bauer2014,
+  author =        {Bauer, Benedikt and Siebert, Reiner and
+                   Traulsen, Arne},
+  journal =       {Journal of Theoretical Biology},
+  pages =         {52--60},
+  publisher =     {Elsevier},
+  title =         {{Cancer initiation with epistatic interactions
+                   between driver and passenger mutations}},
+  volume =        {358},
+  year =          {2014},
+  abstract =      {We investigate the dynamics of cancer initiation in a
+                   mathematical model with one driver mutation and
+                   several passenger mutations. Our analysis is based on
+                   a multi-type branching process: we model individual
+                   cells which can either divide or undergo apoptosis.
+                   In the case of a cell division, the two daughter
+                   cells can mutate, which potentially confers a change
+                   in fitness to the cell. In contrast to previous
+                   models, the change in fitness induced by the driver
+                   mutation depends on the genetic context of the cell,
+                   in our case on the number of passenger mutations. The
+                   passenger mutations themselves have no or only a very
+                   small impact on the cell[U+05F3]s fitness. While our
+                   model is not designed as a specific model for a
+                   particular cancer, the underlying idea is motivated
+                   by clinical and experimental observations in Burkitt
+                   Lymphoma. In this tumor, the hallmark mutation leads
+                   to deregulation of the MYC oncogene which increases
+                   the rate of apoptosis, but also the proliferation
+                   rate of cells. This increase in the rate of apoptosis
+                   hence needs to be overcome by mutations affecting
+                   apoptotic pathways, naturally leading to an epistatic
+                   fitness landscape. This model shows a very
+                   interesting dynamical behavior which is distinct from
+                   the dynamics of cancer initiation in the absence of
+                   epistasis. Since the driver mutation is deleterious
+                   to a cell with only a few passenger mutations, there
+                   is a period of stasis in the number of cells until a
+                   clone of cells with enough passenger mutations
+                   emerges. Only when the driver mutation occurs in one
+                   of those cells, the cell population starts to grow
+                   rapidly. © 2014 Elsevier Ltd.},
+  doi =           {10.1016/j.jtbi.2014.05.018},
+  issn =          {10958541},
+  url =           {http://dx.doi.org/10.1016/j.jtbi.2014.05.018},
+}
+
+@article{Ochs2015,
+  author =        {Ochs, Ian E and Desai, Michael M},
+  journal =       {BMC Evolutionary Biology},
+  number =        {1},
+  pages =         {1--9},
+  title =         {{The competition between simple and complex
+                   evolutionary trajectories in asexual populations}},
+  volume =        {15},
+  year =          {2015},
+  doi =           {10.1186/s12862-015-0334-0},
+  issn =          {1471-2148},
+  url =           {http://www.biomedcentral.com/1471-2148/15/55},
+}
+
+@article{Weissman2009,
+  author =        {Weissman, Daniel B. and Desai, Michael M. and
+                   Fisher, Daniel S. and Feldman, Marcus W.},
+  journal =       {Theoretical Population Biology},
+  number =        {4},
+  pages =         {286--300},
+  publisher =     {Elsevier Inc.},
+  title =         {{The rate at which asexual populations cross fitness
+                   valleys}},
+  volume =        {75},
+  year =          {2009},
+  abstract =      {Complex traits often involve interactions between
+                   different genetic loci. This can lead to sign
+                   epistasis, whereby mutations that are individually
+                   deleterious or neutral combine to confer a fitness
+                   benefit. In order to acquire the beneficial genotype,
+                   an asexual population must cross a fitness valley or
+                   plateau by first acquiring the deleterious or neutral
+                   intermediates. Here, we present a complete, intuitive
+                   theoretical description of the valley-crossing
+                   process across the full spectrum of possible
+                   parameter regimes. We calculate the rate at which a
+                   population crosses a fitness valley or plateau of
+                   arbitrary width, as a function of the mutation rates,
+                   the population size, and the fitnesses of the
+                   intermediates. We find that when intermediates are
+                   close to neutral, a large population can cross even
+                   wide fitness valleys remarkably quickly, so that
+                   valley-crossing dynamics may be common even when
+                   mutations that directly increase fitness are also
+                   possible. Thus the evolutionary dynamics of large
+                   populations can be sensitive to the structure of an
+                   extended region of the fitness landscape - the
+                   population may not take directly uphill paths in
+                   favor of paths across valleys and plateaus that lead
+                   eventually to fitter genotypes. In smaller
+                   populations, we find that below a threshold size,
+                   which depends on the width of the fitness valley and
+                   the strength of selection against intermediate
+                   genotypes, valley-crossing is much less likely and
+                   hence the evolutionary dynamics are less influenced
+                   by distant regions of the fitness landscape. ?? 2009
+                   Elsevier Inc. All rights reserved.},
+  doi =           {10.1016/j.tpb.2009.02.006},
+  isbn =          {1096-0325 (Electronic)$\backslash$r0040-5809
+                   (Linking)},
+  issn =          {00405809},
+  url =           {http://dx.doi.org/10.1016/j.tpb.2009.02.006},
+}
+
+@misc{Oncotree,
+  author =        {Szabo, Aniko and Pappas, Lisa},
+  title =         {{Oncotree: Estimating oncogenetic trees}},
+  year =          {2013},
+  url =           {http://cran.r-project.org/package=Oncotree},
+}
+
