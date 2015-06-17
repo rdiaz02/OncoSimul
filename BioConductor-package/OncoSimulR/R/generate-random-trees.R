@@ -1,11 +1,19 @@
-## This used to be in BestOncoTree, up to 2015-04-16
-## It is still there, but now I add it here.
-##
-## version_generate_random_trees <- "1.1"
-## cat(paste("\n generate_random_trees: This is version ",
-##           version_generate_random_trees, "\n"))
+## Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
 
-## require(OncoSimulR)
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 
 simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
                       multilevelParent = TRUE,

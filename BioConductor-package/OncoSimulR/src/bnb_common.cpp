@@ -1,3 +1,20 @@
+//     Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 #include "bnb_common.h"
 #include <Rcpp.h>
 
@@ -45,16 +62,6 @@ double pM_f_st(const double& t,
   return pM;
 }
 
-
-
-// FIXME: if this is expenssive, use doubles, not long doubles.
-// after all, we might end up with DBL_MIN anyway if large
-// pop size (> 10^9) and runif very close to 1.
-
-// Some comparisons with the exponential (beeren) fitness
-// using long doubled showed problems in ~ 25% of cases
-// (42 warnings total out of 179 completed C++ executions).
-// Using just double, I get 63 out of 205, so ~ 30%.
 double ti_nextTime_tmax_2_st(const spParamsP& spP,
 				    const double& currentTime,
 				    const double& tSample,
@@ -256,7 +263,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	ti = DBL_MIN;
 	// Beware of this!!  throw std::range_error("ti set to DBL_MIN");
 	// Do not exit. Record it. We check for it now in R code. Maybe
-	// abort simulation and go to a new one?  FIXME
+	// abort simulation and go to a new one?  
 	// Rcpp::Rcout << "ti set to DBL_MIN\n";
 	// Yes, abort because o.w. we can repeat it many, manu times
 	// throw std::range_error("ti set to DBL_MIN");
@@ -715,3 +722,41 @@ void updateRatesBeeren(std::vector<spParamsP>& popParams,
 
 
 
+
+
+void mapTimes_updateP(std::multimap<double, int>& mapTimes,
+			     std::vector<spParamsP>& popParams,
+			     const int index,
+			     const double time) {
+  // Update the map times <-> indices
+  // First, remove previous entry, then insert.
+  // But if we just created the species, nothing to remove from the map.
+  if(popParams[index].timeLastUpdate > -1)
+    mapTimes.erase(popParams[index].pv);
+  popParams[index].pv = mapTimes.insert(std::make_pair(time, index));
+}
+
+
+void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
+			     const std::multimap<double, int>& mapTimes) {
+  // we want minNextMutationTime and nextMutant
+  nextMutant = mapTimes.begin()->second;
+  minNextMutationTime = mapTimes.begin()->first;
+}
+
+
+void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
+			       const std::vector<double>& sampleTotPopSize,
+			       const std::vector<double>& sampleLargestPopSize,
+			       const std::vector<double>& sampleLargestPopProp,
+			       const std::vector<int>& sampleMaxNDr,
+			       const std::vector<int>& sampleNDrLargestPop){
+
+  for(size_t i = 0; i < sampleTotPopSize.size(); ++i) {
+    perSampleStats(i, 0) = sampleTotPopSize[i];
+    perSampleStats(i, 1) = sampleLargestPopSize[i]; // Never used in R FIXME: remove!!
+    perSampleStats(i, 2) = sampleLargestPopProp[i]; // Never used in R
+    perSampleStats(i, 3) = static_cast<double>(sampleMaxNDr[i]);
+    perSampleStats(i, 4) = static_cast<double>(sampleNDrLargestPop[i]);
+  }
+}

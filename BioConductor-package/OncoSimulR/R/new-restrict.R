@@ -1,5 +1,20 @@
-## alternatig signs: make sure no problem
-## summary of simulated object: change?
+## Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
+
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 
 
 ## Say which are drivers: populate the drv vector.
@@ -14,15 +29,6 @@
 ## - Modules and order effects can be kind of funny?
 
 ## Gene names can contain no spaces, commas, or ">"
-## library(data.table)
-## library(Rcpp)
-## library(gtools) ## for permutations
-## setwd("../../")
-## library(igraph)
-## library(Rgraphviz)
-
-## sourceCpp("nrOncoSimul.cpp", verbose = TRUE)
-## sourceCpp("t1.cpp", verbose = TRUE)
 
 
 check.gm <- function(gm) {

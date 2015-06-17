@@ -1,3 +1,20 @@
+//     Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 #ifndef _BNB_COMMON_H_
 #define _BNB_COMMON_H_
 
@@ -41,12 +58,6 @@ inline void R_f_st(spParamsP& spP) {
 inline double pE_f_st(double& pM, const spParamsP& spP){
   double pE = (spP.death * (1.0 - pM ) )/(spP.W - spP.death - spP.birth * pM );
   if( !std::isfinite(pE) ) {
-    //  DP2(spP.death); DP2(pM); 
-    // print_spP(spP); 
-    // for the running out of mutations
-    // set a very tiny mutation prob, and if by chance it happens,
-    // then mutate back to one self, so do not mutate
-    // o.w., work out the math carefully
     throw std::range_error("pE.f: pE not finite");
   }
   return pE;
@@ -57,132 +68,22 @@ inline double pB_f_st(const double& pE,
   return (spP.birth * pE)/spP.death; 
 }
 
-
-
-inline void mapTimes_updateP(std::multimap<double, int>& mapTimes,
+void mapTimes_updateP(std::multimap<double, int>& mapTimes,
 			     std::vector<spParamsP>& popParams,
 			     const int index,
-			     const double time) {
-  // Update the map times <-> indices
-  // First, remove previous entry, then insert.
-  // But if we just created the species, nothing to remove from the map.
-  if(popParams[index].timeLastUpdate > -1)
-    mapTimes.erase(popParams[index].pv);
-  popParams[index].pv = mapTimes.insert(std::make_pair(time, index));
-}
+			     const double time);
 
 
-inline void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
-			     const std::multimap<double, int>& mapTimes) {
-  // we want minNextMutationTime and nextMutant
-  nextMutant = mapTimes.begin()->second;
-  minNextMutationTime = mapTimes.begin()->first;
-}
+void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
+			     const std::multimap<double, int>& mapTimes);
 
 
-// inline void whichDrivers(int& totalPresentDrivers,
-// 			 std::string& strDrivers,
-// 			 const std::vector<int>& countByDriver){
-//   // Does two things: return a string with the drivers and give the total
-//   // presentDrivers.
-//   std::string comma = "";
-//   for(size_t i = 0; i < countByDriver.size(); ++i) {
-//     if(countByDriver[i] > 0) {
-//       strDrivers += (comma + std::to_string(i + 1)); 
-//       comma = ", ";
-//       ++totalPresentDrivers;
-//     }
-//   }
-//   if(totalPresentDrivers == 0) strDrivers = "NA";
-// }
-
-// inline void whichDrivers(int& totalPresentDrivers,
-// 				std::string& strDrivers,
-// 				const std::vector<int>& countByDriver){
-//   std::string comma = "";
-//   DP2(countByDriver.size());
-  
-//   for(size_t i = 0; i < countByDriver.size(); ++i) {
-//     DP1(" v 1");
-//     DP2(i);
-//     DP2( i + 1 );
-//     DP1(" v 2");
-//     int ii = i + 1;
-//     DP2(ii);
-//     DP1(" v 3");
-//     std::string uu =  std::to_string(ii);
-//     DP1(" v 4");
-//     DP1(" v 5");
-//     DP1(" v 6");
-//     if(countByDriver[i] > 0) {
-//       DP1("v 7");
-//       DP2(countByDriver[i]);
-//       DP1("v8");
-//       DP1("v9");
-//       int iii = i + 1;
-//       DP1("v10");
-//       std::string uuu = std::to_string(iii);
-//       DP1("v11");
-//       DP1("v12");
-//       strDrivers += (comma + std::to_string(i + 1)); 
-//       comma = ", ";
-//       ++totalPresentDrivers;
-//     }
-//   }
-//   if(totalPresentDrivers == 0) strDrivers = "NA";
-// }
-
-// inline void whichDrivers(int& totalPresentDrivers,
-// 			 std::string& strDrivers,
-// 			 const std::vector<int>& countByDriver){
-//   DP1("w 1");
-//   std::string comma = "";
-//   std::string uu;
-//   int ui;
-//   for(size_t i = 0; i < countByDriver.size(); ++i) {
-//     DP2(i);
-//     DP2( i + 1);
-//     ui = static_cast<int>(i) + 1;
-//     DP1("after ui");
-//     DP2(ui);
-    
-//     uu = std::to_string(ui);
-//     DP1("w 2");
-//     DP2(i);
-//     if(countByDriver[i] > 0) {
-//       DP1("w 3");
-//       DP2(countByDriver[i]);
-//        DP1("w 3 a");
-//        std::string uu = std::to_string(i + 1);
-//       strDrivers += (comma + std::to_string(i + 1));
-//        DP1("w 3 aa");
-//       comma = ", ";
-//        DP1("w 3 ab");
-//       ++totalPresentDrivers;
-//       DP1("w3b");
-//     }
-//   }
-//   DP1("w 4");
-//   if(totalPresentDrivers == 0) strDrivers = "NA";
-// }
-
-
-
-inline void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
+void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
 			       const std::vector<double>& sampleTotPopSize,
 			       const std::vector<double>& sampleLargestPopSize,
 			       const std::vector<double>& sampleLargestPopProp,
 			       const std::vector<int>& sampleMaxNDr,
-			       const std::vector<int>& sampleNDrLargestPop){
-
-  for(size_t i = 0; i < sampleTotPopSize.size(); ++i) {
-    perSampleStats(i, 0) = sampleTotPopSize[i];
-    perSampleStats(i, 1) = sampleLargestPopSize[i]; // Never used in R FIXME: remove!!
-    perSampleStats(i, 2) = sampleLargestPopProp[i]; // Never used in R
-    perSampleStats(i, 3) = static_cast<double>(sampleMaxNDr[i]);
-    perSampleStats(i, 4) = static_cast<double>(sampleNDrLargestPop[i]);
-  }
-}
+		 const std::vector<int>& sampleNDrLargestPop);
 
 
 void print_spP(const spParamsP& spP);

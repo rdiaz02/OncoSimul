@@ -1,3 +1,20 @@
+//     Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
+
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, either version 3 of the License, or
+//     (at your option) any later version.
+
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
 // #include "OncoSimul.h"
 #include "debug_common.h"
 #include "bnb_common.h"
@@ -130,41 +147,6 @@ void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
   }
 }
 
-// FIXME: change this, now that we keep a count of drivers?
-// see the new function in new-restrict.cpp: countDrivers
-
-// Yes, we do want to count drivers. For instance, stopping in cancer can
-// be related to this. So:
-
-// In R, the user says which are the drivers. If does not say anuthing,
-// the default (NULL) then drivers are all in poset, epist, restrict. The
-// user can pass a vector with the names of the genes (not modules). Allow
-// also for empty, so this is faster if not needed. And check that if we
-// use a stopping rule based on drivers that drv vectors is not empty.
-
-// inline void nr_count_NumDrivers(int& maxNumDrivers, 
-// 				std::vector<int>& countByDriver,
-// 				Rcpp::IntegerMatrix& returnGenotypes,
-// 				const vector<int>& drv){
-//   // Fill up the "countByDriver" table and return the maximum number of
-//   // mutated drivers in any genotype.
-//   // This is in how many genotypes each driver is present. Is this relevant?
-//   // Difference w.r.t. to former is passing drv
-//   maxNumDrivers = 0;
-//   int tmpdr = 0;
-//   int driver_indx;
-//   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
-//     tmpdr = 0;
-//     for(int i : drv) {
-//       driver_indx = i - 1;
-//       tmpdr += returnGenotypes(driver_indx, j);
-//       countByDriver[driver_indx] += returnGenotypes(driver_indx, j);
-//     }
-//     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
-//   }
-// }
-
-
 inline void driverCounts(int& maxNumDrivers,
 			 int& totalPresentDrivers,
 			 std::vector<int>& countByDriver,
@@ -202,16 +184,6 @@ inline void driverCounts(int& maxNumDrivers,
 
 // FIXME: why not keep the number of present drivers in the genotype? We
 // call often the getGenotypeDrivers(ge, drv).size()
-
-// FIXME: we do this often. Why not just keep it in the struct?
-// We do not call this one-liner, but we call the internal thing. Three places.
-// int nr_count_genotype_NDrivers(const Genotype& ge, const vector<int>& drv) {
-//   // Counts the number of mutated drivers in a genotype.
-//   // drv comes from R, and it is the vector with the
-//   // numbers of the genes, not modules.
-//   return getGenotypeDrivers(ge, drv).size();
-// }
-
 
 
 void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
@@ -417,19 +389,6 @@ Rcpp::NumericMatrix create_outNS(const vector<vector<int> >& uniqueGenotypes,
 
 // FIXME: when creating the 0/1, collapse those that are the same
 
-// vector< vector<int> > uniqueGenot_vector(vector<Genotype>& genot_out) {
-//   // From genot_out we want the unique genotypes, but each as a single
-//   // vector. Convert to the vector, then use a set to give unique sorted
-//   // vector.
-//   std::vector<std::vector<int> > genot_out_nr;
-//   std::transform(genout_out.begin(), genot_out.end(),
-// 		 back_inserter(genout_out_nr),
-// 		 genotypeSingleVector);
-//   std::set<std::vector<int> > uniqueGenotypes_nr(genot_out_nr.begin(), genot_out_nr.end());
-//   std::vector<std::vector<int> > uniqueGenotypes_vector_nr (uniqueGenotypes_nr.begin(),
-// 							    uniqueGenotypes_nr.end());
-//   return uniqueGenotypes_vector_nr;
-// }
 
 vector< vector<int> > uniqueGenot_vector(vector<vector<int> >& genot_out) {
   // From genot_out we want the unique genotypes, but each as a single
@@ -443,20 +402,6 @@ vector< vector<int> > uniqueGenot_vector(vector<vector<int> >& genot_out) {
 }
 
 
-// std::set<std::vector<int> > nr_find_unique_genotypes(const std::vector<unsigned long long>& genot_out_l) {
-//   std::set<std::vector<int> > uniqueGenotypes;
-//   for( auto gg : genot_out_nr)
-//     uniqueGenotypes.insert(gg);
-//   return uniqueGenotypes;
-// }
-
-
-
-// static inline void genot_out_to_ullong(std::vector<unsigned long long>& go_l,
-// 			       const std::vector<Genotype64>& go) {
-//   for(size_t i = 0; i < go.size(); ++i)
-//     go_l[i] = go[i].to_ullong();
-// }
 
 std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go) {
   std::vector<std::vector<int> > go_l;
@@ -465,11 +410,6 @@ std::vector<std::vector<int> > genot_to_vectorg(const std::vector<Genotype>& go)
 }
 
 
-// std::vector<std::vector<int> > nr_uniqueGenotypes_to_vector(const std::set< std::vector<int> >& uniqueGenotypes_nr) {
-//   std::vector<std::vector<int> > ugV(uniqueGenotypes_nr.begin(),
-// 				     uniqueGenotypes_nr.end());
-//   return ugV;
-// }
 
 std::string driversToNameString(const std::vector<int>& presentDrivers,
 			    const std::map<int, std::string>& intName) {
@@ -1246,15 +1186,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	  numSpecies << " at iteration " << iter << "\n";
 #endif
       }
-      // Why are these lines here instead of somewhere else?
-      // Right before the if for sampling or not?
-      // FIXME
-      // runningWallTime = difftime(time(NULL), start_time);
-      // if( runningWallTime > maxWallTime ) {
-      // 	hittedWalllTime = true;
-      // 	forceSample = true;
-      // 	simulsDone = true;
-      // }
 
 
       if(popParams[nextMutant].numMutablePos != 0) {
@@ -1474,47 +1405,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       computeMcFarlandError(e1, n_0, n_1, tps_0, tps_1, 
 			    typeFitness, totPopSize, K); //, initSize);
 
-      // Largest error in McFarlands' method
-      // if( (typeFitness == "mcfarland0") ||
-      // 	  (typeFitness == "mcfarland") || 
-      // 	  (typeFitness == "mcfarlandlog") ) {
-      // 	tps_1 = totPopSize;
-      // 	if(typeFitness == "mcfarland")
-      // 	  etmp = abs( tps_1 - (tps_0 + 1) );
-      // 	else {
-      // 	  if( (tps_0 + 1.0) > tps_1 ) 
-      // 	    etmp = (K + tps_0 + 1.0)/(K + tps_1);
-      // 	  else
-      // 	    etmp = (K + tps_1)/(K + tps_0 + 1);
-      // 	}
-      // 	if(etmp > e1) {
-      // 	  e1 = etmp;
-      // 	  n_0 = tps_0;
-      // 	  n_1 = tps_1;
-      // 	}
-      // 	tps_0 = tps_1;
-      // }
-
-      // It goes here: zz: not detectionSize,
-      // but the keepEvery? or sampleUntilKeep. Yes, use that.
-      // endingSampleEvery.
-
-      // Use driver criterion here!!! 
-      // if endingSampleEvery
-      // if totPopSize >= detectionSize: 
-      //        do not break unless 
-      //        tSample %% endingSampleEvery 
-
-      // All of this has to be in totPopSize_and_fill
-
-
-      // this if not sampleUntilKeep
-      // if( (totPopSize >= detectionSize) ||
-      // 	  (totPopSize <= 0.0) || (tSample >= finalTime)) {	
-      // 	simulsDone = true;
-      // 	break; // skip last update if beerenwinkel
-      // }       
-      
       if(simulsDone)
 	break; //skip last updateRates
 
@@ -1552,44 +1442,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 }
 
 
-// Start being explicit about parameter types
-
-
-// Rcpp::List nr_BNB_Algo5(SEXP restrictTable_,
-// 		     SEXP numDrivers_,
-// 		     SEXP numGenes_,
-// 		     SEXP typeCBN_,
-// 		     SEXP birthRate_, 
-// 		     SEXP s_, 
-// 		     SEXP death_,
-// 		     SEXP mu_,
-// 		     SEXP initSize_,
-// 		     SEXP sampleEvery_,
-// 		     SEXP detectionSize_,
-// 		     SEXP finalTime_,
-// 		     SEXP initSize_species_,
-// 		     SEXP initSize_iter_,
-// 		     SEXP seed_gsl_,
-// 		     SEXP verbose_,
-// 		     SEXP speciesFS_,
-// 		     SEXP ratioForce_,
-// 		     SEXP typeFitness_,
-// 		     SEXP maxram_,
-// 		     SEXP mutatorGenotype_,
-// 		     SEXP initMutant_,
-// 		     SEXP maxWallTime_,
-// 		     SEXP keepEvery_,
-// 		     SEXP alpha_,
-// 		     SEXP sh_,
-// 		     SEXP K_,
-// 		     SEXP detectionDrivers_,
-// 		     SEXP onlyCancer_,
-// 		     SEXP errorHitWallTime_,
-// 		     SEXP maxNumTries_,
-// 		     SEXP errorHitMaxTries_,
-// 		     SEXP minDetectDrvCloneSz_,
-// 		     SEXP extraTime_
-// 		     ) {
 
 // [[Rcpp::export]]
 Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
@@ -1620,57 +1472,16 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			bool errorHitMaxTries,
 			double minDetectDrvCloneSz,
 			double extraTime) {  
-  // SEXP endTimeEvery_,
-  //  BEGIN_RCPP
-  // using namespace Rcpp;
   precissionLoss();
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   // const std::string typeFitness = as<std::string>(typeFitness_);
   const std::string typeFitness = Rcpp::as<std::string>(typeFitness_); // no need to do [0]
   
-  // birth and death are irrelevant with Bozic
-  // const double death = as<double>(death_);
-  // const double mu = as<double>(mu_);
-  // const double initSize = as<double>(initSize_);
-  // const double sampleEvery = as<double>(sampleEvery_);
-  // const double detectionSize = as<double>(detectionSize_);
-  // const double finalTime = as<double>(finalTime_);
-  // const int initSp = as<int>(initSize_species_);
-  // const int initIt = as<int>(initSize_iter_); // FIXME: this is a misnomer
-  // const int verbosity = as<int>(verbose_);
-  // // const double minNonZeroMut = mu * 0.01;  // to avoid == 0.0 comparisons
-  // double ratioForce = as<double>(ratioForce_); // If a single species this times
-  // // detectionSize, force a sampling to prevent going too far.
-  // int speciesFS = as<int>(speciesFS_); // to force sampling when too many 
-  // // species
-  // const int seed = as<int>(seed_);
-  // const long maxram = as<int>(maxram_);
-  // const int mutatorGenotype = as<int>(mutatorGenotype_);
-  // const int initMutant = as<int>(initMutant_);
-  // const double maxWallTime = as<double>(maxWallTime_);
-  // const double keepEvery = as<double>(keepEvery_);
-
-  
-  // const double alpha = as<double>(alpha_);
-  // // if a driver without dependencies. Like in Datta et al., 2013.
-  // const double K = as<double>(K_); //for McFarland
-  // //const double endTimeEvery = as<double>(endTimeEvery_); 
-  // const int detectionDrivers = as<int>(detectionDrivers_); 
   const double genTime = 4.0; // should be a parameter. For Bozic only.
-  // const bool errorFinalTime = as<bool>(errorFinalTime_);
-  // const bool errorHitWallTime = as<bool>(errorHitWallTime_);
-  // const bool onlyCancer = as<bool>(onlyCancer_);
-  // const int maxNumTries = as<int>(maxNumTries_);
-  // const bool errorHitMaxTries = as<bool>(errorHitMaxTries_);
-  // const double minDetectDrvCloneSz = as<double>(minDetectDrvCloneSz_);
-  // const double extraTime = as<double>(extraTime_);
   
   std::mt19937 ran_gen(seed);
-  // DP2(seed);
-  
-  // some checks. Do this systematically
-  // FIXME: do only if mcfarland!
 
+  
   if(K < 1 )
     throw std::range_error("K < 1.");
   fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
@@ -1700,8 +1511,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   sampleNDrLargestPop.reserve(initIt);
 
   int outNS_i = -1; // the column in the outNS
-  // time limits
-  // FIXME think later FIXME
   time_t start_time = time(NULL);
   double runningWallTime = 0;
   bool  hittedWallTime = false;
@@ -2001,26 +1810,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
     }
 
 
-
-
-
-
-// void Mutation(const double mu, const double chromothripsis) {
-//   if(chromothripsis) {
-//     do something;
-//   } else {
-//     pointMutation();
-//   }
-
-// }
-
-
-
-// FIXME: get into dealing with fitness!
-
-
-
-
 // Creating return object:
 
 
@@ -2032,11 +1821,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 // genotypes, but is not immediately observable. So for 0,1
 // representation, not needed or used. Thus, maybe I want two
 // representations.
-
-
-// I do not need all the ulong thing: I can always work directly with the
-// Genotype struct, everywhere. And then return, to R either the 0,1 or
-// the vector of mutated positions, or both.
 
 // Yes, the full Genotye structure is only used when assigning fitness. So
 // could we use a collapsed one with: order + rest? Nope, as whenever I'd

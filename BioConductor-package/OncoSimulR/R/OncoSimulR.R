@@ -16,9 +16,6 @@
 
 
 
-## FIXME if adjmat or poset have non-integer labels, these are lost.
-## Maybe place them back after the return of the object? Or later in C++.
-## But this will change with the modules/genes
 
 oncoSimulSample <- function(Nindiv,
                             fp,
@@ -216,82 +213,6 @@ oncoSimulSample <- function(Nindiv,
         } 
     }
 }
-
-## oncoSimulSample <- function(Nindiv,
-##                             poset,
-##                             model = "Bozic",
-##                             numPassengers = 0,
-##                             mu = 1e-6,
-##                             detectionSize = round(runif(Nindiv, 1e6, 1e8)),
-##                             detectionDrivers = sample(3:round(0.75 * max(poset)),
-##                                                       Nindiv, replace = TRUE),
-##                             sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
-##                                 0.025),
-##                             initSize = 500,
-##                             s = 0.1,
-##                             sh = -1,
-##                             K = initSize/(exp(1) - 1),
-##                             endTimeEvery = -9, 
-##                             finalTime = 0.25 * 25 * 365,
-##                             onlyCancer = TRUE,
-##                             max.memory = 2000,
-##                             max.wall.time = 200,
-##                             man.num.tries.total = 500 * Nindiv,
-##                             errorHitWallTime = TRUE,
-##                             errorHitMaxTries = TRUE,
-##                             verbosity  = 1,
-##                             typeSample = "whole",
-##                             thresholdWhole = 0.5,
-##                             mc.cores = detectCores()
-##                             ){
-##     ## leaving detectionSize and detectionDrivers as they are, produces
-##     ## the equivalente of uniform sampling. For last, fix a single number
-##     if(.Platform$OS.type == "windows") {
-##         if(mc.cores != 1)
-##             message("You are running Windows. Setting mc.cores = 1")
-##         mc.cores <- 1
-##     }
-    
-##     pop <- parallel::mcMap(dummyOncoSimulIndiv,
-##                            Nindiv = seq.int(Nindiv),
-##                            poset = list(poset),
-##                            model = model,
-##                            numPassengers = numPassengers,
-##                            mu = mu,
-##                            detectionSize = detectionSize,
-##                            detectionDrivers = detectionDrivers,
-##                            sampleEvery = sampleEvery,
-##                            initSize = initSize,
-##                            s = s,
-##                            sh = sh,
-##                            K = K,
-##                            endTimeEvery = endTimeEvery,
-##                            finalTime = finalTime,
-##                            max.memory = max.memory,
-##                            max.wall.time = max.wall.time,
-##                            verbosity = verbosity,
-##                            keepEvery = -9,
-##                            onlyCancer = onlyCancer,
-##                            errorHitWallTime = errorHitWallTime,
-##                            mc.cores = mc.cores
-##                            )
-
-##     class(pop) <- "oncosimulpop"
-##     ## attributes(pop)$call <- match.call()
-##     ## Now, sampling code here for typeSample
-
-##     return(list(
-##         popSummary = summary(pop),
-##         popSample = samplePop(pop, typeSample = typeSample,
-##                   thresholdWhole = thresholdWhole)
-##     ))
-## }
-## we leave it up to mcMap to make sure we do in fact replicate up to Nindiv
-
-
-## dummyOncoSimulIndiv <- function(Nindiv, ...){
-##     oncoSimulIndiv(...)
-## }
 
 
 samplePop <- function(x, timeSample = "last", typeSample = "whole",
@@ -833,50 +754,6 @@ get.mut.vector <- function(x, timeSample = "whole", typeSample = "last",
 }
 
 
-
-
-
-
-## Now done in C++
-## reachCancer <- function(x, ndr = 0, detectionSize = 0,
-##                         maxPopSize = 1e15) {
-##     return(
-##         ( ((x$TotalPopSize >= detectionSize) ||
-##            (x$MaxDriversLast >= ndr)) &&
-##          ## (x$ti_dbl_min == 0) && ## silly, since now impossible
-##          (x$TotalPopSize < maxPopSize) ## numerical issues here
-##          ))
-## }
-
-## oncoSimul.internal <- function(restrict.table,
-##                                numGenes,
-##                                typeFitness,
-##                                typeCBN,
-##                                birth, 
-##                                s,
-##                                sh,
-##                                death,
-##                                mu,
-##                                initSize,
-##                                sampleEvery,
-##                                detectionSize,
-##                                mutatorGenotype,
-##                                finalTime,
-##                                initSize_species = 2000,
-##                                initSize_iter = 500,
-##                                seed_gsl = NULL,
-##                                verbosity = 1,
-##                                initMutant = -1,
-##                                speciesFS = 40000,
-##                                ratioForce = 2,
-##                                max.memory = 20000,
-##                                max.wall.time = 3600,
-##                                keepEvery = 20,
-##                                alpha = 0.0015,
-##                                K = 1000,
-##                                endTimeEvery = 5 * sampleEvery,
-##                                finalDrivers = 1000) {
-
 oncoSimul.internal <- function(poset, ## restrict.table,
                                numPassengers, 
                                ## numGenes,
@@ -981,54 +858,6 @@ oncoSimul.internal <- function(poset, ## restrict.table,
 
     ## transpose the table
     rtC <- convertRestrictTable(restrict.table)
-
-    
-    ## return the matching call? call <- match.call()
-    ## and then return(c(.Call(), call))
-    ## call <- match.call()
-    ## return(c(
-    ##     .Call(
-    ##     ## "Algorithm5",
-    ##   "C_OncoSimulR_BNB_Algo5",
-    ##     rtC,
-    ##     numDrivers,
-    ##     numGenes,
-    ##     typeCBN,
-    ##     birth, 
-    ##     s, 
-    ##     death,
-    ##     mu,
-    ##     initSize,
-    ##     sampleEvery,
-    ##     detectionSize,
-    ##     finalTime,
-    ##     initSize_species,
-    ##     initSize_iter,
-    ##     seed_gsl,
-    ##     verbosity,
-    ##     speciesFS,
-    ##     ratioForce,
-    ##     typeFitness,
-    ##     max.memory,
-    ##     mutatorGenotype,
-    ##     initMutant,
-    ##     max.wall.time,
-    ##     keepEvery,
-    ##     alpha,
-    ##     sh,
-    ##     K,
-    ##     # endTimeEvery,
-    ##     detectionDrivers,
-    ##     onlyCancer,
-    ##     errorHitWallTime,
-    ##     max.num.tries,
-    ##     errorHitMaxTries,
-    ##     minDetectDrvCloneSz,
-    ##     extraTime
-    ## ),
-    ##          NumDrivers = numDrivers
-    ##          ))
-
 
     return(c(
         BNB_Algo5(rtC,
@@ -1225,106 +1054,6 @@ rtNoDep <- function(numdrivers) {
     x[, 3] <- -9
     return(x)
 }
-
-
-
-## get.mut.vector.whole <- function(filename, timeSample, threshold = 0.5,
-##                                  remove.offending = TRUE) {
-##     ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
-##     ## Obtain, from a file with results from a simulation run, the vector
-##     ## of 0/1 corresponding to each gene.
-    
-##     ## threshold is the min. proportion for a mutation to be detected
-##     ## We are doing whole tumor sampling here, as in Sprouffske
-
-##     ## timeSample: do we sample at end, or at a time point, chosen
-##     ## randomly, from all those with at least one driver?
-    
-##     ## We can be using rds and RData
-
-##     ## This is fragile: if things fail below, but there is a tmp object in
-##     ## global env, we can get garbage.
-
-##     ## Can be made more robust by assigning to another name on load,
-##     ## and in the future I will only use rds
-##     ## or if RData, do as in ADaCGH2 with named RDatas
-##     rt <- try({
-##         if(length(grep("RData$", filename))) {
-##             load(filename) ## we expect the object to be called tmp
-##         } else {
-##             tmp <- readRDS(filename)
-##         }
-##     })
-##     if(inherits(rt, "try-error")) {
-##         if(remove.offending) {
-##             warning("Removing offending filename ", filename)
-##             file.remove(filename)
-##             return(NA)
-##         }
-##     } else {
-        
-##         if(timeSample == "last") {
-##             return(as.numeric((tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
-##                                           tmp$Genotypes)/tmp$TotalPopSize) > threshold))
-##         } else if (timeSample == "uniform") {
-##             the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-##             pop <- tmp$pops.by.time[the.time, -1]
-##             popSize <- tmp$PerSampleStats[the.time, 1]
-##             return( as.numeric((tcrossprod(pop, tmp$Genotypes)/popSize) > threshold) )
-##         }
-##   }
-## }
-
-
-
-
-
-## get.mut.vector.singlecell <- function(filename, timeSample,
-##                                       remove.offending = TRUE) {
-##     ## FIXME: make remove.offending = FALSE. It is extremely dangerous!!!
-##     ## Obtain, from a file with results from a simulation run, the vector
-##     ## of 0/1 corresponding to each gene.
-    
-##     ## No threshold, as single cell.
-
-##     ## timeSample: do we sample at end, or at a time point, chosen
-##     ## randomly, from all those with at least one driver?
-    
-##     ## We can be using rds and RData
-
-##     ## This is fragile: if things fail below, but there is a tmp object in
-##     ## global env, we can get garbage.
-
-##     ## Can be made more robust by assigning to another name on load,
-##     ## and in the future I will only use rds
-##     ## or if RData, do as in ADaCGH2 with named RDatas
-##     rt <- try({
-##         if(length(grep("RData$", filename))) {
-##             load(filename) ## we expect the object to be called tmp
-##         } else {
-##             tmp <- readRDS(filename)
-##         }
-##     })
-##     if(inherits(rt, "try-error")) {
-##         if(remove.offending) {
-##             warning("Removing offending filename ", filename)
-##             file.remove(filename)
-##             return(NA)
-##         }
-##     } else {
-##         if(timeSample == "last") {
-##             the.time <- nrow(tmp$pops.by.time)
-##         } else if (timeSample == "uniform") {
-##             the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-##         }
-##         pop <- tmp$pops.by.time[the.time, -1]
-##         ##       popSize <- tmp$PerSampleStats[the.time, 1]
-##         ## genot <- sample(seq_along(pop), 1, prob = pop)
-##         return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
-##   }
-## }
-
-
 
 
 ## simulate from generative model. This might not be fully correct!!!
