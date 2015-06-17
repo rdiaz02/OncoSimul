@@ -11,6 +11,8 @@ cp OncoSimulR/src/*.h ../Subversion-in-BioC/OncoSimulR/src/.
 
 cp OncoSimulR/R/*.R ../Subversion-in-BioC/OncoSimulR/R/.
 
+cp OncoSimulR/tests/testthat/*.R ../Subversion-in-BioC/OncoSimulR/tests/testthat/.
+
 cp OncoSimulR/man/*.Rd ../Subversion-in-BioC/OncoSimulR/man/.
 
 cp OncoSimulR/inst/NEWS ../Subversion-in-BioC/OncoSimulR/inst/.
