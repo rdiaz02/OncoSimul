@@ -14,7 +14,7 @@ or multiple realizations of the simulations.
 
 
 
-The /OncoSimulR directory contains the code for the BioConductor package
+The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
 [OncoSimulR](http://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html). The
 /miscell-files directory contains additional files so far only related to
 the above.
