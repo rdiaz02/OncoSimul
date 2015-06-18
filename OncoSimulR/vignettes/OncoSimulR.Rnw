@@ -589,20 +589,21 @@ cbn2 <- allFitnessEffects(c1)
 
 @ 
 
-We can get a graphical representation using the default ``graphNEL''
-<<fig.height=3>>=
-plot(cbn2)
-@ 
+%% We can get a graphical representation using the default ``graphNEL''
+%% <<fig.height=3>>=
+%% plot(cbn2)
+%% @ 
 
-or one using ``igraph'':
-<<fig.height=5>>=
-plot(cbn2, "igraph", layout = layout.reingold.tilford)
-@ 
+%% or one using ``igraph'':
+%% <<fig.height=5>>=
+%% plot(cbn2, "igraph", layout = layout.reingold.tilford)
+%% @ 
 
-(since this is a tree, the reingold.tilford layout is probably the best here).
+%% (since this is a tree, the reingold.tilford layout is probably the best here).
 
-This figures, of course, are the same as in the example in section
-\ref{cbn1}, since the structure has not changed, only the numeric values.
+We could get graphical representations but the figures, of course, would
+be the same as in the example in section \ref{cbn1}, since the structure
+has not changed, only the numeric values.
 
 What is the fitness of all possible genotypes? Here, order of events
 \textit{per se} does not matter, beyond that considered in the poset. In
@@ -780,7 +781,7 @@ plot(fp3)
 
 We can also use ``igraph'':
 
-<<fig.height=5>>=
+<<fig.height=6>>=
 plot(fp3, "igraph", layout.reingold.tilford)
 @ 
 
@@ -975,7 +976,7 @@ plot(fp4m, expandModules = TRUE)
 
 or
 
-<<fig.height=6>>=
+<<fig.height=7>>=
 plot(fp4m, "igraph", layout = layout.reingold.tilford, 
      expandModules = TRUE)
 
@@ -1738,7 +1739,7 @@ fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
 
 How does it look?
 
-<<fig.height=5.5>>=
+<<fig.height=6.5>>=
 plot(fea)
 @ 
 
@@ -1750,12 +1751,12 @@ plot(fea, "igraph")
 
 
 We can, if we want, expand the modules using a ``graphNEL'' graph
-<<fig.height=5>>=
+<<fig.height=6.5>>=
 plot(fea, expandModules = TRUE)
 @ 
 
 or an ``igraph'' one
-<<fig.height=7>>=
+<<fig.height=7.>>=
 plot(fea, "igraph", expandModules = TRUE)
 @ 
 
