@@ -21,6 +21,7 @@
 #include <Rcpp.h>
 #include"debug_common.h"
 #include <limits>
+#include <random>
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
 
