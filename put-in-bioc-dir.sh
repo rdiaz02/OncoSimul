@@ -1,4 +1,10 @@
 #!/bin/bash
+
+## This places the code to upload to BiC in the right place.
+## The Subversion-in-BioC directory is a special directory (under svn vc)
+## for the code in BioC. Yes, will eventually use
+## the bridge or similar.
+
 cp OncoSimulR/vignettes/OncoSimulR.Rnw ../Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.bib ../Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitsetinfo.sty ../Subversion-in-BioC/OncoSimulR/vignettes/.

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+## To test the code I place in the Subversion-in-BioC directory
+## before svn commit that stuff.
+## That directory is not under vc by git, of course.
+
+
 V_R=$1
 
 cd ../Subversion-in-BioC

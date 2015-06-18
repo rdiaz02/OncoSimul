@@ -1,7 +1,0 @@
-- Add graph.to.poset to testing-poset-transformations and add that as a
-  formal test in testthat
-
-- samplePop should not add "G." to names of genes. Use the names that are
-  in the restrictionTable/poset/adjacency matrix.
-
-- testing of conversion: add names when the above is working.
