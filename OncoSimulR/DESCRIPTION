@@ -14,7 +14,7 @@ Description: Functions for forward population genetic simulation in
     functions for simulating random DAGs of the type found in Oncogenetic
     Tress, Conjunctive Bayesian Networks, and other tumor progression
     models, and for plotting and sampling from single or multiple
-    realizations of the simulations.
+    realizations of the simulations, including single-cell sampling.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, http://ligarto.org/rdiaz
