@@ -85,8 +85,16 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 
   // FIXME: should never happen
   if(spP.popSize <= 0.0) {
+    
+#ifdef _WIN32     
     throw std::range_error("ti: popSize <= 0. spP.popSize = "
+			   + SSTR(spP.popSize));
+#endif
+    
+#ifndef _WIN32 
+        throw std::range_error("ti: popSize <= 0. spP.popSize = "
 			   + std::to_string(spP.popSize));
+#endif
   }
   // long double invpop = 1/spP.popSize;
   // long double r;

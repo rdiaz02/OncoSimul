@@ -16,6 +16,14 @@
 /* } */
 
 
+// Windows compiler in BioC is pre 4.8.0, so no to_string
+// From http://stackoverflow.com/a/5590404
+#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
+       ( std::ostringstream() << std::dec << x ) ).str()
+
+
+
+
 #ifdef DEBUGW
 #define ASSERT(x) {							\
     if (! (x)) {							\

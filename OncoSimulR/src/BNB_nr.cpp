@@ -448,12 +448,22 @@ std::string genotypeToIntString(const std::vector<int>& genotypeV,
 
   
   for(auto const &g : order_int) {
+#ifdef _WIN32  
+     order_part += (comma + SSTR(g));
+#endif
+#ifndef _WIN32
     order_part += (comma + std::to_string(g));
+#endif
     comma = ", ";
   }
   comma = "";
   for(auto const &g : rest_int) {
+#ifdef _WIN32  
+     rest += (comma + SSTR(g));
+#endif
+#ifndef _WIN32
     rest += (comma + std::to_string(g));
+#endif
     comma = ", ";
   }
   if(fg.orderG.size()) {
