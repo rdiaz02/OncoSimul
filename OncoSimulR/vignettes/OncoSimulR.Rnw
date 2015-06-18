@@ -477,7 +477,7 @@ numbers), while the values of \texttt{s} are much larger positive numbers.
 
 We can now illustrate the specification of different fitness effects.
 
-\subsubsection{A first conjunction example}\label{cbn1}
+\subsubsection{A first conjunction (AND) example}\label{cbn1}
 
 <<>>=
 
@@ -564,9 +564,10 @@ and typeDep columns, so no need to specify \texttt{stringsAsFactor = TRUE}).
 
 We fix the error in our specification. Notice that the ``sh'' is not set
 to $-1$ in these examples. If you want strict compliance with the poset
-restrictions, you should set $sh = -1$, but having an $sh > -1$ will lead
-to fitnesses that are $> 0$ and, thus, is a way of modeling small
-deviations from the poset (see discussion in \cite{Diaz-Uriarte2015}).
+restrictions, you should set $sh = -1$ or, better yet, $sh = -\infty$ (see
+section \ref{noviab}), but having an $sh > -1$ will lead to fitnesses that
+are $> 0$ and, thus, is a way of modeling small deviations from the poset
+(see discussion in \cite{Diaz-Uriarte2015}).
 
 In these examples, the reason to set ``sh'' to values larger than $-1$ and
 different among the genes is to allow us to easily see the actual,
@@ -2249,7 +2250,7 @@ pancreatic cancer poset in Gerstung et al.\ \cite{Gerstung2011} (their
 figure 2B, left). We use directly the names of the genes, since that is
 immediately supported by the new version.
 
-<<>>=
+<<fig.width=4>>=
 
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
@@ -2262,6 +2263,7 @@ pancr <- allFitnessEffects(
                sh = -0.9,
                typeDep = "MN"))
 
+plot(pancr)
 @ 
 
 Of course the ``s'' and ``sh'' are set arbitrarily here.
