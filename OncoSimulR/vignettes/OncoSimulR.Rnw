@@ -175,7 +175,7 @@ summary of some of the key features:
       on McFarland et al.\ \cite{McFarland2013}.
       
     \item Code in C++ is available (though not yet callable from R) for
-      using several other models, including the one from \cite{Beerenwinkel2007}.
+      using several other models, including the one from \cite{Beerenwinkel2007b}.
       
     \item Simulations are generally very fast as I use C++ to implement
       the BNB algorithm.
@@ -254,16 +254,6 @@ library(igraph)
 With OncoSimulR you can specify different types of effects on fitness:
 
 \begin{itemize}
-\item General epistatic effects (e.g., section \ref{epi}), including
-  synthetic viability (e.g., section \ref{sv}) and synthetic
-  lethality/mortality (e.g., section \ref{sl}).
-  
-  
-\item Effects where the order in which mutations are acquired matter, as
-  illustrated in section \ref{oe}. There is, in fact, empirical evidence
-  of these effects \cite{Ortmann2015}. For instance, the fitness of
-  genotype ``A, B'' would differ depending on whether A or B was acquired
-  first.
 
 \item A special type of epistatic effects that is particularly amenable to
   be represented as a graph. In this graph, having, say, ``B'' be a child
@@ -271,21 +261,37 @@ With OncoSimulR you can specify different types of effects on fitness:
   is what OT \cite{Desper1999JCB, Szabo2008}, CBN \cite{Beerenwinkel2007,
     Gerstung2009, Gerstung2011}, progression networks
   \cite{FarahaniLagergren2013}, and other similar models
-  \cite{Korsunsky2014} mean.  Note that this is not an order effect: the
-  fitness of a genotype is a function of whether or not the restrictions
-  in the graph are satisfied, not the historical sequence by how they were
-  satisfied.
+  \cite{Korsunsky2014} mean. Details are provided in section
+  \ref{posetslong}. Note that this is not an order effect (discussed
+  below): the fitness of a genotype from this DAGs is a function of
+  whether or not the restrictions in the graph are satisfied, not the
+  historical sequence by how they were satisfied.
 
-\item Genes that have independent effects on fitness.
+\item Effects where the order in which mutations are acquired matter, as
+  illustrated in section \ref{oe}. There is, in fact, empirical evidence
+  of these effects \cite{Ortmann2015}. For instance, the fitness of
+  genotype ``A, B'' would differ depending on whether A or B was acquired
+  first.
+
+  
+\item General epistatic effects (e.g., section \ref{epi}), including
+  synthetic viability (e.g., section \ref{sv}) and synthetic
+  lethality/mortality (e.g., section \ref{sl}).
+
+
+\item Genes that have independent effects on fitness (section \ref{noint}).
   
 \end{itemize}
 
 
-Modules (see section \ref{modules0}) allow you to specify the above
+Modules (see section \ref{modules0}) allow you to specify any of the above
 effects (except those for genes without interactions, as it would not make
-sense there) in terms of modules (sets of genes), not individual genes.
+sense there) in terms of modules (sets of genes), not individual genes. We
+will introduce them right after \ref{posetslong}, and continue using them
+thereafter.
 
-\subsubsection{How to specify those effects}\label{howfit}
+
+\subsubsection{How to specify fitness effects effects}\label{howfit}
 
 A guiding design principle of OncoSimulR is to try to make the
 specification of those effects as simple as possible but also as flexible
@@ -472,6 +478,15 @@ but the presence of some mutations increases the probability of occurrence
 of other mutations. For example, the values of \texttt{sh} could be all
 small positive ones (or for mildly deleterious effects, small negative
 numbers), while the values of \texttt{s} are much larger positive numbers.
+
+\subsubsection{Extended posets}
+In version 1 of this package we used posets in the sense of
+\cite{Beerenwinkel2007, Gerstung2009} as explained in section \ref{poset}
+and in the help for \Rfunction{poset}. Here, we continue using two
+columns, that specify parents and children, but we add columns for the
+specific values of fitness effects (both s and sh ---i.e., fitness effects
+for what happens when restrictions are and are not satisfied) and for the
+type of dependency as explained in section \ref{andorxor}.
 
 
 
@@ -1286,6 +1301,7 @@ type, but each single mutant is lethal.
   M&M& (1 + s)\\
   \hline
 \end{tabular}
+
 where ``wt'' denotes wild type and ``M'' denotes mutant.
 
 
@@ -2887,7 +2903,7 @@ proposed and named before; please let me know, best if with a reference.
 
 
 Should we remove direct connections if there are indirect? Or, should we
-set \texttt{removeDirectIndirect = TRUE}? Except for zz \cite{FarahaniLagergren2013},
+set \texttt{removeDirectIndirect = TRUE}? Except for \cite{FarahaniLagergren2013},
 none of the DAGs I've seen in the context of CBNs, oncogenetic trees, etc,
 include both direct and indirect connections between nodes. If these
 exist, reasoning about the model can be harder. For example, with CBN (AND
