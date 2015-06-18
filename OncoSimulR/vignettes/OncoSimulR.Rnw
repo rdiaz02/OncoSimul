@@ -2371,6 +2371,31 @@ summary(colSums(mcfLs$Genotypes[-(1:70), ]))
 
 
 
+
+%% <<>>=
+
+%% nin <- 50000
+%% ne <- 10
+%% s <- 0.1
+%% sj <- -0.05
+%% nn <- sapply(c("A", "B"), function(x) paste0(seq.int(ne), x))
+%% int <- apply(nn, 1, function(x) paste(x, collapse = " : "))
+%% single <- as.vector(nn)
+%% epi <- c(rep(s, length(single)), rep(sj, length(int)))
+%% names(epi) <- c(single, int)
+%% ee <- allFitnessEffects(epistasis = epi,
+%%                         noIntGenes = rexp(nin, 20))
+
+
+%% see <- oncoSimulIndiv(ee, model = "Exp", detectionDrivers = 1000,
+%%                       sampleEvery = 10,
+%%                       keepEvery = -9)
+
+%% @ 
+
+
+
+
 \subsection{Simulation with a conjunction example}\label{s-cbn1}
 
 We will simulate using the simple CBN-like restrictions of
