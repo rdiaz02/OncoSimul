@@ -1,3 +1,7 @@
+Changes in version 1.99.1 (2015-06-18):
+	- Try to compile in Windoze with the SSTR again.
+	- Reduce size of RData objects with resaveRdaFiles.
+
 Changes in version 1.99.0 (2015-06-17):
 	- Many MAJOR changes: we are done moving to v.2
 	  - New way of specifying restrictions (v.2) that allows
