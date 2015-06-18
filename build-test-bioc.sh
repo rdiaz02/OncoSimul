@@ -7,7 +7,7 @@
 
 V_R=$1
 
-cd ../Subversion-in-BioC
+cd ./Subversion-in-BioC
 
 V_ADA=$(cat ./OncoSimulR/DESCRIPTION | grep Version | cut -d' ' -f2)
 
