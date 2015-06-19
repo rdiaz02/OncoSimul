@@ -242,7 +242,7 @@ Before anything else, let us load the package. We also explicitly load
 \Biocpkg{graph} and \CRANpkg{igraph} for the vignette to work (you do not
 need that for your usual interactive work).
 
-<<echo=FALSE>>=
+<<results="hide">>=
 library(OncoSimulR)
 library(graph)
 library(igraph)
