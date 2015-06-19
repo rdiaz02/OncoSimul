@@ -14,6 +14,7 @@ cp OncoSimulR/vignettes/gitHeadInfo.gin ./Subversion-in-BioC/OncoSimulR/vignette
 cp OncoSimulR/src/*.c ./Subversion-in-BioC/OncoSimulR/src/.
 cp OncoSimulR/src/*.cpp ./Subversion-in-BioC/OncoSimulR/src/.
 cp OncoSimulR/src/*.h ./Subversion-in-BioC/OncoSimulR/src/.
+cp OncoSimulR/src/Makevars* ./Subversion-in-BioC/OncoSimulR/src/.
 
 cp OncoSimulR/R/*.R ./Subversion-in-BioC/OncoSimulR/R/.
 
