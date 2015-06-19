@@ -417,7 +417,9 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
     with clones in columns and time in row. Not all clones are shown here,
     only those that were present in at least on of the keepEvery samples.}
   
-  \item{NumClones   }{Total number of clones in the above matrix.  }
+  \item{NumClones   }{Total number of clones in the above matrix. This
+  is not the total number of distinct clones that have appeared over all
+  simulations (which is likely to be larger or much larger).}
 
   \item{TotalPopSize}{Total population size at the end.}
 
@@ -464,10 +466,13 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
     population size.}
   
   \item{other}{A list that contains statistics for an estimate of the
-    simulation error when using the McFarland model. The relevant value
-    is errorMF, which is -99 unless in the McFarland model. For the
-    McFarland model it is the largest difference of successive death
-    rates.}
+    simulation error when using the McFarland model as well as other
+    statistics. For the McFarland model, the relevant value is errorMF,
+    which is -99 unless in the McFarland model. For the McFarland model
+    it is the largest difference of successive death rates. The entries
+    names minDMratio and minBMratio are the smallest ratio, over all
+    simulations, of death rate to mutation rate or birth rate to
+    mutation rate. The BNB algorithm thrives when those are large.}
   
 
   For \code{oncoSimulPop} a list of length \code{Nindiv}, and of class

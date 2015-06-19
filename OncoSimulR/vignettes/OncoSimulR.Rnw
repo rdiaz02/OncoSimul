@@ -59,7 +59,7 @@ BiocStyle::latex()
 
 \bioctitle[\textit{OncoSimulR: genetic simulation with arbitrary
   epistasis}]{OncoSimulR: forward genetic simulation in asexual
-  populations with arbitrary epistatic interactions and focus on modeling
+  populations with arbitrary epistatic interactions and a focus on modeling
   tumor progression.}
 
 %% \bioctitle{Using OncoSimulR: a package for simulating cancer progression data,
@@ -97,26 +97,26 @@ BiocStyle::latex()
 \section{Introduction}\label{intro}
 
 OncoSimulR was originally developed to simulate tumor progression using
-several models of tumor progression with emphasis on restriction the
-accumulation of mutations as specified, for example, in Oncogenetic Tree
-(OT; \cite{Desper1999JCB, Szabo2008}) or Conjunctive Bayesian Network
-(CBN; \cite{Beerenwinkel2007, Gerstung2009, Gerstung2011})
-models. Moreover, you could add passenger mutations to the
-simulations. 
+several models of tumor progression with emphasis on allowing users to set
+restrictions in the accumulation of mutations as specified, for example,
+by Oncogenetic Trees (OT; \cite{Desper1999JCB, Szabo2008}) or Conjunctive
+Bayesian Networks (CBN; \cite{Beerenwinkel2007, Gerstung2009,
+  Gerstung2011}), with the possibility of adding passenger mutations to
+the simulations and several types of sampling.
 
 
-Since then, OncoSimulR has been vastly extended to allow you to specify,
-also, other types of restrictions in the accumulation of genes, as
-specified by the ``semimonotone'' model of Farahani and Lagergren
+Since then, OncoSimulR has been vastly extended to allow you to specify
+other types of restrictions in the accumulation of genes, as in
+the ``semimonotone'' model of Farahani and Lagergren
 \cite{FarahaniLagergren2013} and the XOR models of Korsunsky and
 collaborators \cite{Korsunsky2014}. Moreover, different fitness effects
 related to the order in which mutations appear can also be incorporated,
 involving arbitrary numbers of genes. This is different from
-``restrictions in the accumulation of mutations''. In this phenomenon,
+``restrictions in the accumulation of mutations''. With order effects, 
 shown empirically in a recent cancer paper by Ortmann and collaborators
 \cite{Ortmann2015}, the effect of having both mutations ``A'' and ``B''
 differs depending on whether ``A'' appeared before or after ``B''. More
-generally, OncoSimulR also allows now to specify arbitrary epistatic
+generally, now OncoSimulR also allows you to specify arbitrary epistatic
 interactions between arbitrary collections of genes and to model, for
 example, synthetic mortality or synthetic viability (again, involving an
 arbitrary number of genes, some of which might also depend on other genes,
@@ -175,7 +175,10 @@ summary of some of the key features:
       on McFarland et al.\ \cite{McFarland2013}.
       
     \item Code in C++ is available (though not yet callable from R) for
-      using several other models, including the one from \cite{Beerenwinkel2007b}.
+      using several other models, including the one from Beerenwinkel and
+      collaborators \cite{Beerenwinkel2007b}.
+    \item You can use very large numbers of genes (e.g., see an example of
+      50000 in section \ref{mcf50070} ).
       
     \item Simulations are generally very fast as I use C++ to implement
       the BNB algorithm.
@@ -217,11 +220,12 @@ Using this package will often involve the following steps:
     gompertz-like growth (``McFL''). If exponential growth, you can choose
     whether the the effects of mutations operate on the death rate
     (``Bozic'') or the birth rate (``Exp'')\footnote{It is of course
-      possible to do this with the gompertz-like models, but there is
-      little reason to do it. \cite{McFarland2013} discuss this has little
-      effect on their results, for example. In addition, decreasing the
-      death rate will more easily lead to numerical problems as shown in
-      section \ref{ex-0-death}}.
+      possible to do this with the gompertz-like models, but there
+      probably is little reason to do it. McFarland et
+      al. \cite{McFarland2013} discuss this has little effect on their
+      results, for example. In addition, decreasing the death rate will
+      more easily lead to numerical problems as shown in section
+      \ref{ex-0-death}}.
   \item Specify the other parameters of the simulation (when to stop,
     mutation rate, etc).
   \end{itemize}
@@ -238,7 +242,7 @@ Before anything else, let us load the package. We also explicitly load
 \Biocpkg{graph} and \CRANpkg{igraph} for the vignette to work (you do not
 need that for your usual interactive work).
 
-<<>>=
+<<echo=FALSE>>=
 library(OncoSimulR)
 library(graph)
 library(igraph)
@@ -255,7 +259,7 @@ With OncoSimulR you can specify different types of effects on fitness:
 
 \begin{itemize}
 
-\item A special type of epistatic effects that is particularly amenable to
+\item A special type of epistatic effect that is particularly amenable to
   be represented as a graph. In this graph, having, say, ``B'' be a child
   of ``A'' means that B can only accumulate if A is already present.  This
   is what OT \cite{Desper1999JCB, Szabo2008}, CBN \cite{Beerenwinkel2007,
@@ -265,9 +269,9 @@ With OncoSimulR you can specify different types of effects on fitness:
   \ref{posetslong}. Note that this is not an order effect (discussed
   below): the fitness of a genotype from this DAGs is a function of
   whether or not the restrictions in the graph are satisfied, not the
-  historical sequence by how they were satisfied.
+  historical sequence of how they were satisfied.
 
-\item Effects where the order in which mutations are acquired matter, as
+\item Effects where the order in which mutations are acquired matters, as
   illustrated in section \ref{oe}. There is, in fact, empirical evidence
   of these effects \cite{Ortmann2015}. For instance, the fitness of
   genotype ``A, B'' would differ depending on whether A or B was acquired
@@ -297,13 +301,13 @@ A guiding design principle of OncoSimulR is to try to make the
 specification of those effects as simple as possible but also as flexible
 as possible. 
 
-Conceptually, the simplest way is to specify the mapping of genotypes to
-fitness explicitly. This can be done with OncoSimulR (e.g., see sections
-\ref{e2}, \ref{e3} and \ref{theminus} or the example in \ref{weis1b}), but
-this only makes sense for subsets of the genes or for very small genotypes,
-as you probably do not want to be explicit about the mapping of $2^k$
-genotypes to fitness when $k$ is larger than, say, four or five, and
-definitely not when $k$ is 10.
+Conceptually, the simplest way is to specify the mapping of all genotypes
+to fitness explicitly. This can be done with OncoSimulR (e.g., see
+sections \ref{e2}, \ref{e3} and \ref{theminus} or the example in
+\ref{weis1b}), but this only makes sense for subsets of the genes or for
+very small genotypes, as you probably do not want to be explicit about the
+mapping of $2^k$ genotypes to fitness when $k$ is larger than, say, four
+or five, and definitely not when $k$ is 10.
 
 
 
@@ -322,8 +326,8 @@ As we will see in the examples (e.g., see sections \ref{e2}, \ref{e3},
 \ref{exlong}) OncoSimulR makes it simple to be explicit about the mapping
 of specific genotypes, while also using the ``how this specific effects
 modifies previous effects'' logic, leading to a flexible
-specification. This also means that in many cases, the same fitness
-effects can be specified in very different ways.
+specification. This also means that in many cases the same fitness
+effects can be specified in several different ways.
 
 
 \subsection{Numeric values of fitness effects}\label{numfit}
@@ -333,7 +337,7 @@ We evaluate fitness using the usual (e.g. \cite{Zanini2012, Gillespie1993,
 $\prod (1 + s_i)$ where $s_i$ is the fitness effect of gene (or gene
 interaction) $i$.  In all models except Bozic, this fitness refers to the
 growth rate (the death rate being fixed to 1\footnote{You can change this
-  if you really want to, but I cannot see a reason to do it.}). The
+  if you really want to.}). The
 original model of McFarland \cite{McFarland2013} has a slightly different
 parameterization, but you can go easily from one to the other (see section
 \ref{mcfl}).
@@ -347,16 +351,18 @@ rate then becomes $\prod (1 - s_i)$.
 In the original McFarland model \cite{McFarland2013}, the effects of
 drivers contribute to the numerator of the birth rate, and those of the
 (deleterious) passengers to the denominator as:
-$\frac{(1 + s)^d}{(1 - s_p)^p}$. However, we can map from this ratio to
-the usual product of terms by using a different value of $s_p$, that we
-will call $s_{pp} = -s_p/(1 + s_p)$ (see \cite{McFarland2014-phd}, his
-eq. 2.1 in p.\ 9).  This reparameterization applies to v.2. In v.1 we use
-the same parameterization as in the original one in McFarland
-\cite{McFarland2013}.
+$\frac{(1 + s)^D}{(1 - s_p)^p}$, where $D$ and $P$ are, respectively, the
+total number of drivers and passengers in a genotype, and here the fitness
+effects of all drivers is the same ($s$) and that of all passengers the
+same too ($s_p$). However, we can map from this ratio to the usual product
+of terms by using a different value of $s_p$, that we will call
+$s_{pp} = -s_p/(1 + s_p)$ (see \cite{McFarland2014-phd}, his eq. 2.1 in
+p.\ 9).  This reparameterization applies to v.2. In v.1 we use the same
+parameterization as in the original one in McFarland \cite{McFarland2013}.
 
 
 
-\subsubsection{No viability and types of models}\label{noviab}
+\subsubsection{No viability of clones and types of models}\label{noviab}
 
 For all models where fitness affects directly the birth rate (for now, all
 except Bozic), if you specify that some event (say, mutating gene A) has
@@ -369,7 +375,7 @@ immediately without any chance for mutation\footnote{This is a shortcut
   continuous time model we use mutation is not linked to reproduction. In
   the present code, we are not allowing for any mutation when birth rate
   is 0. There are other options, but none which I find really better. An
-  alternative implementation makes a clone immediately extinct only if any
+  alternative implementation makes a clone immediately extinct if and only if any
   of the $s_i = -\infty$.  However, we still need to handle the case with
   $s_i < -1$ as a special case. We either make it identical to the case
   with any $s_i = -\infty$ or for any $s_i > -\infty$ we set
@@ -394,7 +400,7 @@ immediate extinction or no viability in this case? You can set the value
 of $s = -\infty$. %% Setting a value of
 %% $s < -90$ has the same effect.
 
-In general, though, if you want to identify some mutations or some
+In general, if you want to identify some mutations or some
 combinations of mutations as leading to immediate extinction, no
 viability, of the affected clone, set it to $-\infty$ as this would work
 even if we later change how birth rates of 0 are handled. Most examples
@@ -404,6 +410,44 @@ where we do it both ways in Section \ref{fit-neg-pos}.
 
 
 
+\subsection{Genes without interactions}\label{noint}
+
+This is a imple scenario. Each gene, $i$, has a fitness effect $s_i$ if
+mutated. The $s_i$ can come from any distribution you want. As an example
+let's use three genes. We know there are no order effects, but we will
+also see what happens if we examine genotypes as ordered.
+
+<<>>=
+
+ai1 <- evalAllGenotypes(allFitnessEffects(
+    noIntGenes = c(0.05, -.2, .1)), order = FALSE)
+@ 
+
+
+We can easily verify the first results:
+
+<<>>=
+ai1
+@ 
+
+<<>>=
+
+all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
+       (1 + .05) * (1 - .2),
+       (1 + .05) * (1 + .1),
+       (1 - .2) * (1 + .1),
+       (1 + .05) * (1 - .2) * (1 + .1)))
+
+@ 
+
+And we can see that considering the order of mutations makes no difference:
+<<>>=
+
+(ai2 <- evalAllGenotypes(allFitnessEffects(
+    noIntGenes = c(0.05, -.2, .1)), order = TRUE))
+
+@ 
+
 
 
 
@@ -412,13 +456,11 @@ where we do it both ways in Section \ref{fit-neg-pos}.
 \subsubsection{AND, OR, XOR relationships}\label{andorxor}
 The literature on oncogenetic trees, CBNs, etc, has used graphs as a way
 of showing the restrictions in the order in which mutations can
-accumulate. The meaning of these graphs, however, differs. In Figure 1 of
-\cite{Korsunsky2014} we are shown a simple diagram that illustrates the
-three basic different meanings of convergent arrows in these DAGs using
-two parental nodes. 
-
-We will illustrate it here with three. Suppose we focus on node ``g'' the
-following figure (we will create it shortly)
+accumulate. The meaning of ``convergent arrows'' in these graphs, however,
+differs. In Figure 1 of \cite{Korsunsky2014} we are shown a simple diagram
+that illustrates the three basic different meanings of convergent arrows
+using two parental nodes. We will illustrate it here with three. Suppose
+we focus on node ``g'' in the following figure (we will create it shortly)
 <<fig.height=4>>=
 data(examplesFitnessEffects)
 plot(examplesFitnessEffects[["cbn1"]])
@@ -428,7 +470,7 @@ plot(examplesFitnessEffects[["cbn1"]])
 \item In relationships of the type used in \textbf{Conjunctive} Bayesian
   Networks (CBN) \cite[e.g.]{Gerstung2009}, we are modeling an
   \textbf{AND} relationship, also called \textbf{CMPN} by
-  \cite{Korsunsky2014} or \textbf{monotone} relationship in
+  \cite{Korsunsky2014} or \textbf{monotone} relationship by
   \cite{FarahaniLagergren2013}. If the relationship in the graph is fully
   respected, then ``g'' will only appear if all of ``c'', ``d'', and ``e''
   are already mutated.
@@ -448,17 +490,17 @@ Note that oncogenetic trees (\cite{Desper1999JCB, Szabo2008}) need not
 deal with the above distinctions, since the DAGs are trees: no node has
 more than one incoming connection or more than one parent\footnote{OTs and
 CBNs have some other technical differences about the underlying model they
-assume, such as the Poisson waiting time in CBNs. We will not discuss them
+assume, such as the exponential waiting time in CBNs. We will not discuss them
 here.}.
 
 To have a flexible way of specifying all of these restrictions, we will
-want, therefore to be able to say of what kind of dependency each child
+want to be able to say what kind of dependency each child
 node has on its parents.
 
 \subsubsection{Fitness effects}\label{fitnessposets}
 
 Those DAGs specify dependencies and, as explained in
-\cite{Diaz-Uriarte2015} it is simple to map them to a simple evolutionary
+\cite{Diaz-Uriarte2015}, it is simple to map them to a simple evolutionary
 model: any set of mutations that does not conform to the restrictions
 encoded in the graph will have a fitness of 0. However, we might not want
 to require absolute compliance with the DAG. This means we might want to
@@ -466,14 +508,14 @@ allow deviations from the DAG with a corresponding penalization that is,
 however, not identical to setting fitness to 0 (again, see
 \cite{Diaz-Uriarte2015}). This we can do by being explicit about the
 fitness effects of these deviations from the restrictions encoded in the
-DAG. We will use, below a column of \texttt{s} for the fitness effect when
+DAG. We will use below a column of \texttt{s} for the fitness effect when
 the restrictions are satisfied and a column of \texttt{sh} when they are
 not. (See also \ref{numfit} for the details about the meaning of the
 fitness effects).
 
 
 That way of specifying fitness effects makes it also trivial to use the
-model in \cite{Hjelm2006} where all mutations might be allowed to occur,
+model in Hjelm et al.\ \cite{Hjelm2006} where all mutations might be allowed to occur,
 but the presence of some mutations increases the probability of occurrence
 of other mutations. For example, the values of \texttt{sh} could be all
 small positive ones (or for mildly deleterious effects, small negative
@@ -481,7 +523,7 @@ numbers), while the values of \texttt{s} are much larger positive numbers.
 
 \subsubsection{Extended posets}
 In version 1 of this package we used posets in the sense of
-\cite{Beerenwinkel2007, Gerstung2009} as explained in section \ref{poset}
+\cite{Beerenwinkel2007, Gerstung2009}, as explained in section \ref{poset}
 and in the help for \Rfunction{poset}. Here, we continue using two
 columns, that specify parents and children, but we add columns for the
 specific values of fitness effects (both s and sh ---i.e., fitness effects
@@ -525,7 +567,7 @@ Since this is a tree, the reingold.tilford layout is probably the best
 here, so you might want to use that:
 
 <<fig.height=5>>=
-library(igraph) ## to make the layout available
+library(igraph) ## to make the reingold.tilford layout available
 plot(cbn1, "igraph", layout = layout.reingold.tilford)
 @ 
 
@@ -566,14 +608,18 @@ try(fc1 <- allFitnessEffects(c1))
 @ 
 
 That is an error because the ``sh'' varies within a child, and we do not
-allow that for a poset-type specification, as it can lead to
-ambiguities. If you need arbitrary fitness values for arbitrary
-combinations of genotypes, you can specify them using epistatic effects as
-in section \ref{epi} and order effects as in section \ref{oe}.
+allow that for a poset-type specification, as it is ambiguous. If you need
+arbitrary fitness values for arbitrary combinations of genotypes, you can
+specify them using epistatic effects as in section \ref{epi} and order
+effects as in section \ref{oe}.
 
+Why do we need to specify as many ``s'' and ``sh'' as there are rows (or a
+single one, that gets expanded to those many) when the ``s'' and ``sh''
+are properties of the child node, not of the edges? Because, for ease, we
+use a data.frame.
 
-(By the way, yes, we convert all factors to strings in the parent, child,
-and typeDep columns, so no need to specify \texttt{stringsAsFactor = TRUE}).
+%% (By the way, yes, we convert all factors to strings in the parent, child,
+%% and typeDep columns, so no need to specify \texttt{stringsAsFactor = TRUE}).
 
 
 
@@ -584,12 +630,12 @@ section \ref{noviab}), but having an $sh > -1$ will lead to fitnesses that
 are $> 0$ and, thus, is a way of modeling small deviations from the poset
 (see discussion in \cite{Diaz-Uriarte2015}).
 
-In these examples, the reason to set ``sh'' to values larger than $-1$ and
-different among the genes is to allow us to easily see the actual,
-different, terms that enter into the multiplication of the fitness effects
-(and, also, to make it easier to catch bugs).
+%% In these examples, the reason to set ``sh'' to values larger than $-1$ and
+%% different among the genes is to allow us to easily see the actual,
+%% different, terms that enter into the multiplication of the fitness effects
+%% (and, also, to make it easier to catch bugs).
 
-Note also that for those nodes that depend only on ``Root'' the type of
+Note that for those nodes that depend only on ``Root'' the type of
 dependency is irrelevant.
 
 <<>>=
@@ -616,7 +662,7 @@ cbn2 <- allFitnessEffects(c1)
 
 %% (since this is a tree, the reingold.tilford layout is probably the best here).
 
-We could get graphical representations but the figures, of course, would
+We could get graphical representations but the figures would
 be the same as in the example in section \ref{cbn1}, since the structure
 has not changed, only the numeric values.
 
@@ -624,7 +670,7 @@ What is the fitness of all possible genotypes? Here, order of events
 \textit{per se} does not matter, beyond that considered in the poset. In
 other words, the fitness of genotype ``a, b, c'' is the same no matter how
 we got to ``a, b, c''. What matters is whether or not the genes on which
-each of ``a'', ``b'', and ``c'' are present or not (I only show the first
+each of ``a'', ``b'', and ``c'' depend are present or not (I only show the first
 10 genotypes)
 
 <<>>=
@@ -640,6 +686,9 @@ of occurrence of mutations, we would see no differences
 gcbn2o <- evalAllGenotypes(cbn2, order = TRUE, max = 1956)
 gcbn2o[1:10, ]
 @ 
+
+(The \texttt{max = 1956} is there so that we show all the genotypes, even
+if they are more than 256, the default.)
 
 You can check the output and verify things are as they should. For instance:
 
@@ -700,7 +749,7 @@ gsmn1 <- evalAllGenotypes(smn1, order = FALSE)
 
 @ 
 
-Now, having just one parental dependency satisfied is enough, in contrast
+Having just one parental dependency satisfied is now enough, in contrast
 to what happened before. For instance:
 
 <<>>=
@@ -753,9 +802,11 @@ c(1.01 * 1.02 * 0.1, 1.03 * 1.04 * 0.05)
 However, having just both ``a'' and ``b'' is identical to the case with
 CBN and the monotone relationship (see sections \ref{cbn2} and
 \ref{mn1}). If you want the joint presence of ``a'' and ``b'' to result in
-different fitness, you can specify that using general epistatic effects
-(section \ref{epi}); XOR relationships of these kind are, actually,
-examples of synthetic lethality, which are shown in section \ref{sl}.
+different fitness than the product of the individual terms, without
+considering the presence of ``c'', you can specify that using general
+epistatic effects (section
+\ref{epi}).%% ; XOR relationships of these kind are, actually,
+%% examples of synthetic lethality, which are shown in section \ref{sl}.
 
 
 We also see a very different pattern compared to CBN (section \ref{cbn2})
@@ -764,8 +815,8 @@ here:
 gxor1[28, ] 
 1.01 * 1.1 * 1.2
 @ 
-as ``c'' is satisfied by one, and ``g'' too, this is in the
-``semimonotone'' situatione.
+
+as exactly one of the dependencies for both ``c'' and ``g'' are satisfied.
 
 But 
 <<>>=
@@ -836,7 +887,7 @@ modules, where each module is a set of genes (and the intersection between
 modules is the empty set). Modules, then, play the role of a ``union
 operation'' over sets of genes. Of course, if we can use modules for the
 restrictions in the DAGs we should also be able to use them for epistasis
-and order effects.
+and order effects, as we will see later (e.g., \ref{oemod}).
 
 
 
@@ -867,10 +918,10 @@ m0 <- allFitnessEffects(data.frame(
 evalAllGenotypes(m0, order = FALSE, addwt = TRUE)
 @ 
 
-Note that we need to add an epistasis term (see all the details in section
-\ref{epi}) to capture the idea of ``mutating both ``a1'' and ``a2''
+Note that we need to add an epistasis term, with value ``sboth''
+to capture the idea of ``mutating both ``a1'' and ``a2''
 provides no additional fitness advantage compared to mutating only a
-single one of them''.
+single one of them''; see details in section \ref{epi}.
 
 
 
@@ -939,30 +990,33 @@ they can be large with modules with many genes.
 How do you specify modules? The general procedure is simple: you pass a
 vector that makes explicit the mapping from modules to sets of genes. We
 just saw an example. There are several additional examples such as
-\ref{oemod}, \ref{pm3}, \ref{epimod}.
+\ref{pm3}, \ref{oemod}, \ref{epimod}.
 
 Why do we force you to specify ``Root'' = ``Root''? We could check for it,
 and add it if it is not present. But we want you to be explicit (and we
 want to avoid you shooting yourself in the foot having a gene that is not
-root but is called ``Root'', etc).
+the root of the tree but is called ``Root'', etc).
 
 
 It is important to note that, once you specify modules, we expect all of
 the relationships (except those that involve the non interacting genes) to
-be specified as modules. All elements of the epistasis, posets (the DAGs)
-and order effects components should be specified in terms of modules. But
-you can, of course, specify a module as containing a single gene (and a
-single gene with the same name as the module).
+be specified as modules. Thus, all elements of the epistasis, posets (the
+DAGs) and order effects components should be specified in terms of
+modules. But you can, of course, specify a module as containing a single
+gene (and a single gene with the same name as the module).
 
 
 \subsubsection{Modules and posets again: the three types of relationships
   and modules}\label{pm3}
 
-We can of course add modules. Beware that the number of genotypes is
-starting to grow quite fast, though. We use the same specification of
-poset, but add modules. To keep it manageable, we only add a few genes for
-some modules, and have some modules with a single gene. We capitalize to
-differentiate modules (capital letters) from genes (lowercase with a number).
+
+We use the same specification of poset, but add modules. To keep it
+manageable, we only add a few genes for some modules, and have some
+modules with a single gene. Beware that the number of genotypes is
+starting to grow quite fast, though.  We capitalize to differentiate
+modules (capital letters) from genes (lowercase with a number), but this
+is not needed.
+
 
 <<>>=
 p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -978,12 +1032,12 @@ fp4m <- allFitnessEffects(p4,
                               "F" = "f1, f2", "G" = "g1"))
 @ 
 
-Plotting is simple
+By default, plotting shows the modules:
 <<fig.height=3>>=
 plot(fp4m)
 @ 
 
-and we can show the gene names instead of the module names:
+but we can show the gene names instead of the module names:
 
 <<fig.height=3>>=
 plot(fp4m, expandModules = TRUE)
@@ -991,7 +1045,7 @@ plot(fp4m, expandModules = TRUE)
 
 or
 
-<<fig.height=7>>=
+<<fig.height=8>>=
 plot(fp4m, "igraph", layout = layout.reingold.tilford, 
      expandModules = TRUE)
 
@@ -1036,13 +1090,13 @@ having ``A'' mutated before ``B''). However, once you have the genotype
 
 \subsubsection{Order effects: three-gene orders}
 
-Consider this case, where three specific three-gene-orders and two
+Consider this case, where three specific three-gene orders and two
 two-gene orders (one of them a subset of one of the three) lead to
 different fitness compared to the wild-type. We add also modules, to show
 its usage (but just limit ourselves to using one gene per module here). 
 
 Order effects are specified using a $x > y$, that means that that order
-effect is satisfied when gene $x$ is mutated before gene $y$.
+effect is satisfied when module $x$ is mutated before module $y$.
 
 <<>>=
 
@@ -1070,7 +1124,7 @@ M$. The 12th matches $F > D > M$ but also $D > M$. Etc.
 
 
 
-\subsubsection{Order effects and modules}\label{oemod}
+\subsubsection{Order effects and modules with multiple genes}\label{oemod}
 
 Consider the following case:
 <<>>=
@@ -1140,7 +1194,8 @@ all(ag[53:64, "Fitness"] == 0.7)
 \subsubsection{Order and modules with 325 genotypes}
 We can of course have more than two genes per module. This just repeats
 the above, with five genes (there are 325 genotypes, and that is why we
-pass the ``max'' argument, to allow for more than the default 256).
+pass the ``max'' argument to \Rfunction{evalAllGenotypes}, to allow for
+more than the default 256).
 
 <<>>=
 
@@ -1166,42 +1221,6 @@ oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
 all(ag2[-oe, "Fitness"] == 1)
 @ 
 
-\subsection{Genes without interactions}\label{noint}
-
-Let's use three genes. We know there are no order effects, but we will
-also see what happens if we examine genotypes as ordered.
-
-<<>>=
-
-ai1 <- evalAllGenotypes(allFitnessEffects(
-    noIntGenes = c(0.05, -.2, .1)), order = FALSE)
-@ 
-
-
-We can easily verify the first results:
-
-<<>>=
-ai1
-@ 
-
-<<>>=
-
-all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
-       (1 + .05) * (1 - .2),
-       (1 + .05) * (1 + .1),
-       (1 - .2) * (1 + .1),
-       (1 + .05) * (1 - .2) * (1 + .1)))
-
-@ 
-
-And we can see that considering the order of mutations makes no difference:
-<<>>=
-
-ai2 <- evalAllGenotypes(allFitnessEffects(
-    noIntGenes = c(0.05, -.2, .1)), order = TRUE)
-
-ai2
-@ 
 
 
 \subsubsection{Order effects and genes without interactions}
@@ -1268,7 +1287,7 @@ error, because of floating point arithmetic) to the order effect of having
 $(1 - 0.3) * 1.05 * 0.8 * 1.1 = 0.7392$
 
 <<>>=
-all.equal(agoi1[230:253, "Fitness"] , rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 24))
+all.equal(agoi1[230:253, "Fitness"] , rep((1 - 0.2) * 1.05 * 0.8 * 1.1, 24))
 @ 
 and that will also be the value of any genotype with the five mutations
 where ``D'' comes before ``B'' such as those in rows 260 to 265, 277, or
@@ -1329,13 +1348,16 @@ difference:
 evalAllGenotypes(sv, order = TRUE, addwt = TRUE)
 @ 
 
-Another example is shown in section \ref{misra1b}.
+Another example of synthetic viability is shown in section \ref{misra1b}.
 
+Of course, if multiple simultaneous mutations are not possible in the
+simulations, it is not possible to go from the wildtype to the double
+mutant in this model where the single mutants are not viable.
 
 \subsubsection{Synthetic viability using Bozic model}\label{fit-neg-pos}
 
 If we were to use the above specification with Bozic's models, we might
-not get what we want:
+not get what we think we should get:
 
 <<>>=
 evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic")
@@ -1345,7 +1367,7 @@ What gives here? The simulation code would alert you of this (see section
 \ref{fit-neg-pos}) in this particular case because there are ``-1'',
 which might indicate that this is not what you want. The problem is that
 you probably want the Death rate to be infinity (the birth rate was 0, so
-no clone viability, when we used birth rates).
+no clone viability, when we used birth rates ---section \ref{noviab}).
 
 Let us say so explicitly:
 
@@ -1360,7 +1382,7 @@ evalAllGenotypes(svB, order = FALSE, addwt = TRUE, model = "Bozic")
 
 Likewise, values of $s$ larger than one have no effect beyond setting $s =
 1$ (a single term of $(1 - 1)$ will drive the product to 0, and as we
-cannot allow negative death rates, negative values are set to 0):
+cannot allow negative death rates negative values are set to 0):
 
 
 <<>>=
@@ -1409,6 +1431,7 @@ al. \cite{Misra2014}, Figure 1b, which we go over in section \ref{misra}.
 where $s_a, s_b < 0$ but $s_{ab} > 0$. 
 
 
+
 <<>>=
 sa <- -0.1
 sb <- -0.2
@@ -1439,7 +1462,7 @@ evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
 
 \subsection{Synthetic mortality or synthetic lethality}\label{sl}
 
-In contrast to section \ref{sv}, the joint mutant has decreased viability:
+In contrast to section \ref{sv}, here the joint mutant has decreased viability:
 
 \begin{tabular} {c c c}
   A & B & Fitness \\
@@ -1508,9 +1531,11 @@ That uses the ``-'' specification, so we explicitly exclude some patterns:
 with ``A:-B'' we say ``A when there is no B''.
 
 But we can also use a specification where we do not use the ``-''. That
-requires rewriting the interaction term as genotype ``A is mutant, B is
-mutant'' will incorporate the effects of ``A mutant'', ``B mutant'' and
-``both A and B mutants''. We can define a new $s_2$ that satisfies
+requires a different numerical value of the interaction, because now, as
+we are rewriting the interaction term as genotype ``A is mutant, B is
+mutant'' the double mutant will incorporate the effects of ``A mutant'',
+``B mutant'' and ``both A and B mutants''. We can define a new $s_2$ that
+satisfies $(1 + s_{ab}) = (1 + s_a) (1 + s_b) (1 + s_2)$ so
 $(1 + s_2) = (1 + s_{ab})/((1 + s_a) (1 + s_b))$ and therefore specify as:
 
 <<>>=
@@ -1528,7 +1553,7 @@ Note that this is the way you would specify effects with FFPopsim
 \cite{Zanini2012}. Whether this specification or the previous one with
 ``-'' is simpler will depend on the model. For synthetic mortality and
 viability, I think the one using ``-'' is simpler to map genotype tables
-to fitness effects. See also section \ref{theminus} and \ref{e3} and the
+to fitness effects. See also section \ref{e3} and \ref{theminus} and the
 example in section \ref{weis1b}.
 
 
@@ -1647,10 +1672,11 @@ program, to specify the genotype ``A is wt, B is a mutant'' you can
 specify it as \texttt{``-A,B''}, not just as \texttt{``B''}. Why? Because
 just the presence of a ``B'' is also compatible with genotype ``A is
 mutant and B is mutant''.  If you use ``-'' you are explicitly saying what
-should not be there so that ``-A,B'' is NOT compatible with ``A, B''
-. Otherwise, you need to carefully add coefficients.  Depending on what
-you are trying to model, different specifications might be simpler. See
-the examples in section \ref{e2} and \ref{e3}. You have both options.
+should not be there so that \texttt{-A,B} is NOT compatible with
+\texttt{A, B}. Otherwise, you need to carefully add coefficients.
+Depending on what you are trying to model, different specifications might
+be simpler. See the examples in section \ref{e2} and \ref{e3}. You have
+both options.
 
 
 \subsubsection{Epistasis: modules}\label{epimod}
@@ -1778,7 +1804,7 @@ plot(fea, "igraph", expandModules = TRUE)
 
 
 We will not evaluate the fitness of all genotypes, since the number of all
-order genotypes is $> 7*10^{22}$. We will look at some specific genotypes:
+ordered genotypes is $> 7*10^{22}$. We will look at some specific genotypes:
 
 <<>>=
 evalGenotype("k1 > i1 > h2", fea) ## 0.5
@@ -1791,7 +1817,7 @@ evalGenotype("k2 > m1 > h1 > i1 > c1 > n3 > f2", fea)
 
 @ 
 
-Finally, let's generate some genotypes randomly:
+Finally, let's generate some ordered genotypes randomly:
 
 <<>>=
 
@@ -1851,18 +1877,19 @@ evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
 \section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}
 
-In the model of \cite[p.\ 54]{Bauer2014} ``For cells without the primary
-driver mutation, each secondary driver mutation leads to a change in the
-cell's fitness by $s_P$. For cells with the primary driver mutation, the
-fitness advantage obtained with each secondary driver mutation is $s_{DP}$.''
+In the model of bauer and collaborators \cite[p.\ 54]{Bauer2014} ``For
+cells without the primary driver mutation, each secondary driver mutation
+leads to a change in the cell's fitness by $s_P$. For cells with the
+primary driver mutation, the fitness advantage obtained with each
+secondary driver mutation is $s_{DP}$.''
 
 The proliferation probability is given as $(1 + s_p)^k$ when there are $k$
 secondary drivers mutated and no primary diver. If the primary driver is
 mutated, then the expression is $\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$.
-They set apoptosis as $1 - proliferation$.  So, forgetting constants such
-as $1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a
-table as (for a largest $k$ of 5 in this example, but can make it
-arbitrarily large):
+They set apoptosis as $1 - proliferation$.  So, ignoring constants such as
+$1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a table
+as (for a largest $k$ of 5 in this example, but can make it arbitrarily
+large):
 
 <<>>=
 
@@ -1898,7 +1925,7 @@ Order makes no difference
 (b2 <- evalAllGenotypes(fbauer, order = TRUE, max = 2000))[1:15, ]
 @ 
 
-And number of levels is right one: 11
+And the number of levels is the right one: 11
 <<>>=
 length(table(b1$Fitness))
 length(table(b2$Fitness))
@@ -1916,7 +1943,7 @@ Can we use modules in this module? Sure, as in any other.
 
 \subsection{Misra et al., 2014}\label{misra}
 
-Figure 1 of \cite{Misra2014} presents three scenarios which are different
+Figure 1 of Misra et al.\ \cite{Misra2014} presents three scenarios which are different
 types of epistasis.
 
 \subsubsection{Example 1.a}\label{misra1a}
@@ -2026,10 +2053,10 @@ before (\ref{misra1a}).
 
 \subsubsection{Example 1.c}\label{misra1c}
 
-The final case, in figure 1.c, is just epistasis, where a mutation in one
-of the genes is deleterious (possibly only mildly), in the other is
-beneficial, and the double mutation has fitness larger than any of the
-other two.
+The final case, in figure 1.c of Misra et al., is just epistasis, where a
+mutation in one of the genes is deleterious (possibly only mildly), in the
+other is beneficial, and the double mutation has fitness larger than any
+of the other two.
 
 
 <<echo=FALSE, fig.width=4, fig.height=4>>=
@@ -2048,8 +2075,8 @@ text(x = df1[, 1], y = df1[, 2], labels = df1[, "names"], pos = c(3, 3, 3, 2))
 
 @ 
 
-Here we have that $S_A > 0$, $S_B < 0$, $(1 + S_{AB}) (1 + S_A) (1 +
-S_B) > (1 + S_{AB})$ so $S_{AB} > \frac{-S_B}{1 + S_B}$
+Here we have that $s_A > 0$, $s_B < 0$, $(1 + s_{AB}) (1 + s_A) (1 +
+s_B) > (1 + s_{AB})$ so $s_{AB} > \frac{-s_B}{1 + s_B}$
 
 
 As before, we can specify this in several different ways. The simplest is
@@ -2071,7 +2098,7 @@ before (\ref{misra1a}).
 
 \subsection{Ochs and Desai, 2015}\label{ochsdesai}
 
-In \cite{Ochs2015} we find the a model that we can represent as (the
+In \cite{Ochs2015} the authors present a model shown graphically as (the
 actual numerical values are arbitrarily set by me):
 
 
@@ -2091,9 +2118,9 @@ arrows(c(2, 2, 3), c(1, 1, 0.95),
 ## text(1.4, 1.2, "B", pos = 2)
 @
 
-In their model, $S_u > 0$, $S_v > S_u$, $S_i < 0$, we can only arrive at
+In their model, $s_u > 0$, $s_v > s_u$, $s_i < 0$, we can only arrive at
 $v$ from $i$, and the mutants ``ui'' and ``uv'' can never appear as their
-fitness is 0, or $-\infty$, so $S_{ui} = S_{uv} = -1$.
+fitness is 0, or $-\infty$, so $s_{ui} = s_{uv} = -1$ (or $-\infty$).
 
 We can specify this combining a graph and epistasis specifications:
 
@@ -2147,10 +2174,10 @@ segments(c(1, 2), c(1, 0.95),
 ## text(1.4, 1.2, "B", pos = 2)
 @
 
-where the ``1'' and ``2'' refer to the number of mutations in two
+where the ``1'' and ``2'' refer to the total number of mutations in two
 different loci. This is, therefore, very similar to the example in section
-\ref{misra1b}. Here we have $\delta_1 < 0$, fitness of single ``A'' or
-single ``B'' = $1 + \delta_1$, $S_{AB} > 0$,
+\ref{misra1b}. Here we have, in their notation, $\delta_1 < 0$, fitness of
+single ``A'' or single ``B'' = $1 + \delta_1$, $S_{AB} > 0$,
 $(1 + S_{AB})(1 + \delta_1)^2 > 1$.
 
 
@@ -2174,7 +2201,7 @@ segments(c(1, 2, 3), c(1, 0.95, 0.92),
 ## text(1.4, 1.2, "B", pos = 2)
 @
 
-Where, as before, 1, 2, 3, denote the number of mutations in three
+Where, as before, 1, 2, 3, denote the total number of mutations over three
 different loci and $\delta_1 < 0$, $\delta_2 < 0$, fitness of single
 mutant is $(1 + \delta_1)$, of double mutant is $(1 + \delta_2)$ so that
 $(1 + \delta_2) = (1 + \delta_1)^2 (1 + s_2)$ and of triple mutant is
@@ -2219,7 +2246,7 @@ evalAllGenotypes(w, order = FALSE, addwt = TRUE)
 
 
 
-Alternative, we can directly specify what each genotype adds to the
+Alternatively, we can directly specify what each genotype adds to the
 fitness, given the included genotype. This is basically replacing the
 graph by giving each of ``A'', ``B'', and ``C'' directly:
 
@@ -2237,7 +2264,8 @@ wb <- allFitnessEffects(
 evalAllGenotypes(wb, order = FALSE, addwt = TRUE)
 @ 
 
-The plot, of course, is not very revealing:
+The plot, of course, is not very revealing and we cannot show that there
+is a three-way interaction (only all three two-way interactions):
 
 <<, fig.width=3, fig.height=3>>=
 plot(wb)
@@ -2288,14 +2316,9 @@ Of course the ``s'' and ``sh'' are set arbitrarily here.
 
 \section{Running the simulations}\label{simul}
 
-We will use several of the previous examples. Most of them are in file
-\Robject{examplesFitnessEffects}, where they are stored inside a list,
-with named components (names the same as in the examples above):
 
-<<>>=
-data(examplesFitnessEffects)
-names(examplesFitnessEffects)
-@ 
+\subsection{McFarland model with 5000 passengers and 70
+  drivers}\label{mcf5070}
 
 <<fig.width=6>>=
 
@@ -2322,9 +2345,12 @@ summary(mcf1s)
 @ 
 
 
-The next is too slow and too big to run in a vignette, because we keep
-track of over 4000 different clones (which leads to a result object of
-over 800 MB):
+\subsection{McFarland model with 50000 passengers and 70
+  drivers}\label{mcf50070}
+
+The next is too slow (takes a couple of minutes in an i5 laptop) and too
+big to run in a vignette, because we keep track of over 4000 different
+clones (which leads to a result object of over 800 MB):
 
 <<eval=FALSE>>=
 
@@ -2360,6 +2386,10 @@ summary(colSums(mcfLs$Genotypes[-(1:70), ]))
 @ 
 
 
+Note that we see clonal competition between clones with the same number of
+drivers (and with different drivers, of course). We will return to this
+(section \ref{clonalint}).
+
 %% %% The problem is the Genotype matrix. We remove empty passenger rows.
 %% <<>>=
 %% g1 <- mcfLs$Genotypes[1:nd, ]
@@ -2372,26 +2402,17 @@ summary(colSums(mcfLs$Genotypes[-(1:70), ]))
 
 
 
-%% <<>>=
+\subsection{Loading fitnessEffects data for simulation
+  examples}\label{fedata}
+We will use several of the previous examples. Most of them are in file
+\Robject{examplesFitnessEffects}, where they are stored inside a list,
+with named components (names the same as in the examples above):
 
-%% nin <- 50000
-%% ne <- 10
-%% s <- 0.1
-%% sj <- -0.05
-%% nn <- sapply(c("A", "B"), function(x) paste0(seq.int(ne), x))
-%% int <- apply(nn, 1, function(x) paste(x, collapse = " : "))
-%% single <- as.vector(nn)
-%% epi <- c(rep(s, length(single)), rep(sj, length(int)))
-%% names(epi) <- c(single, int)
-%% ee <- allFitnessEffects(epistasis = epi,
-%%                         noIntGenes = rexp(nin, 20))
+<<>>=
+data(examplesFitnessEffects)
+names(examplesFitnessEffects)
+@ 
 
-
-%% see <- oncoSimulIndiv(ee, model = "Exp", detectionDrivers = 1000,
-%%                       sampleEvery = 10,
-%%                       keepEvery = -9)
-
-%% @ 
 
 
 
@@ -2431,7 +2452,7 @@ sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
 summary(sb)
 @ 
 
-\subsection{Simulation with order effects and some clonal competition}
+\subsection{Simulation with order effects and some clonal competition}\label{clonalint}
 %% Interesting to show effects of order: o3
 
 %% Increase mutation rate, so does not take forever
@@ -2465,7 +2486,8 @@ summary(sb)
 
 %% @ 
 
-(We use a somewhat large mutation rate, so that the simulation runs quickly.)
+(We use a somewhat large mutation rate tha usual, so that the simulation
+runs quickly.)
 
 <<fig.width=6>>=
 
@@ -2548,62 +2570,16 @@ plot(tmp, addtot = TRUE, log = "")
 
 
 (We have used \Rcode{extraTime} to continue the simulation well past the
-point of detection. Instead of specifying \Rcode{extraTime} we can set the
-\Rcode{detectionDrivers} value to a number larger than the number of
-existing possible drivers, and the simulation will run until
-\Rcode{finalTime} if \Rcode{onlyCancer = FALSE}.)
+point of detection, here specified as three drivers. Instead of specifying
+\Rcode{extraTime} we can set the \Rcode{detectionDrivers} value to a
+number larger than the number of existing possible drivers, and the
+simulation will run until \Rcode{finalTime} if \Rcode{onlyCancer =
+  FALSE}.)
 
 
 
 
 
-%% \section{Running all}
-
-%% <<>>=
-%% for(i in 1:length(examplesFitnessEffects)) {
-%%     cat(paste("\n Doing i = ", i , " name = ",
-%%               names(examplesFitnessEffects)[i], "\n"))
-%%     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
-%%                            model = "Bozic", 
-%%                            mu = 1e-6,
-%%                            detectionSize = 1e8, 
-%%                            detectionDrivers = 4,
-%%                            sampleEvery = 2,
-%%                            max.num.tries = 100,
-%%                            initSize = 2000,
-%%                            onlyCancer = TRUE)
-%% }
-
-%% for(i in 1:length(examplesFitnessEffects)) {
-%%     cat(paste("\n Doing i = ", i , " name = ",
-%%               names(examplesFitnessEffects)[i], "\n"))
-%%     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
-%%                            model = "Exp", 
-%%                            mu = 1e-6,
-%%                            detectionSize = 1e8, 
-%%                            detectionDrivers = 4,
-%%                            sampleEvery = 2,
-%%                            max.num.tries = 100,
-%%                            initSize = 2000,
-%%                            onlyCancer = TRUE)
-%% }
-
-
-%% for(i in 1:length(examplesFitnessEffects)) {
-%%     cat(paste("\n Doing i = ", i , " name = ",
-%%               names(examplesFitnessEffects)[i], "\n"))
-%%     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
-%%                            model = "McFL", 
-%%                            mu = 5e-7,
-%%                            detectionSize = 1e8, 
-%%                            detectionDrivers = 2,
-%%                            sampleEvery = 0.025,
-%%                            max.num.tries = 10,
-%%                            initSize = 2000,
-%%                            finalTime = 15000,
-%%                            onlyCancer = TRUE)
-%% }
-%% @ 
 
 \subsection{Numerical issues with Bozic}\label{ex-0-death}
 
@@ -2638,7 +2614,7 @@ i1_b <- oncoSimulIndiv(i1, model = "Bozic")
 @ 
 
 
-Of course, there is no trouble in using the above with other models:
+Of course, there is no problem in using the above with other models:
 
 <<>>=
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
@@ -2697,6 +2673,8 @@ pancrSamp
 @ 
 
 
+\subsection{Differences between \Rfunction{samplePop} and
+  \Rfunction{oncoSimulSample}}\label{diffsample}
 
 \Rfunction{samplePop} provides two sampling times: ``last'' and
 ``uniform''. "last" means to sample each individual in the very last time
@@ -2705,7 +2683,7 @@ individual at a time choosen uniformly from all the times recorded in the
 simulation between the time when the first driver appeared and the final
 time period. "unif" means that it is almost sure that different
 individuals will be sampled at different times. "last" does not guarantee
-that different individuals will be sample at the same time unit, only that
+that different individuals will be sampled at the same time unit, only that
 all will be sampled in the last time unit of their simulation.
 
 
@@ -2718,10 +2696,10 @@ correspond to the time point at which those are reached (analogous to
 \Rcode{timeSample = ``last''}). How about uniform sampling? We pass a
 vector of \Rfunction{detectionSize} and \Rfunction{detectionDrivers},
 where each value of the vector comes from a uniform distribution. This is
-not identical to the ``unifor'' sampling of  \Rfunction{oncoSimulSample},
+not identical to the ``uniform'' sampling of  \Rfunction{oncoSimulSample},
 as we are not sampling uniformly over all time periods, but are stopping
-at uniformly distributed values of the stopping conditions. Arguably,
-however, the procedure in \Rfunction{samplePop} might be closer by what we
+at uniformly distributed values over the stopping conditions. Arguably,
+however, the procedure in \Rfunction{samplePop} might be closer to what we
 mean with ``uniformly sampled over the course of the disease'' if that
 course is measured in terms of drivers or size of tumor.
 
@@ -2786,8 +2764,9 @@ tumor sampling'', it is the frequency of the mutations in each gene that
 counts, not the order. So, for instance, ``c, d'' and ``c, d'' both
 contribute to the counts of ``c'' and ``d''. Similarly, when we use single
 cell sampling, we obtain a genotype defined in terms of mutations, but
-there might be multiple orders that give this genotype. For example, ``d >
-c'' and ``c > d'' both give you a genotype with ``c'' and ``d'' mutated.
+there might be multiple orders that give this genotype. For example, $d >
+c$ and $c > d$ both  give you a genotype with ``c'' and ``d'' mutated, and
+thus in the output you can have two columns with both genes mutated.
 
 
 
@@ -2896,49 +2875,6 @@ c'' and ``c > d'' both give you a genotype with ``c'' and ``d'' mutated.
 
 
 %% @ 
-
-\section{Generating random DAGs for restrictions}\label{simo}
-
-You might want to randomly generate DAGs like those often found in the
-literature on oncogenetic trees et al. Function \Rfunction{simOGraph}
-might help here. 
-
-<<>>=
-(a1 <- simOGraph(10))
-library(graph) ## for simple plotting
-plot(as(a1, "graphNEL"))
-@ 
-
-Once you obtain the adjacency matrices, it is for now up to you to convert
-them into appropriate posets or fitnessEffects objects.
-
-
-
-Why this function? I searched for, and could not find any that did what I
-wanted, in particular bounding the number of parents, being able to
-specify the approximate depth\footnote{Where depth is defined in the usual
-  way to mean smallest number of nodes ---or edges--- to traverse to get
-  from the bottom to the top of the DAG.} of the graph, and optionally
-being able to have DAGs where no node is connected to another both
-directly (an edge between the two) and indirectly (there is a path between
-the two through other nodes). So I wrote my own code. The code is fairly
-simple to understand (all in file \texttt{generate-random-trees.R}). I
-would not be surprised if this way of generating random graphs has been
-proposed and named before; please let me know, best if with a reference.
-
-
-Should we remove direct connections if there are indirect? Or, should we
-set \texttt{removeDirectIndirect = TRUE}? Except for \cite{FarahaniLagergren2013},
-none of the DAGs I've seen in the context of CBNs, oncogenetic trees, etc,
-include both direct and indirect connections between nodes. If these
-exist, reasoning about the model can be harder. For example, with CBN (AND
-or CMPN or monotone relationships) adding a direct connection makes no
-difference iff we assume that the relationships encoded in the DAG are
-fully respected (e.g., all $s_h = -\infty$). But it can make a difference
-if we allow for deviations from the monotonicity, specially if we only
-check for the satisfaction of the presence of the immediate ancestors. And
-things get even trickier if we combine XOR with AND. The code for
-computing fitness, however, should deal with all of this just fine.
 
 
 
@@ -3434,6 +3370,52 @@ plot(ot2)
 You can of course rename the columns of the output matrix to something
 else if you want so the names of the nodes will reflect those potentially
 more meaningful names.
+
+
+
+
+\section{Generating random DAGs for restrictions}\label{simo}
+
+You might want to randomly generate DAGs like those often found in the
+literature on oncogenetic trees et al. Function \Rfunction{simOGraph}
+might help here. 
+
+<<>>=
+(a1 <- simOGraph(10))
+library(graph) ## for simple plotting
+plot(as(a1, "graphNEL"))
+@ 
+
+Once you obtain the adjacency matrices, it is for now up to you to convert
+them into appropriate posets or fitnessEffects objects.
+
+
+
+Why this function? I searched for, and could not find any that did what I
+wanted, in particular bounding the number of parents, being able to
+specify the approximate depth\footnote{Where depth is defined in the usual
+  way to mean smallest number of nodes ---or edges--- to traverse to get
+  from the bottom to the top of the DAG.} of the graph, and optionally
+being able to have DAGs where no node is connected to another both
+directly (an edge between the two) and indirectly (there is a path between
+the two through other nodes). So I wrote my own code. The code is fairly
+simple to understand (all in file \texttt{generate-random-trees.R}). I
+would not be surprised if this way of generating random graphs has been
+proposed and named before; please let me know, best if with a reference.
+
+
+Should we remove direct connections if there are indirect? Or, should we
+set \texttt{removeDirectIndirect = TRUE}? Except for \cite{FarahaniLagergren2013},
+none of the DAGs I've seen in the context of CBNs, oncogenetic trees, etc,
+include both direct and indirect connections between nodes. If these
+exist, reasoning about the model can be harder. For example, with CBN (AND
+or CMPN or monotone relationships) adding a direct connection makes no
+difference iff we assume that the relationships encoded in the DAG are
+fully respected (e.g., all $s_h = -\infty$). But it can make a difference
+if we allow for deviations from the monotonicity, specially if we only
+check for the satisfaction of the presence of the immediate ancestors. And
+things get even trickier if we combine XOR with AND. The code for
+computing fitness, however, should deal with all of this just fine.
 
 
 

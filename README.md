@@ -50,7 +50,7 @@ dependencies, if needed:
     biocLite("OncoSimulR")
 ```
 
-To start using
+To start using it:
 
 ```r
 library(OncoSimulR)

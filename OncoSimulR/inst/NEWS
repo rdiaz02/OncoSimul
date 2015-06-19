@@ -1,6 +1,10 @@
+Changes in version 1.99.2 (2015-06-19):
+	- Fixed typos and other minor in vignett.
+
 Changes in version 1.99.1 (2015-06-18):
 	- Try to compile in Windoze with the SSTR again.
 	- Reduce size of RData objects with resaveRdaFiles.
+	- Try to compile in Mac: mt RNG must include random in all files.
 
 Changes in version 1.99.0 (2015-06-17):
 	- Many MAJOR changes: we are done moving to v.2
