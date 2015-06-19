@@ -2314,6 +2314,53 @@ plot(pancr)
 Of course the ``s'' and ``sh'' are set arbitrarily here.
 
 
+\subsection{Raphael and Vandin's modules}\label{raphael-ex}
+
+In \cite{Raphael2014a}, Raphael and Vandin show several progression models
+in terms of modules. The extended poset for the colorectal cancer model in
+their Figure 4.a is (s and sh are arbitrary):
+
+
+<<fig.height = 4>>=
+rv1 <- allFitnessEffects(data.frame(parent = c("Root", "A", "KRAS"),
+                                    child = c("A", "KRAS", "FBXW7"),
+                                    s = 0.1,
+                                    sh = -0.01,
+                                    typeDep = "MN"),
+                         geneToModule = c("Root" = "Root",
+                             "A" = "EVC2, PIK3CA, TP53",
+                             "KRAS" = "KRAS",
+                             "FBXW7" = "FBXW7"))
+
+plot(rv1, expandModules = TRUE, autofit = TRUE)
+
+@ 
+
+We use the (experimental) \Rcode{autofit} option to fit the labels to the
+edges.
+
+
+Their Figure 5b is
+
+<<fig.height=12>>=
+
+rv2 <- allFitnessEffects(data.frame(parent = c("Root", "1", "2", "3", "4"),
+                                    child = c("1", "2", "3", "4", "ELF3"),
+                                    s = 0.1,
+                                    sh = -0.01,
+                                    typeDep = "MN"),
+                         geneToModule = c("Root" = "Root",
+                             "1" = "APC, FBXW7",
+                             "2" = "ATM, FAM123B, PIK3CA, TP53",
+                             "3" = "BRAF, KRAS, NRAS",
+                             "4" = "SMAD2, SMAD4, SOX9",
+                             "ELF3" = "ELF3"))
+plot(rv2, "igraph", expandModules = TRUE, 
+     layout = layout.reingold.tilford,
+     autofit = TRUE)
+
+@ 
+
 \section{Running the simulations}\label{simul}
 
 
@@ -2629,7 +2676,7 @@ Often, you will want to simulate multiple runs of the same scenario, and
 do something with them. Conceptually, the first step is running multiple
 simulations and, then, sampling them.
 
-We will use the ``pancreas'' example, above \section{pancreas}
+We will use the ``pancreas'' example, above section \ref{pancreas}.
 <<>>=
 
 

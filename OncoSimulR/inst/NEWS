@@ -1,3 +1,9 @@
+Changes in version 1.99.3 (2015-06-19):
+	- More examples to vignette
+	- Using Makevars
+	- More functionality to plot.fitnessEffects
+	- Will Windoze work now?
+
 Changes in version 1.99.2 (2015-06-19):
 	- Fixed typos and other minor in vignett.
 
