@@ -10,7 +10,7 @@
 }
 \usage{
 \method{plot}{fitnessEffects}(x, type = "graphNEL", layout = NULL,
-expandModules = FALSE, ...)
+expandModules = FALSE, autofit = FALSE, return_g = FALSE, ...)
 
 %%plotFitnessEffects(fe, type = "graphNEL", layout = NULL, expandModules = FALSE)
 }
@@ -31,6 +31,12 @@ expandModules = FALSE, ...)
    If there are modules with multiple genes, if you set this to TRUE
   modules will be replaced by their genes.
 }
+
+\item{autofit}{If TRUE, we try to fit the edges to the labels. This is a
+  very experimental feature, likely to be not very robust.}
+
+\item{return_g}{It TRUE, the graph object (graphNEL or igrap) is returned.}
+
  \item{\dots}{
     Other arguments passed to \code{plot}. Not used for now.
   }
@@ -45,6 +51,8 @@ expandModules = FALSE, ...)
   type. Order relationships have an arrow from the earlier to the later
   event and have a different dotted line (lty 3).
 
+  If \code{return_g} is TRUE, you are returned also the graph object
+  (igraph or graphNEL) so that you can manipulate it further.
 }
 \author{
 Ramon Diaz-Uriarte

@@ -723,15 +723,16 @@ fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects) {
 
 
 plot.fitnessEffects <- function(x, type = "graphNEL",
-                               layout = NULL,
-                               expandModules = FALSE,
-                               ...) {
+                                layout = NULL,
+                                expandModules = FALSE,
+                                autofit = FALSE,
+                                return_g = FALSE,
+                                ...) {
     ## some other layouts I find OK
     ## layout.circle
     ## layout.reingold.tilford if really a tree
     ## o.w. it will use the default
     g <- x$graph
-
     
     if(type == "igraph") {
         if(expandModules && (!x$gMOneToOne)) {
@@ -739,7 +740,18 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
             vlabels <- x$geneToModule[V(g)$name]
             V(g)$label <- vlabels
         }
-        plot.igraph(g, layout = layout)
+        if(autofit) {
+            plot(0, type = "n", axes = FALSE, ann = FALSE)
+            ## ideas from http://stackoverflow.com/questions/14472079/match-vertex-size-to-label-size-in-igraph
+            ## vsize <- (strwidth(V(g)$label) + strwidth("oo")) * 200
+            ## but this is a kludge.
+            vsize <- (nchar(V(g)$label) + 3) * 4.5
+            plot.igraph(g, vertex.size = vsize, vertex.shape = "rectangle",
+                        layout = layout)
+        } else {
+            plot.igraph(g, layout = layout)
+        }
+        if(return_g) return(g)
     }
     else if (type == "graphNEL") {
         g1 <- igraph.to.graphNEL(g)
@@ -758,9 +770,19 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
             names(nnodes) <- nodes(g1)
             nAttrs$label <- nnodes
         }
-        plot(g1, edgeAttrs = list(arrowsize = a1, lty = s1, lwd = lwd,
-                     color = c1),
-             nodeAttrs = nAttrs)
+        if(autofit) {
+            nAttrs$width <- (nchar(nAttrs$label) + 1)/10
+            names(nAttrs$width) <- names(nAttrs$label)
+            plot(g1, edgeAttrs = list(arrowsize = a1, lty = s1, lwd = lwd,
+                         color = c1), attrs=list(node=list(shape = "rectangle")),
+                 nodeAttrs = nAttrs)
+            
+        } else {
+            plot(g1, edgeAttrs = list(arrowsize = a1, lty = s1, lwd = lwd,
+                         color = c1),
+                 nodeAttrs = nAttrs)
+        }
+        if(return_g) return(g1)
     } else {
         stop("plot type not recognized")
     }
