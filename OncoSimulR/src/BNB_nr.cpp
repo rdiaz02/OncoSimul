@@ -1486,6 +1486,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   // const std::string typeFitness = as<std::string>(typeFitness_);
   const std::string typeFitness = Rcpp::as<std::string>(typeFitness_); // no need to do [0]
+
   
   const double genTime = 4.0; // should be a parameter. For Bozic only.
   
