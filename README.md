@@ -50,6 +50,36 @@ dependencies, if needed:
     biocLite("OncoSimulR")
 ```
 
+To start using
+
+```r
+library(OncoSimulR)
+```
+
+
+
+Documentation
+=============
+
+As any R/BioConductor package, OncoSimulR comes with documentation for its
+user-visible functions and data sets (using the help is just standard R
+usage). From BioConductor you can obtain the
+[PDF reference manual](http://www.bioconductor.org/packages/3.2/bioc/manuals/OncoSimulR/man/OncoSimulR.pdf). A
+better place to start, though, is the long vignette, with commented
+examples (and created from the `OncoSimulR/vignettes/OncoSimulR.Rnw` file
+that includes both text and code). Here is
+[the vignette as PDF](http://www.bioconductor.org/packages/3.2/bioc/vignettes/OncoSimulR/inst/doc/OncoSimulR.pdf),
+from the BioConductor site.
+
+
+You can view the vignette from R itself doing
+
+
+```r
+browseVignettes("OncoSimulR")
+```
+
+and this gives you access to the PDF, the Rnw file (LaTeX + R), and the R code.
 
 
 Licenses and copyright
