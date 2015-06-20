@@ -85,11 +85,12 @@ and this gives you access to the PDF, the Rnw file (LaTeX + R), and the R code.
 Licenses and copyright
 ======================
 
-The OncoSimulR BioConductor package is Copyright 2012-2015 by Ramon
-Diaz-Uriarte and under the GPL 3 license.
+Except for the file `randutils.h` (see below), all of the code for the
+OncoSimulR BioConductor package is Copyright 2012-2015 by Ramon
+Diaz-Uriarte and is under the GPL 3 license.
 
 
-The code in OncoSimulR/src/randutils.h is copyright Melissa E. O'Neill,
+The code in `OncoSimulR/src/randutils.h` is copyright Melissa E. O'Neill,
 and is licensed under "The MIT License (MIT)" in the terms explained in
 the file itself. The file randutils.hpp was downloaded from
 (https://gist.github.com/imneme/540829265469e673d045) on 2015-06-20 and is
