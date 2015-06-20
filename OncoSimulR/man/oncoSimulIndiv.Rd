@@ -366,8 +366,7 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
   NULL will make the C++ seed reproducible if you use the same seed in R
   via \code{set.seed}). However, even using the same value of
   \code{seed} is unlikely to give the exact same results between
-  platforms and compilers (because of the way the numeric seed is
-  converted into a higher quality seed).  Note that the defaults are not
+  platforms and compilers.  Note that the defaults are not
   the same in \code{oncoSimulIndiv}, \code{oncoSimulPop} and
   \code{oncoSimulSample}. }
 
