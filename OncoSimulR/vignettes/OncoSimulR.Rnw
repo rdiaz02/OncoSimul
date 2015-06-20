@@ -2313,15 +2313,16 @@ plot(pancr)
 
 Of course the ``s'' and ``sh'' are set arbitrarily here.
 
-
+\clearpage
 \subsection{Raphael and Vandin's modules}\label{raphael-ex}
 
 In \cite{Raphael2014a}, Raphael and Vandin show several progression models
-in terms of modules. The extended poset for the colorectal cancer model in
-their Figure 4.a is (s and sh are arbitrary):
+in terms of modules. We can code the extended poset for the colorectal
+cancer model in their Figure 4.a is (s and sh are arbitrary):
 
 
 <<fig.height = 4>>=
+
 rv1 <- allFitnessEffects(data.frame(parent = c("Root", "A", "KRAS"),
                                     child = c("A", "KRAS", "FBXW7"),
                                     s = 0.1,
@@ -2336,13 +2337,14 @@ plot(rv1, expandModules = TRUE, autofit = TRUE)
 
 @ 
 
-We use the (experimental) \Rcode{autofit} option to fit the labels to the
-edges.
+We have used the (experimental) \Rcode{autofit} option to fit the labels to the
+edges. Note how we can use the same name for genes and modules, but we
+need to specify all the modules. 
 
-
+\clearpage
 Their Figure 5b is
 
-<<fig.height=12>>=
+<<fig.height=6>>=
 
 rv2 <- allFitnessEffects(data.frame(parent = c("Root", "1", "2", "3", "4"),
                                     child = c("1", "2", "3", "4", "ELF3"),
@@ -2355,12 +2357,17 @@ rv2 <- allFitnessEffects(data.frame(parent = c("Root", "1", "2", "3", "4"),
                              "3" = "BRAF, KRAS, NRAS",
                              "4" = "SMAD2, SMAD4, SOX9",
                              "ELF3" = "ELF3"))
-plot(rv2, "igraph", expandModules = TRUE, 
-     layout = layout.reingold.tilford,
-     autofit = TRUE)
-
+plot(rv2, expandModules = TRUE,   autofit = TRUE)
 @ 
 
+%%very poor rendering in the PDF, in separate page, etc.
+%% plot(rv2, "igraph", expandModules = TRUE, 
+%%      layout = layout.reingold.tilford,
+%%      autofit = TRUE,
+%%      scale_char = 8)
+
+
+\clearpage
 \section{Running the simulations}\label{simul}
 
 

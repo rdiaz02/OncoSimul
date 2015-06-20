@@ -726,6 +726,7 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
                                 layout = NULL,
                                 expandModules = FALSE,
                                 autofit = FALSE,
+                                scale_char = ifelse(type == "graphNEL", 1/10, 5),
                                 return_g = FALSE,
                                 ...) {
     ## some other layouts I find OK
@@ -745,7 +746,7 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
             ## ideas from http://stackoverflow.com/questions/14472079/match-vertex-size-to-label-size-in-igraph
             ## vsize <- (strwidth(V(g)$label) + strwidth("oo")) * 200
             ## but this is a kludge.
-            vsize <- (nchar(V(g)$label) + 3) * 4.5
+            vsize <- (nchar(V(g)$label) + 1) * scale_char
             plot.igraph(g, vertex.size = vsize, vertex.shape = "rectangle",
                         layout = layout)
         } else {
@@ -771,7 +772,7 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
             nAttrs$label <- nnodes
         }
         if(autofit) {
-            nAttrs$width <- (nchar(nAttrs$label) + 1)/10
+            nAttrs$width <- (nchar(nAttrs$label) + 1) * scale_char
             names(nAttrs$width) <- names(nAttrs$label)
             plot(g1, edgeAttrs = list(arrowsize = a1, lty = s1, lwd = lwd,
                          color = c1), attrs=list(node=list(shape = "rectangle")),

@@ -10,7 +10,9 @@
 }
 \usage{
 \method{plot}{fitnessEffects}(x, type = "graphNEL", layout = NULL,
-expandModules = FALSE, autofit = FALSE, return_g = FALSE, ...)
+expandModules = FALSE, autofit = FALSE,
+scale_char = ifelse(type == "graphNEL", 1/10, 5),
+return_g = FALSE, ...)
 
 %%plotFitnessEffects(fe, type = "graphNEL", layout = NULL, expandModules = FALSE)
 }
@@ -34,6 +36,11 @@ expandModules = FALSE, autofit = FALSE, return_g = FALSE, ...)
 
 \item{autofit}{If TRUE, we try to fit the edges to the labels. This is a
   very experimental feature, likely to be not very robust.}
+
+\item{scale_char}{If using \code{autofit = TRUE}, the scaling factor for
+the size of the rectangles as a function of the number of
+characters. You have to play with this because the best value can
+depend on a number of things.}
 
 \item{return_g}{It TRUE, the graph object (graphNEL or igrap) is returned.}
 
@@ -66,6 +73,7 @@ but that is not quite the same thing). Likewise, there is no reasonable
 way to convey the pressence of a "-" in the epistatic relationship.
 
 Genes without interactions are not shown.
+
 }
 
 \seealso{

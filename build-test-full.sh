@@ -18,6 +18,8 @@ rm ./OncoSimulR.Rcheck/* -r -f
 # rmdir ./OncoSimulR/inst/doc/auto
 rm ./OncoSimulR/vignettes/auto/*
 rmdir ./OncoSimulR/vignettes/auto
+rm ./OncoSimulR/vignettes/figure/*
+rmdir ./OncoSimulR/vignettes/figure
 rm ./OncoSimulR/vignettes/*.bbl
 rm ./OncoSimulR/vignettes/*.aux
 rm ./OncoSimulR/vignettes/*.toc
@@ -26,6 +28,8 @@ rm ./OncoSimulR/vignettes/*.pdf
 rm ./OncoSimulR/vignettes/*.log
 rm ./OncoSimulR/vignettes/*.out
 rm ./OncoSimulR/vignettes/*.blg
+rm ./OncoSimulR/vignettes/*.synctex.*
+
 
 
 
