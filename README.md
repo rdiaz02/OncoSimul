@@ -88,6 +88,19 @@ Licenses and copyright
 The OncoSimulR BioConductor package is Copyright 2012-2015 by Ramon
 Diaz-Uriarte and under the GPL 3 license.
 
+
+The code in OncoSimulR/src/randutils.h is copyright Melissa E. O'Neill,
+and is licensed under "The MIT License (MIT)" in the terms explained in
+the file itself. The file randutils.hpp was downloaded from
+(https://gist.github.com/imneme/540829265469e673d045) on 2015-06-20 and is
+also referenced from the main article [Ease of Use without Loss of Power]
+(http://www.pcg-random.org/posts/ease-of-use-without-loss-of-power.html). I
+renamed it to randutils.h to conform to R's requirements (and changed the
+`auto exit_func = hash(&_Exit);` line to keep R from complaining about the
+Exit function).
+
+
+
 The file under gitinfo-hooks is Copyright 2011 Brent Longborough, is
 part of the
 [gitinfo package](https://www.ctan.org/tex-archive/macros/latex/contrib/gitinfo?lang=en),
