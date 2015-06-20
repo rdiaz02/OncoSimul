@@ -29,11 +29,11 @@ rm ./OncoSimulR/vignettes/*.blg
 
 
 
-time $V_R CMD build --keep-empty-dirs --resave-data OncoSimulR
+time $V_R CMD build --keep-empty-dirs OncoSimulR
+## time $V_R CMD build --keep-empty-dirs --resave-data OncoSimulR
 
 time $V_R CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
-
-time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
+## time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 
 
 ## --force-multiarch in windoze?

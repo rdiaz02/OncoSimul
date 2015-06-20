@@ -16,6 +16,7 @@
 
 
 #include "bnb_common.h"
+#include "new_restrict.h" // for the TypeModel enum
 #include <Rcpp.h>
 
 
@@ -591,6 +592,18 @@ double returnMFE(double& e1,
     return -99;
 }
 
+
+double returnMFE(double& e1,
+			const double& K,
+			const TypeModel typeModel) {
+  if((typeModel == TypeModel::mcfarland0) || (typeModel == TypeModel::mcfarlandlog))
+    return log(e1);
+  else if(typeModel == TypeModel::mcfarland)
+    return ((1.0/K) * e1);
+  else
+    return -99;
+}
+
 // FIXME But I'd probably want a percent error, compared to the death rate
 // something like (log(1+N1/K) - log(1+N2/K))/(log(1+N1/K))
 
@@ -613,6 +626,41 @@ void computeMcFarlandError(double& e1,
     double etmp;
     tps_1 = totPopSize;
     if(typeFitness == "mcfarland")
+      etmp = std::abs( tps_1 - (tps_0 + 1) );
+    else {
+      if( (tps_0 + 1.0) > tps_1 ) 
+	etmp = (K + tps_0 + 1.0)/(K + tps_1);
+      else
+	etmp = (K + tps_1)/(K + tps_0 + 1);
+    }
+    if(etmp > e1) {
+      e1 = etmp;
+      n_0 = tps_0;
+      n_1 = tps_1;
+    }
+    tps_0 = tps_1;
+  }
+}
+
+
+void computeMcFarlandError(double& e1,
+				  double& n_0,
+				  double& n_1,
+				  double& tps_0,
+				  double& tps_1,
+				  const TypeModel typeModel,
+				  const double& totPopSize,
+				  const double& K){
+  //				  const double& initSize) {
+  // static double tps_0 = initSize;
+  // static double tps_1 = 0.0;
+
+  if( (typeModel == TypeModel::mcfarland0) ||
+      (typeModel == TypeModel::mcfarland) || 
+      (typeModel == TypeModel::mcfarlandlog) ) {
+    double etmp;
+    tps_1 = totPopSize;
+    if(typeModel == TypeModel::mcfarland)
       etmp = std::abs( tps_1 - (tps_0 + 1) );
     else {
       if( (tps_0 + 1.0) > tps_1 ) 

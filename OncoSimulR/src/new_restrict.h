@@ -24,6 +24,8 @@
 #include <random>
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
+enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
+    beerenwinkel, mcfarland0,  bozic2};
 
 struct Poset_struct {
   Dependency typeDep;
@@ -139,6 +141,8 @@ bool operator==(const Genotype& lhs, const Genotype& rhs);
 
 bool operator<(const Genotype& lhs, const Genotype& rhs);
 
+
+TypeModel stringToModel(const std::string& dep);
 
 Dependency stringToDep(const std::string& dep);
 

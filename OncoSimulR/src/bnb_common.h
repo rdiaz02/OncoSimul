@@ -20,7 +20,7 @@
 
 #include<Rcpp.h>
 #include"debug_common.h"
-
+#include "new_restrict.h" // for the TypeModel enum
 
 // Simple custom exception for exceptions that lead to re-runs.
 class rerunExcept: public std::runtime_error {
@@ -106,17 +106,32 @@ void precissionLoss();
 void init_tmpP(spParamsP& tmpParam);
 
 double returnMFE(double& e1,
-			const double& K,
+		 const double& K,
 		 const std::string& typeFitness);
 
+double returnMFE(double& e1,
+		 const double& K,
+		 const TypeModel typeModel);
+
 void computeMcFarlandError(double& e1,
-				  double& n_0,
-				  double& n_1,
-				  double& tps_0,
-				  double& tps_1,
-				  const std::string& typeFitness,
-				  const double& totPopSize,
+			   double& n_0,
+			   double& n_1,
+			   double& tps_0,
+			   double& tps_1,
+			   const std::string& typeFitness,
+			   const double& totPopSize,
 			   const double& K);
+
+void computeMcFarlandError(double& e1,
+			   double& n_0,
+			   double& n_1,
+			   double& tps_0,
+			   double& tps_1,
+			   const TypeModel typeModel,
+			   const double& totPopSize,
+			   const double& K);
+
+
 
 void updateRatesMcFarland(std::vector<spParamsP>& popParams,
 				 double& adjust_fitness_MF,
