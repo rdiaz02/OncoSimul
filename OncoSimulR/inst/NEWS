@@ -1,3 +1,6 @@
+Changes in version 1.99.4 (2015-06-20):
+	- Using randutils, from O'Neill.
+
 Changes in version 1.99.3 (2015-06-19):
 	- More examples to vignette
 	- Using Makevars

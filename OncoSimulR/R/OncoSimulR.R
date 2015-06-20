@@ -54,7 +54,8 @@ oncoSimulSample <- function(Nindiv,
                             ## errorHitMaxTries = TRUE,
                             verbosity  = 1,
                             typeSample = "whole",
-                            thresholdWhole = 0.5){
+                            thresholdWhole = 0.5,
+                            seed = "auto"){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
     
@@ -160,7 +161,8 @@ oncoSimulSample <- function(Nindiv,
                                keepEvery = -9,
                                onlyCancer = onlyCancer,
                                errorHitWallTime = TRUE,
-                               errorHitMaxTries = TRUE)
+                               errorHitMaxTries = TRUE,
+                               seed = seed)
         
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
@@ -279,7 +281,8 @@ oncoSimulPop <- function(Nindiv,
                          errorHitWallTime = TRUE,
                          errorHitMaxTries = TRUE,
                          verbosity  = 0,
-                         mc.cores = detectCores()) {
+                         mc.cores = detectCores(),
+                         seed = "auto") {
 
     if(.Platform$OS.type == "windows") {
         if(mc.cores != 1)
@@ -310,7 +313,8 @@ oncoSimulPop <- function(Nindiv,
                         max.num.tries = max.num.tries,
                         errorHitWallTime = errorHitWallTime,
                         errorHitMaxTries = errorHitMaxTries,
-                        verbosity = verbosity),
+                        verbosity = verbosity,
+                        seed = seed),
                     mc.cores = mc.cores
                     )
     class(pop) <- "oncosimulpop"
@@ -387,13 +391,6 @@ oncoSimulIndiv <- function(fp,
         stop("mutation rate (mu) is negative")
     }
 
-    if(is.null(seed)) {## passing a null creates a random seed
-        ## name is a legacy. This is really the seed for the C++ generator.
-        seed <- as.integer(round(runif(1, min = 0, max = 2^16)))
-    }
-    if(verbosity >= 2)
-        cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
-
     if( (keepEvery > 0) & (keepEvery < sampleEvery)) {
         keepEvery <- sampleEvery
         warning("setting keepEvery <- sampleEvery")
@@ -415,9 +412,19 @@ oncoSimulIndiv <- function(fp,
                        "You must specify all of poset, numPassengers",
                        "s, and sh.")
             stop(m)
-            if(length(initMutant) > 1)
-                stop("With the old poset, initMutant can only take a single value.")
+           
         }
+        if(length(initMutant) > 1)
+            stop("With the old poset, initMutant can only take a single value.")
+        ## Seeding C++ is now much better in new version
+        if(is.null(seed) || (seed == "auto")) {## passing a null creates a random seed
+            ## name is a legacy. This is really the seed for the C++ generator.
+            ## Nope, we cannot use 2^32, because as.integer will fail.
+            seed <- as.integer(round(runif(1, min = 0, max = 2^16)))
+        }
+        if(verbosity >= 2)
+            cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
+
         ## if(message.v1)
         ##     message("You are using the old poset format. Consider using the new one.")
    
@@ -463,6 +470,18 @@ oncoSimulIndiv <- function(fp,
                   silent = !verbosity)
         objClass <- "oncosimul"
     } else {
+        if(is.null(seed)) {## Passing a null creates a random seed
+            ## We use a double, to be able to pass in range > 2^16.
+            ## Do not use 0, as that is our way of signaling to C++ to
+            ## generate the seed.
+            seed <- round(runif(1, min = 1, max = 2^32))
+            if(verbosity >= 2)
+                cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
+        } else if(seed == "auto") {
+            seed <- 0.0
+            if(verbosity >= 2)
+                cat("\n A (high quality) random seed will be generated in C++\n")
+        }
         op <- try(nr_oncoSimul.internal(rFE = fp, 
                                         birth = birth,
                                         death = death,  

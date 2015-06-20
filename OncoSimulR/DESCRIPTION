@@ -1,9 +1,9 @@
 Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progresion with Epistasis 
-Version: 1.99.3
+Version: 1.99.4
 Date: 2015-06-19
-Author: Ramon Diaz-Uriarte. 
+Author: Ramon Diaz-Uriarte. Melissa O'Neill for randutils.
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
@@ -16,7 +16,7 @@ Description: Functions for forward population genetic simulation in
     models, and for plotting and sampling from single or multiple
     realizations of the simulations, including single-cell sampling.
 biocViews: BiologicalQuestion, SomaticMutation
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 URL: https://github.com/rdiaz02/OncoSimul, http://ligarto.org/rdiaz
 Depends: R (>= 3.1.0)
 Imports: Rcpp (>= 0.11.1), parallel, data.table, graph, Rgraphviz, gtools, igraph

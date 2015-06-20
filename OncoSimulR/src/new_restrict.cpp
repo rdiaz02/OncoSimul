@@ -14,7 +14,7 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
+#include "randutils.h"
 #include "new_restrict.h"
 #include "debug_common.h"
 #include <Rcpp.h>
@@ -436,7 +436,7 @@ void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent,
 		     std::vector<int>& newMutations,
-		     std::mt19937& ran_gen) {
+		     randutils::mt19937_rng& ran_gen) {
   //Ugly: we return the mutations AND the numMutablePosParent This is
   // almost ready to accept multiple mutations. And it returns a vector,
   // newMutations.
@@ -446,8 +446,13 @@ void obtainMutations(const Genotype& parent,
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
   
-  std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
-  newMutations.push_back(nonmutated[rpos(ran_gen)]);
+  // std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+  // newMutations.push_back(nonmutated[rpos(ran_gen)]);
+  // Yes, the next will work, but pick is simpler!
+  // size_t rpos = ran_gen.uniform(static_cast<size_t>(0), nonmutated.size() - 1);
+  //  newMutations.push_back(nonmutated[rpos]);
+  int posmutated = ran_gen.pick(nonmutated);
+  newMutations.push_back(posmutated);
   numMutablePosParent = nonmutated.size();
 }
 
@@ -524,7 +529,7 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
 			   const fitnessEffectsAll& fe,
-			   std::mt19937& ran_gen) {
+			   randutils::mt19937_rng& ran_gen) {
   Genotype newGenot = parent;
   std::vector<int> tempOrder; // holder for multiple muts if order.
   bool sort_rest = false;
@@ -558,8 +563,13 @@ Genotype createNewGenotype(const Genotype& parent,
 
   // If there is order but multiple simultaneous mutations
   // (chromothripsis), we randomly insert them
+  // if(tempOrder.size() > 1)
+  //   shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
+  // the new randutils engine:
   if(tempOrder.size() > 1)
-    shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
+    ran_gen.shuffle(tempOrder.begin(), tempOrder.end());
+
+  
   for(auto const &g : tempOrder)
     newGenot.orderEff.push_back(g);
 

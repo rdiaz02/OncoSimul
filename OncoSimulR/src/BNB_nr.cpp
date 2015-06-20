@@ -16,6 +16,7 @@
 
 
 // #include "OncoSimul.h"
+#include "randutils.h"
 #include "debug_common.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
@@ -669,7 +670,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     std::vector<int>& sampleMaxNDr,
 		     std::vector<int>& sampleNDrLargestPop,
 		     bool& reachDetection,
-		     std::mt19937& ran_gen,
+		     randutils::mt19937_rng& ran_gen,
 		     double& runningWallTime,
 		     bool& hittedWallTime) {
 		     //bool& anyForceRerunIssues
@@ -1469,7 +1470,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double finalTime,
 			int initSp,
 			int initIt,
-			int seed,
+			double seed,
 			int verbosity,
 			int speciesFS,
 			double ratioForce,
@@ -1493,8 +1494,15 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   const TypeModel typeModel = stringToModel(Rcpp::as<std::string>(typeFitness_));
 
   const double genTime = 4.0; // should be a parameter. For Bozic only.
-  
-  std::mt19937 ran_gen(seed);
+
+  //If seed is -9, then use automatic seed.
+
+  randutils::mt19937_rng ran_gen;
+  if(seed == 0)
+    ran_gen.seed();
+  else
+    ran_gen.seed(static_cast<unsigned int>(seed));
+  //std::mt19937 ran_gen(seed);
 
   
   if(K < 1 )

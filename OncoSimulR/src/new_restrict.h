@@ -18,8 +18,9 @@
 #ifndef _NEW_RESTRICT_H__
 #define _NEW_RESTRICT_H__
 
+#include "debug_common.h"
+#include "randutils.h"
 #include <Rcpp.h>
-#include"debug_common.h"
 #include <limits>
 #include <random>
 
@@ -153,12 +154,12 @@ void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent,
 		     std::vector<int>& newMutations,
-		     std::mt19937& ran_gen);
+		     randutils::mt19937_rng& ran_gen);
 
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
 			   const fitnessEffectsAll& fe,
-			   std::mt19937& ran_gen);
+			   randutils::mt19937_rng& ran_gen);
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 					const fitnessEffectsAll& F);

@@ -2540,7 +2540,7 @@ summary(sb)
 
 %% @ 
 
-(We use a somewhat large mutation rate tha usual, so that the simulation
+(We use a somewhat large mutation rate than usual, so that the simulation
 runs quickly.)
 
 <<fig.width=6>>=

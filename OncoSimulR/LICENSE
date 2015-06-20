@@ -1,0 +1,21 @@
+All code, except src/randutils.h, is copyright Ramon Diaz-Uriarte and
+licensed under the GPL (>=3).
+
+
+The code in src/randutils.h is copyright Melissa E. O'Neill, and is
+licensed under "The MIT License (MIT)" in the terms explained in the file
+itself. The file randutils.hpp was downloaded from
+https://gist.github.com/imneme/540829265469e673d045 on 2015-06-20 and is
+also referenced from the main article
+http://www.pcg-random.org/posts/ease-of-use-without-loss-of-power.html.  I
+(RDU) have renamed it to randutils.h (to comply with R) and have changed
+the line
+
+auto exit_func = hash(&_Exit);
+
+by
+
+auto exit_func = hash(&getenv);
+
+to keep R from complaining about using the Exit function.
+
