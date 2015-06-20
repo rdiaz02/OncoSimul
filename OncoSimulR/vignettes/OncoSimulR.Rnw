@@ -244,6 +244,7 @@ need that for your usual interactive work).
 
 <<results="hide">>=
 library(OncoSimulR)
+packageVersion("OncoSimulR")
 library(graph)
 library(igraph)
 @ 
@@ -2400,7 +2401,7 @@ summary(mcf1s)
 
 
 \subsection{McFarland model with 50000 passengers and 70
-  drivers}\label{mcf50070}
+  drivers: clonal competition}\label{mcf50070}
 
 The next is too slow (takes a couple of minutes in an i5 laptop) and too
 big to run in a vignette, because we keep track of over 4000 different
@@ -2506,7 +2507,7 @@ sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
 summary(sb)
 @ 
 
-\subsection{Simulation with order effects and some clonal competition}\label{clonalint}
+\subsection{Simulation with order effects and McFL model}\label{clonalint}
 %% Interesting to show effects of order: o3
 
 %% Increase mutation rate, so does not take forever
@@ -2545,7 +2546,7 @@ runs quickly.)
 
 <<fig.width=6>>=
 
-set.seed(3)
+set.seed(4321)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
                        mu = 5e-5,
@@ -2555,29 +2556,32 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        max.num.tries = 10,
                        keepEvery = 5,
                        initSize = 2000,
-                       finalTime = 8000,
+                       finalTime = 6000,
                        onlyCancer = FALSE); 
 plot(tmp, addtot = TRUE, log = "")
 
 @ 
 
-In this example, we can see clonal interference between clones with the
-same number of drivers and between clones with different numbers of
-drivers. And this is one case where the summary statistics about number of
-drivers says little of value, as fitness is very different for genotypes
-with the same number of mutations, and does not increase in a simple way
-with drivers:
+In this example (and at least under Linux, with both GCC and clang), we
+can see that the mutants with three drivers do not get established when we
+stop the simulation at time 6000. This is one case where the summary
+statistics about number of drivers says little of value, as fitness is
+very different for genotypes with the same number of mutations, and does
+not increase in a simple way with drivers:
 
 <<>>=
 evalAllGenotypes(examplesFitnessEffects[["o3"]])
 @ 
 
-Another run that shows clonal interference between clones with different
-numbers of drivers:
+In this case, the clones with three drivers end up displacing those with
+two by the time we stop; moreover, notice how those with one driver never
+really grow to a large population size, so we basically go from a
+population with clones with zero drivers to a population made of clones
+with two or three drivers:
 
 <<fig.width=6>>=
 
-set.seed(2)
+set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
                        mu = 5e-5,
@@ -2589,34 +2593,36 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        initSize = 2000,
                        finalTime = 20000,
                        onlyCancer = FALSE,
-                       extraTime = 1000)
+                       extraTime = 1500)
 tmp
-plot(tmp, addtot = TRUE, log = "")
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
 
 @
 
+The argument \Rcode{plotDiversity = TRUE} asks to show a small plot on top
+with Shannon's diversity index.
 
-These patterns, however, are not always present
+%% These patterns, however, are not always present
 
-<<fig.width=6>>=
+%% <<fig.width=6>>=
 
-set.seed(9) 
-tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
-                       model = "McFL", 
-                       mu = 5e-5,
-                       detectionSize = 1e8, 
-                       detectionDrivers = 3,
-                       sampleEvery = 0.015,
-                       max.num.tries = 10,
-                       keepEvery = 5,
-                       initSize = 2000,
-                       finalTime = 10000,
-                       onlyCancer = FALSE,
-                       extraTime = 10)
-tmp
-plot(tmp, addtot = TRUE, log = "")
+%% set.seed(7654) 
+%% tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+%%                        model = "McFL", 
+%%                        mu = 5e-5,
+%%                        detectionSize = 1e8, 
+%%                        detectionDrivers = 3,
+%%                        sampleEvery = 0.015,
+%%                        max.num.tries = 10,
+%%                        keepEvery = 5,
+%%                        initSize = 2000,
+%%                        finalTime = 10000,
+%%                        onlyCancer = FALSE,
+%%                        extraTime = 10)
+%% tmp
+%% plot(tmp, addtot = TRUE, log = "")
 
-@ 
+%% @ 
 
 
 %% Although in other runs we do not reach the three gene mutant and continue
@@ -2657,9 +2663,8 @@ lead to trouble when using Bozic's model:
 
 %% Even simpler
 
+%% ## set.seed(987)
 <<>>=
-
-set.seed(987)
 i1 <- allFitnessEffects(noIntGenes = c(1))
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Bozic")
@@ -3435,6 +3440,7 @@ literature on oncogenetic trees et al. Function \Rfunction{simOGraph}
 might help here. 
 
 <<>>=
+## No seed fixed, so reruns will give different DAGs.
 (a1 <- simOGraph(10))
 library(graph) ## for simple plotting
 plot(as(a1, "graphNEL"))

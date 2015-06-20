@@ -602,6 +602,7 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                               thinData = FALSE,
                               thinData.keep = 0.1,
                               thinData.min = 2,
+                              plotDiversity = FALSE,
                               ...
                               ) {
     op <- par(ask = ask)
@@ -624,6 +625,7 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                                   thinData = thinData,
                                   thinData.keep = thinData.keep,
                                   thinData.min = thinData.min,
+                                  plotDiversity = plotDiversity,
                                   ...))
 }
 
@@ -644,6 +646,7 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
                            thinData = FALSE,
                            thinData.keep = 0.1,
                            thinData.min = 2,
+                           plotDiversity = FALSE,
                            ...
                            ) {
 
@@ -662,6 +665,11 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
             yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
         else
             yl <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+    }
+    if(plotDiversity) {
+        par(fig = c(0, 1, 0.8, 1))
+        plotShannon(x)
+        par(fig = c(0, 1, 0, 0.9), new = TRUE)  
     }
     if(plotClones) {
         plotClones(x,
@@ -694,6 +702,7 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
                      log = log, ylim = yl,
                      ...)
     }
+    
 }
 
 
@@ -993,6 +1002,36 @@ thin.pop.data <- function(x, keep = 0.1, min.keep = 3) {
     return(x)
 }
 
+shannonI <- function(x) {
+    sx <- sum(x)
+    p <- x/sx
+    p <- p[p > 0]
+    return(-sum(p * log(p)))
+}
+
+plotShannon <- function(z) {
+    h <- apply(z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE],
+               1, shannonI)
+    plot(x = z$pops.by.time[, 1],
+         y = h, type = "l", xlab = "", ylab = "H", axes = FALSE)
+    box()
+    axis(2)
+}
+
+## simpsonI <- function(x) {
+##     sx <- sum(x)
+##     p <- x/sx
+##     p <- p[p > 0]
+##     return(sum(p^2)))
+## }
+
+## plotSimpson <- function(z) {
+    
+##     h <- apply(z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE],
+##                1, shannonI)
+##     plot(x = z$pops.by.time[, 1],
+##          y = h, lty = "l", xlab = "", ylab = "H")
+## }
 
 
 plotClones <- function(z, ndr = NULL, na.subs = TRUE,
@@ -1020,6 +1059,7 @@ plotClones <- function(z, ndr = NULL, na.subs = TRUE,
             log = log, type = type,
             col = col, lty = lty,
             ...)
+    box()
 }
 
 

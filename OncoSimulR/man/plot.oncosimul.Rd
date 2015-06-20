@@ -24,7 +24,8 @@
                    ylab = "Number of cells", plotClones = TRUE,
                    plotDrivers = TRUE, addtot = FALSE,
                    addtotlwd = 0.5, yl = NULL, thinData = FALSE,
-                   thinData.keep = 0.1, thinData.min = 2, ...)
+                   thinData.keep = 0.1, thinData.min = 2,
+                   plotDiversity = FALSE, ...)
 
 \method{plot}{oncosimulpop}(x, ask = TRUE, col = c(8, "orange", 6:1),
                       log = "y",
@@ -34,7 +35,8 @@
                       ylab = "Number of cells", plotClones = TRUE,
                       plotDrivers = TRUE, addtot = FALSE,
                       addtotlwd = 0.5, yl = NULL, thinData = FALSE,
-                      thinData.keep = 0.1, thinData.min = 2, ...)
+                      thinData.keep = 0.1, thinData.min = 2,
+                      plotDiversity = FALSE, ...)
 
 
 
@@ -130,6 +132,12 @@
     
     
   }
+
+  \item{plotDiversity}{If TRUE, we also show, on top of the main figure,
+  Shannon's diversity index (and we considers as distinct those
+  genotypes with different order of mutations when order matters).}
+
+  
   \item{\dots}{
     Other arguments passed to \code{plots}. For instance, \code{main}.
     
@@ -149,9 +157,10 @@
 data(examplePosets)
 p701 <- examplePosets[["p701"]]
 
-## simulate and plot a single individual
+## Simulate and plot a single individual, including showing
+## Shannon's diversity index
 b1 <- oncoSimulIndiv(p701)
-plot(b1, addtot = TRUE)
+plot(b1, addtot = TRUE, plotDiversity = TRUE)
 
 
 ## simulate and plot 2 individuals
