@@ -723,6 +723,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   int iterL = 1000;
   int speciesL = 1000; 
   //int timeL = 1000;
+
+  int iterInterrupt = 200000; //how large should we make this?
   
   double tmpdouble1 = 0.0;
   double tmpdouble2 = 0.0;
@@ -1005,6 +1007,10 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     }
     
     iter++;
+    
+    if( !(iter % iterInterrupt))
+      Rcpp::checkUserInterrupt();
+    
     if(verbosity > 1) {
       if(! (iter % iterL) ) {
 	Rcpp::Rcout << "\n\n    ... iteration " << iter;
@@ -1603,6 +1609,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // tps_1 = totPopSize;
 
     try {
+      Rcpp::checkUserInterrupt();
+
       // it is CRUCIAL that several entries are zeroed (or -1) at the
       // start of innerBNB now that we do multiple runs if onlyCancer = true.
       nr_innerBNB(
