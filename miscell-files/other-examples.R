@@ -2,7 +2,7 @@
 
 
 
-nin <- 50000
+nin <- 100
 ne <- 10
 s <- 0.1
 sj <- -0.05
@@ -13,12 +13,10 @@ epi <- c(rep(s, length(single)), rep(sj, length(int)))
 names(epi) <- c(single, int)
 ee <- allFitnessEffects(epistasis = epi,
                         noIntGenes = rexp(nin, 20))
-
-
 see <- oncoSimulIndiv(ee, model = "Exp", detectionDrivers = 1000,
                       sampleEvery = 10,
                       keepEvery = -9)
-
+summary(see)
 
 
 

@@ -724,7 +724,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   int speciesL = 1000; 
   //int timeL = 1000;
 
-  int iterInterrupt = 200000; //how large should we make this?
+  int iterInterrupt = 50000; //how large should we make this?
   
   double tmpdouble1 = 0.0;
   double tmpdouble2 = 0.0;
@@ -1669,7 +1669,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		     List::create(Named("UnrecoverExcept") = true,
 				  Named("ExceptionMessage") = e.what()));
     } catch (...) {
-      Rcpp::Rcout << "\n Unknown unrecoverable exception. Aborting. \n";
+      Rcpp::Rcout << "\n Unknown unrecoverable exception. Aborting."
+		  << "(User interrupts also generate this).\n";
       return
 	List::create(Named("other") =
 		     List::create(Named("UnrecoverExcept") = true,
