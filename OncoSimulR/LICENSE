@@ -16,7 +16,8 @@ auto exit_func = hash(&_Exit);
 
 by
 
-auto exit_func = hash(&getenv);
+auto getenv_func = hash(&getenv);
 
-to keep R from complaining about using the Exit function.
+to keep R from complaining about using the Exit function (it is not using
+it, just getting its address).
 

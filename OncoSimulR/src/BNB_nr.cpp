@@ -1500,8 +1500,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   randutils::mt19937_rng ran_gen;
   if(seed == 0)
     ran_gen.seed();
-  else
+  else {
     ran_gen.seed(static_cast<unsigned int>(seed));
+    // The next does not solve the differences between clang and gcc. So
+    // keep it simple.
+    // std::seed_seq s1{static_cast<unsigned int>(seed)};
+    // ran_gen.seed(s1);
+  }
   //std::mt19937 ran_gen(seed);
 
   

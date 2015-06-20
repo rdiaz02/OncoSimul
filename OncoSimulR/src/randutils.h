@@ -493,7 +493,7 @@ class auto_seeded : public SeedSeq {
         // (might not change until system is rebooted though).  Hopefully
         // it's in a different library from time_func.
         // auto exit_func = hash(&_Exit);
-	auto exit_func = hash(&getenv);
+	auto getenv_func = hash(&getenv);
 
         // The address of a local function.  That may be in a totally
         // different part of memory.  On OS X it'll vary from run to run thanks
@@ -521,7 +521,7 @@ class auto_seeded : public SeedSeq {
         auto cpu = crushto32(RANDUTILS_CPU_ENTROPY);
 
         return {{random_int, crushto32(hitime), stack, heap, self_data,
-                 self_func, exit_func, thread_id, type_id, pid, cpu}};
+                 self_func, getenv_func, thread_id, type_id, pid, cpu}};
     }
 
 
