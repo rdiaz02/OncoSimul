@@ -50,7 +50,7 @@ void nr_fitness(spParamsP& tmpP,
 		       const spParamsP& parentP,
 		       const Genotype& ge,
 		       const fitnessEffectsAll& F,
-		       const std::string& typeFitness,
+		       const TypeModel typeModel,
 		       const double& genTime,
 		       const double& adjust_fitness_B,
 		       const double& adjust_fitness_MF) {
@@ -69,14 +69,14 @@ void nr_fitness(spParamsP& tmpP,
 
   // The ones often used are bozic1, exp, mcfarlandlog
 
-  if(typeFitness == "bozic1") {
+  if(typeModel == TypeModel::bozic1) {
     tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F));
     if( tmpP.death > 99) {
       tmpP.birth = 0.0; 
     } else {
       tmpP.birth = 1.0;
     }
-  } else if (typeFitness == "bozic2") {
+  } else if (typeModel == TypeModel::bozic2) {
     double pp = prodDeathFitness(evalGenotypeFitness(ge, F));
     tmpP.birth = std::max(0.0, (1.0/genTime) * (1.0 - 0.5 * pp ));
     tmpP.death = (0.5/genTime) * pp;
@@ -92,10 +92,10 @@ void nr_fitness(spParamsP& tmpP,
       tmpP.absfitness = parentP.absfitness;
       tmpP.birth = fitness;
       // exp, mcfarland, and mcfarlandlog as above. Next are the two exceptions.
-      if(typeFitness == "beerenwinkel") {
+      if(typeModel == TypeModel::beerenwinkel) {
 	tmpP.absfitness = fitness; 
 	tmpP.birth = adjust_fitness_B * tmpP.absfitness;
-      } else if(typeFitness == "mcfarland0") {
+      } else if(typeModel == TypeModel::mcfarland0) {
 	tmpP.absfitness = fitness;
 	tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
       }
@@ -636,7 +636,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     const double& K,
 		     const double& alpha,
 		     const double& genTime,
-		     const std::string& typeFitness,
+		     const TypeModel typeModel,
 		     const int& mutatorGenotype,
 		     const double& mu,
 		     const double& death,
@@ -835,7 +835,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 				     ran_gen); // FIXME: nr, here. What is a "wt
 					// genotype"? Does it have "0"
 					// mutated, or nothing. Nothing.
-    if(typeFitness == "beerenwinkel") {
+    if(typeModel == TypeModel::beerenwinkel) {
       
       popParams[0].death = 1.0; //note same is in McFarland.
       // But makes sense here; adjustment in beerenwinkel is via fitness
@@ -849,7 +849,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       updateRatesBeeren(popParams, adjust_fitness_B, initSize,
 			currentTime, alpha, initSize, 
 			mutatorGenotype, mu);
-    } else if(typeFitness == "mcfarland0") {
+    } else if(typeModel == TypeModel::mcfarland0) {
       // death equal to birth of a non-mutant.
       popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
       if(!mutatorGenotype)
@@ -859,39 +859,39 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
 			    totPopSize,
 			    mutatorGenotype, mu);
-    } else if(typeFitness == "mcfarland") {
+    } else if(typeModel == TypeModel::mcfarland) {
       popParams[0].death = totPopSize/K;
       popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
 								fitnessEffects));
-    } else if(typeFitness == "mcfarlandlog") {
+    } else if(typeModel == TypeModel::mcfarlandlog) {
       popParams[0].death = log1p(totPopSize/K);
       popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
 								fitnessEffects));
-    } else if(typeFitness == "bozic1") {
+    } else if(typeModel == TypeModel::bozic1) {
       tmpParam.birth =  1.0;
       tmpParam.death = -99.9;
-    } else if (typeFitness == "bozic2") {
+    } else if (typeModel == TypeModel::bozic2) {
       tmpParam.birth =  -99;
       tmpParam.death = -99;
-    } else if (typeFitness == "exp") {
+    } else if (typeModel == TypeModel::exp) {
       tmpParam.birth =  -99;
       tmpParam.death = death;
     } else {
-      throw std::invalid_argument("this ain't a valid typeFitness");
+      throw std::invalid_argument("this ain't a valid typeModel");
     } 
-    if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
-	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
+    if( (typeModel != TypeModel::beerenwinkel) && (typeModel != TypeModel::mcfarland0) 
+	&& (typeModel != TypeModel::mcfarland) && (typeModel != TypeModel::mcfarlandlog)) // wouldn't matter
       nr_fitness(popParams[0], tmpParam,
 		 Genotypes[0],
 		 fitnessEffects,
-		 typeFitness, genTime,
+		 typeModel, genTime,
 		 adjust_fitness_B, adjust_fitness_MF);
     // we pass as the parent the tmpParam; it better initialize
     // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
   } else {
     popParams[0].numMutablePos = numGenes;
-    if(typeFitness == "beerenwinkel") {
+    if(typeModel == TypeModel::beerenwinkel) {
       popParams[0].death = 1.0;
       // initialize to prevent birth/mutation warning with Beerenwinkel
       // when no mutator. O.w., the defaults
@@ -901,7 +901,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       updateRatesBeeren(popParams, adjust_fitness_B, initSize,
 			currentTime, alpha, initSize, 
 			mutatorGenotype, mu);
-    } else if(typeFitness == "mcfarland0") {
+    } else if(typeModel == TypeModel::mcfarland0) {
       popParams[0].death = log1p(totPopSize/K);
       if(!mutatorGenotype)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
@@ -909,25 +909,25 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
 			    totPopSize,
 			    mutatorGenotype, mu);
-    } else if(typeFitness == "mcfarland") {
+    } else if(typeModel == TypeModel::mcfarland) {
       popParams[0].birth = 1.0;
       popParams[0].death = totPopSize/K;
       // no need to call updateRates
-    } else if(typeFitness == "mcfarlandlog") {
+    } else if(typeModel == TypeModel::mcfarlandlog) {
       popParams[0].birth = 1.0;
       popParams[0].death = log1p(totPopSize/K);
       // no need to call updateRates
-    } else if(typeFitness == "bozic1") {
+    } else if(typeModel == TypeModel::bozic1) {
       popParams[0].birth = 1.0;
       popParams[0].death = 1.0;
-    } else if (typeFitness == "bozic2") {
+    } else if (typeModel == TypeModel::bozic2) {
       popParams[0].birth = 0.5/genTime;
       popParams[0].death = 0.5/genTime;
-    } else if (typeFitness == "exp") {
+    } else if (typeModel == TypeModel::exp) {
       popParams[0].birth = 1.0;
       popParams[0].death = death;
     } else {
-      throw std::invalid_argument("this ain't a valid typeFitness");
+      throw std::invalid_argument("this ain't a valid typeModel");
     }
   }
 
@@ -1254,7 +1254,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	  nr_fitness(tmpParam, popParams[nextMutant],
 		     newGenotype,
 		     fitnessEffects,
-		     typeFitness, genTime,
+		     typeModel, genTime,
 		     adjust_fitness_B, adjust_fitness_MF);
 	
 	  if(tmpParam.birth > 0.0) {
@@ -1413,23 +1413,23 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       }
       
       computeMcFarlandError(e1, n_0, n_1, tps_0, tps_1, 
-			    typeFitness, totPopSize, K); //, initSize);
+			    typeModel, totPopSize, K); //, initSize);
 
       if(simulsDone)
 	break; //skip last updateRates
 
-      if( (typeFitness == "beerenwinkel") ) {
+      if( (typeModel == TypeModel::beerenwinkel) ) {
 	updateRatesBeeren(popParams, adjust_fitness_B,
 			  initSize, currentTime, alpha, totPopSize,
 			  mutatorGenotype, mu);
-      } else if( (typeFitness == "mcfarland0") ) {
+      } else if( (typeModel == TypeModel::mcfarland0) ) {
 	updateRatesMcFarland0(popParams, adjust_fitness_MF,
 			     K, totPopSize,
 			     mutatorGenotype, mu);
-      } else if( (typeFitness == "mcfarland") ) {
+      } else if( (typeModel == TypeModel::mcfarland) ) {
 	updateRatesMcFarland(popParams, adjust_fitness_MF,
 			     K, totPopSize);
-      } else if( (typeFitness == "mcfarlandlog") ) {
+      } else if( (typeModel == TypeModel::mcfarlandlog) ) {
 	updateRatesMcFarlandLog(popParams, adjust_fitness_MF,
 			     K, totPopSize);
       }
@@ -1484,10 +1484,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double extraTime) {  
   precissionLoss();
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
-  // const std::string typeFitness = as<std::string>(typeFitness_);
-  const std::string typeFitness = Rcpp::as<std::string>(typeFitness_); // no need to do [0]
+  const TypeModel typeModel = stringToModel(Rcpp::as<std::string>(typeFitness_));
 
-  
   const double genTime = 4.0; // should be a parameter. For Bozic only.
   
   std::mt19937 ran_gen(seed);
@@ -1613,7 +1611,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       K,
 	       alpha,
 	       genTime,
-	       typeFitness,
+	       typeModel,
 	       mutatorGenotype,
 	       mu,
 	       death,
@@ -1800,7 +1798,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
 					       Named("errorMF") = 
 					       returnMFE(e1, K, 
-							 typeFitness),
+							 typeModel),
 					       Named("errorMF_size") = e1,
 					       Named("errorMF_n_0") = n_0,
 #ifdef MIN_RATIO_MUTS_NR

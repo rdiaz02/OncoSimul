@@ -90,21 +90,21 @@ bool operator<(const Genotype& lhs, const Genotype& rhs) {
 
 TypeModel stringToModel(const std::string& mod) {
   if(mod == "exp")
-    return typeModel::exp;
+    return TypeModel::exp;
   else if(mod == "bozic1")
-    return typeModel::bozic1;
+    return TypeModel::bozic1;
   else if(mod == "mcfarlandlog")
-    return typeModel::mcfarlandlog;
+    return TypeModel::mcfarlandlog;
   else if(mod == "mcfarland")
-    return typeModel::mcfarland;
+    return TypeModel::mcfarland;
   else if(mod == "beerenwinkel")
-    return typeModel::beerenwinkel;
+    return TypeModel::beerenwinkel;
   else if(mod == "mcfarland0")
-    return typeModel::mcfarland0;
+    return TypeModel::mcfarland0;
   else if(mod == "bozic2")
-    return typeModel::bozic2;
+    return TypeModel::bozic2;
   else 
-    throw std::out_of_range("Not a valid typeModel");
+    throw std::out_of_range("Not a valid TypeModel");
 }
 
 
