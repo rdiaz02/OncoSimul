@@ -477,8 +477,8 @@ std::string genotypeToIntString(const std::vector<int>& genotypeV,
 
 
 std::string genotypeToNameString(const std::vector<int>& genotypeV,
-				       const fitness_as_genes& fg,
-				       const std::map<int, std::string>& intName) {
+				 const fitness_as_genes& fg,
+				 const std::map<int, std::string>& intName) {
   
   // The genotype vectors are returned as a string of names. Similar to
   // the Int version, but we map here to names.
@@ -525,9 +525,10 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
 
 
 std::vector<std::string> genotypesToNameString(const std::vector< vector<int> >& uniqueGenotypesV,
-					       const fitnessEffectsAll& F,
+					       const fitness_as_genes fg,
+					       // const fitnessEffectsAll& F,
 					       const std::map<int, std::string>& intName) {
-  fitness_as_genes fg = fitnessAsGenes(F);
+  //fitness_as_genes fg = fitnessAsGenes(F); // I use this before;
   std::vector<std::string> gs;
   for(auto const &v: uniqueGenotypesV )
       gs.push_back(genotypeToNameString(v, fg, intName));
@@ -628,7 +629,18 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 }
 
 
-
+void addToPhylog(PhylogName& phylog,
+		 const Genotype& parent,
+		 const Genotype& child,
+		 double time,
+		 const std::map<int, std::string>& intName,
+		 const fitness_as_genes& fg) {
+  phylog.time.push_back(time);
+  phylog.parent.push_back(genotypeToNameString(genotypeSingleVector(parent),
+					       fg, intName));
+  phylog.child.push_back(genotypeToNameString(genotypeSingleVector(child),
+					      fg, intName));
+}
 
 
 
@@ -672,7 +684,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     bool& reachDetection,
 		     randutils::mt19937_rng& ran_gen,
 		     double& runningWallTime,
-		     bool& hittedWallTime) {
+			bool& hittedWallTime,
+			const std::map<int, std::string>& intName,
+			const fitness_as_genes& genesInFitness,
+			PhylogName& phylog,
+			bool keepPhylog) {
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
 
@@ -682,6 +698,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero
   genot_out.clear();
+
+  phylog = PhylogName();
+  
   popSizes_out.clear();
   index_out.clear();
   time_out.clear();
@@ -1265,6 +1284,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     adjust_fitness_B, adjust_fitness_MF);
 	
 	  if(tmpParam.birth > 0.0) {
+	    //FIXME: phylog
+	    if(keepPhylog)
+	      addToPhylog(phylog, Genotypes[nextMutant], newGenotype, currentTime,
+			  intName, genesInFitness);
+	    
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
 	    if(mutatorGenotype)
 	      tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
@@ -1488,7 +1512,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			int maxNumTries,
 			bool errorHitMaxTries,
 			double minDetectDrvCloneSz,
-			double extraTime) {  
+			double extraTime,
+			bool keepPhylog) {  
   precissionLoss();
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   const TypeModel typeModel = stringToModel(Rcpp::as<std::string>(typeFitness_));
@@ -1513,7 +1538,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   if(K < 1 )
     throw std::range_error("K < 1.");
   fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
-
+  //Used at least twice
+  std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
+  fitness_as_genes genesInFitness = fitnessAsGenes(fitnessEffects);
+  PhylogName phylog;
+  
   bool runAgain = true;
   bool reachDetection = false;
   //Output
@@ -1667,7 +1696,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       reachDetection,
 	       ran_gen,
 	       runningWallTime,
-	       hittedWallTime);
+		  hittedWallTime,
+		  intName,
+		  genesInFitness,
+		  phylog,
+		  keepPhylog);
       ++numRuns;
       forceRerun = false;
     } catch (rerunExcept &e) {
@@ -1761,9 +1794,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   // whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
 
-  std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
+  // std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
   std::vector<std::string> genotypesAsStrings =
-    genotypesToNameString(uniqueGenotypes_vector_nr, fitnessEffects, intName);
+    genotypesToNameString(uniqueGenotypes_vector_nr, genesInFitness, intName);
   std::string driversAsString =
     driversToNameString(presentDrivers, intName);
 
@@ -1778,7 +1811,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   NumericMatrix perSampleStats(outNS_i + 1, 5);
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
   	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
-
 
 
   // // // debuggin: precompute things
@@ -1796,6 +1828,15 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   // Rcpp::List returnGenotypesO = Rcpp::wrap(uniqueGenotypesV);
 
+  // if(keepPhylog) {
+  //   Rcpp::DataFrame PhylogDF = Rcpp::DataFrame::create(Named("parent") = phylog.parent,
+  // 						       Named("child") = phylog.child,
+  // 						       Named("time") = phylog.time);
+  // } else {
+  //   Rcpp::DataFrame PhylogDF = Rcpp::DataFrame::create(Named("parent") = NA,
+  // 						       Named("child") = NA,
+  // 						       Named("time") = NA);
+  // }
  
   return
     List::create(Named("pops.by.time") = outNS,
@@ -1833,6 +1874,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 					       Named("minBMratio") = -99,
 #endif
 					       Named("errorMF_n_1") = n_1,
+					       Named("PhylogDF") =  DataFrame::create(
+										      Named("parent") = phylog.parent,
+										      Named("child") = phylog.child,
+										      Named("time") = phylog.time
+										      ),
 					       Named("UnrecoverExcept") = false)
 		 );
 

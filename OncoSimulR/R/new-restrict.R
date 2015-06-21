@@ -824,7 +824,8 @@ nr_oncoSimul.internal <- function(rFE,
                                   max.num.tries,
                                   errorHitMaxTries,
                                   minDetectDrvCloneSz,
-                                  extraTime) {
+                                  extraTime,
+                                  keepPhylog) {
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
@@ -899,7 +900,8 @@ nr_oncoSimul.internal <- function(rFE,
                  maxNumTries = max.num.tries,
                  errorHitMaxTries = errorHitMaxTries,
                  minDetectDrvCloneSz = minDetectDrvCloneSz,
-                     extraTime = extraTime),
+                     extraTime = extraTime,
+                     keepPhylog),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))

@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // nr_BNB_Algo5
-Rcpp::List nr_BNB_Algo5(Rcpp::List rFE, double mu, double death, double initSize, double sampleEvery, double detectionSize, double finalTime, int initSp, int initIt, double seed, int verbosity, int speciesFS, double ratioForce, Rcpp::CharacterVector typeFitness_, int maxram, int mutatorGenotype, Rcpp::IntegerVector initMutant_, double maxWallTime, double keepEvery, double alpha, double K, int detectionDrivers, bool onlyCancer, bool errorHitWallTime, int maxNumTries, bool errorHitMaxTries, double minDetectDrvCloneSz, double extraTime);
-RcppExport SEXP OncoSimulR_nr_BNB_Algo5(SEXP rFESEXP, SEXP muSEXP, SEXP deathSEXP, SEXP initSizeSEXP, SEXP sampleEverySEXP, SEXP detectionSizeSEXP, SEXP finalTimeSEXP, SEXP initSpSEXP, SEXP initItSEXP, SEXP seedSEXP, SEXP verbositySEXP, SEXP speciesFSSEXP, SEXP ratioForceSEXP, SEXP typeFitness_SEXP, SEXP maxramSEXP, SEXP mutatorGenotypeSEXP, SEXP initMutant_SEXP, SEXP maxWallTimeSEXP, SEXP keepEverySEXP, SEXP alphaSEXP, SEXP KSEXP, SEXP detectionDriversSEXP, SEXP onlyCancerSEXP, SEXP errorHitWallTimeSEXP, SEXP maxNumTriesSEXP, SEXP errorHitMaxTriesSEXP, SEXP minDetectDrvCloneSzSEXP, SEXP extraTimeSEXP) {
+Rcpp::List nr_BNB_Algo5(Rcpp::List rFE, double mu, double death, double initSize, double sampleEvery, double detectionSize, double finalTime, int initSp, int initIt, double seed, int verbosity, int speciesFS, double ratioForce, Rcpp::CharacterVector typeFitness_, int maxram, int mutatorGenotype, Rcpp::IntegerVector initMutant_, double maxWallTime, double keepEvery, double alpha, double K, int detectionDrivers, bool onlyCancer, bool errorHitWallTime, int maxNumTries, bool errorHitMaxTries, double minDetectDrvCloneSz, double extraTime, bool keepPhylog);
+RcppExport SEXP OncoSimulR_nr_BNB_Algo5(SEXP rFESEXP, SEXP muSEXP, SEXP deathSEXP, SEXP initSizeSEXP, SEXP sampleEverySEXP, SEXP detectionSizeSEXP, SEXP finalTimeSEXP, SEXP initSpSEXP, SEXP initItSEXP, SEXP seedSEXP, SEXP verbositySEXP, SEXP speciesFSSEXP, SEXP ratioForceSEXP, SEXP typeFitness_SEXP, SEXP maxramSEXP, SEXP mutatorGenotypeSEXP, SEXP initMutant_SEXP, SEXP maxWallTimeSEXP, SEXP keepEverySEXP, SEXP alphaSEXP, SEXP KSEXP, SEXP detectionDriversSEXP, SEXP onlyCancerSEXP, SEXP errorHitWallTimeSEXP, SEXP maxNumTriesSEXP, SEXP errorHitMaxTriesSEXP, SEXP minDetectDrvCloneSzSEXP, SEXP extraTimeSEXP, SEXP keepPhylogSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -39,7 +39,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type errorHitMaxTries(errorHitMaxTriesSEXP);
     Rcpp::traits::input_parameter< double >::type minDetectDrvCloneSz(minDetectDrvCloneSzSEXP);
     Rcpp::traits::input_parameter< double >::type extraTime(extraTimeSEXP);
-    __result = Rcpp::wrap(nr_BNB_Algo5(rFE, mu, death, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutatorGenotype, initMutant_, maxWallTime, keepEvery, alpha, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime));
+    Rcpp::traits::input_parameter< bool >::type keepPhylog(keepPhylogSEXP);
+    __result = Rcpp::wrap(nr_BNB_Algo5(rFE, mu, death, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutatorGenotype, initMutant_, maxWallTime, keepEvery, alpha, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime, keepPhylog));
     return __result;
 END_RCPP
 }

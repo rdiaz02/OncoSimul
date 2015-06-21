@@ -1,3 +1,8 @@
+
+
+
+
+
 ## just for me; I assume everything starts with rt* and ends in RData
 ## and the object is called tmp
 plotdriversdir0 <- function(...){
@@ -10,7 +15,7 @@ plotdriversdir0 <- function(...){
   par(op)
 }
 ## using rds
-plotdriversdir <- function(...){
+plotdriversdir <- function(...){.R
   op <- par(ask = TRUE)
   files <- dir(pattern = "^rt.*rds$")
   for(fi in files) {

@@ -132,6 +132,19 @@ inline Genotype wtGenotype() {
   return g;
 }
 
+// struct st_PhylogNum {
+//   double time;
+//   std::vector<int> parent;
+//   std::vector<int> child;
+// };
+
+// This is all we need to then use igraph on the data frame.
+struct PhylogName {
+  std::vector<double> time;
+  std::vector<std::string> parent;
+  std::vector<std::string> child;
+  // yes, implicit constructor clears
+};
 
 
 

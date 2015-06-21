@@ -11,7 +11,8 @@ passenger genes.  Also included are functions for simulating random DAGs
 of the type found in Oncogenetic Tress, Conjunctive Bayesian Networks, and
 other tumor progression models, and for plotting and sampling from single
 or multiple realizations of the simulations, including whole-tumor and
-single-cell sampling.
+single-cell sampling, as well as functions for plotting the true
+phylogenetic relationships of the clones.
 
 
 The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package

@@ -2434,7 +2434,13 @@ object has been trimmed by removing empty passenger rows in the Genotype matrix)
 
 <<fig.width=6>>=
 data(mcfLs)
-plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "")
+plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "", plotDiversity = TRUE)
+@ 
+The argument \Rcode{plotDiversity = TRUE} asks to show a small plot on top
+with Shannon's diversity index.
+
+
+<<>>=
 summary(mcfLs)
 ## number of passengers per clone
 summary(colSums(mcfLs$Genotypes[-(1:70), ]))
@@ -2558,7 +2564,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        initSize = 2000,
                        finalTime = 6000,
                        onlyCancer = FALSE); 
-plot(tmp, addtot = TRUE, log = "")
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
 
 @ 
 
@@ -2579,8 +2585,8 @@ really grow to a large population size, so we basically go from a
 population with clones with zero drivers to a population made of clones
 with two or three drivers:
 
-<<fig.width=6>>=
-
+%%<<fig.width=6>>=
+<<>>=
 set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
@@ -2596,11 +2602,16 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        extraTime = 1500)
 tmp
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
-
 @
 
-The argument \Rcode{plotDiversity = TRUE} asks to show a small plot on top
-with Shannon's diversity index.
+As before, the argument \Rcode{plotDiversity = TRUE} asks to show a small
+plot on top with Shannon's diversity index. Here, as before, the quick
+clonal expansion of the clone with two drivers leads to a sudden drop in
+diversity (for a while, the population is made virtually of a single
+clone). Note, however, that compared to section \ref{mcf50070}, we are
+modeling here a scenario with very few genes, and correspondingly very few
+possible genotypes, and thus it is not strange that we observe very little
+diversity.
 
 %% These patterns, however, are not always present
 
@@ -3217,7 +3228,10 @@ thus in the output you can have two columns with both genes mutated.
 
 
 
+\section{Showing the true phylogenetic relationships of clones}\label{phylog}
 
+There is support in R for phylog, blablabal. But does not work for our
+specific problem. So use igraph blablabla
 
 
 

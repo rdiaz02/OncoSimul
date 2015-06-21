@@ -14,7 +14,8 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
+## Does it even make sense to keepPhylog with oncoSimulSample?
+## Yes, but think what we store.
 
 
 oncoSimulSample <- function(Nindiv,
@@ -46,6 +47,7 @@ oncoSimulSample <- function(Nindiv,
                             extraTime = 0,
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
+                            keepPhylog = FALSE, 
                             max.memory = 2000,
                             max.wall.time.total = 600,
                             max.num.tries.total = 500 * Nindiv,
@@ -162,7 +164,8 @@ oncoSimulSample <- function(Nindiv,
                                onlyCancer = onlyCancer,
                                errorHitWallTime = TRUE,
                                errorHitMaxTries = TRUE,
-                               seed = seed)
+                               seed = seed,
+                               keepPhylog = keepPhylog)
         
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
@@ -275,6 +278,7 @@ oncoSimulPop <- function(Nindiv,
                          ##                       5 * sampleEvery),
                          finalTime = 0.25 * 25 * 365,
                          onlyCancer = TRUE,
+                         keepPhylog = FALSE,
                          max.memory = 2000,
                          max.wall.time = 200,
                          max.num.tries = 500,
@@ -314,7 +318,8 @@ oncoSimulPop <- function(Nindiv,
                         errorHitWallTime = errorHitWallTime,
                         errorHitMaxTries = errorHitMaxTries,
                         verbosity = verbosity,
-                        seed = seed),
+                        seed = seed, keepPhylog = keepPhylog
+                    ),
                     mc.cores = mc.cores
                     )
     class(pop) <- "oncosimulpop"
@@ -345,6 +350,7 @@ oncoSimulIndiv <- function(fp,
                            ##                     5 * sampleEvery),
                            finalTime = 0.25 * 25 * 365,
                            onlyCancer = TRUE,
+                           keepPhylog = FALSE,
                            max.memory = 2000,
                            max.wall.time = 200,
                            max.num.tries = 500,
@@ -510,7 +516,8 @@ oncoSimulIndiv <- function(fp,
                                         detectionDrivers = detectionDrivers,
                                         onlyCancer = onlyCancer,
                                         errorHitWallTime = errorHitWallTime,
-                                        errorHitMaxTries = errorHitMaxTries),
+                                        errorHitMaxTries = errorHitMaxTries,
+                                        keepPhylog = keepPhylog),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }
@@ -668,8 +675,14 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
     }
     if(plotDiversity) {
         par(fig = c(0, 1, 0.8, 1))
+        m <- par()$mar
+        m[c(1, 3)] <- c(0, 0.7)
+        op <- par(mar = m )
         plotShannon(x)
-        par(fig = c(0, 1, 0, 0.9), new = TRUE)  
+        par(op)
+        m[c(3)] <- 0.2
+        op <- par(mar = m )
+        par(fig = c(0, 1, 0, 0.8), new = TRUE)  
     }
     if(plotClones) {
         plotClones(x,
@@ -723,6 +736,43 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
 plotAdjMat <- function(adjmat) {
     plot(as(adjmat, "graphNEL"))
 }
+
+
+
+plotClonePhylog <- function(x, timeEvent = FALSE,
+                            showEvents = TRUE,
+                            fixOverlap = TRUE) {
+    if(!inherits(x, "oncosimul2"))
+        stop("Phylogenetic information is only stored with v.>=2")
+    if(nrow(x$other$PhylogDF) == 0)
+        stop("It seems you run the simulation with keepPhylog= FALSE")
+    require(igraph)
+    df <- x$other$PhylogDF
+    if(!showEvents) {
+        df <- df[!duplicated(df[, c(1, 2)]), ]
+    }
+    g <- igraph::graph.data.frame(df)
+    l0 <- layout.reingold.tilford(g)
+    if(!timeEvent) {
+        plot(g, layout = l0)
+    } else {
+        l1 <- l0
+        indexAppear <- match(V(g)$name, as.character(df[, 2]))
+        firstAppear <- df$time[indexAppear]
+        firstAppear[1] <- 0
+        l1[, 2] <- (max(firstAppear) - firstAppear)
+        if(fixOverlap) {
+            dx <- which(duplicated(l1[, 1]))
+            if(length(dx)) {
+                ra <- range(l1[, 1])
+                l1[dx, 1] <- runif(length(dx), ra[1], ra[2])
+            }
+        }
+        plot(g, layout = l1)         
+    }
+}
+
+
 
 
 

@@ -17,6 +17,21 @@ summary(tmp)
 
 
 
+library(OncoSimulR)
+data(examplesFitnessEffects)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.025,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 2000,
+                       finalTime = 8000,
+                       onlyCancer = FALSE,
+                       seed = 4,
+                       keepPhylog = TRUE);
 
 
 

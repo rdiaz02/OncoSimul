@@ -472,7 +472,7 @@ void obtainMutations(const Genotype& parent,
 
 
 fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
-  // Given the fitnessEffects in terms of genes, not modules.
+  // Give the fitnessEffects in terms of genes, not modules.
   
   // Extract the noInt. Then those in order effects by creating a multimap
   // to go from map to genes. Then all remaining genes are those only in
