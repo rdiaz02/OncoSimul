@@ -361,7 +361,8 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
   you set it to "auto", then if you are using v.1, the behavior is the
   same as if you set it to NULL (a seed will be generated in R and
   passed to C++) but if you are using v.2, a random seed will be
-  produced in C++ using the randutils code from M.E.O'Neill. If you need
+  produced in C++. %% using the randutils code from M.E.O'Neill.
+  If you need
   reproducibility, either pass a value or set it to NULL (setting it to
   NULL will make the C++ seed reproducible if you use the same seed in R
   via \code{set.seed}). However, even using the same value of

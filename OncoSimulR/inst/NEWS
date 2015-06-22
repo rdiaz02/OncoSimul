@@ -1,5 +1,7 @@
-Changes in version 1.99.4 (2015-06-20):
-	- Using randutils, from O'Neill.
+Changes in version 1.99.4 (2015-06-22):
+	- Tried randutils, from O'Neill. Won't work with gcc-4.6.
+	- bool issue in Windows/gcc-4.6.
+	- Most all to all.equal in tests.
 
 Changes in version 1.99.3 (2015-06-19):
 	- More examples to vignette

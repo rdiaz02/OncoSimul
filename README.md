@@ -87,12 +87,11 @@ Licenses and copyright
 ======================
 
 The R/BioConductor OncoSimulR package is licensed under the GPLv3
-license. Except for the file `randutils.h` (see below), all of the code
-for the OncoSimulR BioConductor package is Copyright 2012-2015 by Ramon
-Diaz-Uriarte.
+license. All of the code for the OncoSimulR BioConductor package is
+Copyright 2012-2015 by Ramon Diaz-Uriarte.
 
 
-The code in `OncoSimulR/src/randutils.h` is copyright Melissa E. O'Neill,
+The code in `miscell-files/randutils.h` is copyright Melissa E. O'Neill,
 and is licensed under "The MIT License (MIT)" in the terms explained in
 the file itself. This is a license that is
 [compatible with the GPL](http://directory.fsf.org/wiki/License:Expat).
@@ -102,7 +101,8 @@ also referenced from the main article [Ease of Use without Loss of Power]
 (http://www.pcg-random.org/posts/ease-of-use-without-loss-of-power.html). I
 renamed it to randutils.h to conform to R's requirements (and changed the
 `auto exit_func = hash(&_Exit);` line to keep R from complaining about the
-Exit function).
+Exit function). I had to disable usage of randutils for now, since I could
+not get it to compile with gcc-4.6 (the default so far for R under Windows).
 
 
 

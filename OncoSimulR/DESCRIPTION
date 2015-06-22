@@ -1,8 +1,8 @@
 Package: OncoSimulR
 Type: Package
-Title: Forward Genetic Simulation of Cancer Progresion with Epistasis 
+Title: Forward Genetic Simulation of Cancer Progresion with Epistasis
 Version: 1.99.4
-Date: 2015-06-20
+Date: 2015-06-22
 Author: Ramon Diaz-Uriarte. Melissa O'Neill for randutils.
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
@@ -14,15 +14,15 @@ Description: Functions for forward population genetic simulation in
     functions for simulating random DAGs of the type found in Oncogenetic
     Tress, Conjunctive Bayesian Networks, and other tumor progression
     models, and for plotting and sampling from single or multiple
-    realizations of the simulations, including single-cell sampling, as
-    well as functions for plotting the true phylogenetic relationships of
-    the clones.
+    realizations of the simulations, including single-cell sampling.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3) + file LICENSE
 URL: https://github.com/rdiaz02/OncoSimul, http://ligarto.org/rdiaz
 Depends: R (>= 3.1.0)
-Imports: Rcpp (>= 0.11.1), parallel, data.table, graph, Rgraphviz, gtools, igraph
+Imports: Rcpp (>= 0.11.1), parallel, data.table, graph, Rgraphviz,
+        gtools, igraph
 Suggests: BiocStyle, knitr, Oncotree, testthat
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-# SystemRequirements: C++11
+NeedsCompilation: yes
+

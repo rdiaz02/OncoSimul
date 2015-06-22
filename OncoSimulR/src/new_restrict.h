@@ -19,7 +19,7 @@
 #define _NEW_RESTRICT_H__
 
 #include "debug_common.h"
-#include "randutils.h"
+// #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include <Rcpp.h>
 #include <limits>
 #include <random>
@@ -167,12 +167,16 @@ void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent,
 		     std::vector<int>& newMutations,
-		     randutils::mt19937_rng& ran_gen);
+		     std::mt19937& ran_gen
+		     //randutils::mt19937_rng& ran_gen
+		     );
 
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
 			   const fitnessEffectsAll& fe,
-			   randutils::mt19937_rng& ran_gen);
+			   std::mt19937& ran_gen
+			   //randutils::mt19937_rng& ran_gen
+			   );
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 					const fitnessEffectsAll& F);
@@ -188,9 +192,9 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe);
 
 std::vector<int> getGenotypeDrivers(const Genotype& ge, const std::vector<int>& drv);
 
-double prodFitness(std::vector<double> s);
+double prodFitness(const std::vector<double>& s);
 
-double prodDeathFitness(std::vector<double> s);
+double prodDeathFitness(const std::vector<double>& s);
 
 #endif
 

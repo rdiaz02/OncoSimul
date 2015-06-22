@@ -1,3 +1,4 @@
+
 //     Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
 
 //     This program is free software: you can redistribute it and/or modify
@@ -16,7 +17,7 @@
 
 
 // #include "OncoSimul.h"
-#include "randutils.h"
+// #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include "debug_common.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
@@ -682,7 +683,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     std::vector<int>& sampleMaxNDr,
 		     std::vector<int>& sampleNDrLargestPop,
 		     bool& reachDetection,
-		     randutils::mt19937_rng& ran_gen,
+			std::mt19937& ran_gen,
+			// randutils::mt19937_rng& ran_gen,
 		     double& runningWallTime,
 			bool& hittedWallTime,
 			const std::map<int, std::string>& intName,
@@ -1522,18 +1524,26 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   //If seed is -9, then use automatic seed.
 
-  randutils::mt19937_rng ran_gen;
-  if(seed == 0)
-    ran_gen.seed();
-  else {
-    ran_gen.seed(static_cast<unsigned int>(seed));
-    // The next does not solve the differences between clang and gcc. So
-    // keep it simple.
-    // std::seed_seq s1{static_cast<unsigned int>(seed)};
-    // ran_gen.seed(s1);
-  }
-  //std::mt19937 ran_gen(seed);
 
+  // Code when using randutils
+  // randutils::mt19937_rng ran_gen;
+  // if(seed == 0)
+  //   ran_gen.seed();
+  // else {
+  //   ran_gen.seed(static_cast<unsigned int>(seed));
+  //   // The next does not solve the differences between clang and gcc. So
+  //   // keep it simple.
+  //   // std::seed_seq s1{static_cast<unsigned int>(seed)};
+  //   // ran_gen.seed(s1);
+  // }
+ 
+  unsigned int rseed = static_cast<unsigned int>(seed);
+  if(seed == 0) {
+    rseed = std::random_device{}();
+  }
+  std::mt19937 ran_gen(rseed);
+
+  
   
   if(K < 1 )
     throw std::range_error("K < 1.");

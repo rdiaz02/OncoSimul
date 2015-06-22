@@ -14,7 +14,7 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "randutils.h"
+// #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include "new_restrict.h"
 #include "debug_common.h"
 #include <Rcpp.h>
@@ -27,15 +27,8 @@ using namespace Rcpp;
 using std::vector;
 using std::back_inserter;
 
-// // FIXME: move this later
-// int seed = 1; 
-// std::mt19937 ran_gen(seed);
 
-
-// double Inf = std::numeric_limits<double>::infinity();
-// double NegInf = -std::numeric_limits<double>::infinity();
-
-double prodFitness(std::vector<double> s) {
+double prodFitness(const std::vector<double>& s) {
   return accumulate(s.begin(), s.end(), 1.0,
 		    [](double x, double y) {return (x * std::max(0.0, (1 + y)));});
 }
@@ -54,18 +47,10 @@ double prodFitness(std::vector<double> s) {
 //   return f;
 // }
 
-double prodDeathFitness(std::vector<double> s) {
+double prodDeathFitness(const std::vector<double>& s) {
   return accumulate(s.begin(), s.end(), 1.0,
 		    [](double x, double y) {return (x * std::max(0.0, (1 - y)));});
 }
-
-
-
-// inline double logSumFitness(vector<double> s) {
-//   return accumulate(s.begin(), s.end(), 1.0,
-// 		    [](double x, double y) {return (x * (1 + y));})
-// }
-
 
 
 
@@ -361,7 +346,7 @@ std::vector<epistasis> convertEpiOrderEff(Rcpp::List ep) {
   return Epistasis;
 }
 
-std::vector<int> sortedAllOrder(std::vector<epistasis>& E) {
+std::vector<int> sortedAllOrder(const std::vector<epistasis>& E) {
   
   std::vector<int> allG;
   for(auto const &ec : E) {
@@ -375,7 +360,7 @@ std::vector<int> sortedAllOrder(std::vector<epistasis>& E) {
   return allG;
 }
 
-std::vector<int> sortedAllPoset(std::vector<Poset_struct>& Poset) {
+std::vector<int> sortedAllPoset(const std::vector<Poset_struct>& Poset) {
   // Yes, this could be done inside rTable_to_Poset but this is cleaner
   // and will only add very little time. 
   std::vector<int> allG;
@@ -399,7 +384,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List ro = rFE["long.orderEffects"];
   Rcpp::List rgi = rFE["long.geneNoInt"];
   Rcpp::List rgm = rFE["geneModule"];
-  bool rone = rFE["gMOneToOne"];
+  bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
 
   if(rrt.size()) {
@@ -434,9 +419,11 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
 
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
-		     int& numMutablePosParent,
+		     int& numMutablePosParent, 
 		     std::vector<int>& newMutations,
-		     randutils::mt19937_rng& ran_gen) {
+		     //randutils::mt19937_rng& ran_gen
+		     std::mt19937& ran_gen
+		     ) {
   //Ugly: we return the mutations AND the numMutablePosParent This is
   // almost ready to accept multiple mutations. And it returns a vector,
   // newMutations.
@@ -446,13 +433,14 @@ void obtainMutations(const Genotype& parent,
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
   
-  // std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
-  // newMutations.push_back(nonmutated[rpos(ran_gen)]);
-  // Yes, the next will work, but pick is simpler!
-  // size_t rpos = ran_gen.uniform(static_cast<size_t>(0), nonmutated.size() - 1);
-  //  newMutations.push_back(nonmutated[rpos]);
-  int posmutated = ran_gen.pick(nonmutated);
-  newMutations.push_back(posmutated);
+  std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+  newMutations.push_back(nonmutated[rpos(ran_gen)]);
+  // randutils
+  // // Yes, the next will work, but pick is simpler!
+  // // size_t rpos = ran_gen.uniform(static_cast<size_t>(0), nonmutated.size() - 1);
+  // //  newMutations.push_back(nonmutated[rpos]);
+  // int posmutated = ran_gen.pick(nonmutated);
+  // newMutations.push_back(posmutated);
   numMutablePosParent = nonmutated.size();
 }
 
@@ -529,7 +517,9 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
 			   const fitnessEffectsAll& fe,
-			   randutils::mt19937_rng& ran_gen) {
+			   std::mt19937& ran_gen
+			   //randutils::mt19937_rng& ran_gen
+			   ) {
   Genotype newGenot = parent;
   std::vector<int> tempOrder; // holder for multiple muts if order.
   bool sort_rest = false;
@@ -563,11 +553,11 @@ Genotype createNewGenotype(const Genotype& parent,
 
   // If there is order but multiple simultaneous mutations
   // (chromothripsis), we randomly insert them
-  // if(tempOrder.size() > 1)
-  //   shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
-  // the new randutils engine:
   if(tempOrder.size() > 1)
-    ran_gen.shuffle(tempOrder.begin(), tempOrder.end());
+    shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
+  // The new randutils engine:
+  // if(tempOrder.size() > 1)
+  //   ran_gen.shuffle(tempOrder.begin(), tempOrder.end());
 
   
   for(auto const &g : tempOrder)
@@ -591,8 +581,8 @@ Genotype createNewGenotype(const Genotype& parent,
 
 
 
-void breakingGeneDiff(const vector<int> genotype,
-		      const vector<int> fitness) {
+void breakingGeneDiff(const vector<int>& genotype,
+		      const vector<int>& fitness) {
   std::vector<int> diffg;
   set_difference(genotype.begin(), genotype.end(),
 		 fitness.begin(), fitness.end(),
@@ -635,7 +625,7 @@ void checkLegitGenotype(const vector<int>& ge,
 
 
 Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
-			      fitnessEffectsAll& fe) {
+			      const fitnessEffectsAll& fe) {
   // A genotype is of one kind or another depending on what genes are of
   // what type.
 
@@ -695,11 +685,12 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
 
 
 
-bool match_order_effects(std::vector<int> O, std::vector<int> G) {
+bool match_order_effects(const std::vector<int>& O,
+			 const std::vector<int>& G) {
   //As the name sayes: we check if the order effect is matched
   if(G.size() < O.size()) return false;
   
-  std::vector<int>::iterator p;
+  std::vector<int>::const_iterator p;
   std::vector<size_t> vdist;
   
   auto itb = G.begin();
@@ -735,7 +726,8 @@ std::vector<double> evalOrderEffects(const std::vector<int>& mutatedM,
 }
 
 
-bool match_negative_epist(std::vector<int> E, std::vector<int> G) {
+bool match_negative_epist(const std::vector<int>& E,
+			  const std::vector<int>& G) {
   // When we have things like -1, 2 in epistasis. We need to check 2 is
   // present and 1 is not present. E is the vector of epistatic coeffs,
   // and G the sorted genotype.
@@ -912,6 +904,11 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // sorted vector with all mutations and map to modules, if needed. Then
   // eval.
 
+  // Why not use a modified genotypeSingleVector without the no ints? We
+  // could, but not necessary. And you can place genes in any order you
+  // want, since this is not for order restrictions. That goes below.
+  // Why do I put the epist first? Se previous answer.
+  // Why do I sort if one to one? binary searches. Not done below for order.
   std::vector<int> mutG (ge.epistRtEff);
   mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
   std::vector<int> mutatedModules;
@@ -1025,8 +1022,8 @@ void printGene_Module_table(const
 
 
 void printOtherEpistasis(const std::vector<epistasis>& Epistasis,
-				const std::string effectName,
-				const std::string sepstr) {
+			 const std::string effectName,
+			 const std::string sepstr) {
   Rcpp::Rcout << "\n **********  General " << effectName << "s (internal) *******"
 	      << std::endl;
   if(!Epistasis.size()) {
