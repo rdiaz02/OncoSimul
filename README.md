@@ -27,6 +27,10 @@ progression: effects of passengers, evolutionary models, and sampling",
 [BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41/abstract).
 
 
+You can also find
+[OncoSimulR](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/)
+listed in the [Genetic Simulation Resources
+catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 
 
 Installation

@@ -1,3 +1,6 @@
+(This does not apply now, as we had to remove randutils.hpp until we can
+use gcc >= 4.8 in Windows to compile R packages.)
+
 All code, except src/randutils.h, is copyright Ramon Diaz-Uriarte and
 licensed under the GPL (>=3).
 
