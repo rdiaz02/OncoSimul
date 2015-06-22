@@ -614,7 +614,8 @@ m1 <- oncoSimulIndiv(p701,
                      initSize = 4000,
                      sampleEvery = 0.025,
                      finalTime = 15000,
-                     keepEvery = 5)
+                     keepEvery = 10,
+                     onlyCancer = FALSE)
 plot(m1, addtot = TRUE, log = "")
 
 
@@ -643,11 +644,11 @@ p2 <- oncoSimulSample(4, p701)
 
 
 
-#### A model similar to the one in McFarland. We use 5070 genes.
+#### A model similar to the one in McFarland. We use 2070 genes.
 
 set.seed(456)
 nd <- 70  
-np <- 5000 
+np <- 2000 
 s <- 0.1  
 sp <- 1e-3 
 spp <- -sp/(1 + sp)
@@ -683,7 +684,7 @@ oiI1$GenotypesLabels
 oiI1   ## note the order and separation by "_"
 
 
-oiP1 <- oncoSimulPop(4, oi,
+oiP1 <- oncoSimulPop(2, oi,
                      keepEvery = 10,
                      mc.cores = 2)
 summary(oiP1) 
@@ -695,7 +696,7 @@ summary(oiP1)
 samplePop(oiP1)
 
 
-oiS1 <- oncoSimulSample(4, oi)
+oiS1 <- oncoSimulSample(2, oi)
 
 ## The output contains only the summary of the runs AND
 ## the sample:
@@ -739,7 +740,7 @@ summary(pancrPop)
 pancrSPop <- samplePop(pancrPop)
 pancrSPop
 
-pancrSamp <- oncoSimulSample(4, pancr)
+pancrSamp <- oncoSimulSample(2, pancr)
 pancrSamp
                       
 }
