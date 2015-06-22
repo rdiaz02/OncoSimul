@@ -1,6 +1,37 @@
+## animation like
+for(i in seq(from = 800, to = 1000, by = 50))
+    plotClonePhylog(mcf1s, N = 1, t = c(i, i + 5))
+
+
+
+## a silly thing to catch clones that appear in phylog but never
+## in popps.by.time
+for(i in 1:100){
+    cat(paste("\n i = ", i))
+    set.seed(i)
+    tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                           model = "McFL", 
+                           mu = 5e-5,
+                           detectionSize = 1e8, 
+                           detectionDrivers = 3,
+                           sampleEvery = 0.015,
+                           max.num.tries = 10,
+                           keepEvery = 5,
+                           initSize = 2000,
+                           finalTime = 20000,
+                           onlyCancer = FALSE,
+                           extraTime = 1500,
+                           keepPhylog = TRUE);
+    a <- sort(tmp$GenotypesLabels)
+    b <- sort(unique(as.character(unlist(tmp$other$PhylogDF[, c(1, 2)]))))
+    if(!(all(a == b))) stop("here")
+}
+
+
+
 library(OncoSimulR)
+
 data(examplesFitnessEffects)
-set.seed(3)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
                        mu = 5e-5,
@@ -10,7 +41,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        max.num.tries = 10,
                        keepEvery = 5,
                        initSize = 2000,
-                       finalTime = 8000,
+                       finalTime = 3000,
                        onlyCancer = FALSE,
                        seed = 4);
 summary(tmp)

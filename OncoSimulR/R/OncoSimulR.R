@@ -64,6 +64,10 @@ oncoSimulSample <- function(Nindiv,
     ## leaving detectionSize and detectionDrivers as they are, produces
     ## the equivalente of uniform sampling. For last, fix a single number
 
+    if(keepPhylog)
+        warning(paste("oncoSimulSample does not return the phylogeny",
+                      "for now, so there is little point in storing it."))
+    
     if(max.num.tries.total < Nindiv)
         stop(paste("You have requested something impossible: ",
                    "max.num.tries.total < Nindiv"))
@@ -739,26 +743,73 @@ plotAdjMat <- function(adjmat) {
 
 
 
-plotClonePhylog <- function(x, timeEvent = FALSE,
-                            showEvents = TRUE,
-                            fixOverlap = TRUE) {
+which_N_at_T <- function(x, N = 1, t = "last") {
+    if((length(t) == 1) && (t == "last"))
+        T <- nrow(x$pops.by.time)
+    else if(length(t) == 2) {
+        if(t[1] < 0)
+            warning("smallest t must be >= 0; setting to 0")
+        if(t[1] > t[2])
+            stop("t[1] must be <= t[2]")
+        if(t[2] > max(x$pops.by.time[, 1]))
+            message("t[2] > largest time; setting it to the max")
+        T <- which(
+            (x$pops.by.time[, 1] >= t[1]) &
+                (x$pops.by.time[, 1] <= t[2]))
+    }
+    else
+        stop("t must be either 'last' or a vector of length 2")
+    z <- which(x$pops.by.time[T, -1, drop = FALSE] >= N, arr.ind = TRUE)[, 2]
+    z <- unique(z) ## recall we removed first column but we index from first.
+    return(z)
+}
+
+phylogClone <- function(x, N = 1, t = "last", keepEvents = TRUE) {
     if(!inherits(x, "oncosimul2"))
-        stop("Phylogenetic information is only stored with v.>=2")
-    if(nrow(x$other$PhylogDF) == 0)
-        stop("It seems you run the simulation with keepPhylog= FALSE")
-    ## requireNamespace("igraph")
+        stop("Phylogenetic information is only stored with v >= 2")
+    z <- which_N_at_T(x, N, t)
+    tG <- x$GenotypesLabels[z] ## only for GenotypesLabels we keep all
+                               ## sample size info at each period
     df <- x$other$PhylogDF
-    if(!showEvents) {
+    if(!keepEvents) { ## is this just a graphical thing? or not?
         df <- df[!duplicated(df[, c(1, 2)]), ]
     }
-    g <- igraph::graph.data.frame(df)
-    l0 <- igraph::layout.reingold.tilford(g)
-    if(!timeEvent) {
-        plot(g, layout = l0)
+    g <- igraph::graph.data.frame(df[, c(1, 2)])
+    ## nodes <- match(tG, V(g)$name)
+    nodesInP <- unique(unlist(igraph::neighborhood(g, order = 1e9,
+                                                   nodes = tG,
+                                                   mode = "in")))
+    ## Remember that the phylog info can contain clones that are
+    ## not in pops.by.time, as they go extinct between creation
+    ## and sampling.
+    allLabels <- unique(as.character(unlist(df[, c(1, 2)])))
+    nodesRm <- setdiff(allLabels, V(g)$name[nodesInP])
+    g <- igraph::delete.vertices(g, nodesRm)
+    tmp <- list(graph = g, df = df)
+    class(tmp) <- c(class(tmp), "phylogClone")
+    return(tmp)
+    ## trivial to return an adjacency matrix if needed. The keepEvents = FALSE
+}
+
+
+
+plotClonePhylog <- function(x, N = 1, t = "last",
+                            timeEvents = FALSE,
+                            keepEvents = FALSE,
+                            fixOverlap = TRUE,
+                            returnGraph = FALSE, ...) {
+    if(!inherits(x, "oncosimul2"))
+        stop("Phylogenetic information is only stored with v >=2")
+    if(nrow(x$other$PhylogDF) == 0)
+        stop("It seems you run the simulation with keepPhylog= FALSE")
+    pc <- phylogClone(x, N, t, keepEvents)
+    l0 <- igraph::layout.reingold.tilford(pc$g)
+    if(!timeEvents) {
+        plot(pc$g, layout = l0)
     } else {
         l1 <- l0
-        indexAppear <- match(V(g)$name, as.character(df[, 2]))
-        firstAppear <- df$time[indexAppear]
+        indexAppear <- match(V(pc$g)$name, as.character(pc$df[, 2]))
+        firstAppear <- pc$df$time[indexAppear]
         firstAppear[1] <- 0
         l1[, 2] <- (max(firstAppear) - firstAppear)
         if(fixOverlap) {
@@ -768,9 +819,46 @@ plotClonePhylog <- function(x, timeEvent = FALSE,
                 l1[dx, 1] <- runif(length(dx), ra[1], ra[2])
             }
         }
-        plot(g, layout = l1)         
+        plot(pc$g, layout = l1)         
     }
+    if(returnGraph)
+        return(pc$g)
 }
+
+
+
+## plotClonePhylog <- function(x, timeEvent = FALSE,
+##                             showEvents = TRUE,
+##                             fixOverlap = TRUE) {
+##     if(!inherits(x, "oncosimul2"))
+##         stop("Phylogenetic information is only stored with v >=2")
+##     if(nrow(x$other$PhylogDF) == 0)
+##         stop("It seems you run the simulation with keepPhylog= FALSE")
+##     ## requireNamespace("igraph")
+##     df <- x$other$PhylogDF
+##     if(!showEvents) {
+##         df <- df[!duplicated(df[, c(1, 2)]), ]
+##     }
+##     g <- igraph::graph.data.frame(df)
+##     l0 <- igraph::layout.reingold.tilford(g)
+##     if(!timeEvent) {
+##         plot(g, layout = l0)
+##     } else {
+##         l1 <- l0
+##         indexAppear <- match(V(g)$name, as.character(df[, 2]))
+##         firstAppear <- df$time[indexAppear]
+##         firstAppear[1] <- 0
+##         l1[, 2] <- (max(firstAppear) - firstAppear)
+##         if(fixOverlap) {
+##             dx <- which(duplicated(l1[, 1]))
+##             if(length(dx)) {
+##                 ra <- range(l1[, 1])
+##                 l1[dx, 1] <- runif(length(dx), ra[1], ra[2])
+##             }
+##         }
+##         plot(g, layout = l1)         
+##     }
+## }
 
 
 

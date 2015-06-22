@@ -3228,7 +3228,143 @@ thus in the output you can have two columns with both genes mutated.
 
 
 
-%% \section{Showing the true phylogenetic relationships of clones}\label{phylog}
+\section{Showing the true phylogenetic relationships of clones}\label{phylog}
+
+If you run simulations with the \texttt{keepPhylog = TRUE} argument, the
+simulations keep track of when every clone is generated, and that will
+allow us to see the true phylogenetic relationships of clones. (This is
+disabled by default: the code runs a little bit slower and the result is
+larger.)
+
+
+Let us re-run a previous example:
+
+<<>>=
+
+set.seed(15)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.015,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 2000,
+                       finalTime = 20000,
+                       onlyCancer = FALSE,
+                       extraTime = 1500,
+                       keepPhylog = TRUE)
+tmp
+@ 
+
+We can plot the phylogenetic relationships of every clone ever created
+(with fitness larger than 0 ---clones without viability are never shown):
+
+<<>>=
+plotClonePhylog(tmp, N = 0)
+@ 
+
+However, we often only want to show clones that exist (have number of
+cells $>0$) at a certain time (while of course showing all of their
+ancestors, even if those are not extinct ---i.e., regardless of their
+current numbers).
+
+<<>>=
+plotClonePhylog(tmp, N = 1)
+@ 
+
+If we set \texttt{keepEvents = TRUE} the arrows show how many times each
+clone appeared:
+
+(The next can take a while)
+<<>>=
+plotClonePhylog(tmp, N = 1, keepEvents = TRUE)
+@ 
+
+And we can plot the phylogeny so the vertical axis is proportional to time
+(though you might see overlap of nodes if a child node appeared shortly
+after the parent):
+
+<<>>=
+plotClonePhylog(tmp, N = 1, timeEvents = TRUE)
+@ 
+
+We can obtain the adjacency matrix doing
+
+<<fig.keep="none">>=
+get.adjacency(plotClonePhylog(tmp, N = 1, returnGraph = TRUE))
+
+@ 
+
+
+We can see another example here:
+
+<<>>=
+
+set.seed(456)
+mcf1s <-  oncoSimulIndiv(mcf1,
+                         model = "McFL", 
+                         mu = 1e-7,
+                         detectionSize = 1e8, 
+                         detectionDrivers = 100,
+                         sampleEvery = 0.02,
+                         keepEvery = 2,
+                         initSize = 2000,
+                         finalTime = 1000,
+                         onlyCancer = FALSE,
+                         keepPhylog = TRUE)
+
+@ 
+
+Showing only clones that exist at the end of the simulation (and all their
+parents):
+
+<<>>=
+plotClonePhylog(mcf1s, N = 1)
+@ 
+
+Notice that the labels here do not have a ``\_'', since there were no order
+effects in fitness. However, the labels show the genes that are
+mutated, just as before.
+
+Similar, but with vertical axis proportional to time:
+
+
+<<>>=
+plotClonePhylog(mcf1s, N = 1, timeEvents = TRUE)
+@ 
+
+What about those that existed in the last 200 time units?
+<<>>=
+plotClonePhylog(mcf1s, N = 1, t = c(800, 1000))
+@ 
+
+And try now to show also when the clones appeared (we restrict the time
+to between 900 and 1000, to avoid too much clutter):
+<<>>=
+plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
+@ 
+
+(By playing with \texttt{t}, it should be possible to obtain animations of
+the phylogeny. We will not pursue it here.)
+
+
+If the previous graph seems cluttered, we can represent it in a different
+way by calling \CRANpkg{igraph} directly after storing the graph and using
+the default layout:
+
+<<fig.keep="none">>=
+g1 <- plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), returnGraph = TRUE)
+@ 
+
+<<>>=
+plot(g1)
+@ 
+
+which might be easier to show complex relationships or identify central or
+key clones.
+
 
 %% There is support in R for phylog, blablabal. But does not work for our
 %% specific problem. So use igraph blablabla
@@ -3239,7 +3375,37 @@ thus in the output you can have two columns with both genes mutated.
 %% plotClonePhylog(tmp, FALSE, FALSE, FALSE)
 %% @ 
 
+\subsection{Phylogenies from multiple runs}\label{phylogmult}
 
+If you use \Rfunction{oncoSimulPop} you can store and plot the phylogenies
+of the different runs:
+
+<<>>=
+oi <- allFitnessEffects(orderEffects =
+               c("F > D" = -0.3, "D > F" = 0.4),
+               noIntGenes = rexp(5, 10),
+                          geneToModule =
+                              c("Root" = "Root",
+                                "F" = "f1, f2, f3",
+                                "D" = "d1, d2") )
+oiI1 <- oncoSimulIndiv(oi, model = "Exp")
+oiP1 <- oncoSimulPop(4, oi,
+                     keepEvery = 10,
+                     mc.cores = 2,
+                     keepPhylog = TRUE)
+
+@ 
+
+We will plot the first two:
+<<>>=
+par(mfrow = c(2, 1))
+plotClonePhylog(oiP1[[1]])
+plotClonePhylog(oiP1[[2]])
+@ 
+
+
+This is so far disabled in function \Rfunction{oncoSimulSample}, since
+that function is optimized for other uses. This might change in the future.
 
 
 \section{Using v.1 posets and simulations}\label{v1}

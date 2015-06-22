@@ -28,6 +28,7 @@
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
+                keepPhylog = FALSE,
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
                 errorHitWallTime = TRUE,
@@ -45,6 +46,7 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
+                keepPhylog = FALSE,
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
                 errorHitWallTime = TRUE,
@@ -82,7 +84,7 @@ oncoSimulSample(Nindiv,
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365,
-                onlyCancer = TRUE,
+                onlyCancer = TRUE, keepPhylog = FALSE,
                 max.memory = 2000,
                 max.wall.time.total = 600,
                 max.num.tries.total = 500 * Nindiv,
@@ -255,6 +257,11 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
   population size or number of drivers in any clone and this includes
   simulations where the population goes extinct.
 
+}
+
+\item{keepPhylog}{
+  If TRUE, keep track of when and from which clone each clone is
+  created. See also \code{\link{plotClonePhylog}}. 
 }
 
 %% \item{seed}{The seed to use for the C++ random number generator. If not

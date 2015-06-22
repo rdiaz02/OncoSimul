@@ -3,7 +3,7 @@ useDynLib(OncoSimulR, .registration=TRUE)
 export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "plotPoset", "oncoSimulSample", "allFitnessEffects",
        "evalGenotype", "evalAllGenotypes", "simOGraph"
-##       , "plotClonePhylog"
+     , "plotClonePhylog"
        )
 
 S3method(plot, oncosimul)
@@ -18,7 +18,8 @@ S3method(plot, fitnessEffects)
 importFrom("data.table", rbindlist, .rbind.data.table) 
 importFrom(Rcpp, evalCpp)
 importFrom("igraph", igraph.to.graphNEL, graph.data.frame, V, E,
-           "V<-", "E<-", plot.igraph, layout.reingold.tilford)
+           "V<-", "E<-", plot.igraph, layout.reingold.tilford,
+           delete.vertices, neighborhood, get.adjacency)
 import(graph)
 import(Rgraphviz)
 importFrom("parallel", mclapply, detectCores, mcMap)

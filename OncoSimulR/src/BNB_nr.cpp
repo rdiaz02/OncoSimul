@@ -617,6 +617,7 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
       // has had a non-zero size at sampling time is preserved (if it
       // needs to be preserved, because it is keepEvery time).
       sp_to_remove.push_back(i);
+
 #ifdef DEBUGV
       Rcpp::Rcout << "\n\n     Removing species i = " << i 
 		  << " with genotype = " << genotypeSingleVector(Genotypes[i]);
@@ -1411,7 +1412,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       nr_sample_all_pop_P(sp_to_remove, 
 		       popParams, Genotypes, tSample);
       timeNextPopSample += sampleEvery;
-      
+      // When we call nr_totPopSize ... species that existed between
+      // their creation and sampling time are never reflected. That is OK.
+      // This is on purpose, but if you track the phylogeny, you might see
+      // in the phylogeny things that never get reflected in the pops.by.time
+      // object.
       if(sp_to_remove.size())
 	remove_zero_sp_nr(sp_to_remove, Genotypes, popParams, mapTimes);
 
