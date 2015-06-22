@@ -96,8 +96,8 @@ test_that("Order effects, modules 1", {
                                     "F" = "f1, f2",
                                     "D" = "d1, d2") )
     ag <- evalAllGenotypes(ofe1)
-    expect_true(all(ag[c(17, 39, 19, 29), "Fitness"] == c(1.4, 0.7, 1.4, 0.7)))
-    expect_true(all(ag[c(43, 44), "Fitness"] == c(1.4, 1.4)))
+    expect_true(all.equal(ag[c(17, 39, 19, 29), "Fitness"], c(1.4, 0.7, 1.4, 0.7)))
+    expect_true(all.equal(ag[c(43, 44), "Fitness"], c(1.4, 1.4)))
     expect_true(all(ag[41:52, "Fitness"] == 1.4))
     expect_true(all(ag[53:64, "Fitness"] == 0.7))
 })
@@ -112,7 +112,7 @@ test_that("Order effects, modules 2", {
     oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
     expect_true(all(ag2[grep("^d.*f.*", ag2[, 1]), "Fitness"] == 1.4))
     expect_true(all(ag2[grep("^f.*d.*", ag2[, 1]), "Fitness"] == 0.7))
-    expect_true(all(ag2[-oe, "Fitness"] == 1))
+    expect_true(all(ag2[-oe, "Fitness"] ==  1))
 })
 
 
@@ -127,7 +127,7 @@ test_that("Order effects, twisted module names", {
     o1s <- o1[order(o1$Genotype),   ]
     o2s <- o2[order(o2$Genotype),   ]
     expect_equal(o1s, o2s)
-    expect_true(all(o1[, "Fitness"] == c(1, 1, 0.7, 1.4)))
+    expect_true(all.equal(o1[, "Fitness"], c(1, 1, 0.7, 1.4)))
 })
 
 
@@ -146,7 +146,7 @@ test_that("Order effects, three-gene-orders and modules 1", {
                                     "F" = "f",
                                     "D" = "d") )
     ag <- evalAllGenotypes(o3)
-    expect_true(all(ag[, "Fitness"] ==
+    expect_true(all.equal(ag[, "Fitness"],
                         c(rep(1, 4),
                           1.1,
                           1, 1,
@@ -171,13 +171,13 @@ test_that("No interaction genes, 1", {
         noIntGenes = c(0.05, -.2, .1)), order = TRUE)
 
     
-    expect_true(all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai1[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
        (1 - .2) * (1 + .1),
        (1 + .05) * (1 - .2) * (1 + .1))))
 
-    expect_true(all(ai2[, "Fitness"] == c((1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai2[, "Fitness"],  c((1 + .05), (1 - .2), (1 + .1),
                            1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
                            1.05 * 1.1, 1.1 * .8,
                            rep(1.05 * .8 * 1.1, 6) )))
@@ -194,13 +194,13 @@ test_that("No interaction genes, 2", {
     ai4 <- evalAllGenotypes(allFitnessEffects(
         noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1)), order = TRUE)
     
-    expect_true(all(ai3[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai3[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
        (1 - .2) * (1 + .1),
        (1 + .05) * (1 - .2) * (1 + .1))))
 
-    expect_true(all(ai4[, "Fitness"] == c((1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai4[, "Fitness"], c((1 + .05), (1 - .2), (1 + .1),
                            1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
                            1.05 * 1.1, 1.1 * .8,
                            rep(1.05 * .8 * 1.1, 6) )))
@@ -218,13 +218,13 @@ test_that("No interaction genes, 3", {
     ai4 <- evalAllGenotypes(allFitnessEffects(
         noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1)), order = TRUE)
     
-    expect_true(all(ai3[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai3[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
        (1 - .2) * (1 + .1),
        (1 + .05) * (1 - .2) * (1 + .1))))
 
-    expect_true(all(ai4[, "Fitness"] == c((1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai4[, "Fitness"],  c((1 + .05), (1 - .2), (1 + .1),
                            1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
                            1.05 * 1.1, 1.1 * .8,
                            rep(1.05 * .8 * 1.1, 6) )))
@@ -241,7 +241,7 @@ test_that("No interaction genes and order effects, 1", {
     agoi1 <- evalAllGenotypes(foi1,  max = 325)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
-    expect_true(all(agoi1[rn[LETTERS[1:5]], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1)))
+    expect_true(all.equal(agoi1[rn[LETTERS[1:5]], "Fitness"], c(1.05, 1, 0.8, 1, 1.1)))
     ## orders that do not involve all. D > A;   B > C;
     expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 1.05))
     expect_true(all(agoi1[grep("^C > [BD]$", names(rn)), "Fitness"] == 0.8))
@@ -272,7 +272,8 @@ test_that("No interaction genes and order effects, 2", {
     agoi1 <- evalAllGenotypes(foi1,  max = 325)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
-    expect_true(all(agoi1[rn[c("B", "D", "M", "A", "J")], "Fitness"] == c(1, 1, 1.05, 0.8, 1.1)))
+    expect_true(all.equal(agoi1[rn[c("B", "D", "M", "A", "J")], "Fitness"],
+                          c(1, 1, 1.05, 0.8, 1.1)))
     ## orders that do not involve all. D > A;   B > C;
     expect_true(all(agoi1[grep("^M > [BD]$", names(rn)), "Fitness"] == 1.05))
     expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 0.8))
@@ -302,12 +303,12 @@ test_that("synthetic viability, 1", {
     sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
                                 "A : -B" = -1,
                                 "A:B" = s))
-    expect_true( all(
+    expect_true( all.equal(
         evalAllGenotypes(sv,
-                         order = FALSE, addwt = TRUE)[, "Fitness"] == c(1, 0, 0, 1.2)))
-    expect_true( all(
+                         order = FALSE, addwt = TRUE)[, "Fitness"] , c(1, 0, 0, 1.2)))
+    expect_true( all.equal(
         evalAllGenotypes(sv,
-                         order = TRUE, addwt = TRUE)[, "Fitness"] == c(1, 0, 0, 1.2, 1.2)))
+                         order = TRUE, addwt = TRUE)[, "Fitness"], c(1, 0, 0, 1.2, 1.2)))
 })
 
 
@@ -322,16 +323,16 @@ test_that("synthetic viability, with modules, 2", {
                                  "Root" = "Root",
                                  "A" = "a1, a2",
                                  "B" = "b"))
-    expect_true( all(
+    expect_true( all.equal(
         evalAllGenotypes(sv2,
-                         order = FALSE, addwt = TRUE)[, "Fitness"] ==
-                             c(1, 0.9, 0.9, 0.8, 0.9, rep(1.25, 3))))
-    expect_true( all(
+                         order = FALSE, addwt = TRUE)[, "Fitness"],
+        c(1, 0.9, 0.9, 0.8, 0.9, rep(1.25, 3))))
+    expect_true( all.equal(
         evalAllGenotypes(sv2,
-                         order = TRUE, addwt = TRUE)[, "Fitness"] ==
-                             c(1, 0.9, 0.9, 0.8,
-                               .90, 1.25, .9, rep(1.25, 9)
-                               )))
+                         order = TRUE, addwt = TRUE)[, "Fitness"],
+        c(1, 0.9, 0.9, 0.8,
+          .90, 1.25, .9, rep(1.25, 9)
+          )))
 })
 
 
@@ -342,11 +343,11 @@ test_that("synthetic mortality, 1", {
     sm1 <- allFitnessEffects(epistasis = c("-A : B" = sb,
                                  "A : -B" = sa,
                                  "A:B" = sab))
-    expect_true( all(
-        evalAllGenotypes(sm1, order = FALSE, addwt = TRUE)[, "Fitness"] ==
-            c(1, 1.1, 1.2, 1 - 0.8)))
-    expect_true( all(
-        evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)[, "Fitness"] ==
+    expect_true( all.equal(
+        evalAllGenotypes(sm1, order = FALSE, addwt = TRUE)[, "Fitness"],
+        c(1, 1.1, 1.2, 1 - 0.8)))
+    expect_true( all.equal(
+        evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)[, "Fitness"], 
             c(1, 1.1, 1.2, 1 - 0.8, 1 - 0.8)))
 })
 
@@ -361,10 +362,9 @@ test_that("Epistasis, 1", {
                                 c("A: -B" = sa,
                                   "-A:B" = sb,
                                   "A : B" = sab))
-
-    expect_true(all(evalAllGenotypes(e2,
+    expect_true(all.equal(evalAllGenotypes(e2,
                                      order = FALSE,
-                                     addwt = TRUE)[, "Fitness"] ==
+                                     addwt = TRUE)[, "Fitness"], 
                     c(1, 1.2, 1.3, 1.7)))
 })
 
@@ -382,13 +382,13 @@ test_that("Epistasis, with and without -", {
                                 c("A" = sa,
                                   "B" = sb,
                                   "A : B" = s2))
-    expect_true(all(evalAllGenotypes(e2,
+    expect_true(all.equal(evalAllGenotypes(e2,
                                      order = FALSE,
-                                     addwt = TRUE)[, "Fitness"] ==
+                                     addwt = TRUE)[, "Fitness"],
                                          c(1, 1.2, 1.3, 1.7)))
-    expect_true(all(evalAllGenotypes(e3,
+    expect_true(all.equal(evalAllGenotypes(e3,
                                      order = FALSE,
-                                     addwt = TRUE)[, "Fitness"] ==
+                                     addwt = TRUE)[, "Fitness"], 
                                          c(1, 1.2, 1.3, 1.7)))
 })
 
@@ -411,7 +411,7 @@ test_that("Epistasis, with and without -, three terms", {
                                   "A : B : C" = sabc)
                             )
 
-    expect_true(all(evalAllGenotypes(E3, order = FALSE, addwt = FALSE)[, "Fitness"] ==
+    expect_true(all.equal(evalAllGenotypes(E3, order = FALSE, addwt = FALSE)[, "Fitness"], 
                     c(1.1, 1.15, 1.2, 1.3, (1.1 * 1.2), 0.75, 1.4)))
 
 })
@@ -434,7 +434,7 @@ test_that("Epistasis, three, with and without -, two alternative specs", {
                                    "A:-B:C" = sac,
                                    "A : B : C" = sabc)
                              )
-    expect_true(all(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)[, "Fitness"] ==
+    expect_true(all.equal(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)[, "Fitness"], 
                         c(1.1, 1.15, 1.2, 1.3, (1.1 * 1.2), 0.75, 1.4)))
     Sab <- ( (1 + sab)/((1 + sa) * (1 + sb))) - 1
     Sbc <- ( (1 + sbc)/((1 + sb) * (1 + sc))) - 1
@@ -448,7 +448,7 @@ test_that("Epistasis, three, with and without -, two alternative specs", {
                                    ## "A:C" = sac,
                                    "A : B : C" = Sabc)
                              )
-    expect_true(all(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE) == 
+    expect_true(all.equal(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE),  
                         evalAllGenotypes(E3B, order = FALSE, addwt = FALSE)))
 })
 

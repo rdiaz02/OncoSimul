@@ -746,13 +746,13 @@ plotClonePhylog <- function(x, timeEvent = FALSE,
         stop("Phylogenetic information is only stored with v.>=2")
     if(nrow(x$other$PhylogDF) == 0)
         stop("It seems you run the simulation with keepPhylog= FALSE")
-    require(igraph)
+    ## requireNamespace("igraph")
     df <- x$other$PhylogDF
     if(!showEvents) {
         df <- df[!duplicated(df[, c(1, 2)]), ]
     }
     g <- igraph::graph.data.frame(df)
-    l0 <- layout.reingold.tilford(g)
+    l0 <- igraph::layout.reingold.tilford(g)
     if(!timeEvent) {
         plot(g, layout = l0)
     } else {

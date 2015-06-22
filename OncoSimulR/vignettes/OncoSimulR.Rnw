@@ -3228,11 +3228,16 @@ thus in the output you can have two columns with both genes mutated.
 
 
 
-\section{Showing the true phylogenetic relationships of clones}\label{phylog}
+%% \section{Showing the true phylogenetic relationships of clones}\label{phylog}
 
-There is support in R for phylog, blablabal. But does not work for our
-specific problem. So use igraph blablabla
+%% There is support in R for phylog, blablabal. But does not work for our
+%% specific problem. So use igraph blablabla
 
+
+%% <<>>=
+%% plotClonePhylog(mcf1s, TRUE, FALSE, FALSE)
+%% plotClonePhylog(tmp, FALSE, FALSE, FALSE)
+%% @ 
 
 
 
