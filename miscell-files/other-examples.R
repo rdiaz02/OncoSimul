@@ -1,3 +1,30 @@
+s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = 0.1,
+                 sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
+                 typeDep = "SM")
+smn1 <- allFitnessEffects(s1)
+plot(smn1)
+
+
+set.seed(123)
+
+
+par(ask = TRUE)
+par(mfrow = c(1, 2))
+
+while(TRUE) {
+    tmp <- oncoSimulIndiv(smn1, model = "McFL",
+                          mu = 5e-5, finalTime = 500,
+                          detectionDrivers = 3,
+                          onlyCancer = FALSE,
+                          initSize = 1000, keepPhylog = TRUE)
+    plotClonePhylog(tmp, N = 0)
+    plot(tmp)
+}
+
+
+
 ## animation like
 for(i in seq(from = 800, to = 1000, by = 50))
     plotClonePhylog(mcf1s, N = 1, t = c(i, i + 5))

@@ -57,6 +57,9 @@ BiocStyle::latex()
 %%}
 
 
+%% FIXME: the homozigos, etc.
+
+
 \bioctitle[\textit{OncoSimulR: genetic simulation with arbitrary
   epistasis}]{OncoSimulR: forward genetic simulation in asexual
   populations with arbitrary epistatic interactions and a focus on modeling
@@ -79,8 +82,12 @@ BiocStyle::latex()
 %%     \gitAbbrevHash)}}
 
 
+ %% I use x.y.z and gitinfo does not deal with this well in gitVtags et al.
+%% \date{\gitAuthorDate\ {\footnotesize (Version:\gitVtags, Rev: \gitAbbrevHash)}}
+
 \date{\gitAuthorDate\ {\footnotesize (Rev: \gitAbbrevHash)}}
- 
+
+
 \begin{document}
 \maketitle
 
@@ -177,11 +184,15 @@ summary of some of the key features:
     \item Code in C++ is available (though not yet callable from R) for
       using several other models, including the one from Beerenwinkel and
       collaborators \cite{Beerenwinkel2007b}.
+      
     \item You can use very large numbers of genes (e.g., see an example of
       50000 in section \ref{mcf50070} ).
       
     \item Simulations are generally very fast as I use C++ to implement
       the BNB algorithm.
+      
+    \item You can obtain the true sequence of events and the phylogenetic
+      relationships between clones.
       
 \end{itemize}
 
@@ -244,9 +255,13 @@ need that for your usual interactive work).
 
 <<results="hide">>=
 library(OncoSimulR)
-packageVersion("OncoSimulR")
 library(graph)
 library(igraph)
+@ 
+
+To be explicit, what version are we running?
+<<>>=
+packageVersion("OncoSimulR")
 @ 
 
 
@@ -1875,6 +1890,50 @@ evalGenotype(randomGenotype(fea), fea, echo = TRUE, verbose = TRUE)
 
 @ 
 
+\subsection{Homozygosity, heterozygosity, oncogenes, tumor suppressors}\label{oncog}
+
+We are using what is conceptually a single linear chromosome. However, you
+can use it to model scenarios where the numbers of copies affected matter,
+by properly duplicating the genes. 
+
+Suppose we have a tumor suppressor gene, G, with two copies, one from Mom
+and one from Dad. We can have a table like:
+
+
+\begin{tabular} {c c c}
+  $G_M$ & $G_D$ & Fitness \\
+  \hline
+  wt&wt& 1 \\
+  wt&M& 1 \\
+  M&wt& 1\\
+  M&M& $(1 + s)$\\
+  \hline
+\end{tabular}
+
+where $s > 0$, meaning that you need two hits, one in each copy, to
+trigger the clonal expansion.
+
+
+What about oncogenes? A simple model is that one single hit leads to
+clonal expansion and additional hits lead to no additional changes, as in
+this table for gene O, where again the M or D subscript denotes the copy
+from Mom or from Dad:
+
+\begin{tabular} {c c c}
+  $O_M$ & $O_D$ & Fitness \\
+  \hline
+  wt&wt& 1 \\
+  wt&M&  $(1 + s)$\\
+  M&wt& $(1 + s)$\\
+  M&M& $(1 + s)$\\
+  \hline
+\end{tabular}
+
+If you have multiple copies you can proceed similarly. As you can see,
+these are nothing but special cases of synthetic mortality (\ref{sl}),
+synthetic viability (\ref{sv}) and epistasis (\ref{epi}).
+
+
 \section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}
 
@@ -3258,7 +3317,12 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
 tmp
 @ 
 
-We can plot the phylogenetic relationships of every clone ever created
+We can plot the phylogenetic relationships\footnote{There are several
+  packages in R devoted to phylogenetic inference and related issues. For
+  instance, \CRANpkg{ape}. I have not used that infrastructure because of
+  our very specific needs and circumstances; for instance, internal nodes
+  are observed, we can have networks instead of trees, and we have no
+  uncertainty about when events occurred.} of every clone ever created
 (with fitness larger than 0 ---clones without viability are never shown):
 
 <<>>=
@@ -3375,12 +3439,33 @@ key clones.
 %% plotClonePhylog(tmp, FALSE, FALSE, FALSE)
 %% @ 
 
+
+It is of course quite possible that, especially if we consider few genes,
+our phylogeny will be a network, not a tree, as the same child node can
+have multiple parents. You can play with this example, modified from one
+we saw before (section \ref{mn1}):
+
+<<eval=FALSE>>=
+op <- par(ask = TRUE)
+while(TRUE) {
+    tmp <- oncoSimulIndiv(smn1, model = "McFL",
+                          mu = 5e-5, finalTime = 500,
+                          detectionDrivers = 3,
+                          onlyCancer = FALSE,
+                          initSize = 1000, keepPhylog = TRUE)
+    plotClonePhylog(tmp, N = 0)
+}
+par(op)
+@ 
+
+
 \subsection{Phylogenies from multiple runs}\label{phylogmult}
 
 If you use \Rfunction{oncoSimulPop} you can store and plot the phylogenies
 of the different runs:
 
 <<>>=
+
 oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.4),
                noIntGenes = rexp(5, 10),
@@ -3397,10 +3482,13 @@ oiP1 <- oncoSimulPop(4, oi,
 @ 
 
 We will plot the first two:
-<<>>=
-par(mfrow = c(2, 1))
+<<fig.height=9>>=
+
+op <- par(mar = rep(0, 4), mfrow = c(2, 1))
 plotClonePhylog(oiP1[[1]])
 plotClonePhylog(oiP1[[2]])
+par(op)
+
 @ 
 
 
