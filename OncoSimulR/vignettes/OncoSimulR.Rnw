@@ -145,10 +145,11 @@ core of the code is implemented in C++, providing for fast execution.
 Finally, to help with simulation studies, code to simulate random graphs
 of the kind often seen in CBN, OTs, etc, is also available.
 
+\subsection{Key features of OncoSimulR}\label{key}
 
-Therefore, OncoSimulR is now a very general package for forward genetic
-simulation, with applicability well beyond tumor progression. This is a
-summary of some of the key features:
+As mentioned above, OncoSimulR is now a very general package for forward
+genetic simulation, with applicability well beyond tumor progression. This
+is a summary of some of the key features:
 
 
 \begin{itemize}
@@ -263,6 +264,23 @@ To be explicit, what version are we running?
 <<>>=
 packageVersion("OncoSimulR")
 @ 
+
+
+\subsection{A temporary note about versions}\label{versions}
+
+In this vignette and the documentation I often refer to version 1 (v.1)
+and version 2 of OncoSimulR. Version 1 is the version available up to, and
+including, BioConductor v.\ 3.1. Version 2 of OncoSimulR is available for
+the current BioConductor development branch, 3.2. If you look at the
+package version, however, it currently shows as 1.99.x (where x should be
+a number $\ge 4$). That is because of the versioning scheme of
+BioConductor. This will become 2.0 in the next release of BioConductor.
+
+Summary: if you are using the current development version of BioConductor,
+or you grab the sources from github
+(\Burl{https://github.com/rdiaz02/OncoSimul}) you are using what we call
+version 2. If you see a version in the package that says ``1.99.x'', where
+``x'' is any number, you are too.
 
 
 
