@@ -356,9 +356,25 @@ getNamesID <- function(fp) {
 }
 
 
-getDrv <- function(geneModule, geneNoInt, drv) {
-    indicesM <- sort(match( drv, geneModule$Gene))
-    indicesI <- sort(match( drv, geneNoInt$Gene))
+getGeneIDNum <- function(geneModule, geneNoInt, drv, sort = TRUE) {
+    ## It returns the genes, as NumID, in the given vector with names drv
+    ## initMutant uses this, for simplicity, without sorting, but noInt
+    ## are always sorted
+
+    ## Also used for the drivers with sort = TRUE
+
+    ## Yes, we must do it twice because we do not know before hand which
+    ## is which. This makes sure no NA. Period.
+    if(any(is.na( match(drv, c(geneModule$Gene, geneNoInt$Gene))))) {
+        stop(paste("For driver or initMutant you have passed genes",
+                   "not in the fitness table."))
+    }
+    
+    indicesM <- as.vector(na.omit(match( drv, geneModule$Gene)))
+    indicesI <- as.vector(na.omit(sort(match( drv, geneNoInt$Gene))))
+    if(sort) {
+        indicesM <- sort(indicesM)
+    }
     return(c(
         geneModule$GeneNumID[indicesM],
         geneNoInt$GeneNumID[indicesI])
@@ -489,7 +505,7 @@ allFitnessEffects <- function(rT = NULL,
     }
 
     if(!is.null(drvNames)) {
-        drv <- getDrv(geneModule, geneNoInt, drvNames)
+        drv <- getGeneIDNum(geneModule, geneNoInt, drvNames)
     } else {
         drv <- geneModule$GeneNumID[-1]
     }
@@ -831,7 +847,15 @@ nr_oncoSimul.internal <- function(rFE,
                    "as created, for instance, with function",
                    "allFitnessEffects"))
     if(!is.null(initMutant)) {
-        initMutant <- getDrv(rFE$geneModule, initMutant)
+       if(length(grep(">", initMutant))) {
+            initMutant <- nice.vector.eo(initMutant, ">")
+        } else if(length(grep(",", initMutant))) {
+            initMutant <- nice.vector.eo(initMutant, ",")
+        }
+        initMutant <- getGeneIDNum(rFE$geneModule,
+                             rFE$long.geneNoInt,
+                                   initMutant,
+                                   FALSE)
     } else {
         initMutant <- vector(mode = "integer")
     }

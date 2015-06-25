@@ -857,9 +857,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     Genotypes[0] = createNewGenotype(wtGenotype(),
 				     initMutant,
 				     fitnessEffects,
-				     ran_gen); // FIXME: nr, here. What is a "wt
-					// genotype"? Does it have "0"
-					// mutated, or nothing. Nothing.
+				     ran_gen,
+				     false); 
     if(typeModel == TypeModel::beerenwinkel) {
       
       popParams[0].death = 1.0; //note same is in McFarland.
@@ -1251,7 +1250,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	newGenotype = createNewGenotype(Genotypes[nextMutant],
 					newMutations,
 					fitnessEffects,
-					ran_gen);
+					ran_gen,
+					true);
 
 	// nr_change
 	// newGenotype = Genotypes[nextMutant];

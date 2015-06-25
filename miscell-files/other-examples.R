@@ -5,6 +5,46 @@ s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  typeDep = "SM")
 smn1 <- allFitnessEffects(s1)
 plot(smn1)
+set.seed(123)
+tmp <- oncoSimulIndiv(smn1, model = "McFL",
+                      mu = 5e-5, finalTime = 500,
+                      detectionDrivers = 3,
+                      onlyCancer = FALSE,
+                      initSize = 1000,
+                      keepPhylog = TRUE
+                     , initMutant = c("b, a")
+                      )
+plotClonePhylog(tmp, N = 0)
+
+
+plot(tmp)
+
+
+
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.015,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 2000,
+                       finalTime = 20000,
+                       onlyCancer = FALSE,
+                       extraTime = 1500,
+                       keepPhylog = TRUE,
+                       initMutant = "d > m")
+plotClonePhylog(tmp, N = 0)
+
+
+s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = 0.1,
+                 sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
+                 typeDep = "SM")
+smn1 <- allFitnessEffects(s1)
+plot(smn1)
 
 
 set.seed(123)

@@ -174,9 +174,9 @@ void obtainMutations(const Genotype& parent,
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
 			   const fitnessEffectsAll& fe,
-			   std::mt19937& ran_gen
+			   std::mt19937& ran_gen,
 			   //randutils::mt19937_rng& ran_gen
-			   );
+			   bool random);
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 					const fitnessEffectsAll& F);

@@ -3304,6 +3304,41 @@ thus in the output you can have two columns with both genes mutated.
 %% more meaningful names.
 
 
+\subsection{Can I start the simulation from a specific mutant?}\label{initmut}
+
+You bet. In v.1 you can only give the initial mutant as one with a single
+mutated gene. In version 2, however, you can specify the genotype for the
+initial mutant with the same flexibility as in
+\Rfunction{evalGenotype}. Here we show a couple of examples (we use the
+representation of the phylogeny, discussed in section \ref{phylog} of the
+clones so that you can see which clones appear, and from which).
+
+
+<<fig.height=6>>=
+
+o3init <- allFitnessEffects(orderEffects = c(
+                            "M > D > F" = 0.99,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.1,
+                            "M > D"     = 0.9),
+                        noIntGenes = c("u" = 0.01, "z" = 0.01),
+                        geneToModule =
+                            c("Root" = "Root",
+                              "M" = "m",
+                              "F" = "f",
+                              "D" = "d") )
+tmpI <- oncoSimulIndiv(o3init, model = "McFL",
+                       mu = 5e-5, finalTime = 500,
+                       detectionDrivers = 3,
+                       onlyCancer = FALSE,
+                       initSize = 1000,
+                       keepPhylog = TRUE,
+                       initMutant = c("m > u > d")
+                      )
+plotClonePhylog(tmpI, N = 0)
+
+@ 
+
 
 \section{Showing the true phylogenetic relationships of clones}\label{phylog}
 

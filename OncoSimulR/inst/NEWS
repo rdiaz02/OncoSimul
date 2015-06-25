@@ -1,3 +1,6 @@
+Changes in version 1.99.5 (2015-06-25):
+	- Fixed bug in initMutant, added tests, and vignette section.
+
 Changes in version 1.99.4 (2015-06-22):
 	- Tried randutils, from O'Neill. Won't work with gcc-4.6.
 	- bool issue in Windows/gcc-4.6.

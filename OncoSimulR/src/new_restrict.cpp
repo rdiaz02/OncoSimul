@@ -517,9 +517,13 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
 			   const fitnessEffectsAll& fe,
-			   std::mt19937& ran_gen
+			   std::mt19937& ran_gen,
 			   //randutils::mt19937_rng& ran_gen
-			   ) {
+			   bool random = true) {
+  // random: if multiple mutations, randomly shuffle the ordered ones?
+  // This is the way to go if chromothripsis, but not if we give an
+  // initial mutant
+  
   Genotype newGenot = parent;
   std::vector<int> tempOrder; // holder for multiple muts if order.
   bool sort_rest = false;
@@ -553,7 +557,9 @@ Genotype createNewGenotype(const Genotype& parent,
 
   // If there is order but multiple simultaneous mutations
   // (chromothripsis), we randomly insert them
-  if(tempOrder.size() > 1)
+
+  // FIXME: initMutant cannot use this!! we give the order!!!
+  if( (tempOrder.size() > 1) && random)
     shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
   // The new randutils engine:
   // if(tempOrder.size() > 1)
