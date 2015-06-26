@@ -3,7 +3,7 @@ Type: Package
 Title: Forward Genetic Simulation of Cancer Progresion with Epistasis 
 Version: 1.99.5
 Date: 2015-06-25
-Author: Ramon Diaz-Uriarte. Melissa O'Neill for randutils.
+Author: Ramon Diaz-Uriarte. 
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
