@@ -67,7 +67,7 @@ oncoSimulSample <- function(Nindiv,
     if(keepPhylog)
         warning(paste("oncoSimulSample does not return the phylogeny",
                       "for now, so there is little point in storing it."))
-    
+
     if(max.num.tries.total < Nindiv)
         stop(paste("You have requested something impossible: ",
                    "max.num.tries.total < Nindiv"))
@@ -84,13 +84,16 @@ oncoSimulSample <- function(Nindiv,
                          detectionSize = detectionSize,
                          detectionDrivers = detectionDrivers)[, -1, drop = FALSE]
 
+    ## FIXME: we are not triggering an error, just a message. This is on
+    ## purpose, since some of these conditions DO provide useful
+    ## output. Do we want these to be errors?
     f.out.attempts <- function() {
         message("Run out of attempts")
         return(list(
             popSummary = NA,
             popSample = NA,
             HittedMaxTries = TRUE,
-            hittedWallTime = FALSE,
+            HittedWallTime = FALSE,
             UnrecoverExcept = FALSE
         ))    
     }    
@@ -112,7 +115,7 @@ oncoSimulSample <- function(Nindiv,
             popSummary = NA,
             popSample = NA,
             HittedMaxTries = TRUE,
-            hittedWallTime = FALSE,
+            HittedWallTime = FALSE,
             UnrecoverExcept = FALSE
         ))    
     }    
@@ -197,7 +200,7 @@ oncoSimulSample <- function(Nindiv,
             return(f.out.time.cpp())
         } else if( indiv > Nindiv ) {
             if(verbosity > 0)
-                message(paste("Successfully sampled ", Nindiv, " individuals"))
+                message(paste0("Successfully sampled ", Nindiv, " individuals"))
             class(pop) <- "oncosimulpop"
             if(inherits(fp, "fitnessEffects")) {
                 geneNames <- names(getNamesID(fp))
@@ -215,6 +218,7 @@ oncoSimulSample <- function(Nindiv,
                 UnrecoverExcept = FALSE
             ))
         } else if( attemptsLeft <= 0 ) {
+              ## it is very unlikely this will ever happen. 
             return(f.out.attempts())
         } else  if( as.double(difftime(Sys.time(), startTime, units = "secs"))
                    > max.wall.time.total ) {
@@ -400,6 +404,8 @@ oncoSimulIndiv <- function(fp,
     if(mu < 0) {
         stop("mutation rate (mu) is negative")
     }
+    ## We do not test for equality to 0. That might be a weird but
+    ## legitimate case?
 
     if( (keepEvery > 0) & (keepEvery < sampleEvery)) {
         keepEvery <- sampleEvery
@@ -588,8 +594,8 @@ summary.oncosimulpop <- function(object, ...) {
 }
 
 print.oncosimulpop <- function(x, ...) {
-    cat("\nPopulation of OncoSimul trajectories of ",
-        length(x), " individuals. Call :\n")
+    cat("\nPopulation of OncoSimul trajectories of",
+        length(x), "individuals. Call :\n")
     print(attributes(x)$call)
     cat("\n")
     print(summary(x))
@@ -737,9 +743,10 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
         box()
 }
 
-plotAdjMat <- function(adjmat) {
-    plot(as(adjmat, "graphNEL"))
-}
+## this function seems to never be used
+## plotAdjMat <- function(adjmat) {
+##     plot(as(adjmat, "graphNEL"))
+## }
 
 
 
@@ -878,6 +885,10 @@ get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
     
     
     if(timeSample == "last") {
+        if(tmp$TotalPopSize == 0)
+            warning(paste("Final population size is 0.",
+                          "Thus, there is nothing to sample with ",
+                          "sampling last. You will get NAs"))
         return(as.numeric(
             (tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
                         tmp$Genotypes)/tmp$TotalPopSize) > threshold))
@@ -885,6 +896,10 @@ get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
         the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
         pop <- tmp$pops.by.time[the.time, -1]
         popSize <- tmp$PerSampleStats[the.time, 1]
+        if(popSize == 0)
+            warning(paste("Population size at this time is 0.",
+                          "Thus, there is nothing to sample at this time point.",
+                          "You will get NAs"))
         return( as.numeric((tcrossprod(pop,
                                        tmp$Genotypes)/popSize) > threshold) )
     }
@@ -900,12 +915,25 @@ get.mut.vector.singlecell <- function(tmp, timeSample = "last") {
     if(timeSample == "last") {
         the.time <- nrow(tmp$pops.by.time)
     } else if (timeSample %in% c("uniform", "unif")) {
-        the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
+          the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
+          if(length(the.time) == 0) {
+              warning(paste("There are no clones with drivers at any time point.",
+                            "No uniform sampling possible.",
+                            "You will get a vector of NAs."))
+            return(rep(NA, nrow(tmp$Genotypes)))  
+          }
     }
     pop <- tmp$pops.by.time[the.time, -1]
     ##       popSize <- tmp$PerSampleStats[the.time, 1]
     ## genot <- sample(seq_along(pop), 1, prob = pop)
-    return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+    if(all(pop == 0)) {
+        warning(paste("All clones have a population size of 0",
+                      "at the chosen time. Nothing to sample.",
+                      "You will get NAs"))
+        return(rep(NA, nrow(tmp$Genotypes)))
+    } else {
+          return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+      }
 }
 
 

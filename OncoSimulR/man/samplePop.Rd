@@ -64,7 +64,23 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 
   Please see \code{\link{oncoSimulSample}} for a much more efficient way
   of sampling when you are sure what you want to sample.
-}
+
+  Note that if you have set \code{onlyCancer = FALSE} in the call to
+  \code{\link{oncoSimulSample}}, you can end up trying to sample from
+  simulations where the population size is 0. In this case, you will get
+  a vector/matrix of NAs and a warning.
+
+  Similarly, when using \code{timeSample = "last"} you might end up with
+  a vector of 0 (not NAs) because you are sampling from a population
+  that contains no clones with mutated genes. This event (sampling from
+  a population that contains no clones with mutated genes), by
+  construction, cannot happen when \code{timeSample = "unif"} as
+  "uniform" sampling is taken here to mean sampling at a time choosen
+  uniformly from all the times recorded in the simulation between the
+  time when the first driver appeared and the final time
+  period. However, you might still get a vector of 0, with uniform
+  sampling, if you sample from a population that contains only a few
+  cells with any mutated genes, and most cells with no mutated genes.}
 
 \value{
 
@@ -85,9 +101,11 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 }
 
 \references{
-  Diaz-Uriarte, R. (2014). Inferring restrictions in the temporal order
-  of mutations during tumor progression: effects of passenger mutations,
-  evolutionary models, and sampling. \url{http://dx.doi.org/10.1101/005587}
+  Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
+  accumulation of mutations during tumor progression: effects of
+  passengers, evolutionary models, and sampling
+  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
+
 }
 
 \author{
