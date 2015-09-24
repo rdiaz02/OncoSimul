@@ -8,8 +8,7 @@ test_that("Bauer example: correct number of fitness classes", {
                         child = c("p", paste0("s", 1:5)),
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
-                        typeDep = "MN",
-                        stringsAsFactors = FALSE)
+                        typeDep = "MN")
     b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
     expect_equal(length(unique(b1$Fitness)), 11)
@@ -24,8 +23,7 @@ test_that("Bauer example: identical values fitness classes, unorder and ord", {
                         child = c("p", paste0("s", 1:5)),
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
-                        typeDep = "MN",
-                        stringsAsFactors = FALSE)
+                        typeDep = "MN")
     b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
     expect_equal(unique(b1$Fitness), unique(b2$Fitness))
@@ -40,15 +38,13 @@ test_that("Bauer example: identical values fitness classes, rename", {
                         child = c("p", paste0("s", 1:5)),
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
-                        typeDep = "MN",
-                        stringsAsFactors = FALSE)
+                        typeDep = "MN")
     b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     bauer3 <- data.frame(parent = c("Root", rep("u", 5)),
                          child = c("u", paste0("s", 1:5)),
                          s = c(sd, rep(sdp, 5)),
                          sh = c(0, rep(sp, 5)),
-                         typeDep = "MN",
-                         stringsAsFactors = FALSE)
+                         typeDep = "MN")
     b3 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
     expect_equal(unique(b1$Fitness), unique(b3$Fitness))
 } )
@@ -62,15 +58,13 @@ test_that("Bauer example: identical values fitness classes, diff. order", {
                         child = c("p", paste0("s", 1:5)),
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
-                        typeDep = "MN",
-                        stringsAsFactors = FALSE)
+                        typeDep = "MN")
     b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     bauer3 <- data.frame(parent = c(rep("u", 5), "Root"),
                          child = c(paste0("s", 1:5), "u"),
                          s = c(sd, rep(sdp, 5)),
                          sh = c(0, rep(sp, 5)),
-                         typeDep = "MN",
-                         stringsAsFactors = FALSE)
+                         typeDep = "MN")
     b3 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
     expect_equal(unique(b1$Fitness), unique(b3$Fitness))
 } )
@@ -513,8 +507,7 @@ test_that("Error if not same sh within child", {
                      child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                      sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
-                     typeDep = "MN",
-                     stringsAsFactors = FALSE)
+                     typeDep = "MN")
     expect_error(allFitnessEffects(c1))
 })
 
