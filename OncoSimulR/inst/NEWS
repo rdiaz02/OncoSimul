@@ -1,3 +1,6 @@
+Changes in version 1.99.6 (2015-09-24):
+	- Improved test coverage and removed stringsAsfactors from tests
+
 Changes in version 1.99.5 (2015-06-25):
 	- Fixed bug in initMutant, added tests, and vignette section.
 
