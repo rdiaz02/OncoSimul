@@ -5,6 +5,11 @@
 ## for the code in BioC. Yes, will eventually use
 ## the bridge or similar.
 
+## If passed an additional argument, with the path of an R version, it
+## builds and tests.
+
+## Yes, works under eshell.
+
 cp OncoSimulR/vignettes/OncoSimulR.Rnw ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.bib ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitsetinfo.sty ./Subversion-in-BioC/OncoSimulR/vignettes/.
@@ -33,8 +38,19 @@ cp OncoSimulR/NAMESPACE ./Subversion-in-BioC/OncoSimulR/.
 cp OncoSimulR/DESCRIPTION ./Subversion-in-BioC/OncoSimulR/.
 
 
-## check if things need adding
+## should we run the tests?
 
+if [[ $# == 1 ]]; then
+    V_R=$1
+    cd ~/Proyectos/OncoSimul/Subversion-in-BioC
+    V_P=$(cat ./OncoSimulR/DESCRIPTION | grep Version | cut -d' ' -f2)
+    rm OncoSimulR_$V_P.tar.gz
+    time $V_R CMD build --keep-empty-dirs --no-resave-data OncoSimulR
+    time $V_R CMD check --no-vignettes --timings OncoSimulR_$V_P.tar.gz
+fi
+
+
+## Check what/if things need adding
 cd ~/Proyectos/OncoSimul/Subversion-in-BioC/OncoSimulR
 
 svn status --show-updates
