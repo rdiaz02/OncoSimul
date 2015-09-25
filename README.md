@@ -36,8 +36,8 @@ catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 Installation
 ============
 
-To use the latest code you first need to [use a development version of
-Bioconductor](http://www.bioconductor.org/developers/how-to/useDevel/). Most
+To use the most recent code that I regard as stable you first need to [use
+a development version of Bioconductor](http://www.bioconductor.org/developers/how-to/useDevel/). Most
 of the time, from R you only need to do:
 
 
@@ -46,8 +46,8 @@ of the time, from R you only need to do:
     useDevel()
 ```
 
-Then the next will install the development version of the package and its
-dependencies, if needed:
+Then the next code will install the development version of the package and
+its dependencies, if needed:
 
 
 ```r
@@ -61,6 +61,10 @@ To start using it:
 library(OncoSimulR)
 ```
 
+
+
+(You can of course clone this repo, and install from there. But sometimes
+the latest additions in this repo could be broken.)
 
 
 Documentation
