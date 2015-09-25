@@ -873,79 +873,173 @@ plotClonePhylog <- function(x, N = 1, t = "last",
 
 ############# The rest are internal functions
 
-get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
-    ## Obtain, from  results from a simulation run, the vector
-    ## of 0/1 corresponding to each gene.
-    
-    ## threshold is the min. proportion for a mutation to be detected
-    ## We are doing whole tumor sampling here, as in Sprouffske
 
-    ## timeSample: do we sample at end, or at a time point, chosen
-    ## randomly, from all those with at least one driver?
-    
-    
+get.the.time.for.sample <- function(tmp, timeSample) {
     if(timeSample == "last") {
-        if(tmp$TotalPopSize == 0)
+        if(tmp$TotalPopSize == 0) {
             warning(paste("Final population size is 0.",
-                          "Thus, there is nothing to sample with ",
+                          "Thus, there is nothing to sample with",
                           "sampling last. You will get NAs"))
-        return(as.numeric(
-            (tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
-                        tmp$Genotypes)/tmp$TotalPopSize) > threshold))
-    } else if (timeSample %in% c("uniform", "unif")) {
-        the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-        pop <- tmp$pops.by.time[the.time, -1]
-        popSize <- tmp$PerSampleStats[the.time, 1]
-        if(popSize == 0)
-            warning(paste("Population size at this time is 0.",
-                          "Thus, there is nothing to sample at this time point.",
-                          "You will get NAs"))
-        return( as.numeric((tcrossprod(pop,
-                                       tmp$Genotypes)/popSize) > threshold) )
-    }
-}
-
-
-get.mut.vector.singlecell <- function(tmp, timeSample = "last") {
-    ## No threshold, as single cell.
-
-    ## timeSample: do we sample at end, or at a time point, chosen
-    ## randomly, from all those with at least one driver?
-    
-    if(timeSample == "last") {
-        the.time <- nrow(tmp$pops.by.time)
-    } else if (timeSample %in% c("uniform", "unif")) {
-          the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
-          if(length(the.time) == 0) {
-              warning(paste("There are no clones with drivers at any time point.",
-                            "No uniform sampling possible.",
-                            "You will get a vector of NAs."))
-            return(rep(NA, nrow(tmp$Genotypes)))  
+            the.time <- -99
+        } else {
+              the.time <- nrow(tmp$pops.by.time)
           }
-    }
-    pop <- tmp$pops.by.time[the.time, -1]
-    ##       popSize <- tmp$PerSampleStats[the.time, 1]
-    ## genot <- sample(seq_along(pop), 1, prob = pop)
+    } else if (timeSample %in% c("uniform", "unif")) {
+          candidate.time <- which(tmp$PerSampleStats[, 4] > 0)
+          
+          if (length(candidate.time) == 0) {
+              warning(paste("There is not a single sampled time",
+                            "at which there are any mutants.",
+                            "Thus, no uniform sampling possible.",
+                            "You will get NAs"))
+              the.time <- -99
+              ## return(rep(NA, nrow(tmp$Genotypes)))
+          } else if (length(candidate.time) == 1) {
+                message("Only one sampled time period with mutants.")
+                the.time <- candidate.time
+            } else {
+                  the.time <- sample(candidate.time, 1)
+              }
+      } else {
+            stop("Unknown timeSample option")
+        }
+    return(the.time)
+}
+
+
+get.mut.vector <- function(x, timeSample, typeSample,
+                           thresholdWhole) {
+    the.time <- get.the.time.for.sample(x, timeSample)
+    if(the.time < 0) { 
+        return(rep(NA, nrow(x$Genotypes)))
+    } 
+    pop <- x$pops.by.time[the.time, -1]
+    
     if(all(pop == 0)) {
-        warning(paste("All clones have a population size of 0",
-                      "at the chosen time. Nothing to sample.",
-                      "You will get NAs"))
-        return(rep(NA, nrow(tmp$Genotypes)))
-    } else {
-          return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
-      }
-}
-
-
-get.mut.vector <- function(x, timeSample = "whole", typeSample = "last",
-                           thresholdWhole = 0.5) {
-    if(typeSample %in% c("wholeTumor", "whole")) {
-        get.mut.vector.whole(x, timeSample = timeSample,
-                             threshold = thresholdWhole)
-    } else if(typeSample %in%  c("singleCell", "single")) {
-        get.mut.vector.singlecell(x, timeSample = timeSample)
+        stop("You found a bug: this should never happen")
     }
+    
+    if(typeSample %in% c("wholeTumor", "whole")) {
+        popSize <- x$PerSampleStats[the.time, 1]
+        return( as.numeric((tcrossprod(pop,
+                                       x$Genotypes)/popSize) > thresholdWhole) )
+    } else if (typeSample %in%  c("singleCell", "single")) {
+
+          return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+      } else {
+            stop("Unknown typeSample option")
+        }
 }
+
+
+
+
+
+
+
+
+## get.mut.vector.whole <- function(tmp, timeSample = "last", threshold = 0.5) {
+##     ## Obtain, from  results from a simulation run, the vector
+##     ## of 0/1 corresponding to each gene.
+    
+##     ## threshold is the min. proportion for a mutation to be detected
+##     ## We are doing whole tumor sampling here, as in Sprouffske
+
+##     ## timeSample: do we sample at end, or at a time point, chosen
+##     ## randomly, from all those with at least one driver?
+    
+##     if(timeSample == "last") {
+##         if(tmp$TotalPopSize == 0)
+##             warning(paste("Final population size is 0.",
+##                           "Thus, there is nothing to sample with ",
+##                           "sampling last. You will get NAs"))
+##         return(as.numeric(
+##             (tcrossprod(tmp$pops.by.time[nrow(tmp$pops.by.time), -1],
+##                         tmp$Genotypes)/tmp$TotalPopSize) > threshold))
+##     } else if (timeSample %in% c("uniform", "unif")) {
+##           candidate.time <- which(tmp$PerSampleStats[, 4] > 0)
+          
+##           if (length(candidate.time) == 0) {
+##               warning(paste("There is not a single sampled time",
+##                             "at which there are any mutants.",
+##                             "Thus, no uniform sampling possible.",
+##                             "You will get NAs"))
+##               return(rep(NA, nrow(tmp$Genotypes)))
+##           } else if (length(candidate.time) == 1) {
+##                 the.time <- candidate.time
+##             } else {
+##                   the.time <- sample(candidate.time, 1)
+##               }
+##           pop <- tmp$pops.by.time[the.time, -1]
+##           popSize <- tmp$PerSampleStats[the.time, 1]
+##           ## if(popSize == 0)
+##           ##     warning(paste("Population size at this time is 0.",
+##           ##                   "Thus, there is nothing to sample at this time point.",
+##           ##                   "You will get NAs"))
+##           return( as.numeric((tcrossprod(pop,
+##                                        tmp$Genotypes)/popSize) > threshold) )
+##       }
+## }
+
+
+## FIXME: review all calls to sample
+
+
+          
+##           the.time <- sample(which(tmp$PerSampleStats[, 4] > 0), 1)
+##           if(length(the.time) == 0) {
+##               warning(paste("There are no clones with drivers at any time point.",
+##                             "No uniform sampling possible.",
+##                             "You will get a vector of NAs."))
+##             return(rep(NA, nrow(tmp$Genotypes)))  
+##           }
+## get.mut.vector.singlecell <- function(tmp, timeSample = "last") {
+##     ## No threshold, as single cell.
+
+##     ## timeSample: do we sample at end, or at a time point, chosen
+##     ## randomly, from all those with at least one driver?
+    
+##     if(timeSample == "last") {
+##         the.time <- nrow(tmp$pops.by.time)
+##     } else if (timeSample %in% c("uniform", "unif")) {
+##          candidate.time <- which(tmp$PerSampleStats[, 4] > 0)
+         
+##          if (length(candidate.time) == 0) {
+##              warning(paste("There is not a single sampled time",
+##                            "at which there are any mutants.",
+##                            "Thus, no uniform sampling possible.",
+##                            "You will get NAs"))
+##              return(rep(NA, nrow(tmp$Genotypes)))
+##          } else if (length(candidate.time) == 1) {
+##                the.time <- candidate.time
+##            } else {
+##                  the.time <- sample(candidate.time, 1)
+##              }
+
+##      }
+##     pop <- tmp$pops.by.time[the.time, -1]
+##     ##       popSize <- tmp$PerSampleStats[the.time, 1]
+##     ## genot <- sample(seq_along(pop), 1, prob = pop)
+##     if(all(pop == 0)) {
+##         warning(paste("All clones have a population size of 0",
+##                       "at the chosen time. Nothing to sample.",
+##                       "You will get NAs"))
+##         return(rep(NA, nrow(tmp$Genotypes)))
+##     } else {
+##           return(tmp$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+##       }
+## }
+
+
+## get.mut.vector <- function(x, timeSample = "whole", typeSample = "last",
+##                            thresholdWhole = 0.5) {
+##     if(typeSample %in% c("wholeTumor", "whole")) {
+##         get.mut.vector.whole(x, timeSample = timeSample,
+##                              threshold = thresholdWhole)
+##     } else if(typeSample %in%  c("singleCell", "single")) {
+##         get.mut.vector.singlecell(x, timeSample = timeSample)
+##     }
+## }
 
 
 oncoSimul.internal <- function(poset, ## restrict.table,
