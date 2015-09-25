@@ -80,14 +80,16 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   modules to contain more than one gene. If you specify a geneToModule
   argument, it must necessarily contain "Root".  
 }
+
 \item{drvNames}{The names of genes that are considered drivers. This is
   only used for: a) deciding when to stop the simulations, in case you
   use number of drivers as a simulation stopping criterion (see
   \code{\link{oncoSimulIndiv}}); b) for summarization purposes (e.g.,
   how many drivers are mutated); c) in figures. But you need not
   specifiy anything if you do not want to, and you can pass an empty
-  vector. The default is to assume that all genes that are not in the
-  \code{noIntGenes} are drivers.}
+  vector (as \code{character(0)}). The default is to assume that all
+  genes that are not in the \code{noIntGenes} are drivers.}
+
 \item{keepInput}{
   If TRUE, whether to keep the original input. This is only useful for
   human consumption of the output. It is useful because it is easier to
