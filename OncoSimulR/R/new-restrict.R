@@ -193,7 +193,8 @@ to.long.rt <- function(rt, idm) {
         z$childNumID <- idm[z$child]
         z$parentsNumID <- idm[z$parents]
         if( any(is.na(z$parentsNumID)) ||
-           any(is.na(z$childNumID)) ) {
+            any(is.na(z$childNumID)) ) {
+            ## I think this can no longer be reached ever. Caught before.
             stop(paste("An ID is NA:",
                        "Is a gene part of two different modules?",
                        "(That includes being by itself and part",
@@ -659,8 +660,8 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
     nn <- nrow(fitnessEffects$geneModule) -1  + nrow(fitnessEffects$long.geneNoInt)
     tnn <- tot(nn)
     if(tnn > max) {
-        m <- paste("There are ", tnn, "genotypes.")
-        m <- paste(m, " This is larger than max.")
+        m <- paste("There are", tnn, "genotypes.")
+        m <- paste(m, "This is larger than max.")
         m <- paste(m, "Adjust max and rerun if you want")
         stop(m)
     }
@@ -859,12 +860,13 @@ nr_oncoSimul.internal <- function(rFE,
     } else {
         initMutant <- vector(mode = "integer")
     }
-    if(initSize_species < 10) {
-        warning("initSize_species too small?")
-    }
-    if(initSize_iter < 100) {
-        warning("initSize_iter too small?")
-    }
+    ## these are never user options
+    ## if(initSize_species < 10) {
+    ##     warning("initSize_species too small?")
+    ## }
+    ## if(initSize_iter < 100) {
+    ##     warning("initSize_iter too small?")
+    ## }
 
     if(typeFitness %in% c("bozic1", "bozic2")) {
         thesh <- unlist(lapply(rFE$long.rt, function(x) x$sh))
