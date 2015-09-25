@@ -112,5 +112,19 @@ test_that("exercising the fitnessEffects plotting code", {
                    expandModules = TRUE)
               plot(fp4m, "igraph", layout = layout.reingold.tilford, 
                    expandModules = TRUE, autofit = TRUE)
-
+              plot(fp4m, expandModules = TRUE, autofit = TRUE)
+              
           })
+
+test_that("only recognized options", {
+    data(examplesFitnessEffects)
+    expect_error(plot(examplesFitnessEffects[["cbn1"]],
+                      type = "igrapho"),
+                 "plot type not recognized")
+    expect_error(plot(examplesFitnessEffects[["cbn1"]],
+                      type = "cuco"),
+                 "plot type not recognized")
+    expect_error(plot(examplesFitnessEffects[["cbn1"]],
+                      type = "gnel"),
+                 "plot type not recognized")
+})

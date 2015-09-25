@@ -877,6 +877,93 @@ test_that("Bauer example: exercising drvNames", {
     expect_equal(length(unique(b2$Fitness)), 11)
 } )
 
+
+test_that("non distinct gene names per module caught", {
+    expect_error(ofe1 <-
+                     allFitnessEffects(
+                         orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
+                         geneToModule =
+                             c("Root" = "Root",
+                               "F" = "f1, f2",
+                               "D" = "d1, d2, f1") ),
+                 "Are there identical gene names in different modules?")
+    s <- 0.2
+    expect_error(
+        m1 <- allFitnessEffects(data.frame(
+            parent = c("Root", "A"),
+            child = c("A", "B"),
+            s = s,
+            sh = -1,
+            typeDep = "OR"),
+            geneToModule = c("Root" = "Root",
+                             "A" = "a1, b1, a2",
+                             "B" = "b1")),
+        "Are there identical gene names in different modules?")
+})
+
+
+test_that("gene by itself and in module", {
+    expect_error(ofe1 <- allFitnessEffects(data.frame(parent = c("Root", "Root", "A"),
+                                                      child = c("A", "e", "B"),
+                                 s = .1,
+                                 sh = .1,
+                                 typeDep = "OR"),
+                      geneToModule =
+                          c("Root" = "Root",
+                            "e" = "e",
+                            "A" = "a1, e, a2",
+                            "B" = "b1"))
+                ,
+                 "Are there identical gene names in different modules?")
+    ## I think the "Is a gene part of two ... cannot be reached anymore"
+})
+
+
+
+test_that("a silly epistasis example", {
+    ## make sure we exercise the nrow(df) == 0L
+    expect_output(sv <- allFitnessEffects(
+                     orderEffects = c("A > B" = 0.1),
+                     epistasis = c("A" = 1)), "")
+    expect_output(evalAllGenotypes(sv), "")
+})
+
+test_that("can run without keeping input", {
+    cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                      child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                 s = 0.1,
+                 sh = -0.9,
+                 typeDep = "MN")
+    expect_output(cbn1 <- allFitnessEffects(cs, keepInput = FALSE), "")
+})
+
+
+
+test_that("we are exercising evalGenotype with a comma, echo, and proNeg", {
+    ## we do this in the vignette already
+    ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
+                              geneToModule =
+                                  c("Root" = "Root",
+                                    "F" = "f1, f2, f3",
+                                    "D" = "d1, d2") )
+    expect_equal(evalGenotype("d1 , d2, f3", ofe2, verbose = TRUE, echo = TRUE),
+                 1.4)
+    expect_equal(evalGenotype("f3 , d1 , d2", ofe2, verbose = TRUE, echo = TRUE),
+                 0.7)
+    expect_equal(evalGenotype("f3 , d1 , d2", ofe2, verbose = TRUE,
+                              echo = TRUE, model = "Bozic"),
+                 1.3)
+})
+
+
+test_that("We limit number of genotypes in eval", {
+    expect_error(evalAllGenotypes(
+        allFitnessEffects(
+            noIntGenes = runif(10)), order = FALSE),
+        "There are 1024 genotypes. This is larger than max.",
+        fixed = TRUE)
+})
+
 ## how is table geneModule with no ints? are they there?
 
 ## check it breaks if same ID
@@ -888,10 +975,23 @@ test_that("Bauer example: exercising drvNames", {
 
 
 
+sv <- allFitnessEffects(data.frame(
+    parent = c("Root", "Root", "a1", "a2"),
+    child = c("a1", "a2", "b", "b"),
+    s = 1.2,
+    sh = 0.1,
+    typeDep = "OR"))
+
+oncoSimulIndiv(sv, model = "Bozic") ## this stops with error
+evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic") ## this works
 
 
 
+sv2 <- allFitnessEffects(epistasis = c("-A : B" = 1.5,
+                                      "A : -B" = 1.5,
+                                      "A:B" = 2.5))
 
-
-
-
+oncoSimulIndiv(sv2, model = "Bozic") ## this stops with exception
+## we need to incorporate further checks of thes and thesh, and other
+## death rates.
+evalAllGenotypes(sv2, order = FALSE, addwt = TRUE, model = "Bozic") ## this works

@@ -21,6 +21,16 @@
 
 
 
+test_that("posetToGraph stop in incorrect entry type", {
+    expect_error(OncoSimulR:::posetToGraph(1:5, letters[1:5]),
+                 "If poset is not a matrix, it must be a vector of length 1")
+    expect_error(OncoSimulR:::posetToGraph(1:5, letters[1:2]),
+                 "If poset is not a matrix, it must be a vector of length 1")
+    expect_error(OncoSimulR:::posetToGraph(data.frame(a = 1:5, b = 1:5),
+                                           letters[1:5]),
+                 "poset contains non-integers")
+})
+
 
 
 m0 <- matrix(0L, ncol = 4, nrow = 4)
@@ -274,6 +284,7 @@ numSimul <- 100
 
 checkAdjMatOGraph <- function(rangeNodes = 4:30,
                               rangeParents = 2:5,
+                              multilevelP = TRUE,
                               verbose = FALSE) {
     tp <- within(list( 
         nodes = sample(rangeNodes, 1),
@@ -290,7 +301,7 @@ checkAdjMatOGraph <- function(rangeNodes = 4:30,
                                   h = tp$h,
                     nparents = tp$parents,
                     conjunction = TRUE,
-                    multilevelParent = TRUE,
+                    multilevelParent = multilevelP,
                     removeDirectIndirect = TRUE,
                     rootName = "0"
                                   )
@@ -319,6 +330,15 @@ checkAdjMatOGraph <- function(rangeNodes = 4:30,
 }
 
 tmp <- replicate(numSimul, checkAdjMatOGraph())
+
+## here set parents to 1
+tmp <- replicate(numSimul, checkAdjMatOGraph(rangeNodes = 2:50,
+                                             rangeParents = 1))
+
+## no multilevel parents
+tmp <- replicate(numSimul, checkAdjMatOGraph(rangeNodes = 2:50,
+                                             rangeParents = 1:5,
+                                             multilevelP = FALSE))
 
 
 

@@ -160,3 +160,63 @@ test_that("exercising oncoSimulSample, new format", {
           })
 
 
+
+test_that("check error unknown timeSample", {
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE)
+    expect_error(samplePop(r1, timeSample = "uniformo"), 
+                 "Unknown timeSample option")
+    expect_error(samplePop(r1, timeSample = "uni"), 
+                 "Unknown timeSample option")
+    expect_error(samplePop(r1, timeSample = "lasto"), 
+                 "Unknown timeSample option")
+    expect_error(samplePop(r1, timeSample = "whole"), 
+                 "Unknown timeSample option")
+    expect_error(samplePop(r1, timeSample = "single"), 
+                 "Unknown timeSample option")
+    expect_error(samplePop(r1, timeSample = "cucu"), 
+                 "Unknown timeSample option")
+})
+
+test_that("check error unknown typeSample", {
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE)
+    expect_error(samplePop(r1, typeSample = "uniformo"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "uni"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "lasto"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "uniform"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "last"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "wholo"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "whola"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "singlo"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "cell"), 
+                 "Unknown typeSample option")
+    expect_error(samplePop(r1, typeSample = "cucu"), 
+                 "Unknown typeSample option")
+})
+
+
+test_that("oncosimul sample without drivers", {
+    np <- 20
+    s <- 0.015
+    spp <- 0.01
+    nd <- 5
+    mcf1 <- allFitnessEffects(noIntGenes = rep(spp, np),
+                              drvNames = integer(0))
+    mcf2 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
+                              drvNames = character(0))
+    expect_message(o1 <- oncoSimulSample(2, mcf1),
+                   "Successfully sampled 2 individuals")
+    expect_message(o2 <- oncoSimulSample(5, mcf2),
+                   "Successfully sampled 5 individuals")
+})
