@@ -25,6 +25,27 @@ test_that("exercising the oncosimul plotting code", {
               plot(out)
           })
 
+test_that("exercising the oncosimul plotting code, thinning", {
+              data(examplePosets)
+              p701 <- examplePosets[["p701"]]
+              b1 <- oncoSimulIndiv(p701)
+              plot(b1, addtot = TRUE, plotDiversity = TRUE)
+              p1 <- oncoSimulPop(2, p701, mc.cores = 2)
+              plot(p1, ask = FALSE)
+              oi <- allFitnessEffects(orderEffects =
+                                          c("F > D" = -0.3, "D > F" = 0.4),
+                                      noIntGenes = rexp(5, 10),
+                                      geneToModule =
+                                          c("Root" = "Root",
+                                            "F" = "f1, f2, f3",
+                                            "D" = "d1, d2") )
+              out <- oncoSimulPop(4,
+                                  oi, 
+                                  detectionSize = 1e4,
+                                  onlyCancer = FALSE)
+              plot(out, thinData = TRUE)
+          })
+
 
 test_that("exercising the poset plotting code", {
               data(examplePosets)
@@ -89,4 +110,7 @@ test_that("exercising the fitnessEffects plotting code", {
               plot(fp4m, expandModules = TRUE)
               plot(fp4m, "igraph", layout = layout.reingold.tilford, 
                    expandModules = TRUE)
+              plot(fp4m, "igraph", layout = layout.reingold.tilford, 
+                   expandModules = TRUE, autofit = TRUE)
+
           })

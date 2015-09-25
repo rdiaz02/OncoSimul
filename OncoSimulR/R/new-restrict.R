@@ -531,46 +531,46 @@ allFitnessEffects <- function(rT = NULL,
 }
 
 
-
-rtAndGeneModule <- function(mdeps, gM = NULL) {
-    ## To show a table of restrictions when there are modules. Do not use
-    ## for anything else. Maybe as intermediate to plotting.
+## No longer used
+## rtAndGeneModule <- function(mdeps, gM = NULL) {
+##     ## To show a table of restrictions when there are modules. Do not use
+##     ## for anything else. Maybe as intermediate to plotting.
     
-    ## Specify restriction table of modules and a mapping of modules to
-    ## genes. gM is a named vector; names are modules, values are elements
-    ## of each module.
+##     ## Specify restriction table of modules and a mapping of modules to
+##     ## genes. gM is a named vector; names are modules, values are elements
+##     ## of each module.
 
-    ## We do nothing important if gM is NULL except checks
+##     ## We do nothing important if gM is NULL except checks
 
-    ## If there are modules, the table shows the individual genes.
-    checkRT(mdeps)
-    ## if(ncol(mdeps) != 5)
-    ##     stop("mdeps must be of exactly 5 columns")
-    ## if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
-    ##     stop(paste("Column names of mdeps not of appropriate format. ",
-    ##                "Should be parent, child, s, sh, typeDep"))
-    if(!is.null(gM)) {
-        if(any(is.na(match(mdeps[ , 1], names(gM)))))
-            stop("Some values in parent not from a known module")
-        if(any(is.na(match(mdeps[ , 2], names(gM)))))
-            stop("Some values in child not from a known module")
-        if(any(is.na(match(names(gM), c(mdeps[, 1], mdeps[, 2])))))
-            stop("Some values in module in neither parent or child")
+##     ## If there are modules, the table shows the individual genes.
+##     checkRT(mdeps)
+##     ## if(ncol(mdeps) != 5)
+##     ##     stop("mdeps must be of exactly 5 columns")
+##     ## if(!identical(colnames(mdeps), c("parent", "child", "s", "sh", "typeDep")))
+##     ##     stop(paste("Column names of mdeps not of appropriate format. ",
+##     ##                "Should be parent, child, s, sh, typeDep"))
+##     if(!is.null(gM)) {
+##         if(any(is.na(match(mdeps[ , 1], names(gM)))))
+##             stop("Some values in parent not from a known module")
+##         if(any(is.na(match(mdeps[ , 2], names(gM)))))
+##             stop("Some values in child not from a known module")
+##         if(any(is.na(match(names(gM), c(mdeps[, 1], mdeps[, 2])))))
+##             stop("Some values in module in neither parent or child")
         
-        parent <- gM[mdeps[, 1]]
-        child <- gM[mdeps[, 2]]
-        df <- data.frame(parent = parent,
-                         child = child,
-                         s = mdeps$s,
-                         sh = mdeps$sh,
-                         typeDep = mdeps$typeDep,
-                         stringsAsFactors = FALSE)
-    } else {
-        df <- mdeps
-    }
-    rownames(df) <- seq.int(nrow(df))
-    return(df)
-}
+##         parent <- gM[mdeps[, 1]]
+##         child <- gM[mdeps[, 2]]
+##         df <- data.frame(parent = parent,
+##                          child = child,
+##                          s = mdeps$s,
+##                          sh = mdeps$sh,
+##                          typeDep = mdeps$typeDep,
+##                          stringsAsFactors = FALSE)
+##     } else {
+##         df <- mdeps
+##     }
+##     rownames(df) <- seq.int(nrow(df))
+##     return(df)
+## }
 
 ## wrap.test.rt <- function(rt, gM = NULL) {
 ##     ## FIXME add epistasis and orderEffects
@@ -579,18 +579,18 @@ rtAndGeneModule <- function(mdeps, gM = NULL) {
 ##     wrap_test_rt(lrt$long.rt, lrt$geneModule)
 ## }
 
-
-wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm, echo = TRUE) {
-    tt <- allFitnessEffects(rt, epi, oe, ni, gm)
-    readFitnessEffects(tt, echo = echo)
-    ## readFitnessEffects(tt$long.rt,
-    ##                    tt$long.epistasis,
-    ##                    tt$long.orderEffects,
-    ##                    tt$long.geneNoInt,
-    ##                    tt$geneModule,
-    ##                    tt$gMOneToOne,
-    ##                    echo = TRUE)
-}
+## No longer used
+## wrap.readFitnessEffects <- function(rt, epi, oe, ni, gm, echo = TRUE) {
+##     tt <- allFitnessEffects(rt, epi, oe, ni, gm)
+##     readFitnessEffects(tt, echo = echo)
+##     ## readFitnessEffects(tt$long.rt,
+##     ##                    tt$long.epistasis,
+##     ##                    tt$long.orderEffects,
+##     ##                    tt$long.geneNoInt,
+##     ##                    tt$geneModule,
+##     ##                    tt$gMOneToOne,
+##     ##                    echo = TRUE)
+## }
 
 evalGenotype <- function(genotype, fitnessEffects,
                          verbose = FALSE,

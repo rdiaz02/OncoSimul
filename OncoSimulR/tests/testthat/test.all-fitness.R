@@ -15,6 +15,8 @@ test_that("Bauer example: correct number of fitness classes", {
     expect_equal(length(unique(b2$Fitness)), 11)
 } )
 
+
+
 test_that("Bauer example: identical values fitness classes, unorder and ord", {
     sd <- 0.1
     sdp <- 0.15
@@ -854,6 +856,26 @@ test_that("long example OK", {
 })
 
 
+
+
+
+test_that("Bauer example: exercising drvNames", {
+    sd <- 0.1
+    sdp <- 0.15
+    sp <- 0.05
+    bauer <- data.frame(parent = c("Root", rep("p", 5)),
+                        child = c("p", paste0("s", 1:5)),
+                        s = c(sd, rep(sdp, 5)),
+                        sh = c(0, rep(sp, 5)),
+                        typeDep = "MN")
+    b1 <- evalAllGenotypes(allFitnessEffects(bauer, drvNames = c("s1", "s5")),
+                           order = FALSE)
+    b2 <- evalAllGenotypes(allFitnessEffects(bauer,
+                                             drvNames = c("s2", "s3", "s4")),
+                           order = TRUE, max = 2000)
+    expect_equal(length(unique(b1$Fitness)), 11)
+    expect_equal(length(unique(b2$Fitness)), 11)
+} )
 
 ## how is table geneModule with no ints? are they there?
 

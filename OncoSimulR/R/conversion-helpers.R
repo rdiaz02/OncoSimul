@@ -252,22 +252,24 @@ OTtoPoset <- function(x) {
 ##     return(am[cn, cn])
 ## }
 
-sortAdjMat <- function(am) {
-    ## If column names, except Root, are integers, sort as integers. O.w.,
-    ## general lexicog. sort.
-    cn <- colnames(am)
-    rootpos <- grep("^Root$", cn) 
-    if(length(rootpos) != 1)
-        stop("No root in adj mat, or multiple Roots")
-    cn0 <- colnames(am)[-rootpos]
-    namesInts <- type.convert(cn0, as.is = TRUE)
-    if(is.integer(namesInts)) {
-        cn <- c("Root", sort(namesInts))
-    } else {
-        cn <- c("Root", sort(cn0))
-    }
-    return(am[cn, cn])
-}
+
+## No longer used
+## sortAdjMat <- function(am) {
+##     ## If column names, except Root, are integers, sort as integers. O.w.,
+##     ## general lexicog. sort.
+##     cn <- colnames(am)
+##     rootpos <- grep("^Root$", cn) 
+##     if(length(rootpos) != 1)
+##         stop("No root in adj mat, or multiple Roots")
+##     cn0 <- colnames(am)[-rootpos]
+##     namesInts <- type.convert(cn0, as.is = TRUE)
+##     if(is.integer(namesInts)) {
+##         cn <- c("Root", sort(namesInts))
+##     } else {
+##         cn <- c("Root", sort(cn0))
+##     }
+##     return(am[cn, cn])
+## }
 
 
 

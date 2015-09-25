@@ -34,6 +34,8 @@ oncoSimulSample <- function(Nindiv,
                                 } else {
                                     nd <- (2 : round(0.75 * max(fp)))
                                 }
+                                if(length(nd) == 1) ## for sample
+                                       nd <- c(nd, nd)
                                 sample(nd, Nindiv,
                                        replace = TRUE)
                             },
@@ -1193,21 +1195,21 @@ oncoSimul.internal <- function(poset, ## restrict.table,
 
 
 
-
-create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
-    if(tmp$NumClones > 1) {
-        NumMutations <- apply(tmp$Genotypes, 2, sum)
-        muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE],
-                              t(apply(tmp$pops.by.time[, -c(1),
-                                                       drop = FALSE], 1,
-                                      function(x) tapply(x,
-                                                         NumMutations, sum))))
-        colnames(muts.by.time)[c(1)] <- "Time"
-    } else {
-        muts.by.time <- tmp$pops.by.time
-    }
-    return(muts.by.time)
-} 
+## We are not using this anymore
+## create.muts.by.time <- function(tmp) { ## tmp is the output from Algorithm5
+##     if(tmp$NumClones > 1) {
+##         NumMutations <- apply(tmp$Genotypes, 2, sum)
+##         muts.by.time <- cbind(tmp$pops.by.time[, c(1), drop = FALSE],
+##                               t(apply(tmp$pops.by.time[, -c(1),
+##                                                        drop = FALSE], 1,
+##                                       function(x) tapply(x,
+##                                                          NumMutations, sum))))
+##         colnames(muts.by.time)[c(1)] <- "Time"
+##     } else {
+##         muts.by.time <- tmp$pops.by.time
+##     }
+##     return(muts.by.time)
+## } 
 
 
 create.drivers.by.time <- function(tmp, ndr) {
@@ -1365,14 +1367,15 @@ plotDrivers0 <- function(x,
 }
 
 
-rtNoDep <- function(numdrivers) {
-    ## create a restriction table with no dependencies
-    x <- matrix(nrow = numdrivers, ncol = 3)
-    x[, 1] <- 1:numdrivers
-    x[, 2] <- 0
-    x[, 3] <- -9
-    return(x)
-}
+## No longer used
+## rtNoDep <- function(numdrivers) {
+##     ## create a restriction table with no dependencies
+##     x <- matrix(nrow = numdrivers, ncol = 3)
+##     x[, 1] <- 1:numdrivers
+##     x[, 2] <- 0
+##     x[, 3] <- -9
+##     return(x)
+## }
 
 
 ## Simulate from generative model. This is a quick function, and is most
