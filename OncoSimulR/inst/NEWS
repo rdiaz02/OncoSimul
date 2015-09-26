@@ -1,5 +1,7 @@
-Changes in version 1.99.6 (2015-09-24):
+Changes in version 1.99.6 (2015-09-26):
 	- Improved test coverage and removed stringsAsfactors from tests
+	- Consistent handling of corner cases in Bozic
+	- Miscell minor documentation improvements
 
 Changes in version 1.99.5 (2015-06-25):
 	- Fixed bug in initMutant, added tests, and vignette section.
