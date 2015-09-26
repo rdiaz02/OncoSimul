@@ -98,6 +98,7 @@ gm.to.geneModuleL <- function(gm, one.to.one) {
     if(length(unique(geneMod$Gene)) != nrow(geneMod)) {
         stop("Are there identical gene names in different modules?")
     }
+    ## I think this is unreacheable now. Caught earlier.
     if(length(unique(geneMod$GeneNumID)) != nrow(geneMod)) {
         stop("Are there identical gene names in different modules?")
     }
