@@ -252,12 +252,14 @@ Using this package will often involve the following steps:
 
 Before anything else, let us load the package. We also explicitly load
 \Biocpkg{graph} and \CRANpkg{igraph} for the vignette to work (you do not
-need that for your usual interactive work).
+need that for your usual interactive work). And I set the default color
+for vertices in igraph.
 
 <<results="hide">>=
 library(OncoSimulR)
 library(graph)
 library(igraph)
+igraph_options(vertex.color = "SkyBlue2")
 @ 
 
 To be explicit, what version are we running?
@@ -691,7 +693,7 @@ cbn2 <- allFitnessEffects(c1)
 
 %% or one using ``igraph'':
 %% <<fig.height=5>>=
-%% plot(cbn2, "igraph", layout = layout.reingold.tilford)
+%%plot(cbn2, "igraph", layout = layout.reingold.tilford)
 %% @ 
 
 %% (since this is a tree, the reingold.tilford layout is probably the best here).
@@ -2438,11 +2440,11 @@ rv2 <- allFitnessEffects(data.frame(parent = c("Root", "1", "2", "3", "4"),
 plot(rv2, expandModules = TRUE,   autofit = TRUE)
 @ 
 
-%%very poor rendering in the PDF, in separate page, etc.
+%%very poor rendering in the PDF, in separate page, et c.
 %% plot(rv2, "igraph", expandModules = TRUE, 
-%%      layout = layout.reingold.tilford,
-%%      autofit = TRUE,
-%%      scale_char = 8)
+%%       layout = layout.reingold.tilford,
+%%       autofit = TRUE,
+%%       scale_char = 8)
 
 
 \clearpage
