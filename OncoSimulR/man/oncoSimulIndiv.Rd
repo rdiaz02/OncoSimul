@@ -72,6 +72,8 @@ oncoSimulSample(Nindiv,
                                 } else {
                                     nd <- (2 : round(0.75 * max(fp)))
                                 }
+                                if (length(nd) == 1) 
+                                    nd <- c(nd, nd)
                                 sample(nd, Nindiv,
                                        replace = TRUE)
                             },
