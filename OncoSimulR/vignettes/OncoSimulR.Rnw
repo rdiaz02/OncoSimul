@@ -3312,8 +3312,8 @@ You bet. In v.1 you can only give the initial mutant as one with a single
 mutated gene. In version 2, however, you can specify the genotype for the
 initial mutant with the same flexibility as in
 \Rfunction{evalGenotype}. Here we show a couple of examples (we use the
-representation of the phylogeny, discussed in section \ref{phylog} of the
-clones so that you can see which clones appear, and from which).
+representation of the phylogeny ---discussed in section \ref{phylog}--- of
+the clones so that you can see which clones appear, and from which).
 
 
 <<fig.height=6>>=
@@ -3386,7 +3386,7 @@ plotClonePhylog(tmp, N = 0)
 
 However, we often only want to show clones that exist (have number of
 cells $>0$) at a certain time (while of course showing all of their
-ancestors, even if those are not extinct ---i.e., regardless of their
+ancestors, even if those are now extinct ---i.e., regardless of their
 current numbers).
 
 <<>>=
