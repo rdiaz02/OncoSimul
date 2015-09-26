@@ -550,9 +550,12 @@ oncoSimulIndiv <- function(fp,
 }
 
 summary.oncosimul <- function(object, ...) {
-
-    if(object$HittedWallTime || object$HittedMaxTries ||
-       object$other$UnrecoverExcept)
+    
+    if(object$other$UnrecoverExcept) ## yes, when bailing out from
+                                     ## except. can have just minimal
+                                     ## content
+        return(NA)
+    else if (object$HittedWallTime || object$HittedMaxTries)
         return(NA)
     else {
         tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
