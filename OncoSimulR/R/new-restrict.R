@@ -870,7 +870,12 @@ nr_oncoSimul.internal <- function(rFE,
 
     if(typeFitness %in% c("bozic1", "bozic2")) {
         thesh <- unlist(lapply(rFE$long.rt, function(x) x$sh))
-        thes <- unlist(lapply(rFE$long.rt, function(x) x$s))
+        ## thes <- unlist(lapply(rFE$long.rt, function(x) x$s))
+        thes <- unlist(c(lapply(rFE$long.rt, function(x) x$s),
+                         lapply(rFE$long.epistasis, function(x) x$s),
+                         lapply(rFE$long.orderEffects, function(x) x$s),
+                         rFE$long.geneNoInt$s))
+        
         if(any(thes > 1 )) {
             m <- paste("You are using a Bozic model with",
                        "the new restriction specification, and you have",
@@ -878,13 +883,16 @@ nr_oncoSimul.internal <- function(rFE,
                        "But that is the same as setting that to 1:",
                        "we obviously cannot allow negative death rates,",
                        "nor problems derived from multiplying odd or even",
-                       "numbers of negative numbers.")
+                       "numbers of negative numbers.",
+                       "You can set those > 1 to 1, but then you will",
+                       "eventually get the simulations to abort when the",
+                       "death rate becomes 0.")
             stop(m)
         }
-        if(any(thesh == -1)) {
+        if(any( (thesh <= -1) & (thesh > -Inf))) {
             m <- paste("You are using a Bozic model with",
                        "the new restriction specification, and you have",
-                       "at least one sh of -1. Maybe you mean -Inf?")
+                       "at least one sh <= -1. Maybe you mean -Inf?")
             warning(m)
         }
         if(any(thes == 1 )) {
