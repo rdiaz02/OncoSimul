@@ -973,25 +973,132 @@ test_that("We limit number of genotypes in eval", {
 
 
 
+## Nope, this is not inconsistent
 
-
-sv <- allFitnessEffects(data.frame(
-    parent = c("Root", "Root", "a1", "a2"),
-    child = c("a1", "a2", "b", "b"),
-    s = 1.2,
-    sh = 0.1,
-    typeDep = "OR"))
-
-oncoSimulIndiv(sv, model = "Bozic") ## this stops with error
-evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic") ## this works
-
-
-
-sv2 <- allFitnessEffects(epistasis = c("-A : B" = 1.5,
-                                      "A : -B" = 1.5,
-                                      "A:B" = 2.5))
-
-oncoSimulIndiv(sv2, model = "Bozic") ## this stops with exception
-## we need to incorporate further checks of thes and thesh, and other
-## death rates.
-evalAllGenotypes(sv2, order = FALSE, addwt = TRUE, model = "Bozic") ## this works
+test_that("Bozic limit cases handled consistently", {
+    sv <- allFitnessEffects(data.frame(
+        parent = c("Root", "Root", "a1", "a2"),
+        child = c("a1", "a2", "b", "b"),
+        s = 1.2,
+        sh = 0.1,
+        typeDep = "OR"),
+        noIntGenes = c("E" = 0.85, "F" = 1))
+    expect_output(evalAllGenotypes(sv, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_error(oncoSimulIndiv(sv, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
+                 ) 
+    sv2 <- allFitnessEffects(epistasis = c("-A : B" = 1.5,
+                                           "A : -B" = 1.5,
+                                           "A:B" = 2.5))
+    expect_output(evalAllGenotypes(sv2, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_error(oncoSimulIndiv(sv2, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
+                 ) 
+    sv3 <- allFitnessEffects(epistasis = c("-A : B" = 0.1,
+                                           "A : -B" = 1,
+                                           "A:B" = 0.1))
+    expect_output(evalAllGenotypes(sv3, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_warning(oncoSimulIndiv(sv3, model = "Bozic"),
+                   "You are using a Bozic model with the new restriction specification, and you have at least one s of 1."
+                   ) 
+    sv4 <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+                                           "A : -B" = 0.95,
+                                           "A:B" = 0.5),
+                             orderEffects = c("G > H" = 1.1),
+                             noIntGenes = c("E" = 0.85, "F" = 1.35))
+    expect_output(evalAllGenotypes(sv4, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_error(oncoSimulIndiv(sv4, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
+                 ) 
+    sv5 <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+                                           "A : -B" = 0.95,
+                                           "A:B" = 1),
+                             orderEffects = c("G > H" = 1),
+                             noIntGenes = c("E" = 0.85, "F" = 1))
+    expect_output(evalAllGenotypes(sv5, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_warning(oncoSimulIndiv(sv5, model = "Bozic"),
+                   "You are using a Bozic model with the new restriction specification, and you have at least one s of 1."
+                   ) 
+    sv4c <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+                                           "A : -B" = 1.5,
+                                           "A:B" = 0.5),
+                             orderEffects = c("G > H" = 1),
+                             noIntGenes = c("E" = 0.85, "F" = 1.35))
+    expect_output(evalAllGenotypes(sv4c, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_error(oncoSimulIndiv(sv4c, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
+                 ) 
+    sv4d <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+                                           "A : -B" = 0.95,
+                                           "A:B" = 0.5),
+                             orderEffects = c("G > H" = 1.1),
+                             noIntGenes = c("E" = 0.85, "F" = 0.35))
+    expect_output(evalAllGenotypes(sv4d, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_error(oncoSimulIndiv(sv4d, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
+                 ) 
+    sv4d <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+                                           "A : -B" = 0.95,
+                                           "A:B" = 0.5),
+                             orderEffects = c("G > H" = 0.1),
+                             noIntGenes = c("E" = 0.85, "F" = 1.3))
+    expect_output(evalAllGenotypes(sv4d, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_error(oncoSimulIndiv(sv4d, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
+                 )
+    svff <- allFitnessEffects(data.frame(
+        parent = c("Root", "Root", "a1", "a2"),
+        child = c("a1", "a2", "b", "b"),
+        s = 0.2,
+        sh = -1,
+        typeDep = "OR"),
+        noIntGenes = c("E" = 0.85, "F" = .1))
+    expect_output(evalAllGenotypes(svff, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_warning(oncoSimulIndiv(svff, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one sh <= -1."
+                 ) 
+    svff2 <- allFitnessEffects(data.frame(
+        parent = c("Root", "Root", "a1", "a2"),
+        child = c("a1", "a2", "b", "b"),
+        s = 0.2,
+        sh = -1.5,
+        typeDep = "OR"),
+        noIntGenes = c("E" = 0.85, "F" = .1))
+    expect_output(evalAllGenotypes(svff2, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_warning(oncoSimulIndiv(svff2, model = "Bozic"),
+                 "You are using a Bozic model with the new restriction specification, and you have at least one sh <= -1."
+                 ) 
+    svff3 <- allFitnessEffects(data.frame(
+        parent = c("Root", "Root", "a1", "a2"),
+        child = c("a1", "a2", "b", "b"),
+        s = 0.2,
+        sh = -Inf,
+        typeDep = "OR"),
+        noIntGenes = c("E" = 0.85, "F" = .1))
+    expect_output(evalAllGenotypes(svff3, order = FALSE, addwt = TRUE,
+                                   model = "Bozic"), ## this works
+                  "Death_rate", fixed = TRUE, all = FALSE)
+    expect_output(oncoSimulIndiv(svff3, model = "Bozic"),
+                 "Individual OncoSimul trajectory with call"
+                 ) 
+})
