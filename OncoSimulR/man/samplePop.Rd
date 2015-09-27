@@ -32,7 +32,7 @@ samplePop(x, timeSample = "last", typeSample = "whole",
     in the simulation between the time when the first driver appeared
     and the final time period. "unif" means that it is almost sure that
     different individuals will be sampled at different times. "last"
-    does not guarantee that different individuals will be sample at the
+    does not guarantee that different individuals will be sampled at the
     same time unit, only that all will be sampled in the last time unit
     of their simulation.
   }
