@@ -3323,21 +3323,65 @@ o3init <- allFitnessEffects(orderEffects = c(
                             "D > M > F" = 0.2,
                             "D > M"     = 0.1,
                             "M > D"     = 0.9),
-                        noIntGenes = c("u" = 0.01, "z" = 0.01),
+                        noIntGenes = c("u" = 0.01, 
+                                       "v" = 0.01,
+                                       "w" = 0.001,
+                                       "x" = 0.0001,
+                                       "y" = -0.0001,
+                                       "z" = -0.001),
                         geneToModule =
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
                               "D" = "d") )
-tmpI <- oncoSimulIndiv(o3init, model = "McFL",
+
+oneI <- oncoSimulIndiv(o3init, model = "McFL",
                        mu = 5e-5, finalTime = 500,
                        detectionDrivers = 3,
                        onlyCancer = FALSE,
                        initSize = 1000,
                        keepPhylog = TRUE,
                        initMutant = c("m > u > d")
-                      )
-plotClonePhylog(tmpI, N = 0)
+                       )
+plotClonePhylog(oneI, N = 0)
+
+
+## 
+ospI <- oncoSimulPop(4, 
+                    o3init, model = "Exp",
+                    mu = 5e-5, finalTime = 500,
+                    detectionDrivers = 3,
+                    onlyCancer = TRUE,
+                    initSize = 10,
+                    keepPhylog = TRUE,
+                    initMutant = c("d > m > z"),
+                    mc.cores = 2
+                    )
+
+op <- par(mar = rep(0, 4), mfrow = c(2, 2))
+plotClonePhylog(ospI[[1]])
+plotClonePhylog(ospI[[2]])
+plotClonePhylog(ospI[[3]])
+plotClonePhylog(ospI[[4]])
+par(op)
+
+
+ossI <- oncoSimulSample(4, 
+                        o3init, model = "Exp",
+                        mu = 5e-5, finalTime = 500,
+                        detectionDrivers = 2,
+                        onlyCancer = TRUE,
+                        initSize = 10,
+                        initMutant = c("z > d"),
+                        thresholdWhole = 1 ## check presence of initMutant
+                    )
+
+## No phylogeny is kept with oncoSimulSample, but look at the 
+## OcurringDrivers and the sample
+
+ossI$popSample
+ossI$popSummary[, "OccurringDrivers", drop = FALSE]
+
 
 @ 
 

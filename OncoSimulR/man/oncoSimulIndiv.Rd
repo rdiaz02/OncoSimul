@@ -51,7 +51,9 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
                 max.num.tries = 500,
                 errorHitWallTime = TRUE,
                 errorHitMaxTries = TRUE,
-                verbosity = 0, mc.cores = detectCores(),
+                initMutant = NULL,
+                verbosity = 0,
+                mc.cores = detectCores(),
                 seed = "auto")
 
 
@@ -90,9 +92,10 @@ oncoSimulSample(Nindiv,
                 max.memory = 2000,
                 max.wall.time.total = 600,
                 max.num.tries.total = 500 * Nindiv,
-                verbosity  = 1,
                 typeSample = "whole",
                 thresholdWhole = 0.5,
+                initMutant = NULL,
+                verbosity  = 1,
                 seed = "auto")
 
 
@@ -102,6 +105,7 @@ oncoSimulSample(Nindiv,
   
   \item{Nindiv}{Number of individuals or number of different
     trajectories to simulate.}
+
   \item{fp}{
     
     Either a poset that specifies the order restrictions (see
@@ -372,15 +376,14 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
   you set it to "auto", then if you are using v.1, the behavior is the
   same as if you set it to NULL (a seed will be generated in R and
   passed to C++) but if you are using v.2, a random seed will be
-  produced in C++. %% using the randutils code from M.E.O'Neill.
-  If you need
-  reproducibility, either pass a value or set it to NULL (setting it to
-  NULL will make the C++ seed reproducible if you use the same seed in R
-  via \code{set.seed}). However, even using the same value of
+  produced in C++. %% using the randutils code from M.E.O'Neill.  If you
+  need reproducibility, either pass a value or set it to NULL (setting
+  it to NULL will make the C++ seed reproducible if you use the same
+  seed in R via \code{set.seed}). However, even using the same value of
   \code{seed} is unlikely to give the exact same results between
-  platforms and compilers.  Note that the defaults are not
-  the same in \code{oncoSimulIndiv}, \code{oncoSimulPop} and
-  \code{oncoSimulSample}. }
+  platforms and compilers.  Moreover, note that the defaults for
+  \code{seed} are not the same in \code{oncoSimulIndiv},
+  \code{oncoSimulPop} and \code{oncoSimulSample}. }
 
 
 

@@ -56,9 +56,10 @@ oncoSimulSample <- function(Nindiv,
                             ## well, obviously they are errors
                             ## errorHitWallTime = TRUE,
                             ## errorHitMaxTries = TRUE,
-                            verbosity  = 1,
                             typeSample = "whole",
                             thresholdWhole = 0.5,
+                            initMutant = NULL,
+                            verbosity  = 1,
                             seed = "auto"){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
@@ -174,6 +175,7 @@ oncoSimulSample <- function(Nindiv,
                                errorHitWallTime = TRUE,
                                errorHitMaxTries = TRUE,
                                seed = seed,
+                               initMutant = initMutant,
                                keepPhylog = keepPhylog)
         
         if(tmp$other$UnrecoverExcept) {
@@ -211,8 +213,10 @@ oncoSimulSample <- function(Nindiv,
             }
             return(list(
                 popSummary = summary(pop),
-                popSample = samplePop(pop, typeSample = typeSample,
-                    thresholdWhole = thresholdWhole, geneNames = geneNames),
+                popSample = samplePop(pop, timeSample = "last",
+                                      typeSample = typeSample,
+                                      thresholdWhole = thresholdWhole,
+                                      geneNames = geneNames),
                 attemptsUsed = attemptsUsed,
                 probCancer = Nindiv/attemptsUsed,
                 HittedMaxTries = FALSE,
@@ -294,6 +298,7 @@ oncoSimulPop <- function(Nindiv,
                          max.num.tries = 500,
                          errorHitWallTime = TRUE,
                          errorHitMaxTries = TRUE,
+                         initMutant = NULL,
                          verbosity  = 0,
                          mc.cores = detectCores(),
                          seed = "auto") {
@@ -328,7 +333,8 @@ oncoSimulPop <- function(Nindiv,
                         errorHitWallTime = errorHitWallTime,
                         errorHitMaxTries = errorHitMaxTries,
                         verbosity = verbosity,
-                        seed = seed, keepPhylog = keepPhylog
+                        seed = seed, keepPhylog = keepPhylog,
+                        initMutant = initMutant
                     ),
                     mc.cores = mc.cores
                     )
@@ -895,7 +901,7 @@ get.mut.vector <- function(x, timeSample, typeSample,
     if(typeSample %in% c("wholeTumor", "whole")) {
         popSize <- x$PerSampleStats[the.time, 1]
         return( as.numeric((tcrossprod(pop,
-                                       x$Genotypes)/popSize) > thresholdWhole) )
+                                       x$Genotypes)/popSize) >= thresholdWhole) )
     } else if (typeSample %in%  c("singleCell", "single")) {
 
           return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])

@@ -1,3 +1,6 @@
+Changes in version 1.99.7 (2015-09-27):
+	- initMutant available in oncoSimulPop and oncoSimulSample
+
 Changes in version 1.99.6 (2015-09-26):
 	- Improved test coverage and removed stringsAsfactors from tests
 	- Consistent handling of corner cases in Bozic
