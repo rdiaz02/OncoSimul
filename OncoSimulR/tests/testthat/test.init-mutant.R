@@ -164,7 +164,7 @@ test_that("initMutant non lexicog order",
               expect_true( "m, d, f_u" %in% cn )
           })
 
-
+## FIXME: we could use stronger test: we will never see M > D
 test_that("initMutant with oncoSimulSample", {
     o3init <- allFitnessEffects(orderEffects = c(
                             "M > D > F" = 0.99,
@@ -187,7 +187,7 @@ test_that("initMutant with oncoSimulSample", {
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 2,
                         onlyCancer = TRUE,
-                        initSize = 10,
+                        initSize = 500,
                         initMutant = c("z > d"),
                         thresholdWhole = 1 ## check presence of initMutant
                         )
@@ -209,9 +209,11 @@ test_that("initMutant with oncoSimulSample, 2", {
                             "D > M > F" = 0.2,
                             "D > M"     = 0.1,
                             "M > D"     = 0.9,
-                            "M > A"     = 0.25),
-                        noIntGenes = c("u" = 0.01, 
-                                       "v" = 0.01,
+                            "M > A"     = 0.25,
+                            "A > H"     = 0.2,
+                            "A > G"     = 0.3),
+                        noIntGenes = c("u" = 0.1, 
+                                       "v" = 0.2,
                                        "w" = 0.001,
                                        "x" = 0.0001,
                                        "y" = -0.0001,
@@ -221,13 +223,15 @@ test_that("initMutant with oncoSimulSample, 2", {
                               "A" = "a",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d",
+                              "H" = "h",
+                              "G" = "g") )
     ossI <- oncoSimulSample(4, 
                         o3init, model = "Exp",
-                        mu = 5e-5, finalTime = 2000,
+                        mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
                         onlyCancer = TRUE,
-                        initSize = 10,
+                        initSize = 500,
                         initMutant = c("z > a"),
                         thresholdWhole = 1 ## check presence of initMutant
                         )
@@ -247,7 +251,7 @@ test_that("initMutant with oncoSimulPop", {
     o3init <- allFitnessEffects(orderEffects = c(
                             "M > D > F" = 0.99,
                             "D > M > F" = 0.2,
-                            "D > M"     = 0.1,
+                            "D > M"     = 0.2,
                             "M > D"     = 0.9),
                         noIntGenes = c("u" = 0.01, 
                                        "v" = 0.01,
@@ -262,11 +266,11 @@ test_that("initMutant with oncoSimulPop", {
                               "D" = "d") )
     ospI <- oncoSimulPop(4, 
                         o3init, model = "Exp",
-                        mu = 5e-5, finalTime = 1000,
+                        mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
                         onlyCancer = TRUE,
                         keepPhylog = TRUE,
-                        initSize = 10,
+                        initSize = 500,
                         initMutant = c("d > m > y"),
                         mc.cores = 2
                         )
@@ -302,7 +306,7 @@ test_that("initMutant with oncoSimulPop, 2", {
                             "D > M > F" = 0.2,
                             "D > M"     = 0.1,
                             "M > D"     = 0.9),
-                        noIntGenes = c("u" = 0.01, 
+                            noIntGenes = c("u" = 0.01, 
                                        "v" = 0.01,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -319,7 +323,7 @@ test_that("initMutant with oncoSimulPop, 2", {
                         detectionDrivers = 4, ## yes, reach end
                         onlyCancer = FALSE,
                         keepPhylog = TRUE,
-                        initSize = 10,
+                        initSize = 100,
                         initMutant = c("m > v > d"),
                         mc.cores = 2
                         )

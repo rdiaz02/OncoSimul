@@ -164,7 +164,7 @@ test_that("exercising oncoSimulSample, new format", {
 test_that("check error unknown timeSample", {
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
-    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE)
+    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE, max.num.tries = 5000)
     expect_error(samplePop(r1, timeSample = "uniformo"), 
                  "Unknown timeSample option")
     expect_error(samplePop(r1, timeSample = "uni"), 
@@ -182,7 +182,7 @@ test_that("check error unknown timeSample", {
 test_that("check error unknown typeSample", {
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
-    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE)
+    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE, max.num.tries = 5000)
     expect_error(samplePop(r1, typeSample = "uniformo"), 
                  "Unknown typeSample option")
     expect_error(samplePop(r1, typeSample = "uni"), 

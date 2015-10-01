@@ -6,7 +6,7 @@ nindiv <- 4
 
 
 test_that("oncoSimulSample success with large num tries", {
-    p1 <- oncoSimulSample(nindiv, p701, max.num.tries = 200 * nindiv,
+    p1 <- oncoSimulSample(nindiv, p701, max.num.tries = 5000 * nindiv,
                           onlyCancer = TRUE)
     expect_true(p1$probCancer < 1)
     expect_true(p1$attemptsUsed > nindiv)
@@ -37,7 +37,7 @@ test_that("oncoSimulSample exits with minimal num tries", {
 
 test_that("oncoSimulSample exits with small num tries", {
     p6 <- oncoSimulSample(nindiv, p701,
-                          max.num.tries = nindiv + 4,
+                          max.num.tries = nindiv + 2,
                           onlyCancer = TRUE)
     expect_true(p6$HittedMaxTries)
     expect_true(is.na(p6$popSummary))

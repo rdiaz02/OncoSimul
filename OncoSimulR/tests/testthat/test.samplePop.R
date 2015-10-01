@@ -197,13 +197,13 @@ test_that("exercising the sampling code, v2 objects", {
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
               o1 <- oncoSimulIndiv(oi, detectionSize = 1e4,
-                                   onlyCancer = TRUE)
+                                   onlyCancer = TRUE,
+                                   max.num.tries = 5000)
               o4 <- oncoSimulPop(2,
                                  oi, 
                                  detectionSize = 1e4,
-                                 onlyCancer = TRUE)
-              ## many of them are generating warnings, because sampling
-              ## with pop size of 0. That is OK.
+                                 onlyCancer = TRUE,
+                                 max.num.tries = 5000)
               expect_message(samplePop(o1),
                              "Subjects by Genes matrix of 1 subjects and 10 genes")
               expect_message(samplePop(o1, typeSample = "single",
@@ -242,14 +242,14 @@ test_that("exercising the sampling code, v2 objects, more", {
                                 typeDep = "MN")
               cbn1 <- allFitnessEffects(cs)
               o1 <- oncoSimulIndiv(cbn1, detectionSize = 1e4,
-                                   onlyCancer = TRUE)
+                                   onlyCancer = TRUE,
+                                   max.num.tries = 5000)
               o4 <- oncoSimulPop(4,
                                  cbn1, 
                                  detectionSize = 1e4,
                                  onlyCancer = TRUE,
-                                 mc.cores = 2)
-              ## many of them are generating warnings, because sampling
-              ## with pop size of 0. That is OK.
+                                 mc.cores = 2,
+                                 max.num.tries = 5000)
               expect_message(samplePop(o1),
                              "Subjects by Genes matrix of 1 subjects and 6 genes")
               expect_message(samplePop(o1, typeSample = "single",
