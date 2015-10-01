@@ -10,7 +10,7 @@ while(TRUE) {
     i <- i + 1
     cat("\n\n Doing iteration ", i, "\n")
     nn <- paste(sample(c(letters, 0:1), 12, replace = TRUE), collapse = "")
-    nnn <- paste0("~/tmp/", nn)
+    nnn <- paste0(tempfile(pattern=""), nn)
     dir.create(nnn)
     cat(paste("Using directory ", nnn, "\n"))
     test_package("OncoSimulR") ## testthat, but if interactive, asks for plots,

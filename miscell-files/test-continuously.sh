@@ -10,6 +10,6 @@ fi
    
 for (( run = 1; run <=${NRUNS}; run++ ))
 do
-    nohup R --vanilla --slave < test-continuously.R > test-continuously-$run.Rout &
+    nohup R --vanilla --slave < test-continuously.R &> test-continuously-$run.Rout &
 done
 
