@@ -5,7 +5,10 @@ library(OncoSimulR)
 library(tools)
 ## recall to install with --install-tests
 
+i <- 0
 while(TRUE) {
+    i <- i + 1
+    cat("\n\n Doing iteration ", i, "\n")
     nn <- paste(sample(c(letters, 0:1), 12, replace = TRUE), collapse = "")
     nnn <- paste0("~/tmp/", nn)
     dir.create(nnn)
