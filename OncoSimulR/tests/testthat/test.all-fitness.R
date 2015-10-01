@@ -777,6 +777,7 @@ test_that("long example OK", {
                  "H" = "h1, h2", "I" = "i1",
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
     set.seed(1) ## for repeatability
+    ## These are seeds in R; no problems with different compilers, etc.
     noint <- rexp(5, 10)
     names(noint) <- paste0("n", 1:5)
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
