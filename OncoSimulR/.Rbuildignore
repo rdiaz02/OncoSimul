@@ -8,4 +8,9 @@ vignettes/figure/
 vignettes/figure
 R/.Rhistory
 .Rhistory
-
+GTAGS
+GPATH
+GRTAGS
+src/GTAGS
+src/GPATH
+src/GRTAGS
