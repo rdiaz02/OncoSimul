@@ -17,15 +17,19 @@ while(TRUE) {
     test_package("OncoSimulR") ## testthat, but if interactive, asks for plots,
     ## and you need to load the library first
     the.seed <- .Random.seed ## examples and vignette set the seed in several
-                             ## places
+    ## places
+    cat("\n         And this is the second random uniform number ", runif(1), "\n")
+
     testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
                          types = c("examples"))
+    cat("\n                    And this is the third random uniform number ", runif(1), "\n")
     .Random.seed <- the.seed
     testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
                          types = c("tests"))
+    cat("\n                          And this is the fourth random uniform number ", runif(1), "\n")
     .Random.seed <- the.seed
     checkVignettes("OncoSimulR", workdir = "src") ## yes, tmp or cur does not do it
-    cat("\n And this is the final random uniform number ", runif(1), "\n")
+    cat("\n                              And this is the FINAL random uniform number ", runif(1), "\n")
     .Random.seed <- the.seed
 }
 
