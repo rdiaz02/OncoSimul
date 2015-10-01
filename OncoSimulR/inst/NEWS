@@ -1,3 +1,6 @@
+Changes in version 1.99.8 (2015-10-01):
+	- test "initMutant with oncoSimulSample, 2" occasionally fails
+
 Changes in version 1.99.7 (2015-09-27):
 	- initMutant available in oncoSimulPop and oncoSimulSample
 
