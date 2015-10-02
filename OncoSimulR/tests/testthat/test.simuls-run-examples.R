@@ -12,10 +12,10 @@ for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
     if (names(examplesFitnessEffects)[16] == "e2") {
-        detectionDriv <- 2
+        detectionDrv <- 2
         sE <- 0.05
     } else {
-        detectionDriv <- 4
+        detectionDrv <- 4
         sE <- 2
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
