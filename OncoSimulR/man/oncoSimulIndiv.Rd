@@ -538,7 +538,7 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
   as labels for the genes, you will see numbers (however, as a character
   string).}
 
-
+%% Fixme: mention probCancer is not a binomial, but a negative binomial.
 
 
 }
