@@ -6,9 +6,11 @@ p701 <- examplePosets[["p701"]]
 test_that("oncoSimulSample success with large num tries", {
     ## If nindiv small, sometimes you reach cancer at first try in every
     ## indiv.
-    nindiv <- 500
+    nindiv <- 70 ## this is decreased to increase speed
     p1 <- oncoSimulSample(nindiv, p701,
                           max.num.tries = 5000 * nindiv,
+                          sampleEvery = 0.3, ## this to avoid large N all
+                                             ## of a sudden
                           onlyCancer = TRUE)
     expect_true(p1$probCancer < 1)
     expect_true(p1$attemptsUsed > nindiv)
