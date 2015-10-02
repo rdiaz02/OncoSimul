@@ -45,3 +45,17 @@ OncoSimulR.Rcheck/
 /OncoSimulR/GPATH
 /OncoSimulR/GRTAGS
 /OncoSimulR/GTAGS
+miscell-files/test-continuously*.Rout*
+miscell-files/test-until*.Rout
+miscell-files/tc*.Rout
+/OncoSimulR/src/#BNB_nr.cpp#
+OncoSimulR/src/#bnb_common.cpp#
+OncoSimulR/src/#new_restrict.cpp#
+OncoSimulR/src/GPATH
+OncoSimulR/src/GRTAGS
+OncoSimulR/src/GTAGS
+OncoSimulR_1.99.0.tar.gz
+miscell-files/nohup.out
+miscell-files/nohup.out.00
+OncoSimulR_1.99.8.tar.gz
+Subversion-in-BioC-0/
