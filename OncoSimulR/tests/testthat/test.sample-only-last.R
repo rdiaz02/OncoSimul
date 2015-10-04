@@ -45,7 +45,7 @@ runBothFuncts <- function(seed, Poset, functionPair) {
 
 
 for(i in 1:length(examplePosets)) {
-    s1 <- round(runif(1) * 10000)
+    s1 <- round(runif(1) * 10000) ## do better as: as.integer(runif(1, 1, 1e9))
     Poset <- examplePosets[[i]]
     attributes(Poset)$namePoset <- names(examplePosets)[[i]]
     for(ffs in FexpectedSame) {
