@@ -1,18 +1,23 @@
+Changes in version 1.99.9 (2015-10-08):
+	- Fixed NEWS file.
+	- Removed empty file.
+
 Changes in version 1.99.8 (2015-10-01):
-	- test "initMutant with oncoSimulSample, 2" occasionally fails
+	- Test "initMutant with oncoSimulSample, 2" occasionally failed.
 
 Changes in version 1.99.7 (2015-09-27):
-	- initMutant available in oncoSimulPop and oncoSimulSample
+	- initMutant available in oncoSimulPop and oncoSimulSample.
 
 Changes in version 1.99.6 (2015-09-26):
-	- Improved test coverage and removed stringsAsfactors from tests
-	- Consistent handling of corner cases in Bozic
-	- Miscell minor documentation improvements
+	- Improved test coverage and removed stringsAsfactors from tests.
+	- Consistent handling of corner cases in Bozic.
+	- Miscell minor documentation improvements.
 
 Changes in version 1.99.5 (2015-06-25):
 	- Fixed bug in initMutant, added tests, and vignette section.
 
 Changes in version 1.99.4 (2015-06-22):
+	- Plotting true phylogenies.
 	- Tried randutils, from O'Neill. Won't work with gcc-4.6.
 	- bool issue in Windows/gcc-4.6.
 	- Most all to all.equal in tests.
@@ -31,7 +36,7 @@ Changes in version 1.99.1 (2015-06-18):
 	- Reduce size of RData objects with resaveRdaFiles.
 	- Try to compile in Mac: mt RNG must include random in all files.
 
-Changes in version 1.99.0 (2015-06-17):
+Changes in version 1.99.01 (2015-06-17):
 	- Many MAJOR changes: we are done moving to v.2
 	  - New way of specifying restrictions (v.2) that allows
 	    arbitrary epistatic interactions and order effects, and
@@ -41,53 +46,56 @@ Changes in version 1.99.0 (2015-06-17):
 	  - Random DAG generation.
 	  - Some defaults for v.1 changed.
 
+Changes in version 1.99.00 (2015-04-23):
+	- Accumulated changes of former 99.1.2 to 99.1.14:
+	
+	- changes in intermediate version 1.99.1.14 (2015-04-23):
+		- Now are things OK (I messed up the repos)
 
-Changes in version 99.1.14 (2015-04-23):
-	- Now are things OK (I messed up the repos)
+	- changes in intermediate version 99.1.13 (2015-04-23)
+		- Added a couple of drop = FALSE. Their absence lead to
+		  crashes in some strange, borderline cases.
+		- Increased version to make unambiguous version used for
+		  anal. CBN.
 
-Changes in version 99.1.13 (2015-04-23)
-	- Added a couple of drop = FALSE. Their absence lead to crashes in
-	some strange, borderline cases.
-	- Increased version to make unambiguous version used for anal. CBN.
+	- changes in intermediate version 99.1.12 (2015-04-22)
+		- Removed lots of unused conversion helpers and added more
+		  strict checks and tests of those checks.
 
-Changes in version 99.1.12 (2015-04-22)
-	- Removed lots of unused conversion helpers and added more strict
-	checks and tests of those checks.
+	- changes in intermediate version 99.1.11 (2015-04-18)
+		- Tests of conversion helpers now really working.
 
-Changes in version 99.1.11 (2015-04-18)
-	- Tests of conversion helpers now really working.
+	- changes in intermediate version 99.1.10 (2015-04-16)
+		- Added conversion helpers as separate file.
+		- Added tests of conversion helpers.
+		- Added generate-random-trees code (separate file).
+		- More strict now on the poset format and conversions.
 
+	- changes in intermediate version 99.1.9 (2015-04-09)
+		- added null mutation for when we run out of mutable positions,
+		  and since not clear how to use BNB then.
 
-Changes in version 99.1.10 (2015-04-16)
-	- Added conversion helpers as separate file.
-	- Added tests of conversion helpers.
-	- Added generate-random-trees code (separate file).
-	- More strict now on the poset format and conversions.
+	- changes in intermediate version 99.1.8 (2015-04-03)
+		- added extraTime.
 
-Changes in version 99.1.9 (2015-04-09)
-	- added null mutation for when we run out of mutable positions,
-	and since not clear how to use BNB then.
+	- changes in intermediate version 99.1.7 (2015-04-03)
+		- endTimeEvery removed. Now using minDDrPopSize if needed.
 
-Changes in version 99.1.8 (2015-04-03)
-	- added extraTime.
+	- changes in intermediate version 99.1.6 (2015-03-20)
+		- untilcancer and oncoSimulSample working together
 
-Changes in version 99.1.7 (2015-04-03)
-	- endTimeEvery removed. Now using minDDrPopSize if needed.
+	- changes in intermediate version 99.1.5 (2015-03-20)
+		- Using the untilcancer branch
 
-Changes in version 99.1.6 (2015-03-20)
-	- untilcancer and oncoSimulSample working together
+	- changes in intermediate version 99.1.4 (2014-12-24)
+		- Added computation of min. of ratio birth/mutation and
+                  death/mutation.
 
-Changes in version 99.1.5 (2015-03-20)
-	- Using the untilcancer branch
+	- changes in intermediate version 99.1.3 (2014-12-23)
+		- Fixed segfault when hitting wall time and sampling only once.
 
-Changes in version 99.1.4 (2014-12-24)
-	- Added computation of min. of ratio birth/mutation and death/mutation.
-
-Changes in version 99.1.3 (2014-12-23)
-	- Fixed segfault when hitting wall time and sampling only once.
-
-Changes in version 99.1.2 (2014-12-16)
-	- Sampling only once
+	- changes in intermediate version 99.1.2 (2014-12-16)
+		- Sampling only once
 
 Changes in version 0.99.2 (2014-07-14)
 	- Consistently using indentation in .Rd files.
