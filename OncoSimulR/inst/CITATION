@@ -2,11 +2,11 @@ citHeader("If you use OncoSimulR, please cite OncoSimulR itself. Note that a for
 
 citEntry(entry="Manual",
          author = "R Diaz-Uriarte",
-         title = "OncoSimulR: Simulation of cancer progresion with order restrictions.",
+         title = "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis.",
          year = "2015",
-         note = "R package version 1.99.0",
+         note = "R package version 2.0.0",
          textVersion = paste("R Diaz-Uriarte.",
-             "OncoSimulR: Simulation of cancer progression with order restrictions. 2015. BioConductor package version 1.99.0. ")
+             "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis. 2015. BioConductor package version 2.0.0 ")
 )
 
 
