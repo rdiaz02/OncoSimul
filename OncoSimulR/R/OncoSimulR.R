@@ -696,13 +696,14 @@ plot.oncosimul <- function(x, col = c(8, "orange", 6:1),
     }
     if(plotDiversity) {
         par(fig = c(0, 1, 0.8, 1))
-        m <- par()$mar
+        m1 <- par()$mar
+        m <- m1
         m[c(1, 3)] <- c(0, 0.7)
         op <- par(mar = m )
         plotShannon(x)
         par(op)
-        m[c(3)] <- 0.2
-        op <- par(mar = m )
+        m1[c(3)] <- 0.2
+        op <- par(mar = m1)
         par(fig = c(0, 1, 0, 0.8), new = TRUE)  
     }
     if(plotClones) {
