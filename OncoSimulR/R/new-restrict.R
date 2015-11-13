@@ -746,6 +746,7 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
                                 autofit = FALSE,
                                 scale_char = ifelse(type == "graphNEL", 1/10, 5),
                                 return_g = FALSE,
+                                lwdf = 1, ## multiplier for lwd for graphNEL
                                 ...) {
     ## some other layouts I find OK
     ## layout.circle
@@ -783,6 +784,7 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
         lwd <- s1
         lwd[lwd == 2] <- 2 ## o.w. too thin
         lwd[lwd == 3] <- 2 ## o.w. too thin
+        lwd <- lwd * lwdf
         nAttrs <- list()
         if(expandModules && (!x$gMOneToOne)) {
             nnodes <- x$geneToModule[nodes(g1)]
