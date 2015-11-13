@@ -1957,7 +1957,7 @@ synthetic viability (\ref{sv}) and epistasis (\ref{epi}).
 \section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}
 
-In the model of bauer and collaborators \cite[p.\ 54]{Bauer2014} ``For
+In the model of Bauer and collaborators \cite[p.\ 54]{Bauer2014} ``For
 cells without the primary driver mutation, each secondary driver mutation
 leads to a change in the cell's fitness by $s_P$. For cells with the
 primary driver mutation, the fitness advantage obtained with each
@@ -2437,6 +2437,7 @@ rv2 <- allFitnessEffects(data.frame(parent = c("Root", "1", "2", "3", "4"),
                              "3" = "BRAF, KRAS, NRAS",
                              "4" = "SMAD2, SMAD4, SOX9",
                              "ELF3" = "ELF3"))
+
 plot(rv2, expandModules = TRUE,   autofit = TRUE)
 @ 
 
