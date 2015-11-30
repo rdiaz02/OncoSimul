@@ -24,7 +24,7 @@ the above.
 A former version of this code has been used in the paper "Identifying
 restrictions in the order of accumulation of mutations during tumor
 progression: effects of passengers, evolutionary models, and sampling",
-[BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41/abstract).
+[BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41).
 
 
 You can also find
