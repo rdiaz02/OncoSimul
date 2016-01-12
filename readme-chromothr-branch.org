@@ -1,0 +1,18 @@
+* Chrmothripsis
+  - Probability of occurrence
+    - Altered if given gene(s) mutated?
+  - Fraction of genome affected: chrt_frac
+  - check chromosomal instability papers of Michor
+  - Simpler: a vector: 
+    - if length one, that is constant prob of chromothr.
+    - if length genes, cond. prob of chromothr if that gene mutated
+    - this is a named vector of more than one element, or a single element
+      unnamed vector
+
+      - Modify: "obtainMutations" in new_restrict.cpp
+    
+
+
+* Mutator genotype
+
+  - If gene mutated, then increased mutation rate in all genome.

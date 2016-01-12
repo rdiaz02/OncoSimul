@@ -432,7 +432,9 @@ void obtainMutations(const Genotype& parent,
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
-  
+
+  // FIXME:chromothr would not use this, or this is the limit case with a
+  // single mutant
   std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
   newMutations.push_back(nonmutated[rpos(ran_gen)]);
   // randutils
