@@ -49,7 +49,8 @@ oncoSimulSample <- function(Nindiv,
                             extraTime = 0,
                             finalTime = 0.25 * 25 * 365,
                             onlyCancer = TRUE,
-                            keepPhylog = FALSE, 
+                            keepPhylog = FALSE,
+                            mutationPropGrowth = TRUE,
                             max.memory = 2000,
                             max.wall.time.total = 600,
                             max.num.tries.total = 500 * Nindiv,
@@ -176,7 +177,8 @@ oncoSimulSample <- function(Nindiv,
                                errorHitMaxTries = TRUE,
                                seed = seed,
                                initMutant = initMutant,
-                               keepPhylog = keepPhylog)
+                               keepPhylog = keepPhylog,
+                               mutationPropGrowth = mutationPropGrowth)
         
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
@@ -293,6 +295,7 @@ oncoSimulPop <- function(Nindiv,
                          finalTime = 0.25 * 25 * 365,
                          onlyCancer = TRUE,
                          keepPhylog = FALSE,
+                         mutationPropGrowth = TRUE,
                          max.memory = 2000,
                          max.wall.time = 200,
                          max.num.tries = 500,
@@ -334,7 +337,8 @@ oncoSimulPop <- function(Nindiv,
                         errorHitMaxTries = errorHitMaxTries,
                         verbosity = verbosity,
                         seed = seed, keepPhylog = keepPhylog,
-                        initMutant = initMutant
+                        initMutant = initMutant,
+                        mutationPropGrowth = mutationPropGrowth
                     ),
                     mc.cores = mc.cores
                     )
@@ -367,6 +371,7 @@ oncoSimulIndiv <- function(fp,
                            finalTime = 0.25 * 25 * 365,
                            onlyCancer = TRUE,
                            keepPhylog = FALSE,
+                           mutationPropGrowth = ifelse(model == "Bozic", FALSE, TRUE),
                            max.memory = 2000,
                            max.wall.time = 200,
                            max.num.tries = 500,
@@ -388,10 +393,10 @@ oncoSimulIndiv <- function(fp,
 
     if(typeFitness == "exp") {
         death <- 1
-        mutatorGenotype <- 1
+        ## mutationPropGrowth <- 1
     } else {
         death <- -99
-        mutatorGenotype <- 0
+        ## mutationPropGrowth <- 0
     }
     birth <- -99
 
@@ -420,8 +425,8 @@ oncoSimulIndiv <- function(fp,
         warning("setting keepEvery <- sampleEvery")
     }
 
-    if( (typeFitness == "bozic1") && (mutatorGenotype) )
-        warning("Using fitness bozic1 with mutatorGenotype;",
+    if( (typeFitness == "bozic1") && (mutationPropGrowth) )
+        warning("Using fitness bozic1 with mutationPropGrowth = TRUE;",
                 "this will have no effect.")
 
     if( (typeFitness == "exp") && (death != 1) )
@@ -477,7 +482,7 @@ oncoSimulIndiv <- function(fp,
                                      ratioForce = 2,
                                      typeFitness = typeFitness,
                                      max.memory = max.memory,
-                                     mutatorGenotype = mutatorGenotype,                                   
+                                     mutationPropGrowth = mutationPropGrowth,                                   
                                      initMutant = -1, 
                                      max.wall.time = max.wall.time,
                                      max.num.tries = max.num.tries,
@@ -522,7 +527,7 @@ oncoSimulIndiv <- function(fp,
                                         ratioForce = 2,
                                         typeFitness = typeFitness,
                                         max.memory = max.memory,
-                                        mutatorGenotype = mutatorGenotype,                                   
+                                        mutationPropGrowth = mutationPropGrowth,                                   
                                         initMutant = initMutant, 
                                         max.wall.time = max.wall.time,
                                         max.num.tries = max.num.tries,
@@ -942,7 +947,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
                                ratioForce,
                                typeFitness,
                                max.memory,
-                               mutatorGenotype,
+                               mutationPropGrowth, ## make it explicit
                                initMutant,
                                max.wall.time,
                                keepEvery,
@@ -1048,7 +1053,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         ratioForce,
         typeFitness,
         max.memory,
-        mutatorGenotype,
+        as.integer(mutationPropGrowth),
         initMutant,
         max.wall.time,
         keepEvery,
