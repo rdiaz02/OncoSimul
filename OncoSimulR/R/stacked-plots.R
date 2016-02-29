@@ -1,9 +1,8 @@
-##
-library(ggplot2)
+## Functions for stacked and stream plots. Originals from Mark Taylor; see
+## https://github.com/marchtaylor/sinkr and
+## http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html
 
 
-
-## From: https://gist.github.com/menugget/7864454
 #plot.stream makes a "stream plot" where each y series is plotted 
 #as stacked filled polygons on alternating sides of a baseline.
 #
@@ -100,7 +99,6 @@ plot.stream <- function(
 
 
 
-## From https://gist.github.com/menugget/7864471
 #plot.stacked makes a stacked plot where each y series is plotted on top
 #of the each other using filled polygons
 #
