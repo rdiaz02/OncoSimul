@@ -2,8 +2,6 @@
 library(ggplot2)
 
 
-## look at these examples for base
-## http://stackoverflow.com/questions/27250542/how-to-make-gradient-color-filled-timeseries-plot-in-r
 
 ## From: https://gist.github.com/menugget/7864454
 #plot.stream makes a "stream plot" where each y series is plotted 
@@ -316,6 +314,22 @@ plot.oncosimul2 <- function(x, col = c(8, "orange", 6:1),
 
 
 
+########## colors, etc
+
+### Notes for me
+
+display.brewer.all()
+
+cl <- colorRamp(brewer.pal(9,'YlOrRd'), alpha = TRUE)( (0:20)/20 )
+
+plot(1, col = rgb(cl[20, 1], cl[20, 2], cl[20, 3], maxColorValue = 255))
+
+
+## look at these examples for base
+## http://stackoverflow.com/questions/27250542/how-to-make-gradient-color-filled-timeseries-plot-in-r
+
+
+
 ############### with streamgraph package
 
 
@@ -575,6 +589,9 @@ ggplot(dd1, aes(x = Time, y = Y, fill = Genotype)) + geom_area() +
     guides(fill = FALSE) + 
 
 
+
+
+    
 
 
     
