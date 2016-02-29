@@ -95,8 +95,12 @@ Licenses and copyright
 ======================
 
 The R/BioConductor OncoSimulR package is licensed under the GPLv3
-license. All of the code for the OncoSimulR BioConductor package is
-Copyright 2012-2015 by Ramon Diaz-Uriarte.
+license. All of the code for the OncoSimulR BioConductor package, except
+for functions `plot.stream` and `plot.stacked`, is Copyright 2012-2016 by
+Ramon Diaz-Uriarte. `plot.stream` and `plot.stacked` are Copyright
+2013-2016 by Marc Taylor (see also (https://github.com/marchtaylor/sinkr)
+and
+(http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html)).
 
 
 The code in `miscell-files/randutils.h` is copyright Melissa E. O'Neill,
