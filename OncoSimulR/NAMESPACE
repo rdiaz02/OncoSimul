@@ -24,3 +24,10 @@ import(graph)
 import(Rgraphviz)
 importFrom("parallel", mclapply, detectCores, mcMap)
 importFrom("gtools", combinations, permutations)
+
+importFrom("graphics", "axis", "box", "legend", "matplot", "par")
+importFrom("methods", "as")
+importFrom("stats", "na.omit", "runif")
+importFrom("utils", "type.convert")
+
+
