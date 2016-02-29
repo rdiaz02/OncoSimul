@@ -316,16 +316,65 @@ plot.oncosimul2 <- function(x, col = c(8, "orange", 6:1),
 
 ### Notes for me
 
+library(RColorBrewer)
+
 display.brewer.all()
 
-cl <- colorRamp(brewer.pal(9,'YlOrRd'), alpha = TRUE)( (0:20)/20 )
+## For genotypes, use "categorical", like "Set1", "Paired", or "Dark2"
 
-plot(1, col = rgb(cl[20, 1], cl[20, 2], cl[20, 3], maxColorValue = 255))
+
+
+## for distinct colors, from gplots
+rich.colors(5)
+?rich.colors ## from gplots
+plot(1:8, col = rich.colors(8), pch = 16, cex = 3)
+## From the example on the colorspace vignette
+plot(1:6, col = rainbow_hcl(6, c = 60, l = 75), pch = 16, cex = 3)
+
+
+myhsvcols <- function(ndr, srange = c(0.4, 1),
+                      vrange = c(0.8, 1)) {
+    minor <- table(ndr)
+    major <- length(minor)
+    
+    h <- seq(from = 0, to = 1, length.out = major + 1)[-1]
+    ## do not keep close similar hues
+    oe <- seq_along(h) %% 2
+    h <- h[order(oe, h)]
+
+    hh <- rep(h, minor)
+    
+    sr <- unlist(lapply(minor, function(x) 
+        seq(from = srange[1], to = srange[2], length.out = x)))
+    sv <- unlist(lapply(minor, function(x) 
+        seq(from = vrange[1], to = vrange[2], length.out = x))
+        )
+
+    colors <- hsv(hh, sr, sv)
+ 
+    colorsLegend <- aggregate(list(Color = colors), list(Drivers = ndr),
+                              function(x)
+                                  as.character(x[((length(x) %/% 2) + 1 )]))
+    ## To show what it would look like
+    ## plot(1:(sum(minor)), col = colors, pch = 16, cex = 3)
+    ## legend(1, length(ndr), col = colorsLegend$Color, legend = names(minor),
+    ##        pch = 16)
+
+    return(list(colors = colors,
+           colorsLegend = colorsLegend))
+}
+
+
+plot(1:6, col = hsv(seq(from = 0, to = 1, length.out = 10), 1, 1), pch = 16, cex = 3)
+
 
 
 ## look at these examples for base
 ## http://stackoverflow.com/questions/27250542/how-to-make-gradient-color-filled-timeseries-plot-in-r
 
+
+##   FIXME
+#### Get things ready to use streamgraph, and add example to vignette
 
 
 ############### with streamgraph package
@@ -584,7 +633,121 @@ ggplot(dd3, aes(x = Time, y = Y)) + geom_area(fill = dd3$Genotype)
 
 ## Simple use of ggplot, but slow 
 ggplot(dd1, aes(x = Time, y = Y, fill = Genotype)) + geom_area() +
-    guides(fill = FALSE) + 
+    guides(fill = FALSE)
+
+
+
+
+colors <- function(ndr) {
+    tt <- table(ndr)
+    
+    nl <- length(unique(ndr))
+    
+
+}
+
+
+
+
+
+n <- 20;  y <- -sin(3*pi*((1:n)-1/2)/n)
+op <- par(mar = rep(1.5, 4))
+plot(y, axes = FALSE, frame.plot = TRUE,
+     xlab = "", ylab = "", pch = 21, cex = 30,
+     bg = rainbow(n, start = .8, end = .5),
+     main = "Red tones")
+
+
+myhsv <- function(major = 5, minor = 6) {
+    h <- seq(from = 0, to = 1, length.out = major + 1)[-1]
+    ## do not keep close similar hues
+    oe <- seq_along(h) %% 2
+    h <- h[order(oe, h)]
+    
+    hh <- rep(h, rep(minor, major))
+    
+    ## sr <- c(seq(from = 0.4, to = 0.5, length.out = ((minor - 1)/2) - 1),
+    ##         1,
+    ##         seq(from = 0.6, to = 0.8, length.out = (minor - 1)/2))
+
+    ## sv <- c(seq(from = 0.4, to = 0.5, length.out = ((minor - 1)/2) - 1),
+    ##         1,
+    ##         seq(from = 0.6, to = 0.8, length.out = (minor - 1)/2))
+
+    sr <- seq(from = 0.4, to = 1, length.out = minor)
+    sv <- seq(from = 0.8, to = 1, length.out = minor)
+
+    ## Nope, too many jumps
+    ## oe <- seq_along(sr) %% 2
+    ## sr <- sr[order(oe, sr)]
+    ## oe <- seq_along(sv) %% 2
+    ## sv <- sv[order(oe, sv)]
+    ## hummm...
+    sv <- rev(sv)
+    
+    srr <- rep(sr, major)
+    svv <- rep(sv, major)
+
+    col <- hsv(hh, srr, svv)
+
+    plot(seq_along(hh), col = col, pch = 16, cex = 3)
+    print(sr)
+    print(sv)
+}
+
+
+myhsv2 <- function(major = 5, minor = 6,
+                   srange = c(0.4, 1),
+                   vrange = c(0.8, 1)) {
+    ## major is a number, minor can be a vector
+    if(length(minor) == 1) minor <- rep(minor, major)
+
+    h <- seq(from = 0, to = 1, length.out = major + 1)[-1]
+    ## do not keep close similar hues
+    oe <- seq_along(h) %% 2
+    h <- h[order(oe, h)]
+
+    hh <- rep(h, minor)
+    
+    sr <- unlist(lapply(minor, function(x) 
+        seq(from = srange[1], to = srange[2], length.out = x)))
+    sv <- unlist(lapply(minor, function(x) 
+        rev(seq(from = vrange[1], to = vrange[2], length.out = x)))
+        )
+
+    col <- hsv(hh, srr, svv)
+    
+    plot(1:(sum(minor)), col = col, pch = 16, cex = 3)
+    print(sr)
+    print(sv)
+}
+
+
+
+
+np <- 8
+nr <- 2
+pl <- "Dark2"
+## plot(1:np, col = brewer.pal(np,pl)[-(seq(1:nr))])
+plot(1:np, col = brewer.pal(np,pl))
+
+pp <- brewer.pal(8,pl)
+np2 <- 8
+
+plot(1:np2, col = colorRampPalette(pp[c(1, 2)])( np2))
+
+cl <- colorRamp(brewer.pal(8,pl), alpha = TRUE)( (0:20)/20 )
+
+
+plot(1:20, col = clcl(cl), pch = 16, cex = 3)
+
+
+
+
+clcl <- function(ramp) {
+    apply(ramp, 1, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+}
+
 
 
 
@@ -592,4 +755,5 @@ ggplot(dd1, aes(x = Time, y = Y, fill = Genotype)) + geom_area() +
     
 
 
+    
     
