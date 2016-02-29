@@ -161,20 +161,33 @@ plot.stacked <- function(
 
 }
 
-
-plotClones3 <- function(z, ndr = NULL, na.subs = TRUE,
-                       log = "y", type = "l",
-                       lty = 1:8, col = 1:9, ...) {
+   
+plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
+                         log = "y",
+                         lwd = lwd,
+                         ## type = "l",
+                         lty = 1:8, col = 1:9,
+                         order.method = order.method,
+                         stream.center = stream.center,
+                         stream.frac.rand = stream.frac.rand,
+                         stream.spar = stream.spar,
+                         border = border,
+                         srange = srange,
+                         vrange = vrange,
+                         type = type,
+                         ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
     ## drivers are plotted last
 
     y <- z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE]
     
-    ## if(na.subs){
-    ##     y[y == 0] <- NA
-    ## }
+    if(type %in% c("stacked", "stream") )
+        na.subs <- FALSE
     
+    if(na.subs){
+        y[y == 0] <- NA
+    }
     if(!is.null(ndr)) {
         ## could be done above, to avoid creating
         ## more copies
@@ -183,53 +196,61 @@ plotClones3 <- function(z, ndr = NULL, na.subs = TRUE,
         ndr <- ndr[oo]
         col <- col[ndr + 1]
     }
-    plot.stream(x = z$pops.by.time[, 1],
+    ## FIXME: break if ndr is null?!
+    if(type == "line") {
+        matplot(x = z$pops.by.time[, 1],
                 y = y,
-                frac.rand = 0) ## work on the log axis
-    ## matplot(x = z$pops.by.time[, 1],
-    ##         y = y,
-    ##         log = log, type = type,
-    ##         col = col, lty = lty,
-    ##         ...)
-    ## box()
-}
-
-plotClones2 <- function(z, ndr = NULL, na.subs = TRUE,
-                       log = "y", type = "l",
-                       lty = 1:8, col = 1:9, ...) {
-
-    ## if given ndr, we order columns based on ndr, so clones with more
-    ## drivers are plotted last
-
-    y <- z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE]
-    
-    ## if(na.subs){
-    ##     y[y == 0] <- NA
-    ## }
-    
-    if(!is.null(ndr)) {
-        ## could be done above, to avoid creating
-        ## more copies
-        oo <- order(ndr)
-        y <- y[, oo, drop = FALSE]
-        ndr <- ndr[oo]
-        col <- col[ndr + 1]
+                log = log, type = "l",
+                col = col, lty = lty,
+                lwd = lwd,
+                ...)
+        box()
+    } else {
+        ## color things
+        cll <- myhsvcols(ndr, srange = srange, vrange = vrange)
+        if (type == "stacked") {
+            plot.stacked(x = z$pops.by.time[, 1],
+                         y = y,
+                         order.method = order.method,
+                         border = border,
+                         lwd = lwd,
+                         col = cll$colors) ## log thing
+            ## legend thing
+        } else if (type == "stream") {
+            plot.stream(x = z$pops.by.time[, 1],
+                        y = y,
+                        order.method = order.method,
+                        border = border,
+                        lwd = lwd,
+                        col = cll$colors,
+                        frac.rand = stream.frac.rand,
+                        spar = stream.spar,
+                        center = stream.center)
+            ## legend thing
+        }
+        browser()
+        legend(x = "topleft",
+               title = "Number of drivers",
+               lty = 1,
+               col = cll$colorsLegend$Color,
+               legend = cll$colorsLegend$Drivers)
+        
     }
-    plot.stacked(x = z$pops.by.time[, 1],
-                 y = y) ## work on the log axis
-    ## matplot(x = z$pops.by.time[, 1],
-    ##         y = y,
-    ##         log = log, type = type,
-    ##         col = col, lty = lty,
-    ##         ...)
-    ## box()
 }
 
 
-plot.oncosimul2 <- function(x, col = c(8, "orange", 6:1),
-                            log = "y",
-                            ltyClone = 2:6,
-                            lwdClone = 0.9,
+
+
+
+
+
+
+plot.oncosimul2 <- function(x,
+                           type = "stacked",
+                           col = "auto",
+                           log = "y",
+                           ltyClone = 2:6,
+                           lwdClone = 0.9,
                            ltyDrivers = 1,
                            lwdDrivers = 3,
                            xlab = "Time units",
@@ -243,9 +264,26 @@ plot.oncosimul2 <- function(x, col = c(8, "orange", 6:1),
                            thinData.keep = 0.1,
                            thinData.min = 2,
                            plotDiversity = FALSE,
+                           order.method = "as.is",
+                           stream.center = TRUE,
+                           stream.frac.rand = 0.01,
+                           stream.spar = 0.2,
+                           border = NULL,
+                           lwd = 1,
+                           srange = c(0.4, 1),
+                           vrange = c(0.8, 1),
                            ...
                            ) {
 
+    ## FIXME: test this
+    if(!(type %in% c("stacked", "stream", "line")))
+        stop("Type of plot unknown: it must be one of",
+             "stacked, stream or line")
+    
+    if(col == "auto" && (type == "line") )
+        col = c(8, "orange", 6:1)
+    
+    
     if(thinData)
         x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
 
@@ -262,53 +300,62 @@ plot.oncosimul2 <- function(x, col = c(8, "orange", 6:1),
         else
             yl <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
     }
-    ## if(plotDiversity) {
-    ##     par(fig = c(0, 1, 0.8, 1))
-    ##     m1 <- par()$mar
-    ##     m <- m1
-    ##     m[c(1, 3)] <- c(0, 0.7)
-    ##     op <- par(mar = m )
-    ##     plotShannon(x)
-    ##     par(op)
-    ##     m1[c(3)] <- 0.2
-    ##     op <- par(mar = m1)
-    ##     par(fig = c(0, 1, 0, 0.8), new = TRUE)  
-    ## }
-    
-    ##    if(plotClones) {
+    if(plotDiversity) {
+        par(fig = c(0, 1, 0.8, 1))
+        m1 <- par()$mar
+        m <- m1
+        m[c(1, 3)] <- c(0, 0.7)
+        op <- par(mar = m )
+        plotShannon(x)
+        par(op)
+        m1[c(3)] <- 0.2
+        op <- par(mar = m1)
+        par(fig = c(0, 1, 0, 0.8), new = TRUE)  
+    }
+    if(plotClones) {
+        plotClonesSt(x,
+                     ndr = ndr, 
+                     xlab = xlab,
+                     ylab = ylab,
+                     lty = ltyClone,
+                     col = col, 
+                     ylim = yl,
+                     lwd = lwdClone,
+                     axes = FALSE,
+                     log = log,
+                     order.method = order.method,
+                     stream.center = stream.center,
+                     stream.frac.rand = stream.frac.rand,
+                     stream.spar = stream.spar,
+                     border = border,
+                     srange = srange,
+                     vrange = vrange,
+                     type = type,
+                     ...)
+    }
 
+    if(plotClones && plotDrivers && (type == "line"))
+        par(new = TRUE)
     
-    plotClones2(x,
-               ndr = ndr, 
-               xlab = xlab,
-               ylab = ylab,
-               lty = ltyClone,
-               col = col, 
-               ylim = yl,
-               lwd = lwdClone,
-               axes = FALSE,
-               log = log,
-               ...)
-##    }
-
-    ## if(plotClones && plotDrivers)
-    ##     par(new = TRUE)
-    
-    ## if(plotDrivers){
-    ##     plotDrivers0(x,
-    ##                  ndr,
-    ##                  timescale = 1,
-    ##                  trim.no.drivers = FALSE,
-    ##                  xlab = "", ylab = "",
-    ##                  lwd = lwdDrivers,
-    ##                  lty = ltyDrivers,
-    ##                  col = col, 
-    ##                  addtot = addtot,
-    ##                  addtotlwd = addtotlwd,
-    ##                  log = log, ylim = yl,
-    ##                  ...)
+    if(plotDrivers && (type == "line")){
+        plotDrivers0(x,
+                     ndr,
+                     timescale = 1,
+                     trim.no.drivers = FALSE,
+                     xlab = "", ylab = "",
+                     lwd = lwdDrivers,
+                     lty = ltyDrivers,
+                     col = col, 
+                     addtot = addtot,
+                     addtotlwd = addtotlwd,
+                     log = log, ylim = yl,
+                     ...)
     }
     
+}
+
+
+
 
 
 
@@ -334,6 +381,13 @@ plot(1:6, col = rainbow_hcl(6, c = 60, l = 75), pch = 16, cex = 3)
 
 myhsvcols <- function(ndr, srange = c(0.4, 1),
                       vrange = c(0.8, 1)) {
+    ## Generate a set of colors so that:
+    ##  - easy to tell when we increase number of drivers
+    ##  - reasonably easy to generate a legend
+    ##  - different clones with same number of drivers have "similar" colors
+
+    ## I use hsv color specification as this seems the easiest.
+    
     minor <- table(ndr)
     major <- length(minor)
     
@@ -361,7 +415,7 @@ myhsvcols <- function(ndr, srange = c(0.4, 1),
     ##        pch = 16)
 
     return(list(colors = colors,
-           colorsLegend = colorsLegend))
+                colorsLegend = colorsLegend))
 }
 
 
@@ -757,3 +811,149 @@ clcl <- function(ramp) {
 
     
     
+plotClones3 <- function(z, ndr = NULL, na.subs = TRUE,
+                       log = "y", type = "l",
+                       lty = 1:8, col = 1:9, ...) {
+
+    ## if given ndr, we order columns based on ndr, so clones with more
+    ## drivers are plotted last
+
+    y <- z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE]
+    
+    ## if(na.subs){
+    ##     y[y == 0] <- NA
+    ## }
+    
+    if(!is.null(ndr)) {
+        ## could be done above, to avoid creating
+        ## more copies
+        oo <- order(ndr)
+        y <- y[, oo, drop = FALSE]
+        ndr <- ndr[oo]
+        col <- col[ndr + 1]
+    }
+    plot.stream(x = z$pops.by.time[, 1],
+                y = y,
+                frac.rand = 0) ## work on the log axis
+    ## matplot(x = z$pops.by.time[, 1],
+    ##         y = y,
+    ##         log = log, type = type,
+    ##         col = col, lty = lty,
+    ##         ...)
+    ## box()
+}
+
+plotClones2 <- function(z, ndr = NULL, na.subs = TRUE,
+                       log = "y", type = "l",
+                       lty = 1:8, col = 1:9, ...) {
+
+    ## if given ndr, we order columns based on ndr, so clones with more
+    ## drivers are plotted last
+
+    y <- z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE]
+    
+    ## if(na.subs){
+    ##     y[y == 0] <- NA
+    ## }
+    
+    if(!is.null(ndr)) {
+        ## could be done above, to avoid creating
+        ## more copies
+        oo <- order(ndr)
+        y <- y[, oo, drop = FALSE]
+        ndr <- ndr[oo]
+        col <- col[ndr + 1]
+    }
+    plot.stacked(x = z$pops.by.time[, 1],
+                 y = y) ## work on the log axis
+    ## matplot(x = z$pops.by.time[, 1],
+    ##         y = y,
+    ##         log = log, type = type,
+    ##         col = col, lty = lty,
+    ##         ...)
+    ## box()
+}
+
+
+plot.oncosimul2 <- function(x, col = c(8, "orange", 6:1),
+                            log = "y",
+                            ltyClone = 2:6,
+                            lwdClone = 0.9,
+                           ltyDrivers = 1,
+                           lwdDrivers = 3,
+                           xlab = "Time units",
+                           ylab = "Number of cells",
+                           plotClones = TRUE,
+                           plotDrivers = TRUE,
+                           addtot = FALSE,
+                           addtotlwd = 0.5,
+                           yl = NULL,
+                           thinData = FALSE,
+                           thinData.keep = 0.1,
+                           thinData.min = 2,
+                           plotDiversity = FALSE,
+                           ...
+                           ) {
+
+    if(thinData)
+        x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
+
+    ## uvx
+    if(!inherits(x, "oncosimul2"))
+        ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
+    else {
+        ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+    }
+    
+    if(is.null(yl)) {
+        if(log %in% c("y", "xy", "yx") )
+            yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+        else
+            yl <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+    }
+    ## if(plotDiversity) {
+    ##     par(fig = c(0, 1, 0.8, 1))
+    ##     m1 <- par()$mar
+    ##     m <- m1
+    ##     m[c(1, 3)] <- c(0, 0.7)
+    ##     op <- par(mar = m )
+    ##     plotShannon(x)
+    ##     par(op)
+    ##     m1[c(3)] <- 0.2
+    ##     op <- par(mar = m1)
+    ##     par(fig = c(0, 1, 0, 0.8), new = TRUE)  
+    ## }
+    
+    ##    if(plotClones) {
+
+    
+    plotClones2(x,
+               ndr = ndr, 
+               xlab = xlab,
+               ylab = ylab,
+               lty = ltyClone,
+               col = col, 
+               ylim = yl,
+               lwd = lwdClone,
+               axes = FALSE,
+               log = log,
+               ...)
+##    }
+
+    ## if(plotClones && plotDrivers)
+    ##     par(new = TRUE)
+    
+    ## if(plotDrivers){
+    ##     plotDrivers0(x,
+    ##                  ndr,
+    ##                  timescale = 1,
+    ##                  trim.no.drivers = FALSE,
+    ##                  xlab = "", ylab = "",
+    ##                  lwd = lwdDrivers,
+    ##                  lty = ltyDrivers,
+    ##                  col = col, 
+    ##                  addtot = addtot,
+    ##                  addtotlwd = addtotlwd,
+    ##                  log = log, ylim = yl,
+    ##                  ...)
+    }
