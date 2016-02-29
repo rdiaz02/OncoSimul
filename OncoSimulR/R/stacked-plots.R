@@ -35,22 +35,27 @@ plot.stream <- function(
 	...
 ){
 
-	if(sum(y < 0) > 0) error("y cannot contain negative numbers")
+    if(sum(y < 0, na.rm = TRUE) > 0) error("y cannot contain negative numbers")
 
-	if(is.null(border)) border <- par("fg")
-	border <- as.vector(matrix(border, nrow=ncol(y), ncol=1))
-	col <- as.vector(matrix(col, nrow=ncol(y), ncol=1))
-	lwd <- as.vector(matrix(lwd, nrow=ncol(y), ncol=1))
+    ## if(log %in% c("y", "xy", "yx") ) {
+        
 
+    ## }
+    
+    if(is.null(border)) border <- par("fg")
+    border <- as.vector(matrix(border, nrow=ncol(y), ncol=1))
+    col <- as.vector(matrix(col, nrow=ncol(y), ncol=1))
+    lwd <- as.vector(matrix(lwd, nrow=ncol(y), ncol=1))
+    
 	if(order.method == "max") {
-		ord <- order(apply(y, 2, which.max))
+		ord <- order(apply(y, 2, which.max, na.rm = TRUE))
 		y <- y[, ord]
 		col <- col[ord]
 		border <- border[ord]
 	}
 
 	if(order.method == "first") {
-		ord <- order(apply(y, 2, function(x) min(which(r>0))))
+		ord <- order(apply(y, 2, function(x) min(which(r>0), na.rm = TRUE)))
 		y <- y[, ord]
 		col <- col[ord]
 		border <- border[ord]
@@ -82,7 +87,7 @@ plot.stream <- function(
 	} else {
 		g0 <- runif(length(x), min=frac.rand*ylim.tmp[1], max=frac.rand*ylim.tmp[2])
 	}
-	
+	browser()
 	fit <- smooth.spline(g0 ~ x, spar=spar)
 
 	for(i in seq(polys)){
@@ -188,6 +193,9 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
     if(na.subs){
         y[y == 0] <- NA
     }
+
+    browser()
+    
     if(!is.null(ndr)) {
         ## could be done above, to avoid creating
         ## more copies
@@ -206,15 +214,17 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                 ...)
         box()
     } else {
-        ## color things
         cll <- myhsvcols(ndr, srange = srange, vrange = vrange)
+
         if (type == "stacked") {
+            browser()
             plot.stacked(x = z$pops.by.time[, 1],
                          y = y,
                          order.method = order.method,
                          border = border,
                          lwd = lwd,
-                         col = cll$colors) ## log thing
+                         col = cll$colors,
+                         log = log) ## log thing
             ## legend thing
         } else if (type == "stream") {
             plot.stream(x = z$pops.by.time[, 1],
@@ -225,7 +235,8 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                         col = cll$colors,
                         frac.rand = stream.frac.rand,
                         spar = stream.spar,
-                        center = stream.center)
+                        center = stream.center,
+                        log = log)
             ## legend thing
         }
         browser()

@@ -1260,6 +1260,7 @@ plotDrivers0 <- function(x,
         tot <- rowSums(y, na.rm = TRUE)
         lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
     }
+    ## FIXME: the legend could be wrong if some drivers are not shown?!
     legend(x = "topleft",
            title = "Number of drivers",
            lty = lty, col = col, lwd = lwd,
