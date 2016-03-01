@@ -189,7 +189,9 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
     ## drivers are plotted last
 
     y <- z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE]
-    
+
+    ## How best to deal with log with stacked and stream still not clear.
+    ## So for now leave as this.
     if(type %in% c("stacked", "stream") )
         na.subs <- FALSE
     
@@ -218,10 +220,17 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
         box()
     } else {
         cll <- myhsvcols(ndr, srange = srange, vrange = vrange)
+        x <- z$pops.by.time[, 1]
+        if(grepl("y", log)) {
+            y <- log10(y + 1)
+        }
+        if(grepl("x", log)) {
+            x <- log10(x + 1)
+        }
 
         if (type == "stacked") {
             browser()
-            plot.stacked(x = z$pops.by.time[, 1],
+            plot.stacked(x = x,
                          y = y,
                          order.method = order.method,
                          border = border,
@@ -230,7 +239,7 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                          log = log) ## log thing
             ## legend thing
         } else if (type == "stream") {
-            plot.stream(x = z$pops.by.time[, 1],
+            plot.stream(x = x,
                         y = y,
                         order.method = order.method,
                         border = border,
@@ -254,7 +263,12 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
 
 
 
+mylogaxis <- function(side = 2) {
+    po <- axis( side = side, labels = FALSE, tick = FALSE)
+    labels <- 10^po
+    
 
+}
 
 
 
