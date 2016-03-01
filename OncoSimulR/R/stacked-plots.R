@@ -166,7 +166,10 @@ plot.stacked <- function(
 
 }
 
-   
+
+
+## FIXME: do we ever use log of x?
+
 plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                          log = "y",
                          lwd = lwd,
