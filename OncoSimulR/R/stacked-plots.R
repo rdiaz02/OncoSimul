@@ -3,6 +3,8 @@
 ## http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html
 
 
+## FIXME: former bugs in both funct: r>0 should be x> 0 for "first"
+
 #plot.stream makes a "stream plot" where each y series is plotted 
 #as stacked filled polygons on alternating sides of a baseline.
 #
@@ -24,81 +26,91 @@
 #'lwd' - border line width for polygons corresponding to y columns (will recycle)
 #'...' - other plot arguments
 
-plot.stream <- function(
-	x, y, 
-	order.method = "as.is", frac.rand=0.1, spar=0.2,
-	center=TRUE,
-	ylab="", xlab="",  
-	border = NULL, lwd=1, 
-	col=rainbow(length(y[1,])),
-	ylim=NULL, 
-	...
-){
+plot.stream2 <- function(
+                        x, y, 
+                        order.method = "as.is", frac.rand=0.1, spar=0.2,
+                        center=TRUE,
+                        ylab="", xlab="",  
+                        border = NULL, lwd=1, 
+                        col=rainbow(length(y[1,])),
+                        ylim=NULL,
+                        log = "",
+                        ...
+                        ){
 
     if(sum(y < 0, na.rm = TRUE) > 0) error("y cannot contain negative numbers")
 
-    ## if(log %in% c("y", "xy", "yx") ) {
-        
-
-    ## }
-    
     if(is.null(border)) border <- par("fg")
     border <- as.vector(matrix(border, nrow=ncol(y), ncol=1))
     col <- as.vector(matrix(col, nrow=ncol(y), ncol=1))
     lwd <- as.vector(matrix(lwd, nrow=ncol(y), ncol=1))
     
-	if(order.method == "max") {
-		ord <- order(apply(y, 2, which.max, na.rm = TRUE))
-		y <- y[, ord]
-		col <- col[ord]
-		border <- border[ord]
-	}
+    if(order.method == "max") {
+        ord <- order(apply(y, 2, which.max))
+        y <- y[, ord]
+        col <- col[ord]
+        border <- border[ord]
+    }
 
-	if(order.method == "first") {
-		ord <- order(apply(y, 2, function(x) min(which(r>0), na.rm = TRUE)))
-		y <- y[, ord]
-		col <- col[ord]
-		border <- border[ord]
-	}
+    if(order.method == "first") {
+        ord <- order(apply(y, 2, function(x) min(which(x>0), na.rm = TRUE)))
+        y <- y[, ord]
+        col <- col[ord]
+        border <- border[ord]
+    }
 
-	bottom.old <- x*0
-	top.old <- x*0
-	polys <- vector(mode="list", ncol(y))
-	for(i in seq(polys)){
-		if(i %% 2 == 1){ #if odd
-			top.new <- top.old + y[,i]
-			polys[[i]] <- list(x=c(x, rev(x)), y=c(top.old, rev(top.new)))
-			top.old <- top.new
-		}
-		if(i %% 2 == 0){ #if even
-			bottom.new <- bottom.old - y[,i]
-			polys[[i]] <- list(x=c(x, rev(x)), y=c(bottom.old, rev(bottom.new)))
-			bottom.old <- bottom.new
-		}
-	}
+    bottom.old <- x*0
+    top.old <- x*0
+    polys <- vector(mode="list", ncol(y))
+    for(i in seq(polys)){
+        if(i %% 2 == 1){ #if odd
+            top.new <- top.old + y[,i]
+            polys[[i]] <- list(x=c(x, rev(x)), y=c(top.old, rev(top.new)))
+            top.old <- top.new
+        }
+        if(i %% 2 == 0){ #if even
+            bottom.new <- bottom.old - y[,i]
+            polys[[i]] <- list(x=c(x, rev(x)), y=c(bottom.old, rev(bottom.new)))
+            bottom.old <- bottom.new
+        }
+    }
 
-	ylim.tmp <- range(sapply(polys, function(x) range(x$y, na.rm=TRUE)), na.rm=TRUE)
-	outer.lims <- sapply(polys, function(r) rev(r$y[(length(r$y)/2+1):length(r$y)]))
-	mid <- apply(outer.lims, 1, function(r) mean(c(max(r, na.rm=TRUE), min(r, na.rm=TRUE)), na.rm=TRUE))
-	
-	#center and wiggle
-	if(center) {
-		g0 <- -mid + runif(length(x), min=frac.rand*ylim.tmp[1], max=frac.rand*ylim.tmp[2])
-	} else {
-		g0 <- runif(length(x), min=frac.rand*ylim.tmp[1], max=frac.rand*ylim.tmp[2])
-	}
-	fit <- smooth.spline(g0 ~ x, spar=spar)
+    ylim.tmp <- range(sapply(polys,
+                             function(x) range(x$y, na.rm=TRUE)), na.rm=TRUE)
+    outer.lims <- sapply(polys,
+                         function(r) rev(r$y[(length(r$y)/2+1):length(r$y)]))
+    mid <- apply(outer.lims, 1,
+                 function(r) mean(c(max(r, na.rm=TRUE),
+                                    min(r, na.rm=TRUE)), na.rm=TRUE))
+    
+    ## center and wiggle
+    if(center) {
+        g0 <- -mid + runif(length(x), min=frac.rand*ylim.tmp[1], max=frac.rand*ylim.tmp[2])
+    } else {
+        g0 <- runif(length(x), min=frac.rand*ylim.tmp[1], max=frac.rand*ylim.tmp[2])
+    }
+    fit <- smooth.spline(g0 ~ x, spar=spar)
 
-	for(i in seq(polys)){
-		polys[[i]]$y <- polys[[i]]$y + c(fit$y, rev(fit$y))
-	}
+    for(i in seq(polys)){
+        polys[[i]]$y <- polys[[i]]$y + c(fit$y, rev(fit$y))
+    }
 
-	if(is.null(ylim)) ylim <- range(sapply(polys, function(x) range(x$y, na.rm=TRUE)), na.rm=TRUE)
-	plot(x,y[,1], ylab=ylab, xlab=xlab, ylim=ylim, t="n", ...)
-	for(i in seq(polys)){
-		polygon(polys[[i]], border=border[i], col=col[i], lwd=lwd[i])
-	}
-
+    if(is.null(ylim)) ylim <- range(sapply(polys,
+                                           function(x) range(x$y, na.rm=TRUE)),
+                                    na.rm=TRUE)
+    if(grepl("x", log))
+        axes <- FALSE
+    else
+        axes <- TRUE
+    plot(x,y[,1], ylab=ylab, xlab=xlab, ylim=ylim, t="n", axes = axes, ...)
+    for(i in seq(polys)){
+        polygon(polys[[i]], border=border[i], col=col[i], lwd=lwd[i])
+    }
+    if(!axes) {
+        ## yes, we only allow transformation of x axis
+        relabelLogaxis(1)
+        axis(2)
+    }
 }
 
 
@@ -118,7 +130,7 @@ plot.stream <- function(
 #'lwd' - border line width for polygons corresponding to y columns (will recycle)
 #'...' - other plot arguments
 
-plot.stacked <- function(
+plot.stacked2 <- function(
                          x, y, 
                          order.method = "as.is",
                          ylab="", xlab="", 
@@ -142,7 +154,7 @@ plot.stacked <- function(
     }
 
     if(order.method == "first") {
-        ord <- order(apply(y, 2, function(x) min(which(r>0))))
+        ord <- order(apply(y, 2, function(x) min(which(x>0))))
         y <- y[, ord]
         col <- col[ord]
         border <- border[ord]
@@ -171,26 +183,28 @@ plot.stacked <- function(
     }
     if(!axes) {
         ## yes, we only allow transformation of x axis
-        mylogaxis(1)
+        relabelLogaxis(1)
         axis(2)
     }
 }
 
 
 
-plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
+plotClonesSt <- function(z, ndr,
+                         na.subs = TRUE,
                          log = "y",
-                         lwd = lwd,
+                         lwd = 1,
                          ## type = "l",
                          lty = 1:8, col = 1:9,
-                         order.method = order.method,
-                         stream.center = stream.center,
-                         stream.frac.rand = stream.frac.rand,
-                         stream.spar = stream.spar,
-                         border = border,
-                         srange = srange,
-                         vrange = vrange,
-                         type = type,
+                         order.method = "as.is",
+                         stream.center = TRUE,
+                         stream.frac.rand = 0.01,
+                         stream.spar = 0.2,
+                         border = NULL,
+                         srange = c(0.4, 1),
+                         vrange = c(0.8, 1),
+                         type = "stacked",
+                         breakSortColors = "oe",
                          ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
@@ -200,6 +214,8 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
 
     ## Code in stacked and stream plots relies on there being no NAs. Could
     ## change it, but it does not seem reasonable.
+    ##  But my original plotting code runs faster and is simpler if 0 are
+    ##  dealt as NAs (which also makes log transformations simpler).
     
     if(type %in% c("stacked", "stream") )
         na.subs <- FALSE
@@ -207,16 +223,17 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
     if(na.subs){
         y[y == 0] <- NA
     }
-
-    if(!is.null(ndr)) {
+    ## if(is.null(ndr))
+    ##     stop("Should never have null ndr")
+    ## if(!is.null(ndr)) {
         ## could be done above, to avoid creating
         ## more copies
-        oo <- order(ndr)
-        y <- y[, oo, drop = FALSE]
-        ndr <- ndr[oo]
-        col <- col[ndr + 1]
-    }
-    ## FIXME: break if ndr is null?!
+    oo <- order(ndr)
+    y <- y[, oo, drop = FALSE]
+    ndr <- ndr[oo]
+    col <- col[ndr + 1]
+    ## }
+
     if(type == "line") {
         matplot(x = z$pops.by.time[, 1],
                 y = y,
@@ -227,28 +244,27 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
         box()
     } else {
         ymax <- colSums(y)
-        cll <- myhsvcols(ndr, ymax, srange = srange, vrange = vrange)
+        cll <- myhsvcols(ndr, ymax, srange = srange, vrange = vrange,
+                         breakSortColors = breakSortColors)
         x <- z$pops.by.time[, 1]
-        if(grepl("y", log)) {
+        if(grepl("y", log)) { ## FIXME:TEST add a test for this
             stop("It makes little sense to do a stacked/stream",
                  "plot after taking the log of the y data.")
-            ## y <- log10(y + 1)
         }
         if(grepl("x", log)) {
             x <- log10(x + 1)
         }
 
         if (type == "stacked") {
-            plot.stacked(x = x,
+            plot.stacked2(x = x,
                          y = y,
                          order.method = order.method,
                          border = border,
                          lwd = lwd,
                          col = cll$colors,
-                         log = log) ## log thing
-            ## legend thing
+                         log = log) 
         } else if (type == "stream") {
-            plot.stream(x = x,
+            plot.stream2(x = x,
                         y = y,
                         order.method = order.method,
                         border = border,
@@ -258,7 +274,6 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                         spar = stream.spar,
                         center = stream.center,
                         log = log)
-            ## legend thing
         }
         legend(x = "topleft",
                title = "Number of drivers",
@@ -273,7 +288,7 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
 
 
 
-mylogaxis <- function(side = 2) {
+relabelLogaxis <- function(side = 2) {
     po <- axis( side = side, labels = FALSE, tick = FALSE, lwd = 0)
     axis(side = side, labels = 10^po, at = po, tick = TRUE)
 }
@@ -308,6 +323,7 @@ plot.oncosimul2 <- function(x,
                            lwd = 1,
                            srange = c(0.4, 1),
                            vrange = c(0.8, 1),
+                           breakSortColors = "oe",
                            ...
                            ) {
 
@@ -367,6 +383,7 @@ plot.oncosimul2 <- function(x,
                      srange = srange,
                      vrange = vrange,
                      type = type,
+                     breakSortColors = breakSortColors,
                      ...)
     }
 
@@ -392,22 +409,32 @@ plot.oncosimul2 <- function(x,
 
 
 myhsvcols <- function(ndr, ymax, srange = c(0.4, 1),
-                      vrange = c(0.8, 1)) {
+                      vrange = c(0.8, 1),
+                      breakSortColors = "oe") {
     ## Generate a set of colors so that:
     ##  - easy to tell when we increase number of drivers
-    ##  - reasonably easy to generate a legend
+    ##  - reasonably easy to tell in a legend
     ##  - different clones with same number of drivers have "similar" colors
 
-    ## I use hsv color specification as this seems the easiest.
+    ## I use hsv color specification as this seems the most reasonable.
     
     minor <- table(ndr)
-    major <- length(minor)
+    major <- length(unique(ndr)) ## yeah same as length(minor), but least
+                                 ## surprise
     
     h <- seq(from = 0, to = 1, length.out = major + 1)[-1]
-    ## do not keep close similar hues
-    oe <- seq_along(h) %% 2
-    h <- h[order(oe, h)]
-
+    ## do not keep similar hues next to each other
+    if(breakSortColors == "oe") {
+        oe <- seq_along(h) %% 2
+        h <- h[order(oe, h)]
+    } else if(breakSortColors == "distave"){
+        sl <- seq_along(h)
+        h <- h[order(-abs(mean(sl) - sl))]
+    } else if(breakSortColors == "random") {
+        rr <- order(runif(length(h)))
+        h <- h[rr]
+    } 
+    
     hh <- rep(h, minor)
     
     sr <- unlist(lapply(minor, function(x) 
@@ -440,6 +467,10 @@ myhsvcols <- function(ndr, ymax, srange = c(0.4, 1),
 }
 
 
+
+
+## Stream does not always give you what you'd like conveying newer mutants.
+## For example, using b11
 
 ## Testcode for log = y and log = x
 
@@ -891,7 +922,7 @@ plotClones3 <- function(z, ndr = NULL, na.subs = TRUE,
         ndr <- ndr[oo]
         col <- col[ndr + 1]
     }
-    plot.stream(x = z$pops.by.time[, 1],
+    plot.stream2(x = z$pops.by.time[, 1],
                 y = y,
                 frac.rand = 0) ## work on the log axis
     ## matplot(x = z$pops.by.time[, 1],
