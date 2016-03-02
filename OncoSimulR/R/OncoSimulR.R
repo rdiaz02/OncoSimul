@@ -1250,21 +1250,27 @@ plotDrivers0 <- function(x,
     ##     time <- z[, 1]
     ## }
     time <- timescale * z[, 1]
-    
     if(nrow(y) <= 2) type <- "b"
+    ## Allow for the weird case of possibly missing drivers
+    col2 <- rep(col, length.out = (1 + max(ndr)))
+    col2 <- col2[sort(unique(ndr)) + 1]
     matplot(x = time,
             y = y,
-            type = type, log = log, lty = lty, col = col, lwd = lwd,
+            type = type, log = log, lty = lty, col = col2, lwd = lwd,
             ...)
     if(addtot) {
         tot <- rowSums(y, na.rm = TRUE)
         lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
     }
-    ## FIXME: the legend could be wrong if some drivers are not shown?!
+
+    ## This will work even if under the weird case of a driver missing
+    ldrv <- unlist(lapply(strsplit(colnames(y), "dr_", fixed = TRUE),
+                          function(x) x[2]))
     legend(x = "topleft",
            title = "Number of drivers",
-           lty = lty, col = col, lwd = lwd,
-           legend = (1:ncol(y)) - 1)
+           lty = lty, col = col2, lwd = lwd,
+           legend = ldrv)
+    ## legend = (1:ncol(y)) - 1)
 }
 
 
