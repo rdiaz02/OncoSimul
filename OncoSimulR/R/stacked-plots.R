@@ -87,7 +87,6 @@ plot.stream <- function(
 	} else {
 		g0 <- runif(length(x), min=frac.rand*ylim.tmp[1], max=frac.rand*ylim.tmp[2])
 	}
-	browser()
 	fit <- smooth.spline(g0 ~ x, spar=spar)
 
 	for(i in seq(polys)){
@@ -120,55 +119,64 @@ plot.stream <- function(
 #'...' - other plot arguments
 
 plot.stacked <- function(
-	x, y, 
-	order.method = "as.is",
-	ylab="", xlab="", 
-	border = NULL, lwd=1, 
-	col=rainbow(length(y[1,])),
-	ylim=NULL,
-	...
-){
+                         x, y, 
+                         order.method = "as.is",
+                         ylab="", xlab="", 
+                         border = NULL, lwd=1, 
+                         col=rainbow(length(y[1,])),
+                         ylim=NULL,
+                         log = "",
+                         ...){
+    if(sum(y < 0) > 0) error("y cannot contain negative numbers")
 
-    	if(sum(y < 0) > 0) error("y cannot contain negative numbers")
+    if(is.null(border)) border <- par("fg")
+    border <- as.vector(matrix(border, nrow=ncol(y), ncol=1))
+    col <- as.vector(matrix(col, nrow=ncol(y), ncol=1))
+    lwd <- as.vector(matrix(lwd, nrow=ncol(y), ncol=1))
 
-	if(is.null(border)) border <- par("fg")
-	border <- as.vector(matrix(border, nrow=ncol(y), ncol=1))
-	col <- as.vector(matrix(col, nrow=ncol(y), ncol=1))
-	lwd <- as.vector(matrix(lwd, nrow=ncol(y), ncol=1))
+    if(order.method == "max") {
+        ord <- order(apply(y, 2, which.max))
+        y <- y[, ord]
+        col <- col[ord]
+        border <- border[ord]
+    }
 
-	if(order.method == "max") {
-		ord <- order(apply(y, 2, which.max))
-		y <- y[, ord]
-		col <- col[ord]
-		border <- border[ord]
-	}
+    if(order.method == "first") {
+        ord <- order(apply(y, 2, function(x) min(which(r>0))))
+        y <- y[, ord]
+        col <- col[ord]
+        border <- border[ord]
+    }
 
-	if(order.method == "first") {
-		ord <- order(apply(y, 2, function(x) min(which(r>0))))
-		y <- y[, ord]
-		col <- col[ord]
-		border <- border[ord]
-	}
+    top.old <- x*0
+    polys <- vector(mode="list", ncol(y))
+    for(i in seq(polys)){
+        top.new <- top.old + y[,i]
+        polys[[i]] <- list(x=c(x, rev(x)), y=c(top.old, rev(top.new)))
+        top.old <- top.new
+    }
 
-	top.old <- x*0
-	polys <- vector(mode="list", ncol(y))
-	for(i in seq(polys)){
-		top.new <- top.old + y[,i]
-		polys[[i]] <- list(x=c(x, rev(x)), y=c(top.old, rev(top.new)))
-		top.old <- top.new
-	}
-
-	if(is.null(ylim)) ylim <- range(sapply(polys, function(x) range(x$y, na.rm=TRUE)), na.rm=TRUE)
-	plot(x,y[,1], ylab=ylab, xlab=xlab, ylim=ylim, t="n", ...)
-	for(i in seq(polys)){
-		polygon(polys[[i]], border=border[i], col=col[i], lwd=lwd[i])
-	}
-
+    if(is.null(ylim)) ylim <- range(sapply(polys, function(x) range(x$y, na.rm=TRUE)), na.rm=TRUE)
+    ## if(grepl("y", log) || grepl("x", log))
+    ##     axes <- FALSE
+    ## else
+    ##     axes <- TRUE
+    if(grepl("x", log))
+        axes <- FALSE
+    else
+        axes <- TRUE
+    plot(x,y[,1], ylab=ylab, xlab=xlab, ylim=ylim, t="n",  axes = axes, ...)
+    for(i in seq(polys)){
+        polygon(polys[[i]], border=border[i], col=col[i], lwd=lwd[i])
+    }
+    if(!axes) {
+        ## yes, we only allow transformation of x axis
+        mylogaxis(1)
+        axis(2)
+    }
 }
 
 
-
-## FIXME: do we ever use log of x?
 
 plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                          log = "y",
@@ -190,8 +198,9 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
 
     y <- z$pops.by.time[, 2:ncol(z$pops.by.time), drop = FALSE]
 
-    ## How best to deal with log with stacked and stream still not clear.
-    ## So for now leave as this.
+    ## Code in stacked and stream plots relies on there being no NAs. Could
+    ## change it, but it does not seem reasonable.
+    
     if(type %in% c("stacked", "stream") )
         na.subs <- FALSE
     
@@ -199,8 +208,6 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
         y[y == 0] <- NA
     }
 
-    browser()
-    
     if(!is.null(ndr)) {
         ## could be done above, to avoid creating
         ## more copies
@@ -219,17 +226,19 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                 ...)
         box()
     } else {
-        cll <- myhsvcols(ndr, srange = srange, vrange = vrange)
+        ymax <- colSums(y)
+        cll <- myhsvcols(ndr, ymax, srange = srange, vrange = vrange)
         x <- z$pops.by.time[, 1]
         if(grepl("y", log)) {
-            y <- log10(y + 1)
+            stop("It makes little sense to do a stacked/stream",
+                 "plot after taking the log of the y data.")
+            ## y <- log10(y + 1)
         }
         if(grepl("x", log)) {
             x <- log10(x + 1)
         }
 
         if (type == "stacked") {
-            browser()
             plot.stacked(x = x,
                          y = y,
                          order.method = order.method,
@@ -251,10 +260,11 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
                         log = log)
             ## legend thing
         }
-        browser()
         legend(x = "topleft",
                title = "Number of drivers",
-               lty = 1,
+               pch = 15,
+               ## lty = 1,
+               ## lwd = 2,
                col = cll$colorsLegend$Color,
                legend = cll$colorsLegend$Drivers)
         
@@ -264,10 +274,8 @@ plotClonesSt <- function(z, ndr = NULL, na.subs = TRUE,
 
 
 mylogaxis <- function(side = 2) {
-    po <- axis( side = side, labels = FALSE, tick = FALSE)
-    labels <- 10^po
-    
-
+    po <- axis( side = side, labels = FALSE, tick = FALSE, lwd = 0)
+    axis(side = side, labels = 10^po, at = po, tick = TRUE)
 }
 
 
@@ -383,31 +391,7 @@ plot.oncosimul2 <- function(x,
 }
 
 
-
-
-
-
-########## colors, etc
-
-### Notes for me
-
-library(RColorBrewer)
-
-display.brewer.all()
-
-## For genotypes, use "categorical", like "Set1", "Paired", or "Dark2"
-
-
-
-## for distinct colors, from gplots
-rich.colors(5)
-?rich.colors ## from gplots
-plot(1:8, col = rich.colors(8), pch = 16, cex = 3)
-## From the example on the colorspace vignette
-plot(1:6, col = rainbow_hcl(6, c = 60, l = 75), pch = 16, cex = 3)
-
-
-myhsvcols <- function(ndr, srange = c(0.4, 1),
+myhsvcols <- function(ndr, ymax, srange = c(0.4, 1),
                       vrange = c(0.8, 1)) {
     ## Generate a set of colors so that:
     ##  - easy to tell when we increase number of drivers
@@ -433,10 +417,19 @@ myhsvcols <- function(ndr, srange = c(0.4, 1),
         )
 
     colors <- hsv(hh, sr, sv)
- 
-    colorsLegend <- aggregate(list(Color = colors), list(Drivers = ndr),
-                              function(x)
-                                  as.character(x[((length(x) %/% 2) + 1 )]))
+
+    ## This gives "average" or "median" color for legend
+    ## colorsLegend <- aggregate(list(Color = colors), list(Drivers = ndr),
+    ##                           function(x)
+    ##                               as.character(x[((length(x) %/% 2) + 1 )]))
+
+    ## Give the most abundant class color as the legend. Simpler to read
+    colorsLegend <- by(data.frame(Color = colors, maxnum = ymax),
+                       list(Drivers = ndr),
+                       function(x) as.character(x$Color[which.max(x$maxnum)]))
+    colorsLegend <- data.frame(Drivers = as.integer(row.names(colorsLegend)),
+                               Color = cbind(colorsLegend)[, 1],
+                               stringsAsFactors = FALSE)
     ## To show what it would look like
     ## plot(1:(sum(minor)), col = colors, pch = 16, cex = 3)
     ## legend(1, length(ndr), col = colorsLegend$Color, legend = names(minor),
@@ -445,6 +438,44 @@ myhsvcols <- function(ndr, srange = c(0.4, 1),
     return(list(colors = colors,
                 colorsLegend = colorsLegend))
 }
+
+
+
+## Testcode for log = y and log = x
+
+
+### Why not stacked or stream plots with log transformed data:
+## log(a + b) != log(a) + log(b)
+
+## but stacked plots depend on additivity for the output to make
+## sense. You can have an increase in total population but the stacked
+## plot with log data would suggest you get a decrease.
+
+## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
+## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
+
+
+########## colors, etc
+
+### Notes for me
+
+library(RColorBrewer)
+
+display.brewer.all()
+
+## For genotypes, use "categorical", like "Set1", "Paired", or "Dark2"
+
+
+
+## for distinct colors, from gplots
+rich.colors(5)
+?rich.colors ## from gplots
+plot(1:8, col = rich.colors(8), pch = 16, cex = 3)
+## From the example on the colorspace vignette
+plot(1:6, col = rainbow_hcl(6, c = 60, l = 75), pch = 16, cex = 3)
+
+
+
 
 
 plot(1:6, col = hsv(seq(from = 0, to = 1, length.out = 10), 1, 1), pch = 16, cex = 3)
