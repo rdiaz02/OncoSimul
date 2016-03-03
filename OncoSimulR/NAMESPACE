@@ -29,5 +29,5 @@ importFrom("graphics", "axis", "box", "legend", "matplot", "par")
 importFrom("methods", "as")
 importFrom("stats", "na.omit", "runif")
 importFrom("utils", "type.convert")
-
+importFrom("RColorBrewer", "brewer.pal")
 
