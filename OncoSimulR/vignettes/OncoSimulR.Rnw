@@ -2665,6 +2665,7 @@ A stacked plot might be better to show the extent of clonal competition
 (plotting takes some time ---a stream plot reveals similar patterns and is
 also slower than the line plot).
 
+
 <<>>=
 plot(mcfLs, type = "stacked")
 @ 
@@ -2806,6 +2807,7 @@ log-transformed y-axis, even if there are other clones/genotypes present.
 
 (We use a somewhat large mutation rate than usual, so that the simulation
 runs quickly.)
+
 
 <<fig.width=6>>=
 
@@ -2964,10 +2966,12 @@ summary(i1_e)
 @ 
 
 
+
+
 \subsection{Interactive graphics}\label{interactive}
 
 It is possible to create interactive stacked area and stream plots using
-the \code{streamgraph} package, available from
+the \Githubpkg{streamgraph} package, available from
 \Burl{https://github.com/hrbrmstr/streamgraph}.  However, that package is
 not available as a CRAN or BioConductor package, and thus we cannot depend
 on it for this vignette (or this package). You can, however, paste the
@@ -2982,6 +2986,7 @@ convert the data from the original format in which it is stored into
 As an example, we will use the data we generated above for section
 \ref{bauer2}.
 
+
 <<eval=FALSE>>=
 ## Convert the data
 lb1 <- OncoSimulWide2Long(b1)
@@ -2991,20 +2996,24 @@ library(devtools)
 devtools::install_github("hrbrmstr/streamgraph")
 library(streamgraph)
 
-## Sream plot for Genotypes
-streamgraph(lb1, Genotype, Y, Time, scale = "continuous") %>%
-    sg_legend(show=TRUE, label="Genotype: ")
+## Stream plot for Genotypes
+sg_legend(streamgraph(lb1, Genotype, Y, Time, scale = "continuous"),
+              show=TRUE, label="Genotype: ")
 
-## Staked area plot 
+## Staked area plot and we use the pipe
 streamgraph(lb1, Genotype, Y, Time, scale = "continuous", 
-            offset = "zero") %>%
-    sg_legend(show=TRUE, label="Genotype: ")
+          offset = "zero") %>% sg_legend(show=TRUE, label="Genotype: ")
 @ 
 
 
+%% (Note: the idiomatic way of doing the above with \CRANpkg{tidyr} is using 
+%% \verb= %>% =, the pipe operator. Something like 
+%% \begin{verbatim}
+%% streamgraph(lb1, Genotype, Y, Time, scale = ``continuous'',  
+%%            offset = ``zero'') \%>\%                                                                                                                                sg_legend(show=TRUE, label=``Genotype: '') 
+%% \end{verbatim}
 
-
-
+%% but it gives me problems with knitr, etc).
 
 
 
@@ -3056,6 +3065,7 @@ pancrSamp <- oncoSimulSample(10, pancr)
 pancrSamp
 
 @ 
+
 
 
 \subsection{Differences between \Rfunction{samplePop} and
