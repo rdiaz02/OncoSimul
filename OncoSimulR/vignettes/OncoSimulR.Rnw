@@ -2969,16 +2969,18 @@ summary(i1_e)
 It is possible to create interactive stacked area and stream plots using
 the \code{streamgraph} package, available from
 \Burl{https://github.com/hrbrmstr/streamgraph}.  However, that package is
-not available as CRAN or BioConductor package, and thus we cannot depend
-on it for this vignette. You can, however, paste the code and make it run
-locally.
+not available as a CRAN or BioConductor package, and thus we cannot depend
+on it for this vignette (or this package). You can, however, paste the
+code below and make it run locally.
 
-Before this works, we need to convert the data from the original format in
-which it is stored into ``long format''. A simple convenience function is
-provided as \Rfunction{OncoSimulWide2Long}.
+Before calling the \Rfunction{streamgraph} function, though, we need to
+convert the data from the original format in which it is stored into
+``long format''. A simple convenience function is provided as
+\Rfunction{OncoSimulWide2Long} in \Biocpkg{OncoSimulR}.
 
 
-As an example, we will use the data we generated above for section \ref{bauer2}.
+As an example, we will use the data we generated above for section
+\ref{bauer2}.
 
 <<eval=FALSE>>=
 ## Convert the data
@@ -2989,10 +2991,14 @@ library(devtools)
 devtools::install_github("hrbrmstr/streamgraph")
 library(streamgraph)
 
-## Stacked area plot for Genotypes
-streamgraph(lb1, Genotype, Y, Time, scale = "continuous")
-## Stream plot for Drivers
-streamgraph(lb1, Drivers, Y, Time, scale = "continuous", offset = "zero")
+## Sream plot for Genotypes
+streamgraph(lb1, Genotype, Y, Time, scale = "continuous") %>%
+    sg_legend(show=TRUE, label="Genotype: ")
+
+## Staked area plot 
+streamgraph(lb1, Genotype, Y, Time, scale = "continuous", 
+            offset = "zero") %>%
+    sg_legend(show=TRUE, label="Genotype: ")
 @ 
 
 

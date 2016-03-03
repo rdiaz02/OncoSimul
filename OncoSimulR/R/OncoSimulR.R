@@ -808,10 +808,20 @@ plot.oncosimul <- function(x,
                            ...
                            ) {
 
-    ## FIXME: test this
+
     if(!(type %in% c("stacked", "stream", "line")))
         stop("Type of plot unknown: it must be one of",
              "stacked, stream or line")
+
+    if(!(show %in% c("genotypes", "drivers")))
+        stop("show must be one of",
+             "genotypes or drivers")
+
+    if(!(breakSortColors %in% c("oe", "distave", "random")))
+        stop("breakSortColors must be one of",
+             "oe, distave, or random")
+
+    
 
     colauto <- FALSE
     if(col == "auto" && (type == "line") && (show == "drivers"))
@@ -1010,7 +1020,7 @@ plotClonesSt <- function(z, ndr,
             cll <- list(colors = col)
         }
         x <- z$pops.by.time[, 1]
-        if(grepl("y", log)) { ## FIXME:TEST add a test for this
+        if(grepl("y", log)) {
             stop("It makes little sense to do a stacked/stream",
                  "plot after taking the log of the y data.")
         }
