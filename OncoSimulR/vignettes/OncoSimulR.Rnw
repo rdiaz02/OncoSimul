@@ -2971,7 +2971,7 @@ summary(i1_e)
 \subsection{Interactive graphics}\label{interactive}
 
 It is possible to create interactive stacked area and stream plots using
-the \Githubpkg{streamgraph} package, available from
+the \Rpackage{streamgraph} package, available from
 \Burl{https://github.com/hrbrmstr/streamgraph}.  However, that package is
 not available as a CRAN or BioConductor package, and thus we cannot depend
 on it for this vignette (or this package). You can, however, paste the
