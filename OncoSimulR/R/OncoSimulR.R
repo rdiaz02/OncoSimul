@@ -1218,61 +1218,6 @@ plotClones <- function(z, ndr = NULL, na.subs = TRUE,
 }
 
 
-plotDrivers0 <- function(x,
-                         ndr,
-                         timescale = 1,
-                         trim.no.drivers = FALSE,
-                         addtot = TRUE,
-                         addtotlwd = 2,
-                         na.subs = TRUE, log = "y", type = "l",
-                         lty = 1:9, col = c(8, "orange", 6:1),
-                         lwd = 2,
-                         ...) {
-    ## z <- create.drivers.by.time(x, numDrivers)
-    z <- create.drivers.by.time(x, ndr)
-    ## we can now never enter here because trim.no.drivers is always FALSE
-    ## in call.
-    if(trim.no.drivers && x$MaxDriversLast) {
-        fi <- which(apply(z[, -c(1, 2), drop = FALSE], 1,
-                          function(x) sum(x) > 0))[1]
-        z <- z[fi:nrow(z), , drop = FALSE]
-    }
-    y <- z[, 2:ncol(z), drop = FALSE]
-    if(na.subs){
-        y[y == 0] <- NA
-    }
-
-    ## Likewise, we can never enter here now as timescale fixed at 1. And
-    ## this is silly.
-    ## if(timescale != 1) {
-    ##     time <- timescale * z[, 1]
-    ## } else {
-    ##     time <- z[, 1]
-    ## }
-    time <- timescale * z[, 1]
-    if(nrow(y) <= 2) type <- "b"
-    ## Allow for the weird case of possibly missing drivers
-    col2 <- rep(col, length.out = (1 + max(ndr)))
-    col2 <- col2[sort(unique(ndr)) + 1]
-    matplot(x = time,
-            y = y,
-            type = type, log = log, lty = lty, col = col2, lwd = lwd,
-            ...)
-    if(addtot) {
-        tot <- rowSums(y, na.rm = TRUE)
-        lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
-    }
-
-    ## This will work even if under the weird case of a driver missing
-    ldrv <- unlist(lapply(strsplit(colnames(y), "dr_", fixed = TRUE),
-                          function(x) x[2]))
-    legend(x = "topleft",
-           title = "Number of drivers",
-           lty = lty, col = col2, lwd = lwd,
-           legend = ldrv)
-    ## legend = (1:ncol(y)) - 1)
-}
-
 
 
 

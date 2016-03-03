@@ -191,6 +191,7 @@ plot.stacked2 <- function(
 
 
 plotClonesSt <- function(z, ndr,
+                         show = "drivers",
                          na.subs = TRUE,
                          log = "y",
                          lwd = 1,
@@ -205,6 +206,7 @@ plotClonesSt <- function(z, ndr,
                          vrange = c(0.8, 1),
                          type = "stacked",
                          breakSortColors = "oe",
+                         colauto = TRUE,
                          ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
@@ -231,9 +233,17 @@ plotClonesSt <- function(z, ndr,
     oo <- order(ndr)
     y <- y[, oo, drop = FALSE]
     ndr <- ndr[oo]
-    col <- col[ndr + 1]
+    if(show == "drivers") {
+        col <- rep(col, length.out = (1 + max(ndr)))[ndr + 1]
+        lty <- rep(lty, length.out = ncol(y))
+    } else {
+        if(length(col) < max(ndr))
+            warning("Repeating colors; you might want to",
+                    "pass a col vector of more elements")
+        col <- rep(col, length.out = (max(ndr)))[ndr]
+    }
     ## }
-
+    browser()
     if(type == "line") {
         matplot(x = z$pops.by.time[, 1],
                 y = y,
@@ -242,10 +252,27 @@ plotClonesSt <- function(z, ndr,
                 lwd = lwd,
                 ...)
         box()
+        if(show == "genotypes") {
+            if(!inherits(z, "oncosimul2")) {
+                ldrv <- genotypeLabel(z)
+            } else {
+                ldrv <- z$GenotypesLabels
+            }
+            ldrv[ldrv == ""] <- "Wt"
+            legend(x = "topleft",
+                   title = "Genotypes",
+                   lty = lty,
+                   col = col, lwd = lwd,
+                   legend = ldrv)
+        }
     } else {
         ymax <- colSums(y)
-        cll <- myhsvcols(ndr, ymax, srange = srange, vrange = vrange,
-                         breakSortColors = breakSortColors)
+        if((show == "drivers") || ((show == "genotypes") && (!colauto))) {
+            cll <- myhsvcols(ndr, ymax, srange = srange, vrange = vrange,
+                             breakSortColors = breakSortColors)
+        } else {
+            cll <- list(colors = col)
+        }
         x <- z$pops.by.time[, 1]
         if(grepl("y", log)) { ## FIXME:TEST add a test for this
             stop("It makes little sense to do a stacked/stream",
@@ -254,35 +281,48 @@ plotClonesSt <- function(z, ndr,
         if(grepl("x", log)) {
             x <- log10(x + 1)
         }
-
+        
         if (type == "stacked") {
             plot.stacked2(x = x,
+                          y = y,
+                          order.method = order.method,
+                          border = border,
+                          lwd = lwd,
+                          col = cll$colors,
+                          log = log) 
+        } else if (type == "stream") {
+            plot.stream2(x = x,
                          y = y,
                          order.method = order.method,
                          border = border,
                          lwd = lwd,
                          col = cll$colors,
-                         log = log) 
-        } else if (type == "stream") {
-            plot.stream2(x = x,
-                        y = y,
-                        order.method = order.method,
-                        border = border,
-                        lwd = lwd,
-                        col = cll$colors,
-                        frac.rand = stream.frac.rand,
-                        spar = stream.spar,
-                        center = stream.center,
-                        log = log)
+                         frac.rand = stream.frac.rand,
+                         spar = stream.spar,
+                         center = stream.center,
+                         log = log)
         }
-        legend(x = "topleft",
-               title = "Number of drivers",
-               pch = 15,
-               ## lty = 1,
-               ## lwd = 2,
-               col = cll$colorsLegend$Color,
-               legend = cll$colorsLegend$Drivers)
-        
+        if(show == "drivers") {
+            legend(x = "topleft",
+                   title = "Number of drivers",
+                   pch = 15,
+                   ## lty = 1,
+                   ## lwd = 2,
+                   col = cll$colorsLegend$Color,
+                   legend = cll$colorsLegend$Drivers)
+        } else if (show == "genotypes") {
+            if(!inherits(z, "oncosimul2")) {
+                ldrv <- genotypeLabel(z)
+            } else {
+                ldrv <- z$GenotypesLabels
+            }
+            ldrv[ldrv == ""] <- "Wt"
+            legend(x = "topleft",
+                   title = "Genotypes",
+                   pch = 15,
+                   col = cll$colors,
+                   legend = ldrv)
+        }
     }
 }
 
@@ -297,11 +337,12 @@ relabelLogaxis <- function(side = 2) {
 
 
 plot.oncosimul2 <- function(x,
-                           type = "stacked",
-                           col = "auto",
-                           log = "y",
-                           ltyClone = 2:6,
-                           lwdClone = 0.9,
+                            show = "drivers", 
+                            type = "stacked",
+                            col = "auto",
+                            log = "",
+                            ltyClone = 2:6,
+                            lwdClone = 0.9,
                            ltyDrivers = 1,
                            lwdDrivers = 3,
                            xlab = "Time units",
@@ -331,19 +372,38 @@ plot.oncosimul2 <- function(x,
     if(!(type %in% c("stacked", "stream", "line")))
         stop("Type of plot unknown: it must be one of",
              "stacked, stream or line")
+
+    colauto <- FALSE
+    if(col == "auto" && (type == "line") && (show == "drivers"))
+        col <- c(8, "orange", 6:1)
+    if(col == "auto" && (show == "genotypes")) {
+        col <- colorRampPalette(brewer.pal(8, "Dark2"))(ncol(x$pops.by.time) - 1)
+        colauto <- TRUE
+    }
     
-    if(col == "auto" && (type == "line") )
-        col = c(8, "orange", 6:1)
-    
+    if(show == "genotypes") {
+        plotDrivers <- FALSE
+        plotClones <- TRUE
+    }
     
     if(thinData)
         x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
 
-    ## uvx
-    if(!inherits(x, "oncosimul2"))
-        ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
-    else {
-        ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+    ## For genotypes, ndr is now the genotypes.  Actually, ndr is now just
+    ## a sequence 1:(ncol(y) - 1)
+
+    ## The user will want to change the colors, like a colorRamp, etc. Or
+    ## rainbow.
+
+    ## genotypes and line, always call plotDrivers0
+    if(show == "drivers") {
+        if(!inherits(x, "oncosimul2"))
+            ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
+        else {
+            ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+        }
+    } else { ## show we are showing genotypes
+        ndr <- 1:(ncol(x$pops.by.time) - 1)
     }
     
     if(is.null(yl)) {
@@ -364,12 +424,18 @@ plot.oncosimul2 <- function(x,
         op <- par(mar = m1)
         par(fig = c(0, 1, 0, 0.8), new = TRUE)  
     }
+
+    ## Shows its history: plotClones makes plotDrivers0 unneeded with
+    ## stacked and stream plots. But now so with line plot.
+    ## When showing genotypes, plotDrivers0 with line only used for
+    ## showing the legend.
     if(plotClones) {
         plotClonesSt(x,
-                     ndr = ndr, 
+                     ndr = ndr,
+                     show = show,
                      xlab = xlab,
                      ylab = ylab,
-                     lty = ltyClone,
+                     lty = ifelse(show == "drivers", ltyClone, ltyDrivers),
                      col = col, 
                      ylim = yl,
                      lwd = lwdClone,
@@ -384,13 +450,14 @@ plot.oncosimul2 <- function(x,
                      vrange = vrange,
                      type = type,
                      breakSortColors = breakSortColors,
+                     colauto = colauto,
                      ...)
     }
 
     if(plotClones && plotDrivers && (type == "line"))
         par(new = TRUE)
     
-    if(plotDrivers && (type == "line")){
+    if( plotDrivers && (type == "line") ) {
         plotDrivers0(x,
                      ndr,
                      timescale = 1,
@@ -466,6 +533,68 @@ myhsvcols <- function(ndr, ymax, srange = c(0.4, 1),
                 colorsLegend = colorsLegend))
 }
 
+genotypeLabel <- function(x) {
+    ## For oncosimul objects, that do not have the GenotypesLabels object
+    apply(x$Genotypes, 2,
+          function(x) paste(which(x == 1), sep = "", collapse = ", "))
+}
+
+plotDrivers0 <- function(x,
+                         ndr,
+                         timescale = 1,
+                         trim.no.drivers = FALSE,
+                         addtot = TRUE,
+                         addtotlwd = 2,
+                         na.subs = TRUE, log = "y", type = "l",
+                         lty = 1:9, col = c(8, "orange", 6:1),
+                         lwd = 2,
+                         ...) {
+    ## z <- create.drivers.by.time(x, numDrivers)
+    z <- create.drivers.by.time(x, ndr)
+    ## We can now never enter here because trim.no.drivers is always FALSE
+    ## in call.
+    ## if(trim.no.drivers && x$MaxDriversLast) {
+    ##     fi <- which(apply(z[, -c(1, 2), drop = FALSE], 1,
+    ##                       function(x) sum(x) > 0))[1]
+    ##     z <- z[fi:nrow(z), , drop = FALSE]
+    ## }
+    y <- z[, 2:ncol(z), drop = FALSE]
+    if(na.subs){
+        y[y == 0] <- NA
+    }
+
+    ## Likewise, we can never enter here now as timescale fixed at 1. And
+    ## this is silly.
+    ## if(timescale != 1) {
+    ##     time <- timescale * z[, 1]
+    ## } else {
+    ##     time <- z[, 1]
+    ## }
+    time <- timescale * z[, 1]
+    if(nrow(y) <= 2) type <- "b"
+    ## Allow for the weird case of possibly missing drivers
+    col2 <- rep(col, length.out = (1 + max(ndr)))
+    col2 <- col2[sort(unique(ndr)) + 1]
+    matplot(x = time,
+            y = y,
+            type = type, log = log, lty = lty, col = col2, lwd = lwd,
+            ...)
+    if(showGenotypes)
+        addtot <- FALSE 
+    if(addtot) {
+        tot <- rowSums(y, na.rm = TRUE)
+        lines(time, tot, col = "black", lty = 1, lwd = addtotlwd)
+    }
+    
+    ## This will work even if under the weird case of a driver missing
+    ldrv <- unlist(lapply(strsplit(colnames(y), "dr_", fixed = TRUE),
+                          function(x) x[2]))
+    legend(x = "topleft",
+           title = "Number of drivers",
+           lty = lty, col = col2, lwd = lwd,
+           legend = ldrv)
+    ## legend = (1:ncol(y)) - 1)
+}
 
 
 
@@ -484,6 +613,37 @@ myhsvcols <- function(ndr, ymax, srange = c(0.4, 1),
 
 ## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
 ## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
+
+
+
+###############
+
+sa <- 0.1
+sb <- -0.2
+sab <- 0.25
+sac <- -0.1
+sbc <- 0.25
+
+sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                                       "A : -B" = sa,
+                                       "A : C" = sac,
+                                       "A:B" = sab,
+                                       "-A:B:C" = sbc),
+                         geneToModule = c(
+                             "Root" = "Root",
+                             "A" = "a1, a2",
+                             "B" = "b",
+                             "C" = "c"))
+evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
+
+
+e1 <- oncoSimulIndiv(sv2, model = "McFL",
+                     mu = 5e-6,
+                     sampleEvery = 0.02,
+                     keepEvery = 1,
+                     initSize = 2000,
+                     finalTime = 3000,
+                     onlyCancer = FALSE)
 
 
 ########## colors, etc
