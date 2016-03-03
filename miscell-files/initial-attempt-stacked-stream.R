@@ -78,37 +78,9 @@ plot(1:6, col = hsv(seq(from = 0, to = 1, length.out = 10), 1, 1), pch = 16, cex
 
 
 
-dwl <- function(time, y, ndr, genotLabels) {
-    ## Put data in long format, for ggplot et al
-    nc <- ncol(y)
-    nr <- nrow(y)
-    y <- as.vector(y)
-    df <- data.frame(Time = rep(time, nc),
-                     Y = y,
-                     Drivers = rep(ndr, rep(nr, nc)),
-                     Genotype = rep(genotLabels, rep(nr, nc)))
-    return(df)
-}
 
-dwla <- function(x) {
-    if(!inherits(x, "oncosimul2"))
-        ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
-    else {
-        ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
-    }
 
-    y <- x$pops.by.time[, 2:ncol(x$pops.by.time), drop = FALSE]
 
-    oo <- order(ndr)
-    y <- y[, oo, drop = FALSE]
-    ndr <- ndr[oo]
-    
-    dwl(x$pops.by.time[, 1],
-        y,
-        ndr,
-        x$GenotypesLabels)
-
-}
 
 devtools::install_github("hrbrmstr/streamgraph")
 library(streamgraph)
@@ -137,6 +109,16 @@ streamgraph(dd1, Genotype, Y, Time, scale = "continuous", offset = "zero")
 ## But probably hard to use a range of colors by drivers. And this ain't in CRAN yet.
 
 
+dwl <- function(time, y, ndr, genotLabels) {
+    nc <- ncol(y)
+    nr <- nrow(y)
+    y <- as.vector(y)
+    df <- data.frame(Time = rep(time, nc),
+                     Y = y,
+                     Drivers = rep(ndr, rep(nr, nc)),
+                     Genotype = rep(genotLabels, rep(nr, nc)))
+    return(df)
+}
 
 
 dwlb <- function(x, min.col = .2, max.col = .7) {
@@ -387,5 +369,37 @@ myhsv2 <- function(major = 5, minor = 6,
 
 clcl <- function(ramp) {
     apply(ramp, 1, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
+}
+
+dwl <- function(time, y, ndr, genotLabels) {
+    ## Put data in long format, for ggplot et al
+    nc <- ncol(y)
+    nr <- nrow(y)
+    y <- as.vector(y)
+    df <- data.frame(Time = rep(time, nc),
+                     Y = y,
+                     Drivers = rep(ndr, rep(nr, nc)),
+                     Genotype = rep(genotLabels, rep(nr, nc)))
+    return(df)
+}
+
+dwla <- function(x) {
+    if(!inherits(x, "oncosimul2"))
+        ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
+    else {
+        ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+    }
+
+    y <- x$pops.by.time[, 2:ncol(x$pops.by.time), drop = FALSE]
+
+    oo <- order(ndr)
+    y <- y[, oo, drop = FALSE]
+    ndr <- ndr[oo]
+    
+    dwl(x$pops.by.time[, 1],
+        y,
+        ndr,
+        x$GenotypesLabels)
+
 }
 

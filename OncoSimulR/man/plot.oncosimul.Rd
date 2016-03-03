@@ -142,6 +142,9 @@
     driver color while using sligtly different colors for different
     clones of a driver. See the code by doing
     \code{OncoSimulR:::myhsvcols}.
+
+    You can specify your own vector of colors, but it will be ignored
+  with \code{show == "drivers"}.
   }
 
 

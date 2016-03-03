@@ -847,14 +847,14 @@ plot.oncosimul <- function(x,
         ndr <- 1:(ncol(x$pops.by.time) - 1)
     }
     
-    if(is.null(yl)) {
+    if((type == "line") && is.null(yl)) {
         if(log %in% c("y", "xy", "yx") )
             yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
         else
             yl <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
     }
     if(plotDiversity) {
-        par(fig = c(0, 1, 0.8, 1))
+        oppd <- par(fig = c(0, 1, 0.8, 1))
         m1 <- par()$mar
         m <- m1
         m[c(1, 3)] <- c(0, 0.7)
@@ -913,6 +913,9 @@ plot.oncosimul <- function(x,
                      log = log, ylim = yl,
                      legend.ncols = legend.ncols,
                      ...)
+    }
+    if(plotDiversity) {
+        par(oppd)
     }
     
 }
@@ -1000,7 +1003,7 @@ plotClonesSt <- function(z, ndr,
         }
     } else {
         ymax <- colSums(y)
-        if((show == "drivers") || ((show == "genotypes") && (!colauto))) {
+        if((show == "drivers") || ((show == "genotypes") && (colauto))) {
             cll <- myhsvcols(ndr, ymax, srange = srange, vrange = vrange,
                              breakSortColors = breakSortColors)
         } else {
@@ -1546,6 +1549,35 @@ eFinalMf <- function(initSize, s, j) {
     ## Set B(d) = D(N)
     K <- initSize/(exp(1) - 1)
     return(K * (exp( (1 + s)^j) - 1))
+}
+
+
+
+OncoSimulWide2Long <- function(x) {
+    ## Put data in long format, for ggplot et al
+    
+    if(!inherits(x, "oncosimul2")) {
+        ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
+        genotLabels <- genotypeLabel(x)
+    } else {
+        ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+        genotLabels <- x$GenotypesLabels
+    }
+    genotLabels[genotLabels == ""] <- "Wt"
+    y <- x$pops.by.time[, 2:ncol(x$pops.by.time), drop = FALSE]
+    y[y == 0] <- NA
+    
+    oo <- order(ndr)
+    y <- y[, oo, drop = FALSE]
+    ndr <- ndr[oo]
+
+    nc <- ncol(y)
+    nr <- nrow(y)
+    y <- as.vector(y)
+    return(data.frame(Time = rep(x$pops.by.time[, 1], nc),
+                      Y = y,
+                      Drivers = factor(rep(ndr, rep(nr, nc))),
+                      Genotype = rep(genotLabels, rep(nr, nc))))
 }
 
 

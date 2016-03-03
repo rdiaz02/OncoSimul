@@ -509,7 +509,7 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
   // FIXME: when sure no problems, remove at if needed for speed.
   for(auto const &g : order_int) {
     order_part += (comma + intName.at(g));
-    comma = ", ";
+    comma = " > "; // comma = ", ";
   }
   comma = "";
   for(auto const &g : rest_int) {

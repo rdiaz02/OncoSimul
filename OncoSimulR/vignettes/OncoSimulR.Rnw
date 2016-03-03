@@ -268,21 +268,103 @@ packageVersion("OncoSimulR")
 @ 
 
 
-\subsection{A temporary note about versions}\label{versions}
+
+\subsection{Two quick examples}\label{quickexample}
+
+Following the above we will run two examples. First a model with a few
+genes and \textbf{epistasis}:
+
+<<>>=
+## 1. Fitness effects: here we specify a 
+##    epistatic model with modules.
+sa <- 0.1
+sb <- -0.2
+sab <- 0.25
+sac <- -0.1
+sbc <- 0.25
+sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                                       "A : -B" = sa,
+                                       "A : C" = sac,
+                                       "A:B" = sab,
+                                       "-A:B:C" = sbc),
+                         geneToModule = c(
+                             "Root" = "Root",
+                             "A" = "a1, a2",
+                             "B" = "b",
+                             "C" = "c"))
+evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
+
+## 2. Simulate the data. Here we use the "McFL" model and set explicitly
+##    parameters for mutation rate, final and initial sizes, etc.
+ep1 <- oncoSimulIndiv(sv2, model = "McFL",
+                     mu = 5e-6,
+                     sampleEvery = 0.02,
+                     keepEvery = 0.5,
+                     initSize = 2000,
+                     finalTime = 3000,
+                     onlyCancer = FALSE)
+
+## 3. We will not analyze those data any further. We will only plot them.
+par(mfrow = c(1, 2))
+plot(ep1, show = "drivers")
+plot(ep1, show = "genotypes")
+@ 
+
+
+
+
+As a second example, we will use a model where we specify
+\textbf{restrictions in the order of accumulation of mutations} using the
+pancreatic cancer poset in Gerstung et al.\ \cite{Gerstung2011} (see more
+details in section \ref{pancreas}):
+
+<<fig.width=4>>=
+## 1. Fitness effects: 
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), 
+                   "SMAD4", "CDNK2A", 
+                   "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                   "TP53", "MLL3",
+                   rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.1,
+               sh = -0.9,
+               typeDep = "MN"))
+## How does it look like?
+plot(pancr)
+
+## 2. Simulate from it. 
+set.seed(1) ## Fix the seed, so we can repeat it
+ep2 <- oncoSimulIndiv(pancr, model = "McFL",
+                     mu = 1e-6,
+                     sampleEvery = 0.02,
+                     keepEvery = 1,
+                     initSize = 1000,
+                     finalTime = 10000,
+                     onlyCancer = FALSE)
+
+## 3. What genotypes and drivers we get?
+plot(ep2, show = "genotypes")
+plot(ep2, show = "drivers", addtot = TRUE)
+@ 
+
+
+
+\subsection{Versions}\label{versions}
 
 In this vignette and the documentation I often refer to version 1 (v.1)
 and version 2 of OncoSimulR. Version 1 is the version available up to, and
-including, BioConductor v.\ 3.1. Version 2 of OncoSimulR is available for
-the current BioConductor development branch, 3.2. If you look at the
-package version, however, it currently shows as 1.99.x (where x should be
-a number $\ge 4$). That is because of the versioning scheme of
-BioConductor. This will become 2.0 in the next release of BioConductor.
-
-Summary: if you are using the current development version of BioConductor,
-or you grab the sources from github
+including, BioConductor v.\ 3.1. Version 2 of OncoSimulR is available
+starting from BioConductor 3.2 (and, of course, available too from
+development versions of BioC). %% If you look at the
+%% package version, however, it currently shows as 1.99.x (where x should be
+%% a number $\ge 4$). That is because of the versioning scheme of
+%% BioConductor. This will become 2.0 in the next release of BioConductor.
+So, if you are using the current stable or development version of
+BioConductor, or you grab the sources from github
 (\Burl{https://github.com/rdiaz02/OncoSimul}) you are using what we call
-version 2. If you see a version in the package that says ``1.99.x'', where
-``x'' is any number, you are too.
+version 2. %% If you see a version in the package that says ``1.99.x'', where
+%% ``x'' is any number, you are too.
 
 
 
@@ -2449,8 +2531,49 @@ plot(rv2, expandModules = TRUE,   autofit = TRUE)
 
 
 \clearpage
-\section{Running the simulations}\label{simul}
+\section{Running and plotting the simulations}\label{simul}
 
+
+\subsection{Bauer's example again}\label{bauer2}
+We will use the model of Bauer et al., \cite{Bauer2014} that we saw in
+section \ref{bauer}.
+
+<<>>=
+K <- 5
+sd <- 0.1
+sdp <- 0.15
+sp <- 0.05
+bauer <- data.frame(parent = c("Root", rep("p", K)),
+                    child = c("p", paste0("s", 1:K)),
+                    s = c(sd, rep(sdp, K)),
+                    sh = c(0, rep(sp, K)),
+                    typeDep = "MN")
+fbauer <- allFitnessEffects(bauer)
+set.seed(1)
+## Use fairly large mutation rate
+b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000) 
+@ 
+
+
+We will now use a variety of plots
+<<>>=
+## First, drivers
+plot(b1, type = "line", addtot = TRUE)
+plot(b1, type = "stacked")
+plot(b1, type = "stream")
+
+## Next, genotypes
+plot(b1, show = "genotypes", type = "line")
+plot(b1, show = "genotypes", type = "stacked")
+plot(b1, show = "genotypes", type = "stream")
+@ 
+
+In this case, probably the stream plots are most helpful. Note, however,
+that (in contrast to some figures in the literature showing models of
+clonal expansion) the stream plot (or the stacked plot) does not try to
+explicitly show parent-descendant relationships, which would hardly be
+realistically possible in these plots (although the plots of phylogenies
+in section \ref{phylog} could be of help).
 
 \subsection{McFarland model with 5000 passengers and 70
   drivers}\label{mcf5070}
@@ -2478,6 +2601,11 @@ mcf1s <-  oncoSimulIndiv(mcf1,
 plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "")
 summary(mcf1s)
 @ 
+
+
+With the above output (where we see there are over 500 different
+genotypes) trying to represent the genotypes makes no sense. 
+
 
 
 \subsection{McFarland model with 50000 passengers and 70
@@ -2516,6 +2644,8 @@ object has been trimmed by removing empty passenger rows in the Genotype matrix)
 data(mcfLs)
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "", plotDiversity = TRUE)
 @ 
+
+
 The argument \Rcode{plotDiversity = TRUE} asks to show a small plot on top
 with Shannon's diversity index.
 
@@ -2530,6 +2660,15 @@ summary(colSums(mcfLs$Genotypes[-(1:70), ]))
 Note that we see clonal competition between clones with the same number of
 drivers (and with different drivers, of course). We will return to this
 (section \ref{clonalint}).
+
+A stacked plot might be better to show the extent of clonal competition
+(plotting takes some time ---a stream plot reveals similar patterns and is
+also slower than the line plot).
+
+<<>>=
+plot(mcfLs, type = "stacked")
+@ 
+
 
 %% %% The problem is the Genotype matrix. We remove empty passenger rows.
 %% <<>>=
@@ -2578,20 +2717,58 @@ sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
 summary(sm)
 @ 
 
+%% We will use several plots here.
+
+%% <<>>=
+%% ## Show drivers, line plot
+%% plot(sm, show = "drivers", type = "line", addtot = TRUE)
+%% ## drivers, stacked
+%% plot(sm, show = "drivers", type = "stacked")
+
+%% ## Genotypes, line plot
+%% plot(sm, show = "genotypes", type = "line")
+%% ## genotypes, stacked
+%% plot(sm, show = "genotypes", type = "stacked")
+%% @ 
+
 
 <<>>=
+set.seed(1234)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
                  model = "Bozic")[1:10, ]
 sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
                        model = "Bozic", 
-                       mu = 1e-6,
+                       mu = 5e-6,
                        detectionSize = 1e8, 
                        detectionDrivers = 4,
                        sampleEvery = 2,
                        initSize = 2000,
                        onlyCancer = TRUE)
 summary(sb)
+
+## We will use several plots here.
+## Show drivers, line plot
+plot(sb,show = "drivers", type = "line", addtot = TRUE)
+## drivers, stacked
+plot(sb,show = "drivers", type = "stacked")
+## drivers, stream
+plot(sb,show = "drivers", type = "stream")
+## Genotypes, line plot
+plot(sb,show = "genotypes", type = "line")
+## genotypes, stacked
+plot(sb,show = "genotypes", type = "stacked")
+## genotypes, stream
+plot(sb,show = "genotypes", type = "stream")
 @ 
+
+The above illustrates again that different types of plots can be useful to
+reveal different patterns in the data. For instance, here, because of the
+huge relative frequency of one of the clones/genotypes, the stacked and
+stream plots do not reveal the other clones/genotypes as we cannot use a
+log-transformed y-axis, even if there are other clones/genotypes present.
+
+
+
 
 \subsection{Simulation with order effects and McFL model}\label{clonalint}
 %% Interesting to show effects of order: o3
@@ -2643,7 +2820,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        keepEvery = 5,
                        initSize = 2000,
                        finalTime = 6000,
-                       onlyCancer = FALSE); 
+                       onlyCancer = FALSE) 
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
 
 @ 
@@ -2658,6 +2835,14 @@ not increase in a simple way with drivers:
 <<>>=
 evalAllGenotypes(examplesFitnessEffects[["o3"]])
 @ 
+
+A few figures could help:
+
+<<>>=
+plot(tmp, show = "genotypes")
+plot(tmp, show = "genotypes", type = "line")
+@ 
+
 
 In this case, the clones with three drivers end up displacing those with
 two by the time we stop; moreover, notice how those with one driver never
@@ -2682,7 +2867,12 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        extraTime = 1500)
 tmp
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+## Improve telling appart the most abundant ones sorting colors
+## differently via breakSortColors
+plot(tmp, show = "genotypes", breakSortColors = "distave")
 @
+
+
 
 As before, the argument \Rcode{plotDiversity = TRUE} asks to show a small
 plot on top with Shannon's diversity index. Here, as before, the quick
@@ -2772,6 +2962,45 @@ evalAllGenotypes(i1, order = FALSE, addwt = TRUE,
 i1_e <- oncoSimulIndiv(i1, model = "Exp")
 summary(i1_e)
 @ 
+
+
+\subsection{Interactive graphics}\label{interactive}
+
+It is possible to create interactive stacked area and stream plots using
+the \code{streamgraph} package, available from
+\Burl{https://github.com/hrbrmstr/streamgraph}.  However, that package is
+not available as CRAN or BioConductor package, and thus we cannot depend
+on it for this vignette. You can, however, paste the code and make it run
+locally.
+
+Before this works, we need to convert the data from the original format in
+which it is stored into ``long format''. A simple convenience function is
+provided as \Rfunction{OncoSimulWide2Long}.
+
+
+As an example, we will use the data we generated above for section \ref{bauer2}.
+
+<<eval=FALSE>>=
+## Convert the data
+lb1 <- OncoSimulWide2Long(b1)
+
+## Install the streamgraph package from github and load
+library(devtools)
+devtools::install_github("hrbrmstr/streamgraph")
+library(streamgraph)
+
+## Stacked area plot for Genotypes
+streamgraph(lb1, Genotype, Y, Time, scale = "continuous")
+## Stream plot for Drivers
+streamgraph(lb1, Drivers, Y, Time, scale = "continuous", offset = "zero")
+@ 
+
+
+
+
+
+
+
 
 \section{Sampling multiple simulations}\label{sample}
 
