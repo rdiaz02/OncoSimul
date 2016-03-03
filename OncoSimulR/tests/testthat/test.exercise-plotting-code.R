@@ -116,6 +116,7 @@ test_that("exercising the fitnessEffects plotting code", {
               
           })
 
+
 test_that("only recognized options", {
     data(examplesFitnessEffects)
     expect_error(plot(examplesFitnessEffects[["cbn1"]],
@@ -128,3 +129,87 @@ test_that("only recognized options", {
                       type = "gnel"),
                  "plot type not recognized")
 })
+
+
+
+test_that("stacked, stream, genotypes", {
+      data(examplesFitnessEffects)
+      tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                             model = "McFL", 
+                             mu = 5e-5,
+                             detectionSize = 1e8, 
+                             detectionDrivers = 3,
+                             sampleEvery = 0.025,
+                             max.num.tries = 10,
+                             keepEvery = 5,
+                             initSize = 2000,
+                             finalTime = 3000,
+                             onlyCancer = FALSE,
+                             keepPhylog = TRUE)
+      
+      plot(tmp, type = "stacked", show = "genotypes")
+      plot(tmp, type = "stream", show = "genotypes")
+      plot(tmp, type = "line", show = "genotypes")
+
+      plot(tmp, type = "stacked", show = "drivers")
+      plot(tmp, type = "stream", show = "drivers")
+      plot(tmp, type = "line", show = "drivers")
+
+      plot(tmp, type = "stacked", show = "genotypes",
+           breakSortColors = "random")
+      plot(tmp, type = "stream", show = "genotypes",
+           breakSortColors = "distave")
+      
+
+})
+
+
+
+
+test_that("only recognized arguments", {
+      data(examplesFitnessEffects)
+      tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                             model = "McFL", 
+                             mu = 5e-5,
+                             detectionSize = 1e8, 
+                             detectionDrivers = 3,
+                             sampleEvery = 0.025,
+                             max.num.tries = 10,
+                             keepEvery = 5,
+                             initSize = 2000,
+                             finalTime = 3000,
+                             onlyCancer = FALSE,
+                             keepPhylog = TRUE)
+      expect_error(plot(tmp, type = "sto"),
+                   "Type of plot unknown", fixed = TRUE)
+      expect_error(plot(tmp, show = "sto"),
+                   "show must be one of ", fixed = TRUE)
+      expect_error(plot(tmp, breakSortColors = "sto"),
+                   "breakSortColors must be one of ", fixed = TRUE)
+})
+
+test_that("no stacked/stream with log", {
+      data(examplesFitnessEffects)
+      tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                             model = "McFL", 
+                             mu = 5e-5,
+                             detectionSize = 1e8, 
+                             detectionDrivers = 3,
+                             sampleEvery = 0.025,
+                             max.num.tries = 10,
+                             keepEvery = 5,
+                             initSize = 2000,
+                             finalTime = 3000,
+                             onlyCancer = FALSE,
+                             keepPhylog = TRUE)
+      expect_error(plot(tmp, type = "stacked", log = "y"),
+                   "It makes little sense to do a stacked/stream",
+                   fixed = TRUE)
+      expect_error(plot(tmp, type = "stream", log = "xy"),
+                   "It makes little sense to do a stacked/stream",
+                   fixed = TRUE)
+})
+
+## Examples of why it is silly
+## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
+## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
