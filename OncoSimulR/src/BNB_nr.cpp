@@ -502,7 +502,7 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
     }
   }
 
-  std::string order_sep = "_";
+  std::string order_sep = " _ ";
   std::string order_part;
   std::string rest;
   std::string comma = "";

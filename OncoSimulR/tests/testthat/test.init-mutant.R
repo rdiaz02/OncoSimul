@@ -96,10 +96,14 @@ test_that("initMutant lexicog order with noint",
               cn <- colnames(igraph::get.adjacency(plotClonePhylog(tmp, N = 0,
                                                                    returnGraph = TRUE),
                                                    sparse = FALSE))
-              expect_true( "d, m_z" %in% cn )
-              expect_true( "d, m, f_z" %in% cn )
-              expect_false( "m, d_" %in% cn )
-              expect_false( "m, d, f_" %in% cn )
+              expect_true( "d > m _ z" %in% cn )
+              expect_true( "d > m > f _ z" %in% cn )
+              expect_false( "m > d _" %in% cn )
+              expect_false( "m > d > f _" %in% cn )
+              ## expect_true( "d, m_z" %in% cn )
+              ## expect_true( "d, m, f_z" %in% cn )
+              ## expect_false( "m, d_" %in% cn )
+              ## expect_false( "m, d, f_" %in% cn )
           })
 
 
@@ -127,10 +131,10 @@ test_that("initMutant non lexicog order",
               cn <- colnames(igraph::get.adjacency(plotClonePhylog(tmp, N = 0,
                                                                    returnGraph = TRUE),
                                                    sparse = FALSE))
-              expect_false( "d, m_" %in% cn )
-              expect_false( "d, m, f_" %in% cn )
-              expect_true( "m, d_" %in% cn )
-              expect_true( "m, d, f_" %in% cn )
+              expect_false( "d > m _" %in% cn )
+              expect_false( "d > m > f _" %in% cn )
+              expect_true( "m > d _" %in% cn )
+              expect_true( "m > d > f _" %in% cn )
           })
 
 
@@ -348,5 +352,6 @@ test_that("initMutant with oncoSimulPop, 2", {
     expect_true(all(
         lapply(ospI,
                function(x)
-                   as.character(x$other$PhylogDF[1, 1])) == "m, d_v"))
+                   as.character(x$other$PhylogDF[1, 1])) == "m > d _ v"))
+##                   as.character(x$other$PhylogDF[1, 1])) == "m, d_v"))
 })
