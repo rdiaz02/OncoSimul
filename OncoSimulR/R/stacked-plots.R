@@ -54,7 +54,7 @@ plot.stream2 <- function(
                         ...
                         ){
 
-    if(sum(y < 0, na.rm = TRUE) > 0) error("y cannot contain negative numbers")
+    if(sum(y < 0, na.rm = TRUE) > 0) stop("y cannot contain negative numbers")
 
     if(is.null(border)) border <- par("fg")
     border <- as.vector(matrix(border, nrow=ncol(y), ncol=1))
@@ -159,7 +159,7 @@ plot.stacked2 <- function(
                          ylim=NULL,
                          log = "",
                          ...){
-    if(sum(y < 0) > 0) error("y cannot contain negative numbers")
+    if(sum(y < 0) > 0) stop("y cannot contain negative numbers")
 
     if(is.null(border)) border <- par("fg")
     border <- as.vector(matrix(border, nrow=ncol(y), ncol=1))
