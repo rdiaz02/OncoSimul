@@ -3,8 +3,6 @@
 ## http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html
 
 
-## FIXME: former bugs in both funct: r>0 should be x> 0 for "first"
-
 #plot.stream makes a "stream plot" where each y series is plotted 
 #as stacked filled polygons on alternating sides of a baseline.
 #
@@ -207,6 +205,7 @@ plotClonesSt <- function(z, ndr,
                          type = "stacked",
                          breakSortColors = "oe",
                          colauto = TRUE,
+                         legend.ncols = "auto",
                          ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
@@ -259,11 +258,15 @@ plotClonesSt <- function(z, ndr,
                 ldrv <- z$GenotypesLabels
             }
             ldrv[ldrv == ""] <- "Wt"
+            if(legend.ncols == "auto") {
+                if(length(ldrv) > 6) legend.ncols <- 2
+            }
             legend(x = "topleft",
                    title = "Genotypes",
                    lty = lty,
                    col = col, lwd = lwd,
-                   legend = ldrv)
+                   legend = ldrv,
+                   ncol = legend.ncols)
         }
     } else {
         ymax <- colSums(y)
@@ -303,13 +306,17 @@ plotClonesSt <- function(z, ndr,
                          log = log)
         }
         if(show == "drivers") {
+            if(legend.ncols == "auto") {
+                if(length(cll$colorsLegend$Drivers) > 6) legend.ncols <- 2
+            }
             legend(x = "topleft",
                    title = "Number of drivers",
                    pch = 15,
                    ## lty = 1,
                    ## lwd = 2,
                    col = cll$colorsLegend$Color,
-                   legend = cll$colorsLegend$Drivers)
+                   legend = cll$colorsLegend$Drivers,
+                   ncol = legend.ncols)
         } else if (show == "genotypes") {
             if(!inherits(z, "oncosimul2")) {
                 ldrv <- genotypeLabel(z)
@@ -317,11 +324,15 @@ plotClonesSt <- function(z, ndr,
                 ldrv <- z$GenotypesLabels
             }
             ldrv[ldrv == ""] <- "Wt"
+            if(legend.ncols == "auto") {
+                if(length(ldrv) > 6) legend.ncols <- 2
+            }
             legend(x = "topleft",
                    title = "Genotypes",
                    pch = 15,
                    col = cll$colors,
-                   legend = ldrv)
+                   legend = ldrv,
+                   ncol = legend.ncols)
         }
     }
 }
@@ -365,6 +376,7 @@ plot.oncosimul2 <- function(x,
                            srange = c(0.4, 1),
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
+                           legend.ncols = "auto",
                            ...
                            ) {
 
@@ -451,6 +463,7 @@ plot.oncosimul2 <- function(x,
                      type = type,
                      breakSortColors = breakSortColors,
                      colauto = colauto,
+                     legend.ncols = legend.ncols,
                      ...)
     }
 
@@ -469,6 +482,7 @@ plot.oncosimul2 <- function(x,
                      addtot = addtot,
                      addtotlwd = addtotlwd,
                      log = log, ylim = yl,
+                     legend.ncols = legend.ncols,
                      ...)
     }
     
@@ -548,6 +562,7 @@ plotDrivers0 <- function(x,
                          na.subs = TRUE, log = "y", type = "l",
                          lty = 1:9, col = c(8, "orange", 6:1),
                          lwd = 2,
+                         legend.ncols = "auto",
                          ...) {
     ## z <- create.drivers.by.time(x, numDrivers)
     z <- create.drivers.by.time(x, ndr)
@@ -589,10 +604,14 @@ plotDrivers0 <- function(x,
     ## This will work even if under the weird case of a driver missing
     ldrv <- unlist(lapply(strsplit(colnames(y), "dr_", fixed = TRUE),
                           function(x) x[2]))
+    if(legend.ncols == "auto") {
+        if(length(ldrv) > 6) legend.ncols <- 2
+    }
     legend(x = "topleft",
            title = "Number of drivers",
            lty = lty, col = col2, lwd = lwd,
-           legend = ldrv)
+           legend = ldrv,
+           ncol = legend.ncols)
     ## legend = (1:ncol(y)) - 1)
 }
 
