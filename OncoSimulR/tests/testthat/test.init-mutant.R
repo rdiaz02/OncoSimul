@@ -65,8 +65,8 @@ test_that("initMutant lexicog order",
               cn <- colnames(igraph::get.adjacency(plotClonePhylog(tmp, N = 0,
                                                                    returnGraph = TRUE),
                                                    sparse = FALSE))
-              expect_true( "d > m _" %in% cn )
-              expect_true( "d > m > f _" %in% cn )
+              expect_true( "d > m _ " %in% cn )
+              expect_true( "d > m > f _ " %in% cn )
               expect_false( "m > d _" %in% cn )
               expect_false( "m > d > f _" %in% cn )
           })
@@ -133,8 +133,8 @@ test_that("initMutant non lexicog order",
                                                    sparse = FALSE))
               expect_false( "d > m _" %in% cn )
               expect_false( "d > m > f _" %in% cn )
-              expect_true( "m > d _" %in% cn )
-              expect_true( "m > d > f _" %in% cn )
+              expect_true( "m > d _ " %in% cn )
+              expect_true( "m > d > f _ " %in% cn )
           })
 
 
