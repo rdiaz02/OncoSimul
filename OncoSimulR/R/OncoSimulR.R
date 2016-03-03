@@ -814,11 +814,11 @@ plot.oncosimul <- function(x,
              "stacked, stream or line")
 
     if(!(show %in% c("genotypes", "drivers")))
-        stop("show must be one of",
+        stop("show must be one of ",
              "genotypes or drivers")
 
     if(!(breakSortColors %in% c("oe", "distave", "random")))
-        stop("breakSortColors must be one of",
+        stop("breakSortColors must be one of ",
              "oe, distave, or random")
 
     
