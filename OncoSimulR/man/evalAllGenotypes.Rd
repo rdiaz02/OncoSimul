@@ -69,7 +69,7 @@ and the Fitness (or Death Rate, if Bozic). The notation for the Genotype
 colum is a follows: when order does not matter, a comma "," separates
 the identifier of mutated genes. When order matters, a genotype shown as
 ``x > y _ z'' means that a mutation in ``x'' happened before a mutation
-in ``y''; there is also a mutation in ``z'', but that is a gene for
+in ``y''; there is also a mutation in ``z'', but ``z'' is a gene for
 which order does not matter. In all cases, a "WT" denotes the wild-type
 (or, actually, the genotype without any mutations).
 
