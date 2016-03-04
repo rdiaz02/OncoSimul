@@ -567,13 +567,22 @@ all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
 
 @ 
 
-And we can see that considering the order of mutations makes no difference:
+And we can see that considering the order of mutations (see section
+\ref{oe}) makes no difference:
 <<>>=
 
 (ai2 <- evalAllGenotypes(allFitnessEffects(
-    noIntGenes = c(0.05, -.2, .1)), order = TRUE))
+    noIntGenes = c(0.05, -.2, .1)), order = TRUE,
+    addwt = TRUE))
 
 @ 
+
+(The meaning of the notation is as follows: ``WT'' denotes the wild-type,
+or non-mutated clone. The notation ``x > y'' means that a mutation in
+``x'' happened before a mutation in ``y''. A genotype as ``x > y _ z''
+means that a mutation in ``x'' happened before a mutation in ``y''; there
+is also a mutation in ``z'', but that is a gene for which order does not
+matter).
 
 
 
@@ -1242,6 +1251,14 @@ o3 <- allFitnessEffects(orderEffects = c(
 
 (ag <- evalAllGenotypes(o3))
 @ 
+
+(The meaning of the notation is as follows: ``WT'' denotes the wild-type,
+or non-mutated clone. The notation ``x > y'' means that a mutation in
+``x'' happened before a mutation in ``y''. A genotype as ``x > y _ z''
+means that a mutation in ``x'' happened before a mutation in ``y''; there
+is also a mutation in ``z'', but that is a gene for which order does not
+matter).
+
 
 The values for the first nine genotypes come directly from the fitness
 specifications. The 10th genotype matches $D > F > M$ ($= (1 + 0.4)$)
@@ -2628,7 +2645,7 @@ plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "",
 ## data (and make it plot faster)
 plot(mcf1s, show = "drivers", type = "stacked",
      thinData = TRUE, thinData.keep = 0.5,
-     xlim = c(600, 1000))
+     xlim = c(600, 1000), legend.ncols = 2)
 @ 
 
 
@@ -2901,7 +2918,7 @@ very different for genotypes with the same number of mutations, and does
 not increase in a simple way with drivers:
 
 <<>>=
-evalAllGenotypes(examplesFitnessEffects[["o3"]])
+evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE)
 @ 
 
 A few figures could help:
@@ -2911,6 +2928,12 @@ par(mfrow = c(2, 1))
 plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3)
 plot(tmp, show = "genotypes", type = "line", ylim = c(1, 6000))
 @ 
+
+(When reading the figure legends, recall that genotype  ``x > y _ z'' is
+one where a mutation in ``x'' happened before a mutation in ``y'', and
+there is also a mutation in ``z'' for which order does not matter. Here,
+there are no genes for which order does not matter and thus there is
+nothing after the ``_'').
 
 
 In this case, the clones with three drivers end up displacing those with

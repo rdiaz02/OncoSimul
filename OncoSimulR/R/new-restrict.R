@@ -702,7 +702,7 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
     df <- data.frame(Genotype = genotNames, Fitness = allf,
                      stringsAsFactors = FALSE)
     if(addwt)
-        df <- rbind(data.frame(Genotype = "wt", Fitness = 1,
+        df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
                                stringsAsFactors = FALSE), df)
     if(prodNeg)
         colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"

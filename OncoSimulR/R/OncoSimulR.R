@@ -1017,7 +1017,8 @@ plotClonesSt <- function(z,
             } else {
                 ldrv <- z$GenotypesLabels
             }
-            ldrv[ldrv == ""] <- "Wt"
+            ldrv[ldrv == ""] <- "WT"
+            ldrv[ldrv == " _ "] <- "WT"
             if(legend.ncols == "auto") {
                 if(length(ldrv) > 6) legend.ncols <- 2
                 else legend.ncols <- 1
@@ -1095,7 +1096,8 @@ plotClonesSt <- function(z,
             } else {
                 ldrv <- z$GenotypesLabels
             }
-            ldrv[ldrv == ""] <- "Wt"
+            ldrv[ldrv == ""] <- "WT"
+            ldrv[ldrv == " _ "] <- "WT"            
             if(legend.ncols == "auto") {
                 if(length(ldrv) > 6) legend.ncols <- 2
                 else legend.ncols <- 1
@@ -1601,7 +1603,8 @@ OncoSimulWide2Long <- function(x) {
         ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
         genotLabels <- x$GenotypesLabels
     }
-    genotLabels[genotLabels == ""] <- "Wt"
+    genotLabels[genotLabels == ""] <- "WT"
+    genotLabels[genotLabels == " _ "] <- "WT"
     y <- x$pops.by.time[, 2:ncol(x$pops.by.time), drop = FALSE]
     y[y == 0] <- NA
     
