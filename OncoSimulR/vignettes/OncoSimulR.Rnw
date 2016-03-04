@@ -2587,7 +2587,7 @@ b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000)
 
 
 We will now use a variety of plots
-<<fig.width=6.5, fig.height=10>>=
+<<baux1,fig.width=6.5, fig.height=10>>=
 par(mfrow = c(3, 1))
 ## First, drivers
 plot(b1, type = "line", addtot = TRUE)
@@ -2595,7 +2595,7 @@ plot(b1, type = "stacked")
 plot(b1, type = "stream")
 @ 
 
-<<fig.width=6.5, fig.height=10>>=
+<<baux2,fig.width=6.5, fig.height=10>>=
 par(mfrow = c(3, 1))
 ## Next, genotypes
 plot(b1, show = "genotypes", type = "line")
@@ -2636,7 +2636,7 @@ mcf1s <-  oncoSimulIndiv(mcf1,
 summary(mcf1s)
 @ 
 
-<<fig.width=6.5, fig.height=10>>=
+<<mcf1sx1,fig.width=6.5, fig.height=10>>=
 par(mfrow  = c(2, 1))
 ## I use thinData to make figures smaller and faster
 plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "", 
@@ -2686,7 +2686,7 @@ mcfLs <-  oncoSimulIndiv(mcfL,
 But you can access the pre-stored results and plot them (beware: this
 object has been trimmed by removing empty passenger rows in the Genotype matrix)
 
-<<fig.width=6>>=
+<<mcflsx2,fig.width=6>>=
 data(mcfLs)
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "", plotDiversity = TRUE)
 @ 
@@ -2713,7 +2713,7 @@ also slower than the line plot). I will thin the data for this plot so it
 is faster and smaller (but we miss some of the fine grain, of course):
 
 
-<<>>=
+<<mcflsx3>>=
 plot(mcfLs, type = "stacked", thinData = TRUE, 
      thinData.keep = 0.5,
      plotDiversity = TRUE,
@@ -2801,33 +2801,33 @@ summary(sb)
 As usual, we will use several plots here.
 \clearpage
 
-<<fig.width=6.5, fig.height=3.3>>=
+<<sbx1,fig.width=6.5, fig.height=3.3>>=
 ## Show drivers, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "line", addtot = TRUE, plotDiversity = TRUE)
 @ 
-<<fig.width=6.5, fig.height=3.3>>=
+<<sbx2,fig.width=6.5, fig.height=3.3>>=
 ## Drivers, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stacked", plotDiversity = TRUE)
 @ 
-<<fig.width=6.5, fig.height=3.3>>=
+<<sbx3,fig.width=6.5, fig.height=3.3>>=
 ## Drivers, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stream", plotDiversity = TRUE)
 @ 
 \clearpage
-<<fig.width=6.5, fig.height=3.3>>=
+<<sbx4,fig.width=6.5, fig.height=3.3>>=
 ## Genotypes, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "line", plotDiversity = TRUE)
 @ 
-<<fig.width=6.5, fig.height=3.3>>=
+<<sbx5,fig.width=6.5, fig.height=3.3>>=
 ## Genotypes, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stacked", plotDiversity = TRUE)
 @ 
-<<fig.width=6.5, fig.height=3.3>>=
+<<sbx6,fig.width=6.5, fig.height=3.3>>=
 ## Genotypes, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stream", plotDiversity = TRUE)
@@ -2900,11 +2900,11 @@ We show a stacked and a line plot of the drivers:
 
 \clearpage
 
-<<fig.width=6.5, fig.height=4.1>>=
+<<tmpmx1,fig.width=6.5, fig.height=4.1>>=
 par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
 @ 
-<<fig.width=6.5, fig.height=4.1>>=
+<<tmpmx2,fig.width=6.5, fig.height=4.1>>=
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE, 
      ylim = c(0, 5500), legend.ncols = 4)
@@ -2923,7 +2923,7 @@ evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE)
 
 A few figures could help:
 
-<<fig.width=6.5, fig.height=10>>=
+<<tmpmx3,fig.width=6.5, fig.height=10>>=
 par(mfrow = c(2, 1))
 plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3)
 plot(tmp, show = "genotypes", type = "line", ylim = c(1, 6000))
@@ -2963,11 +2963,11 @@ tmp
 \clearpage
 
 use a drivers plot:
-<<fig.width=6.5, fig.height=4>>=
+<<tmpmdx5,fig.width=6.5, fig.height=4>>=
 par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
 @ 
-<<fig.width=6.5, fig.height=4>>=
+<<tmpmdx6,fig.width=6.5, fig.height=4>>=
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE,
      legend.ncols = 4, ylim = c(0, 5200))
@@ -2976,7 +2976,7 @@ plot(tmp, type = "stacked", plotDiversity = TRUE,
 \clearpage
 
 Now show the genotypes explicitly:
-<<fig.width=6.5, fig.height=5.3>>=
+<<tmpmdx7,fig.width=6.5, fig.height=5.3>>=
 ## Improve telling appart the most abundant 
 ## genotypes by sorting colors
 ## differently via breakSortColors
@@ -4066,7 +4066,7 @@ m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL",
 @ 
 As usual, we will plot using both a line and a stacked plot:
 
-<<fig.width=6.5, fig.height=10>>=
+<<m2x1,fig.width=6.5, fig.height=10>>=
 par(mfrow = c(2, 1))
 plot(m2, addtot = TRUE, log = "",
      thinData = TRUE, thinData.keep = 0.5)
@@ -4092,7 +4092,7 @@ summary(b4)
 
 Plot those runs:
 
-<<ch1, fig.width=8, fig.height=4>>=
+<<b3b4x1ch1, fig.width=8, fig.height=4>>=
 par(mfrow = c(1, 2))
 par(cex = 0.8) ## smaller font
 plot(b3)
@@ -4114,13 +4114,13 @@ plot(p1, ask = FALSE)
 \clearpage
 We can also use stream and stacked plots, though they might not be as
 useful in this case:
-<<>>=
+<<p1multx1>>=
 par(mfrow = c(2, 2))
 plot(p1, type = "stream", ask = FALSE)
 @
 
 \clearpage
-<<>>=
+<<p1multstx1>>=
 par(mfrow = c(2, 2))
 plot(p1, type = "stacked", ask = FALSE)
 @
@@ -4157,7 +4157,7 @@ infer an oncogenetic tree (and plot it) using the \CRANpkg{Oncotree}
 package \cite{Oncotree} after getting a quick look at the marginal
 frequencies of events:
 
-<<fig.width=4, fig.height=4>>=
+<<fxot1,fig.width=4, fig.height=4>>=
 colSums(genotypes)/nrow(genotypes)
 
 require(Oncotree)
@@ -4174,7 +4174,7 @@ events down the tree are now found in the cross-sectional sample.
 Alternatively, you can use single cell sampling and that, sometimes,
 recovers one or a couple more events.
 
-<<fig.width=4, fig.height=4>>=
+<<fxot2,fig.width=4, fig.height=4>>=
 genotypesSC <- samplePop(m1, typeSample = "single")
 colSums(genotypesSC)/nrow(genotypesSC)
 
