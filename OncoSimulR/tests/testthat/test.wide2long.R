@@ -12,7 +12,7 @@ test_that("wide2long, two basic cases, minimal testing",
     expect_true(ncol(lp1) == 4)
     expect_true(any(is.na(lp1)))
     expect_true(length(tt1) == 1)
-    expect_true(tt1 == 1127)
+    expect_true(tt1 == length(unique(p1$pops.by.time[, 1])))
     expect_true(names(tt1) == as.character(length(unique(lp1$Genotype))))
     
     ## An object of class oncosimul2
@@ -34,7 +34,7 @@ test_that("wide2long, two basic cases, minimal testing",
     expect_true(ncol(lsm) == 4)
     expect_true(any(is.na(lsm)))
     expect_true(length(tt2) == 1)
-    expect_true(tt2 == 457)
+    expect_true(tt2 == length(unique(sm$pops.by.time[, 1])))
     expect_true(names(tt2) == as.character(length(unique(lsm$Genotype))))
 })
 
