@@ -274,7 +274,7 @@ packageVersion("OncoSimulR")
 Following the above we will run two examples. First a model with a few
 genes and \textbf{epistasis}:
 
-<<>>=
+<<fig.width=6.5, fig.height=10>>=
 ## 1. Fitness effects: here we specify a 
 ##    epistatic model with modules.
 sa <- 0.1
@@ -303,9 +303,11 @@ ep1 <- oncoSimulIndiv(sv2, model = "McFL",
                      initSize = 2000,
                      finalTime = 3000,
                      onlyCancer = FALSE)
+@ 
 
+<<fig.width=6.5, fig.height=9.5>>=
 ## 3. We will not analyze those data any further. We will only plot them.
-par(mfrow = c(1, 2))
+par(mfrow = c(2, 1))
 plot(ep1, show = "drivers")
 plot(ep1, show = "genotypes")
 @ 
@@ -318,7 +320,7 @@ As a second example, we will use a model where we specify
 pancreatic cancer poset in Gerstung et al.\ \cite{Gerstung2011} (see more
 details in section \ref{pancreas}):
 
-<<fig.width=4>>=
+<<>>=
 ## 1. Fitness effects: 
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
@@ -332,7 +334,8 @@ pancr <- allFitnessEffects(
                typeDep = "MN"))
 ## How does it look like?
 plot(pancr)
-
+@ 
+<<fig.width=6.5, fig.height=10>>=
 ## 2. Simulate from it. 
 set.seed(1) ## Fix the seed, so we can repeat it
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
@@ -342,8 +345,11 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      initSize = 1000,
                      finalTime = 10000,
                      onlyCancer = FALSE)
-
+@ 
+<<fig.width=6.5, fig.height=9>>=
 ## 3. What genotypes and drivers we get?
+par(mfrow = c(2, 1))
+par(cex = 0.7)
 plot(ep2, show = "genotypes")
 plot(ep2, show = "drivers", addtot = TRUE)
 @ 
@@ -2556,12 +2562,16 @@ b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000)
 
 
 We will now use a variety of plots
-<<>>=
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow = c(3, 1))
 ## First, drivers
 plot(b1, type = "line", addtot = TRUE)
 plot(b1, type = "stacked")
 plot(b1, type = "stream")
+@ 
 
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow = c(3, 1))
 ## Next, genotypes
 plot(b1, show = "genotypes", type = "line")
 plot(b1, show = "genotypes", type = "stacked")
@@ -2598,8 +2608,12 @@ mcf1s <-  oncoSimulIndiv(mcf1,
                          initSize = 2000,
                          finalTime = 1000,
                          onlyCancer = FALSE)
-plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "")
 summary(mcf1s)
+@ 
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow  = c(2, 1))
+plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "")
+plot(mcf1s, show = "drivers", type = "stacked")
 @ 
 
 
@@ -2663,11 +2677,12 @@ drivers (and with different drivers, of course). We will return to this
 
 A stacked plot might be better to show the extent of clonal competition
 (plotting takes some time ---a stream plot reveals similar patterns and is
-also slower than the line plot).
+also slower than the line plot). I will thin the data for this plot so it
+is faster and smaller (but we miss some of the fine grain, of course):
 
 
 <<>>=
-plot(mcfLs, type = "stacked")
+plot(mcfLs, type = "stacked", thinData = TRUE, thinData.keep = 0.5)
 @ 
 
 
@@ -2746,19 +2761,26 @@ sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
                        initSize = 2000,
                        onlyCancer = TRUE)
 summary(sb)
+@ 
 
-## We will use several plots here.
+We will use several plots here.
+
+<<fig.width=6.5, fig.height=10>>=
+par(mfrwo=c(3, 1))
 ## Show drivers, line plot
 plot(sb,show = "drivers", type = "line", addtot = TRUE)
-## drivers, stacked
+## Drivers, stacked
 plot(sb,show = "drivers", type = "stacked")
-## drivers, stream
+## Drivers, stream
 plot(sb,show = "drivers", type = "stream")
+@ 
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow = c(3, 1)) 
 ## Genotypes, line plot
 plot(sb,show = "genotypes", type = "line")
-## genotypes, stacked
+## Genotypes, stacked
 plot(sb,show = "genotypes", type = "stacked")
-## genotypes, stream
+## Genotypes, stream
 plot(sb,show = "genotypes", type = "stream")
 @ 
 
@@ -2823,8 +2845,13 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        initSize = 2000,
                        finalTime = 6000,
                        onlyCancer = FALSE) 
-plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+@ 
 
+We show a stacked and a line plot of the drivers:
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow = c(2, 1))
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+plot(tmp, tupe = "stacked", plotDiversity = TRUE)
 @ 
 
 In this example (and at least under Linux, with both GCC and clang), we
@@ -2840,7 +2867,8 @@ evalAllGenotypes(examplesFitnessEffects[["o3"]])
 
 A few figures could help:
 
-<<>>=
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow = c(2, 1))
 plot(tmp, show = "genotypes")
 plot(tmp, show = "genotypes", type = "line")
 @ 
@@ -2868,10 +2896,24 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        onlyCancer = FALSE,
                        extraTime = 1500)
 tmp
+@ 
+
+use a drivers plot:
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow = c(3, 1))
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
-## Improve telling appart the most abundant ones sorting colors
+plot(tmp, type = "stacked", plotDiversity = TRUE)
+@ 
+
+Now show the genotypes explicitly:
+<<fig.width=6.5, fig.height=4>>=
+## Improve telling appart the most abundant 
+## genotypes by sorting colors
 ## differently via breakSortColors
-plot(tmp, show = "genotypes", breakSortColors = "distave")
+## Modify ncols of legend, so it is legible by not overlapping
+## with plot
+plot(tmp, show = "genotypes", breakSortColors = "distave",
+     showDiversity = TRUE, legend.ncols = 1)
 @
 
 
@@ -3920,12 +3962,17 @@ run the simulations and look at a simple summary and a plot. %% We explicitly
 If you want to plot the trajectories, it is better to keep more frequent
 samples,  so you can see when clones appear:
 
-<<fig.height=5, fig.width=5>>=
+<<fig.height=8.5, fig.width=5.5>>=
 b2 <- oncoSimulIndiv(p1101, keepEvery = 1)
                     
 summary(b2)
+par(mfrow = c(2, 1))
 plot(b2)
+plot(b2, type = "stacked")
 @ 
+
+As we have seen before, the stacked plot here is less useful.
+
 
 
 The following is an example where we do not care about passengers, but we
@@ -3943,8 +3990,13 @@ m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL",
                      sampleEvery = 0.025,
                      finalTime = 25000, keepEvery = 5, 
                      detectionSize = 1e6) 
-plot(m2, addtot = TRUE, log = "")
+@ 
+As usual, we will plot using both a line and a stacked plot:
 
+<<fig.width=6.5, fig.height=10>>=
+par(mfrow = c(2, 1))
+plot(m2, addtot = TRUE, log = "")
+plot(m2, type = "stacked")
 @ 
 
 
@@ -3969,8 +4021,6 @@ Plot those runs:
 par(mfrow = c(1, 2))
 par(cex = 0.8) ## smaller font
 plot(b3)
-@ 
-<<>>=
 plot(b4)
 @ 
 
@@ -3986,6 +4036,18 @@ p1 <- oncoSimulPop(4, p1101)
 par(mfrow = c(2, 2))
 plot(p1, ask = FALSE)
 @ 
+
+We can also use stream and stacked plots, though they might not be as
+useful in this case:
+<<>>=
+par(mfrow = c(2, 2))
+plot(p1, type = "stream", ask = FALSE)
+@
+
+<<>>=
+par(mfrow = c(2, 2))
+plot(p1, type = "stacked", ask = FALSE)
+@
 
 
 \subsection{Sampling from a set of simulated subjects}\label{sample-1}
