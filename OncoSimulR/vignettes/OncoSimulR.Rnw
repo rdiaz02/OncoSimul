@@ -306,13 +306,17 @@ ep1 <- oncoSimulIndiv(sv2, model = "McFL",
                      onlyCancer = FALSE)
 @ 
 
-<<fig.width=6.5, fig.height=9.5>>=
+<<iep1x1,fig.width=6.5, fig.height=9.5>>=
 ## 3. We will not analyze those data any further. We will only plot them.
+##    For the sake of a small plot, we thin the data.
 par(mfrow = c(2, 1))
-plot(ep1, show = "drivers")
+plot(ep1, show = "drivers", xlim = c(0, 1500),
+     thinData = TRUE, thinData.keep = 0.5)
 ## Increase ylim and legend.ncols to avoid overlap of 
 ## legend with rest of figure
-plot(ep1, show = "genotypes", ylim = c(0, 4500), legend.ncols = 4)
+plot(ep1, show = "genotypes", ylim = c(0, 4500), legend.ncols = 4,
+     xlim = c(0, 1500),
+     thinData = TRUE, thinData.keep = 0.5)
 @ 
 
 
@@ -349,12 +353,16 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      finalTime = 10000,
                      onlyCancer = FALSE)
 @ 
-<<fig.width=6.5, fig.height=9>>=
-## 3. What genotypes and drivers we get?
+<<iep2x2,fig.width=6.5, fig.height=9>>=
+## 3. What genotypes and drivers we get? And play with limits
+##    to show only parts of the data. We also thin them.
 par(mfrow = c(2, 1))
 par(cex = 0.7)
-plot(ep2, show = "genotypes")
-plot(ep2, show = "drivers", addtot = TRUE)
+plot(ep2, show = "genotypes", xlim = c(2000, 4000), 
+     ylim = c(0, 2400),
+     thinData = TRUE, thinData.keep = 0.5)
+plot(ep2, show = "drivers", addtot = TRUE,
+     thinData = TRUE, thinData.keep = 0.5)
 @ 
 
 
@@ -3802,7 +3810,7 @@ If we set \texttt{keepEvents = TRUE} the arrows show how many times each
 clone appeared:
 
 (The next can take a while)
-<<>>=
+<<pcpkeepx1>>=
 plotClonePhylog(tmp, N = 1, keepEvents = TRUE)
 @ 
 
@@ -4035,16 +4043,19 @@ run the simulations and look at a simple summary and a plot. %% We explicitly
 If you want to plot the trajectories, it is better to keep more frequent
 samples,  so you can see when clones appear:
 
-<<fig.height=8.5, fig.width=5.5>>=
+<<pb2bothx1,fig.height=5.5, fig.width=5.5>>=
 b2 <- oncoSimulIndiv(p1101, keepEvery = 1)
-                    
 summary(b2)
-par(mfrow = c(2, 1))
 plot(b2)
+@ 
+
+As we have seen before, the stacked plot here is less useful and that is
+why I do not evaluate that code for this vignette.
+
+<<pbssttx1,eval=FALSE>>=
 plot(b2, type = "stacked")
 @ 
 
-As we have seen before, the stacked plot here is less useful.
 
 
 
@@ -4111,16 +4122,16 @@ p1 <- oncoSimulPop(4, p1101)
 par(mfrow = c(2, 2))
 plot(p1, ask = FALSE)
 @ 
-\clearpage
+
 We can also use stream and stacked plots, though they might not be as
-useful in this case:
-<<p1multx1>>=
+useful in this case. For the sake of keeping the vignette small, these are
+commented out.
+<<p1multx1,eval=FALSE>>=
 par(mfrow = c(2, 2))
 plot(p1, type = "stream", ask = FALSE)
 @
 
-\clearpage
-<<p1multstx1>>=
+<<p1multstx1,eval=FALSE>>=
 par(mfrow = c(2, 2))
 plot(p1, type = "stacked", ask = FALSE)
 @
