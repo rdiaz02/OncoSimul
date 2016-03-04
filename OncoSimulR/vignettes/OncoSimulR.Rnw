@@ -311,7 +311,7 @@ par(mfrow = c(2, 1))
 plot(ep1, show = "drivers")
 ## Increase ylim and legend.ncols to avoid overlap of 
 ## legend with rest of figure
-plot(ep1, show = "genotypes", ylim = c(0, 3500), legend.ncols = 4)
+plot(ep1, show = "genotypes", ylim = c(0, 4500), legend.ncols = 4)
 @ 
 
 
@@ -2123,7 +2123,7 @@ are different types of epistasis. %% (I show the fitness scenarios without
 df1 <- data.frame(x = c(1, 1.2, 1.4), f = c(1, 1.2, 1.2),
                  names = c("wt", "A", "B"))
 plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab= "", 
-     ylab = "Fitness", xaxt = "n", yaxt = "n")
+     ylab = "Fitness", xaxt = "n", yaxt = "n", ylim = c(1, 1.21))
 segments(1, 1, 1.2, 1.2)
 segments(1, 1, 1.4, 1.2)
 text(1, 1, "wt", pos = 4)
@@ -2193,7 +2193,7 @@ This is a specific case of synthetic viability (see also section \ref{sv}):
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 0.4, 0.3, 1.3),
                  names = c("wt", "A", "B", "AB"))
 plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab= "", ylab = "Fitness",
-     xaxt = "n", yaxt = "n")
+     xaxt = "n", yaxt = "n", ylim = c(0.29, 1.32))
 segments(1, 1, 1.2, 0.4)
 segments(1, 1, 1.2, 0.3)
 segments(1.2, 0.4, 1.4, 1.3)
@@ -2238,7 +2238,7 @@ of the other two.
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 1.2, 0.7, 1.5),
                  names = c("wt", "A", "B", "AB"))
 plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab = "", ylab = "Fitness",
-     xaxt = "n", yaxt = "n")
+     xaxt = "n", yaxt = "n", ylim = c(0.69, 1.53))
 segments(1, 1, 1.2, 1.2)
 segments(1, 1, 1.2, 0.7)
 segments(1.2, 1.2, 1.4, 1.5)
@@ -2780,30 +2780,38 @@ sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
 summary(sb)
 @ 
 
-We will use several plots here.
+As usual, we will use several plots here.
+\clearpage
 
 <<fig.width=6.5, fig.height=3.3>>=
 ## Show drivers, line plot
+par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "line", addtot = TRUE, plotDiversity = TRUE)
 @ 
 <<fig.width=6.5, fig.height=3.3>>=
 ## Drivers, stacked
+par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stacked", plotDiversity = TRUE)
 @ 
 <<fig.width=6.5, fig.height=3.3>>=
 ## Drivers, stream
+par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stream", plotDiversity = TRUE)
 @ 
+\clearpage
 <<fig.width=6.5, fig.height=3.3>>=
 ## Genotypes, line plot
+par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "line", plotDiversity = TRUE)
 @ 
 <<fig.width=6.5, fig.height=3.3>>=
 ## Genotypes, stacked
+par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stacked", plotDiversity = TRUE)
 @ 
 <<fig.width=6.5, fig.height=3.3>>=
 ## Genotypes, stream
+par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stream", plotDiversity = TRUE)
 @ 
 
@@ -2871,10 +2879,15 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
 @ 
 
 We show a stacked and a line plot of the drivers:
-<<fig.width=6.5, fig.height=10>>=
-par(mfrow = c(2, 1))
+
+\clearpage
+
+<<fig.width=6.5, fig.height=4.1>>=
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
-plot(tmp, type = "stacked", plotDiversity = TRUE)
+@ 
+<<fig.width=6.5, fig.height=4.1>>=
+plot(tmp, type = "stacked", plotDiversity = TRUE, 
+     ylim = c(0, 5000), legend.ncols = 4)
 @ 
 
 In this example (and at least under Linux, with both GCC and clang), we
@@ -2892,8 +2905,8 @@ A few figures could help:
 
 <<fig.width=6.5, fig.height=10>>=
 par(mfrow = c(2, 1))
-plot(tmp, show = "genotypes")
-plot(tmp, show = "genotypes", type = "line")
+plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3)
+plot(tmp, show = "genotypes", type = "line", ylim = c(1, 6000))
 @ 
 
 
@@ -2921,22 +2934,32 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
 tmp
 @ 
 
+\clearpage
+
 use a drivers plot:
-<<fig.width=6.5, fig.height=10>>=
-par(mfrow = c(3, 1))
+<<fig.width=6.5, fig.height=4>>=
+par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
-plot(tmp, type = "stacked", plotDiversity = TRUE)
+@ 
+<<fig.width=6.5, fig.height=4>>=
+par(las = 1, cex = 0.85)
+plot(tmp, type = "stacked", plotDiversity = TRUE,
+     legend.ncols = 3, ylim = c(0, 5200))
 @ 
 
+\clearpage
+
 Now show the genotypes explicitly:
-<<fig.width=6.5, fig.height=4>>=
+<<fig.width=6.5, fig.height=5.3>>=
 ## Improve telling appart the most abundant 
 ## genotypes by sorting colors
 ## differently via breakSortColors
 ## Modify ncols of legend, so it is legible by not overlapping
 ## with plot
+par(las = 1, cex = 0.85)
 plot(tmp, show = "genotypes", breakSortColors = "distave",
-     plotDiversity = TRUE, legend.ncols = 1)
+     plotDiversity = TRUE, legend.ncols = 3,
+     ylim = c(0, 5300))
 @
 
 
@@ -2988,6 +3011,7 @@ simulation will run until \Rcode{finalTime} if \Rcode{onlyCancer =
 
 
 
+\clearpage
 
 \subsection{Numerical issues with Bozic}\label{ex-0-death}
 
@@ -4018,8 +4042,10 @@ As usual, we will plot using both a line and a stacked plot:
 
 <<fig.width=6.5, fig.height=10>>=
 par(mfrow = c(2, 1))
-plot(m2, addtot = TRUE, log = "")
-plot(m2, type = "stacked")
+plot(m2, addtot = TRUE, log = "",
+     thinData = TRUE, thinData.keep = 0.5)
+plot(m2, type = "stacked",
+     thinData = TRUE, thinData.keep = 0.5)
 @ 
 
 
