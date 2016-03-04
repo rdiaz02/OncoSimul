@@ -884,13 +884,11 @@ plot.oncosimul <- function(x,
         plotClonesSt(x,
                      ndr = ndr,
                      show = show,
-                     xlab = xlab,
-                     ylab = ylab,
+                     na.subs = TRUE,
+                     log = log,
+                     lwd = lwdClone,
                      lty = ifelse(show == "drivers", ltyClone, ltyDrivers),
                      col = col, 
-                     ylim = yl,
-                     lwd = lwdClone,
-                     log = log,
                      order.method = order.method,
                      stream.center = stream.center,
                      stream.frac.rand = stream.frac.rand,
@@ -903,6 +901,9 @@ plot.oncosimul <- function(x,
                      colauto = colauto,
                      legend.ncols = legend.ncols,
                      lwdStackedStream = lwdStackedStream,
+                     xlab = xlab,
+                     ylab = ylab,
+                     ylim = yl,
                      ...)
     }
 
@@ -930,7 +931,8 @@ plot.oncosimul <- function(x,
     
 }
 
-plotClonesSt <- function(z, ndr,
+plotClonesSt <- function(z,
+                         ndr,
                          show = "drivers",
                          na.subs = TRUE,
                          log = "y",
@@ -949,6 +951,9 @@ plotClonesSt <- function(z, ndr,
                          colauto = TRUE,
                          legend.ncols = "auto",
                          lwdStackedStream = 1,
+                         xlab = "Time units",
+                         ylab = "Number of cells",
+                         ylim = NULL,
                          ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
