@@ -38,7 +38,8 @@
                            plotDrivers = TRUE,
                            addtot = FALSE,
                            addtotlwd = 0.5,
-                           yl = NULL,
+                           ylim = NULL,
+                           xlim = NULL,
                            thinData = FALSE,
                            thinData.keep = 0.1,
                            thinData.min = 2,
@@ -71,7 +72,8 @@
                               plotDrivers = TRUE,
                               addtot = FALSE,
                               addtotlwd = 0.5,
-                              yl = NULL,
+                              ylim = NULL,
+                              xlim = NULL,
                               thinData = FALSE,
                               thinData.keep = 0.1,
                               thinData.min = 2,
@@ -201,12 +203,20 @@
     Line width for total population size.
     
   }
-  \item{yl}{
+  \item{ylim}{
     If non NULL, limits of the y axis. Same as in
     \code{\link{plot.default}}. If NULL, the limits are calculated
     automatically.
     
   }
+  \item{xlim}{
+    If non NULL, limits of the x axis. Same as in
+    \code{\link{plot.default}}. If NULL, the limits are calculated
+    automatically. Using a non-NULL range smaller than the range of observed
+  values of time can also lead to speed ups of large figures (since we
+  trim the data).    
+  }
+  
   \item{thinData}{
     If TRUE, the data plotted is a subset of the original data. The
     original data are "thinned" in such a way that the origin of each
@@ -231,7 +241,12 @@
 
   \item{plotDiversity}{If TRUE, we also show, on top of the main figure,
   Shannon's diversity index (and we consider as distinct those
-  genotypes with different order of mutations when order matters).}
+  genotypes with different order of mutations when order matters).
+
+  If you set this to true, using \code{par(mfrow = c(2, 2))} and similar
+  will not work (since we use \code{par(fig = )}) to display the
+  diversity as the top plot).
+}
 
 
 \item{order.method}{ For stacked and stream plots. \code{c("as.is",

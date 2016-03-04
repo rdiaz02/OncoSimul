@@ -179,6 +179,107 @@ test_that("stacked, stream, genotypes and some colors", {
 })
 
 
+test_that("xlab, ylab, ylim, xlim can be passed", {
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    b1 <- oncoSimulIndiv(p701)
+
+    plot(b1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000), log = "",
+         plotDrivers = TRUE, xlim = c(20, 70))
+
+    plot(b1, show = "drivers", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+         xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(b1, show = "drivers", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(b1, show = "genotypes",
+         addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(1, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(b1, show = "genotypes", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(b1, show = "genotypes", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(-20, 70),
+         plotDrivers = TRUE)
+
+    sa <- 0.1
+    sb <- -0.2
+    sab <- 0.25
+    sac <- -0.1
+    sbc <- 0.25
+    sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                                           "A : -B" = sa,
+                                           "A : C" = sac,
+                                           "A:B" = sab,
+                                           "-A:B:C" = sbc),
+                             geneToModule = c(
+                                 "Root" = "Root",
+                                 "A" = "a1, a2",
+                                 "B" = "b",
+                                 "C" = "c"))
+    e1 <- oncoSimulIndiv(sv2, model = "McFL",
+                         mu = 5e-6,
+                         sampleEvery = 0.02,
+                         keepEvery = 1,
+                         initSize = 2000,
+                         finalTime = 3000,
+                         onlyCancer = FALSE)
+
+    plot(e1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(1, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(e1, show = "drivers", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(e1, show = "drivers", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(e1, show = "genotypes",
+         addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(e1, show = "genotypes", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(e1, show = "genotypes", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    
+})
+
+
 test_that("oncosimul v.1 objects and genotype plotting", {
     data(examplePosets)
     ## An object of class oncosimul

@@ -637,7 +637,8 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                               plotDrivers = TRUE,
                               addtot = FALSE,
                               addtotlwd = 0.5,
-                              yl = NULL,
+                              ylim = NULL,
+                              xlim = NULL,
                               thinData = FALSE,
                               thinData.keep = 0.1,
                               thinData.min = 2,
@@ -660,34 +661,35 @@ plot.oncosimulpop <- function(x, ask = TRUE,
         plot.oncosimul(z,
                        show = show,
                        type = type,
-                                  col = col,
-                                  log = log,
-                                  ltyClone = ltyClone,
-                                  lwdClone = lwdClone,
-                                  ltyDrivers = ltyDrivers,
-                                  lwdDrivers = lwdDrivers,
-                                  xlab = xlab,
-                                  ylab = ylab,
-                                  plotClones = plotClones,
-                                  plotDrivers = plotDrivers,
-                                  addtot = addtot,
-                                  addtotlwd = addtotlwd,
-                                  yl = yl,
-                                  thinData = thinData,
-                                  thinData.keep = thinData.keep,
-                                  thinData.min = thinData.min,
-                                  plotDiversity = plotDiversity,
-                                  order.method = order.method,
-                                  stream.center = stream.center,
-                                  stream.frac.rand = stream.frac.rand,
-                                  stream.spar = stream.spar,
-                                  border = border,
-                                  lwdStackedStream = lwdStackedStream,
-                                  srange = srange,
-                                  vrange = vrange,
-                                  breakSortColors = breakSortColors,
-                                  legend.ncols = legend.ncols,
-                                  ...))
+                       col = col,
+                       log = log,
+                       ltyClone = ltyClone,
+                       lwdClone = lwdClone,
+                       ltyDrivers = ltyDrivers,
+                       lwdDrivers = lwdDrivers,
+                       xlab = xlab,
+                       ylab = ylab,
+                       plotClones = plotClones,
+                       plotDrivers = plotDrivers,
+                       addtot = addtot,
+                       addtotlwd = addtotlwd,
+                       ylim = ylim,
+                       xlim = xlim,
+                       thinData = thinData,
+                       thinData.keep = thinData.keep,
+                       thinData.min = thinData.min,
+                       plotDiversity = plotDiversity,
+                       order.method = order.method,
+                       stream.center = stream.center,
+                       stream.frac.rand = stream.frac.rand,
+                       stream.spar = stream.spar,
+                       border = border,
+                       lwdStackedStream = lwdStackedStream,
+                       srange = srange,
+                       vrange = vrange,
+                       breakSortColors = breakSortColors,
+                       legend.ncols = legend.ncols,
+                       ...))
 }
 
 
@@ -790,7 +792,8 @@ plot.oncosimul <- function(x,
                            plotDrivers = TRUE,
                            addtot = FALSE,
                            addtotlwd = 0.5,
-                           yl = NULL,
+                           ylim = NULL,
+                           xlim = NULL,
                            thinData = FALSE,
                            thinData.keep = 0.1,
                            thinData.min = 2,
@@ -840,6 +843,9 @@ plot.oncosimul <- function(x,
     if(thinData)
         x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
 
+    if(!is.null(xlim))
+        x <- xlim.pop.data(x, xlim)
+    
     ## For genotypes, ndr is now the genotypes.  Actually, ndr is now just
     ## a sequence 1:(ncol(y) - 1)
 
@@ -857,11 +863,11 @@ plot.oncosimul <- function(x,
         ndr <- 1:(ncol(x$pops.by.time) - 1)
     }
     
-    if((type == "line") && is.null(yl)) {
+    if((type == "line") && is.null(ylim)) {
         if(log %in% c("y", "xy", "yx") )
-            yl <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+            ylim <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
         else
-            yl <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+            ylim <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
     }
     if(plotDiversity) {
         oppd <- par(fig = c(0, 1, 0.8, 1))
@@ -903,7 +909,8 @@ plot.oncosimul <- function(x,
                      lwdStackedStream = lwdStackedStream,
                      xlab = xlab,
                      ylab = ylab,
-                     ylim = yl,
+                     ylim = ylim,
+                     xlim = xlim,
                      ...)
     }
 
@@ -921,7 +928,8 @@ plot.oncosimul <- function(x,
                      col = col, 
                      addtot = addtot,
                      addtotlwd = addtotlwd,
-                     log = log, ylim = yl,
+                     log = log, ylim = ylim,
+                     xlim = xlim,
                      legend.ncols = legend.ncols,
                      ...)
     }
@@ -954,6 +962,7 @@ plotClonesSt <- function(z,
                          xlab = "Time units",
                          ylab = "Number of cells",
                          ylim = NULL,
+                         xlim = NULL,
                          ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
@@ -996,6 +1005,10 @@ plotClonesSt <- function(z,
                 log = log, type = "l",
                 col = col, lty = lty,
                 lwd = lwd,
+                xlab = xlab,
+                ylab = ylab,
+                ylim = ylim,
+                xlim = xlim,
                 ...)
         box()
         if(show == "genotypes") {
@@ -1040,7 +1053,12 @@ plotClonesSt <- function(z,
                           border = border,
                           lwd = lwdStackedStream,
                           col = cll$colors,
-                          log = log, ...) 
+                          log = log,
+                          xlab = xlab,
+                          ylab = ylab,
+                          ylim = ylim,
+                          xlim = xlim,
+                          ...) 
         } else if (type == "stream") {
             plot.stream2(x = x,
                          y = y,
@@ -1051,7 +1069,12 @@ plotClonesSt <- function(z,
                          frac.rand = stream.frac.rand,
                          spar = stream.spar,
                          center = stream.center,
-                         log = log, ...)
+                         log = log,
+                         xlab = xlab,
+                         ylab = ylab,
+                         ylim = ylim,
+                         xlim = xlim,
+                         ...)
         }
         if(show == "drivers") {
             if(legend.ncols == "auto") {
@@ -1665,6 +1688,14 @@ thin.pop.data <- function(x, keep = 0.1, min.keep = 3) {
     x$pops.by.time <- x$pops.by.time[keep, , drop = FALSE]
     return(x)
 }
+
+xlim.pop.data <- function(x, xlim) {
+    x$pops.by.time <- x$pops.by.time[
+    (x$pops.by.time[, 1] >= xlim[1]) &
+    (x$pops.by.time[, 1] <= xlim[2]),   ]
+    return(x)
+}
+
 
 shannonI <- function(x) {
     sx <- sum(x)
