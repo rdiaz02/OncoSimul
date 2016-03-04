@@ -132,7 +132,7 @@ test_that("only recognized options", {
 
 
 
-test_that("stacked, stream, genotypes", {
+test_that("stacked, stream, genotypes and some colors", {
       data(examplesFitnessEffects)
       tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                              model = "McFL", 
@@ -155,14 +155,51 @@ test_that("stacked, stream, genotypes", {
       plot(tmp, type = "stream", show = "drivers")
       plot(tmp, type = "line", show = "drivers")
 
+      plot(tmp, type = "stacked", order.method = "max")
+      plot(tmp, type = "stacked", order.method = "first")
+
+      plot(tmp, type = "stream", order.method = "max")
+      plot(tmp, type = "stream", order.method = "first")
+
+      plot(tmp, type = "stream", stream.center = TRUE)
+      plot(tmp, type = "stream", stream.center = FALSE)
+
+      plot(tmp, type = "stream", stream.center = TRUE, log = "x")
+      plot(tmp, type = "stacked", stream.center = TRUE, log = "x")
+      
       plot(tmp, type = "stacked", show = "genotypes",
            breakSortColors = "random")
       plot(tmp, type = "stream", show = "genotypes",
            breakSortColors = "distave")
-      
 
+      plot(tmp, type = "stacked", show = "genotypes", col = rainbow(9))
+      plot(tmp, type = "stream", show = "genotypes", col = rainbow(3))
+      plot(tmp, type = "line", show = "genotypes", col = rainbow(20))
+      
 })
 
+
+test_that("oncosimul v.1 objects and genotype plotting", {
+    data(examplePosets)
+    ## An object of class oncosimul
+    p705 <- examplePosets[["p705"]]
+    p1 <- oncoSimulIndiv(p705)
+    class(p1)
+    plot(p1, type = "stacked", show = "genotypes")
+    plot(p1, type = "stream", show = "genotypes")
+    plot(p1, type = "line", show = "genotypes")
+})
+
+test_that("passing colors", {
+    data(examplePosets)
+    ## An object of class oncosimul
+    p705 <- examplePosets[["p705"]]
+    p1 <- oncoSimulIndiv(p705)
+    class(p1)
+    plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
+    plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
+    plot(p1, type = "line", show = "genotypes", col = rainbow(3))
+})
 
 
 
