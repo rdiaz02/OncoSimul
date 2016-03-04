@@ -1,4 +1,4 @@
-## Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
+## Copyright 2013, 2014, 2015, 2016 Ramon Diaz-Uriarte
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -702,7 +702,7 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
     df <- data.frame(Genotype = genotNames, Fitness = allf,
                      stringsAsFactors = FALSE)
     if(addwt)
-        df <- rbind(data.frame(Genotype = "wt", Fitness = 1,
+        df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
                                stringsAsFactors = FALSE), df)
     if(prodNeg)
         colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
@@ -746,6 +746,7 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
                                 autofit = FALSE,
                                 scale_char = ifelse(type == "graphNEL", 1/10, 5),
                                 return_g = FALSE,
+                                lwdf = 1, ## multiplier for lwd for graphNEL
                                 ...) {
     ## some other layouts I find OK
     ## layout.circle
@@ -783,6 +784,7 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
         lwd <- s1
         lwd[lwd == 2] <- 2 ## o.w. too thin
         lwd[lwd == 3] <- 2 ## o.w. too thin
+        lwd <- lwd * lwdf
         nAttrs <- list()
         if(expandModules && (!x$gMOneToOne)) {
             nnodes <- x$geneToModule[nodes(g1)]
@@ -830,7 +832,7 @@ nr_oncoSimul.internal <- function(rFE,
                                   ratioForce,
                                   typeFitness,
                                   max.memory,
-                                  mutatorGenotype,
+                                  mutationPropGrowth,
                                   initMutant,
                                   max.wall.time,
                                   keepEvery,
@@ -923,7 +925,7 @@ nr_oncoSimul.internal <- function(rFE,
                  ratioForce = ratioForce,
                  typeFitness_ = typeFitness,
                  maxram = max.memory,
-                 mutatorGenotype = mutatorGenotype,
+                 mutationPropGrowth = as.integer(mutationPropGrowth),
                  initMutant_ = initMutant, 
                  maxWallTime = max.wall.time,
                  keepEvery = keepEvery,

@@ -116,6 +116,7 @@ test_that("exercising the fitnessEffects plotting code", {
               
           })
 
+
 test_that("only recognized options", {
     data(examplesFitnessEffects)
     expect_error(plot(examplesFitnessEffects[["cbn1"]],
@@ -128,3 +129,225 @@ test_that("only recognized options", {
                       type = "gnel"),
                  "plot type not recognized")
 })
+
+
+
+test_that("stacked, stream, genotypes and some colors", {
+      data(examplesFitnessEffects)
+      tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                             model = "McFL", 
+                             mu = 5e-5,
+                             detectionSize = 1e8, 
+                             detectionDrivers = 3,
+                             sampleEvery = 0.025,
+                             max.num.tries = 10,
+                             keepEvery = 5,
+                             initSize = 2000,
+                             finalTime = 3000,
+                             onlyCancer = FALSE,
+                             keepPhylog = TRUE)
+      
+      plot(tmp, type = "stacked", show = "genotypes")
+      plot(tmp, type = "stream", show = "genotypes")
+      plot(tmp, type = "line", show = "genotypes")
+
+      plot(tmp, type = "stacked", show = "drivers")
+      plot(tmp, type = "stream", show = "drivers")
+      plot(tmp, type = "line", show = "drivers")
+
+      plot(tmp, type = "stacked", order.method = "max")
+      plot(tmp, type = "stacked", order.method = "first")
+
+      plot(tmp, type = "stream", order.method = "max")
+      plot(tmp, type = "stream", order.method = "first")
+
+      plot(tmp, type = "stream", stream.center = TRUE)
+      plot(tmp, type = "stream", stream.center = FALSE)
+
+      plot(tmp, type = "stream", stream.center = TRUE, log = "x")
+      plot(tmp, type = "stacked", stream.center = TRUE, log = "x")
+      
+      plot(tmp, type = "stacked", show = "genotypes",
+           breakSortColors = "random")
+      plot(tmp, type = "stream", show = "genotypes",
+           breakSortColors = "distave")
+
+      plot(tmp, type = "stacked", show = "genotypes", col = rainbow(9))
+      plot(tmp, type = "stream", show = "genotypes", col = rainbow(3))
+      plot(tmp, type = "line", show = "genotypes", col = rainbow(20))
+      
+})
+
+
+test_that("xlab, ylab, ylim, xlim can be passed", {
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    b1 <- oncoSimulIndiv(p701)
+
+    plot(b1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000), log = "",
+         plotDrivers = TRUE, xlim = c(20, 70))
+
+    plot(b1, show = "drivers", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+         xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(b1, show = "drivers", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(b1, show = "genotypes",
+         addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(1, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(b1, show = "genotypes", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(b1, show = "genotypes", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(-20, 70),
+         plotDrivers = TRUE)
+
+    sa <- 0.1
+    sb <- -0.2
+    sab <- 0.25
+    sac <- -0.1
+    sbc <- 0.25
+    sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                                           "A : -B" = sa,
+                                           "A : C" = sac,
+                                           "A:B" = sab,
+                                           "-A:B:C" = sbc),
+                             geneToModule = c(
+                                 "Root" = "Root",
+                                 "A" = "a1, a2",
+                                 "B" = "b",
+                                 "C" = "c"))
+    e1 <- oncoSimulIndiv(sv2, model = "McFL",
+                         mu = 5e-6,
+                         sampleEvery = 0.02,
+                         keepEvery = 1,
+                         initSize = 2000,
+                         finalTime = 3000,
+                         onlyCancer = FALSE)
+
+    plot(e1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(1, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(e1, show = "drivers", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(e1, show = "drivers", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(e1, show = "genotypes",
+         addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    plot(e1, show = "genotypes", type = "stacked",
+         xlab = "xlab",
+         ylab = "ylab", ylim = c(-1000, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+    
+    plot(e1, show = "genotypes", type = "stream",
+         addtot = TRUE, xlab = "xlab",
+         ylab = "ylab", ylim = c(-100, 1000),
+                  xlim = c(20, 70),
+         plotDrivers = TRUE)
+
+    
+})
+
+
+test_that("oncosimul v.1 objects and genotype plotting", {
+    data(examplePosets)
+    ## An object of class oncosimul
+    p705 <- examplePosets[["p705"]]
+    p1 <- oncoSimulIndiv(p705)
+    class(p1)
+    plot(p1, type = "stacked", show = "genotypes")
+    plot(p1, type = "stream", show = "genotypes")
+    plot(p1, type = "line", show = "genotypes")
+})
+
+test_that("passing colors", {
+    data(examplePosets)
+    ## An object of class oncosimul
+    p705 <- examplePosets[["p705"]]
+    p1 <- oncoSimulIndiv(p705)
+    class(p1)
+    plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
+    plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
+    plot(p1, type = "line", show = "genotypes", col = rainbow(3))
+})
+
+
+
+test_that("only recognized arguments", {
+      data(examplesFitnessEffects)
+      tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                             model = "McFL", 
+                             mu = 5e-5,
+                             detectionSize = 1e8, 
+                             detectionDrivers = 3,
+                             sampleEvery = 0.025,
+                             max.num.tries = 10,
+                             keepEvery = 5,
+                             initSize = 2000,
+                             finalTime = 3000,
+                             onlyCancer = FALSE,
+                             keepPhylog = TRUE)
+      expect_error(plot(tmp, type = "sto"),
+                   "Type of plot unknown", fixed = TRUE)
+      expect_error(plot(tmp, show = "sto"),
+                   "show must be one of ", fixed = TRUE)
+      expect_error(plot(tmp, breakSortColors = "sto"),
+                   "breakSortColors must be one of ", fixed = TRUE)
+})
+
+test_that("no stacked/stream with log", {
+      data(examplesFitnessEffects)
+      tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                             model = "McFL", 
+                             mu = 5e-5,
+                             detectionSize = 1e8, 
+                             detectionDrivers = 3,
+                             sampleEvery = 0.025,
+                             max.num.tries = 10,
+                             keepEvery = 5,
+                             initSize = 2000,
+                             finalTime = 3000,
+                             onlyCancer = FALSE,
+                             keepPhylog = TRUE)
+      expect_error(plot(tmp, type = "stacked", log = "y"),
+                   "It makes little sense to do a stacked/stream",
+                   fixed = TRUE)
+      expect_error(plot(tmp, type = "stream", log = "xy"),
+                   "It makes little sense to do a stacked/stream",
+                   fixed = TRUE)
+})
+
+## Examples of why it is silly
+## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
+## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))

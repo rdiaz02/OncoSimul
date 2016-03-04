@@ -1,3 +1,9 @@
+Changes in version 2.1.1 (2016-02-29):
+	- Added mutationPropGrowth as argument.
+	- Stacked area and stream plots (code from Marc Taylor).
+	- Plots of genotypes.
+	- Expanded vignette.
+
 Changes in version 1.99.9 (2015-10-08):
 	- Fixed NEWS file.
 	- Removed empty file.

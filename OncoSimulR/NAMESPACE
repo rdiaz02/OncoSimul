@@ -3,7 +3,7 @@ useDynLib(OncoSimulR, .registration=TRUE)
 export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "plotPoset", "oncoSimulSample", "allFitnessEffects",
        "evalGenotype", "evalAllGenotypes", "simOGraph"
-     , "plotClonePhylog"
+     , "plotClonePhylog", "OncoSimulWide2Long"
        )
 
 S3method(plot, oncosimul)
@@ -24,3 +24,10 @@ import(graph)
 import(Rgraphviz)
 importFrom("parallel", mclapply, detectCores, mcMap)
 importFrom("gtools", combinations, permutations)
+
+importFrom("graphics", "axis", "box", "legend", "matplot", "par", "polygon")
+importFrom("methods", "as")
+importFrom("stats", "na.omit", "runif", "smooth.spline")
+importFrom("utils", "type.convert")
+importFrom("RColorBrewer", "brewer.pal")
+importFrom("grDevices", "colorRampPalette", "hsv", "rainbow")

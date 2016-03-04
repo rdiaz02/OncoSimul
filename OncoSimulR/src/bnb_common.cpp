@@ -716,14 +716,14 @@ void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
 				  double& adjust_fitness_MF,
 				  const double& K,
 				  const double& totPopSize,
-				  const int& mutatorGenotype,
+				  const int& mutationPropGrowth,
 				  const double& mu){
   
   adjust_fitness_MF = 1.0 / log1p(totPopSize/K);
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].birth = adjust_fitness_MF * popParams[i].absfitness;
-    if(mutatorGenotype) {
+    if(mutationPropGrowth) {
       popParams[i].mutation = mu * popParams[i].birth * 
 	popParams[i].numMutablePos;
     } else if(popParams[i].birth / popParams[i].mutation < 20) {
@@ -742,7 +742,7 @@ void updateRatesBeeren(std::vector<spParamsP>& popParams,
 			      const double& currentTime,
 			      const double& alpha,
 			      const double& totPopSize,
-			      const int& mutatorGenotype,
+			      const int& mutationPropGrowth,
 			      const double& mu){
 
   double average_fitness = 0.0; // average_fitness in Zhu
@@ -763,7 +763,7 @@ void updateRatesBeeren(std::vector<spParamsP>& popParams,
   
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].birth = adjust_fitness_B * popParams[i].absfitness;
-    if(mutatorGenotype) {
+    if(mutationPropGrowth) {
       popParams[i].mutation = mu * popParams[i].birth * 
 	popParams[i].numMutablePos;
     } else if(popParams[i].birth / popParams[i].mutation < 20) {

@@ -24,7 +24,7 @@ the above.
 A former version of this code has been used in the paper "Identifying
 restrictions in the order of accumulation of mutations during tumor
 progression: effects of passengers, evolutionary models, and sampling",
-[BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41/abstract).
+[BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41).
 
 
 You can also find
@@ -95,8 +95,12 @@ Licenses and copyright
 ======================
 
 The R/BioConductor OncoSimulR package is licensed under the GPLv3
-license. All of the code for the OncoSimulR BioConductor package is
-Copyright 2012-2015 by Ramon Diaz-Uriarte.
+license. All of the code for the OncoSimulR BioConductor package, except
+for functions `plot.stream` and `plot.stacked`, is Copyright 2012-2016 by
+Ramon Diaz-Uriarte. `plot.stream` and `plot.stacked` are Copyright
+2013-2016 by Marc Taylor (see also https://github.com/marchtaylor/sinkr
+and
+http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html).
 
 
 The code in `miscell-files/randutils.h` is copyright Melissa E. O'Neill,
@@ -104,7 +108,7 @@ and is licensed under "The MIT License (MIT)" in the terms explained in
 the file itself. This is a license that is
 [compatible with the GPL](http://directory.fsf.org/wiki/License:Expat).
 The file randutils.hpp was downloaded from
-(https://gist.github.com/imneme/540829265469e673d045) on 2015-06-20 and is
+https://gist.github.com/imneme/540829265469e673d045 on 2015-06-20 and is
 also referenced from the main article [Ease of Use without Loss of Power]
 (http://www.pcg-random.org/posts/ease-of-use-without-loss-of-power.html). I
 renamed it to randutils.h to conform to R's requirements (and changed the

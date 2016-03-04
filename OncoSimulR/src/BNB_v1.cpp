@@ -784,7 +784,7 @@ static void innerBNB(const int& numGenes,
 		     const std::string& typeCBN,
 		     const double& genTime,
 		     const std::string& typeFitness,
-		     const int& mutatorGenotype,
+		     const int& mutationPropGrowth,
 		     const double& mu,
 		     const double& sh,
 		     const double& s,
@@ -987,21 +987,21 @@ static void innerBNB(const int& numGenes,
       
       // initialize to prevent birth/mutation warning with Beerenwinkel
       // when no mutator. O.w., the defaults
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0 + s;
       updateRatesBeeren(popParams, adjust_fitness_B, initSize,
 			currentTime, alpha, initSize, 
-			mutatorGenotype, mu);
+			mutationPropGrowth, mu);
     } else if(typeFitness == "mcfarland0") {
       // death equal to birth of a non-mutant.
       popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0 + s;
       updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
 			    totPopSize,
-			    mutatorGenotype, mu);
+			    mutationPropGrowth, mu);
     } else if(typeFitness == "mcfarland") {
       popParams[0].death = totPopSize/K;
       popParams[0].birth = 1.0 + s;
@@ -1036,20 +1036,20 @@ static void innerBNB(const int& numGenes,
       popParams[0].death = 1.0;
       // initialize to prevent birth/mutation warning with Beerenwinkel
       // when no mutator. O.w., the defaults
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0;
       updateRatesBeeren(popParams, adjust_fitness_B, initSize,
 			currentTime, alpha, initSize, 
-			mutatorGenotype, mu);
+			mutationPropGrowth, mu);
     } else if(typeFitness == "mcfarland0") {
       popParams[0].death = log1p(totPopSize/K);
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0;
       updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
 			    totPopSize,
-			    mutatorGenotype, mu);
+			    mutationPropGrowth, mu);
     } else if(typeFitness == "mcfarland") {
       popParams[0].birth = 1.0;
       popParams[0].death = totPopSize/K;
@@ -1083,7 +1083,7 @@ static void innerBNB(const int& numGenes,
   
   // these lines (up to, and including, R_F_st)
   // not needed with mcfarland0 or beerenwinkel
-  if(mutatorGenotype)
+  if(mutationPropGrowth)
     popParams[0].mutation = mu * popParams[0].birth * popParams[0].numMutablePos;
   else
     popParams[0].mutation = mu * popParams[0].numMutablePos;
@@ -1387,7 +1387,7 @@ static void innerBNB(const int& numGenes,
 
 	  if(tmpParam.birth > 0.0) {
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
-	    if(mutatorGenotype)
+	    if(mutationPropGrowth)
 	      tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
 	    //	    tmpParam.mutation = mu * tmpParam.birth * (numMutablePosParent - 1);
 	    else
@@ -1582,11 +1582,11 @@ static void innerBNB(const int& numGenes,
       if( (typeFitness == "beerenwinkel") ) {
 	updateRatesBeeren(popParams, adjust_fitness_B,
 			  initSize, currentTime, alpha, totPopSize,
-			  mutatorGenotype, mu);
+			  mutationPropGrowth, mu);
       } else if( (typeFitness == "mcfarland0") ) {
 	updateRatesMcFarland0(popParams, adjust_fitness_MF,
 			     K, totPopSize,
-			     mutatorGenotype, mu);
+			     mutationPropGrowth, mu);
       } else if( (typeFitness == "mcfarland") ) {
 	updateRatesMcFarland(popParams, adjust_fitness_MF,
 			     K, totPopSize);
@@ -1634,7 +1634,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 		     double ratioForce,
 		     Rcpp::CharacterVector typeFitness_,
 		     int maxram,
-		     int mutatorGenotype,
+		     int mutationPropGrowth,
 		     int initMutant,
 		     double maxWallTime,
 		     double keepEvery,
@@ -1680,7 +1680,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
   // // species
   // const int seed = as<int>(seed_gsl_);
   // const long maxram = as<int>(maxram_);
-  // const int mutatorGenotype = as<int>(mutatorGenotype_);
+  // const int mutationPropGrowth = as<int>(mutationPropGrowth_);
   // const int initMutant = as<int>(initMutant_);
   // const double maxWallTime = as<double>(maxWallTime_);
   // const double keepEvery = as<double>(keepEvery_);
@@ -1838,7 +1838,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 	       typeCBN,
 	       genTime,
 	       typeFitness,
-	       mutatorGenotype,
+	       mutationPropGrowth,
 	       mu,
 	       sh,
 	       s,

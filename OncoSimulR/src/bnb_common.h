@@ -148,7 +148,7 @@ void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
 				  double& adjust_fitness_MF,
 				  const double& K,
 				  const double& totPopSize,
-				  const int& mutatorGenotype,
+				  const int& mutationPropGrowth,
 			   const double& mu);
 
 void updateRatesBeeren(std::vector<spParamsP>& popParams,
@@ -157,7 +157,7 @@ void updateRatesBeeren(std::vector<spParamsP>& popParams,
 			      const double& currentTime,
 			      const double& alpha,
 			      const double& totPopSize,
-			      const int& mutatorGenotype,
+			      const int& mutationPropGrowth,
 		       const double& mu);
 
 

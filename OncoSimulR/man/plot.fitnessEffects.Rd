@@ -12,7 +12,7 @@
 \method{plot}{fitnessEffects}(x, type = "graphNEL", layout = NULL,
 expandModules = FALSE, autofit = FALSE,
 scale_char = ifelse(type == "graphNEL", 1/10, 5),
-return_g = FALSE, ...)
+return_g = FALSE, lwdf = 1, ...)
 
 %%plotFitnessEffects(fe, type = "graphNEL", layout = NULL, expandModules = FALSE)
 }
@@ -42,7 +42,11 @@ the size of the rectangles as a function of the number of
 characters. You have to play with this because the best value can
 depend on a number of things.}
 
-\item{return_g}{It TRUE, the graph object (graphNEL or igrap) is returned.}
+\item{return_g}{It TRUE, the graph object (graphNEL or igrap) is
+  returned.}
+
+\item{lwdf}{The multiplier factor for \code{lwd} when using "graphNEL".}
+
 
  \item{\dots}{
     Other arguments passed to \code{plot}. Not used for now.

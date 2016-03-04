@@ -502,14 +502,14 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
     }
   }
 
-  std::string order_sep = "_";
+  std::string order_sep = " _ ";
   std::string order_part;
   std::string rest;
   std::string comma = "";
   // FIXME: when sure no problems, remove at if needed for speed.
   for(auto const &g : order_int) {
     order_part += (comma + intName.at(g));
-    comma = ", ";
+    comma = " > "; // comma = ", ";
   }
   comma = "";
   for(auto const &g : rest_int) {
@@ -652,7 +652,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const double& alpha,
 		     const double& genTime,
 		     const TypeModel typeModel,
-		     const int& mutatorGenotype,
+		     const int& mutationPropGrowth,
 		     const double& mu,
 		     const double& death,
 		     const double& keepEvery,
@@ -866,23 +866,23 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       
       // initialize to prevent birth/mutation warning with Beerenwinkel
       // when no mutator. O.w., the defaults
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
 								fitnessEffects));
       updateRatesBeeren(popParams, adjust_fitness_B, initSize,
 			currentTime, alpha, initSize, 
-			mutatorGenotype, mu);
+			mutationPropGrowth, mu);
     } else if(typeModel == TypeModel::mcfarland0) {
       // death equal to birth of a non-mutant.
       popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
 								fitnessEffects));
       updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
 			    totPopSize,
-			    mutatorGenotype, mu);
+			    mutationPropGrowth, mu);
     } else if(typeModel == TypeModel::mcfarland) {
       popParams[0].death = totPopSize/K;
       popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
@@ -919,20 +919,20 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       popParams[0].death = 1.0;
       // initialize to prevent birth/mutation warning with Beerenwinkel
       // when no mutator. O.w., the defaults
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0;
       updateRatesBeeren(popParams, adjust_fitness_B, initSize,
 			currentTime, alpha, initSize, 
-			mutatorGenotype, mu);
+			mutationPropGrowth, mu);
     } else if(typeModel == TypeModel::mcfarland0) {
       popParams[0].death = log1p(totPopSize/K);
-      if(!mutatorGenotype)
+      if(!mutationPropGrowth)
 	popParams[0].mutation = mu * popParams[0].numMutablePos;
       popParams[0].absfitness = 1.0;
       updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
 			    totPopSize,
-			    mutatorGenotype, mu);
+			    mutationPropGrowth, mu);
     } else if(typeModel == TypeModel::mcfarland) {
       popParams[0].birth = 1.0;
       popParams[0].death = totPopSize/K;
@@ -965,7 +965,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   
   // these lines (up to, and including, R_F_st)
   // not needed with mcfarland0 or beerenwinkel
-  if(mutatorGenotype)
+  if(mutationPropGrowth)
     popParams[0].mutation = mu * popParams[0].birth * popParams[0].numMutablePos;
   else
     popParams[0].mutation = mu * popParams[0].numMutablePos;
@@ -1295,7 +1295,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			  intName, genesInFitness);
 	    
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
-	    if(mutatorGenotype)
+	    if(mutationPropGrowth)
 	      tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
 	    //	    tmpParam.mutation = mu * tmpParam.birth * (numMutablePosParent - 1);
 	    else
@@ -1461,11 +1461,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       if( (typeModel == TypeModel::beerenwinkel) ) {
 	updateRatesBeeren(popParams, adjust_fitness_B,
 			  initSize, currentTime, alpha, totPopSize,
-			  mutatorGenotype, mu);
+			  mutationPropGrowth, mu);
       } else if( (typeModel == TypeModel::mcfarland0) ) {
 	updateRatesMcFarland0(popParams, adjust_fitness_MF,
 			     K, totPopSize,
-			     mutatorGenotype, mu);
+			     mutationPropGrowth, mu);
       } else if( (typeModel == TypeModel::mcfarland) ) {
 	updateRatesMcFarland(popParams, adjust_fitness_MF,
 			     K, totPopSize);
@@ -1509,7 +1509,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double ratioForce,
 			Rcpp::CharacterVector typeFitness_,
 			int maxram,
-			int mutatorGenotype,
+			int mutationPropGrowth,
 			Rcpp::IntegerVector initMutant_, 
 			double maxWallTime,
 			double keepEvery,
@@ -1679,7 +1679,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       alpha,
 	       genTime,
 	       typeModel,
-	       mutatorGenotype,
+	       mutationPropGrowth,
 	       mu,
 	       death,
 	       keepEvery,

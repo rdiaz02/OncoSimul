@@ -268,21 +268,120 @@ packageVersion("OncoSimulR")
 @ 
 
 
-\subsection{A temporary note about versions}\label{versions}
+
+\subsection{Two quick examples}\label{quickexample}
+
+Following the above we will run two examples. First a model with a few
+genes and \textbf{epistasis}:
+
+<<fig.width=6.5, fig.height=10>>=
+## 1. Fitness effects: here we specify a 
+##    epistatic model with modules.
+sa <- 0.1
+sb <- -0.2
+sab <- 0.25
+sac <- -0.1
+sbc <- 0.25
+sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                                       "A : -B" = sa,
+                                       "A : C" = sac,
+                                       "A:B" = sab,
+                                       "-A:B:C" = sbc),
+                         geneToModule = c(
+                             "Root" = "Root",
+                             "A" = "a1, a2",
+                             "B" = "b",
+                             "C" = "c"))
+evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
+
+## 2. Simulate the data. Here we use the "McFL" model and set explicitly
+##    parameters for mutation rate, final and initial sizes, etc.
+set.seed(983)
+ep1 <- oncoSimulIndiv(sv2, model = "McFL",
+                     mu = 5e-6,
+                     sampleEvery = 0.02,
+                     keepEvery = 0.5,
+                     initSize = 2000,
+                     finalTime = 3000,
+                     onlyCancer = FALSE)
+@ 
+
+<<iep1x1,fig.width=6.5, fig.height=9.5>>=
+## 3. We will not analyze those data any further. We will only plot them.
+##    For the sake of a small plot, we thin the data.
+par(mfrow = c(2, 1))
+plot(ep1, show = "drivers", xlim = c(0, 1500),
+     thinData = TRUE, thinData.keep = 0.5)
+## Increase ylim and legend.ncols to avoid overlap of 
+## legend with rest of figure
+plot(ep1, show = "genotypes", ylim = c(0, 4500), legend.ncols = 4,
+     xlim = c(0, 1500),
+     thinData = TRUE, thinData.keep = 0.5)
+@ 
+
+
+
+
+As a second example, we will use a model where we specify
+\textbf{restrictions in the order of accumulation of mutations} using the
+pancreatic cancer poset in Gerstung et al.\ \cite{Gerstung2011} (see more
+details in section \ref{pancreas}):
+
+<<>>=
+## 1. Fitness effects: 
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), 
+                   "SMAD4", "CDNK2A", 
+                   "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                   "TP53", "MLL3",
+                   rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.1,
+               sh = -0.9,
+               typeDep = "MN"))
+## How does it look like?
+plot(pancr)
+@ 
+<<fig.width=6.5, fig.height=10>>=
+## 2. Simulate from it. 
+set.seed(1) ## Fix the seed, so we can repeat it
+ep2 <- oncoSimulIndiv(pancr, model = "McFL",
+                     mu = 1e-6,
+                     sampleEvery = 0.02,
+                     keepEvery = 1,
+                     initSize = 1000,
+                     finalTime = 10000,
+                     onlyCancer = FALSE)
+@ 
+<<iep2x2,fig.width=6.5, fig.height=9>>=
+## 3. What genotypes and drivers we get? And play with limits
+##    to show only parts of the data. We also thin them.
+par(mfrow = c(2, 1))
+par(cex = 0.7)
+plot(ep2, show = "genotypes", xlim = c(2000, 4000), 
+     ylim = c(0, 2400),
+     thinData = TRUE, thinData.keep = 0.5)
+plot(ep2, show = "drivers", addtot = TRUE,
+     thinData = TRUE, thinData.keep = 0.5)
+@ 
+
+
+
+\subsection{Versions}\label{versions}
 
 In this vignette and the documentation I often refer to version 1 (v.1)
 and version 2 of OncoSimulR. Version 1 is the version available up to, and
-including, BioConductor v.\ 3.1. Version 2 of OncoSimulR is available for
-the current BioConductor development branch, 3.2. If you look at the
-package version, however, it currently shows as 1.99.x (where x should be
-a number $\ge 4$). That is because of the versioning scheme of
-BioConductor. This will become 2.0 in the next release of BioConductor.
-
-Summary: if you are using the current development version of BioConductor,
-or you grab the sources from github
+including, BioConductor v.\ 3.1. Version 2 of OncoSimulR is available
+starting from BioConductor 3.2 (and, of course, available too from
+development versions of BioC). %% If you look at the
+%% package version, however, it currently shows as 1.99.x (where x should be
+%% a number $\ge 4$). That is because of the versioning scheme of
+%% BioConductor. This will become 2.0 in the next release of BioConductor.
+So, if you are using the current stable or development version of
+BioConductor, or you grab the sources from github
 (\Burl{https://github.com/rdiaz02/OncoSimul}) you are using what we call
-version 2. If you see a version in the package that says ``1.99.x'', where
-``x'' is any number, you are too.
+version 2. %% If you see a version in the package that says ``1.99.x'', where
+%% ``x'' is any number, you are too.
 
 
 
@@ -476,13 +575,22 @@ all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
 
 @ 
 
-And we can see that considering the order of mutations makes no difference:
+And we can see that considering the order of mutations (see section
+\ref{oe}) makes no difference:
 <<>>=
 
 (ai2 <- evalAllGenotypes(allFitnessEffects(
-    noIntGenes = c(0.05, -.2, .1)), order = TRUE))
+    noIntGenes = c(0.05, -.2, .1)), order = TRUE,
+    addwt = TRUE))
 
 @ 
+
+(The meaning of the notation in the output table is as follows: ``WT''
+denotes the wild-type, or non-mutated clone. The notation $x > y$ means
+that a mutation in ``x'' happened before a mutation in ``y''. A genotype
+$x > y\ \_\ z$ means that a mutation in ``x'' happened before a
+mutation in ``y''; there is also a mutation in ``z'', but that is a gene
+for which order does not matter).
 
 
 
@@ -1149,8 +1257,16 @@ o3 <- allFitnessEffects(orderEffects = c(
                               "D" = "d") )
 
 
-(ag <- evalAllGenotypes(o3))
+(ag <- evalAllGenotypes(o3, addwt = TRUE))
 @ 
+
+(The meaning of the notation in the output table is as follows: ``WT''
+denotes the wild-type, or non-mutated clone. The notation $x > y$ means
+that a mutation in ``x'' happened before a mutation in ``y''. A genotype
+$x > y\ \_\ z$ means that a mutation in ``x'' happened before a
+mutation in ``y''; there is also a mutation in ``z'', but that is a gene
+for which order does not matter).
+
 
 The values for the first nine genotypes come directly from the fitness
 specifications. The 10th genotype matches $D > F > M$ ($= (1 + 0.4)$)
@@ -1957,7 +2073,7 @@ synthetic viability (\ref{sv}) and epistasis (\ref{epi}).
 \section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}
 
-In the model of bauer and collaborators \cite[p.\ 54]{Bauer2014} ``For
+In the model of Bauer and collaborators \cite[p.\ 54]{Bauer2014} ``For
 cells without the primary driver mutation, each secondary driver mutation
 leads to a change in the cell's fitness by $s_P$. For cells with the
 primary driver mutation, the fitness advantage obtained with each
@@ -2023,21 +2139,24 @@ Can we use modules in this module? Sure, as in any other.
 
 \subsection{Misra et al., 2014}\label{misra}
 
-Figure 1 of Misra et al.\ \cite{Misra2014} presents three scenarios which are different
-types of epistasis.
+Figure 1 of Misra et al.\ \cite{Misra2014} presents three scenarios which
+are different types of epistasis. %% (I show the fitness scenarios without
+%% axis, to replicate as close as possible what they show in their paper)
 
 \subsubsection{Example 1.a}\label{misra1a}
 <<echo=FALSE, fig.height=4, fig.width=4>>=
 
 df1 <- data.frame(x = c(1, 1.2, 1.4), f = c(1, 1.2, 1.2),
                  names = c("wt", "A", "B"))
-plot(df1[, 2] ~ df1[, 1], axes = FALSE, xlab= "", ylab = "")
+plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab= "", 
+     ylab = "Fitness", xaxt = "n", yaxt = "n", ylim = c(1, 1.21))
 segments(1, 1, 1.2, 1.2)
 segments(1, 1, 1.4, 1.2)
 text(1, 1, "wt", pos = 4)
 text(1.2, 1.2, "A", pos = 2)
 text(1.4, 1.2, "B", pos = 2)
-
+## axis(1,  tick = FALSE, labels = FALSE)
+## axis(2,  tick = FALSE, labels = FALSE)
 @ 
 
 
@@ -2099,7 +2218,8 @@ This is a specific case of synthetic viability (see also section \ref{sv}):
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 0.4, 0.3, 1.3),
                  names = c("wt", "A", "B", "AB"))
-plot(df1[, 2] ~ df1[, 1], axes = FALSE, xlab= "", ylab = "")
+plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab= "", ylab = "Fitness",
+     xaxt = "n", yaxt = "n", ylim = c(0.29, 1.32))
 segments(1, 1, 1.2, 0.4)
 segments(1, 1, 1.2, 0.3)
 segments(1.2, 0.4, 1.4, 1.3)
@@ -2143,7 +2263,8 @@ of the other two.
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 1.2, 0.7, 1.5),
                  names = c("wt", "A", "B", "AB"))
-plot(df1[, 2] ~ df1[, 1], axes = FALSE, xlab = "", ylab = "")
+plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab = "", ylab = "Fitness",
+     xaxt = "n", yaxt = "n", ylim = c(0.69, 1.53))
 segments(1, 1, 1.2, 1.2)
 segments(1, 1, 1.2, 0.7)
 segments(1.2, 1.2, 1.4, 1.5)
@@ -2437,6 +2558,7 @@ rv2 <- allFitnessEffects(data.frame(parent = c("Root", "1", "2", "3", "4"),
                              "3" = "BRAF, KRAS, NRAS",
                              "4" = "SMAD2, SMAD4, SOX9",
                              "ELF3" = "ELF3"))
+
 plot(rv2, expandModules = TRUE,   autofit = TRUE)
 @ 
 
@@ -2448,8 +2570,53 @@ plot(rv2, expandModules = TRUE,   autofit = TRUE)
 
 
 \clearpage
-\section{Running the simulations}\label{simul}
+\section{Running and plotting the simulations}\label{simul}
 
+
+\subsection{Bauer's example again}\label{bauer2}
+We will use the model of Bauer et al., \cite{Bauer2014} that we saw in
+section \ref{bauer}.
+
+<<>>=
+K <- 5
+sd <- 0.1
+sdp <- 0.15
+sp <- 0.05
+bauer <- data.frame(parent = c("Root", rep("p", K)),
+                    child = c("p", paste0("s", 1:K)),
+                    s = c(sd, rep(sdp, K)),
+                    sh = c(0, rep(sp, K)),
+                    typeDep = "MN")
+fbauer <- allFitnessEffects(bauer)
+set.seed(1)
+## Use fairly large mutation rate
+b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000) 
+@ 
+
+
+We will now use a variety of plots
+<<baux1,fig.width=6.5, fig.height=10>>=
+par(mfrow = c(3, 1))
+## First, drivers
+plot(b1, type = "line", addtot = TRUE)
+plot(b1, type = "stacked")
+plot(b1, type = "stream")
+@ 
+
+<<baux2,fig.width=6.5, fig.height=10>>=
+par(mfrow = c(3, 1))
+## Next, genotypes
+plot(b1, show = "genotypes", type = "line")
+plot(b1, show = "genotypes", type = "stacked")
+plot(b1, show = "genotypes", type = "stream")
+@ 
+
+In this case, probably the stream plots are most helpful. Note, however,
+that (in contrast to some figures in the literature showing models of
+clonal expansion) the stream plot (or the stacked plot) does not try to
+explicitly show parent-descendant relationships, which would hardly be
+realistically possible in these plots (although the plots of phylogenies
+in section \ref{phylog} could be of help).
 
 \subsection{McFarland model with 5000 passengers and 70
   drivers}\label{mcf5070}
@@ -2474,9 +2641,25 @@ mcf1s <-  oncoSimulIndiv(mcf1,
                          initSize = 2000,
                          finalTime = 1000,
                          onlyCancer = FALSE)
-plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "")
 summary(mcf1s)
 @ 
+
+<<mcf1sx1,fig.width=6.5, fig.height=10>>=
+par(mfrow  = c(2, 1))
+## I use thinData to make figures smaller and faster
+plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "", 
+     thinData = TRUE, thinData.keep = 0.5)
+## I also use here xlim, to focus only on a part of the
+## data (and make it plot faster)
+plot(mcf1s, show = "drivers", type = "stacked",
+     thinData = TRUE, thinData.keep = 0.5,
+     xlim = c(600, 1000), legend.ncols = 2)
+@ 
+
+
+With the above output (where we see there are over 500 different
+genotypes) trying to represent the genotypes makes no sense. 
+
 
 
 \subsection{McFarland model with 50000 passengers and 70
@@ -2511,10 +2694,12 @@ mcfLs <-  oncoSimulIndiv(mcfL,
 But you can access the pre-stored results and plot them (beware: this
 object has been trimmed by removing empty passenger rows in the Genotype matrix)
 
-<<fig.width=6>>=
+<<mcflsx2,fig.width=6>>=
 data(mcfLs)
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "", plotDiversity = TRUE)
 @ 
+
+
 The argument \Rcode{plotDiversity = TRUE} asks to show a small plot on top
 with Shannon's diversity index.
 
@@ -2529,6 +2714,20 @@ summary(colSums(mcfLs$Genotypes[-(1:70), ]))
 Note that we see clonal competition between clones with the same number of
 drivers (and with different drivers, of course). We will return to this
 (section \ref{clonalint}).
+
+A stacked plot might be better to show the extent of clonal competition
+(plotting takes some time ---a stream plot reveals similar patterns and is
+also slower than the line plot). I will thin the data for this plot so it
+is faster and smaller (but we miss some of the fine grain, of course):
+
+
+<<mcflsx3>>=
+plot(mcfLs, type = "stacked", thinData = TRUE, 
+     thinData.keep = 0.5,
+     plotDiversity = TRUE,
+     xlim = c(0, 1000))
+@ 
+
 
 %% %% The problem is the Genotype matrix. We remove empty passenger rows.
 %% <<>>=
@@ -2577,13 +2776,28 @@ sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
 summary(sm)
 @ 
 
+%% We will use several plots here.
+
+%% <<>>=
+%% ## Show drivers, line plot
+%% plot(sm, show = "drivers", type = "line", addtot = TRUE)
+%% ## drivers, stacked
+%% plot(sm, show = "drivers", type = "stacked")
+
+%% ## Genotypes, line plot
+%% plot(sm, show = "genotypes", type = "line")
+%% ## genotypes, stacked
+%% plot(sm, show = "genotypes", type = "stacked")
+%% @ 
+
 
 <<>>=
+set.seed(1234)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
                  model = "Bozic")[1:10, ]
 sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
                        model = "Bozic", 
-                       mu = 1e-6,
+                       mu = 5e-6,
                        detectionSize = 1e8, 
                        detectionDrivers = 4,
                        sampleEvery = 2,
@@ -2591,6 +2805,50 @@ sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
                        onlyCancer = TRUE)
 summary(sb)
 @ 
+
+As usual, we will use several plots here.
+\clearpage
+
+<<sbx1,fig.width=6.5, fig.height=3.3>>=
+## Show drivers, line plot
+par(cex = 0.75, las = 1)
+plot(sb,show = "drivers", type = "line", addtot = TRUE, plotDiversity = TRUE)
+@ 
+<<sbx2,fig.width=6.5, fig.height=3.3>>=
+## Drivers, stacked
+par(cex = 0.75, las = 1)
+plot(sb,show = "drivers", type = "stacked", plotDiversity = TRUE)
+@ 
+<<sbx3,fig.width=6.5, fig.height=3.3>>=
+## Drivers, stream
+par(cex = 0.75, las = 1)
+plot(sb,show = "drivers", type = "stream", plotDiversity = TRUE)
+@ 
+\clearpage
+<<sbx4,fig.width=6.5, fig.height=3.3>>=
+## Genotypes, line plot
+par(cex = 0.75, las = 1)
+plot(sb,show = "genotypes", type = "line", plotDiversity = TRUE)
+@ 
+<<sbx5,fig.width=6.5, fig.height=3.3>>=
+## Genotypes, stacked
+par(cex = 0.75, las = 1)
+plot(sb,show = "genotypes", type = "stacked", plotDiversity = TRUE)
+@ 
+<<sbx6,fig.width=6.5, fig.height=3.3>>=
+## Genotypes, stream
+par(cex = 0.75, las = 1)
+plot(sb,show = "genotypes", type = "stream", plotDiversity = TRUE)
+@ 
+
+The above illustrates again that different types of plots can be useful to
+reveal different patterns in the data. For instance, here, because of the
+huge relative frequency of one of the clones/genotypes, the stacked and
+stream plots do not reveal the other clones/genotypes as we cannot use a
+log-transformed y-axis, even if there are other clones/genotypes present.
+
+
+
 
 \subsection{Simulation with order effects and McFL model}\label{clonalint}
 %% Interesting to show effects of order: o3
@@ -2629,6 +2887,7 @@ summary(sb)
 (We use a somewhat large mutation rate than usual, so that the simulation
 runs quickly.)
 
+
 <<fig.width=6>>=
 
 set.seed(4321)
@@ -2642,9 +2901,21 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        keepEvery = 5,
                        initSize = 2000,
                        finalTime = 6000,
-                       onlyCancer = FALSE); 
-plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+                       onlyCancer = FALSE) 
+@ 
 
+We show a stacked and a line plot of the drivers:
+
+\clearpage
+
+<<tmpmx1,fig.width=6.5, fig.height=4.1>>=
+par(las = 1, cex = 0.85)
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+@ 
+<<tmpmx2,fig.width=6.5, fig.height=4.1>>=
+par(las = 1, cex = 0.85)
+plot(tmp, type = "stacked", plotDiversity = TRUE, 
+     ylim = c(0, 5500), legend.ncols = 4)
 @ 
 
 In this example (and at least under Linux, with both GCC and clang), we
@@ -2655,8 +2926,23 @@ very different for genotypes with the same number of mutations, and does
 not increase in a simple way with drivers:
 
 <<>>=
-evalAllGenotypes(examplesFitnessEffects[["o3"]])
+evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE)
 @ 
+
+A few figures could help:
+
+<<tmpmx3,fig.width=6.5, fig.height=10>>=
+par(mfrow = c(2, 1))
+plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3)
+plot(tmp, show = "genotypes", type = "line", ylim = c(1, 6000))
+@ 
+
+(When reading the figure legends, recall that genotype  $x > y\ \_\ z$ is
+one where a mutation in ``x'' happened before a mutation in ``y'', and
+there is also a mutation in ``z'' for which order does not matter. Here,
+there are no genes for which order does not matter and thus there is
+nothing after the ``\_'').
+
 
 In this case, the clones with three drivers end up displacing those with
 two by the time we stop; moreover, notice how those with one driver never
@@ -2680,8 +2966,37 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        onlyCancer = FALSE,
                        extraTime = 1500)
 tmp
+@ 
+
+\clearpage
+
+use a drivers plot:
+<<tmpmdx5,fig.width=6.5, fig.height=4>>=
+par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+@ 
+<<tmpmdx6,fig.width=6.5, fig.height=4>>=
+par(las = 1, cex = 0.85)
+plot(tmp, type = "stacked", plotDiversity = TRUE,
+     legend.ncols = 4, ylim = c(0, 5200))
+@ 
+
+\clearpage
+
+Now show the genotypes explicitly:
+<<tmpmdx7,fig.width=6.5, fig.height=5.3>>=
+## Improve telling appart the most abundant 
+## genotypes by sorting colors
+## differently via breakSortColors
+## Modify ncols of legend, so it is legible by not overlapping
+## with plot
+par(las = 1, cex = 0.85)
+plot(tmp, show = "genotypes", breakSortColors = "distave",
+     plotDiversity = TRUE, legend.ncols = 4,
+     ylim = c(0, 5300))
 @
+
+
 
 As before, the argument \Rcode{plotDiversity = TRUE} asks to show a small
 plot on top with Shannon's diversity index. Here, as before, the quick
@@ -2730,6 +3045,7 @@ simulation will run until \Rcode{finalTime} if \Rcode{onlyCancer =
 
 
 
+\clearpage
 
 \subsection{Numerical issues with Bozic}\label{ex-0-death}
 
@@ -2771,6 +3087,58 @@ evalAllGenotypes(i1, order = FALSE, addwt = TRUE,
 i1_e <- oncoSimulIndiv(i1, model = "Exp")
 summary(i1_e)
 @ 
+
+
+
+
+\subsection{Interactive graphics}\label{interactive}
+
+It is possible to create interactive stacked area and stream plots using
+the \Rpackage{streamgraph} package, available from
+\Burl{https://github.com/hrbrmstr/streamgraph}.  However, that package is
+not available as a CRAN or BioConductor package, and thus we cannot depend
+on it for this vignette (or this package). You can, however, paste the
+code below and make it run locally.
+
+Before calling the \Rfunction{streamgraph} function, though, we need to
+convert the data from the original format in which it is stored into
+``long format''. A simple convenience function is provided as
+\Rfunction{OncoSimulWide2Long} in \Biocpkg{OncoSimulR}.
+
+
+As an example, we will use the data we generated above for section
+\ref{bauer2}.
+
+
+<<eval=FALSE>>=
+## Convert the data
+lb1 <- OncoSimulWide2Long(b1)
+
+## Install the streamgraph package from github and load
+library(devtools)
+devtools::install_github("hrbrmstr/streamgraph")
+library(streamgraph)
+
+## Stream plot for Genotypes
+sg_legend(streamgraph(lb1, Genotype, Y, Time, scale = "continuous"),
+              show=TRUE, label="Genotype: ")
+
+## Staked area plot and we use the pipe
+streamgraph(lb1, Genotype, Y, Time, scale = "continuous", 
+          offset = "zero") %>% sg_legend(show=TRUE, label="Genotype: ")
+@ 
+
+
+%% (Note: the idiomatic way of doing the above with \CRANpkg{tidyr} is using 
+%% \verb= %>% =, the pipe operator. Something like 
+%% \begin{verbatim}
+%% streamgraph(lb1, Genotype, Y, Time, scale = ``continuous'',  
+%%            offset = ``zero'') \%>\%                                                                                                                                sg_legend(show=TRUE, label=``Genotype: '') 
+%% \end{verbatim}
+
+%% but it gives me problems with knitr, etc).
+
+
 
 \section{Sampling multiple simulations}\label{sample}
 
@@ -2820,6 +3188,7 @@ pancrSamp <- oncoSimulSample(10, pancr)
 pancrSamp
 
 @ 
+
 
 
 \subsection{Differences between \Rfunction{samplePop} and
@@ -3441,7 +3810,7 @@ If we set \texttt{keepEvents = TRUE} the arrows show how many times each
 clone appeared:
 
 (The next can take a while)
-<<>>=
+<<pcpkeepx1>>=
 plotClonePhylog(tmp, N = 1, keepEvents = TRUE)
 @ 
 
@@ -3674,12 +4043,20 @@ run the simulations and look at a simple summary and a plot. %% We explicitly
 If you want to plot the trajectories, it is better to keep more frequent
 samples,  so you can see when clones appear:
 
-<<fig.height=5, fig.width=5>>=
+<<pb2bothx1,fig.height=5.5, fig.width=5.5>>=
 b2 <- oncoSimulIndiv(p1101, keepEvery = 1)
-                    
 summary(b2)
 plot(b2)
 @ 
+
+As we have seen before, the stacked plot here is less useful and that is
+why I do not evaluate that code for this vignette.
+
+<<pbssttx1,eval=FALSE>>=
+plot(b2, type = "stacked")
+@ 
+
+
 
 
 The following is an example where we do not care about passengers, but we
@@ -3697,8 +4074,15 @@ m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL",
                      sampleEvery = 0.025,
                      finalTime = 25000, keepEvery = 5, 
                      detectionSize = 1e6) 
-plot(m2, addtot = TRUE, log = "")
+@ 
+As usual, we will plot using both a line and a stacked plot:
 
+<<m2x1,fig.width=6.5, fig.height=10>>=
+par(mfrow = c(2, 1))
+plot(m2, addtot = TRUE, log = "",
+     thinData = TRUE, thinData.keep = 0.5)
+plot(m2, type = "stacked",
+     thinData = TRUE, thinData.keep = 0.5)
 @ 
 
 
@@ -3719,12 +4103,10 @@ summary(b4)
 
 Plot those runs:
 
-<<ch1, fig.width=8, fig.height=4>>=
+<<b3b4x1ch1, fig.width=8, fig.height=4>>=
 par(mfrow = c(1, 2))
 par(cex = 0.8) ## smaller font
 plot(b3)
-@ 
-<<>>=
 plot(b4)
 @ 
 
@@ -3740,6 +4122,19 @@ p1 <- oncoSimulPop(4, p1101)
 par(mfrow = c(2, 2))
 plot(p1, ask = FALSE)
 @ 
+
+We can also use stream and stacked plots, though they might not be as
+useful in this case. For the sake of keeping the vignette small, these are
+commented out.
+<<p1multx1,eval=FALSE>>=
+par(mfrow = c(2, 2))
+plot(p1, type = "stream", ask = FALSE)
+@
+
+<<p1multstx1,eval=FALSE>>=
+par(mfrow = c(2, 2))
+plot(p1, type = "stacked", ask = FALSE)
+@
 
 
 \subsection{Sampling from a set of simulated subjects}\label{sample-1}
@@ -3773,7 +4168,7 @@ infer an oncogenetic tree (and plot it) using the \CRANpkg{Oncotree}
 package \cite{Oncotree} after getting a quick look at the marginal
 frequencies of events:
 
-<<fig.width=4, fig.height=4>>=
+<<fxot1,fig.width=4, fig.height=4>>=
 colSums(genotypes)/nrow(genotypes)
 
 require(Oncotree)
@@ -3790,7 +4185,7 @@ events down the tree are now found in the cross-sectional sample.
 Alternatively, you can use single cell sampling and that, sometimes,
 recovers one or a couple more events.
 
-<<fig.width=4, fig.height=4>>=
+<<fxot2,fig.width=4, fig.height=4>>=
 genotypesSC <- samplePop(m1, typeSample = "single")
 colSums(genotypesSC)/nrow(genotypesSC)
 

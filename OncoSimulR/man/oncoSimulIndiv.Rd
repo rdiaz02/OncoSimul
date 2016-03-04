@@ -29,6 +29,8 @@
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 keepPhylog = FALSE,
+                mutationPropGrowth = ifelse(model == "Bozic",
+                                                       FALSE, TRUE),
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
                 errorHitWallTime = TRUE,
@@ -47,6 +49,8 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
                 keepPhylog = FALSE,
+                mutationPropGrowth = ifelse(model == "Bozic",
+                                                       FALSE, TRUE),
                 max.memory = 2000, max.wall.time = 200,
                 max.num.tries = 500,
                 errorHitWallTime = TRUE,
@@ -89,6 +93,8 @@ oncoSimulSample(Nindiv,
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365,
                 onlyCancer = TRUE, keepPhylog = FALSE,
+                mutationPropGrowth = ifelse(model == "Bozic",
+                                                       FALSE, TRUE),
                 max.memory = 2000,
                 max.wall.time.total = 600,
                 max.num.tries.total = 500 * Nindiv,
@@ -135,7 +141,7 @@ oncoSimulSample(Nindiv,
 
 }
 \item{mu}{
-  Mutation rate.
+  Mutation rate. See also \code{mutationPropGrowth}.
 
 } \item{detectionSize}{ What is the minimal number of cells for cancer
 to be detected.  For \code{oncoSimulSample} this can be a vector.
@@ -268,6 +274,17 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 \item{keepPhylog}{
   If TRUE, keep track of when and from which clone each clone is
   created. See also \code{\link{plotClonePhylog}}. 
+}
+
+
+
+\item{mutationPropGrowth}{
+  If TRUE, make mutation rate proportional to growth rate, so clones
+  that grow faster also mutate faster. Thus, $mutation_rate = mu *
+  birth_rate$. This is a simple way of approximating that mutation happens
+  at cell division (it is not strictly making mutation happen at cell division,
+  since mutation is not strictly coupled with division).
+  Of course, this only makes sense in models where birth rate changes.
 }
 
 %% \item{seed}{The seed to use for the C++ random number generator. If not
