@@ -296,6 +296,7 @@ evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 
 ## 2. Simulate the data. Here we use the "McFL" model and set explicitly
 ##    parameters for mutation rate, final and initial sizes, etc.
+set.seed(983)
 ep1 <- oncoSimulIndiv(sv2, model = "McFL",
                      mu = 5e-6,
                      sampleEvery = 0.02,
@@ -2883,11 +2884,13 @@ We show a stacked and a line plot of the drivers:
 \clearpage
 
 <<fig.width=6.5, fig.height=4.1>>=
+par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
 @ 
 <<fig.width=6.5, fig.height=4.1>>=
+par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE, 
-     ylim = c(0, 5000), legend.ncols = 4)
+     ylim = c(0, 5500), legend.ncols = 4)
 @ 
 
 In this example (and at least under Linux, with both GCC and clang), we
@@ -2944,7 +2947,7 @@ plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
 <<fig.width=6.5, fig.height=4>>=
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE,
-     legend.ncols = 3, ylim = c(0, 5200))
+     legend.ncols = 4, ylim = c(0, 5200))
 @ 
 
 \clearpage
@@ -2958,7 +2961,7 @@ Now show the genotypes explicitly:
 ## with plot
 par(las = 1, cex = 0.85)
 plot(tmp, show = "genotypes", breakSortColors = "distave",
-     plotDiversity = TRUE, legend.ncols = 3,
+     plotDiversity = TRUE, legend.ncols = 4,
      ylim = c(0, 5300))
 @
 
