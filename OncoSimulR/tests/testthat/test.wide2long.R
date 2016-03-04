@@ -33,7 +33,7 @@ test_that("wide2long, two basic cases, minimal testing",
     summary(lsm)
     tt2 <- table(table(lsm$Time))
     expect_true(ncol(lsm) == 4)
-    expect_true(any(is.na(lsm)))
+    ## expect_true(any(is.na(lsm))) ## also, rarely we might have full data.
     expect_true(length(tt2) == 1)
     expect_true(tt2 == length(unique(sm$pops.by.time[, 1])))
     expect_true(names(tt2) == as.character(length(unique(lsm$Genotype))))
