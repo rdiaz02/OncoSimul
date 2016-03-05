@@ -5,7 +5,7 @@ library(OncoSimulR)
 library(tools)
 ## recall to install with --install-tests
 
-if (Sys.info("hostname") == "Gallotia") {
+if (Sys.info("nodename") == "Gallotia") {
     td <- "/home2/ramon/tmp"
 } else {
     td <- "~/tmp"
