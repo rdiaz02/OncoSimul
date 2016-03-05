@@ -10,9 +10,9 @@ BNB_Algo5 <- function(restrictTable, numDrivers, numGenes, typeCBN_, birthRate, 
 }
 
 ## No longer used (or at least not now)
-## readFitnessEffects <- function(rFE, echo) {
-##     invisible(.Call('C_OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
-## }
+readFitnessEffects <- function(rFE, echo) {
+     invisible(.Call('C_OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
+}
 
 evalRGenotype <- function(rG, rFE, verbose, prodNeg) {
     .Call('C_OncoSimulR_evalRGenotype', PACKAGE = 'OncoSimulR', rG, rFE, verbose, prodNeg)

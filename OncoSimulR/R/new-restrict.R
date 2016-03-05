@@ -850,6 +850,14 @@ nr_oncoSimul.internal <- function(rFE,
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
                    "allFitnessEffects"))
+    if(length(mu) > 1) { ## FIXME:test
+        if(sort(allNamedGenes(rFE)$Gene) !=
+           sort(names(mu)))
+            stop("When using per-gene mutation rates, ",
+                 "names of genes must match those in the ",
+                 "restriction table.")
+    }
+
     if(!is.null(initMutant)) {
        if(length(grep(">", initMutant))) {
             initMutant <- nice.vector.eo(initMutant, ">")
@@ -947,10 +955,33 @@ nr_oncoSimul.internal <- function(rFE,
 
 
 
+allNamedGenes <- function(fe) {
+    ## Root should always be first, but just in case avoid assuming it
+    lni <- length(fe$noIntGenes)
+    ## FIXME:test
+    if((lni > 0) &&
+       (is.null(names(fe$noIntGenes))))
+        stop("When using per-gene mutation rates the ",
+             "no interaction genes must be named ",
+             "(i.e., the noIntGenes vector must have names).")
+    
+    v1 <- c(fe$geneModule$Gene, names(fe$noIntGenes))
+
+    v1 <- fe$geneModule[, c("Gene", "GeneNumID")]
+    if(lni) {
+        v1 <- rbind(v1,
+                    fe$long.geneNoInt[, c("Gene", "GeneNumID")])
+    }
+    v1 <- v1[-which(v1[, "Gene"] == "Root"), ]
+    rownames(v1) <- NULL
+    return(v1)
+}
 
 
-
-
+## FIXME:test:
+## verify the above works when only int genes
+## fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
+## allNamedGenes(fea9)
 
 
 

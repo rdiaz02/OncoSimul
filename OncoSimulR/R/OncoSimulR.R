@@ -416,8 +416,11 @@ oncoSimulIndiv <- function(fp,
         else
             stop("Unknown model")
     }
+    ## FIXME:test
+    if( (length(mu) > 1) && !inherits(fp, "fitnessEffects"))
+        stop("Per-gene mutation rates cannot be used with the old poset format")
 
-    if(mu < 0) {
+    if(any(mu < 0)) {
         stop("mutation rate (mu) is negative")
     }
     ## We do not test for equality to 0. That might be a weird but
