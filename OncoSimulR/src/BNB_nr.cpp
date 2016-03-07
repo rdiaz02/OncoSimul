@@ -655,7 +655,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     const double& genTime,
 		     const TypeModel typeModel,
 		     const int& mutationPropGrowth,
-		     const double& mu,
+			const std::vector<double>& mu,
+			// const double& mu,
 		     const double& death,
 		     const double& keepEvery,
 		     const double& sampleEvery,		     
@@ -1513,7 +1514,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 // [[Rcpp::export]]
 Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
-			double mu,
+			Rcpp::NumericVector mu_,
+			// double mu,
 			double death,
 			double initSize,
 			double sampleEvery,
@@ -1542,6 +1544,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double extraTime,
 			bool keepPhylog) {  
   precissionLoss();
+  const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   const TypeModel typeModel = stringToModel(Rcpp::as<std::string>(typeFitness_));
 
