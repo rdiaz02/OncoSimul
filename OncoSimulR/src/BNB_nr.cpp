@@ -862,44 +862,47 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 				     fitnessEffects,
 				     ran_gen,
 				     false); 
-    if(typeModel == TypeModel::beerenwinkel) {
+    // Commenting out the unused models!
+    // if(typeModel == TypeModel::beerenwinkel) {
       
-      popParams[0].death = 1.0; //note same is in McFarland.
-      // But makes sense here; adjustment in beerenwinkel is via fitness
+    //   popParams[0].death = 1.0; //note same is in McFarland.
+    //   // But makes sense here; adjustment in beerenwinkel is via fitness
       
-      // initialize to prevent birth/mutation warning with Beerenwinkel
-      // when no mutator. O.w., the defaults
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
-								fitnessEffects));
-      updateRatesBeeren(popParams, adjust_fitness_B, initSize,
-			currentTime, alpha, initSize, 
-			mutationPropGrowth, mu);
-    } else if(typeModel == TypeModel::mcfarland0) {
-      // death equal to birth of a non-mutant.
-      popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
-								fitnessEffects));
-      updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
-			    totPopSize,
-			    mutationPropGrowth, mu);
-    } else if(typeModel == TypeModel::mcfarland) {
-      popParams[0].death = totPopSize/K;
-      popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-								fitnessEffects));
-    } else if(typeModel == TypeModel::mcfarlandlog) {
+    //   // initialize to prevent birth/mutation warning with Beerenwinkel
+    //   // when no mutator. O.w., the defaults
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
+    // 								fitnessEffects));
+    //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
+    // 			currentTime, alpha, initSize, 
+    // 			mutationPropGrowth, mu);
+    // } else if(typeModel == TypeModel::mcfarland0) {
+    //   // death equal to birth of a non-mutant.
+    //   popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
+    // 								fitnessEffects));
+    //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
+    // 			    totPopSize,
+    // 			    mutationPropGrowth, mu);
+    // } else if(typeModel == TypeModel::mcfarland) {
+    //   popParams[0].death = totPopSize/K;
+    //   popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+    // 								fitnessEffects));
+    // } else       if(typeModel == TypeModel::mcfarlandlog) {
+
+    if(typeModel == TypeModel::mcfarlandlog) {
       popParams[0].death = log1p(totPopSize/K);
       popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
 								fitnessEffects));
     } else if(typeModel == TypeModel::bozic1) {
       tmpParam.birth =  1.0;
       tmpParam.death = -99.9;
-    } else if (typeModel == TypeModel::bozic2) {
-      tmpParam.birth =  -99;
-      tmpParam.death = -99;
+    // } else if (typeModel == TypeModel::bozic2) {
+    //   tmpParam.birth =  -99;
+    //   tmpParam.death = -99;
     } else if (typeModel == TypeModel::exp) {
       tmpParam.birth =  -99;
       tmpParam.death = death;
@@ -1292,7 +1295,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		     fitnessEffects,
 		     typeModel, genTime,
 		     adjust_fitness_B, adjust_fitness_MF);
-	
+
 	  if(tmpParam.birth > 0.0) {
 	    // if(keepMutationTimes)
 	    //   update_mutation_freqs(newMutation, currentTime, mutation_freq_at);
@@ -1302,11 +1305,22 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			  intName, genesInFitness);
 	    
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
-	    if(mutationPropGrowth)
-	      tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
-	    //	    tmpParam.mutation = mu * tmpParam.birth * (numMutablePosParent - 1);
-	    else
-	      tmpParam.mutation = mu * tmpParam.numMutablePos;
+	    tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
+						   newMutations, mutationPropGrowth);
+	    // if(mutationPropGrowth)
+	    //   tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
+	    // //	    tmpParam.mutation = mu * tmpParam.birth * (numMutablePosParent - 1);
+	    // else
+	    //   tmpParam.mutation = mu * tmpParam.numMutablePos;
+
+	    // FIXME: debug. Verify both calculations of mutation give the same!
+	    STOPASSERT(abs(
+			   mutationFromParent(mu, tmpParam, popParams[nextMutant],
+					      newMutations, mutationPropGrowth) - 
+			   mutationFromScratch(mu, tmpParam, newGenotype,
+					       mutationPropGrowth))
+		       < 1e-25);
+	    
 	    //tmpParam.mutation = mu * (numMutablePosParent - 1);
 	    if (tmpParam.mutation > 1 )
 	      Rcpp::Rcout << "WARNING: mutation > 1\n";

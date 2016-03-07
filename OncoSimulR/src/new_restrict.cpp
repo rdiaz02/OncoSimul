@@ -417,6 +417,9 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   return fe;
 }
 
+
+// FIXME: change this for var mut rate using discrete_distribution!
+// probably use accumulator formulation here?
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent, 
@@ -1137,3 +1140,45 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
 }
 
 
+double mutationFromScratch(const std::vector<double>& mu,
+			   const spParamsP& spP,
+			   const Genotype& g,
+			   const int mutationPropGrowth) {
+  if(mu.size() == 1) {
+    if(mutationPropGrowth)
+      return(mu[0] * spP.numMutablePos * spP.birth);
+    else
+      return(mu[0] * spP.numMutablePos);
+  } else {
+    // std::vector<int> mutatedG = genotypeSingleVector(g);
+    // Not worth it using an accumulator?
+    // std::vector<int> gg = genotypeSingleVector(g);
+    // accumulate(gg.begin(), gg.end(), 0.0,
+    // 	       [](double x, int y) {return( x + mu[y - 1])});
+    double mutrate = 0.0;
+    for(auto const mutated : genotypeSingleVector(g)) {
+      mutrate += mu[mutated - 1];
+    }
+    return(mutrate);
+  }
+}
+
+
+
+double mutationFromParent(const std::vector<double>& mu,
+			  const spParamsP& newP,
+			  const spParamsP& parentP,
+			  const std::vector<int>& newMutations,
+			  const int mutationPropGrowth) {
+  if(mu.size() == 1) {
+    if(mutationPropGrowth)
+      return(mu[0] * newP.numMutablePos * newP.birth);
+    else
+      return(mu[0] * newP.numMutablePos);
+  } else {
+    double pmutrate = parentP.mutation;
+    for(auto const mutated : newMutations) {
+      pmutrate += mu[mutated - 1];
+    }
+    return(pmutrate);
+}
