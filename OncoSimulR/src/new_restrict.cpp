@@ -419,16 +419,13 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
 }
 
 
-// FIXME: change this for var mut rate using discrete_distribution!
-// probably use accumulator formulation here?
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent, 
 		     std::vector<int>& newMutations,
 		     //randutils::mt19937_rng& ran_gen
 		     std::mt19937& ran_gen,
-		     std::vector<double> mu
-		     ) {
+		     std::vector<double> mu) {
   //Ugly: we return the mutations AND the numMutablePosParent This is
   // almost ready to accept multiple mutations. And it returns a vector,
   // newMutations.
