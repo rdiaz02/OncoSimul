@@ -78,10 +78,10 @@ void nr_fitness(spParamsP& tmpP,
     } else {
       tmpP.birth = 1.0;
     }
-  } else if (typeModel == TypeModel::bozic2) {
-    double pp = prodDeathFitness(evalGenotypeFitness(ge, F));
-    tmpP.birth = std::max(0.0, (1.0/genTime) * (1.0 - 0.5 * pp ));
-    tmpP.death = (0.5/genTime) * pp;
+  // } else if (typeModel == TypeModel::bozic2) {
+  //   double pp = prodDeathFitness(evalGenotypeFitness(ge, F));
+  //   tmpP.birth = std::max(0.0, (1.0/genTime) * (1.0 - 0.5 * pp ));
+  //   tmpP.death = (0.5/genTime) * pp;
   } else {
     double fitness = prodFitness(evalGenotypeFitness(ge, F));
     if( fitness <= 0.0) {
@@ -94,13 +94,13 @@ void nr_fitness(spParamsP& tmpP,
       tmpP.absfitness = parentP.absfitness;
       tmpP.birth = fitness;
       // exp, mcfarland, and mcfarlandlog as above. Next are the two exceptions.
-      if(typeModel == TypeModel::beerenwinkel) {
-	tmpP.absfitness = fitness; 
-	tmpP.birth = adjust_fitness_B * tmpP.absfitness;
-      } else if(typeModel == TypeModel::mcfarland0) {
-	tmpP.absfitness = fitness;
-	tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
-      }
+      // if(typeModel == TypeModel::beerenwinkel) {
+      // 	tmpP.absfitness = fitness; 
+      // 	tmpP.birth = adjust_fitness_B * tmpP.absfitness;
+      // } else if(typeModel == TypeModel::mcfarland0) {
+      // 	tmpP.absfitness = fitness;
+      // 	tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
+      // }
     }
   }
   // Exp and McFarland and McFarlandlog are also like Datta et al., 2013
@@ -814,8 +814,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 
   
-  // Beerenwinkel
-  double adjust_fitness_B = -std::numeric_limits<double>::infinity();
+  // // Beerenwinkel
+  // double adjust_fitness_B = -std::numeric_limits<double>::infinity();
   //McFarland
   double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
 
@@ -853,7 +853,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
   if(initMutant.size() > 0) {
-    
     popParams[0].numMutablePos = numGenes - 1;
     Genotypes[0] = createNewGenotype(wtGenotype(),
 				     initMutant,
@@ -907,8 +906,14 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     } else {
       throw std::invalid_argument("this ain't a valid typeModel");
     } 
-    if( (typeModel != TypeModel::beerenwinkel) && (typeModel != TypeModel::mcfarland0) 
-	&& (typeModel != TypeModel::mcfarland) && (typeModel != TypeModel::mcfarlandlog)) // wouldn't matter
+    // if( (typeModel != TypeModel::beerenwinkel) && (typeModel != TypeModel::mcfarland0) 
+    // 	&& (typeModel != TypeModel::mcfarland) && (typeModel != TypeModel::mcfarlandlog)) // wouldn't matter
+    //   nr_fitness(popParams[0], tmpParam,
+    // 		 Genotypes[0],
+    // 		 fitnessEffects,
+    // 		 typeModel, genTime,
+    // 		 adjust_fitness_B, adjust_fitness_MF);
+    if( (typeModel != TypeModel::mcfarlandlog)) // wouldn't matter
       nr_fitness(popParams[0], tmpParam,
 		 Genotypes[0],
 		 fitnessEffects,
@@ -917,40 +922,41 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     // we pass as the parent the tmpParam; it better initialize
     // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
-  } else {
+  } else { //no initMutant
     popParams[0].numMutablePos = numGenes;
-    if(typeModel == TypeModel::beerenwinkel) {
-      popParams[0].death = 1.0;
-      // initialize to prevent birth/mutation warning with Beerenwinkel
-      // when no mutator. O.w., the defaults
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0;
-      updateRatesBeeren(popParams, adjust_fitness_B, initSize,
-			currentTime, alpha, initSize, 
-			mutationPropGrowth, mu);
-    } else if(typeModel == TypeModel::mcfarland0) {
-      popParams[0].death = log1p(totPopSize/K);
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0;
-      updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
-			    totPopSize,
-			    mutationPropGrowth, mu);
-    } else if(typeModel == TypeModel::mcfarland) {
-      popParams[0].birth = 1.0;
-      popParams[0].death = totPopSize/K;
-      // no need to call updateRates
-    } else if(typeModel == TypeModel::mcfarlandlog) {
+    // if(typeModel == TypeModel::beerenwinkel) {
+    //   popParams[0].death = 1.0;
+    //   // initialize to prevent birth/mutation warning with Beerenwinkel
+    //   // when no mutator. O.w., the defaults
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = 1.0;
+    //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
+    // 			currentTime, alpha, initSize, 
+    // 			mutationPropGrowth, mu);
+    // } else if(typeModel == TypeModel::mcfarland0) {
+    //   popParams[0].death = log1p(totPopSize/K);
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = 1.0;
+    //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
+    // 			    totPopSize,
+    // 			    mutationPropGrowth, mu);
+    // } else if(typeModel == TypeModel::mcfarland) {
+    //   popParams[0].birth = 1.0;
+    //   popParams[0].death = totPopSize/K;
+    //   // no need to call updateRates
+    // } else if(typeModel == TypeModel::mcfarlandlog) {
+    if(typeModel == TypeModel::mcfarlandlog) {
       popParams[0].birth = 1.0;
       popParams[0].death = log1p(totPopSize/K);
       // no need to call updateRates
     } else if(typeModel == TypeModel::bozic1) {
-      popParams[0].birth = 1.0;
-      popParams[0].death = 1.0;
-    } else if (typeModel == TypeModel::bozic2) {
-      popParams[0].birth = 0.5/genTime;
-      popParams[0].death = 0.5/genTime;
+       popParams[0].birth = 1.0;
+       popParams[0].death = 1.0;
+    // } else if (typeModel == TypeModel::bozic2) {
+    //   popParams[0].birth = 0.5/genTime;
+    //   popParams[0].death = 0.5/genTime;
     } else if (typeModel == TypeModel::exp) {
       popParams[0].birth = 1.0;
       popParams[0].death = death;
@@ -1242,7 +1248,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			fitnessEffects,
 			numMutablePosParent,
 			newMutations,
-			ran_gen);
+			ran_gen,
+			mu);
 	// nr_change
 	// getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
 	// 		     ran_gen,
@@ -1313,6 +1320,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			   mutationFromParent(mu, tmpParam, popParams[nextMutant],
 					      newMutations, mutationPropGrowth) - 
 			   mutationFromScratch(mu, tmpParam, newGenotype,
+					       fitnessEffects,
 					       mutationPropGrowth))
 		       < 1e-25);
 	    
@@ -1474,18 +1482,19 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       if(simulsDone)
 	break; //skip last updateRates
 
-      if( (typeModel == TypeModel::beerenwinkel) ) {
-	updateRatesBeeren(popParams, adjust_fitness_B,
-			  initSize, currentTime, alpha, totPopSize,
-			  mutationPropGrowth, mu);
-      } else if( (typeModel == TypeModel::mcfarland0) ) {
-	updateRatesMcFarland0(popParams, adjust_fitness_MF,
-			     K, totPopSize,
-			     mutationPropGrowth, mu);
-      } else if( (typeModel == TypeModel::mcfarland) ) {
-	updateRatesMcFarland(popParams, adjust_fitness_MF,
-			     K, totPopSize);
-      } else if( (typeModel == TypeModel::mcfarlandlog) ) {
+      // if( (typeModel == TypeModel::beerenwinkel) ) {
+      // 	updateRatesBeeren(popParams, adjust_fitness_B,
+      // 			  initSize, currentTime, alpha, totPopSize,
+      // 			  mutationPropGrowth, mu);
+      // } else if( (typeModel == TypeModel::mcfarland0) ) {
+      // 	updateRatesMcFarland0(popParams, adjust_fitness_MF,
+      // 			     K, totPopSize,
+      // 			     mutationPropGrowth, mu);
+      // } else if( (typeModel == TypeModel::mcfarland) ) {
+      // 	updateRatesMcFarland(popParams, adjust_fitness_MF,
+      // 			     K, totPopSize);
+      // } else if( (typeModel == TypeModel::mcfarlandlog) ) {
+      if( (typeModel == TypeModel::mcfarlandlog) ) {
 	updateRatesMcFarlandLog(popParams, adjust_fitness_MF,
 			     K, totPopSize);
       }

@@ -25,8 +25,9 @@
 #include <random>
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
-enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
-    beerenwinkel, mcfarland0,  bozic2};
+// enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
+//     beerenwinkel, mcfarland0,  bozic2};
+enum class TypeModel {exp, bozic1, mcfarlandlog};
 
 struct Poset_struct {
   Dependency typeDep;
