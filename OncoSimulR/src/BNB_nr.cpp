@@ -973,13 +973,15 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   
 
   
-  // these lines (up to, and including, R_F_st)
-  // not needed with mcfarland0 or beerenwinkel
-  if(mutationPropGrowth)
-    popParams[0].mutation = mu * popParams[0].birth * popParams[0].numMutablePos;
-  else
-    popParams[0].mutation = mu * popParams[0].numMutablePos;
+  // // these lines (up to, and including, R_F_st)
+  // // not needed with mcfarland0 or beerenwinkel
+  // if(mutationPropGrowth)
+  //   popParams[0].mutation = mu * popParams[0].birth * popParams[0].numMutablePos;
+  // else
+  //   popParams[0].mutation = mu * popParams[0].numMutablePos;
 
+  popParams[0].mutation = mutationFromScratch(mu, popParams, Genotypes[0],
+					      fe, mutationPropGrowth);  
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
