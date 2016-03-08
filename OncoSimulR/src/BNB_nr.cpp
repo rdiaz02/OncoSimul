@@ -1243,6 +1243,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	// ************   5.5   ***************
 
 	newMutations.clear();
+	// FIXME: nonmutated also returned here
 	obtainMutations(Genotypes[nextMutant],
 			fitnessEffects,
 			numMutablePosParent,

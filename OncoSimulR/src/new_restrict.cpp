@@ -170,6 +170,7 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
 }
 
 vector<int> allGenesinGenotype(const Genotype& ge){
+  // Like genotypeSingleVector, but sorted
   std::vector<int> allgG;
   for(auto const &g1 : ge.orderEff)
     allgG.push_back(g1);
@@ -435,7 +436,8 @@ void obtainMutations(const Genotype& parent,
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
-  
+
+  // FIXME: var mut rate
   std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
   newMutations.push_back(nonmutated[rpos(ran_gen)]);
   // randutils
@@ -445,6 +447,9 @@ void obtainMutations(const Genotype& parent,
   // int posmutated = ran_gen.pick(nonmutated);
   // newMutations.push_back(posmutated);
   numMutablePosParent = nonmutated.size();
+
+
+  
 }
 
 
@@ -1143,6 +1148,7 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
 			   const Genotype& g,
+			   const fitnessEffectsAll& fe,
 			   const int mutationPropGrowth) {
   if(mu.size() == 1) {
     if(mutationPropGrowth)
@@ -1150,15 +1156,22 @@ double mutationFromScratch(const std::vector<double>& mu,
     else
       return(mu[0] * spP.numMutablePos);
   } else {
+    std::vector<int> sortedG = allGenesinGenotype(g);
+    std::vector<int> nonmutated;
+    set_difference(fe.allGenes.begin(), fe.allGenes.end(),
+		   sortedG.begin(), sortedG.end(),
+		   back_inserter(nonmutated));
     // std::vector<int> mutatedG = genotypeSingleVector(g);
     // Not worth it using an accumulator?
     // std::vector<int> gg = genotypeSingleVector(g);
     // accumulate(gg.begin(), gg.end(), 0.0,
     // 	       [](double x, int y) {return( x + mu[y - 1])});
     double mutrate = 0.0;
-    for(auto const mutated : genotypeSingleVector(g)) {
-      mutrate += mu[mutated - 1];
+    for(auto const nm : nonmutated) {
+      mutrate += mu[nm - 1];
     }
+    if(mutationPropGrowth)
+      mutrate *= spP.birth;
     return(mutrate);
   }
 }
@@ -1169,6 +1182,7 @@ double mutationFromParent(const std::vector<double>& mu,
 			  const spParamsP& newP,
 			  const spParamsP& parentP,
 			  const std::vector<int>& newMutations,
+			  // const std::vector<int>& nonmutated,
 			  const int mutationPropGrowth) {
   if(mu.size() == 1) {
     if(mutationPropGrowth)
@@ -1178,7 +1192,13 @@ double mutationFromParent(const std::vector<double>& mu,
   } else {
     double pmutrate = parentP.mutation;
     for(auto const mutated : newMutations) {
-      pmutrate += mu[mutated - 1];
+      pmutrate -= mu[mutated - 1];
     }
+    if(mutationPropGrowth)
+      mutrate *= newP.birth;
     return(pmutrate);
+  }
 }
+
+
+  
