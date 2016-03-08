@@ -80,14 +80,14 @@ TypeModel stringToModel(const std::string& mod) {
     return TypeModel::bozic1;
   else if(mod == "mcfarlandlog")
     return TypeModel::mcfarlandlog;
-  else if(mod == "mcfarland")
-    return TypeModel::mcfarland;
-  else if(mod == "beerenwinkel")
-    return TypeModel::beerenwinkel;
-  else if(mod == "mcfarland0")
-    return TypeModel::mcfarland0;
-  else if(mod == "bozic2")
-    return TypeModel::bozic2;
+  // else if(mod == "mcfarland")
+  //   return TypeModel::mcfarland;
+  // else if(mod == "beerenwinkel")
+  //   return TypeModel::beerenwinkel;
+  // else if(mod == "mcfarland0")
+  //   return TypeModel::mcfarland0;
+  // else if(mod == "bozic2")
+  //   return TypeModel::bozic2;
   else 
     throw std::out_of_range("Not a valid TypeModel");
 }
@@ -426,7 +426,8 @@ void obtainMutations(const Genotype& parent,
 		     int& numMutablePosParent, 
 		     std::vector<int>& newMutations,
 		     //randutils::mt19937_rng& ran_gen
-		     std::mt19937& ran_gen
+		     std::mt19937& ran_gen,
+		     std::vector<double> mu
 		     ) {
   //Ugly: we return the mutations AND the numMutablePosParent This is
   // almost ready to accept multiple mutations. And it returns a vector,
@@ -437,8 +438,18 @@ void obtainMutations(const Genotype& parent,
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
 
-  // FIXME: var mut rate
-  std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+  // numMutablePos is used not only for mutation but also to decide about
+  // the dummy or null mutation case.
+  numMutablePosParent = nonmutated.size();
+
+  if(mu.size() == 1) { // common mutation rate
+    std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+  } else { // per-gene mutation rate.
+    // Remember that mutations always indexed from 1, not from 0.
+    std::vector<double> mu_nm;
+    for(auto const &nm : nonmutated) mu_nm.push_back(mu[nm - 1]);
+    std::discrete_distribution<int> rpos(mu_nm.begin(), mu_nm.end());
+  }
   newMutations.push_back(nonmutated[rpos(ran_gen)]);
   // randutils
   // // Yes, the next will work, but pick is simpler!
@@ -446,10 +457,6 @@ void obtainMutations(const Genotype& parent,
   // //  newMutations.push_back(nonmutated[rpos]);
   // int posmutated = ran_gen.pick(nonmutated);
   // newMutations.push_back(posmutated);
-  numMutablePosParent = nonmutated.size();
-
-
-  
 }
 
 
@@ -1167,7 +1174,7 @@ double mutationFromScratch(const std::vector<double>& mu,
     // accumulate(gg.begin(), gg.end(), 0.0,
     // 	       [](double x, int y) {return( x + mu[y - 1])});
     double mutrate = 0.0;
-    for(auto const nm : nonmutated) {
+    for(auto const &nm : nonmutated) {
       mutrate += mu[nm - 1];
     }
     if(mutationPropGrowth)

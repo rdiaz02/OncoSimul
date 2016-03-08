@@ -180,23 +180,23 @@ static void fitness(spParamsP& tmpP,
       tmpP.death = pow( 1.0 - s, sumDriversMet) * 
 	pow( 1.0 + sh, sumDriversNoMet);
       tmpP.birth = 1.0;
-    } else if (typeFitness == "bozic2") {
-      double pp = pow( 1.0 - s, sumDriversMet) * 
-	pow( 1.0 + sh, sumDriversNoMet);
-      tmpP.birth = (1.0/genTime) * (1.0 - 0.5 * pp );
-      tmpP.death = (0.5/genTime) * pp;
-    } else if(typeFitness == "beerenwinkel") {
-      // like Datta et al., 2013
-      tmpP.absfitness = pow(1.0 + s, sumDriversMet) * 
-	pow( 1.0 - sh, sumDriversNoMet);
-      tmpP.birth = adjust_fitness_B * tmpP.absfitness;
-    } else if(typeFitness == "mcfarland0") {
-      tmpP.absfitness = pow(1.0 + s, sumDriversMet) / 
-	pow( 1.0 + sh, sumDriversNoMet);
-      tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
-    } else if(typeFitness == "mcfarland") {
-      tmpP.birth = pow(1.0 + s, sumDriversMet) / 
-	pow( 1.0 + sh, sumDriversNoMet);
+    // } else if (typeFitness == "bozic2") {
+    //   double pp = pow( 1.0 - s, sumDriversMet) * 
+    // 	pow( 1.0 + sh, sumDriversNoMet);
+    //   tmpP.birth = (1.0/genTime) * (1.0 - 0.5 * pp );
+    //   tmpP.death = (0.5/genTime) * pp;
+    // } else if(typeFitness == "beerenwinkel") {
+    //   // like Datta et al., 2013
+    //   tmpP.absfitness = pow(1.0 + s, sumDriversMet) * 
+    // 	pow( 1.0 - sh, sumDriversNoMet);
+    //   tmpP.birth = adjust_fitness_B * tmpP.absfitness;
+    // } else if(typeFitness == "mcfarland0") {
+    //   tmpP.absfitness = pow(1.0 + s, sumDriversMet) / 
+    // 	pow( 1.0 + sh, sumDriversNoMet);
+    //   tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
+    // } else if(typeFitness == "mcfarland") {
+    //   tmpP.birth = pow(1.0 + s, sumDriversMet) / 
+    // 	pow( 1.0 + sh, sumDriversNoMet);
     } else if(typeFitness == "mcfarlandlog") {
       tmpP.birth = pow(1.0 + s, sumDriversMet) / 
 	pow( 1.0 + sh, sumDriversNoMet);
@@ -216,13 +216,13 @@ static void fitness(spParamsP& tmpP,
       DP2(negi);
 #endif
 
-    } else if (typeFitness == "log") {
-      tmpP.birth = birthRate + s * log1p(sumDriversMet) - 
-	sh * log(1 + sumDriversNoMet);
-    } else { // linear
-      tmpP.birth = birthRate + s * static_cast<double>(sumDriversMet) - 
-	sh * static_cast<double>(sumDriversNoMet);
-    } 
+    } // else if (typeFitness == "log") {
+    //   tmpP.birth = birthRate + s * log1p(sumDriversMet) - 
+    // 	sh * log(1 + sumDriversNoMet);
+    // } else { // linear
+    //   tmpP.birth = birthRate + s * static_cast<double>(sumDriversMet) - 
+    // 	sh * static_cast<double>(sumDriversNoMet);
+    // } 
   }
 }
 // Notice: if restriction is 3 -> 4 -> 5
@@ -940,8 +940,8 @@ static void innerBNB(const int& numGenes,
 
 
   
-  // Beerenwinkel
-  double adjust_fitness_B = -std::numeric_limits<double>::infinity();
+  // // Beerenwinkel
+  // double adjust_fitness_B = -std::numeric_limits<double>::infinity();
   //McFarland
   double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
 
@@ -981,48 +981,55 @@ static void innerBNB(const int& numGenes,
   if(initMutant >= 0) {
     popParams[0].numMutablePos = numGenes - 1;
     Genotypes[0].set(initMutant);
-    if(typeFitness == "beerenwinkel") {
-      popParams[0].death = 1.0; //note same is in McFarland.
-      // But makes sense here; adjustment in beerenwinkel is via fitness
+    // if(typeFitness == "beerenwinkel") {
+    //   popParams[0].death = 1.0; //note same is in McFarland.
+    //   // But makes sense here; adjustment in beerenwinkel is via fitness
       
-      // initialize to prevent birth/mutation warning with Beerenwinkel
-      // when no mutator. O.w., the defaults
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0 + s;
-      updateRatesBeeren(popParams, adjust_fitness_B, initSize,
-			currentTime, alpha, initSize, 
-			mutationPropGrowth, mu);
-    } else if(typeFitness == "mcfarland0") {
-      // death equal to birth of a non-mutant.
-      popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0 + s;
-      updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
-			    totPopSize,
-			    mutationPropGrowth, mu);
-    } else if(typeFitness == "mcfarland") {
-      popParams[0].death = totPopSize/K;
-      popParams[0].birth = 1.0 + s;
-    } else if(typeFitness == "mcfarlandlog") {
+    //   // initialize to prevent birth/mutation warning with Beerenwinkel
+    //   // when no mutator. O.w., the defaults
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = 1.0 + s;
+    //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
+    // 			currentTime, alpha, initSize, 
+    // 			mutationPropGrowth, mu);
+    // } else if(typeFitness == "mcfarland0") {
+    //   // death equal to birth of a non-mutant.
+    //   popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = 1.0 + s;
+    //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
+    // 			    totPopSize,
+    // 			    mutationPropGrowth, mu);
+    // } else if(typeFitness == "mcfarland") {
+    //   popParams[0].death = totPopSize/K;
+    //   popParams[0].birth = 1.0 + s;
+    // } else if(typeFitness == "mcfarlandlog") {
+    if(typeFitness == "mcfarlandlog") {      
       popParams[0].death = log1p(totPopSize/K);
       popParams[0].birth = 1.0 + s;
     } else if(typeFitness == "bozic1") {
       tmpParam.birth =  1.0;
       tmpParam.death = -99.9;
-    } else if (typeFitness == "bozic2") {
-      tmpParam.birth =  -99;
-      tmpParam.death = -99;
+    // } else if (typeFitness == "bozic2") {
+    //   tmpParam.birth =  -99;
+    //   tmpParam.death = -99;
     } else if (typeFitness == "exp") {
       tmpParam.birth =  -99;
       tmpParam.death = death;
-    } else { // linear or log
-      tmpParam.birth =  -99;
-      tmpParam.death = death;
-    } 
-    if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
-	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
+    } // else { // linear or log
+    //   tmpParam.birth =  -99;
+    //   tmpParam.death = death;
+    // } 
+    // if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
+    // 	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
+    //   fitness(popParams[0], tmpParam, initMutant, restrictTable,
+    // 	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
+    // 	      typeFitness, genTime, adjust_fitness_B, sh,
+    // 	      adjust_fitness_MF);
+
+    if( typeFitness != "mcfarlandlog") // wouldn't matter
       fitness(popParams[0], tmpParam, initMutant, restrictTable,
 	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
 	      typeFitness, genTime, adjust_fitness_B, sh,
@@ -1032,45 +1039,46 @@ static void innerBNB(const int& numGenes,
     init_tmpP(tmpParam);
   } else {
     popParams[0].numMutablePos = numGenes;
-    if(typeFitness == "beerenwinkel") {
-      popParams[0].death = 1.0;
-      // initialize to prevent birth/mutation warning with Beerenwinkel
-      // when no mutator. O.w., the defaults
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0;
-      updateRatesBeeren(popParams, adjust_fitness_B, initSize,
-			currentTime, alpha, initSize, 
-			mutationPropGrowth, mu);
-    } else if(typeFitness == "mcfarland0") {
-      popParams[0].death = log1p(totPopSize/K);
-      if(!mutationPropGrowth)
-	popParams[0].mutation = mu * popParams[0].numMutablePos;
-      popParams[0].absfitness = 1.0;
-      updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
-			    totPopSize,
-			    mutationPropGrowth, mu);
-    } else if(typeFitness == "mcfarland") {
-      popParams[0].birth = 1.0;
-      popParams[0].death = totPopSize/K;
-      // no need to call updateRates
-    } else if(typeFitness == "mcfarlandlog") {
+    // if(typeFitness == "beerenwinkel") {
+    //   popParams[0].death = 1.0;
+    //   // initialize to prevent birth/mutation warning with Beerenwinkel
+    //   // when no mutator. O.w., the defaults
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = 1.0;
+    //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
+    // 			currentTime, alpha, initSize, 
+    // 			mutationPropGrowth, mu);
+    // } else if(typeFitness == "mcfarland0") {
+    //   popParams[0].death = log1p(totPopSize/K);
+    //   if(!mutationPropGrowth)
+    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+    //   popParams[0].absfitness = 1.0;
+    //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
+    // 			    totPopSize,
+    // 			    mutationPropGrowth, mu);
+    // } else if(typeFitness == "mcfarland") {
+    //   popParams[0].birth = 1.0;
+    //   popParams[0].death = totPopSize/K;
+    //   // no need to call updateRates
+    // } else if(typeFitness == "mcfarlandlog") {
+    if(typeFitness == "mcfarlandlog") {      
       popParams[0].birth = 1.0;
       popParams[0].death = log1p(totPopSize/K);
       // no need to call updateRates
     } else if(typeFitness == "bozic1") {
       popParams[0].birth = 1.0;
       popParams[0].death = 1.0;
-    } else if (typeFitness == "bozic2") {
-      popParams[0].birth = 0.5/genTime;
-      popParams[0].death = 0.5/genTime;
+    // } else if (typeFitness == "bozic2") {
+    //   popParams[0].birth = 0.5/genTime;
+    //   popParams[0].death = 0.5/genTime;
     } else if (typeFitness == "exp") {
       popParams[0].birth = 1.0;
       popParams[0].death = death;
-    } else { // linear or log
-      popParams[0].birth = birthRate;
-      popParams[0].death = death;
-    }
+    } // else { // linear or log
+    //   popParams[0].birth = birthRate;
+    //   popParams[0].death = death;
+    // }
   }
 
 
@@ -1590,18 +1598,19 @@ static void innerBNB(const int& numGenes,
       if(simulsDone)
 	break; //skip last updateRates
 
-      if( (typeFitness == "beerenwinkel") ) {
-	updateRatesBeeren(popParams, adjust_fitness_B,
-			  initSize, currentTime, alpha, totPopSize,
-			  mutationPropGrowth, mu);
-      } else if( (typeFitness == "mcfarland0") ) {
-	updateRatesMcFarland0(popParams, adjust_fitness_MF,
-			     K, totPopSize,
-			     mutationPropGrowth, mu);
-      } else if( (typeFitness == "mcfarland") ) {
-	updateRatesMcFarland(popParams, adjust_fitness_MF,
-			     K, totPopSize);
-      } else if( (typeFitness == "mcfarlandlog") ) {
+      // if( (typeFitness == "beerenwinkel") ) {
+      // 	updateRatesBeeren(popParams, adjust_fitness_B,
+      // 			  initSize, currentTime, alpha, totPopSize,
+      // 			  mutationPropGrowth, mu);
+      // } else if( (typeFitness == "mcfarland0") ) {
+      // 	updateRatesMcFarland0(popParams, adjust_fitness_MF,
+      // 			     K, totPopSize,
+      // 			     mutationPropGrowth, mu);
+      // } else if( (typeFitness == "mcfarland") ) {
+      // 	updateRatesMcFarland(popParams, adjust_fitness_MF,
+      // 			     K, totPopSize);
+      // } else if( (typeFitness == "mcfarlandlog") ) {
+      if( (typeFitness == "mcfarlandlog") ) {	
 	updateRatesMcFarlandLog(popParams, adjust_fitness_MF,
 			     K, totPopSize);
       }
