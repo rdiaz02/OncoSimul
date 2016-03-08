@@ -1487,9 +1487,15 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         restrict.table <- poset.to.restrictTable(poset)
     numDrivers <- nrow(restrict.table)
     numGenes <- (numDrivers + numPassengers)
-    
+    if(numGenes < 2)
+        stop("There must be at least two genes (loci) in the fitness effects.",
+             "If you only care about a degenerate case with just one,",
+             "you can enter a second gene",
+             "with fitness effect of zero.")
     if(numGenes > 64)
-        stop("Largest possible number of genes is 64")
+        stop("Largest possible number of genes (loci) is 64 for version 1.",
+             "You are strongly encouraged to use the new specification",
+             "as in version 2.")
 
     ## These can never be set by the user
     ## if(initSize_species < 10) {

@@ -846,6 +846,12 @@ nr_oncoSimul.internal <- function(rFE,
                                   minDetectDrvCloneSz,
                                   extraTime,
                                   keepPhylog) {
+    if(nrow(allNamedGenes(rFE)) < 2) {
+        stop("There must be at least two genes (loci) in the fitness effects.",
+             "If you only care about a degenerate case with just one,",
+             "you can enter a second gene (locus)",
+             "with fitness effect of zero.")
+    }
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
@@ -857,7 +863,12 @@ nr_oncoSimul.internal <- function(rFE,
                  "names of genes must match those in the ",
                  "restriction table.")
     }
-
+    if( (length(mu) == 1) && !(is.null(names(mu)))) {
+        stop("A length 1 mutation, but named.",
+             "This is ambiguous. We require at least two genes.",
+             "If you want per-gene mutation rates, each gene",
+             "must have its entry in the mu vector.")
+    }
     if(!is.null(initMutant)) {
        if(length(grep(">", initMutant))) {
             initMutant <- nice.vector.eo(initMutant, ">")
@@ -916,6 +927,7 @@ nr_oncoSimul.internal <- function(rFE,
             warning(m)
         }
     }
+
     ## call <- match.call()
     return(c(
         nr_BNB_Algo5(rFE = rFE,
@@ -983,8 +995,16 @@ allNamedGenes <- function(fe) {
 ## fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
 ## allNamedGenes(fea9)
 
+## FIXME: test:
+## a mu of length 1 with names.
 
+## FIXME:test
+## Only 2 or more genes.
 
+## FIXME: test
+## initMutant with a mu as a vector.
+## The mutated one always present, even if that mu has 10-9.
+## And others ordered as they should.
 
 
 
