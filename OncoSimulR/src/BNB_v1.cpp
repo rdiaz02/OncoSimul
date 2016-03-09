@@ -75,15 +75,15 @@ static void fitness(spParamsP& tmpP,
 		    Rcpp::IntegerMatrix restrictTable,
 		    const std::string& typeCBN,
 		    const Genotype64& newGenotype,
-		    const double& birthRate, 
+		    // const double& birthRate, 
 		    const double& s,
 		    // const double& death,
 		    const int& numDrivers,
 		    const std::string& typeFitness,
 		    // const double& genTime,
 		    // const double& adjust_fitness_B,
-		    const double& sh,
-		    const double& adjust_fitness_MF) {
+		    const double& sh){
+  //const double& adjust_fitness_MF) {
 
   using namespace Rcpp;
   // Two pieces: split into two functions??
@@ -218,7 +218,7 @@ static void fitness(spParamsP& tmpP,
 #endif
 
     } // else if (typeFitness == "log") {
-    //   tmpP.birth = birthRate + s * log1p(sumDriversMet) - 
+    //   tmpP.birth = birthRate+ s * log1p(sumDriversMet) - 
     // 	sh * log(1 + sumDriversNoMet);
     // } else { // linear
     //   tmpP.birth = birthRate + s * static_cast<double>(sumDriversMet) - 
@@ -781,7 +781,7 @@ static void sample_all_pop_P(std::vector<int>& sp_to_remove,
 static void innerBNB(const int& numGenes,
 		     const double& initSize,
 		     const double& K,
-		     const double& alpha,
+		     // const double& alpha,
 		     const std::string& typeCBN,
 		     //		     const double& genTime,
 		     const std::string& typeFitness,
@@ -790,7 +790,7 @@ static void innerBNB(const int& numGenes,
 		     const double& sh,
 		     const double& s,
 		     const double& death,
-		     const double& birthRate,
+		     // const double& birthRate,
 		     const double& keepEvery,
 		     const double& sampleEvery,		     
 		     const int& numDrivers,
@@ -1032,10 +1032,11 @@ static void innerBNB(const int& numGenes,
 
     if( typeFitness != "mcfarlandlog") // wouldn't matter
       fitness(popParams[0], tmpParam, initMutant, restrictTable,
-	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
+	      typeCBN, Genotypes[0], // birthRate,
+	      s, numDrivers, 
 	      typeFitness, // genTime, adjust_fitness_B,
-	      sh,
-	      adjust_fitness_MF);
+	      sh);
+    // adjust_fitness_MF);
     // we pass as the parent the tmpParam; it better initialize
     // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
@@ -1390,9 +1391,10 @@ static void innerBNB(const int& numGenes,
 
 	  fitness(tmpParam, popParams[nextMutant], mutatedPos, 
 		  restrictTable,
-		  typeCBN, newGenotype, birthRate, s,
+		  typeCBN, newGenotype, // birthRate,
+		  s,
 		  numDrivers, typeFitness, // genTime, adjust_fitness_B,
-		  sh, adjust_fitness_MF);
+		  sh); //, adjust_fitness_MF);
 	
 
 	  if(tmpParam.birth > 0.0) {
@@ -1640,7 +1642,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 		     int numDrivers,
 		     int numGenes,
 		     Rcpp::CharacterVector typeCBN_,
-		     double birthRate, 
+		     // double birthRate, 
 		     double s, 
 		     double death,
 		     double mu,
@@ -1660,7 +1662,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 		     int initMutant,
 		     double maxWallTime,
 		     double keepEvery,
-		     double alpha,
+		     // double alpha,
 		     double sh,
 		     double K,
 		     int detectionDrivers,
@@ -1856,7 +1858,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 	       numGenes,
 	       initSize,
 	       K,
-	       alpha,
+	       // alpha,
 	       typeCBN,
 	       // genTime,
 	       typeFitness,
@@ -1865,7 +1867,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 	       sh,
 	       s,
 	       death,
-	       birthRate,
+	       // birthRate,
 	       keepEvery,
 	       sampleEvery,		     
 	       numDrivers,
