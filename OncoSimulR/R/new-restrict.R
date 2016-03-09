@@ -846,18 +846,21 @@ nr_oncoSimul.internal <- function(rFE,
                                   minDetectDrvCloneSz,
                                   extraTime,
                                   keepPhylog) {
-    if(nrow(allNamedGenes(rFE)) < 2) {
+    if(!inherits(rFE, "fitnessEffects"))
+        stop(paste("rFE must be an object of class fitnessEffects",
+                   "as created, for instance, with function",
+                   "allFitnessEffects"))
+
+    if(countGenesFe(rFE) < 2) {
         stop("There must be at least two genes (loci) in the fitness effects.",
              "If you only care about a degenerate case with just one,",
              "you can enter a second gene (locus)",
              "with fitness effect of zero.")
     }
-    if(!inherits(rFE, "fitnessEffects"))
-        stop(paste("rFE must be an object of class fitnessEffects",
-                   "as created, for instance, with function",
-                   "allFitnessEffects"))
+
+    namedGenes <- allNamedGenes(rFE)
     if(length(mu) > 1) { ## FIXME:test
-        if(sort(allNamedGenes(rFE)$Gene) !=
+        if(sort(namedGenes$Gene) !=
            sort(names(mu)))
             stop("When using per-gene mutation rates, ",
                  "names of genes must match those in the ",
@@ -868,6 +871,10 @@ nr_oncoSimul.internal <- function(rFE,
              "This is ambiguous. We require at least two genes.",
              "If you want per-gene mutation rates, each gene",
              "must have its entry in the mu vector.")
+    }
+
+    if( length(mu) > 1) {
+        mu <- order(match(names(mu), namedGenes$Gene))
     }
     if(!is.null(initMutant)) {
        if(length(grep(">", initMutant))) {
@@ -957,28 +964,36 @@ nr_oncoSimul.internal <- function(rFE,
                  maxNumTries = max.num.tries,
                  errorHitMaxTries = errorHitMaxTries,
                  minDetectDrvCloneSz = minDetectDrvCloneSz,
-                     extraTime = extraTime,
-                     keepPhylog),
+                 extraTime = extraTime,
+                 keepPhylog = keepPhylog),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
 }
 
 
+countGenesFe <- function(fe) {
+    ## recall geneModule has Root always
+    nrow(rFE$geneModule) + nrow(rFE$long.geneNoInt) - 1
+}
 
+allNamedGenes <- function(fe){
+    ## Returns a data frame with genes and their names and verifies all
+    ## genes have names.
 
-allNamedGenes <- function(fe) {
-    ## Root should always be first, but just in case avoid assuming it
-    lni <- length(fe$noIntGenes)
-    ## FIXME:test
-    if((lni > 0) &&
-       (is.null(names(fe$noIntGenes))))
-        stop("When using per-gene mutation rates the ",
-             "no interaction genes must be named ",
-             "(i.e., the noIntGenes vector must have names).")
+    ## Root should always be first, but just in case
+    ## avoid assuming it
+
+    ## This does is not a good idea as it assumes the user did not use
+    ## "keepInput = FALSE".
+    ## lni <- length(fe$noIntGenes)
+    ## ## FIXME:test
+    ## if((lni > 0) &&
+    ##        (is.null(names(fe$noIntGenes))))
+    ##         stop("When using per-gene mutation rates the ",
+    ##              "no interaction genes must be named ",
+    ##              "(i.e., the noIntGenes vector must have names).")
     
-    v1 <- c(fe$geneModule$Gene, names(fe$noIntGenes))
-
     v1 <- fe$geneModule[, c("Gene", "GeneNumID")]
     if(lni) {
         v1 <- rbind(v1,
@@ -1007,6 +1022,7 @@ allNamedGenes <- function(fe) {
 ## And others ordered as they should.
 
 
-
+## FIXME: test
+## with named genes for mu in different order
 
 
