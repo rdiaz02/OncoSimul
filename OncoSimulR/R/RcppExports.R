@@ -5,8 +5,8 @@ nr_BNB_Algo5 <- function(rFE, mu, death, initSize, sampleEvery, detectionSize, f
     .Call('C_OncoSimulR_nr_BNB_Algo5', PACKAGE = 'OncoSimulR', rFE, mu, death, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant_, maxWallTime, keepEvery, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime, keepPhylog)
 }
 
-BNB_Algo5 <- function(restrictTable, numDrivers, numGenes, typeCBN_, birthRate, s, death, mu, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant, maxWallTime, keepEvery, sh, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime) {
-    .Call('C_OncoSimulR_BNB_Algo5', PACKAGE = 'OncoSimulR', restrictTable, numDrivers, numGenes, typeCBN_, birthRate, s, death, mu, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant, maxWallTime, keepEvery, sh, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime)
+BNB_Algo5 <- function(restrictTable, numDrivers, numGenes, typeCBN_, s, death, mu, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant, maxWallTime, keepEvery, sh, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime) {
+    .Call('C_OncoSimulR_BNB_Algo5', PACKAGE = 'OncoSimulR', restrictTable, numDrivers, numGenes, typeCBN_, s, death, mu, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant, maxWallTime, keepEvery, sh, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime)
 }
 
 ## No longer used (or at least not now)

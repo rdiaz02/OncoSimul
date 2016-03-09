@@ -875,6 +875,9 @@ nr_oncoSimul.internal <- function(rFE,
 
     if( length(mu) > 1) {
         mu <- order(match(names(mu), namedGenes$Gene))
+        ## Hyperparanoid check. Should never, ever, happen.
+        if(!identical(names(mu), namedGenes$Gene))
+            stop("Names of re-ordered mu do not match names of genes")
     }
     if(!is.null(initMutant)) {
        if(length(grep(">", initMutant))) {
@@ -974,7 +977,7 @@ nr_oncoSimul.internal <- function(rFE,
 
 countGenesFe <- function(fe) {
     ## recall geneModule has Root always
-    nrow(rFE$geneModule) + nrow(rFE$long.geneNoInt) - 1
+    nrow(fe$geneModule) + nrow(fe$long.geneNoInt) - 1
 }
 
 allNamedGenes <- function(fe){
@@ -995,7 +998,7 @@ allNamedGenes <- function(fe){
     ##              "(i.e., the noIntGenes vector must have names).")
     
     v1 <- fe$geneModule[, c("Gene", "GeneNumID")]
-    if(lni) {
+    if(nrow(fe$long.geneNoInt)) {
         v1 <- rbind(v1,
                     fe$long.geneNoInt[, c("Gene", "GeneNumID")])
     }
@@ -1022,7 +1025,7 @@ allNamedGenes <- function(fe){
 ## And others ordered as they should.
 
 
-## FIXME: test
-## with named genes for mu in different order
+## FIXME: test with named genes for mu in different order as in table and
+## make sure output is correct.
 
 
