@@ -19,29 +19,30 @@
 #define _BNB_COMMON_H_
 
 #include<Rcpp.h>
-#include"debug_common.h"
-#include "new_restrict.h" // for the TypeModel enum
+#include "common_classes.h"
+#include "debug_common.h"
+// #include "new_restrict.h" // for the TypeModel enum
 
-// Simple custom exception for exceptions that lead to re-runs.
-class rerunExcept: public std::runtime_error {
-public:
-  rerunExcept(const std::string &s) :
-    std::runtime_error(s) {}
-};
+// // Simple custom exception for exceptions that lead to re-runs.
+// class rerunExcept: public std::runtime_error {
+// public:
+//   rerunExcept(const std::string &s) :
+//     std::runtime_error(s) {}
+// };
 
 
-struct spParamsP {
-  double popSize;
-  double birth;
-  double death;
-  double W;
-  double R;
-  double mutation; 
-  double timeLastUpdate;
-  std::multimap<double, int>::iterator pv;
-  double absfitness; //convenient for Beerenwinkel
-  int numMutablePos; //for mutator if need update of mutation
-};
+// struct spParamsP {
+//   double popSize;
+//   double birth;
+//   double death;
+//   double W;
+//   double R;
+//   double mutation; 
+//   double timeLastUpdate;
+//   std::multimap<double, int>::iterator pv;
+//   double absfitness; //convenient for Beerenwinkel
+//   int numMutablePos; //for mutator if need update of mutation
+// };
 
 
 inline void W_f_st(spParamsP& spP){
