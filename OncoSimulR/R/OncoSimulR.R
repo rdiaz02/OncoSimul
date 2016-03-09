@@ -1553,8 +1553,8 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         BNB_Algo5(restrictTable = rtC,
         numDrivers = numDrivers,
         numGenes = numGenes,
-        typeCBN_ = typeCBN,
-        birthRate = birth,
+        typeCBN_= typeCBN,
+        ## birthRate = birth, 
         s = s, 
         death = death,
         mu = mu,
@@ -1568,7 +1568,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         verbosity = verbosity,
         speciesFS = speciesFS,
         ratioForce = ratioForce,
-        typeFitness_= typeFitness,
+        typeFitness_ = typeFitness,
         maxram = max.memory,
         mutationPropGrowth = as.integer(mutationPropGrowth),
         initMutant = initMutant,
@@ -1586,7 +1586,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         minDetectDrvCloneSz = minDetectDrvCloneSz,
         extraTime = extraTime
     ),
-             NumDrivers = numDrivers
+    NumDrivers = numDrivers
              ))
 
 }

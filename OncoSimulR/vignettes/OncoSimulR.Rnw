@@ -3071,7 +3071,7 @@ lead to trouble when using Bozic's model:
 
 %% ## set.seed(987)
 <<>>=
-i1 <- allFitnessEffects(noIntGenes = c(1))
+i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Bozic")
 i1_b <- oncoSimulIndiv(i1, model = "Bozic")

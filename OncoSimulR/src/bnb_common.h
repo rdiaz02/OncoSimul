@@ -107,11 +107,11 @@ void precissionLoss();
 void init_tmpP(spParamsP& tmpParam);
 
 double returnMFE(double& e1,
-		 const double& K,
+		 // const double& K,
 		 const std::string& typeFitness);
 
 double returnMFE(double& e1,
-		 const double& K,
+		 // const double& K,
 		 const TypeModel typeModel);
 
 void computeMcFarlandError(double& e1,
