@@ -2118,7 +2118,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 		 Named("PerSampleStats") = perSampleStats,
 		 Named("other") = Rcpp::List::create(Named("attemptsUsed") = numRuns,
 					       Named("errorMF") = 
-					       returnMFE(e1, K, 
+						     returnMFE(e1, // K, 
 							 typeFitness),
 					       Named("errorMF_size") = e1,
 					       Named("errorMF_n_0") = n_0,

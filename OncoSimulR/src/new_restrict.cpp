@@ -1209,3 +1209,13 @@ double mutationFromParent(const std::vector<double>& mu,
 
 
   
+// About order of genes and their names, etc
+
+// We first read the R gene module. The $geneModule. The function is
+// R_GeneModuleToGeneModule
+
+// We also read the no interaction. They have their own number-name
+// correspondence, within the noInt genes part. See the struct
+// genesWithoutInt.  But that already comes order from R with numbers
+// starting after the last gene with interaction. See the R function
+// allFitnessEffects.

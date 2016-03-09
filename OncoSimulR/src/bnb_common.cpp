@@ -605,7 +605,7 @@ void init_tmpP(spParamsP& tmpParam) {
 // }
 
 double returnMFE(double& e1,
-		 const double& K,
+		 // const double& K,
 		 const std::string& typeFitness) {
   if(typeFitness == "mcfarlandlog")
     return log(e1);
@@ -614,7 +614,7 @@ double returnMFE(double& e1,
 }
 
 double returnMFE(double& e1,
-			const double& K,
+		 // const double& K,
 			const TypeModel typeModel) {
   if(typeModel == TypeModel::mcfarlandlog)
     return log(e1);
