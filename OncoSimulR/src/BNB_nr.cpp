@@ -650,8 +650,8 @@ void addToPhylog(PhylogName& phylog,
 static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const double& initSize,
 			const double& K,
-			const double& alpha,
-		     const double& genTime,
+			// const double& alpha,
+			// const double& genTime,
 		     const TypeModel typeModel,
 		     const int& mutationPropGrowth,
 			const std::vector<double>& mu,
@@ -1543,7 +1543,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			Rcpp::IntegerVector initMutant_, 
 			double maxWallTime,
 			double keepEvery,
-			double alpha,
+			// double alpha,
 			double K,
 			int detectionDrivers,
 			bool onlyCancer,
@@ -1558,7 +1558,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   const TypeModel typeModel = stringToModel(Rcpp::as<std::string>(typeFitness_));
 
-  const double genTime = 4.0; // should be a parameter. For Bozic only.
+  // const double genTime = 4.0; // should be a parameter. For Bozic only.
 
   //If seed is -9, then use automatic seed.
 
@@ -1707,8 +1707,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  fitnessEffects,
 		  initSize,
 	       K,
-	       alpha,
-	       genTime,
+		  // alpha,
+		  // genTime,
 	       typeModel,
 	       mutationPropGrowth,
 	       mu,
