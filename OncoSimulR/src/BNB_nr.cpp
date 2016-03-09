@@ -1908,7 +1908,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		 Named("PerSampleStats") = perSampleStats,
 		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
 					       Named("errorMF") = 
-					       returnMFE(e1, K, 
+					       returnMFE(e1, //K, 
 							 typeModel),
 					       Named("errorMF_size") = e1,
 					       Named("errorMF_n_0") = n_0,

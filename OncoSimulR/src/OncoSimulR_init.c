@@ -11,8 +11,8 @@ SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP);
 SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP);
 
 R_CallMethodDef callMethods[]  = {
-  {"C_OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 29},
-  {"C_OncoSimulR_BNB_Algo5", (DL_FUNC) &OncoSimulR_BNB_Algo5, 34},
+  {"C_OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 28},
+  {"C_OncoSimulR_BNB_Algo5", (DL_FUNC) &OncoSimulR_BNB_Algo5, 33},
   {"C_OncoSimulR_readFitnessEffects", (DL_FUNC) &OncoSimulR_readFitnessEffects, 2},
   {"C_OncoSimulR_evalRGenotype", (DL_FUNC) &OncoSimulR_evalRGenotype, 4},
   {NULL, NULL, 0}
