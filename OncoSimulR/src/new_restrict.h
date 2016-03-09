@@ -19,15 +19,17 @@
 #define _NEW_RESTRICT_H__
 
 #include "debug_common.h"
+#include "common_classes.h"
 // #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include <Rcpp.h>
 #include <limits>
 #include <random>
 
+
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
 // enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
 //     beerenwinkel, mcfarland0,  bozic2};
-enum class TypeModel {exp, bozic1, mcfarlandlog};
+// enum class TypeModel {exp, bozic1, mcfarlandlog};
 
 struct Poset_struct {
   Dependency typeDep;
@@ -163,14 +165,13 @@ Dependency stringToDep(const std::string& dep);
 
 std::string depToString(const Dependency dep);
 
-
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
-		     int& numMutablePosParent,
+		     int& numMutablePosParent, 
 		     std::vector<int>& newMutations,
-		     std::mt19937& ran_gen
 		     //randutils::mt19937_rng& ran_gen
-		     );
+		     std::mt19937& ran_gen,
+		     std::vector<double> mu);
 
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
@@ -197,5 +198,17 @@ double prodFitness(const std::vector<double>& s);
 
 double prodDeathFitness(const std::vector<double>& s);
 
+double mutationFromScratch(const std::vector<double>& mu,
+			   const spParamsP& spP,
+			   const Genotype& g,
+			   const fitnessEffectsAll& fe,
+			   const int mutationPropGrowth);
+
+double mutationFromParent(const std::vector<double>& mu,
+			  const spParamsP& newP,
+			  const spParamsP& parentP,
+			  const std::vector<int>& newMutations,
+			  // const std::vector<int>& nonmutated,
+			  const int mutationPropGrowth);
 #endif
 

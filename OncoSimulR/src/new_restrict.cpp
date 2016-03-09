@@ -15,8 +15,9 @@
 
 
 // #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
-#include "new_restrict.h"
 #include "debug_common.h"
+#include "common_classes.h"
+#include "new_restrict.h"
 #include <Rcpp.h>
 #include <iomanip> 
 #include <algorithm>
@@ -441,13 +442,15 @@ void obtainMutations(const Genotype& parent,
 
   if(mu.size() == 1) { // common mutation rate
     std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+    newMutations.push_back(nonmutated[rpos(ran_gen)]);
   } else { // per-gene mutation rate.
     // Remember that mutations always indexed from 1, not from 0.
     std::vector<double> mu_nm;
     for(auto const &nm : nonmutated) mu_nm.push_back(mu[nm - 1]);
     std::discrete_distribution<int> rpos(mu_nm.begin(), mu_nm.end());
+    newMutations.push_back(nonmutated[rpos(ran_gen)]);
   }
-  newMutations.push_back(nonmutated[rpos(ran_gen)]);
+  
   // randutils
   // // Yes, the next will work, but pick is simpler!
   // // size_t rpos = ran_gen.uniform(static_cast<size_t>(0), nonmutated.size() - 1);
@@ -1194,13 +1197,13 @@ double mutationFromParent(const std::vector<double>& mu,
     else
       return(mu[0] * newP.numMutablePos);
   } else {
-    double pmutrate = parentP.mutation;
+    double mutrate = parentP.mutation;
     for(auto const mutated : newMutations) {
-      pmutrate -= mu[mutated - 1];
+      mutrate -= mu[mutated - 1];
     }
     if(mutationPropGrowth)
       mutrate *= newP.birth;
-    return(pmutrate);
+    return(mutrate);
   }
 }
 

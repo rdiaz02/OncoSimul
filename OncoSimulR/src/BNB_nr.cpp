@@ -19,6 +19,7 @@
 // #include "OncoSimul.h"
 // #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include "debug_common.h"
+#include "common_classes.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
 #include <Rcpp.h>
@@ -49,13 +50,13 @@ double g_tmp1_nr = DBL_MAX;
 
 
 void nr_fitness(spParamsP& tmpP,
-		       const spParamsP& parentP,
-		       const Genotype& ge,
-		       const fitnessEffectsAll& F,
-		       const TypeModel typeModel,
-		       const double& genTime,
-		       const double& adjust_fitness_B,
-		       const double& adjust_fitness_MF) {
+		const spParamsP& parentP,
+		const Genotype& ge,
+		const fitnessEffectsAll& F,
+		const TypeModel typeModel) {
+		       // const double& genTime,
+		       // const double& adjust_fitness_B,
+		       // const double& adjust_fitness_MF) {
 
   // We want a way to signal immediate non-viability of a clone. For
   // "birth-based" models that happens when any s = -1, as the fitness is
@@ -700,7 +701,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
  
   const int numGenes = fitnessEffects.genomeSize;
-  double dummyMutationRate = std::max(mu/1000, 1e-13);
+  double dummyMutationRate = std::max(*std::min_element(mu.begin(), mu.end())/1000, 1e-13);
   // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero
   genot_out.clear();
@@ -919,8 +920,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       nr_fitness(popParams[0], tmpParam,
 		 Genotypes[0],
 		 fitnessEffects,
-		 typeModel, genTime,
-		 adjust_fitness_B, adjust_fitness_MF);
+		 typeModel);
+    // , genTime);
+    //		 adjust_fitness_B, adjust_fitness_MF);
     // we pass as the parent the tmpParam; it better initialize
     // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
@@ -982,8 +984,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   // else
   //   popParams[0].mutation = mu * popParams[0].numMutablePos;
 
-  popParams[0].mutation = mutationFromScratch(mu, popParams, Genotypes[0],
-					      fe, mutationPropGrowth);  
+  popParams[0].mutation = mutationFromScratch(mu, popParams[0], Genotypes[0],
+					      fitnessEffects, mutationPropGrowth);  
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
@@ -1303,8 +1305,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	  nr_fitness(tmpParam, popParams[nextMutant],
 		     newGenotype,
 		     fitnessEffects,
-		     typeModel, genTime,
-		     adjust_fitness_B, adjust_fitness_MF);
+		     typeModel);// , genTime,
+		     // adjust_fitness_B, adjust_fitness_MF);
 
 	  if(tmpParam.birth > 0.0) {
 	    // if(keepMutationTimes)

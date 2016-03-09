@@ -15,6 +15,7 @@
 
 
 #include "debug_common.h"
+#include "common_classes.h"
 #include "bnb_common.h"
 
 #include <limits>
@@ -79,8 +80,8 @@ static void fitness(spParamsP& tmpP,
 		    // const double& death,
 		    const int& numDrivers,
 		    const std::string& typeFitness,
-		    const double& genTime,
-		    const double& adjust_fitness_B,
+		    // const double& genTime,
+		    // const double& adjust_fitness_B,
 		    const double& sh,
 		    const double& adjust_fitness_MF) {
 
@@ -782,7 +783,7 @@ static void innerBNB(const int& numGenes,
 		     const double& K,
 		     const double& alpha,
 		     const std::string& typeCBN,
-		     const double& genTime,
+		     //		     const double& genTime,
 		     const std::string& typeFitness,
 		     const int& mutationPropGrowth,
 		     const double& mu,
@@ -1032,7 +1033,8 @@ static void innerBNB(const int& numGenes,
     if( typeFitness != "mcfarlandlog") // wouldn't matter
       fitness(popParams[0], tmpParam, initMutant, restrictTable,
 	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
-	      typeFitness, genTime, adjust_fitness_B, sh,
+	      typeFitness, // genTime, adjust_fitness_B,
+	      sh,
 	      adjust_fitness_MF);
     // we pass as the parent the tmpParam; it better initialize
     // everything right, or that will blow. Reset to init
@@ -1389,8 +1391,8 @@ static void innerBNB(const int& numGenes,
 	  fitness(tmpParam, popParams[nextMutant], mutatedPos, 
 		  restrictTable,
 		  typeCBN, newGenotype, birthRate, s,
-		  numDrivers, typeFitness, genTime,
-		  adjust_fitness_B, sh, adjust_fitness_MF);
+		  numDrivers, typeFitness, // genTime, adjust_fitness_B,
+		  sh, adjust_fitness_MF);
 	
 
 	  if(tmpParam.birth > 0.0) {
@@ -1674,7 +1676,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
   precissionLoss();
   const std::string typeFitness = Rcpp::as<std::string>(typeFitness_); // no need to do [0]
   const std::string typeCBN = Rcpp::as<std::string>(typeCBN_); // no need to do [0]
-  const double genTime = 4.0; // should be a parameter. For Bozic only.
+  // const double genTime = 4.0; // should be a parameter. For Bozic only.
   
   // const IntegerMatrix restrictTable(restrictTable_);
   // const int numDrivers = as<int>(numDrivers_);
@@ -1856,7 +1858,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 	       K,
 	       alpha,
 	       typeCBN,
-	       genTime,
+	       // genTime,
 	       typeFitness,
 	       mutationPropGrowth,
 	       mu,

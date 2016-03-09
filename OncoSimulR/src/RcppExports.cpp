@@ -42,7 +42,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type minDetectDrvCloneSz(minDetectDrvCloneSzSEXP);
     Rcpp::traits::input_parameter< double >::type extraTime(extraTimeSEXP);
     Rcpp::traits::input_parameter< bool >::type keepPhylog(keepPhylogSEXP);
-    __result = Rcpp::wrap(nr_BNB_Algo5(rFE, mu, death, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant_, maxWallTime, keepEvery, alpha, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime, keepPhylog));
+    __result = Rcpp::wrap(nr_BNB_Algo5(rFE, mu_, death, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant_, maxWallTime, keepEvery, alpha, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime, keepPhylog));
     return __result;
 END_RCPP
 }
