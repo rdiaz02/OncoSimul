@@ -1,19 +1,54 @@
 
 
-test_that("Bauer example: correct number of fitness classes", {
-    sd <- 0.1
-    sdp <- 0.15
-    sp <- 0.05
-    bauer <- data.frame(parent = c("Root", rep("p", 5)),
-                        child = c("p", paste0("s", 1:5)),
-                        s = c(sd, rep(sdp, 5)),
-                        sh = c(0, rep(sp, 5)),
-                        typeDep = "MN")
-    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
-    b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
-    expect_equal(length(unique(b1$Fitness)), 11)
-    expect_equal(length(unique(b2$Fitness)), 11)
+test_that("Per-gene mutation rates with old poset format", {
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
+    names(muvar) <- letters[1:7]
+    expect_error(oncoSimulIndiv(p701, mu = muvar),
+                 "Per-gene mutation rates cannot be used with the old poset format")
 } )
+
+
+test_that("Only no-int, and sorting", {
+    fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
+    OncoSimulR:::allNamedGenes(fea9)
+    muvar <- c("m" = 1e-5, "D" = 1e-7)
+    expect_output(oncoSimulIndiv(fea9, mu = muvar))
+    fea8 <- allFitnessEffects(noIntGenes =
+                                  c("m" = 0.1,
+                                    "D" = 0.1,
+                                    "z" = 0.1,
+                                    "e" = 0.1,
+                                    "U" = 0.1
+                                    ))
+    ## OncoSimulR:::allNamedGenes(fea8)
+    muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
+    expect_output(oncoSimulIndiv(fea8, mu = muvar2))
+} )
+
+
+
+test_that("Only no-int, unnamed", {
+    fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
+    OncoSimulR:::allNamedGenes(fea9)
+    muvar <- c(1e-5, 1e-7)
+    expect_error(oncoSimulIndiv(fea9, mu = muvar),
+                 "When using per-gene mutation rates, names of genes must match",
+                 fixed = TRUE)
+} )
+
+
+
+test_that("Only one, named", {
+    fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1))
+    muvar <- c("m" = 1e-5)
+    expect_error(oncoSimulIndiv(fea9, mu = muvar),
+                 "There must be at least two genes (loci) in the fitness effects",
+                 fixed = TRUE)
+} )
+
+
 
 
 
@@ -1103,3 +1138,4 @@ test_that("Bozic limit cases handled consistently", {
                  "Individual OncoSimul trajectory with call"
                  ) 
 })
+

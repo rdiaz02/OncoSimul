@@ -858,14 +858,6 @@ nr_oncoSimul.internal <- function(rFE,
              "with fitness effect of zero.")
     }
 
-    namedGenes <- allNamedGenes(rFE)
-    if(length(mu) > 1) { ## FIXME:test
-        if(sort(namedGenes$Gene) !=
-           sort(names(mu)))
-            stop("When using per-gene mutation rates, ",
-                 "names of genes must match those in the ",
-                 "restriction table.")
-    }
     if( (length(mu) == 1) && !(is.null(names(mu)))) {
         stop("A length 1 mutation, but named.",
              "This is ambiguous. We require at least two genes.",
@@ -873,8 +865,16 @@ nr_oncoSimul.internal <- function(rFE,
              "must have its entry in the mu vector.")
     }
 
+    namedGenes <- allNamedGenes(rFE)
+    if(length(mu) > 1) { 
+        if(!identical(sort(namedGenes$Gene),
+                      sort(names(mu))))
+            stop("When using per-gene mutation rates, ",
+                 "names of genes must match those in the ",
+                 "restriction table.")
+    }
     if( length(mu) > 1) {
-        mu <- order(match(names(mu), namedGenes$Gene))
+        mu <- mu[order(match(names(mu), namedGenes$Gene))]
         ## Hyperparanoid check. Should never, ever, happen.
         if(!identical(names(mu), namedGenes$Gene))
             stop("Names of re-ordered mu do not match names of genes")
@@ -1008,16 +1008,7 @@ allNamedGenes <- function(fe){
 }
 
 
-## FIXME:test:
-## verify the above works when only int genes
-## fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
-## allNamedGenes(fea9)
 
-## FIXME: test:
-## a mu of length 1 with names.
-
-## FIXME:test
-## Only 2 or more genes.
 
 ## FIXME: test
 ## initMutant with a mu as a vector.

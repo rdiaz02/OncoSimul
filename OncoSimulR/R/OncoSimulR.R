@@ -416,7 +416,7 @@ oncoSimulIndiv <- function(fp,
         else
             stop("Unknown model")
     }
-    ## FIXME:test
+
     if( (length(mu) > 1) && !inherits(fp, "fitnessEffects"))
         stop("Per-gene mutation rates cannot be used with the old poset format")
 
