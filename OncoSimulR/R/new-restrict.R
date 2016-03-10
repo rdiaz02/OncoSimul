@@ -866,14 +866,17 @@ nr_oncoSimul.internal <- function(rFE,
     }
 
     namedGenes <- allNamedGenes(rFE)
-    if(length(mu) > 1) { 
+
+    if( length(mu) > 1) {
         if(!identical(sort(namedGenes$Gene),
                       sort(names(mu))))
             stop("When using per-gene mutation rates, ",
                  "names of genes must match those in the ",
                  "restriction table.")
-    }
-    if( length(mu) > 1) {
+        if(length(mu) != countGenesFe(rFE))
+            stop("When using per-gene mutation rates, ",
+                 "there must be the same number of genes in the ",
+                 "mu vector and the fitness effects object.")
         mu <- mu[order(match(names(mu), namedGenes$Gene))]
         ## Hyperparanoid check. Should never, ever, happen.
         if(!identical(names(mu), namedGenes$Gene))
