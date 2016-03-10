@@ -1,4 +1,4 @@
-Changes in version 2.1.1 (2016-02-29):
+Changes in version 2.1.1 (2016-03-07):
 	- Added mutationPropGrowth as argument.
 	- Stacked area and stream plots (code from Marc Taylor).
 	- Plots of genotypes.
