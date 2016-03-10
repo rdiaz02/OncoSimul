@@ -7,6 +7,9 @@
 
 
 rm(list = ls())
+## for reproducibility with mclapply
+date()
+RNGkind("L'Ecuyer-CMRG")
 library(OncoSimulR)
 packageVersion("OncoSimulR")
 library(help = OncoSimulR)
@@ -354,18 +357,21 @@ oi <- allFitnessEffects(orderEffects =
 oiI1 <- oncoSimulIndiv(oi, model = "Exp")
 oiI1$GenotypesLabels
 oiI1   ## note the order and separation by "_"
+set.seed(123)
 oiP1 <- oncoSimulPop(2, oi,
                      keepEvery = 10,
-                     mc.cores = 2)
+                     mc.cores = 2,
+                     seed = NULL)
 summary(oiP1) 
 ## Even if order exists, this cannot reflect it;
 ## G1 to G10 are d1, d2, f1..,f3, and the 5 genes without
 ## interaction
 samplePop(oiP1)
-oiS1 <- oncoSimulSample(2, oi)
-## The output contains only the summary of the runs AND
-## the sample:
+
+set.seed(33)
+oiS1 <- oncoSimulSample(2, oi, seed = NULL)
 oiS1 
+
 ## And their sizes do differ
 object.size(oiS1)
 object.size(oiP1)
@@ -396,13 +402,13 @@ pancr1$GenotypesLabels
 set.seed(89862)
 pancrPop <- oncoSimulPop(4, pancr,
                          keepEvery = 10,
-                         mc.cores = 2)
+                         mc.cores = 2, seed = NULL)
 summary(pancrPop)
 set.seed(89862)
 pancrSPop <- samplePop(pancrPop)
 pancrSPop
 set.seed(89862)
-pancrSamp <- oncoSimulSample(2, pancr)
+pancrSamp <- oncoSimulSample(2, pancr, seed = NULL)
 pancrSamp
 
 
@@ -441,7 +447,7 @@ p705 <- examplePosets[["p705"]]
 ## (I set mc.cores = 2 to comply with --as-cran checks, but you
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
-p1 <- oncoSimulPop(4, p705, mc.cores = 2)
+p1 <- oncoSimulPop(4, p705, mc.cores = 2, seed = NULL)
 samplePop(p1)
 
 
@@ -888,7 +894,7 @@ set.seed(53)
               out <- oncoSimulPop(4,
                                   oi, 
                                   detectionSize = 1e4,
-                                  onlyCancer = FALSE)
+                                  onlyCancer = FALSE, seed = NULL)
              out
 
 
@@ -1017,6 +1023,7 @@ set.seed(103)
                         onlyCancer = TRUE,
                         initSize = 500,
                         initMutant = c("z > d"),
+                        seed = NULL,
                         thresholdWhole = 1 ## check presence of initMutant
                         )
 
@@ -1055,6 +1062,7 @@ set.seed(127)
                         onlyCancer = TRUE,
                         initSize = 500,
                         initMutant = c("z > a"),
+                        seed = NULL,
                         thresholdWhole = 1 ## check presence of initMutant
                         )
 ossI
@@ -1084,6 +1092,7 @@ set.seed(987)
                         onlyCancer = TRUE,
                         keepPhylog = TRUE,
                         initSize = 500,
+                        seed = NULL,
                         initMutant = c("d > m > y"),
                         mc.cores = 2
                         )
@@ -1115,7 +1124,8 @@ set.seed(56)
                         keepPhylog = TRUE,
                         initSize = 100,
                         initMutant = c("m > v > d"),
-                        mc.cores = 2
+                        mc.cores = 2,
+                        seed = NULL
                         )
 ospI
 ## Up to, and including, test.init-mutant.R
@@ -1129,13 +1139,14 @@ oi <- allFitnessEffects(orderEffects =
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
 set.seed(9)
-oncoSimulIndiv(oi, verbosity = 2,
+oncoSimulIndiv(oi, 
                detectionSize = 1e4,
                onlyCancer = FALSE)
 
 set.seed(9)
-oncoSimulPop(4, oi, verbosity = 2,
-               detectionSize = 1e4,
+oncoSimulPop(4, oi, 
+             detectionSize = 1e4,
+             seed = NULL,
                onlyCancer = FALSE)
 
 
@@ -1148,10 +1159,11 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
                                                     s = 0.05,
                                                     sh = -0.3,
                                       typeDep = "MN"))
-oncoSimulSample(2, pancr)
+oncoSimulSample(2, pancr, seed = NULL)
 set.seed(11)
 oncoSimulSample(2,
                 pancr,
+                seed = NULL,
                 typeSample = "single")
 
 set.seed(25)
@@ -1164,9 +1176,9 @@ set.seed(25)
     mcf2 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
                               drvNames = character(0))
 set.seed(26)
-oncoSimulSample(2, mcf1)
+oncoSimulSample(2, mcf1, seed = NULL)
 set.seed(27)
-oncoSimulSample(5, mcf2)
+oncoSimulSample(5, mcf2, seed = NULL)
 
 ## up to test.oncoSimulIndiv-miscell
 
@@ -1259,7 +1271,7 @@ for(i in 1:length(examplesFitnessEffects)) {
     }
         set.seed(26)
     tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
-                            onlyCancer = FALSE,
+                            onlyCancer = FALSE, seed = NULL,
                             sampleEvery = sE)
     print(tmp)
 }
@@ -1280,11 +1292,18 @@ for(i in 1:length(examplesFitnessEffects)) {
     tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
                          onlyCancer = FALSE,
                          detectionDrivers = detectionDrv,
-                         sampleEvery = sE,
+                         sampleEvery = sE, seed = NULL, 
                          mc.cores = 2)
     print(tmp)
-    tmp2 <- samplePop(tmp)
     set.seed(419)
+    tmp2 <- samplePop(tmp)
     print(tmp2)
 }
+
+
+
+
+
+
+
 
