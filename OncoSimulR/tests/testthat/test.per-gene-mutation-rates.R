@@ -49,7 +49,9 @@ test_that("Only one, named", {
 } )
 
 
-
+## test different numbers
+fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
+muvar <- c("m" = 1e-5)
 
 
 test_that("Bauer example: identical values fitness classes, unorder and ord", {
