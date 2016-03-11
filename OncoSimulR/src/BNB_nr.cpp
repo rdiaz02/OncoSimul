@@ -701,6 +701,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
  
   const int numGenes = fitnessEffects.genomeSize;
+  // FIXME:varmutrate: if the value of dummy is larger than min mu, then
+  // give a warning. or give the min of the below and min of mu.
   double dummyMutationRate = std::max(*std::min_element(mu.begin(), mu.end())/1000, 1e-13);
   // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero
@@ -1254,6 +1256,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 	newMutations.clear();
 	// FIXME: nonmutated also returned here
+	
 	obtainMutations(Genotypes[nextMutant],
 			fitnessEffects,
 			numMutablePosParent,
@@ -1340,6 +1343,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    if (numMutablePosParent == 1) {
 	      if(verbosity >= 1)
 		Rcpp::Rcout << "Note: mutation = 0; no positions left for mutation\n";
+	      // FIXME:varmutrate: give the value of dummy here.
 	      tmpParam.mutation = dummyMutationRate; // dummy mutation here. Set some mu.
 	    }
 	    W_f_st(tmpParam);

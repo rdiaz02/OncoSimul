@@ -446,7 +446,7 @@ void obtainMutations(const Genotype& parent,
   } else { // per-gene mutation rate.
     // Remember that mutations always indexed from 1, not from 0.
 
-    // FIXME: give a warning if the only mu is for mu = 0.
+    // FIXME:varmutrate give a warning if the only mu is for mu = 0.
     std::vector<double> mu_nm;
     for(auto const &nm : nonmutated) mu_nm.push_back(mu[nm - 1]);
     std::discrete_distribution<int> rpos(mu_nm.begin(), mu_nm.end());

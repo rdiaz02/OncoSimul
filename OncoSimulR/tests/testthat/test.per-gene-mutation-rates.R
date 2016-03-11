@@ -809,7 +809,8 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
     ## In obtainMutations, when we use the discrete_distribution.
 
     ## I think what happens is we first set the dummyMutationRate, and
-    ## then we enter the obtainMutations
+    ## then we enter the obtainMutations. Nope, not that. It just obtains
+    ## the only value in discrete distribution.
     
     RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
     set.seed(26)
