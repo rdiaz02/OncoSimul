@@ -59,6 +59,7 @@ BiocStyle::latex()
 
 %% FIXME: the homozigos, etc.
 
+%%FIXME : examples of gene-specific mutation rates?
 
 \bioctitle[\textit{OncoSimulR: genetic simulation with arbitrary
   epistasis}]{OncoSimulR: forward genetic simulation in asexual
