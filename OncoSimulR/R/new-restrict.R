@@ -1021,18 +1021,23 @@ get.gene.counts <- function(x) {
     ## From get.mut.vector. Used for now just for testing
     timeSample <- "last"
     the.time <- get.the.time.for.sample(x, timeSample)
-    if(the.time < 0) { 
-        return(rep(NA, nrow(x$Genotypes)))
+    if(the.time < 0) {
+        counts <- rep(0, length(x$geneNames))
+        names(counts) <- x$geneNames
+        freq <- rep(NA, length(x$geneNames))
+        names(freqs) <- x$geneNames
+        return(list(counts = counts,
+                    freq = freq,
+                    popSize = 0))
     } 
     pop <- x$pops.by.time[the.time, -1]
-    
     if(all(pop == 0)) {
         stop("You found a bug: this should never happen")
     }
     ## if(typeSample %in% c("wholeTumor", "whole")) {
     popSize <- x$PerSampleStats[the.time, 1]
     counts <- as.vector(tcrossprod(pop, x$Genotypes))
-    names(counts) <- x$geneNames
+    names(counts) <- x$geneNames    
     return(list(counts = counts,
                 freq = counts/popSize,
                 popSize = popSize))
@@ -1046,6 +1051,19 @@ get.gene.counts <- function(x) {
     ##     }
 }
 
+
+
+geneCounts <- function(x) {
+    if(inherits(x, "oncosimulpop")) {
+        return( do.call(rbind,
+                        lapply(x,
+                               function(z)
+                               get.gene.counts(z)$counts))
+               )
+    } else {
+        return( get.gene.counts(x)$counts)
+    }
+}
 
 
 
