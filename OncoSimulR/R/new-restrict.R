@@ -868,15 +868,19 @@ nr_oncoSimul.internal <- function(rFE,
     namedGenes <- allNamedGenes(rFE)
 
     if( length(mu) > 1) {
+        if(is.null(names(mu)))
+            stop("When using per-gene mutation rates the ",
+                 "mu vector must be named ",
+                 "(and if you have noIntGenes, those must have names).")
+        if(length(mu) != countGenesFe(rFE))
+            stop("When using per-gene mutation rates, ",
+                 "there must be the same number of genes in the ",
+                 "mu vector and the fitness effects object.")
         if(!identical(sort(namedGenes$Gene),
                       sort(names(mu))))
             stop("When using per-gene mutation rates, ",
                  "names of genes must match those in the ",
                  "restriction table.")
-        if(length(mu) != countGenesFe(rFE))
-            stop("When using per-gene mutation rates, ",
-                 "there must be the same number of genes in the ",
-                 "mu vector and the fitness effects object.")
         mu <- mu[order(match(names(mu), namedGenes$Gene))]
         ## Hyperparanoid check. Should never, ever, happen.
         if(!identical(names(mu), namedGenes$Gene))
@@ -1011,6 +1015,38 @@ allNamedGenes <- function(fe){
 }
 
 
+get.gene.counts <- function(x) {
+                                        # , timeSample = "last",
+                                        # typeSample = "whole") {
+    ## From get.mut.vector. Used for now just for testing
+    timeSample <- "last"
+    the.time <- get.the.time.for.sample(x, timeSample)
+    if(the.time < 0) { 
+        return(rep(NA, nrow(x$Genotypes)))
+    } 
+    pop <- x$pops.by.time[the.time, -1]
+    
+    if(all(pop == 0)) {
+        stop("You found a bug: this should never happen")
+    }
+    ## if(typeSample %in% c("wholeTumor", "whole")) {
+    popSize <- x$PerSampleStats[the.time, 1]
+    counts <- as.vector(tcrossprod(pop, x$Genotypes))
+    names(counts) <- x$geneNames
+    return(list(counts = counts,
+                freq = counts/popSize,
+                popSize = popSize))
+    ## return( (tcrossprod(pop,
+    ##                     x$Genotypes)/popSize) )
+    ## } else if (typeSample %in%  c("singleCell", "single")) {
+
+    ##       return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+    ##   } else {
+    ##         stop("Unknown typeSample option")
+    ##     }
+}
+
+
 
 
 ## FIXME: test
@@ -1019,7 +1055,5 @@ allNamedGenes <- function(fe){
 ## And others ordered as they should.
 
 
-## FIXME: test with named genes for mu in different order as in table and
-## make sure output is correct.
 
 
