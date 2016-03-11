@@ -1,6 +1,4 @@
-
-
-test_that("Per-gene mutation rates with old poset format", {
+test_that("Per-gene mutation rates with old poset format, fail", {
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
     muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
@@ -12,9 +10,11 @@ test_that("Per-gene mutation rates with old poset format", {
 
 test_that("Only no-int, and sorting", {
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
-    OncoSimulR:::allNamedGenes(fea9)
+    ## OncoSimulR:::allNamedGenes(fea9)
     muvar <- c("m" = 1e-5, "D" = 1e-7)
-    expect_output(oncoSimulIndiv(fea9, mu = muvar))
+    expect_output(oncoSimulIndiv(fea9, mu = muvar),
+                  "Individual OncoSimul trajectory",
+                  fixed = TRUE)
     fea8 <- allFitnessEffects(noIntGenes =
                                   c("m" = 0.1,
                                     "D" = 0.1,
@@ -24,23 +24,21 @@ test_that("Only no-int, and sorting", {
                                     ))
     ## OncoSimulR:::allNamedGenes(fea8)
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
-    expect_output(oncoSimulIndiv(fea8, mu = muvar2))
+    expect_output(oncoSimulIndiv(fea8, mu = muvar2),
+                  "Individual OncoSimul trajectory",
+                  fixed = TRUE)
 } )
 
-
-
-test_that("Only no-int, unnamed", {
+test_that("Only no-int, unnamed, fail", {
     fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
     OncoSimulR:::allNamedGenes(fea9)
     muvar <- c(1e-5, 1e-7)
     expect_error(oncoSimulIndiv(fea9, mu = muvar),
-                 "When using per-gene mutation rates, names of genes must match",
+                 "When using per-gene mutation rates the mu vector must be named",
                  fixed = TRUE)
 } )
 
-
-
-test_that("Only one, named", {
+test_that("Only one, named, fail", {
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1))
     muvar <- c("m" = 1e-5)
     expect_error(oncoSimulIndiv(fea9, mu = muvar),
@@ -48,10 +46,32 @@ test_that("Only one, named", {
                  fixed = TRUE)
 } )
 
+test_that("Only no-int, different names, fail", {
+    fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
+    ## OncoSimulR:::allNamedGenes(fea9)
+    muvar <- c("n" = 1e-5, "D" = 1e-7)
+    expect_error(oncoSimulIndiv(fea9, mu = muvar),
+                 "When using per-gene mutation rates, names of genes must match",
+                  fixed = TRUE)
+} )
+
+test_that("Only no-int, different numbers, fail", {
+    fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
+    muvar <- c("m" = 1e-5, "D" = 1e-7, "E" = 1e-7)
+    expect_error(oncoSimulIndiv(fea9, mu = muvar),
+                 "When using per-gene mutation rates, there must be the same number of genes",
+                 fixed = TRUE)
+    fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3, "E" = 0.1))
+    muvar <- c("m" = 1e-5, "D" = 1e-7)
+    expect_error(oncoSimulIndiv(fea9, mu = muvar),
+                 "When using per-gene mutation rates, there must be the same number of genes",
+                 fixed = TRUE)    
+} )
+
+
+
 
 ## test different numbers
-fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
-muvar <- c("m" = 1e-5)
 
 
 test_that("Bauer example: identical values fitness classes, unorder and ord", {
