@@ -859,10 +859,12 @@ nr_oncoSimul.internal <- function(rFE,
     }
 
     if( (length(mu) == 1) && !(is.null(names(mu)))) {
-        stop("A length 1 mutation, but named.",
-             "This is ambiguous. We require at least two genes.",
+        stop("A length 1 mutation, but named. ",
+             "This is ambiguous. ",
              "If you want per-gene mutation rates, each gene",
-             "must have its entry in the mu vector.")
+             "must have its entry in the mu vector. ",
+             "(And regardless of per-gene mutation rates ",
+             " there must be at least two gene/loci).")
     }
 
     namedGenes <- allNamedGenes(rFE)
@@ -1025,7 +1027,7 @@ get.gene.counts <- function(x) {
         counts <- rep(0, length(x$geneNames))
         names(counts) <- x$geneNames
         freq <- rep(NA, length(x$geneNames))
-        names(freqs) <- x$geneNames
+        names(freq) <- x$geneNames
         return(list(counts = counts,
                     freq = freq,
                     popSize = 0))
