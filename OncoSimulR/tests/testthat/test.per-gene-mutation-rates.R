@@ -1,3 +1,5 @@
+RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+
 test_that("Per-gene mutation rates with old poset format, fail", {
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
@@ -116,7 +118,7 @@ test_that("Same freqs, chisq, when s and t = 1", {
 
 test_that("Different freqs as they should be ordered and chisq, when s=0 and t = 1",
 {
-    muvar2 <- c("U" = 1e-6, "z" = 1e-7, "e" = 1e-3, "m" = 1e-5, "D" = 1e-4)
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
@@ -143,7 +145,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0 and t =
 
 
 test_that("Different freqs as they should be ordered and chisq, when s and t = 1", {
-    muvar2 <- c("U" = 1e-6, "z" = 1e-7, "e" = 1e-3, "m" = 1e-5, "D" = 1e-4)
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni2)
@@ -169,7 +171,7 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
 
 
 test_that("Different freqs as they should be ordered, when s and t> 1", {
-    muvar2 <- c("U" = 1e-6, "z" = 1e-7, "e" = 1e-3, "m" = 1e-5, "D" = 1e-4)
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni2)
@@ -194,17 +196,16 @@ test_that("Different freqs as they should be ordered, when s and t> 1", {
 
 
 test_that("Complex fitness specification, tiny s diffs", {
-
+    set.seed(1)
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
-                     s = c(0.001, 0.002, 0.003, 0.004, 0.001, 0.001, 0.002, 0.002, 0.003, 0.003),
-                     sh = c(rep(0, 4), c(-.00009, -.00009), c(-.000095, -.000095), c(-.000099, -.000099)),
+                     s = c(0.00001, 0.00002, 0.00003, 0.00004, 0.00001, 0.00001, 0.00002, 0.00002, 0.00003, 0.00003),
+                     sh = c(rep(0, 4), c(-.0000009, -.0000009), c(-.00000095, -.00000095), c(-.00000099, -.00000099)),
                      typeDep = c(rep("--", 4), 
                                  "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
-    
-    oe <- c("C > F" = -0.001, "H > I" = 0.0012)
-    sm <- c("I:J"  = -.001)
-    sv <- c("-K:M" = -.0005, "K:-M" = -.0005)
+    oe <- c("C > F" = -0.00001, "H > I" = 0.000012)
+    sm <- c("I:J"  = -.00001)
+    sv <- c("-K:M" = -.000005, "K:-M" = -.000005)
     epist <- c(sm, sv)
     modules <- c("Root" = "Root", "A" = "a1",
                  "B" = "b1, b2", "C" = "c1",
@@ -212,7 +213,7 @@ test_that("Complex fitness specification, tiny s diffs", {
                  "F" = "f1, f2", "G" = "g1",
                  "H" = "h1, h2", "I" = "i1",
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
-    noint <- runif(5, min = 0.00051, max = 0.001)
+    noint <- runif(5, min = 0.0000051, max = 0.00001)
     names(noint) <- paste0("n", 1:5)
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
                              noIntGenes = noint, geneToModule = modules)
@@ -222,14 +223,14 @@ test_that("Complex fitness specification, tiny s diffs", {
     muvar <- sample(seq(from = 1e-7, to = 1e-3, length.out = length(nfea)))
     names(muvar) <- nfea
     no <- 1e4
-    reps <- 10000
+    reps <- 5000
     bb <- oncoSimulPop(reps,
                        fea, mu = muvar,
                        onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
-    
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
     expectedC - colSums(OncoSimulR:::geneCounts(bb))
@@ -422,7 +423,7 @@ test_that("McFL: Same freqs, chisq, when s and t = 1", {
 })
 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0 and t = 1", {
-    muvar2 <- c("U" = 1e-6, "z" = 1e-7, "e" = 1e-3, "m" = 1e-5, "D" = 1e-4)
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
@@ -449,7 +450,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0 a
 
 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s and t = 1", {
-    muvar2 <- c("U" = 1e-6, "z" = 1e-7, "e" = 1e-3, "m" = 1e-5, "D" = 1e-4)
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni2)
@@ -476,7 +477,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
 
 
 test_that("McFL: Different freqs as they should be ordered, when s and t> 1", {
-    muvar2 <- c("U" = 1e-6, "z" = 1e-7, "e" = 1e-3, "m" = 1e-5, "D" = 1e-4)
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni2)
@@ -502,6 +503,7 @@ test_that("McFL: Different freqs as they should be ordered, when s and t> 1", {
 
 
 test_that("McFL: Complex fitness specification, tiny s diffs", {
+    set.seed(94) ## 1, 
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.00001, 0.00002, 0.00003, 0.00004, 0.00001, 0.00001, 0.00002, 0.00002, 0.00003, 0.00003),
