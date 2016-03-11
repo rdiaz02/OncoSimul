@@ -141,7 +141,14 @@ oncoSimulSample(Nindiv,
 
 }
 \item{mu}{
-  Mutation rate. See also \code{mutationPropGrowth}.
+  Mutation rate. Can be a single value or a named vector. If a single
+  value, all genes will have the same mutation rate. If a named vector,
+  the entries in the vector specify the gene-specific mutation rate. If
+  you pass a vector, it must be named, and it must have entries for all
+  the genes in the fitness specification. Passing a vector is only
+  available when using fitnessEffects objects for fitness specification.
+
+  See also \code{mutationPropGrowth}.
 
 } \item{detectionSize}{ What is the minimal number of cells for cancer
 to be detected.  For \code{oncoSimulSample} this can be a vector.
@@ -766,6 +773,14 @@ pancrSPop
 
 pancrSamp <- oncoSimulSample(2, pancr)
 pancrSamp
+
+
+## Using gene-specific mutation rates
+muv <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+ni <- rep(0.01, 5)
+names(ni) <- names(muv)
+femuv <- allFitnessEffects(noIntGenes = ni)
+oncoSimulIndiv(femuv, mu = muv)
                       
 }
 \keyword{misc}
