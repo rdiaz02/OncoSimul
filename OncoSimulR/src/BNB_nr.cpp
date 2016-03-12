@@ -1321,29 +1321,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
 	    tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
 						   newMutations, mutationPropGrowth);
-	    DP1("at mutation");
-	    Rcpp::Rcout << "\n New Genotype :";
-	    print_Genotype(newGenotype);
-	    Rcpp::Rcout << "\n Parent Genotype :";
-	    print_Genotype(Genotypes[nextMutant]);
-	    DP2(tmpParam.mutation);
-	    DP2( popParams[nextMutant].mutation);
-	    DP2(mutationFromScratch(mu, tmpParam, newGenotype,
-					       fitnessEffects,
-				    mutationPropGrowth));
-	    DP2(mutationFromParent(mu, tmpParam, popParams[nextMutant],
-				   newMutations, mutationPropGrowth));
-	    DP1("tmpParam");
-	    print_spP(tmpParam);
-	    DP1("nextmutatn")
-	    print_spP(popParams[nextMutant]);
-	    
-	    DP1("end at mutation");
-	    // if(mutationPropGrowth)
-	    //   tmpParam.mutation = mu * tmpParam.birth * tmpParam.numMutablePos;
-	    // //	    tmpParam.mutation = mu * tmpParam.birth * (numMutablePosParent - 1);
-	    // else
-	    //   tmpParam.mutation = mu * tmpParam.numMutablePos;
 
 	    // FIXME: debug. Verify both calculations of mutation give the same!
 	    STOPASSERT(abs(

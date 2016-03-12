@@ -903,5 +903,4 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
 ## 	    print_spP(popParams[nextMutant]);
 	    
 ## 	    DP1("end at mutation");
-=======
->>>>>>> 180469b1f4c7872f9a4db70a176e56ae4da7d066
+
