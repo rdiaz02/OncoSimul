@@ -125,7 +125,7 @@ oncoSimulSample(Nindiv,
 }
 \item{model}{
   One of "Bozic", "Exp", "McFarlandLog" (the last one can be abbreviated
-  to "McFL").
+  to "McFL"). The default is "Exp".
 
 }
 \item{numPassengers}{
@@ -623,7 +623,7 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 data(examplePosets)
 p701 <- examplePosets[["p701"]]
 
-## Bozic Model
+## Exp Model
 
 b1 <- oncoSimulIndiv(p701)
 summary(b1)
