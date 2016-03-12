@@ -794,6 +794,111 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
 )
 
 
+RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+
+
+##
+RNGkind("Mersenne-Twister")
+
+set.seed(29)
+muvar2 <- c("U" = 0, "D" = 1e-4, "e" = 1e-5) ## eh, if 1e-3 crashes?
+ni2 <- rep(0.01, length(muvar2))
+names(ni2) <- names(muvar2)
+fe1 <- allFitnessEffects(noIntGenes = ni2)
+no <- 1e4
+reps <- 100
+bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                     initSize = no,
+                     model = "McFL",
+                     finalTime = 500,
+                     verbosity = 3,
+                     mutationPropGrowth = FALSE,
+                     seed = NULL
+                     )
+bb
+
+
+
+
+set.seed(29)
+muvar2 <- c("D" = 1e-4, "e" = 1e-5) ## eh, if 1e-3 crashes?
+ni2 <- rep(0.01, length(muvar2))
+names(ni2) <- names(muvar2)
+fe1 <- allFitnessEffects(noIntGenes = ni2)
+no <- 1e4
+reps <- 100
+bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                     initSize = no,
+                     model = "McFL",
+                     finalTime = 500,
+                     ## verbosity = 3,
+                     mutationPropGrowth = FALSE,
+                     seed = NULL
+                     )
+bb
+
+
+
+## look at iter 10619
+## this does it but with debugw shows other problems too
+## Unrecoverable exception: currentTime - timeLastUpdate out of range. Aborting.
+## and setting debugw is changing the run!!!
+RNGkind("L'Ecuyer-CMRG")
+set.seed(26)
+muvar2 <- c("U" = 0, "D" = 1e-3, "e" = 1e-2)
+ni2 <- rep(0.01, length(muvar2))
+names(ni2) <- names(muvar2)
+fe1 <- allFitnessEffects(noIntGenes = ni2)
+no <- 1e4
+reps <- 100
+bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                     initSize = no,
+                     model = "McFL",
+                     finalTime = 200,
+                     verbosity = 3,
+                     seed = NULL
+                     )
+bb
+
+
+
+## this does it but with debugw shows other problems too
+set.seed(26)
+muvar2 <- c("U" = 0, "D" = 1e-3, "e" = 1e-2)
+ni2 <- rep(0.01, length(muvar2))
+names(ni2) <- names(muvar2)
+fe1 <- allFitnessEffects(noIntGenes = ni2)
+no <- 1e4
+reps <- 100
+bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                     initSize = no,
+                     model = "McFL",
+                     finalTime = 200,
+                     verbosity = 3,
+                     seed = NULL
+                     )
+bb
+
+
+## but this breaks
+set.seed(26)
+muvar2 <- c("U" = 0, "D" = 1e-3)
+ni2 <- rep(0.01, length(muvar2))
+names(ni2) <- names(muvar2)
+fe1 <- allFitnessEffects(noIntGenes = ni2)
+no <- 1e4
+reps <- 100
+bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                     initSize = no,
+                     model = "McFL",
+                     finalTime = 200,
+                     seed = NULL
+                     )
+bb
+
+
+
+
 test_that("McFL: Different freqs as they should be ordered and chisq, when s and t = 1 and a mu = 0", {
     
     muvar2 <- c("U" = 0, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
