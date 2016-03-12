@@ -794,110 +794,6 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
 )
 
 
-RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
-
-
-##
-RNGkind("Mersenne-Twister")
-
-set.seed(29)
-muvar2 <- c("U" = 0, "D" = 1e-4, "e" = 1e-5) ## eh, if 1e-3 crashes?
-ni2 <- rep(0.01, length(muvar2))
-names(ni2) <- names(muvar2)
-fe1 <- allFitnessEffects(noIntGenes = ni2)
-no <- 1e4
-reps <- 100
-bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
-                     initSize = no,
-                     model = "McFL",
-                     finalTime = 500,
-                     verbosity = 3,
-                     mutationPropGrowth = FALSE,
-                     seed = NULL
-                     )
-bb
-
-
-
-
-set.seed(29)
-muvar2 <- c("D" = 1e-4, "e" = 1e-5) ## eh, if 1e-3 crashes?
-ni2 <- rep(0.01, length(muvar2))
-names(ni2) <- names(muvar2)
-fe1 <- allFitnessEffects(noIntGenes = ni2)
-no <- 1e4
-reps <- 100
-bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
-                     initSize = no,
-                     model = "McFL",
-                     finalTime = 500,
-                     ## verbosity = 3,
-                     mutationPropGrowth = FALSE,
-                     seed = NULL
-                     )
-bb
-
-
-
-## look at iter 10619
-## this does it but with debugw shows other problems too
-## Unrecoverable exception: currentTime - timeLastUpdate out of range. Aborting.
-## and setting debugw is changing the run!!!
-RNGkind("L'Ecuyer-CMRG")
-set.seed(26)
-muvar2 <- c("U" = 0, "D" = 1e-3, "e" = 1e-2)
-ni2 <- rep(0.01, length(muvar2))
-names(ni2) <- names(muvar2)
-fe1 <- allFitnessEffects(noIntGenes = ni2)
-no <- 1e4
-reps <- 100
-bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
-                     initSize = no,
-                     model = "McFL",
-                     finalTime = 200,
-                     verbosity = 3,
-                     seed = NULL
-                     )
-bb
-
-
-
-## this does it but with debugw shows other problems too
-set.seed(26)
-muvar2 <- c("U" = 0, "D" = 1e-3, "e" = 1e-2)
-ni2 <- rep(0.01, length(muvar2))
-names(ni2) <- names(muvar2)
-fe1 <- allFitnessEffects(noIntGenes = ni2)
-no <- 1e4
-reps <- 100
-bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
-                     initSize = no,
-                     model = "McFL",
-                     finalTime = 200,
-                     verbosity = 3,
-                     seed = NULL
-                     )
-bb
-
-
-## but this breaks
-set.seed(26)
-muvar2 <- c("U" = 0, "D" = 1e-3)
-ni2 <- rep(0.01, length(muvar2))
-names(ni2) <- names(muvar2)
-fe1 <- allFitnessEffects(noIntGenes = ni2)
-no <- 1e4
-reps <- 100
-bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
-                     initSize = no,
-                     model = "McFL",
-                     finalTime = 200,
-                     seed = NULL
-                     )
-bb
-
-
-
 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s and t = 1 and a mu = 0", {
     
@@ -959,3 +855,51 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
     
 }
 )
+
+
+
+
+##################### If you want to verify step by step that the C++ does
+##################### what it should you can, for instance, run this R code
+
+## library(OncoSimulR)
+## RNGkind("L'Ecuyer-CMRG")
+## set.seed(13)
+
+## muvar2 <- c("U" = 1e-3, "z" = 3e-7, "e" = 5e-6, "m" = 5e-5, "D" = 5e-4)
+## ni2 <- rep(0.01, 5)
+## names(ni2) <- names(muvar2)
+## fe1 <- allFitnessEffects(noIntGenes = ni2)
+## no <- 1e5
+## bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+##                      mutationPropGrowth = FALSE,
+##                      initSize = no,
+##                      finalTime = 560
+##                    )
+
+## bb
+
+## with the following C++ in BNB_nr.cpp, right after the line
+## tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
+## 				   newMutations, mutationPropGrowth);
+
+
+## Add this C++ code, recompile.
+## DP1("at mutation");
+## 	    Rcpp::Rcout << "\n New Genotype :";
+## 	    print_Genotype(newGenotype);
+## 	    Rcpp::Rcout << "\n Parent Genotype :";
+## 	    print_Genotype(Genotypes[nextMutant]);
+## 	    DP2(tmpParam.mutation);
+## 	    DP2( popParams[nextMutant].mutation);
+## 	    DP2(mutationFromScratch(mu, tmpParam, newGenotype,
+## 					       fitnessEffects,
+## 				    mutationPropGrowth));
+## 	    DP2(mutationFromParent(mu, tmpParam, popParams[nextMutant],
+## 				   newMutations, mutationPropGrowth));
+## 	    DP1("tmpParam");
+## 	    print_spP(tmpParam);
+## 	    DP1("nextmutatn")
+## 	    print_spP(popParams[nextMutant]);
+	    
+## 	    DP1("end at mutation");
