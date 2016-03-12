@@ -1434,8 +1434,13 @@ static void innerBNB(const int& numGenes,
 	  //#endif
 	} else {	// A mutation to pre-existing species
 #ifdef DEBUGW
-	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0)
-	    throw std::out_of_range("currentTime - timeLastUpdate out of range"); 
+	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0) {
+	    DP2(currentTime);
+	    DP2(sp);
+	    DP2(popParams[sp].timeLastUpdate);
+	    print_spP(popParams[sp]);
+	    throw std::out_of_range("currentTime - timeLastUpdate out of range");
+	  }
 #endif
 	
 	  if(verbosity >= 2) {
@@ -1459,7 +1464,13 @@ static void innerBNB(const int& numGenes,
 	  }
 	
 #ifdef DEBUGW
-	  popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
+	   // This is wrong!!! if we set it to -999999, then the time to
+  	  // next mutation will not be properly updated.  In fact, the
+  	  // mapTimes map becomes a mess because the former pv in the
+  	  // popParams is not removed so we end up inserting another pair
+  	  // for the same species.
+
+	  // popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
 #endif
 	  //popParams[sp].Flag = true;
 	}

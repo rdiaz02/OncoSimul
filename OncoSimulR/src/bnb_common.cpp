@@ -781,10 +781,11 @@ void updateRatesBeeren(std::vector<spParamsP>& popParams,
 
 
 void mapTimes_updateP(std::multimap<double, int>& mapTimes,
-			     std::vector<spParamsP>& popParams,
-			     const int index,
-			     const double time) {
+		      std::vector<spParamsP>& popParams,
+		      const int index,
+		      const double time) {
   // Update the map times <-> indices
+  // Recall this is the map of nextMutationTime and index of species
   // First, remove previous entry, then insert.
   // But if we just created the species, nothing to remove from the map.
   if(popParams[index].timeLastUpdate > -1)
