@@ -794,7 +794,6 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
 )
 
 
-
 test_that("McFL: Different freqs as they should be ordered and chisq, when s and t = 1 and a mu = 0", {
     
     muvar2 <- c("U" = 0, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -855,6 +854,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
     
 }
 )
+<<<<<<< HEAD
 
 
 
@@ -903,3 +903,5 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
 ## 	    print_spP(popParams[nextMutant]);
 	    
 ## 	    DP1("end at mutation");
+=======
+>>>>>>> 180469b1f4c7872f9a4db70a176e56ae4da7d066
