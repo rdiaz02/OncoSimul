@@ -589,9 +589,10 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 #ifdef DEBUGV
     Rcpp::Rcout << "\n\n     ********* 5.9 ******\n " 
 	      << "     Species  = " << i 
-	      << "\n      Genotype = " << genotypeSingleVector(Genotypes[i])
-      //	      << "\n      sp_id = " << genotypeSingleVector(Genotypes[i]) // sp_id[i]  
-	      << "\n      pre-update popSize = " 
+		<< "\n      Genotype = ";
+    print_Genotype(Genotypes[i]); //genotypeSingleVector(Genotypes[i])
+    //	      << "\n      sp_id = " << genotypeSingleVector(Genotypes[i]) // sp_id[i]  
+    Rcpp::Rcout << "\n      pre-update popSize = " 
 	      << popParams[i].popSize 
 	      << "\n      time of sample = " << tSample 
 	      << "\n      popParams[i].timeLastUpdate = " 
@@ -621,7 +622,8 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 
 #ifdef DEBUGV
       Rcpp::Rcout << "\n\n     Removing species i = " << i 
-		  << " with genotype = " << genotypeSingleVector(Genotypes[i]);
+		  << " with genotype = ";
+      print_Genotype(Genotypes[i]); //genotypeSingleVector(Genotypes[i]);
 #endif
     } 
 #ifdef DEBUGV
@@ -1100,8 +1102,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		  << "     tSample  = " << tSample
 	    
 		  << "\n\n**   Species  = " << u_1 
-		  << "\n       genotype =  " << Genotypes[u_1] 
-		  << "\n       popSize = " << popParams[u_1].popSize 
+		    << "\n       genotype =  ";
+	print_Genotype(Genotypes[u_1]);
+	Rcpp::Rcout << "\n       popSize = " << popParams[u_1].popSize 
 		  << "\n       currentTime = " << currentTime 
 		  << "\n       popParams[i].nextMutationTime = " 
 		  << tmpdouble1
@@ -1129,8 +1132,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		  << "     tSample  = " << tSample
 	    
 		  << "\n\n**   Species  = " << u_1 
-		  << "\n       genotype =  " << Genotypes[u_1] 
-		  << "\n       popSize = " << popParams[u_1].popSize 
+		    << "\n       genotype =  ";
+	print_Genotype(Genotypes[u_1]);
+	Rcpp::Rcout << "\n       popSize = " << popParams[u_1].popSize 
 		  << "\n       currentTime = " << currentTime 
 		  << "\n       popParams[i].nextMutationTime = " 
 		  << tmpdouble1
@@ -1141,8 +1145,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 
 		  << "\n\n**     Species  = " << u_2 
-		  << "\n       genotype =  " << Genotypes[u_2] 
-		  << "\n       popSize = " << popParams[u_2].popSize 
+		    << "\n       genotype =  ";
+	print_Genotype(Genotypes[u_2]);
+	Rcpp::Rcout << "\n       popSize = " << popParams[u_2].popSize 
 		  << "\n       currentTime = " << currentTime 
 		  << "\n       popParams[i].nextMutationTime = " 
 		  << tmpdouble2
@@ -1153,7 +1158,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 #endif
 
-      } else { // we sampled, so update all
+      } else { // we sampled, so update all: i.e. to_update == 3
 	for(size_t i = 0; i < popParams.size(); i++) {
 	  tmpdouble1 = ti_nextTime_tmax_2_st(popParams[i],
 					     currentTime,
@@ -1164,8 +1169,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 #ifdef DEBUGV
 	  Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime ******\n " 
 		    << "     Species  = " << i 
-		    << "\n       genotype =  " << Genotypes[i] 
-		    << "\n       popSize = " << popParams[i].popSize 
+		      << "\n       genotype =  ";
+	  print_Genotype(Genotypes[i]);
+	  Rcpp::Rcout << "\n       popSize = " << popParams[i].popSize 
 		    << "\n       currentTime = " << currentTime 
 	    // << "\n       popParams[i].nextMutationTime = " 
 	    // << popParams[i].nextMutationTime
@@ -1343,6 +1349,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    W_f_st(tmpParam);
 	    R_f_st(tmpParam);
 	    tmpParam.timeLastUpdate = -99999.99999; //mapTimes_updateP does what it should.
+	    // as this is a new species
 	    popParams.push_back(tmpParam);
 	    Genotypes.push_back(newGenotype);
 	    to_update = 2;
@@ -1378,20 +1385,27 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	  // #endif
 	} else {	// A mutation to pre-existing species
 #ifdef DEBUGW
-	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0)
-	    throw std::out_of_range("currentTime - timeLastUpdate out of range"); 
+	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0) {
+	    DP2(currentTime);
+	    DP2(sp);
+	    DP2(popParams[sp].timeLastUpdate);
+	    print_spP(popParams[sp]);
+	    throw std::out_of_range("currentTime - timeLastUpdate out of range");
+	  }
 #endif
 	
 	  // if(verbosity >= 2) {
 #ifdef DEBUGV
 	    Rcpp::Rcout <<"\n     Mutated to existing species " << sp 
-			<< " (Genotype = " << genotypeSingleVector(Genotypes[sp]) 
+			<< " (Genotype = ";
+	    print_Genotype(Genotypes[sp]); 
 	      // << "; sp_id = " << Genotypes[sp].to_ullong()
-			<< ")"
+	    Rcpp::Rcout << ")"
 			<< "\n from species "  <<   nextMutant
-			<< " (Genotypes = " << genotypeSingleVector(Genotypes[nextMutant]) 
+			<< " (Genotypes = ";
+	    print_Genotype(Genotypes[nextMutant]); 
 	      // << "; sp_id = " << Genotypes[sp].to_ullong()
-			<< ")";
+	    Rcpp::Rcout	<< ")";
 	    // }
 #endif
 	  // FIXME00: the if can be removed??
@@ -1404,9 +1418,14 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	  } else {
 	    throw std::range_error("\n popSize == 0 but existing? \n");
 	  }
-	
 #ifdef DEBUGW
-	  popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
+	  // This is wrong!!! if we set it to -999999, then the time to
+  	  // next mutation will not be properly updated.  In fact, the
+  	  // mapTimes map becomes a mess because the former pv in the
+  	  // popParams is not removed so we end up inserting another pair
+  	  // for the same species.
+	  
+	  // popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
 #endif
 	  //popParams[sp].Flag = true;
 	}
@@ -1428,8 +1447,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	// DP2(popParams[nextMutant].popSize);
 	// Rcpp::Rcout << "\n done null mutation; after popSize ********" << std::endl;
       }
-    }
-      else { //       *********** We are sampling **********
+    } else { //       *********** We are sampling **********
       to_update = 3; //short_update = false;
       if(verbosity >= 2) {
 	Rcpp::Rcout <<"\n We are SAMPLING";   
