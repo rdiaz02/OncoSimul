@@ -15,8 +15,9 @@
 
 
 // #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
-#include "new_restrict.h"
 #include "debug_common.h"
+#include "common_classes.h"
+#include "new_restrict.h"
 #include <Rcpp.h>
 #include <iomanip> 
 #include <algorithm>
@@ -80,14 +81,14 @@ TypeModel stringToModel(const std::string& mod) {
     return TypeModel::bozic1;
   else if(mod == "mcfarlandlog")
     return TypeModel::mcfarlandlog;
-  else if(mod == "mcfarland")
-    return TypeModel::mcfarland;
-  else if(mod == "beerenwinkel")
-    return TypeModel::beerenwinkel;
-  else if(mod == "mcfarland0")
-    return TypeModel::mcfarland0;
-  else if(mod == "bozic2")
-    return TypeModel::bozic2;
+  // else if(mod == "mcfarland")
+  //   return TypeModel::mcfarland;
+  // else if(mod == "beerenwinkel")
+  //   return TypeModel::beerenwinkel;
+  // else if(mod == "mcfarland0")
+  //   return TypeModel::mcfarland0;
+  // else if(mod == "bozic2")
+  //   return TypeModel::bozic2;
   else 
     throw std::out_of_range("Not a valid TypeModel");
 }
@@ -170,6 +171,7 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
 }
 
 vector<int> allGenesinGenotype(const Genotype& ge){
+  // Like genotypeSingleVector, but sorted
   std::vector<int> allgG;
   for(auto const &g1 : ge.orderEff)
     allgG.push_back(g1);
@@ -417,13 +419,14 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   return fe;
 }
 
+
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent, 
 		     std::vector<int>& newMutations,
 		     //randutils::mt19937_rng& ran_gen
-		     std::mt19937& ran_gen
-		     ) {
+		     std::mt19937& ran_gen,
+		     std::vector<double> mu) {
   //Ugly: we return the mutations AND the numMutablePosParent This is
   // almost ready to accept multiple mutations. And it returns a vector,
   // newMutations.
@@ -433,17 +436,31 @@ void obtainMutations(const Genotype& parent,
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
 
-  // FIXME:chromothr would not use this, or this is the limit case with a
+  // numMutablePos is used not only for mutation but also to decide about
+  // the dummy or null mutation case.
+  numMutablePosParent = nonmutated.size();
+
+  if(mu.size() == 1) { // common mutation rate
+    // FIXME:chromothr would not use this, or this is the limit case with a
   // single mutant
-  std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
-  newMutations.push_back(nonmutated[rpos(ran_gen)]);
+    std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
+    newMutations.push_back(nonmutated[rpos(ran_gen)]);
+  } else { // per-gene mutation rate.
+    // Remember that mutations always indexed from 1, not from 0.
+
+    // FIXME:varmutrate give a warning if the only mu is for mu = 0.
+    std::vector<double> mu_nm;
+    for(auto const &nm : nonmutated) mu_nm.push_back(mu[nm - 1]);
+    std::discrete_distribution<int> rpos(mu_nm.begin(), mu_nm.end());
+    newMutations.push_back(nonmutated[rpos(ran_gen)]);
+  }
+  
   // randutils
   // // Yes, the next will work, but pick is simpler!
   // // size_t rpos = ran_gen.uniform(static_cast<size_t>(0), nonmutated.size() - 1);
   // //  newMutations.push_back(nonmutated[rpos]);
   // int posmutated = ran_gen.pick(nonmutated);
   // newMutations.push_back(posmutated);
-  numMutablePosParent = nonmutated.size();
 }
 
 
@@ -1139,3 +1156,70 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
 }
 
 
+double mutationFromScratch(const std::vector<double>& mu,
+			   const spParamsP& spP,
+			   const Genotype& g,
+			   const fitnessEffectsAll& fe,
+			   const int mutationPropGrowth) {
+  if(mu.size() == 1) {
+    if(mutationPropGrowth)
+      return(mu[0] * spP.numMutablePos * spP.birth);
+    else
+      return(mu[0] * spP.numMutablePos);
+  } else {
+    std::vector<int> sortedG = allGenesinGenotype(g);
+    std::vector<int> nonmutated;
+    set_difference(fe.allGenes.begin(), fe.allGenes.end(),
+		   sortedG.begin(), sortedG.end(),
+		   back_inserter(nonmutated));
+    // std::vector<int> mutatedG = genotypeSingleVector(g);
+    // Not worth it using an accumulator?
+    // std::vector<int> gg = genotypeSingleVector(g);
+    // accumulate(gg.begin(), gg.end(), 0.0,
+    // 	       [](double x, int y) {return( x + mu[y - 1])});
+    double mutrate = 0.0;
+    for(auto const &nm : nonmutated) {
+      mutrate += mu[nm - 1];
+    }
+    if(mutationPropGrowth)
+      mutrate *= spP.birth;
+    return(mutrate);
+  }
+}
+
+
+
+double mutationFromParent(const std::vector<double>& mu,
+			  const spParamsP& newP,
+			  const spParamsP& parentP,
+			  const std::vector<int>& newMutations,
+			  // const std::vector<int>& nonmutated,
+			  const int mutationPropGrowth) {
+  if(mu.size() == 1) {
+    if(mutationPropGrowth)
+      return(mu[0] * newP.numMutablePos * newP.birth);
+    else
+      return(mu[0] * newP.numMutablePos);
+  } else {
+    double mutrate = parentP.mutation;
+    for(auto const mutated : newMutations) {
+      mutrate -= mu[mutated - 1];
+    }
+    if(mutationPropGrowth)
+      mutrate *= newP.birth;
+    return(mutrate);
+  }
+}
+
+
+  
+// About order of genes and their names, etc
+
+// We first read the R gene module. The $geneModule. The function is
+// R_GeneModuleToGeneModule
+
+// We also read the no interaction. They have their own number-name
+// correspondence, within the noInt genes part. See the struct
+// genesWithoutInt.  But that already comes order from R with numbers
+// starting after the last gene with interaction. See the R function
+// allFitnessEffects.

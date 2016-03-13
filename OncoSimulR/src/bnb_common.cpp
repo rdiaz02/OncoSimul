@@ -581,58 +581,104 @@ void init_tmpP(spParamsP& tmpParam) {
 // this is the log of the ratio of death rates
 // so the the difference of the successie death rates, if using
 // the log version.
+// double returnMFE(double& e1,
+// 			const double& K,
+// 			const std::string& typeFitness) {
+//   if((typeFitness == "mcfarland0") || (typeFitness == "mcfarlandlog"))
+//     return log(e1);
+//   else if(typeFitness == "mcfarland")
+//     return ((1.0/K) * e1);
+//   else
+//     return -99;
+// }
+
+
+// double returnMFE(double& e1,
+// 			const double& K,
+// 			const TypeModel typeModel) {
+//   if((typeModel == TypeModel::mcfarland0) || (typeModel == TypeModel::mcfarlandlog))
+//     return log(e1);
+//   else if(typeModel == TypeModel::mcfarland)
+//     return ((1.0/K) * e1);
+//   else
+//     return -99;
+// }
+
 double returnMFE(double& e1,
-			const double& K,
-			const std::string& typeFitness) {
-  if((typeFitness == "mcfarland0") || (typeFitness == "mcfarlandlog"))
+		 // const double& K,
+		 const std::string& typeFitness) {
+  if(typeFitness == "mcfarlandlog")
     return log(e1);
-  else if(typeFitness == "mcfarland")
-    return ((1.0/K) * e1);
   else
     return -99;
 }
 
-
 double returnMFE(double& e1,
-			const double& K,
+		 // const double& K,
 			const TypeModel typeModel) {
-  if((typeModel == TypeModel::mcfarland0) || (typeModel == TypeModel::mcfarlandlog))
+  if(typeModel == TypeModel::mcfarlandlog)
     return log(e1);
-  else if(typeModel == TypeModel::mcfarland)
-    return ((1.0/K) * e1);
   else
     return -99;
 }
+
+
 
 // FIXME But I'd probably want a percent error, compared to the death rate
 // something like (log(1+N1/K) - log(1+N2/K))/(log(1+N1/K))
 
 
-void computeMcFarlandError(double& e1,
-				  double& n_0,
-				  double& n_1,
-				  double& tps_0,
-				  double& tps_1,
-				  const std::string& typeFitness,
-				  const double& totPopSize,
-				  const double& K){
-  //				  const double& initSize) {
-  // static double tps_0 = initSize;
-  // static double tps_1 = 0.0;
+// void computeMcFarlandError(double& e1,
+// 				  double& n_0,
+// 				  double& n_1,
+// 				  double& tps_0,
+// 				  double& tps_1,
+// 				  const std::string& typeFitness,
+// 				  const double& totPopSize,
+// 				  const double& K){
+//   //				  const double& initSize) {
+//   // static double tps_0 = initSize;
+//   // static double tps_1 = 0.0;
 
-  if( (typeFitness == "mcfarland0") ||
-      (typeFitness == "mcfarland") || 
-      (typeFitness == "mcfarlandlog") ) {
+//   if( (typeFitness == "mcfarland0") ||
+//       (typeFitness == "mcfarland") || 
+//       (typeFitness == "mcfarlandlog") ) {
+    
+//     double etmp;
+//     tps_1 = totPopSize;
+//     if(typeFitness == "mcfarland")
+//       etmp = std::abs( tps_1 - (tps_0 + 1) );
+//     else {
+//       if( (tps_0 + 1.0) > tps_1 ) 
+// 	etmp = (K + tps_0 + 1.0)/(K + tps_1);
+//       else
+// 	etmp = (K + tps_1)/(K + tps_0 + 1);
+//     }
+//     if(etmp > e1) {
+//       e1 = etmp;
+//       n_0 = tps_0;
+//       n_1 = tps_1;
+//     }
+//     tps_0 = tps_1;
+//   }
+// }
+
+void computeMcFarlandError(double& e1,
+			   double& n_0,
+			   double& n_1,
+			   double& tps_0,
+			   double& tps_1,
+			   const std::string& typeFitness,
+			   const double& totPopSize,
+			   const double& K){
+
+  if(typeFitness == "mcfarlandlog")  {
     double etmp;
     tps_1 = totPopSize;
-    if(typeFitness == "mcfarland")
-      etmp = std::abs( tps_1 - (tps_0 + 1) );
-    else {
-      if( (tps_0 + 1.0) > tps_1 ) 
-	etmp = (K + tps_0 + 1.0)/(K + tps_1);
-      else
-	etmp = (K + tps_1)/(K + tps_0 + 1);
-    }
+    if( (tps_0 + 1.0) > tps_1 ) 
+      etmp = (K + tps_0 + 1.0)/(K + tps_1);
+    else
+      etmp = (K + tps_1)/(K + tps_0 + 1);
     if(etmp > e1) {
       e1 = etmp;
       n_0 = tps_0;
@@ -643,31 +689,56 @@ void computeMcFarlandError(double& e1,
 }
 
 
-void computeMcFarlandError(double& e1,
-				  double& n_0,
-				  double& n_1,
-				  double& tps_0,
-				  double& tps_1,
-				  const TypeModel typeModel,
-				  const double& totPopSize,
-				  const double& K){
-  //				  const double& initSize) {
-  // static double tps_0 = initSize;
-  // static double tps_1 = 0.0;
+// void computeMcFarlandError(double& e1,
+// 				  double& n_0,
+// 				  double& n_1,
+// 				  double& tps_0,
+// 				  double& tps_1,
+// 				  const TypeModel typeModel,
+// 				  const double& totPopSize,
+// 				  const double& K){
+//   //				  const double& initSize) {
+//   // static double tps_0 = initSize;
+//   // static double tps_1 = 0.0;
 
-  if( (typeModel == TypeModel::mcfarland0) ||
-      (typeModel == TypeModel::mcfarland) || 
-      (typeModel == TypeModel::mcfarlandlog) ) {
+//   if( (typeModel == TypeModel::mcfarland0) ||
+//       (typeModel == TypeModel::mcfarland) || 
+//       (typeModel == TypeModel::mcfarlandlog) ) {
+//     double etmp;
+//     tps_1 = totPopSize;
+//     if(typeModel == TypeModel::mcfarland)
+//       etmp = std::abs( tps_1 - (tps_0 + 1) );
+//     else {
+//       if( (tps_0 + 1.0) > tps_1 ) 
+// 	etmp = (K + tps_0 + 1.0)/(K + tps_1);
+//       else
+// 	etmp = (K + tps_1)/(K + tps_0 + 1);
+//     }
+//     if(etmp > e1) {
+//       e1 = etmp;
+//       n_0 = tps_0;
+//       n_1 = tps_1;
+//     }
+//     tps_0 = tps_1;
+//   }
+// }
+
+void computeMcFarlandError(double& e1,
+			   double& n_0,
+			   double& n_1,
+			   double& tps_0,
+			   double& tps_1,
+			   const TypeModel typeModel,
+			   const double& totPopSize,
+			   const double& K){
+
+  if( typeModel == TypeModel::mcfarlandlog ) {
     double etmp;
     tps_1 = totPopSize;
-    if(typeModel == TypeModel::mcfarland)
-      etmp = std::abs( tps_1 - (tps_0 + 1) );
-    else {
-      if( (tps_0 + 1.0) > tps_1 ) 
-	etmp = (K + tps_0 + 1.0)/(K + tps_1);
-      else
+    if( (tps_0 + 1.0) > tps_1 ) 
+      etmp = (K + tps_0 + 1.0)/(K + tps_1);
+    else
 	etmp = (K + tps_1)/(K + tps_0 + 1);
-    }
     if(etmp > e1) {
       e1 = etmp;
       n_0 = tps_0;
@@ -678,30 +749,29 @@ void computeMcFarlandError(double& e1,
 }
 
 
-void updateRatesMcFarland(std::vector<spParamsP>& popParams,
-				 double& adjust_fitness_MF,
-				 const double& K,
-				 const double& totPopSize){
+// void updateRatesMcFarland(std::vector<spParamsP>& popParams,
+// 				 double& adjust_fitness_MF,
+// 				 const double& K,
+// 				 const double& totPopSize){
 
-  adjust_fitness_MF = totPopSize/K;
+//   adjust_fitness_MF = totPopSize/K;
 
-  for(size_t i = 0; i < popParams.size(); ++i) {
-    popParams[i].death = adjust_fitness_MF;
-    W_f_st(popParams[i]);
-    R_f_st(popParams[i]);
-  }
-}
+//   for(size_t i = 0; i < popParams.size(); ++i) {
+//     popParams[i].death = adjust_fitness_MF;
+//     W_f_st(popParams[i]);
+//     R_f_st(popParams[i]);
+//   }
+// }
 
 
 void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
-				    double& adjust_fitness_MF,
-				    const double& K,
-				    const double& totPopSize){
+			     double& adjust_fitness_MF,
+			     const double& K,
+			     const double& totPopSize){
 
   // from original log(1 + totPopSize/K)
   adjust_fitness_MF = log1p(totPopSize/K);
   
-
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
     W_f_st(popParams[i]);
@@ -710,81 +780,82 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 }
 
 
-// McFarland0 uses: - penalty as log(1 + N/K), and puts
-// that in the birth rate.
-void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
-				  double& adjust_fitness_MF,
-				  const double& K,
-				  const double& totPopSize,
-				  const int& mutationPropGrowth,
-				  const double& mu){
+// // McFarland0 uses: - penalty as log(1 + N/K), and puts
+// // that in the birth rate.
+// void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
+// 				  double& adjust_fitness_MF,
+// 				  const double& K,
+// 				  const double& totPopSize,
+// 				  const int& mutationPropGrowth,
+// 				  const double& mu){
   
-  adjust_fitness_MF = 1.0 / log1p(totPopSize/K);
+//   adjust_fitness_MF = 1.0 / log1p(totPopSize/K);
 
-  for(size_t i = 0; i < popParams.size(); ++i) {
-    popParams[i].birth = adjust_fitness_MF * popParams[i].absfitness;
-    if(mutationPropGrowth) {
-      popParams[i].mutation = mu * popParams[i].birth * 
-	popParams[i].numMutablePos;
-    } else if(popParams[i].birth / popParams[i].mutation < 20) {
-      Rcpp::Rcout << "\n WARNING: birth/mutation < 20";
-      Rcpp::Rcout << "\n Birth = " << popParams[i].birth 
-		<< ";  mutation = " << popParams[i].mutation << "\n";
-    }
-    W_f_st(popParams[i]);
-    R_f_st(popParams[i]);
-  }
-}
+//   for(size_t i = 0; i < popParams.size(); ++i) {
+//     popParams[i].birth = adjust_fitness_MF * popParams[i].absfitness;
+//     if(mutationPropGrowth) {
+//       popParams[i].mutation = mu * popParams[i].birth * 
+// 	popParams[i].numMutablePos;
+//     } else if(popParams[i].birth / popParams[i].mutation < 20) {
+//       Rcpp::Rcout << "\n WARNING: birth/mutation < 20";
+//       Rcpp::Rcout << "\n Birth = " << popParams[i].birth 
+// 		<< ";  mutation = " << popParams[i].mutation << "\n";
+//     }
+//     W_f_st(popParams[i]);
+//     R_f_st(popParams[i]);
+//   }
+// }
 
-void updateRatesBeeren(std::vector<spParamsP>& popParams,
-			      double& adjust_fitness_B,
-			      const double& initSize,
-			      const double& currentTime,
-			      const double& alpha,
-			      const double& totPopSize,
-			      const int& mutationPropGrowth,
-			      const double& mu){
+// void updateRatesBeeren(std::vector<spParamsP>& popParams,
+// 			      double& adjust_fitness_B,
+// 			      const double& initSize,
+// 			      const double& currentTime,
+// 			      const double& alpha,
+// 			      const double& totPopSize,
+// 			      const int& mutationPropGrowth,
+// 			      const double& mu){
 
-  double average_fitness = 0.0; // average_fitness in Zhu
-  double weighted_sum_fitness = 0.0;
-  double N_tilde;
+//   double average_fitness = 0.0; // average_fitness in Zhu
+//   double weighted_sum_fitness = 0.0;
+//   double N_tilde;
   
-  for(size_t i = 0; i < popParams.size(); ++i) {
-    weighted_sum_fitness += (popParams[i].absfitness * popParams[i].popSize);
-  }
+//   for(size_t i = 0; i < popParams.size(); ++i) {
+//     weighted_sum_fitness += (popParams[i].absfitness * popParams[i].popSize);
+//   }
   
-  average_fitness = (1.0/totPopSize) * weighted_sum_fitness;
-  N_tilde =  initSize * exp(alpha * average_fitness * currentTime);
-  adjust_fitness_B = N_tilde/weighted_sum_fitness; 
+//   average_fitness = (1.0/totPopSize) * weighted_sum_fitness;
+//   N_tilde =  initSize * exp(alpha * average_fitness * currentTime);
+//   adjust_fitness_B = N_tilde/weighted_sum_fitness; 
 
-  if(adjust_fitness_B < 0) {
-    throw std::range_error("adjust_fitness_B < 0");
-  }
+//   if(adjust_fitness_B < 0) {
+//     throw std::range_error("adjust_fitness_B < 0");
+//   }
   
-  for(size_t i = 0; i < popParams.size(); ++i) {
-    popParams[i].birth = adjust_fitness_B * popParams[i].absfitness;
-    if(mutationPropGrowth) {
-      popParams[i].mutation = mu * popParams[i].birth * 
-	popParams[i].numMutablePos;
-    } else if(popParams[i].birth / popParams[i].mutation < 20) {
-      Rcpp::Rcout << "\n WARNING: birth/mutation < 20";
-      Rcpp::Rcout << "\n Birth = " << popParams[i].birth 
-		<< ";  mutation = " << popParams[i].mutation << "\n";
-    }
-    W_f_st(popParams[i]);
-    R_f_st(popParams[i]);
-  }
-}
+//   for(size_t i = 0; i < popParams.size(); ++i) {
+//     popParams[i].birth = adjust_fitness_B * popParams[i].absfitness;
+//     if(mutationPropGrowth) {
+//       popParams[i].mutation = mu * popParams[i].birth * 
+// 	popParams[i].numMutablePos;
+//     } else if(popParams[i].birth / popParams[i].mutation < 20) {
+//       Rcpp::Rcout << "\n WARNING: birth/mutation < 20";
+//       Rcpp::Rcout << "\n Birth = " << popParams[i].birth 
+// 		<< ";  mutation = " << popParams[i].mutation << "\n";
+//     }
+//     W_f_st(popParams[i]);
+//     R_f_st(popParams[i]);
+//   }
+// }
 
 
 
 
 
 void mapTimes_updateP(std::multimap<double, int>& mapTimes,
-			     std::vector<spParamsP>& popParams,
-			     const int index,
-			     const double time) {
+		      std::vector<spParamsP>& popParams,
+		      const int index,
+		      const double time) {
   // Update the map times <-> indices
+  // Recall this is the map of nextMutationTime and index of species
   // First, remove previous entry, then insert.
   // But if we just created the species, nothing to remove from the map.
   if(popParams[index].timeLastUpdate > -1)

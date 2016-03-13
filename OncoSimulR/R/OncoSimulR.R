@@ -417,8 +417,11 @@ oncoSimulIndiv <- function(fp,
             stop("Unknown model")
     }
 
-    if(mu < 0) {
-        stop("mutation rate (mu) is negative")
+    if( (length(mu) > 1) && !inherits(fp, "fitnessEffects"))
+        stop("Per-gene mutation rates cannot be used with the old poset format")
+
+    if(any(mu < 0)) {
+        stop("(at least one) mutation rate (mu) is negative")
     }
     ## We do not test for equality to 0. That might be a weird but
     ## legitimate case?
@@ -490,7 +493,7 @@ oncoSimulIndiv <- function(fp,
                                      max.wall.time = max.wall.time,
                                      max.num.tries = max.num.tries,
                                      keepEvery = keepEvery,  
-                                     alpha = 0.0015,  
+                                     ## alpha = 0.0015,  
                                      sh = sh,
                                      K = K, 
                                      minDetectDrvCloneSz = minDetectDrvCloneSz,
@@ -535,7 +538,7 @@ oncoSimulIndiv <- function(fp,
                                         max.wall.time = max.wall.time,
                                         max.num.tries = max.num.tries,
                                         keepEvery = keepEvery,  
-                                        alpha = 0.0015,  
+                                        ## alpha = 0.0015,  
                                         K = K, 
                                         minDetectDrvCloneSz = minDetectDrvCloneSz,
                                         extraTime = extraTime,
@@ -1484,9 +1487,15 @@ oncoSimul.internal <- function(poset, ## restrict.table,
         restrict.table <- poset.to.restrictTable(poset)
     numDrivers <- nrow(restrict.table)
     numGenes <- (numDrivers + numPassengers)
-    
+    if(numGenes < 2)
+        stop("There must be at least two genes (loci) in the fitness effects.",
+             "If you only care about a degenerate case with just one,",
+             "you can enter a second gene",
+             "with fitness effect of zero.")
     if(numGenes > 64)
-        stop("Largest possible number of genes is 64")
+        stop("Largest possible number of genes (loci) is 64 for version 1.",
+             "You are strongly encouraged to use the new specification",
+             "as in version 2.")
 
     ## These can never be set by the user
     ## if(initSize_species < 10) {
@@ -1541,43 +1550,42 @@ oncoSimul.internal <- function(poset, ## restrict.table,
     rtC <- convertRestrictTable(restrict.table)
 
     return(c(
-        BNB_Algo5(rtC,
-        numDrivers,
-        numGenes,
-        typeCBN,
-        birth, 
-        s, 
-        death,
-        mu,
-        initSize,
-        sampleEvery,
-        detectionSize,
-        finalTime,
-        initSize_species,
-        initSize_iter,
-        seed,
-        verbosity,
-        speciesFS,
-        ratioForce,
-        typeFitness,
-        max.memory,
-        as.integer(mutationPropGrowth),
-        initMutant,
-        max.wall.time,
-        keepEvery,
-        alpha,
-        sh,
-        K,
-        # endTimeEvery,
-        detectionDrivers,
-        onlyCancer,
-        errorHitWallTime,
-        max.num.tries,
-        errorHitMaxTries,
-        minDetectDrvCloneSz,
-        extraTime
+        BNB_Algo5(restrictTable = rtC,
+        numDrivers = numDrivers,
+        numGenes = numGenes,
+        typeCBN_= typeCBN,
+        ## birthRate = birth, 
+        s = s, 
+        death = death,
+        mu = mu,
+        initSize = initSize,
+        sampleEvery = sampleEvery,
+        detectionSize = detectionSize,
+        finalTime = finalTime,
+        initSp = initSize_species,
+        initIt = initSize_iter,
+        seed = seed,
+        verbosity = verbosity,
+        speciesFS = speciesFS,
+        ratioForce = ratioForce,
+        typeFitness_ = typeFitness,
+        maxram = max.memory,
+        mutationPropGrowth = as.integer(mutationPropGrowth),
+        initMutant = initMutant,
+        maxWallTime = max.wall.time,
+        keepEvery = keepEvery,
+        # alpha = alpha,
+        sh = sh,
+        K = K,
+        detectionDrivers = detectionDrivers,
+        onlyCancer = onlyCancer,
+        errorHitWallTime = errorHitWallTime,
+        maxNumTries = max.num.tries,
+        errorHitMaxTries = errorHitMaxTries,
+        minDetectDrvCloneSz = minDetectDrvCloneSz,
+        extraTime = extraTime
     ),
-             NumDrivers = numDrivers
+    NumDrivers = numDrivers
              ))
 
 }

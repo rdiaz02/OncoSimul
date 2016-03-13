@@ -836,7 +836,7 @@ nr_oncoSimul.internal <- function(rFE,
                                   initMutant,
                                   max.wall.time,
                                   keepEvery,
-                                  alpha,
+                                  ## alpha,
                                   K,
                                   detectionDrivers,
                                   onlyCancer,
@@ -850,6 +850,49 @@ nr_oncoSimul.internal <- function(rFE,
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
                    "allFitnessEffects"))
+
+    if(countGenesFe(rFE) < 2) {
+        stop("There must be at least two genes (loci) in the fitness effects.",
+             "If you only care about a degenerate case with just one,",
+             "you can enter a second gene (locus)",
+             "with fitness effect of zero.")
+    }
+
+    if( (length(mu) == 1) && !(is.null(names(mu)))) {
+        stop("A length 1 mutation, but named. ",
+             "This is ambiguous. ",
+             "If you want per-gene mutation rates, each gene",
+             "must have its entry in the mu vector. ",
+             "(And regardless of per-gene mutation rates ",
+             " there must be at least two gene/loci).")
+    }
+
+    namedGenes <- allNamedGenes(rFE)
+
+    if( length(mu) > 1) {
+        if(is.null(names(mu)))
+            stop("When using per-gene mutation rates the ",
+                 "mu vector must be named ",
+                 "(and if you have noIntGenes, those must have names).")
+        if(length(mu) != countGenesFe(rFE))
+            stop("When using per-gene mutation rates, ",
+                 "there must be the same number of genes in the ",
+                 "mu vector and the fitness effects object.")
+        if(!identical(sort(namedGenes$Gene),
+                      sort(names(mu))))
+            stop("When using per-gene mutation rates, ",
+                 "names of genes must match those in the ",
+                 "restriction table.")
+        mu <- mu[order(match(names(mu), namedGenes$Gene))]
+        ## Hyperparanoid check. Should never, ever, happen.
+        if(!identical(names(mu), namedGenes$Gene))
+            stop("Names of re-ordered mu do not match names of genes")
+        minmu <- 1e-40
+        if(any(mu <= minmu))
+            stop(paste("At least one per-gene mutation rate is negative",
+                       "or less than", minmu,". Remember that the per-base",
+                       "mutation rate in the human genome is about 1e-10 to 1e-11."))
+    }
     if(!is.null(initMutant)) {
        if(length(grep(">", initMutant))) {
             initMutant <- nice.vector.eo(initMutant, ">")
@@ -908,6 +951,7 @@ nr_oncoSimul.internal <- function(rFE,
             warning(m)
         }
     }
+
     ## call <- match.call()
     return(c(
         nr_BNB_Algo5(rFE = rFE,
@@ -929,7 +973,7 @@ nr_oncoSimul.internal <- function(rFE,
                  initMutant_ = initMutant, 
                  maxWallTime = max.wall.time,
                  keepEvery = keepEvery,
-                 alpha = alpha,
+                 ## alpha = alpha,
                  K = K,
                  detectionDrivers = detectionDrivers,
                  onlyCancer = onlyCancer,
@@ -937,24 +981,103 @@ nr_oncoSimul.internal <- function(rFE,
                  maxNumTries = max.num.tries,
                  errorHitMaxTries = errorHitMaxTries,
                  minDetectDrvCloneSz = minDetectDrvCloneSz,
-                     extraTime = extraTime,
-                     keepPhylog),
+                 extraTime = extraTime,
+                 keepPhylog = keepPhylog),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
 }
 
 
+countGenesFe <- function(fe) {
+    ## recall geneModule has Root always
+    nrow(fe$geneModule) + nrow(fe$long.geneNoInt) - 1
+}
+
+allNamedGenes <- function(fe){
+    ## Returns a data frame with genes and their names and verifies all
+    ## genes have names.
+
+    ## Root should always be first, but just in case
+    ## avoid assuming it
+
+    ## This does is not a good idea as it assumes the user did not use
+    ## "keepInput = FALSE".
+    ## lni <- length(fe$noIntGenes)
+    ## ## FIXME:test
+    ## if((lni > 0) &&
+    ##        (is.null(names(fe$noIntGenes))))
+    ##         stop("When using per-gene mutation rates the ",
+    ##              "no interaction genes must be named ",
+    ##              "(i.e., the noIntGenes vector must have names).")
+    
+    v1 <- fe$geneModule[, c("Gene", "GeneNumID")]
+    if(nrow(fe$long.geneNoInt)) {
+        v1 <- rbind(v1,
+                    fe$long.geneNoInt[, c("Gene", "GeneNumID")])
+    }
+    v1 <- v1[-which(v1[, "Gene"] == "Root"), ]
+    rownames(v1) <- NULL
+    return(v1)
+}
+
+
+get.gene.counts <- function(x) {
+                                        # , timeSample = "last",
+                                        # typeSample = "whole") {
+    ## From get.mut.vector. Used for now just for testing
+    timeSample <- "last"
+    the.time <- get.the.time.for.sample(x, timeSample)
+    if(the.time < 0) {
+        counts <- rep(0, length(x$geneNames))
+        names(counts) <- x$geneNames
+        freq <- rep(NA, length(x$geneNames))
+        names(freq) <- x$geneNames
+        return(list(counts = counts,
+                    freq = freq,
+                    popSize = 0))
+    } 
+    pop <- x$pops.by.time[the.time, -1]
+    if(all(pop == 0)) {
+        stop("You found a bug: this should never happen")
+    }
+    ## if(typeSample %in% c("wholeTumor", "whole")) {
+    popSize <- x$PerSampleStats[the.time, 1]
+    counts <- as.vector(tcrossprod(pop, x$Genotypes))
+    names(counts) <- x$geneNames    
+    return(list(counts = counts,
+                freq = counts/popSize,
+                popSize = popSize))
+    ## return( (tcrossprod(pop,
+    ##                     x$Genotypes)/popSize) )
+    ## } else if (typeSample %in%  c("singleCell", "single")) {
+
+    ##       return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+    ##   } else {
+    ##         stop("Unknown typeSample option")
+    ##     }
+}
 
 
 
+geneCounts <- function(x) {
+    if(inherits(x, "oncosimulpop")) {
+        return( do.call(rbind,
+                        lapply(x,
+                               function(z)
+                               get.gene.counts(z)$counts))
+               )
+    } else {
+        return( get.gene.counts(x)$counts)
+    }
+}
 
 
 
-
-
-
-
+## FIXME: test
+## initMutant with a mu as a vector.
+## The mutated one always present, even if that mu has 10-9.
+## And others ordered as they should.
 
 
 
