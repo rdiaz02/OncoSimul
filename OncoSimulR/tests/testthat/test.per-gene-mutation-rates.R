@@ -893,8 +893,79 @@ test_that("0 or negative mu not allowed", {
 })
 
 
+
+
+
+test_that("Different freqs as they should be ordered and chisq, when s=0 and t = 1, and initMutant",
+{
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+    ni1 <- rep(0, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 5e5
+    reps <- 1000
+    set.seed(6305)
+    bb <- oncoSimulPop(reps,
+                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = 1,
+                       seed =NULL,
+                       initMutant = "e"
+                       )
+    (expectedC <- no*reps*muvar2)
+    ccs <- colSums(OncoSimulR:::geneCounts(bb))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
+    expect_true(ccs["e"] == totalindivs)
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+                           p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
+    expect_equal(
+        order(colSums(OncoSimulR:::geneCounts(bb))[-3]),
+        order(expectedC[-3]))
+    ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    ##            p = expectedC/sum(expectedC))
+})
+
+
+test_that("McFL: Different freqs as they should be ordered and chisq, when s=0 and t = 1, and initMutant",
+{
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+    ni1 <- rep(0, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e5
+    reps <- 1000
+    set.seed(465)
+    bb <- oncoSimulPop(reps,
+                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = 1,
+                       seed =NULL,
+                       model = "McFL",
+                       initMutant = "m"
+                       )
+    (expectedC <- no*reps*muvar2)
+    ccs <- colSums(OncoSimulR:::geneCounts(bb))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
+    expect_true(ccs["m"] == totalindivs)
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-4],
+                           p = expectedC[-4]/sum(expectedC[-4]))$p.value > p.fail)
+    expect_equal(
+        order(colSums(OncoSimulR:::geneCounts(bb))[-4]),
+        order(expectedC[-4]))
+    ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    ##            p = expectedC/sum(expectedC))
+})
+
+
+
+
 ##################### If you want to verify step by step that the C++ does
 ##################### what it should you can, for instance, run this R code
+
 
 ## library(OncoSimulR)
 ## RNGkind("L'Ecuyer-CMRG")

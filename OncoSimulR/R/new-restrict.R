@@ -1074,10 +1074,6 @@ geneCounts <- function(x) {
 
 
 
-## FIXME: test
-## initMutant with a mu as a vector.
-## The mutated one always present, even if that mu has 10-9.
-## And others ordered as they should.
 
 
 
