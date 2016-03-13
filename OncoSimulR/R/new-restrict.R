@@ -887,6 +887,11 @@ nr_oncoSimul.internal <- function(rFE,
         ## Hyperparanoid check. Should never, ever, happen.
         if(!identical(names(mu), namedGenes$Gene))
             stop("Names of re-ordered mu do not match names of genes")
+        minmu <- 1e-40
+        if(any(mu <= minmu))
+            stop(paste("At least one per-gene mutation rate is negative",
+                       "or less than", minmu,". Remember that the per-base",
+                       "mutation rate in the human genome is about 1e-10 to 1e-11."))
     }
     if(!is.null(initMutant)) {
        if(length(grep(">", initMutant))) {

@@ -700,9 +700,21 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
  
   const int numGenes = fitnessEffects.genomeSize;
-  // FIXME:varmutrate: if the value of dummy is larger than min mu, then
-  // give a warning. or give the min of the below and min of mu.
-  double dummyMutationRate = std::max(*std::min_element(mu.begin(), mu.end())/1000, 1e-13);
+
+  double mymindummy = 1e-15;
+  double minmu = *std::min_element(mu.begin(), mu.end());
+  double dummyMutationRate = std::max(minmu/1000, mymindummy);
+  // This should very rarely happen:
+  if(minmu <= mymindummy ) {
+    double newdd = minmu/100;
+    Rcpp::Rcout << "WARNING: the smallest mutation rate is "
+		<< "<= " << mymindummy << ". That is a really small value"
+		<< "(per-base mutation rate in the human genome is"
+		<< " ~ 1e-11 to 1e-10). "
+		<< "Setting dummyMutationRate to your min/100 = "
+		<< newdd << "\n";
+    dummyMutationRate = newdd;
+  }
   // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero
   genot_out.clear();

@@ -421,7 +421,7 @@ oncoSimulIndiv <- function(fp,
         stop("Per-gene mutation rates cannot be used with the old poset format")
 
     if(any(mu < 0)) {
-        stop("mutation rate (mu) is negative")
+        stop("(at least one) mutation rate (mu) is negative")
     }
     ## We do not test for equality to 0. That might be a weird but
     ## legitimate case?

@@ -1,5 +1,7 @@
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
+## I fix seeds because otherwise with continuous testing I get lots of
+## false positives.
 
 test_that("single named gene in mut. fail", {
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
@@ -81,6 +83,7 @@ test_that("Only no-int, different numbers, fail", {
 
 
 test_that("Same freqs, chisq, when s=0 and t = 1", {
+    set.seed(95)
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
@@ -90,7 +93,8 @@ test_that("Same freqs, chisq, when s=0 and t = 1", {
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -109,10 +113,12 @@ test_that("Same freqs, chisq, when s and t = 1", {
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 1e5
     reps <- 10000
+    set.seed(134)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -125,6 +131,8 @@ test_that("Same freqs, chisq, when s and t = 1", {
 
 
 
+
+
 test_that("Different freqs as they should be ordered and chisq, when s=0 and t = 1",
 {
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -133,10 +141,12 @@ test_that("Different freqs as they should be ordered and chisq, when s=0 and t =
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 5e5
     reps <- 1000
+    set.seed(703)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed =NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -149,7 +159,6 @@ test_that("Different freqs as they should be ordered and chisq, when s=0 and t =
         order(expectedC))    
     ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
     ##            p = expectedC/sum(expectedC))
-    
 })
 
 
@@ -160,10 +169,12 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
     fe1 <- allFitnessEffects(noIntGenes = ni2)
     no <- 5e5
     reps <- 1000
+    set.seed(987)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -186,10 +197,12 @@ test_that("Different freqs as they should be ordered, when s and t> 1", {
     fe1 <- allFitnessEffects(noIntGenes = ni2)
     no <- 5e5
     reps <- 1000
+    set.seed(123456)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 4
+                       finalTime = 4,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -255,6 +268,7 @@ test_that("Complex fitness specification, tiny s diffs", {
 
 
 test_that("Complex fitness specification, large diffs", {
+    set.seed(89)
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
@@ -286,18 +300,16 @@ test_that("Complex fitness specification, large diffs", {
                        fea, mu = muvar,
                        onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
-    
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
     expectedC - colSums(OncoSimulR:::geneCounts(bb))
-
     ## this will occasionally fail
     p.fail <- 1e-6
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value < p.fail)
-
     expect_false(
         identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
@@ -381,10 +393,6 @@ test_that("McFL: Only no-int, different numbers, fail", {
                  fixed = TRUE)    
 } )
 
-
-
-
-
 test_that("McFL: Same freqs, chisq, when s=0 and t = 1", {
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0, 5)
@@ -392,11 +400,13 @@ test_that("McFL: Same freqs, chisq, when s=0 and t = 1", {
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 1e5
     reps <- 5000
+    set.seed(65098)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        model = "McFL",
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed= NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -409,6 +419,7 @@ test_that("McFL: Same freqs, chisq, when s=0 and t = 1", {
 
 
 test_that("McFL: Same freqs, chisq, when s and t = 1", {
+    set.seed(3018)
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0.02, 5)
     names(ni1) <- names(muvar2)
@@ -420,7 +431,8 @@ test_that("McFL: Same freqs, chisq, when s and t = 1", {
                        model = "McFL",
                        onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -438,11 +450,13 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0 a
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 2e5
     reps <- 5000
+    set.seed(8)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        model = "McFL",
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL                       
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -465,11 +479,13 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
     fe1 <- allFitnessEffects(noIntGenes = ni2)
     no <- 2e5
     reps <- 2000
+    set.seed(65)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        model = "McFL",
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -486,6 +502,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
 
 
 test_that("McFL: Different freqs as they should be ordered, when s and t> 1", {
+    set.seed(1)
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
@@ -496,7 +513,8 @@ test_that("McFL: Different freqs as they should be ordered, when s and t> 1", {
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        model = "McFL",
                        initSize = no,
-                       finalTime = 4
+                       finalTime = 4,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -512,16 +530,16 @@ test_that("McFL: Different freqs as they should be ordered, when s and t> 1", {
 
 
 test_that("McFL: Complex fitness specification, tiny s diffs", {
-    set.seed(94) ## 1, 
+    set.seed(1) 
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
-                     s = c(0.00001, 0.00002, 0.00003, 0.00004, 0.00001, 0.00001, 0.00002, 0.00002, 0.00003, 0.00003),
+                     s = c(0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001, 0.00001),
                      sh = c(rep(0, 4), c(-.00000009, -.00000009), c(-.000000095, -.000000095), c(-.0000099, -.0000099)),
                      typeDep = c(rep("--", 4), 
                                  "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
-    oe <- c("C > F" = -0.00001, "H > I" = 0.000012)
-    sm <- c("I:J"  = -.00001)
-    sv <- c("-K:M" = -.00005, "K:-M" = -.00005)
+    oe <- c("C > F" = -0.0000001, "H > I" = 0.00000012)
+    sm <- c("I:J"  = -.0000001)
+    sv <- c("-K:M" = -.00000145, "K:-M" = -.0000015)
     epist <- c(sm, sv)
     modules <- c("Root" = "Root", "A" = "a1",
                  "B" = "b1, b2", "C" = "c1",
@@ -529,7 +547,7 @@ test_that("McFL: Complex fitness specification, tiny s diffs", {
                  "F" = "f1, f2", "G" = "g1",
                  "H" = "h1, h2", "I" = "i1",
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
-    noint <- runif(5, min = 0.000051, max = 0.000081)
+    noint <- runif(5, min = 0.0000051, max = 0.0000081)
     names(noint) <- paste0("n", 1:5)
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
                              noIntGenes = noint, geneToModule = modules)
@@ -539,13 +557,14 @@ test_that("McFL: Complex fitness specification, tiny s diffs", {
     muvar <- sample(seq(from = 1e-7, to = 1e-3, length.out = length(nfea)))
     names(muvar) <- nfea
     no <- 1e3
-    reps <- 2000
+    reps <- 3500
     bb <- oncoSimulPop(reps,
                        fea, mu = muvar,
                        model = "McFL",
                        onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -562,6 +581,7 @@ test_that("McFL: Complex fitness specification, tiny s diffs", {
 
 
 test_that("McFL: Complex fitness specification, large diffs", {
+    set.seed(4)
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
@@ -594,7 +614,8 @@ test_that("McFL: Complex fitness specification, large diffs", {
                        model = "McFL",
                        onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -617,28 +638,23 @@ test_that("get.gene.counts exercising for NA case", {
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
-    
     ou1 <- oncoSimulIndiv(fe1, mu = muvar2,
                           initSize = 100,
-                          onlyCancer = FALSE)
+                          onlyCancer = FALSE,
+                          seed = NULL)
     expect_output(OncoSimulR:::get.gene.counts(ou1),
                   "$counts",
                   fixed = TRUE)
     expect_output(OncoSimulR:::geneCounts(ou1),
                   "0",
                   fixed = TRUE)
-    
 })
 
 
-
-
-## Some other test with mu = 0 for a gene
-
-
-
-test_that("Init mutant with mutation = 0", {
-    
+test_that("Init mutant with tiny mutation", {
+    ## We check the two init mutants have same frequency, and it is the
+    ## largest. So we also verify no additional mutation to
+    ## either one (since their freq is same) and we verify present in all.
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
@@ -664,8 +680,8 @@ test_that("Init mutant with mutation = 0", {
     ## diffs sometimes for order comp
     muvar <- sample(seq(from = 1e-7, to = 1e-4, length.out = length(nfea)))
     names(muvar) <- nfea
-    muvar["h2"] <- 0
-    muvar["i1"] <- 0
+    muvar["h2"] <- 1e-13
+    muvar["i1"] <- 2e-13
     no <- 1e2
     reps <- 500
     bb <- oncoSimulPop(reps,
@@ -679,7 +695,9 @@ test_that("Init mutant with mutation = 0", {
                        )
     (expectedC <- no*reps*muvar)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["h2"] == ccs["i1"])
+    expect_true(ccs["h2"] == totalindivs)
     expect_true(all(ccs["h2"] > ccs[!(names(ccs) %in% c("h2", "i1"))]))
     ## this will occasionally fail
     p.fail <- 1e-6
@@ -692,8 +710,7 @@ test_that("Init mutant with mutation = 0", {
 })
 
 
-test_that("McFL: Init mutant with mutation = 0", {
-    
+test_that("McFL: Init mutant with tiny mutation", {
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
@@ -719,11 +736,10 @@ test_that("McFL: Init mutant with mutation = 0", {
     ## diffs sometimes for order comp
     muvar <- sample(seq(from = 1e-7, to = 1e-5, length.out = length(nfea)))
     names(muvar) <- nfea
-    muvar["h2"] <- 0
-    muvar["i1"] <- 0
+    muvar["h2"] <- 3e-13
+    muvar["i1"] <- 1e-13
     no <- 1e3
     reps <- 500
-    
     bb <- oncoSimulPop(5, ##reps,
                        fea, mu = muvar,
                        onlyCancer = FALSE,
@@ -732,11 +748,11 @@ test_that("McFL: Init mutant with mutation = 0", {
                        finalTime = 600,
                        initMutant = "h2 > i1"
                        )
-
-    
     (expectedC <- no*reps*muvar)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["h2"] == ccs["i1"])
+    expect_true(ccs["h2"] == totalindivs)
     expect_true(all(ccs["h2"] > ccs[!(names(ccs) %in% c("h2", "i1"))]))
     ## this will occasionally fail
     p.fail <- 1e-6
@@ -746,15 +762,10 @@ test_that("McFL: Init mutant with mutation = 0", {
         identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
             order(expectedC)))
-
 })
 
-
-
-
-
-test_that("Different freqs as they should be ordered and chisq, when s and t = 1 and a mu = 0", {
-    muvar2 <- c("U" = 0, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+test_that("Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
+    muvar2 <- c("U" = 1e-13, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
     ni2["U"] <- 0.5
@@ -765,7 +776,8 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 5
+                       finalTime = 5,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -778,65 +790,55 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1
-                       )
-    (expectedC <- no*reps*muvar2)
-    colSums(OncoSimulR:::geneCounts(bb))
-    expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-    ## This will fail sometimes
-    p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
-                           p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
-    expect_equal(
-        order(colSums(OncoSimulR:::geneCounts(bb))),
-        order(expectedC))
-}
-)
-
-
-test_that("McFL: Different freqs as they should be ordered and chisq, when s and t = 1 and a mu = 0", {
-    
-    muvar2 <- c("U" = 0, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
-    ni2 <- rep(0.01, 5)
-    names(ni2) <- names(muvar2)
-    ni2["U"] <- 0.5
-    fe1 <- allFitnessEffects(noIntGenes = ni2)
-    no <- 1e4
-    reps <- 100
-
-    ## There is a bug here!!! See bb[[2]] The bug is because we are
-    ## left with no genes to mutate but the one with mu = 0.
-    ## In obtainMutations, when we use the discrete_distribution.
-
-    ## I think what happens is we first set the dummyMutationRate, and
-    ## then we enter the obtainMutations. Nope, not that. It just obtains
-    ## the only value in discrete distribution.
-    
-    RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
-    set.seed(26)
-    bb <- oncoSimulPop(2, ## reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE,
-                       initSize = no,
-                       model = "McFL",
-                       finalTime = 5000,
+                       finalTime = 1,
                        seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
     expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-
+    ## This will fail sometimes
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
+                           p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
     expect_equal(
         order(colSums(OncoSimulR:::geneCounts(bb))),
         order(expectedC))
+}
+)
 
-
-    ## A chisq will not work as we increase finalTime.
-
+test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
+    muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+    ni2 <- rep(0.01, 5)
+    names(ni2) <- names(muvar2)
+    ni2["U"] <- 0.5
+    fe1 <- allFitnessEffects(noIntGenes = ni2)
+    no <- 1e5
+    reps <- 100
+    ## Beware: with McFL final time has to be small or we will see
+    ## mutations in U as it is the only one left. 
+    set.seed(26)
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        model = "McFL",
-                       finalTime = 1
+                       finalTime = 200,
+                       seed = NULL
+                       )
+    (expectedC <- no*reps*muvar2)
+    colSums(OncoSimulR:::geneCounts(bb))
+    expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
+    expect_equal(
+        order(colSums(OncoSimulR:::geneCounts(bb))),
+        order(expectedC))
+    ## A chisq will not work as we increase finalTime.
+    set.seed(35)
+    no <- 1e5
+    bb <- oncoSimulPop(reps,
+                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       initSize = no,
+                       model = "McFL",
+                       finalTime = 1,
+                       seed = NULL
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -848,15 +850,47 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
     expect_equal(
         order(colSums(OncoSimulR:::geneCounts(bb))),
         order(expectedC))
-
-
-
-    
 }
 )
-<<<<<<< HEAD
 
 
+
+
+test_that("0 or negative mu not allowed", {
+    muvar2 <- c("U" = 0, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
+    ni1 <- rep(0.02, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e5
+    expect_error(oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                                initSize = no,
+                                finalTime = 1
+                                ),
+                 "At least one per-gene mutation rate is negative or less",
+                 fixed = TRUE)
+    muvar2 <- c("U" = 1e-70, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
+    ni1 <- rep(0.02, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e5
+    expect_error(oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                                initSize = no,
+                                finalTime = 1
+                                ),
+                 "At least one per-gene mutation rate is negative or less",
+                 fixed = TRUE)
+    muvar2 <- c("U" = 1e-4, "z" = -0.2, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
+    ni1 <- rep(0.02, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e5
+    expect_error(oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+                                initSize = no,
+                                finalTime = 1
+                                ),
+                 "(at least one) mutation rate (mu) is negative",
+                 fixed = TRUE)
+})
 
 
 ##################### If you want to verify step by step that the C++ does
