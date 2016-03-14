@@ -210,5 +210,8 @@ double mutationFromParent(const std::vector<double>& mu,
 			  const std::vector<int>& newMutations,
 			  // const std::vector<int>& nonmutated,
 			  const int mutationPropGrowth);
+
+double prodMuts(const std::vector<double>& s);
+
 #endif
 

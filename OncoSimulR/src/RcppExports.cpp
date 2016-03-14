@@ -103,8 +103,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // evalRGenotype
-double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose, bool prodNeg);
-RcppExport SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP) {
+double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose, bool prodNeg, Rcpp::CharacterVector calledBy_);
+RcppExport SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP, SEXP calledBy_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -112,7 +112,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::List >::type rFE(rFESEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< bool >::type prodNeg(prodNegSEXP);
-    __result = Rcpp::wrap(evalRGenotype(rG, rFE, verbose, prodNeg));
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type calledBy_(calledBy_SEXP);   
+    __result = Rcpp::wrap(evalRGenotype(rG, rFE, verbose, prodNeg, calledBy_));
     return __result;
 END_RCPP
 }

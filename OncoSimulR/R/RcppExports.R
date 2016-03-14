@@ -14,7 +14,7 @@ readFitnessEffects <- function(rFE, echo) {
      invisible(.Call('C_OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
 }
 
-evalRGenotype <- function(rG, rFE, verbose, prodNeg) {
-    .Call('C_OncoSimulR_evalRGenotype', PACKAGE = 'OncoSimulR', rG, rFE, verbose, prodNeg)
+evalRGenotype <- function(rG, rFE, verbose, prodNeg, calledBy_) {
+    .Call('C_OncoSimulR_evalRGenotype', PACKAGE = 'OncoSimulR', rG, rFE, verbose, prodNeg, calledBy_)
 }
 

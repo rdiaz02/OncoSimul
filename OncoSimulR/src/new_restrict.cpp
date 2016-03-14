@@ -53,6 +53,13 @@ double prodDeathFitness(const std::vector<double>& s) {
 		    [](double x, double y) {return (x * std::max(0.0, (1 - y)));});
 }
 
+double prodMuts(const std::vector<double>& s) {
+  // From prodFitness
+  // return accumulate(s.begin(), s.end(), 1.0,
+  // 		    [](double x, double y) {return (x * y);});
+  return accumulate(s.begin(), s.end(), 1.0,
+		    std::multiplies<double>());
+}
 
 
 bool operator==(const Genotype& lhs, const Genotype& rhs) {
@@ -1134,9 +1141,13 @@ void readFitnessEffects(Rcpp::List rFE,
 
 // [[Rcpp::export]]
 double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
-		     bool verbose, bool prodNeg) {
+		     bool verbose, bool prodNeg,
+		     Rcpp::CharacterVector calledBy_) {
+  
+  const std::string calledBy = Rcpp::as<std::string>(calledBy_);
+  
   if(rG.size() == 0) {
-    Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
+    Rcpp::warning("WARNING: you have evaluated fitness/mutator status of a genotype of length zero.");
     return 1;
   }
     
@@ -1145,14 +1156,24 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
   Genotype g = convertGenotypeFromR(rG, F);
   vector<double> s = evalGenotypeFitness(g, F);
   if(verbose) {
-    Rcpp::Rcout << "\n Individual s terms are :";
+    std::string sprod;
+    if(calledBy == "evalGenotype") {
+      sprod = "s";
+    } else { // if (calledBy == "evalGenotypeMut") {
+      sprod = "mutator product";
+    }
+    Rcpp::Rcout << "\n Individual " << sprod << " terms are :";
     for(auto const &i : s) Rcpp::Rcout << " " << i;
     Rcpp::Rcout << std::endl;
   }
-  if(!prodNeg)
-    return prodFitness(s);
-  else 
-    return prodDeathFitness(s);;
+  if(calledBy == "evalGenotype") {
+    if(!prodNeg)
+      return prodFitness(s);
+    else 
+      return prodDeathFitness(s);
+  } else { //if (calledBy == "evalGenotypeMut") {
+    return prodMuts(s);
+  }
 }
 
 
