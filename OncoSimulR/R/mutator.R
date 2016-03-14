@@ -51,7 +51,7 @@ evalGenotypeMut <- function(genotype, fitnessEffects,
                        fitnessEffects = fitnessEffects,
                        verbose = verbose,
                        echo = echo,
-                       model  = model ,
+                       model  = "" ,
                        calledBy_= "evalGenotypeMut"
                        )
 

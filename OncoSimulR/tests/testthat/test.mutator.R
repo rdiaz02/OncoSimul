@@ -1,3 +1,25 @@
+fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                      "b : c" = 0.5),
+                        noIntGenes = c("e" = 0.1))
+
+evalAllGenotypes(fe, order = FALSE)
+
+fm <- OncoSimulR:::allMutatorEffects(fe, noIntGenes = c("a" = 10,
+                                                        "c" = 5))
+
+OncoSimulR:::evalAllGenotypesMut(fm) ## OK
+
+## should fail
+fm <- OncoSimulR:::allMutatorEffects(fe, noIntGenes = c("a" = 10,
+                                                        "d" = 5))
+
+
+
+OncoSimulR:::evalGenotypeMut("a", fm)
+
+
+
+
 
 evalAllGenotypes(
     allFitnessEffects(epistasis = c("a : b" = 0.3,

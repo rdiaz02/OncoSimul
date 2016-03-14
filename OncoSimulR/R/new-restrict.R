@@ -481,6 +481,8 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
         gnid <- gg$GeneNumID
         names(gnid) <- gg$Gene
         gnid <- c("Root" = 0, gnid)
+        if(!all(geneModule$Gene %in% names(gnid) ))
+            stop("Some mutator genes not in reference fitnessEffects")
         geneModule$GeneNumID <- gnid[geneModule$Gene]
     }
     
@@ -524,9 +526,18 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
                                 GeneNumID = gnum,
                                 s = noIntGenes,
                                 stringsAsFactors = FALSE)
+        if(!is.null(refFE)) {
+            ## now, mapping for the noInt if this is mutator
+            if(!all(geneNoInt$Gene %in% names(gnid) ))
+                stop("Some mutator genes not in reference fitnessEffects")
+            geneNoInt$GeneNumID <- gnid[geneNoInt$Gene]
+        }
     } else {
         geneNoInt <- data.frame()
     }
+    
+
+    
     if( (length(long.rt) + length(long.epistasis) + length(long.orderEffects) +
              nrow(geneNoInt)) == 0)
         stop("You have specified nothing!")
