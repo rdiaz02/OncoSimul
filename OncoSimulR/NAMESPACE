@@ -2,8 +2,10 @@ useDynLib(OncoSimulR, .registration=TRUE)
 
 export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "plotPoset", "oncoSimulSample", "allFitnessEffects",
-       "evalGenotype", "evalAllGenotypes", "simOGraph"
-     , "plotClonePhylog", "OncoSimulWide2Long"
+       "evalGenotype", "evalAllGenotypes", "simOGraph",
+       "plotClonePhylog", "OncoSimulWide2Long",
+       "allMutatorEffects", "evalAllGenotypesMut",
+       "evalGenotypeMut"       
        )
 
 S3method(plot, oncosimul)
