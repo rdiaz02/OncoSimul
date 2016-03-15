@@ -10,7 +10,7 @@
 ## numerical ids becomes a pita.
 
 
-allMutatorEffects <- function(refFE,
+allMutatorEffects <- function(## refFE,
                               epistasis = NULL,
                               noIntGenes = NULL,
                               geneToModule = NULL,
@@ -24,7 +24,7 @@ allMutatorEffects <- function(refFE,
         geneToModule = geneToModule,
         drvNames = NULL,
         keepInput = keepInput,
-        refFE = refFE,
+        ## refFE = refFE,
         calledBy = "allMutatorEffects")
 
 }

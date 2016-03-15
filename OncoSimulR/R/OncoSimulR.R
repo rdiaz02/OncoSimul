@@ -356,6 +356,7 @@ oncoSimulIndiv <- function(fp,
                            model = "Exp",
                            numPassengers = 30,
                            mu = 1e-6,
+                           muEF = NULL,
                            detectionSize = 1e8,
                            detectionDrivers = 4,
                            sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
@@ -449,6 +450,8 @@ oncoSimulIndiv <- function(fp,
             stop(m)
            
         }
+        if(!is.null(muEF))
+            stop("Mutator effects cannot be especified with the old poset format")
         if(length(initMutant) > 1)
             stop("With the old poset, initMutant can only take a single value.")
         ## Seeding C++ is now much better in new version
@@ -546,7 +549,8 @@ oncoSimulIndiv <- function(fp,
                                         onlyCancer = onlyCancer,
                                         errorHitWallTime = errorHitWallTime,
                                         errorHitMaxTries = errorHitMaxTries,
-                                        keepPhylog = keepPhylog),
+                                        keepPhylog = keepPhylog,
+                                        muEF = muEF),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }

@@ -412,7 +412,7 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
                                         geneToModule = NULL,
                                         drvNames = NULL,
                                         keepInput = TRUE,
-                                        refFE = NULL,
+                                        ## refFE = NULL,
                                         calledBy = NULL) {
     ## From forme allFitnessEffects. Generalized so we deal with Fitness
     ## and mutator.
@@ -439,12 +439,12 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
     if( !(calledBy %in% c("allFitnessEffects", "allMutatorEffects") ))
         stop("How did you call this function?. Bug.")
     
-    if(calledBy == "allFitnessEffects") {
-        if(!is.null(refFE)) stop("A refFE with allFitnessEffects?. A bug")
-    }
-    if(calledBy == "allMutatorEffects") {
-        if(is.null(refFE)) stop("No refFE with allMutatorEffects?. A bug")
-    }
+    ## if(calledBy == "allFitnessEffects") {
+    ##     if(!is.null(refFE)) stop("A refFE with allFitnessEffects?. A bug")
+    ## }
+    ## if(calledBy == "allMutatorEffects") {
+    ##     if(is.null(refFE)) stop("No refFE with allMutatorEffects?. A bug")
+    ## }
     
     
     rtNames <- NULL
@@ -481,11 +481,11 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
         gMOneToOne <- TRUE
         geneToModule <- geneModuleNull(allModuleNames)
     } else {
-        if(calledBy == "allMutatorEffects") {
-            ## these do not have root, as only epistasis and noInt
-            if(geneToModule[1] != "Root")
-            geneToModule <- c("Root" = "Root", geneToModule)
-        }
+        ## if(calledBy == "allMutatorEffects") {
+        ##     ## these do not have root, as only epistasis and noInt
+        ##     if(geneToModule[1] != "Root")
+        ##     geneToModule <- c("Root" = "Root", geneToModule)
+        ## }
         gMOneToOne <- FALSE
         if(any(is.na(match(setdiff(names(geneToModule), "Root"), allModuleNames))))
             stop(paste("Some values in geneToModule not present in any of",
@@ -496,15 +496,15 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
     }
     geneModule <- gm.to.geneModuleL(geneToModule, one.to.one = gMOneToOne)
 
-    if(!is.null(refFE)) {
-        gg <- allNamedGenes(refFE)
-        gnid <- gg$GeneNumID
-        names(gnid) <- gg$Gene
-        gnid <- c("Root" = 0, gnid)
-        if(!all(geneModule$Gene %in% names(gnid) ))
-            stop("Some mutator genes not in reference fitnessEffects (geneModule)")
-        geneModule$GeneNumID <- gnid[geneModule$Gene]
-    }
+    ## if(!is.null(refFE)) {
+    ##     gg <- allNamedGenes(refFE)
+    ##     gnid <- gg$GeneNumID
+    ##     names(gnid) <- gg$Gene
+    ##     gnid <- c("Root" = 0, gnid)
+    ##     if(!all(geneModule$Gene %in% names(gnid) ))
+    ##         stop("Some mutator genes not in reference fitnessEffects (geneModule)")
+    ##     geneModule$GeneNumID <- gnid[geneModule$Gene]
+    ## }
     
     idm <- unique(geneModule$ModuleNumID)
     names(idm) <- unique(geneModule$Module)
@@ -546,12 +546,12 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
                                 GeneNumID = gnum,
                                 s = noIntGenes,
                                 stringsAsFactors = FALSE)
-        if(!is.null(refFE)) {
-            ## now, mapping for the noInt if this is mutator
-            if(!all(geneNoInt$Gene %in% names(gnid) ))
-                stop("Some mutator genes not in reference fitnessEffects (noInt)")
-            geneNoInt$GeneNumID <- gnid[geneNoInt$Gene]
-        }
+        ## if(!is.null(refFE)) {
+        ##     ## now, mapping for the noInt if this is mutator
+        ##     if(!all(geneNoInt$Gene %in% names(gnid) ))
+        ##         stop("Some mutator genes not in reference fitnessEffects (noInt)")
+        ##     geneNoInt$GeneNumID <- gnid[geneNoInt$Gene]
+        ## }
     } else {
         geneNoInt <- data.frame()
     }
@@ -619,7 +619,7 @@ allFitnessEffects <- function(rT = NULL,
         geneToModule = geneToModule,
         drvNames = drvNames,
         keepInput = keepInput,
-        refFE = NULL,
+        ## refFE = NULL,
         calledBy = "allFitnessEffects")
 }
 
@@ -1246,7 +1246,9 @@ nr_oncoSimul.internal <- function(rFE,
                                   errorHitMaxTries,
                                   minDetectDrvCloneSz,
                                   extraTime,
-                                  keepPhylog) {
+                                  keepPhylog,
+                                  muEF
+                                  ) {
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
@@ -1353,6 +1355,10 @@ nr_oncoSimul.internal <- function(rFE,
         }
     }
 
+    if(!is.null(muEF))
+        full2mutator_ <- matchGeneIDs(rFE, muEF)$Reduced
+    else
+        full2mutator_ <- NULL
     ## call <- match.call()
     return(c(
         nr_BNB_Algo5(rFE = rFE,
@@ -1383,7 +1389,9 @@ nr_oncoSimul.internal <- function(rFE,
                  errorHitMaxTries = errorHitMaxTries,
                  minDetectDrvCloneSz = minDetectDrvCloneSz,
                  extraTime = extraTime,
-                 keepPhylog = keepPhylog),
+                 keepPhylog = keepPhylog,
+                 muEF,
+                 full2mutator_),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
@@ -1503,3 +1511,36 @@ geneCounts <- function(x) {
 ## }
 
 
+matchGeneIDs <- function(x, refFE) {
+    n1 <- allNamedGenes(x)
+    n2 <- allNamedGenes(refFE)
+    colnames(n1)[2] <- "Reduced"
+    colnames(n2)[2] <- "Full"
+    dplyr::full_join(n2, n1, by = "Gene") %>%
+        mutate(Reduced = replace(Reduced, is.na(Reduced), -9))
+    ## d1 <- dplyr::full_join(n2, n1, by = "Gene")
+    
+    ## df %>%
+    ##   mutate(colname = ifelse(is.na(colname),0,colname))
+    ## colnames(n1)[2] <- "Reduced"
+    ## colnames(n2)[2] <- "Full"
+    ## n1num <- n1$GeneNumID
+    ## names(n1num) <- n1$Gene
+    ## df <- data.frame(Gene = n2$Gene,
+    ##                  GeneNumIDFull = n2$Gene,
+    ##                  GeneNumIDReduced = n1num[n2$Gene],
+    ##                  stringsAsFactors = FALSE)
+
+}
+
+
+### Later, for all the effects, we will do some kind of dplyr match?
+
+### a, b, c, in fitness, only a, c in mut.
+### fitness table for a,b,c
+### each row name transformed removing b (so leaving only present)
+### each row transformed matched to row in mut table.
+
+## t1 <- data.frame(v1 = c("a,b", "a,c", "b"), v2 = c("b", "c", "b"), v3 = 1:3, stringsAsFactors = FALSE)
+## t2 <- data.frame(v2 = c("b", "c"), v4 = c(11, 12), stringsAsFactors = FALSE)
+## full_join(t1, t2, by = "v2")
