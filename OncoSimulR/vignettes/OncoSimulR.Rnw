@@ -595,6 +595,10 @@ for which order does not matter).
 
 
 
+And what if I want genes without interactions but I want modules (see
+section \ref{modules0})? Go to section \ref{mod-no-epi}.
+
+
 
 \subsection{Restrictions in the order of mutations as extended posets}\label{posetslong}
 
@@ -1137,10 +1141,10 @@ vector that makes explicit the mapping from modules to sets of genes. We
 just saw an example. There are several additional examples such as
 \ref{pm3}, \ref{oemod}, \ref{epimod}.
 
-Why do we force you to specify ``Root'' = ``Root''? We could check for it,
-and add it if it is not present. But we want you to be explicit (and we
-want to avoid you shooting yourself in the foot having a gene that is not
-the root of the tree but is called ``Root'', etc).
+%% Why do we force you to specify ``Root'' = ``Root''? We could check for it,
+%% and add it if it is not present. But we want you to be explicit (and we
+%% want to avoid you shooting yourself in the foot having a gene that is not
+%% the root of the tree but is called ``Root'', etc).
 
 
 It is important to note that, once you specify modules, we expect all of
@@ -1868,6 +1872,55 @@ em2 <- allFitnessEffects(epistasis =
 evalAllGenotypes(em2, order = FALSE, addwt = TRUE)
 
 @ 
+
+
+\subsection{I do not want epistasis, but I want modules!}
+\label{mod-no-epi}
+
+Sometimes you might want something like having several modules, say ``A''
+and ``B'', each with a number of genes, but with ``A'' and ``B'' showing
+no interaction. 
+
+It is a semantic issue whether we should allow \texttt{noIntGenes} (no
+interaction genes), as explained in section \ref{noint} to actually be
+modules. The reasoning for not allowing them is that the situation
+depicted above actually is one of interaction: the members of ``A'' are
+combined using an ``OR'' operator, not just simply multiplying their
+fitness; similarly for ``B''. This is why no interaction genes also mean
+no modules allowed.
+
+So how do you get what you want in this case?  Enter the names of the
+modules in the \texttt{epistasis} component but have no term for
+\texttt{:}. Let's see an example:
+
+
+<<>>=
+
+fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
+                                        "B" = 0.2),
+                          geneToModule = c("A" = "a1, a2",
+                                           "B" = "b1"))
+
+evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
+
+@ 
+
+In previous versions these was possible using the longer, still accepted
+way of specifying a \texttt{:} with a value of 0, but this is no longer
+needed:
+
+<<>>=
+fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
+                                        "B" = 0.2,
+                                        "A : B" = 0.0),
+                          geneToModule = c("A" = "a1, a2",
+                                           "B" = "b1"))
+
+evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
+
+@ 
+
+This can, of course, be extended to more modules.
 
 
 \subsection{Poset, epistasis, synthetic mortality and viability, order

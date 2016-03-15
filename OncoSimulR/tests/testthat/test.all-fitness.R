@@ -1,3 +1,81 @@
+test_that("Root name in module table or not", {
+    expect_silent(fee <- allFitnessEffects(epistasis = c("A" = 0.3,
+                                           "B" = 0.5),
+                             geneToModule = c("Root" = "Root",
+                                              "A" = "a1, a2",
+                                              "B" = "b1")))
+    expect_silent(fee2 <- allFitnessEffects(epistasis = c("A" = 0.3,
+                                           "B" = 0.5),
+                             geneToModule = c("A" = "a1, a2",
+                                              "B" = "b1")))
+    expect_identical(evalAllGenotypes(fee), evalAllGenotypes(fee2))
+    expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "Root" = "0",
+                                       "A" = "a1, a2",
+                                       "B" = "b1")),
+                 "The name Root is in the module table, but is not of Root",
+                 fixed = TRUE)
+    expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "A" = "a1, a2",
+                                       "B" = "b1",
+                                       "Root" = "0")),
+                 "If the name Root is in the module table, it must be the first",
+                 fixed = TRUE)
+     expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "A" = "a1, a2",
+                                       "B" = "b1",
+                                       "Root" = "Root")),
+                 "If Root is in the module table, it must be the first",
+                 fixed = TRUE)
+    expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "0" = "Root",
+                                       "A" = "a1, a2",
+                                       "B" = "b1")),
+                 "Some values in geneToModule not present in any of",
+                 fixed = TRUE)
+    expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "B" = "Root",
+                                       "A" = "a1, a2",
+                                       "Root" = "b1")),
+                 "If the name Root is in the module table, it must be the first",
+                 fixed = TRUE)
+    expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "Root" = "b1",
+                                       "A" = "a1, a2",
+                                       "B" = "Root")),
+                 "If Root is in the module table, it must be the first",
+                 fixed = TRUE)
+       expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "A" = "a1, a2",
+                                       "Root" = "b1",
+                                       "B" = "Root")),
+                 "If Root is in the module table, it must be the first",
+                 fixed = TRUE)
+       expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
+                                                 "B" = 0.5),
+                                   geneToModule = c(
+                                       "B" = "Root",
+                                       "A" = "a1, a2",
+                                       "B" = "c1")),
+                 "Root is in the module table, but with a different name",
+                 fixed = TRUE)
+})
+
+
 
 
 test_that("Bauer example: correct number of fitness classes", {
@@ -1102,4 +1180,33 @@ test_that("Bozic limit cases handled consistently", {
     expect_output(oncoSimulIndiv(svff3, model = "Bozic"),
                  "Individual OncoSimul trajectory with call"
                  ) 
+})
+
+
+
+
+test_that("No epistasis, modules", {
+    sa <- 0.01
+    sb <- 0.02
+    sc <- 0.03
+    fnme <- allFitnessEffects(epistasis = c("A" = sa,
+                                            "B" = sb,
+                                            "C" = sc),
+                              geneToModule = c("A" = "a1, a2",
+                                               "B" = "b1",
+                                               "C" = "c1, c2"))
+    ea <- evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
+    expect_identical(ea[ea$Genotype == "a1, a2", "Fitness"], 1 + sa)
+    expect_identical(ea[ea$Genotype == "a1, b1", "Fitness"],
+    (1 + sa) * (1 + sb))
+    expect_identical(ea[ea$Genotype == "a2, c1", "Fitness"],
+    (1 + sa) * (1 + sc))
+    expect_identical(ea[ea$Genotype == "b1, c2", "Fitness"],
+    (1 + sb) * (1 + sc))
+    expect_identical(ea[ea$Genotype == "a1, a2, c1", "Fitness"],
+    (1 + sa) * (1 + sc))
+    expect_identical(ea[ea$Genotype == "a1, a2, b1, c1", "Fitness"],
+    (1 + sa) * (1 + sb) * (1 + sc))
+    expect_identical(ea[ea$Genotype == "a2, b1, c1", "Fitness"],
+    (1 + sa) * (1 + sb) * (1 + sc))
 })
