@@ -938,8 +938,8 @@ evalGenotypeAndMut <- function(genotype,
                    "If you see this message, you found a bug."))
     }
 
-    full2mutator_ <- matchGeneIDs(fitnessEffects,
-                                  mutatorEffects)$Reduced
+    full2mutator_ <- matchGeneIDs(mutatorEffects,
+                                  fitnessEffects)$Reduced
 
     evalRGenotypeAndMut(genotype, fitnessEffects,
                         mutatorEffects, full2mutator_, echo,
@@ -1392,10 +1392,10 @@ nr_oncoSimul.internal <- function(rFE,
     }
 
     if(!is.null(muEF)) {
-        full2mutator_ <- matchGeneIDs(rFE, muEF)$Reduced
+        full2mutator_ <- matchGeneIDs(muEF, rFE)$Reduced
     } else {
         full2mutator_ <- vector(mode = "numeric", length = 0)
-        muEF <- emptyFitnessEffects()
+        ## muEF <- emptyFitnessEffects()
     }
     ## call <- match.call()
     return(c(
@@ -1581,7 +1581,7 @@ emptyFitnessEffects <- function() {
          gMOneToOne = TRUE,
          geneToModule = list(),
          graph = NULL,
-         drv = vector(mode = "integer", length = 0),
+         drv = vector(mode = "integer", length = 0)
          )
 }
 

@@ -119,8 +119,8 @@ END_RCPP
 }
 
 
-// evalRGenotype
-double evalRGenotypeAndMut(Rcpp::IntegerVector rG, Rcpp::List rFE, Rcpp::List muEF, Rcpp::IntegerVector full2mutator_, bool verbose, bool prodNeg);
+// evalRGenotypeAndMut
+Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG, Rcpp::List rFE, Rcpp::List muEF, Rcpp::IntegerVector full2mutator_, bool verbose, bool prodNeg);
 RcppExport SEXP OncoSimulR_evalRGenotypeAndMut(SEXP rGSEXP, SEXP rFESEXP, SEXP muEFSEXP, SEXP full2mutator_SEXP, SEXP verboseSEXP, SEXP prodNegSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;

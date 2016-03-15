@@ -1211,18 +1211,21 @@ double nr_mutator(const Genotype& fullge,
     tmp = full2mutator[i - 1]; //gives a -9 if no correspondence
     if( tmp > 0 ) g2.push_back(tmp);
   }
-  Genotype newg = convertGenotypeFromInts(g2, muEF);
-  vector<double> s = evalGenotypeFitness(newg, muEF);
-
-  // just for checking
-  if(verbose) {
-    std::string sprod = "mutator product";
-    Rcpp::Rcout << "\n Individual " << sprod << " terms are :";
-    for(auto const &i : s) Rcpp::Rcout << " " << i;
-    Rcpp::Rcout << std::endl;
+  if(g2.size() == 0) {
+    return 1.0;
+  } else {
+    Genotype newg = convertGenotypeFromInts(g2, muEF);
+    vector<double> s = evalGenotypeFitness(newg, muEF);
+    
+    // just for checking
+    if(verbose) {
+      std::string sprod = "mutator product";
+      Rcpp::Rcout << "\n Individual " << sprod << " terms are :";
+      for(auto const &i : s) Rcpp::Rcout << " " << i;
+      Rcpp::Rcout << std::endl;
+    }
+    return prodMuts(s);
   }
-  
-  return prodMuts(s);
 }
 
 
@@ -1288,16 +1291,15 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   NumericVector out(2);
   const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
 
-  out[0] = evalRGenotype(rG, rFE, verbose, prodNeg, "evalGenotype");
-
   const Rcpp::List rF(rFE);
   fitnessEffectsAll F = convertFitnessEffects(rF);
+  out[0] = evalRGenotype(rG, rFE, verbose, prodNeg, "evalGenotype");
+  
   Genotype fullge = convertGenotypeFromR(rG, F);
-
   const Rcpp::List rm(muEF);
   fitnessEffectsAll muef = convertFitnessEffects(rm);
-  
   out[1] = nr_mutator(fullge, full2mutator, muef, verbose);
+
   return out;
 }
 
