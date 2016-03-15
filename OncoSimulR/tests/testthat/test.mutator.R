@@ -18,7 +18,9 @@ OncoSimulR:::evalGenotypeMut("c", fm)
 ## should fail
 OncoSimulR:::evalGenotypeMut("b", fm)
 
-
+## work on this code
+OncoSimulR:::evalGenotypeAndMut("a", fe, fm)
+OncoSimulR:::evalGenotypeAndMut("b", fe, fm) ## segmentation fault
 
 fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                       "b : c" = 0.5),

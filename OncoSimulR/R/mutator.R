@@ -35,7 +35,7 @@ evalAllGenotypesMut <- function(fitnessEffects,
                                 max = 256,
                                 addwt = FALSE) {
                                 ## model = "") {
-    evalAllGenotypesAndMut(
+    evalAllGenotypesORMut(
         fitnessEffects = fitnessEffects,
         order = FALSE,
         max = max,
@@ -48,7 +48,7 @@ evalGenotypeMut <- function(genotype, fitnessEffects,
                          verbose = FALSE,
                          echo = FALSE) {
 
-    evalGenotypeAndMut(genotype = genotype,
+    evalGenotypeORMut(genotype = genotype,
                        fitnessEffects = fitnessEffects,
                        verbose = verbose,
                        echo = echo,

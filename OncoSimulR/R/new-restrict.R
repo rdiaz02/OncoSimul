@@ -837,7 +837,7 @@ allFitnessEffects <- function(rT = NULL,
 
 
 
-evalGenotypeAndMut <- function(genotype, fitnessEffects,
+evalGenotypeORMut <- function(genotype, fitnessEffects,
                                verbose = FALSE,
                                echo = FALSE,
                                model = "",
@@ -895,12 +895,11 @@ evalGenotypeAndMut <- function(genotype, fitnessEffects,
     return(ff)
 }
 
-
 evalGenotype <- function(genotype, fitnessEffects,
                          verbose = FALSE,
                          echo = FALSE,
                          model = "") {
-    evalGenotypeAndMut(genotype = genotype,
+    evalGenotypeORMut(genotype = genotype,
                        fitnessEffects = fitnessEffects,
                        verbose = verbose,
                        echo = echo,
@@ -909,6 +908,43 @@ evalGenotype <- function(genotype, fitnessEffects,
                        )
 }
 
+
+evalGenotypeAndMut <- function(genotype,
+                                   fitnessEffects,
+                                   mutatorEffects,
+                                   echo = TRUE) {
+    prodNeg <- FALSE
+    ## Next is from evalGenotypeAndMut
+    if(echo)
+        cat(paste("Genotype: ", genotype))
+    if(!is.integer(genotype)) {
+        if(length(grep(">", genotype))) {
+            genotype <- nice.vector.eo(genotype, ">")
+        } else if(length(grep(",", genotype))) {
+            genotype <- nice.vector.eo(genotype, ",")
+        }
+        all.g.nums <- c(fitnessEffects$geneModule$GeneNumID,
+                        fitnessEffects$long.geneNoInt$GeneNumID)
+        all.g.names <- c(fitnessEffects$geneModule$Gene,
+                         fitnessEffects$long.geneNoInt$Gene)
+        genotype <- all.g.nums[match(genotype, all.g.names)]
+    }
+    if(any(is.na(genotype)))
+        stop("genotype contains NAs or genes not in fitnessEffects")
+    if(!length(genotype))
+        stop("genotypes must have at least one mutated gene")
+    if(any(genotype < 0)) {
+        stop(paste("genotypes cannot contain negative values.",
+                   "If you see this message, you found a bug."))
+    }
+
+    full2mutator_ <- matchGeneIDs(fitnessEffects,
+                                  mutatorEffects)$Reduced
+
+    evalRGenotypeAndMut(genotype, fitnessEffects,
+                        mutatorEffects, full2mutator_, echo,
+                        prodNeg)
+}
 
 ## evalGenotype <- function(genotype, fitnessEffects,
 ##                          verbose = FALSE,
@@ -964,7 +1000,7 @@ evalGenotype <- function(genotype, fitnessEffects,
 ##     genotypes <- lapply(lg, function(x) gm$GeneNumID[match(x, gm$Gene)])
 ## }
 
-evalAllGenotypesAndMut <- function(fitnessEffects, order = TRUE, max = 256,
+evalAllGenotypesORMut <- function(fitnessEffects, order = TRUE, max = 256,
                              addwt = FALSE,
                              model = "",
                              calledBy_ = "") {
@@ -1038,7 +1074,7 @@ evalAllGenotypesAndMut <- function(fitnessEffects, order = TRUE, max = 256,
 evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
                              addwt = FALSE,
                              model = "") {
-    evalAllGenotypesAndMut(
+    evalAllGenotypesORMut(
         fitnessEffects = fitnessEffects,
         order = order,
         max = max,
@@ -1355,10 +1391,12 @@ nr_oncoSimul.internal <- function(rFE,
         }
     }
 
-    if(!is.null(muEF))
+    if(!is.null(muEF)) {
         full2mutator_ <- matchGeneIDs(rFE, muEF)$Reduced
-    else
-        full2mutator_ <- NULL
+    } else {
+        full2mutator_ <- vector(mode = "numeric", length = 0)
+        muEF <- emptyFitnessEffects()
+    }
     ## call <- match.call()
     return(c(
         nr_BNB_Algo5(rFE = rFE,
@@ -1390,8 +1428,8 @@ nr_oncoSimul.internal <- function(rFE,
                  minDetectDrvCloneSz = minDetectDrvCloneSz,
                  extraTime = extraTime,
                  keepPhylog = keepPhylog,
-                 muEF,
-                 full2mutator_),
+                 muEF = muEF,
+                 full2mutator_ = full2mutator_),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
@@ -1533,6 +1571,19 @@ matchGeneIDs <- function(x, refFE) {
 
 }
 
+
+emptyFitnessEffects <- function() {
+    list(long.rt = list(),
+         long.epistasis = list(),
+         long.orderEffects = list(),
+         long.geneNoInt = list(),
+         geneModule = list(),
+         gMOneToOne = TRUE,
+         geneToModule = list(),
+         graph = NULL,
+         drv = vector(mode = "integer", length = 0),
+         )
+}
 
 ### Later, for all the effects, we will do some kind of dplyr match?
 

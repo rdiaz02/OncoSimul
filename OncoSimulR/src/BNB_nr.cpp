@@ -1634,7 +1634,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   PhylogName phylog;
 
   // Mutator effects
-  fitnessEffectsAll muEF = convertFitnessEffects(rmuEF);
+  fitnessEffectsAll muEF;
+  if( (full2mutator.size() != 0) ) 
+    muEF = convertFitnessEffects(rmuEF);
+  
   if( (full2mutator.size() != 0) && (muEF.genomeSize == 0))
     throw std::logic_error("full2mutator > 0 with mutatorEffects.genomesize 0");
   if( (full2mutator.size() == 0) && (muEF.genomeSize != 0))
