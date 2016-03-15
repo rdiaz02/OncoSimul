@@ -15,6 +15,7 @@ allMutatorEffects <- function(refFE,
                               noIntGenes = NULL,
                               geneToModule = NULL,
                               keepInput = TRUE) {
+    ## Yes, mutator effects always relative to a fitness effect object
     allFitnessAndMutatorEffects(
         rT = NULL,
         epistasis = epistasis,

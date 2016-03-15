@@ -482,7 +482,7 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
         names(gnid) <- gg$Gene
         gnid <- c("Root" = 0, gnid)
         if(!all(geneModule$Gene %in% names(gnid) ))
-            stop("Some mutator genes not in reference fitnessEffects")
+            stop("Some mutator genes not in reference fitnessEffects (geneModule)")
         geneModule$GeneNumID <- gnid[geneModule$Gene]
     }
     
@@ -529,7 +529,7 @@ allFitnessAndMutatorEffects <- function(rT = NULL,
         if(!is.null(refFE)) {
             ## now, mapping for the noInt if this is mutator
             if(!all(geneNoInt$Gene %in% names(gnid) ))
-                stop("Some mutator genes not in reference fitnessEffects")
+                stop("Some mutator genes not in reference fitnessEffects (noInt)")
             geneNoInt$GeneNumID <- gnid[geneNoInt$Gene]
         }
     } else {
@@ -856,7 +856,7 @@ evalGenotypeAndMut <- function(genotype, fitnessEffects,
     else
         prodNeg <- FALSE
     ff <- evalRGenotype(genotype, fitnessEffects, verbose, prodNeg,
-                        calledBy)
+                        calledBy_)
 
     
     if(echo) {
@@ -948,7 +948,7 @@ evalAllGenotypesAndMut <- function(fitnessEffects, order = TRUE, max = 256,
                              addwt = FALSE,
                              model = "",
                              calledBy_ = "") {
-     if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
+    if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
         stop("How did you call this function?. Bug.")
     
     if(order)
@@ -964,13 +964,15 @@ evalAllGenotypesAndMut <- function(fitnessEffects, order = TRUE, max = 256,
         m <- paste(m, "Adjust max and rerun if you want")
         stop(m)
     }
+    ## With mutator, the ids of genes need not go from 1:n
+    vid <- allNamedGenes(fitnessEffects)$GeneNumID
     if(order) {
         f1 <- function(n) {
-            lapply(seq.int(n), function(x) permutations(n = n, r = x))
+            lapply(seq.int(n), function(x) permutations(n = n, r = x, v = vid))
         }
     } else {
         f1 <- function(n) {
-            lapply(seq.int(n), function(x) combinations(n = n, r = x))}
+            lapply(seq.int(n), function(x) combinations(n = n, r = x, v = vid))}
         
     }
     genotNums <- f1(nn)
@@ -1100,6 +1102,7 @@ fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects) {
     }
     df <- rbind(df0, df1, df2)
     g1 <- graph.data.frame(df)
+    
     E(g1)$color <- "black"
     E(g1)$color[E(g1)$typeDep == "SM"] <- "blue"
     E(g1)$color[E(g1)$typeDep == "XMPN"] <- "red"
@@ -1451,5 +1454,29 @@ geneCounts <- function(x) {
 
 
 
+## geneNumIDReset <- function(x, ref){
+##     ## Set GeneNumID of a fitnessEffect object, x, using ref as the
+##     ## reference fitness effect object.
+##     ## Check also if all in x are in ref.
+
+##     gg <- allNamedGenes(ref)
+##     gnid <- gg$GeneNumID
+##     names(gnid) <- gg$Gene
+##     ## FIXME: this later and conditional on what is in thee
+##     gnid <- c("Root" = 0, gnid)
+    
+##     if(!all(x$geneModule$Gene %in% names(gnid) ))
+##         stop("Some genes not in reference fitnessEffects (rebasing geneModule)")
+##     x$geneModule$GeneNumID <- gnid[geneModule$Gene]
+
+##     ## and then go over all the lists in the x object. 
+    
+##     if(nrow(x$long.geneNoInt)) {
+##         ## now, mapping for the noInt if this is mutator
+##         if(!all(x$long.geneNoInt$Gene %in% names(gnid) ))
+##             stop("Some genes not in reference fitnessEffects (rebasing geneNoInt)")
+##         x$long.geneNoInt$GeneNumID <- gnid[long.geneNoInt$Gene]
+##     }
+## }
 
 

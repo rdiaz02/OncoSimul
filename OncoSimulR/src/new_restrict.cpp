@@ -616,6 +616,7 @@ Genotype createNewGenotype(const Genotype& parent,
 void breakingGeneDiff(const vector<int>& genotype,
 		      const vector<int>& fitness) {
   std::vector<int> diffg;
+
   set_difference(genotype.begin(), genotype.end(),
 		 fitness.begin(), fitness.end(),
 		 back_inserter(diffg));
@@ -624,8 +625,14 @@ void breakingGeneDiff(const vector<int>& genotype,
     for(auto const &gx : diffg) {
       Rcpp::Rcout << " " << gx;
     }
+    Rcpp::Rcout << "\t Genotype: ";
+    for(auto const &g1 : genotype) Rcpp::Rcout << " " << g1;
+    Rcpp::Rcout << "\t Fitness: ";
+    for(auto const &g1 : fitness) Rcpp::Rcout << " " << g1;
+
     Rcpp::Rcout << "\n ";
     throw std::logic_error("\n At least one gene in the genotype not in fitness effects");
+    
   }
 }
 
