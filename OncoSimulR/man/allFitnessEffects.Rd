@@ -70,15 +70,18 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
 }
 \item{noIntGenes}{
   A numeric vector (optionally named) with the fitness coefficients of genes
-  (only genes, not modules) that show no interactions.
+  (only genes, not modules) that show no interactions. These genes
+      cannot be part of modules. But you can specify modules that have
+      no epistatic interactions. See examples and vignette.
 }
 \item{geneToModule}{
   A named character vector that allows to match genes and modules. The
   names are the modules, and each of the values is a character vector
   with the gene names, separated by a comma, that correspond to a
   module. Note that modules cannot share genes. There is no need for
-  modules to contain more than one gene. If you specify a geneToModule
-  argument, it must necessarily contain "Root".  
+  modules to contain more than one gene.
+  %% If you specify a geneToModule
+  %% argument, it must necessarily contain "Root".  
 }
 
 \item{drvNames}{The names of genes that are considered drivers. This is
@@ -207,6 +210,19 @@ fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
                          noIntGenes = noint, geneToModule = modules)
 
 plot(fea)
+
+
+## Modules that show, between them,
+## no epistasis (so multiplicative effects).
+## We specify the individual terms, but no value for the ":".
+
+fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
+                                        "B" = 0.2),
+                          geneToModule = c("A" = "a1, a2",
+                                           "B" = "b1"))
+
+evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
+
 }
 
 \keyword{ manip }

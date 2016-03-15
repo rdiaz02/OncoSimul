@@ -110,9 +110,11 @@ test_that("gm to geneModule, ex5", {
 gb <- c("a" = "1, 2", "b" = "3, 4, 5", "c" = "6")
 gb1 <- c("a" = "1, 2", "Root" = "Root", "b" = "3, 4, 5", "c" = "6")
 
-test_that("error if no root in gm", {
-             expect_error(gm.to.geneModuleL(gb, FALSE))
-          })
+## this is no longer an error as we can deal with no Root
+## test_that("error if no root in gm", {
+##              expect_error(gm.to.geneModuleL(gb, FALSE))
+##           })
+
 
 test_that("error if root out of place in gm", {
              expect_error(gm.to.geneModuleL(gb1, FALSE))

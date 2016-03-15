@@ -32,14 +32,33 @@
 
 
 check.gm <- function(gm) {
-    ## Yes, Root: we want no ambiguities
-    if(gm[1] != "Root")
-        stop("First value of a module table must be Root")
-    if(names(gm)[1] != "Root")
-        stop("First name of a module table must be Root")
+    ## Yes, Root: we want no ambiguities.
+
+    ## Actually, that sucks. So we do not require it, but check for
+    ## consistency.
+    
+    if(any(gm == "Root") && (gm[1] != "Root") )
+        stop("If Root is in the module table, it must be the first")
+
+    if(any(names(gm) == "Root") && (names(gm)[1] != "Root") )
+        stop("If the name Root is in the module table, it must be the first")
+
+    if( (names(gm)[1] == "Root") && (gm[1] != "Root") )
+        stop("The name Root is in the module table, but is not of Root")
+
+    if( (gm[1] == "Root") && (names(gm)[1] != "Root") )
+        stop("Root is in the module table, but with a different name")
+
+    ## if(gm[1] != "Root")
+    ##     stop("First value of a module table must be Root")
+    ## if(names(gm)[1] != "Root")
+    ##     stop("First name of a module table must be Root")
     if(length(unique(names(gm))) != length(gm))
         stop("Number of unique module names different from length of vector")
-    
+
+    if(gm[1] != "Root")
+        gm <- c("Root" = "Root", gm)
+    return(gm)
 }
 
 gtm2 <- function(x) {
@@ -65,7 +84,8 @@ nice.vector.eo <- function(z, sep, rm.sign = FALSE) {
 
 gm.to.geneModuleL <- function(gm, one.to.one) {
     ## the table will be sorted by gene name
-    check.gm(gm)
+    gm <- check.gm(gm)
+   
     ## the named vector with the mapping into the long geneModule df
     geneMod <- as.data.frame(rbindlist(lapply(gm, gtm2)))
     geneMod$Module <- names(gm)[geneMod[, 2]] ## reverse lookup table
@@ -724,6 +744,9 @@ fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects) {
         df2 <- to.pairs.modules(orderEffects, ">")
     }
     df <- rbind(df0, df1, df2)
+    ## for special case of simple epi effects
+    if(nrow(df) == 0) return(NULL)
+    
     g1 <- graph.data.frame(df)
     E(g1)$color <- "black"
     E(g1)$color[E(g1)$typeDep == "SM"] <- "blue"
