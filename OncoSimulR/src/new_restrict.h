@@ -126,6 +126,7 @@ struct Genotype {
 };
 
 
+
 inline Genotype wtGenotype() {
   // Not needed but to make it explicit
   Genotype g;
@@ -202,14 +203,19 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
 			   const Genotype& g,
 			   const fitnessEffectsAll& fe,
-			   const int mutationPropGrowth);
+			   const int mutationPropGrowth,
+			   const std::vector<int> full2mutator,
+			   const fitnessEffectsAll& muEF);
 
 double mutationFromParent(const std::vector<double>& mu,
 			  const spParamsP& newP,
 			  const spParamsP& parentP,
 			  const std::vector<int>& newMutations,
 			  // const std::vector<int>& nonmutated,
-			  const int mutationPropGrowth);
+			  const int mutationPropGrowth,
+			  const Genotype& fullge,
+			  const std::vector<int> full2mutator,
+			  const fitnessEffectsAll& muEF);
 
 double prodMuts(const std::vector<double>& s);
 

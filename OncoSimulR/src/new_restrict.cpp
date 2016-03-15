@@ -663,12 +663,11 @@ void checkLegitGenotype(const vector<int>& ge,
 
 
 
-Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
-			      const fitnessEffectsAll& fe) {
+Genotype convertGenotypeFromInts(const std::vector<int>& gg,
+				 const fitnessEffectsAll& fe) {
   // A genotype is of one kind or another depending on what genes are of
   // what type.
 
-  std::vector<int> gg = Rcpp::as<std::vector<int> > (rG);
   Genotype newGenot;
 
   // check_disable_later
@@ -702,6 +701,55 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
   
   return newGenot;
 }
+
+
+Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
+			      const fitnessEffectsAll& fe) {
+  std::vector<int> gg = Rcpp::as<std::vector<int> > (rG);
+  return convertGenotypeFromInts(gg, fe);
+}
+
+
+// Previous version
+// Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
+// 			      const fitnessEffectsAll& fe) {
+//   // A genotype is of one kind or another depending on what genes are of
+//   // what type.
+
+//   std::vector<int> gg = Rcpp::as<std::vector<int> > (rG);
+//   Genotype newGenot;
+
+//   // check_disable_later
+//   checkLegitGenotype(gg, fe);
+
+
+//   // Very similar to logic in createNewGenotype for placing each gene in
+//   // its correct place, which needs to look at module mapping.
+//   for(auto const &g : gg) {
+//     if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+//       // We can be dealing with modules
+//       int m; 
+//       if(fe.gMOneToOne) {
+// 	m = g; 
+//       } else {
+// 	m = fe.Gene_Module_tabl[g].ModuleNumID;
+//       }
+//       if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
+// 	newGenot.epistRtEff.push_back(g);
+//       } else {
+// 	newGenot.orderEff.push_back(g);
+//       }
+//     } else {
+//       // No interaction genes so no module stuff
+//       newGenot.rest.push_back(g);
+//     }
+//   }    
+
+//   sort(newGenot.rest.begin(), newGenot.rest.end());
+//   sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
+  
+//   return newGenot;
+// }
 
 
 // Genotype convertGenotypeFromR(Rcpp::List rGE) {
@@ -1133,6 +1181,51 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 }
 
 
+
+
+double nr_mutator(const Genotype& fullge,
+		  const std::vector<int>& full2mutator,
+		  const fitnessEffectsAll& muEF,
+		  bool verbose = false) {
+  // In contrast to nr_fitness, that sets birth and death, this simply
+  // returns the multiplication factor for the mutation rate. This is used
+  // by mutationFromParent and mutationFromScratch
+
+  // We could try going by gene inside the structure, but painful and
+  // error-prone. Much simpler at least for now to do:
+
+  // full genotype -> vector of ints (preserving order)
+  //     -> convert the ints to the ints for the genotype of mutator
+  //     -> genotype in terms of mutator
+
+  // the "genotype in terms of mutator" is never preserved. It is just a
+  // transient mapping.
+
+  // This will NOT work if we ever have order effects for mutator as we do
+  // not record order for those that matter fro mutator but not fitness.
+
+  vector<int> g1 = genotypeSingleVector(fullge);
+  vector<int> g2;
+  int tmp;
+  for (auto const & i : g1) {
+    tmp = full2mutator[i - 1]; //gives a -9 if no correspondence
+    if( tmp > 0 ) g2.push_back(tmp);
+  }
+  Genotype newg = convertGenotypeFromInts(g2, muEF);
+  vector<double> s = evalGenotypeFitness(newg, muEF);
+
+  // just for checking
+  if(verbose) {
+    std::string sprod = "mutator product";
+    Rcpp::Rcout << "\n Individual " << sprod << " terms are :";
+    for(auto const &i : s) Rcpp::Rcout << " " << i;
+    Rcpp::Rcout << std::endl;
+  }
+  
+  return prodMuts(s);
+}
+
+
 // [[Rcpp::export]]
 void readFitnessEffects(Rcpp::List rFE,
 			bool echo) {
@@ -1184,16 +1277,53 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
 }
 
 
+// [[Rcpp::export]]
+Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
+					Rcpp::List rFE,
+					Rcpp::List muEF,
+					Rcpp::IntegerVector full2mutator_,
+					bool verbose, bool prodNeg) {
+  // Basically to test nr_mutator. We repeat the conversion to genotype,
+  // etc.
+  NumericVector out(2);
+  const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
+
+  out[0] = evalRGenotype(rG, rFE, verbose, prodNeg, "evalGenotype");
+
+  const Rcpp::List rF(rFE);
+  fitnessEffectsAll F = convertFitnessEffects(rF);
+  Genotype fullge = convertGenotypeFromR(rG, F);
+
+  const Rcpp::List rm(muEF);
+  fitnessEffectsAll muef = convertFitnessEffects(rm);
+  
+  out[1] = nr_mutator(fullge, full2mutator, muef, verbose);
+  return out;
+}
+
+
+
+
+
+
+
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
 			   const Genotype& g,
 			   const fitnessEffectsAll& fe,
-			   const int mutationPropGrowth) {
+			   const int mutationPropGrowth,
+			   const std::vector<int> full2mutator,
+			   const fitnessEffectsAll& muEF) {
+  double mumult;
+  if(full2mutator.size() > 0) { // so there are mutator effects
+    mumult = nr_mutator(g, full2mutator, muEF);
+  } else mumult = 1.0;
+
   if(mu.size() == 1) {
     if(mutationPropGrowth)
-      return(mu[0] * spP.numMutablePos * spP.birth);
+      return(mumult * mu[0] * spP.numMutablePos * spP.birth);
     else
-      return(mu[0] * spP.numMutablePos);
+      return(mumult * mu[0] * spP.numMutablePos);
   } else {
     std::vector<int> sortedG = allGenesinGenotype(g);
     std::vector<int> nonmutated;
@@ -1211,7 +1341,7 @@ double mutationFromScratch(const std::vector<double>& mu,
     }
     if(mutationPropGrowth)
       mutrate *= spP.birth;
-    return(mutrate);
+    return(mumult * mutrate);
   }
 }
 
@@ -1222,12 +1352,20 @@ double mutationFromParent(const std::vector<double>& mu,
 			  const spParamsP& parentP,
 			  const std::vector<int>& newMutations,
 			  // const std::vector<int>& nonmutated,
-			  const int mutationPropGrowth) {
+			  const int mutationPropGrowth,
+			  const Genotype& fullge,
+			  const std::vector<int> full2mutator,
+			  const fitnessEffectsAll& muEF) {
+  double mumult;
+  if(full2mutator.size() > 0) { // so there are mutator effects
+    mumult = nr_mutator(fullge, full2mutator, muEF);
+  } else mumult = 1.0;
+  
   if(mu.size() == 1) {
     if(mutationPropGrowth)
-      return(mu[0] * newP.numMutablePos * newP.birth);
+      return(mumult * mu[0] * newP.numMutablePos * newP.birth);
     else
-      return(mu[0] * newP.numMutablePos);
+      return(mumult * mu[0] * newP.numMutablePos);
   } else {
     double mutrate = parentP.mutation;
     for(auto const mutated : newMutations) {
@@ -1235,7 +1373,7 @@ double mutationFromParent(const std::vector<double>& mu,
     }
     if(mutationPropGrowth)
       mutrate *= newP.birth;
-    return(mutrate);
+    return(mumult * mutrate);
   }
 }
 

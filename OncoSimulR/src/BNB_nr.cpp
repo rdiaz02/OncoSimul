@@ -694,7 +694,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const std::map<int, std::string>& intName,
 			const fitness_as_genes& genesInFitness,
 			PhylogName& phylog,
-			bool keepPhylog) {
+			bool keepPhylog,
+			const fitnessEffectsAll& muEF,
+			const std::vector<int>& full2mutator) {
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
 
@@ -998,7 +1000,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   //   popParams[0].mutation = mu * popParams[0].numMutablePos;
 
   popParams[0].mutation = mutationFromScratch(mu, popParams[0], Genotypes[0],
-					      fitnessEffects, mutationPropGrowth);  
+					      fitnessEffects, mutationPropGrowth,
+					      full2mutator, muEF);  
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
@@ -1332,15 +1335,19 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
 	    tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
-						   newMutations, mutationPropGrowth);
+						   newMutations, mutationPropGrowth,
+						   newGenotype, full2mutator,
+						   muEF);
 
 	    // FIXME: debug. Verify both calculations of mutation give the same!
 	    STOPASSERT(abs(
 			   mutationFromParent(mu, tmpParam, popParams[nextMutant],
-					      newMutations, mutationPropGrowth) - 
+					      newMutations, mutationPropGrowth,
+					      newGenotype, full2mutator, muEF) - 
 			   mutationFromScratch(mu, tmpParam, newGenotype,
 					       fitnessEffects,
-					       mutationPropGrowth))
+					       mutationPropGrowth, full2mutator,
+					       muEF))
 		       < 1e-25);
 	    
 	    //tmpParam.mutation = mu * (numMutablePosParent - 1);
@@ -1580,11 +1587,18 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			bool errorHitMaxTries,
 			double minDetectDrvCloneSz,
 			double extraTime,
-			bool keepPhylog) {  
+			bool keepPhylog,
+			Rcpp::List rmuEF,
+			Rcpp::IntegerVector full2mutator_) {  
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   const TypeModel typeModel = stringToModel(Rcpp::as<std::string>(typeFitness_));
+
+  // A simple, vector-indexed way to map from numeric ids in full to
+  // numeric ids in mutator. Recall all genes start with 1. So full2mutator[i-1];
+  const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
+  // A consistency check
 
   // const double genTime = 4.0; // should be a parameter. For Bozic only.
 
@@ -1618,6 +1632,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
   fitness_as_genes genesInFitness = fitnessAsGenes(fitnessEffects);
   PhylogName phylog;
+
+  // Mutator effects
+  fitnessEffectsAll muEF = convertFitnessEffects(rmuEF);
+  if( (full2mutator.size() != 0) && (muEF.genomeSize == 0))
+    throw std::logic_error("full2mutator > 0 with mutatorEffects.genomesize 0");
+  if( (full2mutator.size() == 0) && (muEF.genomeSize != 0))
+    throw std::logic_error("full2mutator 0 with mutatorEffects.genomesize != 0");
   
   bool runAgain = true;
   bool reachDetection = false;
@@ -1776,7 +1797,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  intName,
 		  genesInFitness,
 		  phylog,
-		  keepPhylog);
+		  keepPhylog,
+		  muEF,
+		  full2mutator);
       ++numRuns;
       forceRerun = false;
     } catch (rerunExcept &e) {
