@@ -136,6 +136,20 @@ test_that("evaluating genotype and mutator", {
                     c(1.3 * 1.5 * 1.1, 10 * 5)))
 })
 
+test_that("fails if genes in mutator not in fitness", {
+    fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                           "c" = 0.14,
+                                           "d" = 0.16,
+                                           "e" = 0.11))
+    fm4 <- allMutatorEffects(noIntGenes = c("a" = .010,
+                                            "b" = .03,
+                                            "d" = .08,
+                                            "c" = .05))
+    expect_error(oncoSimulIndiv(fe, muEF = fm4),
+                 "Genes in mutatorEffects not present in fitnessEffects",
+                 fixed = TRUE)
+})
+
 
 
 ## test with var mut rate,
@@ -165,6 +179,10 @@ test_that("evaluating genotype and mutator", {
 
 ## Modify the printing of the genotype?
 
+
+
+
+
 fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                        "c" = 0.14,
                                        "d" = 0.16,
@@ -183,7 +201,40 @@ fm4 <- allMutatorEffects(noIntGenes = c("a" = .010,
                                         "c" = .05))
 
 
+
+
+fm5 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
+                                        "b" = 1e-6,
+                                        "d" = 1e-6,
+                                        "c" = 1e-6))
+oncoSimulIndiv(fe, muEF = fm5, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
+
+
+fm6 <- allMutatorEffects(noIntGenes = c("a" = 1e2,
+                                        "b" = 1,
+                                        "d" = 1,
+                                        "c" = 1e2))
+oncoSimulIndiv(fe, muEF = fm6, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
+
+
+fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                       "b" = 0.14,
+                                       "c" = 0.16,
+                                       "d" = 0.11))
+fm6 <- allMutatorEffects(noIntGenes = c("a" = 1e2,
+                                        "b" = 1,
+                                        "c" = 1,
+                                        "d" = 1e2))
+oncoSimulIndiv(fe, muEF = fm6, finalTime = 5,
+               mutationPropGrowth = FALSE,
+               initSize = 1e5,
+               onlyCancer = FALSE, verbosity = 6)
+
+
+
+
 oncoSimulIndiv(fe, muEF = fm, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
 oncoSimulIndiv(fe, muEF = fm2, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
 oncoSimulIndiv(fe, muEF = fm3, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
 oncoSimulIndiv(fe, muEF = fm4, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
+

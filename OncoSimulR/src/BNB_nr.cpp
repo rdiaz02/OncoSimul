@@ -1393,6 +1393,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    Rcpp::Rcout << "\n parent birth = " << popParams[nextMutant].birth;
 	    Rcpp::Rcout << "\n parent death = " << popParams[nextMutant].death;
 	    // Rcpp::Rcout << "\n parent Genotype = " << genotypeSingleVector(Genotypes[nextMutant]);
+	    Rcpp::Rcout << "\n\n popParams parent: \n";
+	    print_spP(popParams[nextMutant]);
+	    Rcpp::Rcout << "\n\npopParams child: \n";
 	    print_spP(tmpParam);
 	    }
 	  // #endif

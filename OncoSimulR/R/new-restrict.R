@@ -1485,7 +1485,12 @@ nr_oncoSimul.internal <- function(rFE,
     if(!is.null(muEF)) {
         if(!inherits(muEF, "mutatorEffects"))
             stop("muEF must be a mutatorEffects object")
-        full2mutator_ <- matchGeneIDs(muEF, rFE)$Reduced
+        full2mutator_ <- matchGeneIDs(muEF, rFE)
+        if(any(is.na(full2mutator_$Full)))
+            stop("Genes in mutatorEffects not present in fitnessEffects")
+        if(any(is.na(full2mutator_)))
+            step("full2mutator failed for unknown reasons")
+        full2mutator_ <- full2mutator_$Reduced
     } else {
         full2mutator_ <- vector(mode = "numeric", length = 0)
         ## muEF <- emptyFitnessEffects()
