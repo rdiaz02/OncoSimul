@@ -978,7 +978,6 @@ evalGenotypeFitAndMut <- function(genotype,
 
 ## I am here: simplify this
 
-
 evalAllGenotypesORMut <- function(fitnessEffects, order = TRUE, max = 256,
                              addwt = FALSE,
                              model = "",
@@ -995,60 +994,68 @@ evalAllGenotypesORMut <- function(fitnessEffects, order = TRUE, max = 256,
         stop("You are trying to get the mutator effects of a fitness specification. ",
              "You did not pass an object of class mutatorEffects.")
 
-    
-    if(order)
-        tot <- function(n) {sum(sapply(seq.int(n),
-                                       function(x) choose(n, x) * factorial(x)))}
-    else
-        tot <- function(n) {2^n}
-    nn <- nrow(fitnessEffects$geneModule) -1  + nrow(fitnessEffects$long.geneNoInt)
-    tnn <- tot(nn)
-    if(tnn > max) {
-        m <- paste("There are", tnn, "genotypes.")
-        m <- paste(m, "This is larger than max.")
-        m <- paste(m, "Adjust max and rerun if you want")
-        stop(m)
-    }
-    ## With mutator, the ids of genes need not go from 1:n
-    vid <- allNamedGenes(fitnessEffects)$GeneNumID
-    if(order) {
-        f1 <- function(n) {
-            lapply(seq.int(n), function(x) permutations(n = n, r = x, v = vid))
-        }
-    } else {
-        f1 <- function(n) {
-            lapply(seq.int(n), function(x) combinations(n = n, r = x, v = vid))}
+    allg <- generateAllGenotypes(fitnessEffects = fitnessEffects,
+                                 order = order, max = max)
+    ## if(order)
+    ##     tot <- function(n) {sum(sapply(seq.int(n),
+    ##                                    function(x) choose(n, x) * factorial(x)))}
+    ## else
+    ##     tot <- function(n) {2^n}
+    ## nn <- nrow(fitnessEffects$geneModule) -1  + nrow(fitnessEffects$long.geneNoInt)
+    ## tnn <- tot(nn)
+    ## if(tnn > max) {
+    ##     m <- paste("There are", tnn, "genotypes.")
+    ##     m <- paste(m, "This is larger than max.")
+    ##     m <- paste(m, "Adjust max and rerun if you want")
+    ##     stop(m)
+    ## }
+    ## ## With mutator, the ids of genes need not go from 1:n
+    ## vid <- allNamedGenes(fitnessEffects)$GeneNumID
+    ## if(order) {
+    ##     f1 <- function(n) {
+    ##         lapply(seq.int(n), function(x) permutations(n = n, r = x, v = vid))
+    ##     }
+    ## } else {
+    ##     f1 <- function(n) {
+    ##         lapply(seq.int(n), function(x) combinations(n = n, r = x, v = vid))}
         
-    }
-    genotNums <- f1(nn)
-    list.of.vectors <- function(y) {
-        ## there's got to be a simpler way
-        lapply(unlist(lapply(y, function(x) {apply(x, 1, list)}), recursive = FALSE),
-               function(m) m[[1]])
-    }
-    genotNums <- list.of.vectors(genotNums)
-    names <- c(fitnessEffects$geneModule$Gene[-1],
-               fitnessEffects$long.geneNoInt$Gene)
+    ## }
+    ## genotNums <- f1(nn)
+    ## list.of.vectors <- function(y) {
+    ##     ## there's got to be a simpler way
+    ##     lapply(unlist(lapply(y, function(x) {apply(x, 1, list)}), recursive = FALSE),
+    ##            function(m) m[[1]])
+    ## }
+    ## genotNums <- list.of.vectors(genotNums)
+    ## names <- c(fitnessEffects$geneModule$Gene[-1],
+    ##            fitnessEffects$long.geneNoInt$Gene)
 
-    genotNames <- unlist(lapply(lapply(genotNums, function(x) names[x]),
-                         function(z)
-                             paste(z,
-                                   collapse = if(order){" > "} else {", "} )))
+    ## genotNames <- unlist(lapply(lapply(genotNums, function(x) names[x]),
+    ##                      function(z)
+    ##                          paste(z,
+    ##                                collapse = if(order){" > "} else {", "} )))
     ## This ain't the best, as we repeatedly read and convert
     ## fitnessEffects.  If this were slow, prepare C++ function that takes
     ## vectors of genotypes and uses same fitnessEffects.
+
+
     if(model %in% c("Bozic", "bozic1", "bozic2") )
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
-    allf <- vapply(genotNums,
+    allf <- vapply(allg$genotNums,
                    function(x) evalRGenotype(x, fitnessEffects, FALSE,
                                              prodNeg,
                                              calledBy_),
                    1.1)
-    df <- data.frame(Genotype = genotNames, Fitness = allf,
+    df <- data.frame(Genotype = allg$genotNames, Fitness = allf,
                      stringsAsFactors = FALSE)
-    ## why am I doing this? I am not computing the genotype.
+    ## Why am I doing this? I am not computing the genotype.  I test the
+    ## evaluation of the empty genotype in the tests. But its evaluation
+    ## generates warnings that are not needed. And by decree (even in the
+    ## C++) this thing has a fitness of 1, a mutator effect of 1 since
+    ## there are no terms.
+    
     if(addwt)
         df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
                                stringsAsFactors = FALSE), df)
@@ -1056,7 +1063,7 @@ evalAllGenotypesORMut <- function(fitnessEffects, order = TRUE, max = 256,
         if(prodNeg)
             colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
     } else if (calledBy_ == "evalGenotypeMut") {
-        colnames(df)[match("Fitness", colnames(df))] <- "Mutator_product"
+        colnames(df)[match("Fitness", colnames(df))] <- "MutatorFactor"
     }
     return(df)
 }
@@ -1073,11 +1080,7 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
     )
 }
 
-
-
-
-generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
-                                 addwt = FALSE) {
+generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
     if(order)
         tot <- function(n) {sum(sapply(seq.int(n),
                                        function(x) choose(n, x) * factorial(x)))}
@@ -1119,8 +1122,49 @@ generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
     ## This ain't the best, as we repeatedly read and convert
     ## fitnessEffects.  If this were slow, prepare C++ function that takes
     ## vectors of genotypes and uses same fitnessEffects.
-
+    return(list(genotNums = genotNums,
+                genotNames = genotNames
+                ))
 }
+
+evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
+                                   order = TRUE, max = 256,
+                                   addwt = FALSE,
+                                   model = "") {
+    
+    allg <- generateAllGenotypes(fitnessEffects = fitnessEffects,
+                                 order = order, max = max)
+    if(model %in% c("Bozic", "bozic1", "bozic2") ) {
+        prodNeg <- TRUE
+    } else {
+        prodNeg <- FALSE
+    }
+    
+    full2mutator_ <- matchGeneIDs(mutatorEffects,
+                                  fitnessEffects)$Reduced
+    allf <- t(vapply(allg$genotNums,
+                   function(x) evalRGenotypeAndMut(x,
+                                                   rFE = fitnessEffects,
+                                                   muEF= mutatorEffects,
+                                                   full2mutator_ = full2mutator_,
+                                                   verbose = FALSE,
+                                                   prodNeg = prodNeg),
+                   c(1.1, 2.2)))
+
+    df <- data.frame(Genotype = allg$genotNames, Fitness = allf[, 1],
+                     MutatorFactor = allf[, 2],
+                     stringsAsFactors = FALSE)
+    if(addwt)
+        df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
+                               MutatorFactor = 1,
+                               stringsAsFactors = FALSE), df)
+    if(prodNeg)
+        colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
+    return(df)
+}
+
+
+
 
 
 

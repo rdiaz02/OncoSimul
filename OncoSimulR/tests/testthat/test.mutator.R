@@ -7,6 +7,8 @@ fm <- OncoSimulR:::allMutatorEffects(noIntGenes = c("a" = 10,
 OncoSimulR:::evalGenotypeFitAndMut("a", fe, fm)
 OncoSimulR:::evalGenotypeFitAndMut("b", fe, fm) 
 
+
+
 OncoSimulR:::evalGenotypeFitAndMut("e", fe, fm)
 OncoSimulR:::evalGenotypeFitAndMut("b, e", fe, fm)
 OncoSimulR:::evalGenotypeFitAndMut("a, b, e", fe, fm)
@@ -49,16 +51,16 @@ evalAllGenotypes(fe, order = FALSE)
 fm <- OncoSimulR:::allMutatorEffects(noIntGenes = c("a" = 10,
                                                     "c" = 5))
 
-OncoSimulR:::evalAllGenotypesMut(fm) ## OK
+evalAllGenotypesMut(fm) ## OK
 
 ## ## should fail
 ## fm <- OncoSimulR:::allMutatorEffects(noIntGenes = c("a" = 10,
 ##                                                     "d" = 5))
 
-OncoSimulR:::evalGenotypeMut("a", fm)
-OncoSimulR:::evalGenotypeMut("c", fm)
+evalGenotypeMut("a", fm)
+evalGenotypeMut("c", fm)
 ## should fail
-OncoSimulR:::evalGenotypeMut("b", fm)
+evalGenotypeMut("b", fm)
 
 
 
@@ -91,3 +93,13 @@ OncoSimulR:::evalRGenotypeAndMut(vector(mode = "integer", length = 0),
                                  OncoSimulR:::matchGeneIDs(fm, fe)$Reduced,
                                  TRUE, FALSE)
 
+
+fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                      "b : c" = 0.5),
+                        noIntGenes = c("e" = 0.1))
+fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                       "c" = 5))
+
+
+
+evalAllGenotypesFitAndMut(fe, fm)

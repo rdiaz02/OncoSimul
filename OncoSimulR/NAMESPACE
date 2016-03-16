@@ -5,7 +5,8 @@ export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "evalGenotype", "evalAllGenotypes", "simOGraph",
        "plotClonePhylog", "OncoSimulWide2Long",
        "allMutatorEffects", "evalAllGenotypesMut",
-       "evalGenotypeMut"       
+       "evalGenotypeMut", "evalGenotypeFitAndMut",
+       "evalAllGenotypesFitAndMut"       
        )
 
 S3method(plot, oncosimul)
