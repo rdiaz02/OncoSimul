@@ -645,7 +645,10 @@ void checkNoNegZeroGene(const vector<int>& ge) {
 
 void checkLegitGenotype(const Genotype& ge,
 			const fitnessEffectsAll& F) {
-
+  if((ge.orderEff.size() + ge.epistRtEff.size() + ge.rest.size()) == 0) {
+    // An empty genotype is always legitimate, even if silly
+    return;
+  }
   vector<int> g0 = allGenesinFitness(F);
   vector<int> allgG = allGenesinGenotype(ge);
   checkNoNegZeroGene(allgG);
@@ -654,6 +657,10 @@ void checkLegitGenotype(const Genotype& ge,
 
 void checkLegitGenotype(const vector<int>& ge,
 			const fitnessEffectsAll& F) {
+  if (ge.size() == 0) {
+    // An empty genotype is always legitimate, even if silly
+    return;
+  }
   std::vector<int> g0 = allGenesinFitness(F);
   std::vector<int> allgG (ge);
   sort(allgG.begin(), allgG.end());
@@ -667,38 +674,39 @@ Genotype convertGenotypeFromInts(const std::vector<int>& gg,
 				 const fitnessEffectsAll& fe) {
   // A genotype is of one kind or another depending on what genes are of
   // what type.
-
   Genotype newGenot;
-
-  // check_disable_later
-  checkLegitGenotype(gg, fe);
-
-
-  // Very similar to logic in createNewGenotype for placing each gene in
-  // its correct place, which needs to look at module mapping.
-  for(auto const &g : gg) {
-    if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
-      // We can be dealing with modules
-      int m; 
-      if(fe.gMOneToOne) {
-	m = g; 
-      } else {
-	m = fe.Gene_Module_tabl[g].ModuleNumID;
-      }
-      if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
-	newGenot.epistRtEff.push_back(g);
-      } else {
-	newGenot.orderEff.push_back(g);
-      }
-    } else {
-      // No interaction genes so no module stuff
-      newGenot.rest.push_back(g);
-    }
-  }    
-
-  sort(newGenot.rest.begin(), newGenot.rest.end());
-  sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
   
+  if(gg.size() != 0) { 
+    // check_disable_later
+    checkLegitGenotype(gg, fe);
+
+    // Very similar to logic in createNewGenotype for placing each gene in
+    // its correct place, which needs to look at module mapping.
+    for(auto const &g : gg) {
+      if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+	// We can be dealing with modules
+	int m; 
+	if(fe.gMOneToOne) {
+	  m = g; 
+	} else {
+	  m = fe.Gene_Module_tabl[g].ModuleNumID;
+	}
+	if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
+	  newGenot.epistRtEff.push_back(g);
+	} else {
+	  newGenot.orderEff.push_back(g);
+	}
+      } else {
+	// No interaction genes so no module stuff
+	newGenot.rest.push_back(g);
+      }
+    }    
+
+    sort(newGenot.rest.begin(), newGenot.rest.end());
+    sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
+  } else {
+    newGenot = wtGenotype(); // be explicit!!
+  }
   return newGenot;
 }
 
@@ -962,16 +970,15 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 					const fitnessEffectsAll& F){
-
-
-  // print_Genotype(ge);
+  
   // check_disable_later
   checkLegitGenotype(ge, F);
-
+  
   std::vector<double> s;
   if( (ge.orderEff.size() + ge.epistRtEff.size() + ge.rest.size()) == 0) {
     Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
-    s.push_back(1.0);
+    // s.push_back(1.0); //Eh??!! 1? or 0? FIXME It should be empty! and have prodFitness
+    // deal with it.
     return s;
   }
 
@@ -1183,7 +1190,7 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 
 
 
-double nr_mutator(const Genotype& fullge,
+double evalMutator(const Genotype& fullge,
 		  const std::vector<int>& full2mutator,
 		  const fitnessEffectsAll& muEF,
 		  bool verbose = false) {
@@ -1191,7 +1198,13 @@ double nr_mutator(const Genotype& fullge,
   // returns the multiplication factor for the mutation rate. This is used
   // by mutationFromParent and mutationFromScratch
 
-  // We could try going by gene inside the structure, but painful and
+  // Remember that the fitnessEffectsAll struct for mutator does not use
+  // the same mapping from gene names to gene numerical IDs as for
+  // fitness. fitnessEffectsAll and its associated algorithms expects the
+  // present genes to be indexed as successive integers. That is not
+  // necessarily the case if only some of the genes are in the mutator
+  // fitnessEffectsAll. So we need to remap the gene numerical IDs.  We
+  // could try remapping by gene inside the struct, but painful and
   // error-prone. Much simpler at least for now to do:
 
   // full genotype -> vector of ints (preserving order)
@@ -1202,7 +1215,8 @@ double nr_mutator(const Genotype& fullge,
   // transient mapping.
 
   // This will NOT work if we ever have order effects for mutator as we do
-  // not record order for those that matter fro mutator but not fitness.
+  // not record order for those that matter for mutator if they do not matter for
+  // fitness.
 
   vector<int> g1 = genotypeSingleVector(fullge);
   vector<int> g2;
@@ -1246,16 +1260,18 @@ void readFitnessEffects(Rcpp::List rFE,
 double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
 		     bool verbose, bool prodNeg,
 		     Rcpp::CharacterVector calledBy_) {
-  
+  // Can evaluate both ONLY fitness or ONLY mutator. Not both at the same
+  // time. Use evalRGenotypeAndMut for that.
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
   
   if(rG.size() == 0) {
+    // Why don't we evaluate it?
     Rcpp::warning("WARNING: you have evaluated fitness/mutator status of a genotype of length zero.");
     return 1;
   }
     
-  const Rcpp::List rF(rFE);
-  fitnessEffectsAll F = convertFitnessEffects(rF);
+  //const Rcpp::List rF(rFE);
+  fitnessEffectsAll F = convertFitnessEffects(rFE);
   Genotype g = convertGenotypeFromR(rG, F);
   vector<double> s = evalGenotypeFitness(g, F);
   if(verbose) {
@@ -1286,20 +1302,34 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 					Rcpp::List muEF,
 					Rcpp::IntegerVector full2mutator_,
 					bool verbose, bool prodNeg) {
-  // Basically to test nr_mutator. We repeat the conversion to genotype,
-  // etc.
+  // Basically to test evalMutator. We repeat the conversion to genotype,
+  // but that is unavoidable here.
+
+
   NumericVector out(2);
-  const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
 
-  const Rcpp::List rF(rFE);
-  fitnessEffectsAll F = convertFitnessEffects(rF);
-  out[0] = evalRGenotype(rG, rFE, verbose, prodNeg, "evalGenotype");
+  // For fitness. Except for "evalGenotypeFromR", all is done as in the
+  // rest of the internal code for evaluating a genotype.
+  fitnessEffectsAll F = convertFitnessEffects(rFE);
+  fitnessEffectsAll muef = convertFitnessEffects(muEF);
+  Genotype g = convertGenotypeFromR(rG, F);
+  vector<double> s = evalGenotypeFitness(g, F);
+  if(!prodNeg)
+    out[0] = prodFitness(s);
+  else 
+    out[0] = prodDeathFitness(s);
+  if(verbose) {
+    std::string sprod = "s";
+    Rcpp::Rcout << "\n Individual " << sprod << " terms are :";
+    for(auto const &i : s) Rcpp::Rcout << " " << i;
+    Rcpp::Rcout << std::endl;
+  }
+  // out[0] = evalRGenotype(rG, rFE, verbose, prodNeg, "evalGenotype");
+  // Genotype fullge = convertGenotypeFromR(rG, F);
   
-  Genotype fullge = convertGenotypeFromR(rG, F);
-  const Rcpp::List rm(muEF);
-  fitnessEffectsAll muef = convertFitnessEffects(rm);
-  out[1] = nr_mutator(fullge, full2mutator, muef, verbose);
-
+  const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
+  out[1] = evalMutator(g, full2mutator, muef, verbose);
+  
   return out;
 }
 
@@ -1318,7 +1348,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const fitnessEffectsAll& muEF) {
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = nr_mutator(g, full2mutator, muEF);
+    mumult = evalMutator(g, full2mutator, muEF);
   } else mumult = 1.0;
 
   if(mu.size() == 1) {
@@ -1360,7 +1390,7 @@ double mutationFromParent(const std::vector<double>& mu,
 			  const fitnessEffectsAll& muEF) {
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = nr_mutator(fullge, full2mutator, muEF);
+    mumult = evalMutator(fullge, full2mutator, muEF);
   } else mumult = 1.0;
   
   if(mu.size() == 1) {
