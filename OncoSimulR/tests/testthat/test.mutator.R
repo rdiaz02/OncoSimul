@@ -155,3 +155,35 @@ test_that("evaluating genotype and mutator", {
 ## check fail if mutator and fitness not subseted in calls that use both.
 
 ## check fail if mutator and fitness not both given in the FitAndMut functions.
+
+
+## test changes in genotype accumulation with mutator effects (1, >>1,
+## <<1) and number of mutator genes
+
+
+## And use initMutant with different mutator effects
+
+## Modify the printing of the genotype?
+
+fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                       "c" = 0.14,
+                                       "d" = 0.16,
+                                       "e" = 0.11))
+fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                       "c" = 5))
+fm2 <- allMutatorEffects(noIntGenes = c("a" = .010,
+                                           "c" = .05))
+fm3 <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                        "b" = 3,
+                                        "d" = 8,
+                                        "c" = 5))
+fm4 <- allMutatorEffects(noIntGenes = c("a" = .010,
+                                        "b" = .03,
+                                        "d" = .08,
+                                        "c" = .05))
+
+
+oncoSimulIndiv(fe, muEF = fm, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
+oncoSimulIndiv(fe, muEF = fm2, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
+oncoSimulIndiv(fe, muEF = fm3, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
+oncoSimulIndiv(fe, muEF = fm4, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
