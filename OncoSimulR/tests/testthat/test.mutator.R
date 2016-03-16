@@ -151,7 +151,163 @@ test_that("fails if genes in mutator not in fitness", {
 })
 
 
+test_that("Relative ordering of number of clones with mutator effects", {
+    pops <- 5
+        fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                           "b" = 0.14,
+                                           "c" = 0.16,
+                                           "d" = 0.11))
+    fm6 <- allMutatorEffects(noIntGenes = c("a" = 5,
+                                            "b" = 10,
+                                            "c" = 12,
+                                            "d" = 14))
+    nc1 <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =250,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e6,
+                        onlyCancer = FALSE)
+    fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                           "b" = 0.14,
+                                           "c" = 0.16,
+                                           "d" = 0.11))
+    fm8 <- allMutatorEffects(noIntGenes = c("a" = 1,
+                                            "b" = 1,
+                                            "c" = 1,
+                                            "d" = 1))
+    nc2 <- oncoSimulPop(pops, fe, muEF = fm8, finalTime =250,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e6,
+                        onlyCancer = FALSE)
+    fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                           "b" = 0.14,
+                                           "c" = 0.16,
+                                           "d" = 0.11))
+    fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
+                                            "b" = 1e-6,
+                                            "c" = 1e-6,
+                                            "d" = 1e-6))
+    nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =250,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e6,
+                        onlyCancer = FALSE)
+    expect_true(median(summary(nc1)$NumClones) > median(summary(nc2)$NumClones))
+    expect_true(median(summary(nc2)$NumClones) > median(summary(nc3)$NumClones))
+})
 
+
+
+test_that("Relative ordering of number of clones with init mutant of mutator effects", {
+    pops <- 5
+    ni <- rep(0.01, 50)
+    names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
+    fe <- allFitnessEffects(noIntGenes = ni)
+    fm6 <- allMutatorEffects(noIntGenes = c("a" = .05,
+                                            "b" = 1,
+                                            "c" = 10,
+                                            "d" = 50))
+    nca <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "a",
+                        onlyCancer = FALSE)
+    ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "b",
+                        onlyCancer = FALSE)
+    ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "c",
+                        onlyCancer = FALSE)
+    ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "d",
+                        onlyCancer = FALSE)
+    expect_true( median(summary(nca)$NumClones) <
+                 median(summary(ncb)$NumClones))
+    expect_true(median(summary(ncb)$NumClones) <
+                median(summary(ncc)$NumClones) )
+    expect_true( median(summary(ncc)$NumClones) <
+                 median(summary(ncd)$NumClones) )
+})
+
+
+
+test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
+    pops <- 5
+    ni <- rep(0, 50)
+    names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
+    fe <- allFitnessEffects(noIntGenes = ni)
+    fm6 <- allMutatorEffects(noIntGenes = c("a" = .05,
+                                            "b" = 1,
+                                            "c" = 10,
+                                            "d" = 50))
+    nca <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "a",
+                        onlyCancer = FALSE)
+    ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "b",
+                        onlyCancer = FALSE)
+    ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "c",
+                        onlyCancer = FALSE)
+    ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        initMutant = "d",
+                        onlyCancer = FALSE)
+    ## I once saw a weird thing
+    expect_true(var(summary(nca)$NumClones) > 1e-4)
+    expect_true(var(summary(ncb)$NumClones) > 1e-4)
+    expect_true(var(summary(ncc)$NumClones) > 1e-4)
+    expect_true(var(summary(ncd)$NumClones) > 1e-4)
+    expect_true( median(summary(nca)$NumClones) <
+                 median(summary(ncb)$NumClones))
+    expect_true(median(summary(ncb)$NumClones) <
+                median(summary(ncc)$NumClones) )
+    expect_true( median(summary(ncc)$NumClones) <
+                 median(summary(ncd)$NumClones) )
+})
+
+
+## Verify mutationPropGrowth!!!
+
+test_that("Relative ordering of number of clones with mut prop growth", {
+    ## gets crazy easily
+
+    pops <- 20
+    ni <- rep(0.4, 20)
+    names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
+    fe <- allFitnessEffects(noIntGenes = ni)
+    fm6 <- allMutatorEffects(noIntGenes = c("a" = 15,
+                                            "b" = 15,
+                                            "c" = 15,
+                                            "d" = 15))
+    
+    nca <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =30,
+                        mutationPropGrowth = FALSE,
+                        initSize = 1e4,
+                        onlyCancer = FALSE)
+    
+    ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =30,
+                        mutationPropGrowth = TRUE,
+                        initSize = 1e4,
+                        onlyCancer = FALSE)
+
+
+    
+
+
+
+    
+    
 ## test with var mut rate,
 ## run all tests
 ## create new tests
@@ -160,20 +316,13 @@ test_that("fails if genes in mutator not in fitness", {
 ## docs:
 ##    - help
 ##  -fignete
+##  - finish docs
 
-## Fitness of 0, but mutator effects.
 
 ## Modules same and different from fitness effects.
 
 
-## check fail if mutator and fitness not subseted in calls that use both.
-
 ## check fail if mutator and fitness not both given in the FitAndMut functions.
-
-
-## test changes in genotype accumulation with mutator effects (1, >>1,
-## <<1) and number of mutator genes
-
 
 ## And use initMutant with different mutator effects
 
@@ -228,14 +377,17 @@ fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                        "b" = 0.14,
                                        "c" = 0.16,
                                        "d" = 0.11))
-fm6 <- allMutatorEffects(noIntGenes = c("a" = 1e2,
-                                        "b" = 1,
-                                        "c" = 1,
-                                        "d" = 1e2))
+fm6 <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                        "b" = 20,
+                                        "c" = 30,
+                                        "d" = 40))
 oncoSimulIndiv(fe, muEF = fm6, finalTime =250,
                mutationPropGrowth = FALSE,
                initSize = 1e5,
+               verbosity = 6,
                onlyCancer = FALSE)
+
+
 
 fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                        "b" = 0.14,
@@ -258,3 +410,43 @@ oncoSimulIndiv(fe, muEF = fm2, finalTime = 100, initSize = 1e5, onlyCancer = FAL
 oncoSimulIndiv(fe, muEF = fm3, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
 oncoSimulIndiv(fe, muEF = fm4, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
 
+
+
+
+## ## If you want to check the internal running of C++, use verbosity >=
+## ## 3. For instance, at iteration 3 a new species is created from the
+## ## wildtype. The new clone has mutated gene 1. Thus the new mutation rate
+## ## should be
+
+## 10 * 3 * 1e-6  ## 10 for the effect of a, 3 for the number of remaining
+## ## genes, and 1e-6 for the baseline mutation rate
+
+## That is 3e-5, as shown.
+
+## At iteration 9 we create a mutant at 3 from wildtype and its mutation rate is
+## 30 * 3 * 1e-6
+
+
+## At iteration 254 we create species 1,2,4 from 1,2. The parent mutation is
+
+## 10 * 20 * 2 * 1e-6 = 4e-4
+
+## and the child's is
+
+## 10 * 20 * 40 * 1 * 1e-6 = 0.008
+
+## set.seed(1)
+## fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+##                                        "b" = 0.14,
+##                                        "c" = 0.16,
+##                                        "d" = 0.11))
+## fm6 <- allMutatorEffects(noIntGenes = c("a" = 10,
+##                                         "b" = 20,
+##                                         "c" = 30,
+##                                         "d" = 40))
+## oncoSimulIndiv(fe, muEF = fm6, finalTime =100,
+##                mutationPropGrowth = FALSE,
+##                initSize = 1e5,
+##                verbosity = 6,
+##                onlyCancer = FALSE,
+##                seed = NULL)
