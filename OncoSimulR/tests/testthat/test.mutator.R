@@ -210,13 +210,20 @@ fm5 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
 oncoSimulIndiv(fe, muEF = fm5, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
 
 
+fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                       "c" = 0.14,
+                                       "d" = 0.16,
+                                       "e" = 0.11))
 fm6 <- allMutatorEffects(noIntGenes = c("a" = 1e2,
                                         "b" = 1,
                                         "d" = 1,
                                         "c" = 1e2))
-oncoSimulIndiv(fe, muEF = fm6, finalTime = 100, initSize = 1e5, onlyCancer = FALSE)
+oncoSimulIndiv(fe, muEF = fm6, finalTime = 100, initSize = 1e5, onlyCancer = FALSE,
+               verbosity = 6)
 
 
+
+## Below: makes sense in terms of number of clones
 fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                        "b" = 0.14,
                                        "c" = 0.16,
@@ -225,10 +232,23 @@ fm6 <- allMutatorEffects(noIntGenes = c("a" = 1e2,
                                         "b" = 1,
                                         "c" = 1,
                                         "d" = 1e2))
-oncoSimulIndiv(fe, muEF = fm6, finalTime = 5,
+oncoSimulIndiv(fe, muEF = fm6, finalTime =250,
                mutationPropGrowth = FALSE,
                initSize = 1e5,
-               onlyCancer = FALSE, verbosity = 6)
+               onlyCancer = FALSE)
+
+fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
+                                       "b" = 0.14,
+                                       "c" = 0.16,
+                                       "d" = 0.11))
+fm6 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
+                                        "b" = 1e-6,
+                                        "c" = 1e-6,
+                                        "d" = 1e-6))
+oncoSimulIndiv(fe, muEF = fm6, finalTime =250,
+               mutationPropGrowth = FALSE,
+               initSize = 1e5,
+               onlyCancer = FALSE)
 
 
 
