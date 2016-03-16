@@ -888,7 +888,9 @@ evalGenotype <- function(genotype, fitnessEffects,
 evalGenotypeFitAndMut <- function(genotype,
                                   fitnessEffects,
                                   mutatorEffects,
-                                  echo = TRUE) {
+                                  verbose = FALSE,
+                                  echo = FALSE,
+                                  model = "") {
     prodNeg <- FALSE
     ## Next is from evalGenotypeAndMut
     if(echo)
@@ -916,10 +918,14 @@ evalGenotypeFitAndMut <- function(genotype,
 
     full2mutator_ <- matchGeneIDs(mutatorEffects,
                                   fitnessEffects)$Reduced
-
+    if(model %in% c("Bozic", "bozic1", "bozic2") )
+        prodNeg <- TRUE
+    else
+        prodNeg <- FALSE
     evalRGenotypeAndMut(genotype, fitnessEffects,
-                        mutatorEffects, full2mutator_, echo,
-                        prodNeg)
+                        mutatorEffects, full2mutator_,
+                        verbose = verbose,
+                        prodNeg = prodNeg)
 }
 
 ## evalGenotype <- function(genotype, fitnessEffects,
