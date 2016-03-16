@@ -20,6 +20,7 @@
 }
 \usage{
  oncoSimulIndiv(fp, model = "Exp", numPassengers = 30, mu = 1e-6,
+                muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -40,6 +41,7 @@
                 seed = NULL)
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
+             muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -66,6 +68,7 @@ oncoSimulSample(Nindiv,
                 model = "Exp",
                 numPassengers = 0,
                 mu = 1e-6,
+                muEF = NULL,
                 detectionSize = round(runif(Nindiv, 1e5, 1e8)),
 
                 detectionDrivers = {
@@ -150,7 +153,24 @@ oncoSimulSample(Nindiv,
 
   See also \code{mutationPropGrowth}.
 
-} \item{detectionSize}{ What is the minimal number of cells for cancer
+}
+
+\item{muEF}{
+  Mutator effects. A mutatorEffects object as obtained from
+  \code{\link{allMutatorEffects}}. This specifies how mutations in
+  certain genes change the mutation rate over all the genome.
+
+  All the genes specified in \code{muEF} MUST be included in
+  \code{fp}. If you want to have genes that have no direct effect on
+  fitness, but that affect mutation rate, you MUST specify them in
+  \code{fp}, for instance as \code{noIntGenes} with an effect of 0.
+  
+  If you use mutator effects you must also use fitnessEffects in
+  \code{fp}.
+
+}
+
+\item{detectionSize}{ What is the minimal number of cells for cancer
 to be detected.  For \code{oncoSimulSample} this can be a vector.
 
 }

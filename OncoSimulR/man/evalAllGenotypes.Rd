@@ -1,19 +1,44 @@
 \name{evalAllGenotypes}
+
 \alias{evalAllGenotypes}
+\alias{evalAllGenotypesMut}
+\alias{evalAllGenotypesFitAndMut}
 \alias{evalGenotype}
+\alias{evalGenotypeMut}
+\alias{evalGenotypeFitAndMut}
+
 \title{
-Evaluate fitness of one or all possible genotypes.
+Evaluate fitness/mutator effects of one or all possible genotypes.
 }
+
 \description{
-  Given a fitnessEffects description, obtain the fitness of a single or
+  Given a fitnessEffects/mutatorEffects description, obtain the
+  fitness/mutator effects of a single or
   all genotypes.
 }
+
+
 \usage{
-evalAllGenotypes(fitnessEffects, order = TRUE, max = 256, addwt = FALSE,
-model = "")
 
 evalGenotype(genotype, fitnessEffects, verbose = FALSE, echo = FALSE,
 model = "")
+
+evalGenotypeMut(genotype, mutatorEffects, verbose = FALSE, echo = FALSE)
+
+evalAllGenotypes(fitnessEffects, order = TRUE, max = 256, addwt = FALSE,
+model = "")
+
+evalAllGenotypesMut(mutatorEffects, max = 256, addwt = FALSE)
+
+
+evalGenotypeFitAndMut(genotype, fitnessEffects,
+                      mutatorEffects, verbose = FALSE, echo = FALSE,
+                      model = "")
+
+evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
+                          order = TRUE, max = 256, addwt = FALSE,
+                          model = "")
+
 
 }
 \arguments{
@@ -30,7 +55,14 @@ model = "")
   }
 
 
-  \item{fitnessEffects}{A \code{fitnessEffects} object, as produced by \code{\link{allFitnessEffects}}.}
+  \item{fitnessEffects}{A \code{fitnessEffects} object, as produced by
+    \code{\link{allFitnessEffects}}.}
+
+  \item{mutatorEffects}{A \code{mutatorEffects} object, as produced by
+    \code{\link{allMutatorEffects}}.}
+
+
+  
   \item{order}{
     (For \code{evalAllGenotypes}). Does order matter? If it does, then generate not only all possible
     combinations of the genes, but all possible permutations for each combination.
@@ -73,7 +105,20 @@ in ``y''; there is also a mutation in ``z'', but ``z'' is a gene for
 which order does not matter. In all cases, a "WT" denotes the wild-type
 (or, actually, the genotype without any mutations).
 
+
+
+
+If you use both \code{fitnessEffects} and \code{mutatorEffects} in a
+call,  all the genes specified in
+  \code{mutatorEffects} MUST be included in the
+  \code{fitnessEffects} object. If you want to have genes that have
+  no direct effect on fitness, but that affect mutation rate, you MUST
+  specify them in the call to \code{fitnessEffects}, for instance as
+  \code{noIntGenes} with an effect of 0.  
+
+
 }
+
 \author{
 Ramon Diaz-Uriarte
 }
@@ -89,6 +134,18 @@ Ramon Diaz-Uriarte
   Modules are, of course, taken into account if present (i.e., fitness
   is specified in terms of modules, but the genotype is specified in
   terms of genes).
+
+
+  About the naming. This is the convention used: "All" means we will go
+over all possible genotypes. A function that ends as "Genotypes" returns
+only fitness effects (for backwards compatibility and because mutator
+effects are not always used). A function that ends as "Genotype(s)Mut"
+returns only the mutator effects. A function that ends as "FitAndMut"
+will return both fitness and mutator effects.
+
+Functions that return ONLY fitness or ONLY mutator effects are kept as
+separate functions because they free you from specifyin mutator/fitness
+effects if you only want to play with one of them.
 }
 
 

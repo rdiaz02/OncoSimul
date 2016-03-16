@@ -1,23 +1,38 @@
 \name{allFitnessEffects}
 \alias{allFitnessEffects}
-\title{Create fitness effects specification from restrictions,
-  epistasis, and order effects.
-}
+\alias{allMutatorEffects}
+
+\title{Create fitness and mutation effects specification from
+  restrictions, epistasis, and order effects.  }
+
 \description{
   Given one or more of a set of poset restrictions, epistatic
   interactions, order effects, and genes without interactions, as well
   as, optionally, a mapping of genes to modules, return the complete
   fitness specification.
 
-  The output of this function is not intended for user consumption, but
-  as a way of preparing data to be sent to the C++ code.  }
+  For mutator effects, given one or more of a set of epistatic
+  interactions and genes without interactions, as well as, optionally, a
+  mapping of genes to modules, return the complete specification of how
+  mutations affect the mutation rate.
+  
+  The output of these functions is not intended for user consumption,
+  but as a way of preparing data to be sent to the C++ code.  }
 
 
 \usage{
 
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   noIntGenes = NULL, geneToModule = NULL, drvNames = NULL, keepInput =
-  TRUE) }
+  TRUE)
+
+allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
+                   geneToModule = NULL,
+                  keepInput =  TRUE)
+}
+
+
+
 
 \arguments{
   \item{rT}{A restriction table that is an extended version of a poset 
@@ -58,7 +73,7 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   }
   \item{epistasis}{
     A named numeric vector. The names identify the relationship, and the
-    numeric value is the fitness effect. For the names, each of the
+    numeric value is the fitness (or mutator) effect. For the names, each of the
     genes or modules involved is separated by a ":". A negative sign
     denotes the absence of that term.
   }
@@ -69,7 +84,8 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   mutation Z.
 }
 \item{noIntGenes}{
-  A numeric vector (optionally named) with the fitness coefficients of genes
+  A numeric vector (optionally named) with the fitness coefficients (or
+      mutator multiplier factor) of genes
   (only genes, not modules) that show no interactions. These genes
       cannot be part of modules. But you can specify modules that have
       no epistatic interactions. See examples and vignette.
@@ -100,17 +116,33 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   internal representation. But if you want, you can set it to FALSE and
   the object will be a little bit smaller.}
 }
+
 \details{
-  This function is used for extremely flexible specification of fitness
-  effects, including posets, XOR relationships, synthetic mortality and
+  \code{allFitnessEffects} is used for extremely flexible specification of fitness
+  and mutator effects, including posets, XOR relationships, synthetic mortality and
   synthetic viability, arbitrary forms of epistatis, arbitrary forms of
   order effects, etc. Please, see the vignette for detailed and
   commented examples.
-}
+
+  \code{allMutatorEffects} provide the same flexibility, but without
+  order and posets (this might be included in the future, but I have
+  seen no empirical or theoretical argument for their existence or
+  relevance as of now, so I do not add them to minimize unneeded complexity).
+
+  If you use both for simulations in the same call to, say,
+  \code{\link{oncoSimulIndiv}}, all the genes specified in
+  \code{allMutatorEffects} MUST be included in the
+  \code{allFitnessEffects} object. If you want to have genes that have
+  no direct effect on fitness, but that affect mutation rate, you MUST
+  specify them in the call to \code{allFitnessEffects}, for instance as
+  \code{noIntGenes} with an effect of 0.  }
+
 
 \value{
-  An object of class "fitnessEffects". This is just a list, but it is not
-  intended for human consumption.  The components are:
+  
+  An object of class "fitnessEffects" or "mutatorEffects". This is just
+  a list, but it is not intended for human consumption.  The components
+  are:
 
   \item{long.rt}{The restriction table in "long format", so as to be
     easy to parse by the C++ code.}
