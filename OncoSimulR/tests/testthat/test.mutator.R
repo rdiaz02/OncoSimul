@@ -268,6 +268,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(ncc)$NumClones) > 1e-4)
     expect_true(var(summary(ncd)$NumClones) > 1e-4)
+    ## These are the real tests
     expect_true( median(summary(nca)$NumClones) <
                  median(summary(ncb)$NumClones))
     expect_true(median(summary(ncb)$NumClones) <
@@ -301,13 +302,47 @@ test_that("Relative ordering of number of clones with mut prop growth", {
                         initSize = 1e4,
                         onlyCancer = FALSE)
 
+})
+
+
+
+## ## Some checks on mutationPropGrowth, etc.
+## ni <- rep(0.4, 20)
+## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
+## fe <- allFitnessEffects(noIntGenes = ni)
+## fm6 <- allMutatorEffects(noIntGenes = c("a" = 15,
+##                                         "b" = 15,
+##                                         "c" = 15,
+##                                         "d" = 15))
+## set.seed(5) ## problems with seed of 2 here
+## oncoSimulIndiv(fe, muEF = fm6, finalTime =30,
+##                mutationPropGrowth = TRUE,
+##                initSize = 1e4,
+##                mu = 1e-06,
+##                verbosity = 6,
+##                onlyCancer = FALSE)    
+## ###### Iteration 40.
+## ## mutation
+## ## parent
+## 20 * 1e-06
+## ## child
+## 1.4 * 15 * 1e-06 * 19
+## ###### Iteration 39
+## ## mutation
+## ## parent
+## 1.4 * 15 * 1e-06 * 19
+## ## chlid
+## 1.4 * 1.4 * 15 * 1e-06 * 18
+
+
+
 
     
 
 
 
-    
-    
+
+
 ## test with var mut rate,
 ## run all tests
 ## create new tests
