@@ -1384,35 +1384,35 @@ double mutationFromScratch(const std::vector<double>& mu,
 // disable this for now.  We could fix this, checking if there are new
 // mutation effects, or mutliplying/subtracting only new, etc. But too
 // much of a mess.
-double mutationFromParent(const std::vector<double>& mu,
-			  const spParamsP& newP,
-			  const spParamsP& parentP,
-			  const std::vector<int>& newMutations,
-			  // const std::vector<int>& nonmutated,
-			  const int mutationPropGrowth,
-			  const Genotype& fullge,
-			  const std::vector<int> full2mutator,
-			  const fitnessEffectsAll& muEF) {
-  double mumult;
-  if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = evalMutator(fullge, full2mutator, muEF);
-  } else mumult = 1.0;
+// double mutationFromParent(const std::vector<double>& mu,
+// 			  const spParamsP& newP,
+// 			  const spParamsP& parentP,
+// 			  const std::vector<int>& newMutations,
+// 			  // const std::vector<int>& nonmutated,
+// 			  const int mutationPropGrowth,
+// 			  const Genotype& fullge,
+// 			  const std::vector<int> full2mutator,
+// 			  const fitnessEffectsAll& muEF) {
+//   double mumult;
+//   if(full2mutator.size() > 0) { // so there are mutator effects
+//     mumult = evalMutator(fullge, full2mutator, muEF);
+//   } else mumult = 1.0;
   
-  if(mu.size() == 1) {
-    if(mutationPropGrowth)
-      return(mumult * mu[0] * newP.numMutablePos * newP.birth);
-    else
-      return(mumult * mu[0] * newP.numMutablePos);
-  } else {
-    double mutrate = parentP.mutation;
-    for(auto const mutated : newMutations) {
-      mutrate -= mu[mutated - 1];
-    }
-    if(mutationPropGrowth)
-      mutrate *= newP.birth;
-    return(mumult * mutrate);
-  }
-}
+//   if(mu.size() == 1) {
+//     if(mutationPropGrowth)
+//       return(mumult * mu[0] * newP.numMutablePos * newP.birth);
+//     else
+//       return(mumult * mu[0] * newP.numMutablePos);
+//   } else {
+//     double mutrate = parentP.mutation;
+//     for(auto const mutated : newMutations) {
+//       mutrate -= mu[mutated - 1];
+//     }
+//     if(mutationPropGrowth)
+//       mutrate *= newP.birth;
+//     return(mumult * mutrate);
+//   }
+// }
 
 
   
