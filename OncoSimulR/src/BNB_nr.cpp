@@ -1334,11 +1334,75 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			  intName, genesInFitness);
 	    
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
-	    tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
-						   newMutations, mutationPropGrowth,
-						   newGenotype, full2mutator,
-						   muEF);
+	    tmpParam.mutation = mutationFromScratch(mu, tmpParam, newGenotype,
+					       fitnessEffects,
+					       mutationPropGrowth, full2mutator,
+						    muEF);
+	    // tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
+	    // 					   newMutations, mutationPropGrowth,
+	    // 					   newGenotype, full2mutator,
+	    // 					   muEF);
 
+	    
+#ifdef DEBUGW
+	    DP1("a");
+	    DP2(mutationFromParent(mu, tmpParam, popParams[nextMutant],
+			       newMutations, mutationPropGrowth,
+			       newGenotype, full2mutator,
+				   muEF));
+	    DP1("b");
+	    DP2(mutationFromParent(mu, tmpParam, popParams[nextMutant],
+				   newMutations, mutationPropGrowth,
+				   newGenotype, full2mutator,
+				   muEF));
+
+	    double mfp = mutationFromParent(mu, tmpParam, popParams[nextMutant],
+				   newMutations, mutationPropGrowth,
+				   newGenotype, full2mutator,
+					    muEF);
+	    double mfs = mutationFromScratch(mu, tmpParam, newGenotype,
+					       fitnessEffects,
+					       mutationPropGrowth, full2mutator,
+					    muEF);
+	    DP1("c");
+	    DP2(mfp);
+	    DP2(mfs);
+	    DP2(abs(mfp - mfs));
+	    DP2(fabs(mfp - mfs));
+	    
+	    DP2(mfp - mfs);
+	    
+	    
+	    if(abs(
+			   mutationFromParent(mu, tmpParam, popParams[nextMutant],
+					      newMutations, mutationPropGrowth,
+					      newGenotype, full2mutator, muEF) - 
+			   mutationFromScratch(mu, tmpParam, newGenotype,
+					       fitnessEffects,
+					       mutationPropGrowth, full2mutator,
+					       muEF))
+	       > 1e-25) {
+	      DP2(mutationFromParent(mu, tmpParam, popParams[nextMutant],
+				     newMutations, mutationPropGrowth,
+				     newGenotype, full2mutator, muEF));
+	      DP2(mutationFromScratch(mu, tmpParam, newGenotype,
+				      fitnessEffects,
+				      mutationPropGrowth, full2mutator,
+				      muEF));
+	      
+	      Rcpp::Rcout << "\n Parent Genotype :";
+	      print_Genotype(Genotypes[nextMutant]);
+
+	      Rcpp::Rcout << "\n New Genotype :";
+	      print_Genotype(newGenotype);
+	      
+	      
+	      Rcpp::Rcout << "\n\n popParams parent: \n";
+	      print_spP(popParams[nextMutant]);
+	      Rcpp::Rcout << "\n\npopParams child: \n";
+	      print_spP(tmpParam);
+	    }	    
+#endif
 	    // FIXME: debug. Verify both calculations of mutation give the same!
 	    STOPASSERT(abs(
 			   mutationFromParent(mu, tmpParam, popParams[nextMutant],

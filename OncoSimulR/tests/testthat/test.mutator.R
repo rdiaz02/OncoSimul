@@ -278,35 +278,261 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 })
 
 
-## Verify mutationPropGrowth!!!
 
-test_that("Relative ordering of number of clones with mut prop growth", {
-    ## gets crazy easily
-
-    pops <- 20
-    ni <- rep(0.4, 20)
-    names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
+test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
+    pops <- 10
+    ft <- 1
+    lni <- 200
+    no <- 5e3
+    ni <- c(5, 2, rep(0, lni))
+    ## scramble around names
+    names(ni) <- c("thisistheagene",
+                   "thisisthebgene",
+                   replicate(lni,
+                             paste(sample(letters, 12), collapse = "")))
+    ni <- ni[order(names(ni))]
     fe <- allFitnessEffects(noIntGenes = ni)
-    fm6 <- allMutatorEffects(noIntGenes = c("a" = 15,
-                                            "b" = 15,
-                                            "c" = 15,
-                                            "d" = 15))
-    
-    nca <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =30,
-                        mutationPropGrowth = FALSE,
-                        initSize = 1e4,
-                        onlyCancer = FALSE)
-    
-    ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =30,
+    fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
+    mpg <- oncoSimulPop(pops, fe, muEF = fm1,
+                        finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = 1e4,
+                        initSize = no,
+                        initMutant = "thisistheagene",
                         onlyCancer = FALSE)
-
+    mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
+                         finalTime = ft,
+                         mutationPropGrowth = FALSE,
+                         initSize = no,
+                         initMutant = "thisistheagene",
+                         onlyCancer = FALSE)
+    pg <- oncoSimulPop(pops, fe, 
+                       finalTime = ft,
+                       mutationPropGrowth = TRUE,
+                       initSize = no,
+                       initMutant = "thisistheagene",
+                       onlyCancer = FALSE)
+    npg <- oncoSimulPop(pops, fe, 
+                        finalTime = ft,
+                        mutationPropGrowth = FALSE,
+                        initSize = no,
+                        initMutant = "thisistheagene",
+                        onlyCancer = FALSE)
+      ## I once saw a weird thing
+    expect_true(var(summary(mpg)$NumClones) > 1e-4)
+    expect_true(var(summary(mnpg)$NumClones) > 1e-4)
+    expect_true(var(summary(pg)$NumClones) > 1e-4)
+    expect_true(var(summary(npg)$NumClones) > 1e-4)
+    ## These are the real tests
+    expect_true( median(summary(mpg)$NumClones) >
+                 median(summary(mnpg)$NumClones))
+    expect_true(median(summary(mpg)$NumClones) >
+                median(summary(pg)$NumClones) )
+    expect_true( median(summary(mnpg)$NumClones) >
+                 median(summary(npg)$NumClones) )
+    expect_true( median(summary(pg)$NumClones) >
+                 median(summary(npg)$NumClones) )
 })
 
 
+test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
+    pops <- 10
+    ft <- 1
+    lni <- 200
+    no <- 1e3
+    ni <- c(5, 2, rep(0, lni))
+    ## scramble around names
+    names(ni) <- c("thisistheagene",
+                   "thisisthebgene",
+                   replicate(lni,
+                             paste(sample(letters, 12), collapse = "")))
+    ni <- ni[order(names(ni))]
+    fe <- allFitnessEffects(noIntGenes = ni)
+    fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
+    mpg <- oncoSimulPop(pops, fe, muEF = fm1,
+                        finalTime = ft,
+                        mutationPropGrowth = TRUE,
+                        initSize = no, model = "McFL",
+                        initMutant = "thisistheagene",
+                        onlyCancer = FALSE)
+    mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
+                         finalTime = ft,
+                         mutationPropGrowth = FALSE,
+                         initSize = no, model = "McFL",
+                         initMutant = "thisistheagene",
+                         onlyCancer = FALSE)
+    pg <- oncoSimulPop(pops, fe, 
+                       finalTime = ft,
+                       mutationPropGrowth = TRUE,
+                       initSize = no, model = "McFL",
+                       initMutant = "thisistheagene",
+                       onlyCancer = FALSE)
+    npg <- oncoSimulPop(pops, fe, 
+                        finalTime = ft,
+                        mutationPropGrowth = FALSE,
+                        initSize = no, model = "McFL",
+                        initMutant = "thisistheagene",
+                        onlyCancer = FALSE)
+      ## I once saw a weird thing
+    expect_true(var(summary(mpg)$NumClones) > 1e-4)
+    expect_true(var(summary(mnpg)$NumClones) > 1e-4)
+    expect_true(var(summary(pg)$NumClones) > 1e-4)
+    expect_true(var(summary(npg)$NumClones) > 1e-4)
+    ## These are the real tests
+    expect_true( median(summary(mpg)$NumClones) >
+                 median(summary(mnpg)$NumClones))
+    expect_true(median(summary(mpg)$NumClones) >
+                median(summary(pg)$NumClones) )
+    expect_true( median(summary(mnpg)$NumClones) >
+                 median(summary(npg)$NumClones) )
+    expect_true( median(summary(pg)$NumClones) >
+                 median(summary(npg)$NumClones) )
+})
 
-## ## Some checks on mutationPropGrowth, etc.
+
+test_that("Mutator and var mut rates and init and really scrambled names", {
+    
+    pops <- 5
+    ft <- 1
+    lni <- 200
+    no <- 5e3
+    ni <- c(0, 0, 0, rep(0, lni))
+    ## scramble around names
+    names(ni) <- c("hereisoneagene",
+                   "bereisisabgene",
+                   "nnhsisthecgene",
+                   replicate(lni,
+                             paste(sample(letters, 12), collapse = "")))
+    ni <- ni[order(names(ni))]
+    fe <- allFitnessEffects(noIntGenes = ni)
+    mutator1 <- mutator2 <- rep(1, lni + 3)
+    pg1 <- pg2 <- rep(1e-7, lni + 3)
+    ## scramble names of mutator and per-gene too
+    names(mutator1) <- sample(names(ni))
+    names(mutator2) <- sample(names(ni))
+    names(pg1) <- sample(names(ni))
+    names(pg2) <- sample(names(ni))
+    mutator1["hereisoneagene"] <- 100
+    mutator2["hereisoneagene"] <- 1
+    mutator1["bereisisabgene"] <- 1
+    mutator2["bereisisabgene"] <- 0.01
+    mutator1["nnhsisthecgene"] <- 0.01
+    mutator2["nnhsisthecgene"] <- 100
+    m1 <- allMutatorEffects(noIntGenes = mutator1)
+    m2 <- allMutatorEffects(noIntGenes = mutator2)
+    pg1["hereisoneagene"] <- 1e-5
+    pg2["hereisoneagene"] <- 1e-10
+    pg1["bereisisabgene"] <- 1e-7
+    pg2["bereisisabgene"] <- 1e-7
+    pg1["nnhsisthecgene"] <- 1e-10
+    pg2["nnhsisthecgene"] <- 1e-5
+
+    m1.pg1.a <- oncoSimulPop(pops,
+                           fe,
+                           mu = pg1,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant = "hereisoneagene",
+                           onlyCancer = FALSE)
+    m1.pg2.a <- oncoSimulPop(pops,
+                           fe,
+                           mu = pg2,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant = "hereisoneagene",
+                           onlyCancer = FALSE)
+    m1.pg1.c <- oncoSimulPop(pops,
+                           fe,
+                           mu = pg1,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant = "nnhsisthecgene",
+                           onlyCancer = FALSE)
+    m1.pg2.c <- oncoSimulPop(pops,
+                           fe,
+                           mu = pg2,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant = "nnhsisthecgene",
+                           onlyCancer = FALSE)
+
+    
+
+
+    
+    m2.pg1.a <- oncoSimulPop(pops,
+                           fe,
+                           mu = pg1,
+                           muEF = m2,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant = "hereisoneagene",
+                           onlyCancer = FALSE)
+
+    
+
+
+    
+})
+ 
+
+
+
+## breaks an assertion
+set.seed(2) ## not with set.seed(1)
+pops <- 5
+ft <- 1
+lni <- 200
+no <- 5e3
+ni <- c(0, 0, 0, rep(0, lni))
+## scramble around names
+names(ni) <- c("hereisoneagene",
+               "bereisisabgene",
+               "nnhsisthecgene",
+               replicate(lni,
+                         paste(sample(letters, 12), collapse = "")))
+ni <- ni[order(names(ni))]
+ni <- sample(ni)
+fe <- allFitnessEffects(noIntGenes = ni)
+mutator1 <- rep(1, lni + 3)
+pg1 <- rep(1e-7, lni + 3)  ## what breaks is using 1e-7 instead of 1e-9
+## scramble names of mutator and per-gene too
+names(mutator1) <- sample(names(ni))
+names(pg1) <- sample(names(ni))
+mutator1["hereisoneagene"] <- 100
+mutator1["bereisisabgene"] <- 1
+mutator1["nnhsisthecgene"] <- 0.01
+m1 <- allMutatorEffects(noIntGenes = mutator1)
+pg1["hereisoneagene"] <- 1e-5
+pg1["bereisisabgene"] <- 1e-7
+pg1["nnhsisthecgene"] <- 1e-10
+m1.pg1.a <- oncoSimulIndiv(fe,
+                           mu = pg1,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant = "hereisoneagene",
+                           onlyCancer = FALSE,
+                           verbosity = 6)
+
+mu.nop <- function(p, mu) {
+    nni <- names(ni)[p]
+    pmu <- which(names(mu) %in%  nni)
+    mu[-pmu]
+}
+
+100 * sum(mu.nop(c(45, 64), pg1))
+
+## ## ## Some checks on C++ of mutationPropGrowth and mutator
 ## ni <- rep(0.4, 20)
 ## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
 ## fe <- allFitnessEffects(noIntGenes = ni)
@@ -314,25 +540,29 @@ test_that("Relative ordering of number of clones with mut prop growth", {
 ##                                         "b" = 15,
 ##                                         "c" = 15,
 ##                                         "d" = 15))
-## set.seed(5) ## problems with seed of 2 here
+    
+## set.seed(5)  ## if you use seed of 2, it blows up with huge birth
+## ## rate and many mutations > 1
+## ## But then, 1.4^20 is > 800!
+
 ## oncoSimulIndiv(fe, muEF = fm6, finalTime =30,
 ##                mutationPropGrowth = TRUE,
 ##                initSize = 1e4,
 ##                mu = 1e-06,
 ##                verbosity = 6,
 ##                onlyCancer = FALSE)    
-## ###### Iteration 40.
-## ## mutation
-## ## parent
-## 20 * 1e-06
-## ## child
-## 1.4 * 15 * 1e-06 * 19
-## ###### Iteration 39
-## ## mutation
-## ## parent
-## 1.4 * 15 * 1e-06 * 19
-## ## chlid
-## 1.4 * 1.4 * 15 * 1e-06 * 18
+## ## ###### Iteration 40.
+## ## ## mutation
+## ## ## parent
+## ## 20 * 1e-06
+## ## ## child
+## ## 1.4 * 15 * 1e-06 * 19
+## ## ###### Iteration 39
+## ## ## mutation
+## ## ## parent
+## ## 1.4 * 15 * 1e-06 * 19
+## ## ## chlid
+## ## 1.4 * 1.4 * 15 * 1e-06 * 18
 
 
 

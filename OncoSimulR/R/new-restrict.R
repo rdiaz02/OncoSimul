@@ -1421,7 +1421,7 @@ nr_oncoSimul.internal <- function(rFE,
         if(any(mu <= minmu))
             stop(paste("At least one per-gene mutation rate is negative",
                        "or less than", minmu,". Remember that the per-base",
-                       "mutation rate in the human genome is about 1e-10 to 1e-11."))
+                       "mutation rate in the human genome is about 1e-11 to 1e-9."))
     }
     if(!is.null(initMutant)) {
        if(length(grep(">", initMutant))) {
