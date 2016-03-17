@@ -1378,10 +1378,12 @@ double mutationFromScratch(const std::vector<double>& mu,
 }
 
 
-// Wrong if there are mutator effects. For suppose there are, and they
-// affected the parent, but no new mutator gene affects the child.
-// We will, however, multiply twice by the mutator effect.
-// Therefore, we disable this for now.
+// Wrong when/if there are mutator effects. For suppose there wre, and
+// they affected the parent, but no new mutator gene affects the child.
+// We will, however, multiply twice by the mutator effect.  Therefore, we
+// disable this for now.  We could fix this, checking if there are new
+// mutation effects, or mutliplying/subtracting only new, etc. But too
+// much of a mess.
 double mutationFromParent(const std::vector<double>& mu,
 			  const spParamsP& newP,
 			  const spParamsP& parentP,

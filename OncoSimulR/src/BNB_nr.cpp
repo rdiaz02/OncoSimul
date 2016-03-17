@@ -1367,8 +1367,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    DP1("c");
 	    DP2(mfp);
 	    DP2(mfs);
-	    DP2(abs(mfp - mfs));
-	    DP2(fabs(mfp - mfs));
+	    DP2(std::abs(mfp - mfs));
+	    DP2(std::fabs(mfp - mfs));
 	    
 	    DP2(mfp - mfs);
 	    
