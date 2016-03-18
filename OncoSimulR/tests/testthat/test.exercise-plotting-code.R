@@ -375,7 +375,7 @@ test_that("exercise single driver", {
                          onlyCancer = FALSE,
                          finalTime = 0.01,
                          initMutant = "a1")
-    expect_silent(e1)
+    expect_silent(plot(e1))
     e1 <- oncoSimulIndiv(sv2, model = "Exp",
                          mu = 5e-6,
                          sampleEvery = 0.02,
@@ -384,7 +384,7 @@ test_that("exercise single driver", {
                          onlyCancer = FALSE,
                          finalTime = 0.01,
                          initMutant = "a2")
-    expect_silent(e1)
+    expect_silent(plot(e1))
     e1 <- oncoSimulIndiv(sv2, model = "Exp",
                          mu = 5e-6,
                          sampleEvery = 0.02,
@@ -393,10 +393,11 @@ test_that("exercise single driver", {
                          onlyCancer = FALSE,
                          finalTime = 0.01,
                          initMutant = "b")
-    expect_silent(e1)
+    expect_silent(plot(e1))
 })    
 
 
 ## Examples of why it is silly
 ## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
 ## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
+
