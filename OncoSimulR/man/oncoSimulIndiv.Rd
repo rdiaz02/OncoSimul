@@ -400,7 +400,15 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
   \code{seed} is unlikely to give the exact same results between
   platforms and compilers.  Moreover, note that the defaults for
   \code{seed} are not the same in \code{oncoSimulIndiv},
-  \code{oncoSimulPop} and \code{oncoSimulSample}. }
+  \code{oncoSimulPop} and \code{oncoSimulSample}.
+
+  When using oncoSimulPop, if you want reproducibility, you might want
+  to, in addition to setting \code{seed = NULL}, also do
+  \code{RNGkind("L'Ecuyer-CMRG")} as we use
+  \code{\link[parallel]{mclapply}}; look at the vignette of
+  \pkg{parallel}.
+
+}
 
 
 
