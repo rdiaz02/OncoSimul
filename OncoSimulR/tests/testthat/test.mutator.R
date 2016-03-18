@@ -1143,15 +1143,18 @@ test_that("Different freqs as they should be ordered and chisq, when s=0 and t =
 ## very large mu.
 
 ## Play also with final time: make smaller than 1. It is birth and rate
-## that compound processes.
+## that compound processes and of course we have non-independent sampling
+## (overdispersion)
 
 test_that("Expect freq genotypes, mutator and var mut rates, small case", {
 
+    ## Now play changing the mutation rate randomly
+    
    ## Fails; is it the number of cells, of genotypes?
-    pops <- 200
-    ft <- 1
-    lni <- 20 ## small, so not too many cells
-    no <- 5e5
+    pops <- 400
+    ft <- .01
+    lni <- 80 ## small, so not too many cells
+    no <- 1e6
     ni <- c(0, 0, 0, rep(0, lni))
     ## scramble around names
     names(ni) <- c("hereisoneagene",
@@ -1162,10 +1165,11 @@ test_that("Expect freq genotypes, mutator and var mut rates, small case", {
     ni <- ni[order(names(ni))]
     fe <- allFitnessEffects(noIntGenes = ni)
     mutator1 <- rep(1, lni + 3)
-    pg1 <- rep(1e-5, lni + 3)
+    ## pg1 <- rep(1e-5, lni + 3)
+    pg1 <- runif(lni + 3, min = 1e-7, max = 1e-4)
     names(mutator1) <- sample(names(ni))
     names(pg1) <- sample(names(ni))
-    mutator1["bereisisabgene"] <- 5    ## 53
+    mutator1["bereisisabgene"] <- 34    ## 53
     m1 <- allMutatorEffects(noIntGenes = mutator1)
     pg1["hereisoneagene"] <- 1e-3 ## 1e-3
     m1.pg1.b <- oncoSimulPop(pops,
