@@ -35,7 +35,9 @@
 
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
-## The tests below can occasionally fail (but that probability decreases as we increase number of pops).
+## The tests below can occasionally fail (but that probability decreases
+## as we increase number of pops), as they should.
+
 ## I fix the seed for now.
 test_that("Ordering of number of clones with mutpropgrowth", {
     set.seed(1)
@@ -65,11 +67,12 @@ test_that("Ordering of number of clones with mutpropgrowth", {
                         initSize = no,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL)
-      ## I once saw a weird thing
+    ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
     expect_true(var(summary(ncb2)$NumClones) > 1e-4)
+    ## The real comparison
     expect_true( median(summary(nca)$NumClones) >
                  median(summary(nca2)$NumClones))
     expect_true( median(summary(nca)$NumClones) >
@@ -106,11 +109,12 @@ test_that("Ordering of number of clones with mutpropgrowth, McFL", {
                         initSize = no, model = "McFL",
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL)
-      ## I once saw a weird thing
+    ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
     expect_true(var(summary(ncb2)$NumClones) > 1e-4)
+    ## The real comparison
     expect_true( median(summary(nca)$NumClones) >
                  median(summary(nca2)$NumClones))
     expect_true( median(summary(nca)$NumClones) >
