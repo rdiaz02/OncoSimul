@@ -393,8 +393,8 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
   you set it to "auto", then if you are using v.1, the behavior is the
   same as if you set it to NULL (a seed will be generated in R and
   passed to C++) but if you are using v.2, a random seed will be
-  produced in C++. %% using the randutils code from M.E.O'Neill.  If you
-  need reproducibility, either pass a value or set it to NULL (setting
+  produced in C++. %% using the randutils code from M.E.O'Neill.
+  If you   need reproducibility, either pass a value or set it to NULL (setting
   it to NULL will make the C++ seed reproducible if you use the same
   seed in R via \code{set.seed}). However, even using the same value of
   \code{seed} is unlikely to give the exact same results between
@@ -448,8 +448,8 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 
 
 
-    \code{GenotyesWDistinctOrderEff} provides the information about
-    order effects that is missing from \code{Genotyoes}. When there are
+    \code{GenotypesWDistinctOrderEff} provides the information about
+    order effects that is missing from \code{Genotypes}. When there are
     order effects, the \code{Genotypes} matrix can contain genotypes
     that are not distinguishable. Suppose there are two genes, the first
     and the second. In the \code{Genotype} output you can get two
@@ -457,10 +457,18 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
     correspond to the two possible orders (first gene mutated first, or
     first gene mutated after the
     second). \code{GenotypesWDistinctOrderEff} disambiguates this. The
-    same is done by \code{GenotypeLabels}; this is easier to decode for
+    same is done by \code{GenotypesLabels}; this is easier to decode for
     a human (a string of gene labels) but a little bit harder to parse
-    automatically. 
+    automatically.  Note that when you use the default print method for
+    this object, you get, among others, a two-column display with the
+    \code{GenotypeLabels} information. When order matters, a genotype
+    shown as ``x > y _ z'' means that a mutation in ``x'' happened
+    before a mutation in ``y''; there is also a mutation in ``z'' (which
+    could have happened before or after either of ``x'' or ``y''), but
+    ``z'' is a gene for which order does not matter. When order does not
+    matter, a comma "," separates the identifiers of mutated genes.
 
+    
   
 
 }
