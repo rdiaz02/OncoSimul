@@ -963,6 +963,132 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0 a
 
 
 
+
+test_that("Different freqs as they are expected with chisq, when s=0 and initMutant, many genotypes",{
+    ## Occasionally, the c++ code can blow up as a large mu, etc
+    set.seed(6305)
+    ft <- 0.2 ## yes, small
+    lni <- 100  ## 16
+    muvar2 <- runif(lni, min = 1e-9, max = 1e-3)
+    names(muvar2) <- c(replicate(lni,
+                                 paste(sample(letters, 12), collapse = "")))
+    muvar2[2] <- 2e-5 
+    names(muvar2)[3] <- "e"
+    muvar2[2] <- 1e-3
+    ni1 <- rep(0, lni)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e5
+    reps <- 500
+    bb <- oncoSimulPop(reps,
+                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed =NULL,
+                       initMutant = "e"
+                       )
+    (expectedC <- no*reps*muvar2)
+    (ccs <- colSums(OncoSimulR:::geneCounts(bb)))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
+    expect_true(ccs["e"] == totalindivs)
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+                           p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
+})
+
+
+
+
+
+## More on the above, with less variation. But yet other set of tests.
+test_that("Different freqs as they should be ordered and chisq, when s=0 and t = 1, and initMutant",
+{
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+    ## moderately small mu
+    muvar2[] <- 1e-5
+    muvar2["e"] <- 1e-3
+    ni1 <- rep(0, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 5e5
+    reps <- 1000
+    ## set.seed(6305)
+    bb <- oncoSimulPop(reps,
+                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = 0.2,
+                       seed =NULL,
+                       initMutant = "e"
+                       )
+    (expectedC <- no*reps*muvar2)
+    ccs <- colSums(OncoSimulR:::geneCounts(bb))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
+    expect_true(ccs["e"] == totalindivs)
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+                           p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+    ## relatively large mu
+    muvar2[] <- 1e-3
+    muvar2["e"] <- 1e-6
+    ni1 <- rep(0, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 5e5
+    reps <- 500
+    ## set.seed(6305)
+    bb <- oncoSimulPop(reps,
+                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = 0.2,
+                       seed =NULL,
+                       initMutant = "e"
+                       )
+    (expectedC <- no*reps*muvar2)
+    ccs <- colSums(OncoSimulR:::geneCounts(bb))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
+    expect_true(ccs["e"] == totalindivs)
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+                           p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
+    ## nope, as many are equal
+    ## expect_equal(
+    ##     order(colSums(OncoSimulR:::geneCounts(bb))[-3]),
+    ##     order(expectedC[-3]))
+    ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    ##            p = expectedC/sum(expectedC))
+    ## some moderate, one very large
+    muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+    muvar2[] <- 1e-4
+    muvar2["e"] <- 1e-6
+    muvar2[4] <- 1e-2
+    ni1 <- rep(0, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 5e5
+    reps <- 500
+    ## set.seed(6305)
+    bb <- oncoSimulPop(reps,
+                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = 0.2,
+                       seed =NULL,
+                       initMutant = "e"
+                       )
+    (expectedC <- no*reps*muvar2)
+    (ccs <- colSums(OncoSimulR:::geneCounts(bb)))
+    totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
+    expect_true(ccs["e"] == totalindivs)
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+                           p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
+})
+
+
 ##################### If you want to verify step by step that the C++ does
 ##################### what it should you can, for instance, run this R code
 
