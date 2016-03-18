@@ -1,3 +1,8 @@
+RNGkind("Mersenne-Twister") ## we have some examples below with random
+## genotype generation. We leave the default. We use L'Ecuyer when using
+## mclapply and that file could run before this one
+
+
 test_that("Root name in module table or not", {
     expect_silent(fee <- allFitnessEffects(epistasis = c("A" = 0.3,
                                            "B" = 0.5),
