@@ -38,9 +38,11 @@ RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## The tests below can occasionally fail (but that probability decreases
 ## as we increase number of pops), as they should.
 
-## I fix the seed for now.
+## I limit range of seeds for now
 test_that("Ordering of number of clones with mutpropgrowth", {
-    set.seed(1)
+    pseed <- sample(1:1000, 1)
+    set.seed(pseed)
+    cat("\n the seed is", pseed, "\n")
     pops <- 50
     lni <- 200
     no <- 5e3
@@ -51,22 +53,22 @@ test_that("Ordering of number of clones with mutpropgrowth", {
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "a",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     ncb <- oncoSimulPop(pops, fe, finalTime =1,
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "b",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     nca2 <- oncoSimulPop(pops, fe, finalTime =1,
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = "a",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     ncb2 <- oncoSimulPop(pops, fe, finalTime =1,
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = "b",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
@@ -82,7 +84,9 @@ test_that("Ordering of number of clones with mutpropgrowth", {
 })
 
 test_that("Ordering of number of clones with mutpropgrowth, McFL", {
-    set.seed(2)
+    pseed <- sample(1:1000, 1)
+    set.seed(pseed)
+    cat("\n the seed is", pseed, "\n")
     pops <- 50
     lni <- 200
     no <- 5e3
@@ -93,22 +97,22 @@ test_that("Ordering of number of clones with mutpropgrowth, McFL", {
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "a",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     ncb <- oncoSimulPop(pops, fe, finalTime =1,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "b",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     nca2 <- oncoSimulPop(pops, fe, finalTime =1,
                         mutationPropGrowth = FALSE,
                         initSize = no, model = "McFL",
                         initMutant = "a",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     ncb2 <- oncoSimulPop(pops, fe, finalTime =1,
                         mutationPropGrowth = FALSE,
                         initSize = no, model = "McFL",
                         initMutant = "b",
-                        onlyCancer = FALSE, seed = NULL)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 4)
     ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)

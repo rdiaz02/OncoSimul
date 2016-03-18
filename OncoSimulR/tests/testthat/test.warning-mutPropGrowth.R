@@ -1,3 +1,5 @@
+RNGkind("Mersenne-Twister")
+
 test_that("mutationPropGrowth warning with Bozic, indiv", {
               oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.4),
@@ -36,7 +38,6 @@ test_that("mutationPropGrowth warning with Bozic, indiv", {
 test_that("mutationPropGrowth warning with Bozic, sample", {
     ## Bozic will crash on purpose if any s >= 1. Make sure
     ## that does not happen here
-    
               oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.4),
                noIntGenes = runif(5, 0.01, 0.06),
@@ -52,19 +53,24 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
                              fixed = TRUE)                                                     
 })
 
-
 test_that("mutationPropGrowth no warning with Exp, indiv", {
-              oi <- allFitnessEffects(orderEffects =
-               c("F > D" = -0.3, "D > F" = 0.4),
-               noIntGenes = rexp(5, 10),
-                          geneToModule =
-                              c("Root" = "Root",
-                                "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
-              expect_silent(oiI1 <- oncoSimulIndiv(oi,
-                                                    model = "Exp",
-                                                    mutationPropGrowth = TRUE))                
+    ## I once (out of over > 10000) saw it fail. Try to catch it
+    pseed <- sample(20000:30000, 1)
+    set.seed(pseed)
+    cat("\n the seed is", pseed, "\n")
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = rexp(5, 10),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2") )
+    expect_silent(oiI1 <- oncoSimulIndiv(oi,
+                                         model = "Exp",
+                                         mutationPropGrowth = TRUE,
+                                         seed = NULL))                
 })
+
 
 test_that("mutationPropGrowth no warning with McFl, indiv", {
               oi <- allFitnessEffects(orderEffects =
@@ -95,11 +101,11 @@ test_that("mutationPropGrowth OK  with Exp, sample", {
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-              expect_warning(oiI1 <- oncoSimulSample(4,
+              expect_message(oiI1 <- oncoSimulSample(4,
                                                      oi,
                                                      model = "Exp",
                                                      mutationPropGrowth = TRUE),
-                             NA)
+                             "Successfully", fixed = TRUE)
 })
 
 
@@ -111,7 +117,7 @@ test_that("mutationPropGrowth OK  with McFL, sample", {
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-              expect_warning(oiI1 <- oncoSimulSample(4,
+              expect_message(oiI1 <- oncoSimulSample(4,
                                                      oi,
                                                      model = "McFL",
                                                      mu = 5e-6,
@@ -120,7 +126,7 @@ test_that("mutationPropGrowth OK  with McFL, sample", {
                                                      sampleEvery = 0.025,
                                                      onlyCancer = FALSE,
                                                      mutationPropGrowth = TRUE),
-                             NA)
+                             "Successfully", fixed = TRUE)
 })
 
 
