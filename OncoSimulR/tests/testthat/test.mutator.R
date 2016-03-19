@@ -202,7 +202,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                             "d" = 14))
     nc1 <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =250,
                         mutationPropGrowth = FALSE,
-                        initSize = 1e6,
+                        initSize = 1e6, mc.cores = 2,
                         onlyCancer = FALSE)
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
@@ -214,7 +214,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                             "d" = 1))
     nc2 <- oncoSimulPop(pops, fe, muEF = fm8, finalTime =250,
                         mutationPropGrowth = FALSE,
-                        initSize = 1e6,
+                        initSize = 1e6, mc.cores = 2,
                         onlyCancer = FALSE)
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
@@ -226,7 +226,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                             "d" = 1e-6))
     nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =250,
                         mutationPropGrowth = FALSE,
-                        initSize = 1e6,
+                        initSize = 1e6, mc.cores = 2,
                         onlyCancer = FALSE)
     expect_true(median(summary(nc1)$NumClones) > median(summary(nc2)$NumClones))
     expect_true(median(summary(nc2)$NumClones) > median(summary(nc3)$NumClones))
@@ -246,6 +246,7 @@ test_that("McFL: Relative ordering of number of clones with mutator effects", {
     nc1 <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =250,
                         mutationPropGrowth = FALSE,
                         initSize  = 1e6, model = "McFL",
+                        mc.cores = 2,
                         onlyCancer = FALSE)
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
@@ -258,6 +259,7 @@ test_that("McFL: Relative ordering of number of clones with mutator effects", {
     nc2 <- oncoSimulPop(pops, fe, muEF = fm8, finalTime =250,
                         mutationPropGrowth = FALSE,
                         initSize  = 1e6, model = "McFL",
+                        mc.cores = 2,
                         onlyCancer = FALSE)
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
@@ -270,6 +272,7 @@ test_that("McFL: Relative ordering of number of clones with mutator effects", {
     nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =250,
                         mutationPropGrowth = FALSE,
                         initSize  = 1e6, model = "McFL",
+                        mc.cores = 2,
                         onlyCancer = FALSE)
     expect_true(median(summary(nc1)$NumClones) > median(summary(nc2)$NumClones))
     expect_true(median(summary(nc2)$NumClones) > median(summary(nc3)$NumClones))
@@ -290,22 +293,22 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "a",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "b",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "c",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "d",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     expect_true( median(summary(nca)$NumClones) <
                  median(summary(ncb)$NumClones))
     expect_true(median(summary(ncb)$NumClones) <
@@ -329,22 +332,22 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "a",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "b",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "c",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "d",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
@@ -380,25 +383,25 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
                          finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no,
                          initMutant = "thisistheagene",
-                         onlyCancer = FALSE)
+                         onlyCancer = FALSE, mc.cores = 2)
     pg <- oncoSimulPop(pops, fe, 
                        finalTime = ft,
                        mutationPropGrowth = TRUE,
                        initSize = no,
                        initMutant = "thisistheagene",
-                       onlyCancer = FALSE)
+                       onlyCancer = FALSE, mc.cores = 2)
     npg <- oncoSimulPop(pops, fe, 
                         finalTime = ft,
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
       ## I once saw a weird thing
     expect_true(var(summary(mpg)$NumClones) > 1e-4)
     expect_true(var(summary(mnpg)$NumClones) > 1e-4)
@@ -435,25 +438,25 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
     mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
                          finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
                          initMutant = "thisistheagene",
-                         onlyCancer = FALSE)
+                         onlyCancer = FALSE, mc.cores = 2)
     pg <- oncoSimulPop(pops, fe, 
                        finalTime = ft,
                        mutationPropGrowth = TRUE,
                        initSize = no, model = "McFL",
                        initMutant = "thisistheagene",
-                       onlyCancer = FALSE)
+                       onlyCancer = FALSE, mc.cores = 2)
     npg <- oncoSimulPop(pops, fe, 
                         finalTime = ft,
                         mutationPropGrowth = FALSE,
                         initSize = no, model = "McFL",
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, mc.cores = 2)
       ## I once saw a weird thing
     expect_true(var(summary(mpg)$NumClones) > 1e-4)
     expect_true(var(summary(mnpg)$NumClones) > 1e-4)
@@ -514,7 +517,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -523,7 +526,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -532,7 +535,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -541,7 +544,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg1.b <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -550,7 +553,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "oreoisasabgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
     expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
@@ -564,7 +567,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m2.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -573,7 +576,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m2.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -582,7 +585,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m2.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -591,7 +594,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))
@@ -648,7 +651,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -657,7 +660,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -666,7 +669,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -675,7 +678,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m1.pg1.b <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -684,7 +687,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "oreoisasabgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
     expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
@@ -698,7 +701,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m2.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -707,7 +710,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m2.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -716,7 +719,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     m2.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -725,7 +728,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, mc.cores = 2)
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))
@@ -787,7 +790,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -796,7 +799,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -805,7 +808,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -814,7 +817,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg1.b <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -823,7 +826,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
     ## next can fail sometimes. Similar to why
     ## expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a)) can fail
@@ -840,7 +843,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -849,7 +852,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -858,7 +861,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -867,7 +870,7 @@ test_that("Num clones: Mutator and var mut rates and init and really scrambled n
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ## next test sometimes fails; it can, as we use a small difference in total mut. rate.
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
@@ -927,7 +930,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -936,7 +939,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -945,7 +948,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -954,7 +957,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg1.b <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -963,7 +966,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
     expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
@@ -977,7 +980,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -986,7 +989,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -995,7 +998,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -1004,7 +1007,7 @@ test_that("McFL: Num clones: Mutator and var mut rates and init and really scram
                            mutationPropGrowth = TRUE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))
@@ -1044,7 +1047,7 @@ test_that("Yet another test of ordering, add scrambling", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     m1.pg1.b
     m2 <- allMutatorEffects(noIntGenes = c("oreoisasabgene" = 20))
@@ -1056,7 +1059,7 @@ test_that("Yet another test of ordering, add scrambling", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m2.pg1.b) == totalind(m2.pg1.b))
     m2.pg1.b
     expect_true(medianNClones(m2.pg1.b) > medianNClones(m1.pg1.b))
@@ -1103,7 +1106,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1)
     snom("oreoisasabgene", m1.pg1.b)
@@ -1146,7 +1149,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1)
     snom("oreoisasabgene", m1.pg1.b)
@@ -1189,7 +1192,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1)
     snom("oreoisasabgene", m1.pg1.b)
@@ -1240,7 +1243,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1)
     snom("oreoisasabgene", m1.pg1.b)
@@ -1294,7 +1297,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1)
     snom("oreoisasabgene", m1.pg1.b)
@@ -1352,7 +1355,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1)
     snom("oreoisasabgene", m1.pg1.b)
@@ -1370,7 +1373,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(sm("hereisoneagene", m1.pg1.a) == totalind(m1.pg1.a))
     enom("hereisoneagene", pg1)
     snom("hereisoneagene", m1.pg1.a)
@@ -1397,7 +1400,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
 
     expect_true(sm("hereisoneagene", m2.pg1.a) == totalind(m2.pg1.a))
     enom("hereisoneagene", pg1)
@@ -1423,7 +1426,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -1432,7 +1435,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -1441,7 +1444,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m1.pg1.b <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -1450,7 +1453,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
     expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
@@ -1464,7 +1467,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg2.a <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -1473,7 +1476,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -1482,7 +1485,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     m2.pg2.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg2,
@@ -1491,7 +1494,7 @@ test_that("Expect freq genotypes: Mutator and var mut rates and init and really 
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
-                           onlyCancer = FALSE, seed = NULL)
+                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))

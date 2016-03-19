@@ -94,7 +94,7 @@ test_that("Same freqs, chisq, when s=0 and t = 1", {
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -118,7 +118,7 @@ test_that("Same freqs, chisq, when s and t = 1", {
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -174,7 +174,7 @@ test_that("Different freqs as they should be ordered and chisq, when s and t = 1
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -202,7 +202,7 @@ test_that("Different freqs as they should be ordered, when s and t> 1", {
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 4,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -251,7 +251,7 @@ test_that("Complex fitness specification, tiny s diffs", {
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -301,7 +301,7 @@ test_that("Complex fitness specification, large diffs", {
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -432,7 +432,7 @@ test_that("McFL: Same freqs, chisq, when s and t = 1", {
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -456,7 +456,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0 a
                        model = "McFL",
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL                       
+                       seed = NULL, mc.cores = 2                       
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -485,7 +485,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s and
                        model = "McFL",
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -514,7 +514,7 @@ test_that("McFL: Different freqs as they should be ordered, when s and t> 1", {
                        model = "McFL",
                        initSize = no,
                        finalTime = 4,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -564,7 +564,7 @@ test_that("McFL: Complex fitness specification, tiny s diffs", {
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -615,7 +615,7 @@ test_that("McFL: Complex fitness specification, large diffs", {
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -777,7 +777,7 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 5,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -791,7 +791,7 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -822,7 +822,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                        initSize = no,
                        model = "McFL",
                        finalTime = 200,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -838,7 +838,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                        initSize = no,
                        model = "McFL",
                        finalTime = 1,
-                       seed = NULL
+                       seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
