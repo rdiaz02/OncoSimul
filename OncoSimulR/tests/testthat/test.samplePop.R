@@ -279,3 +279,33 @@ test_that("exercising the sampling code, v2 objects, more", {
                                        typeSample = "whole"),
                              "Subjects by Genes matrix of 4 subjects and 6 genes")
           })
+
+
+
+test_that("exercising sampling code, single sampled period", {
+    o3init <- allFitnessEffects(orderEffects = c(
+                            "M > D > F" = 0.99,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.1,
+                            "M > D"     = 0.9),
+                        noIntGenes = c("u" = 0.01, 
+                                       "v" = 0.01,
+                                       "w" = 0.001,
+                                       "x" = 0.0001,
+                                       "y" = -0.0001,
+                                       "z" = 0.001),
+                        geneToModule =
+                            c("Root" = "Root",
+                              "M" = "m",
+                              "F" = "f",
+                              "D" = "d") )
+    for(i in 1:10) {
+        i1 <- oncoSimulIndiv(o3init, model = "Exp", initSize = 1e8,
+                             mu = 1e-3, finalTime = .01,
+                             detectionDrivers = 2,
+                             onlyCancer = FALSE
+                             )
+        expect_message(spi <- samplePop(i1, timeSample = "unif"),
+                       "Subjects", fixed = TRUE)
+    }
+})

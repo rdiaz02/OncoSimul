@@ -103,7 +103,7 @@ test_that("printing oncosimul object", {
               out <- oncoSimulIndiv(oi, 
                                     detectionSize = 1e4,
                                     onlyCancer = FALSE)
-              expect_output(out,
+              expect_output(print(out),
                             "Individual OncoSimul trajectory with call")
           })
 
@@ -120,7 +120,7 @@ test_that("printing oncosimul pop object", {
                                   oi, 
                                   detectionSize = 1e4,
                                   onlyCancer = FALSE)
-              expect_output(out,
+              expect_output(print(out),
                             "Population of OncoSimul trajectories of 4 individuals")
           })
 

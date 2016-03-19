@@ -297,6 +297,7 @@ evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 
 ## 2. Simulate the data. Here we use the "McFL" model and set explicitly
 ##    parameters for mutation rate, final and initial sizes, etc.
+RNGkind("Mersenne-Twister")
 set.seed(983)
 ep1 <- oncoSimulIndiv(sv2, model = "McFL",
                      mu = 5e-6,
