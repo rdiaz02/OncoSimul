@@ -21,7 +21,7 @@ test_that("exercising the oncosimul plotting code", {
               out <- oncoSimulPop(4,
                                   oi, 
                                   detectionSize = 1e4,
-                                  onlyCancer = FALSE)
+                                  onlyCancer = FALSE, mc.cores = 2)
               plot(out)
           })
 
@@ -42,7 +42,7 @@ test_that("exercising the oncosimul plotting code, thinning", {
               out <- oncoSimulPop(4,
                                   oi, 
                                   detectionSize = 1e4,
-                                  onlyCancer = FALSE)
+                                  onlyCancer = FALSE, mc.cores = 2)
               plot(out, thinData = TRUE)
           })
 
