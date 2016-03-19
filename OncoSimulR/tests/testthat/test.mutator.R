@@ -1200,14 +1200,16 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 
 ## FIXME and this too needs some work
 
+## This can take a long time, but then it makes sense: the number of
+## clones blows up
 test_that("Long genome, mutator. Just have it run", {
     ## 1000 genes. Need to increase pops or many empty cells
     
-    pops <- 10
-    ft <- 100
-    lni <- 10000 
+    pops <- 2
+    ft <- 200
+    lni <- 200 
     no <- 1e3
-    ni <- c(0, 0, 0, rep(0, lni))
+    ni <- c(0.1, 0.01, 0.1, rep(0, lni))
     ## scramble around names
     names(ni) <- c("hereisoneagene",
                    "oreoisasabgene",
@@ -1218,12 +1220,12 @@ test_that("Long genome, mutator. Just have it run", {
     fe <- allFitnessEffects(noIntGenes = ni)
     mutator1 <- rep(1, lni + 3)
     ## pg1 <- rep(1e-5, lni + 3)
-    pg1 <- runif(lni + 3, min = 1e-8, max = 1e-5) 
+    pg1 <- runif(lni + 3, min = 1e-8, max = 1e-6) 
     names(mutator1) <- sample(names(ni))
     names(pg1) <- sample(names(ni))
-    mutator1["oreoisasabgene"] <- 10
+    mutator1["oreoisasabgene"] <- 100
     m1 <- allMutatorEffects(noIntGenes = mutator1)
-    pg1["hereisoneagene"] <- 1e-3 ## 1e-3
+    ## pg1["hereisoneagene"] <- 1e-3 ## 1e-3
     m1.pg1.b <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -1234,11 +1236,11 @@ test_that("Long genome, mutator. Just have it run", {
                            initMutant ="oreoisasabgene",
                            onlyCancer = FALSE)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
-    enom("oreoisasabgene", pg1)
-    snom("oreoisasabgene", m1.pg1.b)
-    p.fail <- 1e-3
-    expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
-                           p = pnom("oreoisasabgene", pg1))$p.value > p.fail)
+    ## enom("oreoisasabgene", pg1)
+    ## snom("oreoisasabgene", m1.pg1.b)
+    ## p.fail <- 1e-3
+    ## expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
+    ##                        p = pnom("oreoisasabgene", pg1))$p.value > p.fail)
 
 
 })
