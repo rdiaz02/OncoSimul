@@ -119,7 +119,7 @@ test_that("printing oncosimul pop object", {
               out <- oncoSimulPop(4,
                                   oi, 
                                   detectionSize = 1e4,
-                                  onlyCancer = FALSE)
+                                  onlyCancer = FALSE, mc.cores = 2)
               expect_output(print(out),
                             "Population of OncoSimul trajectories of 4 individuals")
           })
