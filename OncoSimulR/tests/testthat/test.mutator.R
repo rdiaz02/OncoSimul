@@ -218,7 +218,7 @@ test_that("fails if genes in mutator not in fitness", {
 
 test_that("Relative ordering of number of clones with mutator effects", {
     ## Can occasionally blow up with pE.f: pE not finite.
-    pseed <- sample(1000:2000, 1)
+    pseed <- sample(1000:90000, 1)
     set.seed(pseed)
     cat("\n x1: the seed is", pseed, "\n")
     pops <- 5
@@ -316,6 +316,10 @@ date()
 
 
 test_that("Relative ordering of number of clones with init mutant of mutator effects", {
+    ## Can occasionally blow up with pE.f: pE not finite.
+    pseed <- sample(1000:90000, 1)
+    set.seed(pseed)
+    cat("\n x2bc: the seed is", pseed, "\n")
     pops <- 10
     ni <- rep(0.01, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -355,6 +359,10 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 
 
 test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
+    ## Can occasionally blow up with pE.f: pE not finite.
+    pseed <- sample(1000:90000, 1)
+    set.seed(pseed)
+    cat("\n x2cd: the seed is", pseed, "\n")
     pops <- 10
     ni <- rep(0, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -400,6 +408,10 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 
 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
+    ## Can occasionally blow up with pE.f: pE not finite.
+    pseed <- sample(1000:90000, 1)
+    set.seed(pseed)
+    cat("\n x2ef: the seed is", pseed, "\n")
     pops <- 10
     ft <- 1
     lni <- 200
@@ -455,6 +467,10 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
 
 
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
+    ## Can occasionally blow up with pE.f: pE not finite.
+    pseed <- sample(1000:90000, 1)
+    set.seed(pseed)
+    cat("\n x2gh: the seed is", pseed, "\n")
     pops <- 10
     ft <- 1
     lni <- 200
