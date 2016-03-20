@@ -554,7 +554,7 @@ oncoSimulIndiv <- function(fp,
                                         errorHitWallTime = errorHitWallTime,
                                         errorHitMaxTries = errorHitMaxTries,
                                         keepPhylog = keepPhylog,
-                                        muEF = muEF),
+                                        MMUEF = muEF),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }

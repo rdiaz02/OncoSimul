@@ -96,6 +96,28 @@ struct fitnessEffectsAll {
   
 };
 
+inline fitnessEffectsAll nullFitnessEffects() {
+  // Make it explicit
+  fitnessEffectsAll f;
+  f.gMOneToOne = true;
+  f.genomeSize = 0;
+  f.allOrderG.resize(0);
+  f.allPosetG.resize(0);
+  f.Poset.resize(0);
+  f.Epistasis.resize(0);
+  f.orderE.resize(0);
+  f.Gene_Module_tabl.resize(0);
+  f.allGenes.resize(0);
+  f.drv.resize(0);
+  f.genesNoInt.shift = -99L;
+  f.genesNoInt.NumID.resize(0);
+  f.genesNoInt.names.resize(0);
+  f.genesNoInt.s.resize(0);
+  return f;
+}
+
+
+
 struct fitness_as_genes {
   // fitnessEffectsAll in terms of genes.  Useful for output
   // conversions. There could be genes that are both in orderG and

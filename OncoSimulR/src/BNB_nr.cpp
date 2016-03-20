@@ -1585,7 +1585,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double minDetectDrvCloneSz,
 			double extraTime,
 			bool keepPhylog,
-			Rcpp::List rmuEF,
+			Rcpp::List MMUEF,
 			Rcpp::IntegerVector full2mutator_) {  
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
@@ -1633,12 +1633,16 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // Mutator effects
   fitnessEffectsAll muEF;
   if( (full2mutator.size() != 0) ) 
-    muEF = convertFitnessEffects(rmuEF);
-  
+    muEF = convertFitnessEffects(MMUEF);
+  else
+    muEF = nullFitnessEffects();
+  // Paranoia. We should never end up here.
   if( (full2mutator.size() != 0) && (muEF.genomeSize == 0))
     throw std::logic_error("full2mutator > 0 with mutatorEffects.genomesize 0");
-  if( (full2mutator.size() == 0) && (muEF.genomeSize != 0))
+  if( (full2mutator.size() == 0) && (muEF.genomeSize != 0)) {
+    DP2(muEF.genomeSize);
     throw std::logic_error("full2mutator 0 with mutatorEffects.genomesize != 0");
+  }
   
   bool runAgain = true;
   bool reachDetection = false;

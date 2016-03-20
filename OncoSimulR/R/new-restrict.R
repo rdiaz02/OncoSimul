@@ -1374,7 +1374,7 @@ nr_oncoSimul.internal <- function(rFE,
                                   minDetectDrvCloneSz,
                                   extraTime,
                                   keepPhylog,
-                                  muEF
+                                  MMUEF = NULL ## avoid partial matching, and set default
                                   ) {
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
@@ -1482,10 +1482,10 @@ nr_oncoSimul.internal <- function(rFE,
         }
     }
 
-    if(!is.null(muEF)) {
-        if(!inherits(muEF, "mutatorEffects"))
+    if(!is.null(MMUEF)) {
+        if(!inherits(MMUEF, "mutatorEffects"))
             stop("muEF must be a mutatorEffects object")
-        full2mutator_ <- matchGeneIDs(muEF, rFE)
+        full2mutator_ <- matchGeneIDs(MMUEF, rFE)
         if(any(is.na(full2mutator_$Full)))
             stop("Genes in mutatorEffects not present in fitnessEffects")
         if(any(is.na(full2mutator_)))
@@ -1526,7 +1526,7 @@ nr_oncoSimul.internal <- function(rFE,
                  minDetectDrvCloneSz = minDetectDrvCloneSz,
                  extraTime = extraTime,
                  keepPhylog = keepPhylog,
-                 muEF = muEF,
+                 MMUEF = MMUEF,
                  full2mutator_ = full2mutator_),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))

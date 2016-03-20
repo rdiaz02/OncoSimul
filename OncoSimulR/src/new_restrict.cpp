@@ -410,6 +410,12 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   } else {
     fe.genesNoInt.shift = -9L;
   }
+  // If this is null, use the nullFitnessEffects function; never
+  // end up here.
+  if( (rrt.size() + re.size() + ro.size() + rgi.size()) == 0) {
+      throw std::logic_error("\n Nothing inside this fitnessEffects; why are you here?");
+  }
+  
   fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
   fe.allOrderG = sortedAllOrder(fe.orderE);
   fe.allPosetG = sortedAllPoset(fe.Poset);
