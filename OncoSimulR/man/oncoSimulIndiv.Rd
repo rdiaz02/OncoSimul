@@ -146,14 +146,16 @@ oncoSimulSample(Nindiv,
 } \item{detectionSize}{ What is the minimal number of cells for cancer
 to be detected.  For \code{oncoSimulSample} this can be a vector.
 
-}
-\item{detectionDrivers}{
-  The minimal number of drivers present in any clone for cancer to be
-  detected. For \code{oncoSimulSample} this can be a vector. The default
-  in this case is a vector of drivers from a uniform between 2 and 0.75
-  the total number of drivers
+} 
+
+\item{detectionDrivers}{ The minimal number of drivers (not modules,
+drivers, whether or not they are from the same module) present in any
+clone for cancer to be detected. For \code{oncoSimulSample} this can be
+a vector. The default in this case is a vector of drivers from a uniform
+between 2 and 0.75 the total number of drivers.
 
 }
+
 \item{sampleEvery}{
   
   How often the whole population is sampled. This is not the same as the
