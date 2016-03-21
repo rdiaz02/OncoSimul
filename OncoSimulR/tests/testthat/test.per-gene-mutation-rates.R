@@ -1,5 +1,9 @@
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
+### FIXME: recheck the time for the chisq tests. And beware with the
+### seeds
+
+
 ## I fix seeds because otherwise with continuous testing I get lots of
 ## false positives.
 
@@ -83,17 +87,19 @@ test_that("Only no-int, different numbers, fail", {
 
 
 test_that("Same freqs, chisq, when s=0 and t = 1", {
-    set.seed(95)
+    
+    
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
-    no <- 5e5
-    reps <- 10000
+    no <- 1e7
+    reps <- 200
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE,
+                       fe1, mu = muvar2,
+                       onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 1,
+                       finalTime = 0.001,
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -103,6 +109,8 @@ test_that("Same freqs, chisq, when s=0 and t = 1", {
     p.fail <- 1e-3
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
+
+
 })
 
 

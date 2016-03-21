@@ -38,10 +38,20 @@ sm <- function(name, out) {
     cs[ii]
 }
 
+totalind <- function(out) {
+    ## total num indivs
+  sum(unlist(lapply(out, function(x) x$TotalPopSize)))  
+}
+
 smA <- function(out) {
     ## totals counts for all. So total mutated over all.
     cs <- colSums(OncoSimulR:::geneCounts(out))
     sum(cs)
+}
+
+smAPi <- function(out) {
+    ## smAnom but divided by number of individuals.
+    smA(out)/totalind(out)
 }
 
 smAnom <- function(out, name) {
@@ -58,10 +68,8 @@ smAnomPi <- function(out, name) {
     smAnom(out, name)/totalind(out)
 }
 
-totalind <- function(out) {
-    ## total num indivs
-  sum(unlist(lapply(out, function(x) x$TotalPopSize)))  
-}
+
+
 
 test_that("This should not crash", {
     ## This used to crash because of not nulling the empty mutator effects
@@ -792,7 +800,6 @@ date()
 test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
-
     ## We test:
     ##  - mutator increases mutation rates as seen in:
     ##        - number of clones created
@@ -847,7 +854,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## decrease init pop size to make this fast.
     pseed <- sample(1:9999999, 1)
     set.seed(pseed)
-    cat("\n nm0: the seed is", pseed, "\n")
+    cat("\n nm1: the seed is", pseed, "\n")
     pops <- 6
     ft <- 1
     lni <- 100
@@ -892,6 +899,119 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
 
 
 
+
+date()
+test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t", {
+    ## Here, there is no reproduction or death. Just mutation. And no double
+    ## mutants either.
+    ## We test:
+    ##  - mutator increases mutation rates as seen in:
+    ##        - number of clones created
+    ##        - number of total mutation events
+    pseed <- sample(1:9999999, 1)
+    set.seed(pseed)
+    cat("\n nm2: the seed is", pseed, "\n")
+    pops <- 6
+    ft <- .0001
+    lni <- 100
+    no <- 1e7
+    fi <- rep(0, lni)
+    muvector <- rep(5e-6, lni)
+    ## scrambling names
+    names(fi) <- replicate(lni,
+                           paste(sample(letters, 12), collapse = ""))
+    names(muvector) <- sample(names(fi))
+    ## choose something for mutator
+    mutator10 <- mutator100 <- fi[5]
+    mutator10[] <- 10
+    mutator100[] <- 100
+    fe <- allFitnessEffects(noIntGenes = fi)
+    m10 <- allMutatorEffects(noIntGenes = mutator10)
+    m100 <- allMutatorEffects(noIntGenes = mutator100)
+    pop10 <- oncoSimulPop(pops,
+                        fe,
+                        mu = muvector,
+                        muEF = m10,
+                        model = "McFL",
+                        finalTime = ft,
+                        mutationPropGrowth = FALSE,
+                        initSize = no,
+                        initMutant = names(mutator10),
+                        onlyCancer = FALSE, mc.cores = 2)
+    pop100 <- oncoSimulPop(pops,
+                        fe,
+                        mu = muvector,
+                        muEF = m100,
+                        model = "McFL",                        
+                        finalTime = ft,
+                        mutationPropGrowth = FALSE,
+                        initSize = no,
+                        initMutant = names(mutator10),
+                        onlyCancer = FALSE, mc.cores = 2)
+    ## number of total mutations
+    expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
+    ## number of clones
+    expect_true(medianNClones(pop10) < medianNClones(pop100))
+})
+date()
+
+
+date()
+test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger t", {
+    ## reproduction, death, and double and possibly triple mutants. We
+    ## decrease init pop size to make this fast.
+    pseed <- sample(1:9999999, 1)
+    set.seed(pseed)
+    cat("\n nm3: the seed is", pseed, "\n")
+    pops <- 6
+    ft <- 1
+    lni <- 100
+    no <- 1e5
+    fi <- rep(0, lni)
+    muvector <- rep(5e-6, lni)
+    ## scrambling names
+    names(fi) <- replicate(lni,
+                           paste(sample(letters, 12), collapse = ""))
+    names(muvector) <- sample(names(fi))
+    ## choose something for mutator
+    mutator10 <- mutator100 <- fi[5]
+    mutator10[] <- 10
+    mutator100[] <- 100
+    fe <- allFitnessEffects(noIntGenes = fi)
+    m10 <- allMutatorEffects(noIntGenes = mutator10)
+    m100 <- allMutatorEffects(noIntGenes = mutator100)
+    pop10 <- oncoSimulPop(pops,
+                        fe,
+                        mu = muvector,
+                        muEF = m10,
+                        model = "McFL",                        
+                        finalTime = ft,
+                        mutationPropGrowth = FALSE,
+                        initSize = no,
+                        initMutant = names(mutator10),
+                        onlyCancer = FALSE, mc.cores = 2)
+    pop100 <- oncoSimulPop(pops,
+                        fe,
+                        mu = muvector,
+                        muEF = m100,
+                        model = "McFL",                        
+                        finalTime = ft,
+                        mutationPropGrowth = FALSE,
+                        initSize = no,
+                        initMutant = names(mutator10),
+                        onlyCancer = FALSE, mc.cores = 2)
+    ## number of total mutations
+    expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
+    ## number of clones
+    expect_true(medianNClones(pop10) < medianNClones(pop100))
+})
+date()
+
+
+
+
+
+## I stop here
 
 ## expected total number of mutations
 test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
