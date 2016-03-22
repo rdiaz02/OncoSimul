@@ -4,6 +4,8 @@
 
 ## BEWARE: this do not test that the plotting is correct! It just calls it.
 
+## Takes about 11 seconds on my laptop
+cat(paste("\n Starting plots tests", date(), "\n"))
 test_that("exercising the oncosimul plotting code", {
               data(examplePosets)
               p701 <- examplePosets[["p701"]]
@@ -58,17 +60,16 @@ test_that("exercising the poset plotting code", {
           })
 
 
-
 test_that("exercising plotClonePhylog", {
               data(examplesFitnessEffects)
               tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                                      model = "McFL", 
-                                     mu = 5e-5,
+                                     mu = 5e-6,
                                      detectionSize = 1e8, 
                                      detectionDrivers = 3,
-                                     sampleEvery = 0.025,
+                                     sampleEvery = 0.05, ## to make it fast
                                      max.num.tries = 10,
-                                     keepEvery = 5,
+                                     keepEvery = 15,
                                      initSize = 2000,
                                      finalTime = 3000,
                                      onlyCancer = FALSE,
@@ -85,6 +86,7 @@ test_that("exercising plotClonePhylog", {
               plotClonePhylog(tmp, N = 10, keepEvents = TRUE)
           })
 
+## the next is slightly slow
 test_that("exercising the fitnessEffects plotting code", {
               data(examplesFitnessEffects)
               plot(examplesFitnessEffects[["cbn1"]])
@@ -108,12 +110,11 @@ test_that("exercising the fitnessEffects plotting code", {
                                             "D" = "d1, d2", "E" = "e1",
                                             "F" = "f1, f2", "G" = "g1"))
               plot(fp4m, expandModules = TRUE)
-              plot(fp4m, "igraph", layout = layout.reingold.tilford, 
+              plot(fp4m, "igraph", layout = igraph::layout.reingold.tilford, 
                    expandModules = TRUE)
-              plot(fp4m, "igraph", layout = layout.reingold.tilford, 
+              plot(fp4m, "igraph", layout = igraph::layout.reingold.tilford, 
                    expandModules = TRUE, autofit = TRUE)
               plot(fp4m, expandModules = TRUE, autofit = TRUE)
-              
           })
 
 
@@ -139,9 +140,9 @@ test_that("stacked, stream, genotypes and some colors", {
                              mu = 5e-5,
                              detectionSize = 1e8, 
                              detectionDrivers = 3,
-                             sampleEvery = 0.025,
+                             sampleEvery = 0.05,
                              max.num.tries = 10,
-                             keepEvery = 5,
+                             keepEvery = 100,
                              initSize = 2000,
                              finalTime = 3000,
                              onlyCancer = FALSE,
@@ -180,44 +181,39 @@ test_that("stacked, stream, genotypes and some colors", {
 
 
 test_that("xlab, ylab, ylim, xlim can be passed", {
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    b1 <- oncoSimulIndiv(p701)
-
-    plot(b1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000), log = "",
-         plotDrivers = TRUE, xlim = c(20, 70))
-
-    plot(b1, show = "drivers", type = "stacked",
-         xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000),
-         xlim = c(20, 70),
-         plotDrivers = TRUE)
-    
-    plot(b1, show = "drivers", type = "stream",
-         addtot = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70),
-         plotDrivers = TRUE)
-
-    plot(b1, show = "genotypes",
-         addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(1, 1000),
-                  xlim = c(20, 70),
-         plotDrivers = TRUE)
-
-    plot(b1, show = "genotypes", type = "stacked",
-         xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70),
-         plotDrivers = TRUE)
-    
-    plot(b1, show = "genotypes", type = "stream",
-         addtot = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(-20, 70),
-         plotDrivers = TRUE)
-
+    ## Running times of Exp model are more unpredictable.
+    ## Move that to long tests.
+    ## data(examplePosets)
+    ## p701 <- examplePosets[["p701"]]
+    ## b1 <- oncoSimulIndiv(p701, keepEvery = 5)
+    ## plot(b1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-1000, 1000), log = "",
+    ##      plotDrivers = TRUE, xlim = c(20, 70))
+    ## plot(b1, show = "drivers", type = "stacked",
+    ##      xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-1000, 1000),
+    ##      xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "drivers", type = "stream",
+    ##      addtot = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-100, 1000),
+    ##               xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "genotypes",
+    ##      addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(1, 1000),
+    ##               xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "genotypes", type = "stacked",
+    ##      xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-1000, 1000),
+    ##               xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "genotypes", type = "stream",
+    ##      addtot = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-100, 1000),
+    ##               xlim = c(-20, 70),
+    ##      plotDrivers = TRUE)
     sa <- 0.1
     sb <- -0.2
     sab <- 0.25
@@ -240,43 +236,35 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          initSize = 2000,
                          finalTime = 3000,
                          onlyCancer = FALSE)
-
     plot(e1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(1, 1000),
-                  xlim = c(20, 70),
+                  xlim = c(20, 70), thinData = TRUE,
          plotDrivers = TRUE)
-
     plot(e1, show = "drivers", type = "stacked",
          xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000),
+         ylab = "ylab", ylim = c(-1000, 1000), thinData = TRUE,
                   xlim = c(20, 70),
          plotDrivers = TRUE)
-    
     plot(e1, show = "drivers", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70),
+                  xlim = c(20, 70), thinData = TRUE,
          plotDrivers = TRUE)
-
     plot(e1, show = "genotypes",
          addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70),
+         ylab = "ylab", ylim = c(-1000, 1000), 
+                  xlim = c(20, 70), thinData = TRUE,
          plotDrivers = TRUE)
-
     plot(e1, show = "genotypes", type = "stacked",
          xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70),
+                  xlim = c(20, 70), thinData = TRUE,
          plotDrivers = TRUE)
-    
     plot(e1, show = "genotypes", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70),
+                  xlim = c(20, 70), thinData = TRUE,
          plotDrivers = TRUE)
-
-    
 })
 
 
@@ -284,18 +272,35 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     data(examplePosets)
     ## An object of class oncosimul
     p705 <- examplePosets[["p705"]]
-    p1 <- oncoSimulIndiv(p705)
+    ## Again, Exp model is much more variable and can take long.
+    ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+    p1 <- oncoSimulIndiv(p705, model = "McFL",
+                         mu = 5e-6,
+                         sampleEvery = 0.02,
+                         keepEvery = 10,
+                         initSize = 2000,
+                         finalTime = 3000,
+                         onlyCancer = FALSE)
     class(p1)
-    plot(p1, type = "stacked", show = "genotypes")
-    plot(p1, type = "stream", show = "genotypes")
-    plot(p1, type = "line", show = "genotypes")
+    plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
+    plot(p1, type = "stream", show = "genotypes", thinData = TRUE)
+    plot(p1, type = "line", show = "genotypes", thinData = TRUE)
 })
+
 
 test_that("passing colors", {
     data(examplePosets)
     ## An object of class oncosimul
     p705 <- examplePosets[["p705"]]
-    p1 <- oncoSimulIndiv(p705)
+    ## Again, Exp model is much more variable and can take long.
+    ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+    p1 <- oncoSimulIndiv(p705, model = "McFL",
+                         mu = 5e-6,
+                         sampleEvery = 0.02,
+                         keepEvery = 10,
+                         initSize = 2000,
+                         finalTime = 3000,
+                         onlyCancer = FALSE)
     class(p1)
     plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
     plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
@@ -350,7 +355,6 @@ test_that("no stacked/stream with log", {
 
 
 
-
 test_that("exercise single driver", {
     sa <- 0.1
     sb <- -0.2
@@ -401,3 +405,4 @@ test_that("exercise single driver", {
 ## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
 ## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
 
+cat(paste("\n Ending plots tests", date(), "\n"))

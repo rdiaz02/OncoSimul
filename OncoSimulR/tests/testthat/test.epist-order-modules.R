@@ -82,27 +82,27 @@ out5 <- structure(list(Gene = c("Root", "a", "b", "mXy", "uVw", "vzt"
 
 
 test_that("gm to geneModule, ex1", {
-    expect_identical(gm.to.geneModuleL(gM, FALSE),
+    expect_identical(OncoSimulR:::gm.to.geneModuleL(gM, FALSE),
                      out1)
 })
 
 test_that("gm to geneModule, ex2", {
-    expect_identical(gm.to.geneModuleL(gM2, FALSE),
+    expect_identical(OncoSimulR:::gm.to.geneModuleL(gM2, FALSE),
                      out2)
 })
 
 test_that("gm to geneModule, ex3", {
-    expect_identical(gm.to.geneModuleL(gM3, FALSE),
+    expect_identical(OncoSimulR:::gm.to.geneModuleL(gM3, FALSE),
                      out3)
 })
 
 test_that("gm to geneModule, ex4", {
-    expect_identical(gm.to.geneModuleL(gM4, FALSE),
+    expect_identical(OncoSimulR:::gm.to.geneModuleL(gM4, FALSE),
                      out4)
 })
 
 test_that("gm to geneModule, ex5", {
-    expect_identical(gm.to.geneModuleL(gM5, FALSE),
+    expect_identical(OncoSimulR:::gm.to.geneModuleL(gM5, FALSE),
                      out5)
 })
 
@@ -112,12 +112,12 @@ gb1 <- c("a" = "1, 2", "Root" = "Root", "b" = "3, 4, 5", "c" = "6")
 
 ## this is no longer an error as we can deal with no Root
 ## test_that("error if no root in gm", {
-##              expect_error(gm.to.geneModuleL(gb, FALSE))
+##              expect_error(OncoSimulR:::gm.to.geneModuleL(gb, FALSE))
 ##           })
 
 
 test_that("error if root out of place in gm", {
-             expect_error(gm.to.geneModuleL(gb1, FALSE))
+             expect_error(OncoSimulR:::gm.to.geneModuleL(gb1, FALSE))
           })
 
 

@@ -1,6 +1,10 @@
 ## None should crash or give an uncaught error
 ## Just a minimal set. Will later check warnings when they should, etc.
 
+## Like the one in tests, but using all of them. Note also the old
+## indexing of [16], because we are using all. Could have [i], but this is
+## telling me we are using the original set.
+
 data(examplesFitnessEffects)
 
 ## sometimes cancer is not reached. No problem.
@@ -8,15 +12,10 @@ data(examplesFitnessEffects)
 ## Very rarely, popSize > 1e15, and we get an exception. Decrease
 ## sampleEvery. And e2 only has two genes.
 
-## We take a sample. All of the 22 are run in the long tests.
-nex <- 5
-examplesFitnessEffects <- examplesFitnessEffects[
-    sample(length(examplesFitnessEffects), nex)]
-
 for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
-    if (names(examplesFitnessEffects)[i] == "e2") {
+    if (names(examplesFitnessEffects)[16] == "e2") {
         detectionDrv <- 2
         sE <- 0.05
     } else {
@@ -38,7 +37,7 @@ for(i in 1:length(examplesFitnessEffects)) {
 for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
-    if (names(examplesFitnessEffects)[i] == "e2") {
+    if (names(examplesFitnessEffects)[16] == "e2") {
         detectionDrv <- 2
         sE <- 0.05
     } else {
@@ -79,7 +78,7 @@ for(i in 1:length(examplesFitnessEffects)) {
               names(examplesFitnessEffects)[i], "\n"))
         cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
-    if (names(examplesFitnessEffects)[i] == "e2") {
+    if (names(examplesFitnessEffects)[16] == "e2") {
         sE <- 0.05
     } else {
         sE <- 1
@@ -95,7 +94,7 @@ for(i in 1:length(examplesFitnessEffects)) {
 for(i in 1:length(examplesFitnessEffects)) {
     cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
-    if (names(examplesFitnessEffects)[i] == "e2") {
+    if (names(examplesFitnessEffects)[16] == "e2") {
         detectionDrv <- 2
         sE <- 0.05
     } else {
