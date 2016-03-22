@@ -49,7 +49,7 @@ echo " "
 ## time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 echo " ******************************************* "
 echo " *******      long manual tests ************ "
-$V_R CMD INSTALL OncoSimulR_$V_ADA.tar.gz
+$V_R CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 time $V_R -e 'library(OncoSimulR); library(testthat); test_dir("./OncoSimulR/tests/manual/")'
 echo " "
 echo " =======     done long manual tests   =======     "

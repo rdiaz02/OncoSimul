@@ -189,7 +189,7 @@ test_that("poset to rT, with some nodes missing, nodes exchanged",{
 
 
 
-numTests <- 10 ## in long, we use 100
+numTests <- 40 ## in long, we use 100
 
 createAndConvert <- function(rangeNodes = 4:30,
                              rangeParents = 2:5,
@@ -245,7 +245,7 @@ createAndConvert <- function(rangeNodes = 4:30,
 
 masterTestCall <- function(rangeNodes = 4:30,
                            rangeParents = 2:5,
-                           verbose = TRUE) {
+                           verbose = FALSE) {
 
     out <- createAndConvert(rangeNodes = rangeNodes,
                            rangeParents = rangeParents,
@@ -280,7 +280,7 @@ tmp <- replicate(numTests, masterTestCall() )
 
 
 ## verify the simulator does generate correct adjacency matrices
-numSimul <- 10  ## in long, we use a 100
+numSimul <- 50  ## in long, we use a 100
 
 checkAdjMatOGraph <- function(rangeNodes = 4:30,
                               rangeParents = 2:5,

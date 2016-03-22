@@ -355,7 +355,7 @@ test_that("no stacked/stream with log", {
 
 
 
-test_that("exercise single driver", {
+test_that("exercise single clone and single driver", {
     sa <- 0.1
     sb <- -0.2
     sab <- 0.25
@@ -398,6 +398,28 @@ test_that("exercise single driver", {
                          finalTime = 0.01,
                          initMutant = "b")
     expect_silent(plot(e1))
+    sv4 <- allFitnessEffects(epistasis = c("a1" = sa),
+                             noIntGenes = rep(0, 100))
+    e4 <- oncoSimulIndiv(sv4, model = "Exp",
+                         mu = 1e-4,
+                         sampleEvery = 0.02,
+                         keepEvery = 1,
+                         initSize = 2000,
+                         onlyCancer = FALSE,
+                         finalTime = 5,
+                         initMutant = "a1")
+    expect_silent(plot(e4))
+    sv5 <- allFitnessEffects(epistasis = c("b2" = sa),
+                             noIntGenes = rep(0, 100))
+    e5 <- oncoSimulIndiv(sv5, model = "Exp",
+                         mu = 1e-4,
+                         sampleEvery = 0.02,
+                         keepEvery = 1,
+                         initSize = 2000,
+                         onlyCancer = FALSE,
+                         finalTime = 5,
+                         initMutant = "b2")
+    expect_silent(plot(e5))
 })    
 
 
