@@ -65,7 +65,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
     set.seed(pseed)
     cat("\n mpc1: the seed is", pseed, "\n")
     ft <- 2.5
-    pops <- 40
+    pops <- 200
     lni <- 400
     no <- 10
     ni <- c(5, 3, rep(0, lni))
@@ -122,7 +122,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
     ## nca2.
     ft <- 15 ## going beyond 16 or so, gets it to bail because of reaching max
     ## pop
-    pops <- 40
+    pops <- 200
     lni <- 300
     no <- 10
     ni <- c(1, 0.5, rep(0, lni))
@@ -179,7 +179,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
     ## mu
     ft <- 12 ## going beyond 13 or so, gets it to bail because of reaching max
     ## pop in nca
-    pops <- 40
+    pops <- 200
     lni <- 50
     no <- 10
     ni <- c(1.0, 0.8, rep(0, lni))
@@ -237,7 +237,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     set.seed(pseed)
     cat("\n mpcmcf1: the seed is", pseed, "\n")
     ft <- 20 ## unless large you rarely get triple, etc, mutatns
-    pops <- 40
+    pops <- 100
     lni <- 50 
     no <- 1e3
     ni <- c(3, 1.5, rep(0, lni))
@@ -292,7 +292,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     cat("\n mpcmcf2: the seed is", pseed, "\n")
     ## Increase ft
     ft <- 50 
-    pops <- 40
+    pops <- 200
     lni <- 30
     no <- 1e3
     ni <- c(2, 0.5, rep(0, lni))
@@ -358,7 +358,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     set.seed(pseed)
     cat("\n mpcmcf3: the seed is", pseed, "\n")
     ft <- 10 
-    pops <- 10
+    pops <- 40
     mu <- 1e-5
     lni <- 10
     fni <- 50
@@ -432,7 +432,7 @@ test_that("Without initmutant", {
     pseed <- sample(1:9999999, 1)
     set.seed(pseed)
     cat("\n s3: the seed is", pseed, "\n")
-    pops <- 20
+    pops <- 40
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e3
@@ -482,7 +482,7 @@ test_that("Without initmutant, 2", {
     cat("\n s2: the seed is", pseed, "\n")
     s2 <- 1.0
     ft <- 15
-    pops <- 20
+    pops <- 40
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e4
