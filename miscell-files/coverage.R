@@ -6,7 +6,7 @@ library(DT)
 library(OncoSimulR)
 library(help = OncoSimulR)
 
-setwd("~/Proyectos/OncoSimul/OncoSimulR")
+setwd("../OncoSimulR")
 
 cov3 <- package_coverage(type = "all")
 cov4 <- package_coverage()

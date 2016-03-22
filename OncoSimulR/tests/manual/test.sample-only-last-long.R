@@ -1,3 +1,6 @@
+## Like standard one, but with all 13 posets, which is an unneeded
+## overkill.
+
 data(examplePosets)
 ## RNGkind("Mersenne-Twister") 
 
@@ -43,9 +46,7 @@ runBothFuncts <- function(seed, Poset, functionPair) {
     return(list(all = b1, last = b2))
 }
 
-## We only use one from each of 11, 9, 7.
-## Whole collection tested in long tests
-examplePosets <- examplePosets[c(1, 5, 9)]
+
 for(i in 1:length(examplePosets)) {
     s1 <- round(runif(1) * 10000) ## do better as: as.integer(runif(1, 1, 1e9))
     Poset <- examplePosets[[i]]

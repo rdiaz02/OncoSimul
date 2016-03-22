@@ -161,7 +161,6 @@ inline void driverCounts(int& maxNumDrivers,
   // number of present drivers.
 
   // We used to do count_NumDrivers and then whichDrivers
-  
   maxNumDrivers = 0;
   int tmpdr = 0;
   int driver_indx;
@@ -175,11 +174,13 @@ inline void driverCounts(int& maxNumDrivers,
     }
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
-  
   for(size_t i = 0; i < countByDriver.size(); ++i) {
-    if(countByDriver[i] > 0) presentDrivers.push_back(i + 1);
-    ++totalPresentDrivers;
+    if(countByDriver[i] > 0) {
+      presentDrivers.push_back(i + 1);
+      ++totalPresentDrivers;
+    }
   }
+  
 }
 
 

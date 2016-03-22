@@ -1,3 +1,6 @@
+### Identical to the one in tests, except we set numSimul and numTests to 100
+
+
 ## library(OncoSimulR); library(testthat)
 
 ## A set of tests to verify transformations between graph formats are
@@ -189,7 +192,7 @@ test_that("poset to rT, with some nodes missing, nodes exchanged",{
 
 
 
-numTests <- 10 ## in long, we use 100
+numTests <- 100
 
 createAndConvert <- function(rangeNodes = 4:30,
                              rangeParents = 2:5,
@@ -280,7 +283,7 @@ tmp <- replicate(numTests, masterTestCall() )
 
 
 ## verify the simulator does generate correct adjacency matrices
-numSimul <- 10  ## in long, we use a 100
+numSimul <- 100
 
 checkAdjMatOGraph <- function(rangeNodes = 4:30,
                               rangeParents = 2:5,

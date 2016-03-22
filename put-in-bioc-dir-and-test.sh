@@ -45,8 +45,29 @@ if [[ $# == 1 ]]; then
     cd ~/Proyectos/OncoSimul/Subversion-in-BioC
     V_P=$(cat ./OncoSimulR/DESCRIPTION | grep Version | cut -d' ' -f2)
     rm OncoSimulR_$V_P.tar.gz
+    ## As shown in build report from BioC
+    echo " ***************************************** "
+    echo " *********     R CMD build  ************** "
+    echo " "
     time $V_R CMD build --keep-empty-dirs --no-resave-data OncoSimulR
+    echo " "
+    echo " ===========  done R CMD build   ========== "
+    echo " "
+    ## As shown in check report from BioC
+    echo " ***************************************** "
+    echo " **** R CMD check, as in check report **** "
+    echo ""
     time $V_R CMD check --no-vignettes --timings OncoSimulR_$V_P.tar.gz
+    echo " "
+    echo " =========   done R CMD check as in check report  =======  "
+    echo " "
+    ## time as explained in https://www.bioconductor.org/developers/package-guidelines/#correctness
+    echo " ************************************ "
+    echo " *****   R CMD check: time OK?  ***** "
+    echo ""
+    time $V_R CMD check --no-build-vignettes OncoSimulR_$V_P.tar.gz
+    echo " "
+    echo " ===========  done R CMD check time OK?   ========== "
 fi
 
 

@@ -1,3 +1,4 @@
+## Processing this file takes about 3 seconds on my laptop
 test_that("initMutant crashes",
           {
               o3 <- allFitnessEffects(orderEffects = c(
