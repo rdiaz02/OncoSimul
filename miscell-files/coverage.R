@@ -4,7 +4,7 @@ library(covr)
 library(shiny)
 library(DT)
 library(OncoSimulR)
-setwd("~../OncoSimulR")
+setwd("../OncoSimulR")
 
 cov3 <- package_coverage(type = "all")
 cov4 <- package_coverage()
