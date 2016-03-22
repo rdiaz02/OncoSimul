@@ -1079,7 +1079,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
     //  ************   5.2   ***************
     if(verbosity >= 2)
-      Rcpp::Rcout <<"\n\n\n*** Looping through 5.2. Iter = " << iter << " \n";
+      Rcpp::Rcout <<"\n\n\n*** Looping through 5.2. Iter = " << iter
+		  << ".  Current time " << currentTime <<	" \n";
 
     tSample = std::min(timeNextPopSample, finalTime);
 
@@ -1420,7 +1421,12 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    // }
 #endif
 	  // FIXME00: the if can be removed??
-	  if(popParams[sp].popSize > 0.0) {
+	    // Possibly. But note that the popParams[sp].popSize can be >
+	    // 0, but when updated via Algo2 and added to 1.0 we can end
+	    // in 1. Why? Because Algo2 can return a 0. The species
+	    // "exist" in the sense that it had non-zero pop size when we
+	    // last sampled/updated it.
+	  if(popParams[sp].popSize > 0.0) { 
 	    popParams[sp].popSize = 1.0 + 
 	      Algo2_st(popParams[sp], currentTime);
 	    if(verbosity >= 2) {

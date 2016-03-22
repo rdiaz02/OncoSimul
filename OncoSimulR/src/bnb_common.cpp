@@ -352,11 +352,11 @@ double Algo2_st(const spParamsP& spP,
     }
 
     if( (1.0 - pe/pm) < 0.0 ) {
-      // Rcpp::Rcout << "\n ERROR: Algo 2, (1.0 - pe/pm) < 0.0 \n";
-		// << " t = " << t << "; R = " << R  
-		// <<  "; W = " << W << ";\n death = " << death 
-		// <<  "; growth = " << growth << ";\n pm = " << pm 
-		// << "; pe = " << pe << "; pb = " << pb << std::endl;
+      Rcpp::Rcout << "\n ERROR: Algo 2, (1.0 - pe/pm) < 0.0 \n"
+		  << " t = " << t << "; R = " << spP.R  
+		  <<  "; W = " << spP.W << ";\n death = " << spP.death 
+		  <<  "; growth = " << spP.birth << ";\n pm = " << pm 
+		  << "; pe = " << pe << "; pb = " << pb << std::endl;
       throw std::range_error("Algo 2: 1 - pe/pm < 0");
     }
 
