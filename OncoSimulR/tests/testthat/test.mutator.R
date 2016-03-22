@@ -1,3 +1,5 @@
+## FIXME: see what did and di not crash in Lacerta.
+
 ### Since some tests are slow and some tests are very fragile, for now I
 ### leave date() and seed()
 
@@ -321,57 +323,6 @@ date()
 
 
 
-##FIXME: slow! remove?  this test takes over 4 secs: 
-date()
-test_that("McFL: Relative ordering of number of clones with mutator effects", {
-    ## Can occasionally blow up with pE.f: pE not finite.
-    pseed <- sample(1234:5678, 1)
-    set.seed(pseed)
-    cat("\n x2: the seed is", pseed, "\n")
-    pops <- 40
-    fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
-                                           "b" = 0.14,
-                                           "c" = 0.16,
-                                           "d" = 0.11))
-    fm6 <- allMutatorEffects(noIntGenes = c("a" = 5,
-                                            "b" = 10,
-                                            "c" = 12,
-                                            "d" = 14))
-    nc1 <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =250,
-                        mutationPropGrowth = FALSE,
-                        initSize  = 1e6, model = "McFL",
-                        mc.cores = 2,
-                        onlyCancer = FALSE)
-    fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
-                                           "b" = 0.14,
-                                           "c" = 0.16,
-                                           "d" = 0.11))
-    fm8 <- allMutatorEffects(noIntGenes = c("a" = 1,
-                                            "b" = 1,
-                                            "c" = 1,
-                                            "d" = 1))
-    nc2 <- oncoSimulPop(pops, fe, muEF = fm8, finalTime =250,
-                        mutationPropGrowth = FALSE,
-                        initSize  = 1e6, model = "McFL",
-                        mc.cores = 2,
-                        onlyCancer = FALSE)
-    fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
-                                           "b" = 0.14,
-                                           "c" = 0.16,
-                                           "d" = 0.11))
-    fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
-                                            "b" = 1e-6,
-                                            "c" = 1e-6,
-                                            "d" = 1e-6))
-    nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =250,
-                        mutationPropGrowth = FALSE,
-                        initSize  = 1e6, model = "McFL",
-                        mc.cores = 2,
-                        onlyCancer = FALSE)
-    expect_true(median(summary(nc1)$NumClones) > median(summary(nc2)$NumClones))
-    expect_true(median(summary(nc2)$NumClones) > median(summary(nc3)$NumClones))
-})
-date()
 
 
 test_that("Relative ordering of number of clones with init mutant of mutator effects", {
@@ -468,7 +419,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Can occasionally blow up with pE.f: pE not finite.
-    pseed <- sample(1000:90000, 1)
+    pseed <- sample(1:99999999, 1)
     set.seed(pseed)
     cat("\n x2ef: the seed is", pseed, "\n")
     pops <- 10
@@ -1006,6 +957,9 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
     expect_true(medianNClones(pop10) < medianNClones(pop100))
 })
 date()
+
+
+
 
 
 

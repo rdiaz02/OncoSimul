@@ -87,7 +87,7 @@ test_that("Only no-int, different numbers, fail", {
 
 
 test_that("Same freqs, chisq, when s=0 and t = 1", {
-    
+  
     
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0, 5)
@@ -1095,6 +1095,85 @@ test_that("Different freqs as they should be ordered and chisq, when s=0 and t =
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
 })
+
+
+
+
+
+
+
+
+
+mutsPerClone <- function(x, per.pop.mean = TRUE) {
+    perCl <- function(z)
+        unlist(lapply(z$GenotypesWDistinctOrderEff, length))
+    perCl2 <- function(z)
+        mean(unlist(lapply(z$GenotypesWDistinctOrderEff, length)))
+
+    if(per.pop.mean)    
+        unlist(lapply(x, function(u) perCl2(u)))
+    else
+        lapply(x, function(u) perCl(u))
+}
+
+totalind <- function(out) {
+    ## total num indivs
+  sum(unlist(lapply(out, function(x) x$TotalPopSize)))  
+}
+
+
+## FIXME: new
+
+test_that("Different freqs for three different per-gene-mut",{
+    
+    pseed <- sample(1:9999999, 1)
+    set.seed(pseed)
+    cat("\n df1: the seed is", pseed, "\n")
+    ng <- 10
+    ni <- rep(0, ng)
+    m1 <- runif(ng, min = 1e-7, max = 1e-6)
+    m2 <- runif(ng, min = 1e-4, max = 1e-3)
+    names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
+                                 paste(sample(letters, 12), collapse = "")))
+    fe1 <- allFitnessEffects(noIntGenes = ni)
+    ft <- 0.01
+    no <- 1e-5
+    reps <- 10
+    b1 <- oncoSimulPop(reps,
+                       fe1,
+                       mu = m1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed =NULL
+                       )
+    b2 <- oncoSimulPop(reps,
+                       fe1,
+                       mu = m2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed =NULL
+                       )
+    
+    (expected1 <- no*reps*m1)
+    (expected2 <- no*reps*m2)
+    
+    (cc1 <- colSums(OncoSimulR:::geneCounts(b1)))
+    (cc2 <- colSums(OncoSimulR:::geneCounts(b2)))    
+
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b1)),
+                           p = expected1/sum(expected1))$p.value > p.fail)
+    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b2)),
+                           p = expected1/sum(expected2))$p.value > p.fail)
+
+    
+})
+
+
+
 
 
 ##################### If you want to verify step by step that the C++ does
