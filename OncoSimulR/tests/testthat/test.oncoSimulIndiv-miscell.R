@@ -1,3 +1,18 @@
+test_that("initSize cannot be less than 1", {
+    np <- 20
+    s <- 0.015
+    spp <- 0.01
+    nd <- 5
+    mcf1 <- allFitnessEffects(noIntGenes = rep(spp, np),
+                              drvNames = integer(0))
+    expect_error(oncoSimulIndiv(mcf1,
+                                initSize = 0),
+                 "initSize < 1", fixed = TRUE)
+    expect_error(oncoSimulIndiv(mcf1,
+                                initSize = -3),
+                 "initSize < 1", fixed = TRUE)
+})
+
 test_that("samplePop with oncoSimulIndiv object", {
               oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.4),
