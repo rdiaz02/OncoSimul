@@ -3,7 +3,7 @@ RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ### FIXME: recheck the time for the chisq tests. And beware with the
 ### seeds
 
-
+### FIXME: check failures in Lacerta
 ## I fix seeds because otherwise with continuous testing I get lots of
 ## false positives.
 

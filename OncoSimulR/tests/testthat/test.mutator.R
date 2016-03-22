@@ -8,6 +8,18 @@ cat(paste("\n Starting test.mutator.R test at", date()))
 
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
+mutsPerClone <- function(x, per.pop.mean = TRUE) {
+    perCl <- function(z)
+        unlist(lapply(z$GenotypesWDistinctOrderEff, length))
+    perCl2 <- function(z)
+        mean(unlist(lapply(z$GenotypesWDistinctOrderEff, length)))
+
+    if(per.pop.mean)    
+        unlist(lapply(x, function(u) perCl2(u)))
+    else
+        lapply(x, function(u) perCl(u))
+}
+
 ## Minifunctions for testing
 medianNClones <- function(x) {
     median(summary(x)$NumClones)
@@ -419,7 +431,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Can occasionally blow up with pE.f: pE not finite.
-    pseed <- sample(1:99999999, 1)
+    pseed <- sample(99999999, 1)
     set.seed(pseed)
     cat("\n x2ef: the seed is", pseed, "\n")
     pops <- 10
@@ -558,7 +570,7 @@ date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u6: the seed is", pseed, "\n")
     pops <- 40
@@ -608,7 +620,7 @@ date()
 
 date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u7: the seed is", pseed, "\n")
     pops <- 200
@@ -653,7 +665,7 @@ date()
 date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator, decrease max mu
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u8: the seed is", pseed, "\n")
     pops <- 100
@@ -702,7 +714,7 @@ date()
 date()
 test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u8: the seed is", pseed, "\n")
     pops <- 200
@@ -755,7 +767,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     ##  - mutator increases mutation rates as seen in:
     ##        - number of clones created
     ##        - number of total mutation events
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm0: the seed is", pseed, "\n")
     pops <- 6
@@ -803,7 +815,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
 test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm1: the seed is", pseed, "\n")
     pops <- 6
@@ -859,7 +871,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
     ##  - mutator increases mutation rates as seen in:
     ##        - number of clones created
     ##        - number of total mutation events
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm2: the seed is", pseed, "\n")
     pops <- 6
@@ -911,7 +923,7 @@ date()
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm3: the seed is", pseed, "\n")
     pops <- 6
@@ -972,7 +984,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
     
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm0: the seed is", pseed, "\n")
     pops <- 6
@@ -1696,14 +1708,10 @@ date()
 
 
 
-## FIXME: here before 18:02. I stop here. We will later combine the
-## differences in per-gene with this one.
-## So mu will be a vector
-
 ## Slow (~ 3 seconds) but tests modules of mutator nicely.
 date() ## Beware: this uses a lot of RAM without the gc()
 test_that("Mutator modules differences", {
-    pseed <- sample(1:999999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mmd1: the seed is", pseed, "\n")
     reps <- 10
@@ -1773,6 +1781,238 @@ test_that("Mutator modules differences", {
                  mean(mutsPerClone(b1)))
 })
 date()
+
+
+
+date() 
+test_that("Mutator, several modules differences, fitness eval", {
+    ## the basis of what we do below, but fewer genes here
+    
+    ln <- 2 
+    m1 <- 5
+    ni <- rep(0, 3 * ln)
+    gna <- paste0("a", 1:ln)
+    gnb <- paste0("b", 1:ln)
+    gnc <- paste0("c", 1:ln)
+    names(ni) <- c(gna, gnb, gnc)
+    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
+    gna <- paste(gna, collapse = ", ")
+    gnb <- paste(gnb, collapse = ", ")
+    gnc <- paste(gnc, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn1))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
+                                            "B" = m1,
+                                            "C" = m1),
+                              geneToModule = c("A" = gna,
+                                               "B" = gnb,
+                                               "C" = gnc))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+
+    evalAllGenotypesFitAndMut(f1, mut1, order = FALSE)
+    evalAllGenotypesFitAndMut(f1, mut2, order = FALSE)
+    ## FIXME: complete these evals
+})
+
+    
+    
+
+date() 
+test_that("Mutator, several modules differences", {
+    pseed <- sample(99999999, 1)
+    set.seed(pseed)
+    cat("\n mmd1: the seed is", pseed, "\n")
+    reps <- 10
+    no <- 5e3
+    ft <- 50 ## you need it large enough to get enough hits
+    mu <- 1e-5
+    ln <- 50 
+    m1 <- 5 ## if this is too large, easy to get it to blow.
+    ni <- rep(0, 3 * ln)
+    gna <- paste0("a", 1:ln)
+    gnb <- paste0("b", 1:ln)
+    gnc <- paste0("c", 1:ln)
+    names(ni) <- c(gna, gnb, gnc)
+    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
+    gna <- paste(gna, collapse = ", ")
+    gnb <- paste(gnb, collapse = ", ")
+    gnc <- paste(gnc, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn1))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
+                                            "B" = m1,
+                                            "C" = m1),
+                              geneToModule = c("A" = gna,
+                                               "B" = gnb,
+                                               "C" = gnc))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL
+                       )
+    gc()
+    b2 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL
+                       )
+    gc()
+    ## summary(b2)[, c(1:3, 8:9)]
+    ## summary(b1)[, c(1:3, 8:9)]
+    ## mean(mutsPerClone(b2))
+    ## mean(mutsPerClone(b1))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
+})
+date()
+
+
+
+date() 
+test_that("Mutator, several modules differences, McFL", {
+    pseed <- sample(99999999, 1)
+    set.seed(pseed)
+    cat("\n mmd1: the seed is", pseed, "\n")
+    reps <- 10
+    no <- 5e3
+    ft <- 50 ## you need it large enough to get enough hits
+    mu <- 1e-5
+    ln <- 50 
+    m1 <- 5 ## if this is too large, easy to get it to blow.
+    ni <- rep(0, 3 * ln)
+    gna <- paste0("a", 1:ln)
+    gnb <- paste0("b", 1:ln)
+    gnc <- paste0("c", 1:ln)
+    names(ni) <- c(gna, gnb, gnc)
+    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
+    gna <- paste(gna, collapse = ", ")
+    gnb <- paste(gnb, collapse = ", ")
+    gnc <- paste(gnc, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn1))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
+                                            "B" = m1,
+                                            "C" = m1),
+                              geneToModule = c("A" = gna,
+                                               "B" = gnb,
+                                               "C" = gnc))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL, model = "McFL"
+                       )
+    gc()
+    b2 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL, model = "McFL"
+                       )
+    gc()
+    summary(b2)[, c(1:3, 8:9)]
+    summary(b1)[, c(1:3, 8:9)]
+    mean(mutsPerClone(b2))
+    mean(mutsPerClone(b1))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
+})
+date()
+
+
+
+date() 
+test_that("Mutator, several modules differences, sample at end only, and smaller effect", {
+    ## we also change the effect (smaller) and finalTime (longer)
+    ## you can increase ln, but then occasionally will take very long.
+    ## or increase my, or increase m1, etc.
+    pseed <- sample(99999999, 1)
+    set.seed(pseed)
+    cat("\n l-mmd2: the seed is", pseed, "\n")
+    reps <- 10
+    no <- 5e3
+    ft <- 1000 ## you need it large enough to get enough hits
+    mu <- 1e-5
+    ln <- 20 
+    m1 <- 2 ## if this is too large, easy to get it to blow.
+    ni <- rep(0, 3 * ln)
+    gna <- paste0("a", 1:ln)
+    gnb <- paste0("b", 1:ln)
+    gnc <- paste0("c", 1:ln)
+    names(ni) <- c(gna, gnb, gnc)
+    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
+    gna <- paste(gna, collapse = ", ")
+    gnb <- paste(gnb, collapse = ", ")
+    gnc <- paste(gnc, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn1))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
+                                            "B" = m1,
+                                            "C" = m1),
+                              geneToModule = c("A" = gna,
+                                               "B" = gnb,
+                                               "C" = gnc))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL, keepEvery = ft
+                       )
+    gc()
+    b2 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL, keepEvery = ft
+                       )
+    gc()
+    summary(b2)[, c(1:3, 8:9)]
+    summary(b1)[, c(1:3, 8:9)]
+    mean(mutsPerClone(b2))
+    mean(mutsPerClone(b1))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
+})
+date()
+
+
+
+
 
 ## 1.
 ### Use rT and order and epist and modules in fitness
