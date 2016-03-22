@@ -1693,6 +1693,87 @@ date()
 
 
 
+
+
+
+## FIXME: here before 18:02. I stop here. We will later combine the
+## differences in per-gene with this one.
+## So mu will be a vector
+
+## Slow (~ 3 seconds) but tests modules of mutator nicely.
+date() ## Beware: this uses a lot of RAM without the gc()
+test_that("Mutator modules differences", {
+    pseed <- sample(1:999999999, 1)
+    set.seed(pseed)
+    cat("\n mmd1: the seed is", pseed, "\n")
+    reps <- 10
+    no <- 5e3
+    ft <- 100
+    mu <- 1e-5
+    lni <- 50
+    m1 <- 1
+    m2 <- 25
+    m3 <- 50
+    ni <- rep(0, lni)
+    gn <- paste0("a", 1:lni)
+    names(ni) <- gn
+    gn <- paste(gn, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m2),
+                              geneToModule = c("A" = gn))
+    mut3 <- allMutatorEffects(epistasis = c("A" = m3),
+                              geneToModule = c("A" = gn))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL
+                       )
+    gc()
+    b2 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL
+                       )
+    gc()
+    b3 <- oncoSimulPop(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut3,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed = NULL
+                       )
+    gc()
+    ## summary(b3)[, c(1:3, 8:9)]
+    ## summary(b2)[, c(1:3, 8:9)]
+    ## summary(b1)[, c(1:3, 8:9)]
+    ## mean(mutsPerClone(b3))
+    ## mean(mutsPerClone(b2))
+    ## mean(mutsPerClone(b1))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    expect_true( median(summary(b3)$NumClones) >
+                 median(summary(b2)$NumClones))
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    expect_true( mean(mutsPerClone(b3)) >
+                 mean(mutsPerClone(b2)))
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
+})
+date()
+
 ## 1.
 ### Use rT and order and epist and modules in fitness
 ##  and different epist and modules in mutator

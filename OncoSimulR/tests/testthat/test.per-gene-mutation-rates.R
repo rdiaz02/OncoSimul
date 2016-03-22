@@ -1122,23 +1122,22 @@ totalind <- function(out) {
 }
 
 
-## FIXME: new
+## FIXME: new and done
 
-test_that("Different freqs for three different per-gene-mut",{
-    
+test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",{
     pseed <- sample(1:9999999, 1)
     set.seed(pseed)
     cat("\n df1: the seed is", pseed, "\n")
     ng <- 10
     ni <- rep(0, ng)
-    m1 <- runif(ng, min = 1e-7, max = 1e-6)
+    m1 <- runif(ng, min = 1e-6, max = 1e-5)
     m2 <- runif(ng, min = 1e-4, max = 1e-3)
     names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
                                  paste(sample(letters, 12), collapse = "")))
     fe1 <- allFitnessEffects(noIntGenes = ni)
     ft <- 0.01
-    no <- 1e-5
-    reps <- 10
+    no <- 1e7
+    reps <- 80
     b1 <- oncoSimulPop(reps,
                        fe1,
                        mu = m1,
@@ -1155,24 +1154,66 @@ test_that("Different freqs for three different per-gene-mut",{
                        finalTime = ft,
                        seed =NULL
                        )
-    
     (expected1 <- no*reps*m1)
     (expected2 <- no*reps*m2)
-    
     (cc1 <- colSums(OncoSimulR:::geneCounts(b1)))
     (cc2 <- colSums(OncoSimulR:::geneCounts(b2)))    
-
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b1)),
                            p = expected1/sum(expected1))$p.value > p.fail)
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b2)),
-                           p = expected1/sum(expected2))$p.value > p.fail)
-
-    
+                           p = expected2/sum(expected2))$p.value > p.fail)
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    ## Note the short time, so this is not always very different as few
+    ## have double or triple mutants
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
 })
 
 
+test_that("Num clones, muts per clone for different per-gene-mut",{
+    ## Like previous, but larger finalTime, so no longer chi-square test
+    ## here.
+    pseed <- sample(1:9999999, 1)
+    set.seed(pseed)
+    cat("\n df2: the seed is", pseed, "\n")
+    ng <- 40
+    ni <- rep(0, ng)
+    m1 <- runif(ng, min = 1e-6, max = 1e-5)
+    m2 <- runif(ng, min = 1e-4, max = 1e-3)
+    names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
+                                 paste(sample(letters, 12), collapse = "")))
+    fe1 <- allFitnessEffects(noIntGenes = ni)
+    ft <- 2
+    no <- 1e5
+    reps <- 20
+    b1 <- oncoSimulPop(reps,
+                       fe1,
+                       mu = m1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed =NULL
+                       )
+    b2 <- oncoSimulPop(reps,
+                       fe1,
+                       mu = m2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       seed =NULL
+                       )
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    ## Note the short time, so this is not always very different as few
+    ## have double or triple mutants
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
+})
+
+## FIXME: new and done end block
 
 
 
