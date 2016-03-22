@@ -31,13 +31,17 @@ rm ./OncoSimulR/vignettes/*.blg
 rm ./OncoSimulR/vignettes/*.synctex.*
 
 
-
-
+echo "\n **************** \n"
+echo "************ R CMD build\n"
 time $V_R CMD build --keep-empty-dirs OncoSimulR
 ## time $V_R CMD build --keep-empty-dirs --resave-data OncoSimulR
-
+echo "\n **************** \n"
+echo "R CMD check\n"
 time $V_R CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 ## time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
-
+echo "\n **************** \n"
+echo "long manual tests\n"
+$V_R CMD INSTALL OncoSimulR_$V_ADA.tar.gz
+time $V_R -e 'library(OncoSimulR); library(testthat); test_dir("./OncoSimulR/tests/manual/")'
 
 ## --force-multiarch in windoze?
