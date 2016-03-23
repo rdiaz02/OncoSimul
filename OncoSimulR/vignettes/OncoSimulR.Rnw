@@ -3310,6 +3310,39 @@ since this is likely to lead to better usage of multiple cores/CPUs if you
 are examining a large number of different scenarios.
 
 
+\subsection{Dealing with errors in
+  \Rfunction{oncoSimulPop}}\label{errorosp}
+
+Suppose you did something like
+
+<<>>=
+pancrError <- oncoSimulPop(10, pancr,
+                           initSize = 1e-5,
+                           detectionSize = 1e7,
+                           keepEvery = 10,
+                           mc.cores = 2)
+@ 
+
+The warning you are seeing tells you there was an error in the functions
+called by \Rfunction{mclapply}. If you check the help for
+\Rfunction{mclpapply} you'll see that it returns a try-error object, so we
+can inspect it. For instance, we can do:
+
+<<>>=
+pancrError[[1]]
+@ 
+
+But that output is hard to read. This is better:
+
+<<>>=
+pancrError[[1]][1]
+@ 
+ 
+And from here you can clearly see the error that was returned by
+\Rfunction{oncoSimulIndiv}: \texttt{initSize < 1} (which is indeed true:
+we pass \texttt{initSize = 1e-5}).
+
+
 \subsection{What can you do with the simulations?}
 
 This is up to you. Below (section \ref{sample-1}) we show an example where
