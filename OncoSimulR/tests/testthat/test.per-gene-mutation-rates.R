@@ -213,7 +213,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0",{
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = .00001,
-                       seed =NULL
+                       seed =NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -505,7 +505,7 @@ test_that("McFL: Same freqs, chisq, when s=0", {
                        model = "McFL",
                        initSize = no,
                        finalTime = 0.001,
-                       seed= NULL
+                       seed= NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
@@ -803,7 +803,8 @@ test_that("Init mutant with tiny mutation", {
                        finalTime = 10000,
                        detectionDrivers = 4,
                        mutationPropGrowth = FALSE, ## yes, exclude this possible effect
-                       initMutant = "h2 > i1"
+                       initMutant = "h2 > i1",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
@@ -866,7 +867,8 @@ test_that("McFL: Init mutant with tiny mutation", {
                        model = "McFL",
                        finalTime = 300,
                        mutationPropGrowth = FALSE, ## yes, exclude this possible effect
-                       initMutant = "h2 > i1"
+                       initMutant = "h2 > i1",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
@@ -1047,7 +1049,8 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
                        initSize = no,
                        finalTime = .001,
                        seed =NULL,
-                       initMutant = "e"
+                       initMutant = "e",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
@@ -1080,7 +1083,8 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
                        finalTime = 0.001,
                        seed =NULL,
                        model = "McFL",
-                       initMutant = "m"
+                       initMutant = "m",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
@@ -1120,7 +1124,8 @@ test_that("Different freqs as they are expected with chisq, when s=0 and initMut
                        initSize = no,
                        finalTime = ft,
                        seed =NULL,
-                       initMutant = "e"
+                       initMutant = "e",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     (ccs <- colSums(OncoSimulR:::geneCounts(bb)))
@@ -1154,7 +1159,8 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
                        finalTime = 0.002,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
-                       initMutant = "e"
+                       initMutant = "e",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
@@ -1182,7 +1188,8 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
                        finalTime = 0.002,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
-                       initMutant = "e"
+                       initMutant = "e",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     ccs <- colSums(OncoSimulR:::geneCounts(bb))
@@ -1217,7 +1224,8 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
                        finalTime = 0.002,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
-                       initMutant = "e"
+                       initMutant = "e",
+                       mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
     (ccs <- colSums(OncoSimulR:::geneCounts(bb)))
@@ -1256,7 +1264,8 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     pseed <- sample(9999999, 1)
     set.seed(pseed)
@@ -1268,7 +1277,8 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     (expected1 <- no*reps*m1)
     (expected2 <- no*reps*m2)
@@ -1315,7 +1325,8 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     pseed <- sample(9999999, 1)
     set.seed(pseed)
@@ -1327,7 +1338,8 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     expect_true( median(summary(b2)$NumClones) >
                  median(summary(b1)$NumClones))
@@ -1368,7 +1380,8 @@ test_that(" And mutProGrowth, 1",{
                        initSize = no,
                        finalTime = ft,
                        sampleEvery = 0.01,
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     pseed <- sample(9999999, 1)
     set.seed(pseed)
@@ -1380,7 +1393,8 @@ test_that(" And mutProGrowth, 1",{
                        initSize = no,
                        finalTime = ft,
                        sampleEvery = 0.01,                       
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     ## summary(b2)[, c(1:3, 8:9)]
     ## mean(mutsPerClone(b1));mean(mutsPerClone(b2))
@@ -1441,7 +1455,8 @@ test_that(" And mutProGrowth, 2",{
                        initSize = no,
                        finalTime = ft,
                        sampleEvery = 0.01,
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     pseed <- sample(9999999, 1)
     set.seed(pseed)
@@ -1453,7 +1468,8 @@ test_that(" And mutProGrowth, 2",{
                        initSize = no,
                        finalTime = ft,
                        sampleEvery = 0.01,                       
-                       seed =NULL
+                       seed =NULL,
+                       mc.cores = 2
                        )
     summary(b2)[, c(1:3, 8:9)]
     mean(mutsPerClone(b1));mean(mutsPerClone(b2))
@@ -1540,6 +1556,228 @@ test_that("More mutpropgrowth, in modules of s", {
 })
 date()
 
+
+date()
+test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
+    ## Here, we test that freqs as they should, but so that the test is
+    ## not eternal, we use different settings of reps and no
+
+    ## We probably want about a mean or median number of clones of about 2
+    ## or so. Though if fewer, better but then to have power in the
+    ## chi-square we need much larger reps (as usual, if ft increase, etc,
+    ## we increase the reproduction/death events, which then screws up
+    ## simple expectations for chi-square)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n oss11: the seed is", pseed, "\n")
+    ng <- 10
+    ni <- rep(0, ng)
+    m1 <- runif(ng, min = 1e-6, max = 1e-5)
+    m2 <- runif(ng, min = 1e-4, max = 1e-3)
+    names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
+                                 paste(sample(letters, 12), collapse = "")))
+    fe1 <- allFitnessEffects(noIntGenes = ni)
+    ft <- 0.03
+    no <- 5e5 # delicate as if this is huge, we get the cc1 or cc2 below
+              # to be equal to reps in many genes, because they are
+              # present in at least one cell in all populations
+    reps <- 6000
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n oss1a: the seed is", pseed, "\n")
+    b1 <- oncoSimulSample(reps,
+                          fe1,
+                          mu = m1,
+                          onlyCancer = FALSE,
+                          initSize = no,
+                          finalTime = ft,
+                          mutationPropGrowth = FALSE, ## cleaner, though no real effect
+                          seed =NULL,
+                          thresholdWhole = 1/no
+                          )
+    summary(b1$popSummary[, "NumClones"])
+    (expected1 <- no*reps*m1)
+    (cc1 <- colSums(b1$popSample))
+    if( (any(cc1 == reps)) )
+        warning("The test is likely to fail because reps == cc1 or cc2")
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(cc1,
+                           p = expected1/sum(expected1))$p.value > p.fail)
+    reps <- 5000
+    no <- 1e4
+    ft <- 0.03
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n oss1b: the seed is", pseed, "\n")
+    b2 <- oncoSimulSample(reps,
+                       fe1,
+                       mu = m2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
+                       seed =NULL,
+                       thresholdWhole = 1/no
+                       )
+    summary(b2$popSummary[, "NumClones"])
+    ## we detect anything that is present in at least one case.
+    ## Not exactly the same as what we did in oncoSimulPop
+    (expected2 <- no*reps*m2)
+    (cc2 <- colSums(b2$popSample))
+    if( (any(cc2 == reps)))
+        warning("The test is likely to fail because reps == cc1 or cc2")
+    ## It will fail with prob ~ p.fail
+    p.fail <- 1e-3
+    expect_true(chisq.test(cc2,
+                           p = expected2/sum(expected2))$p.value > p.fail)
+})
+date()
+
+
+
+
+
+date()
+test_that("oncoSimulSample comparing different per-gene-mut",{
+    ## No attempt to compare against expected (other tests do that). We
+    ## just verify that larger mutations rates lead to more total
+    ## mutations and clones.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n oss2: the seed is", pseed, "\n")
+    ng <- 10
+    ni <- rep(0, ng)
+    m1 <- runif(ng, min = 1e-6, max = 1e-5)
+    m2 <- runif(ng, min = 1e-4, max = 1e-3)
+    names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
+                                 paste(sample(letters, 12), collapse = "")))
+    fe1 <- allFitnessEffects(noIntGenes = ni)
+    ft <- .05 ## if you make it too large, then all pops will have at
+             ## least one cell with one of the genes mutated. You can see
+             ## this when cc1 or cc2 have most/all entries equal to reps.
+    no <- 1e5 # delicate as if this is huge, we get the cc1 or cc2 below
+              # to be equal to reps in many genes, because they are
+              # present in at least one cell in all populations
+    reps <- 1000
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n oss2a: the seed is", pseed, "\n")
+    b1 <- oncoSimulSample(reps,
+                          fe1,
+                          mu = m1,
+                          onlyCancer = FALSE,
+                          initSize = no,
+                          finalTime = ft,
+                          mutationPropGrowth = FALSE, ## cleaner, though no real effect
+                          seed =NULL,
+                          thresholdWhole = 1/no
+                          )
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n oss2b: the seed is", pseed, "\n")
+    b2 <- oncoSimulSample(reps,
+                       fe1,
+                       mu = m2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
+                       seed =NULL,
+                       thresholdWhole = 1/no
+                       )
+    ## we detect anything that is present in at least one case.
+    ## Not exactly the same as what we did in oncoSimulPop
+    (cc1 <- colSums(b1$popSample))
+    (cc2 <- colSums(b2$popSample))
+    expect_true(sum(cc2) > sum(cc1))
+    ## This is very similar to above, like assimilating a pop to a clone
+    mutsPerClone1 <- rowSums(b1$popSample)
+    mutsPerClone2 <- rowSums(b2$popSample)
+    expect_true( mean(mutsPerClone2) >
+                 mean(mutsPerClone1))
+    expect_true( median(b2$popSummary[, "NumClones"]) >
+                 median(b1$popSummary[, "NumClones"]))
+    ## Note the short time, so this is not always very different as few
+    ## have double or triple mutants
+})
+date()
+
+
+
+
+date()
+test_that(" oncoSimuSample and mutPropGrowth",{
+
+    ## Hard, because we need to change thresholdWhole to detect patterns.
+    
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz0331: the seed is", pseed, "\n")
+    muvar2 <- c("U" = 5e-5, "z" = 5e-6, "e" = 1e-4, "m" = 1e-5, "D" = 5e-4)
+    ni1 <- rep(0.9, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e3  ## very small, and in all
+    reps <- 100
+    ft <- 12
+    x <- 0.5 * no ## for detection threshold
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz0331a: the seed is", pseed, "\n")
+    b1 <- oncoSimulSample(reps,
+                          fe1, mu = muvar2,
+                          mutationPropGrowth = FALSE,
+                          onlyCancer = FALSE,
+                          initSize = no,
+                          finalTime = ft,
+                          sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x
+                          )
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz0331b: the seed is", pseed, "\n")
+    b2 <- oncoSimulSample(reps,
+                       fe1, mu = muvar2,
+                       mutationPropGrowth = TRUE,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       sampleEvery = 0.01,
+                       detectionSize = 1e9,
+                       detectionDrivers = 99,
+                       seed =NULL,
+                       thresholdWhole = x
+                       )
+    summary(b2$popSummary[, "NumClones"])
+    summary(b1$popSummary[, "NumClones"])
+    summary(b2$popSummary[, "TotalPopSize"])
+    summary(b1$popSummary[, "TotalPopSize"])
+    b2$popSummary[1:5, c(1:3, 8:9)]
+    b1$popSummary[1:5, c(1:3, 8:9)]
+    
+    (cc1 <- colSums(b1$popSample))
+    (cc2 <- colSums(b2$popSample))
+    (mutsPerClone1 <- rowSums(b1$popSample))
+    (mutsPerClone2 <- rowSums(b2$popSample))
+
+  ## I stop about here; diffs in numclones are obvious. But what about the rest?  
+    
+    expect_true(sum(cc2) > sum(cc1))
+    expect_true( mean(mutsPerClone2) >
+                 mean(mutsPerClone1))
+    expect_true( median(b2$popSummary[, "NumClones"]) >
+                 median(b1$popSummary[, "NumClones"]))
+    
+
+})
+date()
+
+
+## Do McFL in the above: oncoSimulSample
 
 
 ##################### If you want to verify step by step that the C++ does

@@ -109,6 +109,10 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
                  mean(mutsPerClone(nca2)))
     expect_true( median(summary(nca)$NumClones) >
                  median(summary(nca2)$NumClones))
+    ## In this cases, we would expect differences in total population size
+    ## between a and a2, but minor or non detectable between b and b2. In
+    ## a we expect them because, since those affect a lot the mutation
+    ## rate, we expect them to get b faster, and thus grow faster noticeably.
 })
 cat("\n", date(), "\n")
 
