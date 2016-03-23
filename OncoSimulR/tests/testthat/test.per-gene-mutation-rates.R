@@ -1,4 +1,4 @@
-cat("\n", date(), "\n") ## whole file takes about 20 seconds
+cat("\n Starting at", date(), "\n") ## whole file takes about 30 seconds
 ## When submitting, probably move half of the tests (mcfl?) to the "long" file.
 
 mutsPerClone <- function(x, per.pop.mean = TRUE) {
@@ -13,6 +13,28 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
         lapply(x, function(u) perCl(u))
 }
 
+
+
+mutsPerCloneLast <- function(x, per.pop.mean = TRUE) {
+    ## Only clones alive in the last period
+    aliveLast <- function(u) {
+        pbt <- u$pops.by.time
+        which(pbt[nrow(pbt), -1] >= 1)
+    }
+    perCl <- function(z) {
+        this <- aliveLast(z)
+        unlist(lapply(z$GenotypesWDistinctOrderEff[this],  length))
+    }
+    perCl2 <- function(z) {
+        this <- aliveLast(z)
+        mean(unlist(lapply(z$GenotypesWDistinctOrderEff[this], length)))
+    }
+    if(per.pop.mean)    
+        unlist(lapply(x, function(u) perCl2(u)))
+    else
+        lapply(x, function(u) perCl(u))
+}
+
 ## we could have used this below . Oh well
 ## totalind <- function(out) {
 ##     ## total num indivs
@@ -21,9 +43,12 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 
 
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
-
+## RNGkind("Mersenne-Twister")
 
 test_that("single named gene in mut. fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s01: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     muvar <- c("m" = 1e-5)
     expect_error(oncoSimulIndiv(fea9, mu = muvar),
@@ -32,6 +57,9 @@ test_that("single named gene in mut. fail", {
 } )
 
 test_that("Per-gene mutation rates with old poset format, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s02: the seed is", pseed, "\n")
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
     muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
@@ -40,8 +68,10 @@ test_that("Per-gene mutation rates with old poset format, fail", {
                  "Per-gene mutation rates cannot be used with the old poset format")
 } )
 
-
 test_that("Only no-int, and sorting", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s03: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
     muvar <- c("m" = 1e-5, "D" = 1e-7)
@@ -63,6 +93,9 @@ test_that("Only no-int, and sorting", {
 } )
 
 test_that("Only no-int, unnamed, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s04: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
     OncoSimulR:::allNamedGenes(fea9)
     muvar <- c(1e-5, 1e-7)
@@ -72,6 +105,9 @@ test_that("Only no-int, unnamed, fail", {
 } )
 
 test_that("Only one, named, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s05: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1))
     muvar <- c("m" = 1e-5)
     expect_error(oncoSimulIndiv(fea9, mu = muvar),
@@ -80,6 +116,9 @@ test_that("Only one, named, fail", {
 } )
 
 test_that("Only no-int, different names, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s06: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
     muvar <- c("n" = 1e-5, "D" = 1e-7)
@@ -89,6 +128,9 @@ test_that("Only no-int, different names, fail", {
 } )
 
 test_that("Only no-int, different numbers, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s07: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     muvar <- c("m" = 1e-5, "D" = 1e-7, "E" = 1e-7)
     expect_error(oncoSimulIndiv(fea9, mu = muvar),
@@ -103,6 +145,9 @@ test_that("Only no-int, different numbers, fail", {
 
 date()
 test_that("Same freqs, chisq, when s=0", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s08: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
@@ -126,9 +171,11 @@ test_that("Same freqs, chisq, when s=0", {
 })
 date()
 
-
 date()
 test_that("Same freqs, chisq, when s", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s09: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0.02, 5)
     names(ni1) <- names(muvar2)
@@ -149,11 +196,11 @@ test_that("Same freqs, chisq, when s", {
 })
 date()
 
-
-
 date()
-test_that("Different freqs as they should be ordered and chisq, when s=0",
-{
+test_that("Different freqs as they should be ordered and chisq, when s=0",{
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s010: the seed is", pseed, "\n")
     ## muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ## too small mu: observed often 0 and expected below 1. Make larger
     muvar2 <- c("U" = 1e-3, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
@@ -183,6 +230,9 @@ date()
 
 date()
 test_that("Different freqs as they should be ordered, when s and t > 1", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s011: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
@@ -193,6 +243,7 @@ test_that("Different freqs as they should be ordered, when s and t > 1", {
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 2,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -207,6 +258,9 @@ date()
 
 date()
 test_that("Different freqs as they should be ordered, when s and t> 1, again", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s012: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
     ## we increase s and finalTime
     ni2 <- rep(0.1, 5)
@@ -218,6 +272,7 @@ test_that("Different freqs as they should be ordered, when s and t> 1, again", {
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 4,
+                       mutationPropGrowth = FALSE, ## cleaner, tough no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -228,11 +283,11 @@ test_that("Different freqs as they should be ordered, when s and t> 1, again", {
 })
 date()
 
-
-
-
 date()
 test_that("Complex fitness specification, s diffs, tiny finalTime, systematic mu", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s1: the seed is", pseed, "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.1, 0.2, 0.3, 0.4, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
@@ -286,6 +341,9 @@ date()
 
 date()
 test_that("Complex fitness specification, tiny s diffs", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s2: the seed is", pseed, "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.00001, 0.00002, 0.00003, 0.00004, 0.00001, 0.00001, 0.00002, 0.00002, 0.00003, 0.00003),
@@ -336,12 +394,12 @@ test_that("Complex fitness specification, tiny s diffs", {
 })
 date()
 
-
-
-
 #### Repeating above, but with McFL
 
 test_that("McFL: Per-gene mutation rates with old poset format, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz01: the seed is", pseed, "\n")
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
     muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
@@ -350,8 +408,10 @@ test_that("McFL: Per-gene mutation rates with old poset format, fail", {
                  "Per-gene mutation rates cannot be used with the old poset format")
 } )
 
-
 test_that("McFL: Only no-int, and sorting", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz02: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
     muvar <- c("m" = 1e-5, "D" = 1e-7)
@@ -367,12 +427,18 @@ test_that("McFL: Only no-int, and sorting", {
                                     ))
     ## OncoSimulR:::allNamedGenes(fea8)
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
-    expect_output(oncoSimulIndiv(fea8, mu = muvar2, model = "McFL", finalTime = 20),
-                  "Individual OncoSimul trajectory",
+    expect_output(oncoSimulIndiv(fea8, mu = muvar2,
+                                 model = "McFL",
+                                 seed = NULL,
+                                 finalTime = 20),
+                  "Individual OncoSimul trajectory", 
                   fixed = TRUE)
 } )
 
 test_that("McFL: Only no-int, unnamed, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz03: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
     OncoSimulR:::allNamedGenes(fea9)
     muvar <- c(1e-5, 1e-7)
@@ -383,6 +449,9 @@ test_that("McFL: Only no-int, unnamed, fail", {
 } )
 
 test_that("McFL: Only one, named, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz04: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1))
     muvar <- c("m" = 1e-5)
     expect_error(oncoSimulIndiv(fea9, mu = muvar, model = "McFL",
@@ -392,6 +461,9 @@ test_that("McFL: Only one, named, fail", {
 } )
 
 test_that("McFL: Only no-int, different names, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz05: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
     muvar <- c("n" = 1e-5, "D" = 1e-7)
@@ -402,6 +474,9 @@ test_that("McFL: Only no-int, different names, fail", {
 } )
 
 test_that("McFL: Only no-int, different numbers, fail", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz06: the seed is", pseed, "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     muvar <- c("m" = 1e-5, "D" = 1e-7, "E" = 1e-7)
     expect_error(oncoSimulIndiv(fea9, mu = muvar, model = "McFL"),
@@ -416,6 +491,9 @@ test_that("McFL: Only no-int, different numbers, fail", {
 
 date()
 test_that("McFL: Same freqs, chisq, when s=0", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s3: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
@@ -440,6 +518,9 @@ date()
 
 date()
 test_that("McFL: Same freqs, chisq, when s", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s4: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0.02, 5)
     names(ni1) <- names(muvar2)
@@ -465,6 +546,9 @@ date()
 
 date()
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s5: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
@@ -494,6 +578,9 @@ date()
 
 date()
 test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s6: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
@@ -505,6 +592,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
                        model = "McFL",
                        initSize = no,
                        finalTime = 4,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -517,6 +605,9 @@ date()
 
 date()
 test_that("McFL: Different freqs as they should be ordered when s and t > 1, again", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s7: the seed is", pseed, "\n")
     ## Increase s and time
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
     ni2 <- rep(0.2, 5)
@@ -529,6 +620,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
                        model = "McFL",
                        initSize = no,
                        finalTime = 10,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -539,12 +631,12 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
 })
 date()
 
-
-
-
 date()
 test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systematic mu", {
-   p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s8: the seed is", pseed, "\n")
+    p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.1, 0.2, 0.3, 0.4, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
                      sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
@@ -591,6 +683,9 @@ date()
 
 date()
 test_that("McFL:Complex fitness specification, tiny s diffs", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s9: the seed is", pseed, "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.00001, 0.00002, 0.00003, 0.00004, 0.00001, 0.00001, 0.00002, 0.00002, 0.00003, 0.00003),
@@ -643,7 +738,11 @@ test_that("McFL:Complex fitness specification, tiny s diffs", {
 date()
 
 
+date()
 test_that("get.gene.counts exercising for NA case", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s10: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
@@ -662,6 +761,9 @@ test_that("get.gene.counts exercising for NA case", {
 
 date()
 test_that("Init mutant with tiny mutation", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s11: the seed is", pseed, "\n")
     ## We check the two init mutants have same frequency, and it is the
     ## largest. So we also verify no additional mutation to
     ## either one (since their freq is same) and we verify present in all.
@@ -700,7 +802,7 @@ test_that("Init mutant with tiny mutation", {
                        initSize = no,
                        finalTime = 10000,
                        detectionDrivers = 4,
-                       mutationPropGrowth = FALSE,
+                       mutationPropGrowth = FALSE, ## yes, exclude this possible effect
                        initMutant = "h2 > i1"
                        )
     (expectedC <- no*reps*muvar)
@@ -722,6 +824,9 @@ date()
 
 date()
 test_that("McFL: Init mutant with tiny mutation", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s12: the seed is", pseed, "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
@@ -751,12 +856,16 @@ test_that("McFL: Init mutant with tiny mutation", {
     muvar["i1"] <- 1e-13
     no <- 1e4
     reps <- 10
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s12b: the seed is", pseed, "\n")
     bb <- oncoSimulPop(5, ##reps,
                        fea, mu = muvar,
                        onlyCancer = FALSE,
                        initSize = no,
                        model = "McFL",
                        finalTime = 300,
+                       mutationPropGrowth = FALSE, ## yes, exclude this possible effect
                        initMutant = "h2 > i1"
                        )
     (expectedC <- no*reps*muvar)
@@ -776,9 +885,11 @@ test_that("McFL: Init mutant with tiny mutation", {
 })
 date()
 
-
 date()
 test_that("Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s13: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-13, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
@@ -790,6 +901,7 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 5,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -799,10 +911,14 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
         order(colSums(OncoSimulR:::geneCounts(bb))),
         order(expectedC))
     ## A chisq will not work as we increase finalTime.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s13b: the seed is", pseed, "\n")
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = .001,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -821,13 +937,16 @@ date()
 
 date()
 test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s14: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni2 <- rep(0.01, 5)
     names(ni2) <- names(muvar2)
     ni2["U"] <- 0.5
     fe1 <- allFitnessEffects(noIntGenes = ni2)
     no <- 1e5
-    reps <- 200
+    reps <- 400
     ## Beware: with McFL final time has to be small or we will see
     ## mutations in U as it is the only one left. 
     bb <- oncoSimulPop(reps,
@@ -835,6 +954,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                        initSize = no,
                        model = "McFL",
                        finalTime = 50,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -845,11 +965,15 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
         order(expectedC))
     ## A chisq will not work as we increase finalTime.
     no <- 1e7
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s14b: the seed is", pseed, "\n")
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        model = "McFL",
                        finalTime = .001,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -866,9 +990,11 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
 )
 date()
 
-
-
+date()
 test_that("0 or negative mu not allowed", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s15: the seed is", pseed, "\n")
     muvar2 <- c("U" = 0, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0.02, 5)
     names(ni1) <- names(muvar2)
@@ -903,13 +1029,13 @@ test_that("0 or negative mu not allowed", {
                  "(at least one) mutation rate (mu) is negative",
                  fixed = TRUE)
 })
-
-
-
+date()
 
 date()
-test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",
-{
+test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s17: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-5, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
@@ -938,8 +1064,10 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
 date()
 
 date()
-test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, and initMutant",
-{
+test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s18: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-5, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
@@ -970,10 +1098,11 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
 })
 date()
 
-
-
 date()
 test_that("Different freqs as they are expected with chisq, when s=0 and initMutant, many genotypes",{
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s19: the seed is", pseed, "\n")
     ft <- 0.001 ## yes, small
     lni <- 100  ## 16
     muvar2 <- runif(lni, min = 1e-4, max = 1e-3)
@@ -1004,12 +1133,12 @@ test_that("Different freqs as they are expected with chisq, when s=0 and initMut
 })
 date()
 
-
-
 date()
-## More on the above, with less variation. But yet another set of tests.
-test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",
-{
+test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
+    ## More on the above, with less variation. But yet another set of tests.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s20: the seed is", pseed, "\n")
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ## moderately small mu
     muvar2[] <- 1e-5
@@ -1023,6 +1152,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 0.002,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
                        initMutant = "e"
                        )
@@ -1043,10 +1173,14 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 1e7
     reps <- 200
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s20b: the seed is", pseed, "\n")
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 0.002,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
                        initMutant = "e"
                        )
@@ -1074,10 +1208,14 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 1e7
     reps <- 200
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s20c: the seed is", pseed, "\n")
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
                        finalTime = 0.002,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
                        initMutant = "e"
                        )
@@ -1092,10 +1230,9 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
 })
 date()
 
-
-
 date()
 test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",{
+## More on the above, with less variation. But yet another set of tests.
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n df1: the seed is", pseed, "\n")
@@ -1109,20 +1246,28 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
     ft <- 0.01
     no <- 1e7
     reps <- 80
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n df1a: the seed is", pseed, "\n")
     b1 <- oncoSimulPop(reps,
                        fe1,
                        mu = m1,
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL
                        )
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n df1b: the seed is", pseed, "\n")
     b2 <- oncoSimulPop(reps,
                        fe1,
                        mu = m2,
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL
                        )
     (expected1 <- no*reps*m1)
@@ -1143,7 +1288,7 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
                  mean(mutsPerClone(b1)))
 })
 
-
+date()
 test_that("Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.
@@ -1160,20 +1305,28 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
     ft <- 2
     no <- 1e5
     reps <- 20
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n df2a: the seed is", pseed, "\n")
     b1 <- oncoSimulPop(reps,
                        fe1,
                        mu = m1,
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL
                        )
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n df2b: the seed is", pseed, "\n")
     b2 <- oncoSimulPop(reps,
                        fe1,
                        mu = m2,
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
+                       mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL
                        )
     expect_true( median(summary(b2)$NumClones) >
@@ -1186,16 +1339,214 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
 date()
 
 
+## Most tests above with t >> 0.01 or so have mutationPropGrowth =
+## FALSE. Why? mutationPropGrowth will not have any noticeable effect
+## unless we let it run for some time and unless there are sizeable
+## differences in birth rates between clones. So in most cases above
+## setting it to FALSE makes little difference, but just to be cleaner.
+
+
+date()
+test_that(" And mutProGrowth, 1",{
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz0331: the seed is", pseed, "\n")
+    muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
+    ni1 <- rep(0.9, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e4
+    reps <- 50
+    ft <- 20
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz0331a: the seed is", pseed, "\n")
+    b1 <- oncoSimulPop(reps,
+                       fe1, mu = muvar2,
+                       mutationPropGrowth = FALSE,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       sampleEvery = 0.01,
+                       seed =NULL
+                       )
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz0331b: the seed is", pseed, "\n")
+    b2 <- oncoSimulPop(reps,
+                       fe1, mu = muvar2,
+                       mutationPropGrowth = TRUE,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       sampleEvery = 0.01,                       
+                       seed =NULL
+                       )
+    ## summary(b2)[, c(1:3, 8:9)]
+    ## mean(mutsPerClone(b1));mean(mutsPerClone(b2))
+    ## median(summary(b1)$NumClones)
+    ## median(summary(b2)$NumClones)
+    ## More mutations in mutationPropGrowth
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    ## But frequency of mutations about the same? Nope: since very fast
+    ## growth and thus non-indep, huge variation in geneCounts in each
+    ## run, etc. so hard to compare geneCounts
+    ## Just for reference, here
+    ## First, look at run to run variation
+    ## OncoSimulR:::geneCounts(b1)
+    ## OncoSimulR:::geneCounts(b2)
+    ## ## The next makes sense
+    ## fb1 <- colSums(OncoSimulR:::geneCounts(b1))
+    ## fb2 <- colSums(OncoSimulR:::geneCounts(b2))
+    ## fb1
+    ## fb2
+    ## fb2/fb1
+    ## fb1/sum(fb1)
+    ## fb2/sum(fb2)
+    ## (fb2/sum(fb2))/(fb1/sum(fb1))
+    ## summary(b2)[, c(1:3, 8:9)]
+    ## mean(mutsPerClone(b1));mean(mutsPerClone(b2))
+    ## median(summary(b1)$NumClones)
+    ## median(summary(b2)$NumClones)
+})
+date()
+
+
+
+
+
+date()
+test_that(" And mutProGrowth, 2",{
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz033: the seed is", pseed, "\n")
+    muvar2 <- c("U" = 1e-4, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
+    ## muvar2 <- c("U" = 5e-5, "z" = 5e-5, "e" = 5e-5, "m" = 5e-5, "D" = 5e-5)
+    ni1 <- rep(1.9, 5)
+    names(ni1) <- names(muvar2)
+    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e5
+    reps <- 10 
+    ft <- 6
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz033a: the seed is", pseed, "\n")
+    b1 <- oncoSimulPop(reps,
+                       fe1, mu = muvar2,
+                       mutationPropGrowth = FALSE,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       sampleEvery = 0.01,
+                       seed =NULL
+                       )
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sz033b: the seed is", pseed, "\n")
+    b2 <- oncoSimulPop(reps,
+                       fe1, mu = muvar2,
+                       mutationPropGrowth = TRUE,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                       sampleEvery = 0.01,                       
+                       seed =NULL
+                       )
+    summary(b2)[, c(1:3, 8:9)]
+    mean(mutsPerClone(b1));mean(mutsPerClone(b2))
+    median(summary(b1)$NumClones)
+    median(summary(b2)$NumClones)
+    ## More mutations in mutationPropGrowth
+    expect_true( mean(mutsPerClone(b2)) >
+                 mean(mutsPerClone(b1)))
+    expect_true( median(summary(b2)$NumClones) >
+                 median(summary(b1)$NumClones))
+    ## But frequency of mutations about the same? Nope: since very fast
+    ## growth and thus non-indep, huge variation in geneCounts in each
+    ## run, etc. so hard to compare geneCounts
+    ## Just for reference, here
+    ## First, look at run to run variation
+    ## OncoSimulR:::geneCounts(b1)
+    ## OncoSimulR:::geneCounts(b2)
+    ## ## The next makes sense
+    ## fb1 <- colSums(OncoSimulR:::geneCounts(b1))
+    ## fb2 <- colSums(OncoSimulR:::geneCounts(b2))
+    ## fb1
+    ## fb2
+    ## fb2/fb1
+    ## fb1/sum(fb1)
+    ## fb2/sum(fb2)
+    ## (fb2/sum(fb2))/(fb1/sum(fb1))
+})
+date()
+
+
+
+
+date()
+test_that("More mutpropgrowth, in modules of s", {
+    ## From a similar test in mutPropGrowth, but we have a vector mu
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpgs3: the seed is", pseed, "\n")
+    pops <- 20
+    lni <- 1 ## no fitness effects genes
+    fni <- 50 ## fitness effects genes
+    no <- 1e3
+    ft <- 5
+    s3 <- 3.0
+    ## noInt have no fitness effects, but can accumulate mutations
+    ni <- rep(0, lni)
+    names(ni) <- paste0("ni", 1:lni)
+    ## Those with fitness effects in one module, so
+    ## neither fitness nor mut. rate blow up
+    gn <- paste(paste0("a", 1:fni), collapse = ", ")
+    f3 <- allFitnessEffects(epistasis = c("A" = s3),
+                            geneToModule = c("A" = gn),
+                            noIntGenes = ni)
+    mu <- runif(fni + lni, min = 1e-7, max = 1e-4)
+    names(mu) <- c(paste0("a", 1:fni), names(ni))
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpgs3a: the seed is", pseed, "\n")
+    s3.ng <- oncoSimulPop(pops,
+                          f3,
+                          mu = mu,
+                          mutationPropGrowth = FALSE,
+                          finalTime =ft,
+                          initSize = no,
+                          onlyCancer = FALSE,
+                          seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpgs3b: the seed is", pseed, "\n")
+    s3.g <- oncoSimulPop(pops,
+                         f3,
+                         mu = mu,
+                         mutationPropGrowth = TRUE,
+                         finalTime =ft,
+                         initSize = no,
+                         onlyCancer = FALSE,
+                         seed = NULL, mc.cores = 2)
+    summary(s3.g)[, c(1, 2, 3, 8, 9)]
+    summary(s3.ng)[, c(1, 2, 3, 8, 9)]
+    expect_true( mean(mutsPerClone(s3.g)) >
+                 mean(mutsPerClone(s3.ng)))
+    expect_true( median(summary(s3.g)$NumClones) >
+                 median(summary(s3.ng)$NumClones))
+})
+date()
+
 
 
 ##################### If you want to verify step by step that the C++ does
 ##################### what it should you can, for instance, run this R code
-
-
 ## library(OncoSimulR)
 ## RNGkind("L'Ecuyer-CMRG")
 ## set.seed(13)
-
 ## muvar2 <- c("U" = 1e-3, "z" = 3e-7, "e" = 5e-6, "m" = 5e-5, "D" = 5e-4)
 ## ni2 <- rep(0.01, 5)
 ## names(ni2) <- names(muvar2)
@@ -1208,12 +1559,9 @@ date()
 ##                    )
 
 ## bb
-
 ## with the following C++ in BNB_nr.cpp, right after the line
 ## tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
 ## 				   newMutations, mutationPropGrowth);
-
-
 ## Add this C++ code, recompile.
 ## DP1("at mutation");
 ## 	    Rcpp::Rcout << "\n New Genotype :";
@@ -1233,6 +1581,5 @@ date()
 ## 	    print_spP(popParams[nextMutant]);
 	    
 ## 	    DP1("end at mutation");
+cat("\n Done at", date(), "\n") ## whole file takes about 6 seconds
 
-
-cat("\n", date(), "\n") ## whole file takes about 6 seconds
