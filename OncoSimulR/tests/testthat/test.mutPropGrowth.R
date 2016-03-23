@@ -5,7 +5,7 @@ RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
 cat("\n", date(), "\n") ## whole file takes about 6 seconds
 test_that("Ordering of number of clones with mutpropgrowth", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n omp1: the seed is", pseed, "\n")
     pops <- 100
@@ -51,7 +51,7 @@ cat("\n", date(), "\n")
 
 cat("\n", date(), "\n")
 test_that("Ordering of number of clones with mutpropgrowth, McFL", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n omp2: the seed is", pseed, "\n")
     pops <- 100

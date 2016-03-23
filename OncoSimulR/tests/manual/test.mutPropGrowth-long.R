@@ -61,7 +61,7 @@ cat(paste("\n Starting at", date(), "\n"))
 
 cat("\n", date(), "\n")
 test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc1: the seed is", pseed, "\n")
     ft <- 2.5
@@ -115,7 +115,7 @@ cat("\n", date(), "\n")
 
 cat("\n", date(), "\n")
 test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc2: the seed is", pseed, "\n")
     ## The s coefficient is small, and so small differences between nca and
@@ -172,7 +172,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
 
 cat("\n", date(), "\n")
 test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc3: the seed is", pseed, "\n")
     ## The s coefficient is small, and so small differences. Here, much large
@@ -233,7 +233,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
 
 cat("\n", date(), "\n")
 test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowth, 1", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf1: the seed is", pseed, "\n")
     ft <- 20 ## unless large you rarely get triple, etc, mutatns
@@ -287,7 +287,7 @@ cat("\n", date(), "\n")
 ## A variation of the former
 cat("\n", date(), "\n")
 test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowth, 2", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf2: the seed is", pseed, "\n")
     ## Increase ft
@@ -354,7 +354,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
 cat("\n", date(), "\n")
 test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowth, and different mmodules",{
     
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf3: the seed is", pseed, "\n")
     ft <- 10 
@@ -429,7 +429,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
 
 cat("\n", date(), "\n")
 test_that("Without initmutant", {
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n s3: the seed is", pseed, "\n")
     pops <- 40
@@ -477,7 +477,7 @@ test_that("Without initmutant, 2", {
     ## More of the above. Use smaller s2 and smaller mutation, but then to
     ## see it reliably you need large ft and we also increase
     ## init. pop. size.
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n s2: the seed is", pseed, "\n")
     s2 <- 1.0

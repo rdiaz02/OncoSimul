@@ -1125,7 +1125,7 @@ totalind <- function(out) {
 ## FIXME: new and done
 
 test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",{
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n df1: the seed is", pseed, "\n")
     ng <- 10
@@ -1176,7 +1176,7 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
 test_that("Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.
-    pseed <- sample(1:9999999, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n df2: the seed is", pseed, "\n")
     ng <- 40
