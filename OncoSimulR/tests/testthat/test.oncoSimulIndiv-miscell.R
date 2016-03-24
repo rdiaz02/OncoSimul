@@ -30,7 +30,7 @@ test_that("numPassengers no effect with fitnessEffects objects", {
                                 c("Root" = "Root",
                                   "F" = "f1, f2, f3",
                                   "D" = "d1, d2") )
-    expect_warning(oi1 <- oncoSimulIndiv(o1, numPassengers = 10),
+    expect_warning(oi1 <- oncoSimulIndiv(oi, numPassengers = 10),
                    "Specifying numPassengers", fixed = TRUE)
 })
 

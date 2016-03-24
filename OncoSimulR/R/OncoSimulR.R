@@ -70,7 +70,7 @@ oncoSimulSample <- function(Nindiv,
     ## the equivalente of uniform sampling. For last, fix a single number
 
     if(Nindiv < 1)
-        stop("Nindiv must be >=1")
+        stop("Nindiv must be >= 1")
     if(keepPhylog)
         warning(paste("oncoSimulSample does not return the phylogeny",
                       "for now, so there is little point in storing it."))
@@ -311,7 +311,7 @@ oncoSimulPop <- function(Nindiv,
                          seed = "auto") {
 
     if(Nindiv < 1)
-        stop("Nindiv must be >=1")
+        stop("Nindiv must be >= 1")
     
     if(.Platform$OS.type == "windows") {
         if(mc.cores != 1)
