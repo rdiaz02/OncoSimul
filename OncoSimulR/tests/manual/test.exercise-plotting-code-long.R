@@ -1,3 +1,4 @@
+RNGkind("Mersenne-Twister")
 cat(date())
 test_that("exercising plotClonePhylog", {
               data(examplesFitnessEffects)

@@ -1,3 +1,4 @@
+RNGkind("Mersenne-Twister")
 test_that("oncoSimulSample and oncoSimulPop require >= 1 indiv", {
     pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
                                                         "TP53", "TP53", "MLL3"),

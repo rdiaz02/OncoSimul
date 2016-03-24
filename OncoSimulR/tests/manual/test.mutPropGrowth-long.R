@@ -71,21 +71,33 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
     ni <- c(5, 3, rep(0, lni))
     names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
     fe <- allFitnessEffects(noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc1a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc1b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc1c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no,
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc1d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no,
@@ -128,21 +140,33 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
     ni <- c(1, 0.5, rep(0, lni))
     names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
     fe <- allFitnessEffects(noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no,
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no,
@@ -186,24 +210,36 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
     mu <- 1e-5
     names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
     fe <- allFitnessEffects(noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc3a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         mu = mu,
                         initSize = no,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc3b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         mu = mu,
                         initSize = no,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc3c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          mu = mu,
                          initSize = no,
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc3d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          mu = mu,                     
@@ -243,21 +279,33 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ni <- c(3, 1.5, rep(0, lni))
     names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
     fe <- allFitnessEffects(noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcm1a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcm1b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcm1c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcm1d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
@@ -298,21 +346,33 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ni <- c(2, 0.5, rep(0, lni))
     names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
     fe <- allFitnessEffects(noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpc2d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
@@ -353,7 +413,6 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
 
 cat("\n", date(), "\n")
 test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowth, and different mmodules",{
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf3: the seed is", pseed, "\n")
@@ -373,12 +432,18 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                             geneToModule = c("A" = "a1",
                                              "B" = gn),
                             noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcmcf3a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, f1, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         mu = mu,
                         initSize = no, model = "McFL",
                         initMutant = "a1",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcmcf3b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, f1, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         mu = mu,
@@ -393,12 +458,18 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ## get a b), even when mutationPropGrowth is false, the population
     ## gets larger. And thus, it is easier to get a clone with three
     ## mutations, etc.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcmcf3c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, f1, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          mu = mu,
                          initSize = no, model = "McFL",
                          initMutant = "a1",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mpcmcf3d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, f1, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          mu = mu,                     
@@ -426,7 +497,6 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
 })
 
 
-
 cat("\n", date(), "\n")
 test_that("Without initmutant", {
     pseed <- sample(9999999, 1)
@@ -447,6 +517,9 @@ test_that("Without initmutant", {
     f3 <- allFitnessEffects(epistasis = c("A" = s3),
                             geneToModule = c("A" = gn),
                             noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s3a: the seed is", pseed, "\n")
     s3.ng <- oncoSimulPop(pops,
                           f3,
                           mu = mu,
@@ -455,6 +528,9 @@ test_that("Without initmutant", {
                           initSize = no,
                           onlyCancer = FALSE,
                           seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s3b: the seed is", pseed, "\n")
     s3.g <- oncoSimulPop(pops,
                          f3,
                          mu = mu,
@@ -495,6 +571,9 @@ test_that("Without initmutant, 2", {
     f2 <- allFitnessEffects(epistasis = c("A" = s2),
                             geneToModule = c("A" = gn),
                             noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s2a: the seed is", pseed, "\n")
     s2.ng <- oncoSimulPop(pops,
                           f2,
                           mu = mu,
@@ -503,6 +582,9 @@ test_that("Without initmutant, 2", {
                           initSize = no,
                           onlyCancer = FALSE,
                           seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s2b: the seed is", pseed, "\n")
     s2.g <- oncoSimulPop(pops,
                          f2,
                          mu = mu,
@@ -525,7 +607,7 @@ cat("\n", date(), "\n")
 ## ##     A way to check is to see the output from the C++ code with the
 ## ##     verbosity option.
 
-## set.seed("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 ## ni <- rep(0.4, 20)
 ## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
 ## fe <- allFitnessEffects(noIntGenes = ni)

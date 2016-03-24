@@ -1,5 +1,5 @@
 test_that("Count TotalPresentDrivers", {
-    ## The once was a bug here (in the driverCounts C++ function)
+    ## There once was a bug here (in the driverCounts C++ function)
     ## Testing we are OK
     ## Below, I use specific seeds for a few cases where I got
     ## errors. This actual cases might not be the same with other

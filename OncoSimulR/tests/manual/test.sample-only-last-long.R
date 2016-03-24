@@ -2,7 +2,7 @@
 ## overkill.
 
 data(examplePosets)
-## RNGkind("Mersenne-Twister") 
+RNGkind("Mersenne-Twister") 
 
 bozic <- function(poset) oncoSimulIndiv(poset)
 bozic9 <- function(poset) oncoSimulIndiv(poset, keepEvery = -9)

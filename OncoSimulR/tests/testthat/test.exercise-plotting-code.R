@@ -4,6 +4,8 @@
 
 ## BEWARE: this do not test that the plotting is correct! It just calls it.
 
+RNGkind("Mersenne-Twister") ## be explicit
+
 ## Takes about 11 seconds on my laptop
 cat(paste("\n Starting plots tests", date(), "\n"))
 test_that("exercising the oncosimul plotting code", {

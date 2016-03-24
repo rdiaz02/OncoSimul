@@ -1,3 +1,4 @@
+RNGkind("Mersenne-Twister")
 test_that("exercising the sampling code, v1 objects", {
               data(examplePosets)
               p705 <- examplePosets[["p705"]]

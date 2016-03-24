@@ -6,6 +6,7 @@
 ## telling me we are using the original set.
 
 data(examplesFitnessEffects)
+RNGkind("Mersenne-Twister")
 
 ## sometimes cancer is not reached. No problem.
 

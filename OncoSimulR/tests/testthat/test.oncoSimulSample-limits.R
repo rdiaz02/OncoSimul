@@ -1,3 +1,4 @@
+RNGkind("Mersenne-Twister")
 data(examplePosets)
 
 p701 <- examplePosets[["p701"]]

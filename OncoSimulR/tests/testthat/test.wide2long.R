@@ -1,3 +1,4 @@
+RNGkind("Mersenne-Twister")
 test_that("wide2long, two basic cases, minimal testing",
 {
     data(examplePosets)

@@ -1,3 +1,5 @@
+RNGkind("Mersenne-Twister")
+
 ## Processing this file takes about 3 seconds on my laptop
 test_that("initMutant crashes",
           {

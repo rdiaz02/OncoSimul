@@ -55,7 +55,7 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
 
 test_that("mutationPropGrowth no warning with Exp, indiv", {
     ## I once (out of over > 10000) saw it fail. Try to catch it
-    pseed <- sample(20000:30000, 1)
+    pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n the seed is", pseed, "\n")
     oi <- allFitnessEffects(orderEffects =

@@ -1,5 +1,3 @@
-## library(OncoSimulR); library(testthat)
-
 ## A set of tests to verify transformations between graph formats are
 ## OK. Recall that restrictionTable acts like a "sink": nothing is
 ## transformed from a restctiionTable to anything else.
@@ -19,7 +17,7 @@
 ## verify that.
 
 
-
+RNGkind("Mersenne-Twister")
 
 test_that("posetToGraph stop in incorrect entry type", {
     expect_error(OncoSimulR:::posetToGraph(1:5, letters[1:5]),
