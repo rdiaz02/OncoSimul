@@ -21,7 +21,8 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 2
+        sE <- 0.2 ## smaller than usual but very rarely (< 1/1000) I can
+                  ## get crashes of Algo 2 as popSize > 1e15
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Bozic", 
@@ -43,7 +44,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 2
+        sE <- 0.2
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Exp", 
@@ -82,7 +83,7 @@ for(i in 1:length(examplesFitnessEffects)) {
     if (names(examplesFitnessEffects)[i] == "e2") {
         sE <- 0.05
     } else {
-        sE <- 1
+        sE <- 0.1
     }
     tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
                             onlyCancer = FALSE,
@@ -100,7 +101,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 2
+        sE <- 0.2
     }
     tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
                          onlyCancer = FALSE,
