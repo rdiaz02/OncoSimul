@@ -608,40 +608,5 @@ cat("\n", date(), "\n")
 
 
 
-## ##     A way to check is to see the output from the C++ code with the
-## ##     verbosity option.
-
-## RNGkind("Mersenne-Twister")
-## ni <- rep(0.4, 20)
-## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
-## fe <- allFitnessEffects(noIntGenes = ni)
-## set.seed(5) 
-## oncoSimulIndiv(fe, finalTime =30,
-##                mutationPropGrowth = TRUE,
-##                initSize = 1e4,
-##                mu = 1e-06,
-##                verbosity = 6,
-##                onlyCancer = FALSE)
-
-## ###### Iteration 30.
-## ## mutation
-## ## child
-## 1.4 * 1e-06 * 19
-
-## ni <- rep(0.4, 20)
-## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
-## fe <- allFitnessEffects(noIntGenes = ni)
-## set.seed(25) 
-## oncoSimulIndiv(fe, finalTime =40,
-##                mutationPropGrowth = TRUE,
-##                initSize = 1e4,
-##                mu = 1e-06,
-##                verbosity = 6,
-##                onlyCancer = FALSE)
-## ## Iteration 48.
-## ## Birth of child:
-## 1.4 * 1.4
-## ## Mutation of child
-## 1.96 * 1e-06 * 18
 
 cat(paste("\n Ending at", date(), "\n"))

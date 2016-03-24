@@ -117,8 +117,122 @@ test_that("Ordering of number of clones with mutpropgrowth, McFL", {
     expect_true( median(summary(ncb)$NumClones) >
                  median(summary(ncb2)$NumClones))
 })
+
+cat("\n", date(), "\n")
+test_that("oncoSimulSample Without initmutant and modules", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osS: the seed is", pseed, "\n")
+    pops <- 60
+    lni <- 1 ## no fitness effects genes
+    fni <- 50 ## fitness effects genes
+    no <- 1e4 ## 1e3
+    ft <- 4 ## 5 ## 8   ## 5
+    s3 <- 2.5 ## 2.0 ## 3
+    mu <- 1e-5 ## 5e-5 ## easier to see
+    ## noInt have no fitness effects, but can accumulate mutations
+    ni <- rep(0, lni)
+    ## Those with fitness effects in one module, so
+    ## neither fitness nor mut. rate blow up
+    gn <- paste(paste0("a", 1:fni), collapse = ", ")
+    f3 <- allFitnessEffects(epistasis = c("A" = s3),
+                            geneToModule = c("A" = gn),
+                            noIntGenes = ni)
+    x <- 1/no
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSa: the seed is", pseed, "\n")
+    b1 <- oncoSimulSample(pops,
+                          f3,
+                          mu = mu,
+                          mutationPropGrowth = FALSE,
+                          finalTime =ft,
+                          initSize = no,
+                          onlyCancer = FALSE,
+                          sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSb: the seed is", pseed, "\n")
+    b2 <- oncoSimulSample(pops,
+                         f3,
+                         mu = mu,
+                         mutationPropGrowth = TRUE,
+                         finalTime =ft,
+                         initSize = no,
+                         onlyCancer = FALSE,
+                         sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                         thresholdWhole = x)
+    b1$popSummary[1:5, c(1:3, 8:9)]
+    summary(b1$popSummary[, "NumClones"])
+    summary(b1$popSummary[, "TotalPopSize"])
+    b2$popSummary[1:5, c(1:3, 8:9)]
+    summary(b2$popSummary[, "NumClones"])
+    summary(b2$popSummary[, "TotalPopSize"])
+    ## cc1 and cc2 should all be smaller than pops, or you are maxing
+    ## things and not seeing patterns
+    ## (cc1 <- colSums(b1$popSample))
+    ## (cc2 <- colSums(b2$popSample))
+    (mutsPerClone1 <- rowSums(b1$popSample))
+    (mutsPerClone2 <- rowSums(b2$popSample))
+    ## summary(mutsPerClone1)
+    ## summary(mutsPerClone2)
+    expect_true( mean(mutsPerClone2) >
+                 mean(mutsPerClone1))
+    expect_true( median(b2$popSummary[, "NumClones"]) >
+                 median(b1$popSummary[, "NumClones"]))
+})
 cat("\n", date(), "\n")
 
+
+
+
+
+
+
+
+
+## ##     A way to check is to see the output from the C++ code with the
+## ##     verbosity option.
+
+## RNGkind("Mersenne-Twister")
+## ni <- rep(0.4, 20)
+## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
+## fe <- allFitnessEffects(noIntGenes = ni)
+## set.seed(5) 
+## oncoSimulIndiv(fe, finalTime =30,
+##                mutationPropGrowth = TRUE,
+##                initSize = 1e4,
+##                mu = 1e-06,
+##                verbosity = 6,
+##                onlyCancer = FALSE)
+
+## ###### Iteration 30.
+## ## mutation
+## ## child
+## 1.4 * 1e-06 * 19
+
+## ni <- rep(0.4, 20)
+## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
+## fe <- allFitnessEffects(noIntGenes = ni)
+## set.seed(25) 
+## oncoSimulIndiv(fe, finalTime =40,
+##                mutationPropGrowth = TRUE,
+##                initSize = 1e4,
+##                mu = 1e-06,
+##                verbosity = 6,
+##                onlyCancer = FALSE)
+## ## Iteration 48.
+## ## Birth of child:
+## 1.4 * 1.4
+## ## Mutation of child
+## 1.96 * 1e-06 * 18
 
 
 
