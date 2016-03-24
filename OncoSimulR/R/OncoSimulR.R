@@ -69,6 +69,8 @@ oncoSimulSample <- function(Nindiv,
     ## leaving detectionSize and detectionDrivers as they are, produces
     ## the equivalente of uniform sampling. For last, fix a single number
 
+    if(Nindiv < 1)
+        stop("Nindiv must be >=1")
     if(keepPhylog)
         warning(paste("oncoSimulSample does not return the phylogeny",
                       "for now, so there is little point in storing it."))
@@ -308,6 +310,9 @@ oncoSimulPop <- function(Nindiv,
                          mc.cores = detectCores(),
                          seed = "auto") {
 
+    if(Nindiv < 1)
+        stop("Nindiv must be >=1")
+    
     if(.Platform$OS.type == "windows") {
         if(mc.cores != 1)
             message("You are running Windows. Setting mc.cores = 1")

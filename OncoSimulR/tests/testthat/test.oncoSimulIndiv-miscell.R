@@ -1,3 +1,26 @@
+test_that("oncoSimulSample and oncoSimulPop require >= 1 indiv", {
+    pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                                                        "TP53", "TP53", "MLL3"),
+                                                    child = c("KRAS","SMAD4", "CDNK2A", 
+                                                        "TP53", "MLL3",
+                                                        rep("PXDN", 3), rep("TGFBR2", 2)),
+                                                    s = 0.05,
+                                                    sh = -0.3,
+                                                    typeDep = "MN"))
+    expect_error(pS <- oncoSimulSample(0, pancr),
+                 "Nindiv must be >= 1",
+                 fixed = TRUE)
+    expect_error(pS <- oncoSimulPop(0, pancr),
+                 "Nindiv must be >= 1",
+                 fixed = TRUE)
+    expect_error(pS <- oncoSimulSample(-3, pancr),
+                 "Nindiv must be >= 1",
+                 fixed = TRUE)
+    expect_error(pS <- oncoSimulPop(-4, pancr),
+                 "Nindiv must be >= 1",
+                 fixed = TRUE)
+})
+
 test_that("numPassengers no effect with fitnessEffects objects", {
     oi <- allFitnessEffects(orderEffects =
                                 c("F > D" = -0.3, "D > F" = 0.4),
