@@ -277,7 +277,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     set.seed(pseed)
     cat("\n mpcmcf1: the seed is", pseed, "\n")
     ft <- 20 ## unless large you rarely get triple, etc, mutatns
-    pops <- 100
+    pops <- 200
     lni <- 50 
     no <- 1e3
     ni <- c(3, 1.5, rep(0, lni))
@@ -421,7 +421,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     set.seed(pseed)
     cat("\n mpcmcf3: the seed is", pseed, "\n")
     ft <- 10 
-    pops <- 40
+    pops <- 200
     mu <- 1e-5
     lni <- 10
     fni <- 50
@@ -506,7 +506,7 @@ test_that("Without initmutant", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n s3: the seed is", pseed, "\n")
-    pops <- 40
+    pops <- 200
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e3
@@ -562,7 +562,7 @@ test_that("Without initmutant, 2", {
     cat("\n s2: the seed is", pseed, "\n")
     s2 <- 1.0
     ft <- 15
-    pops <- 40
+    pops <- 200
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e4
