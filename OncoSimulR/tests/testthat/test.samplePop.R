@@ -109,6 +109,7 @@ test_that("exercising the sampling code, v2 objects, possibly NAs in output", {
               o4 <- oncoSimulPop(2,
                                  oi, 
                                  detectionSize = 1e4,
+                                 mc.cores = 2,
                                  onlyCancer = FALSE)
               ## many of them are generating warnings, because sampling
               ## with pop size of 0. That is OK.
@@ -204,6 +205,7 @@ test_that("exercising the sampling code, v2 objects", {
                                  oi, 
                                  detectionSize = 1e4,
                                  onlyCancer = TRUE,
+                                 mc.cores = 2,
                                  max.num.tries = 5000)
               expect_message(samplePop(o1),
                              "Subjects by Genes matrix of 1 subjects and 10 genes")
