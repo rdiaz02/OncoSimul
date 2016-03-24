@@ -1571,7 +1571,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   
   
-  if(K < 1 )
+  if( (K < 1 ) && ( (typeModel == TypeModel::mcfarlandlog) ||
+		    (typeModel == TypeModel::mcfarland) ||
+		    (typeModel == TypeModel::mcfarland0) ))
     throw std::range_error("K < 1.");
   fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
   //Used at least twice

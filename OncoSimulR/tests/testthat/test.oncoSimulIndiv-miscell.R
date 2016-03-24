@@ -1,4 +1,22 @@
 RNGkind("Mersenne-Twister")
+test_that("can start from 1 individual but error if McFL", {
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = rexp(5, 10),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2") )
+
+    expect_output(oncoSimulIndiv(oi, initSize = 1, onlyCancer = FALSE),
+                  "Individual OncoSimul trajectory", fixed = TRUE)
+    
+    expect_error(oncoSimulIndiv(oi, initSize = 1,
+                                onlyCancer = FALSE, model = "McFL"),
+                 "Using McFarland's model: K cannot be < 1",
+                 fixed = TRUE)
+})
+
 test_that("oncoSimulSample and oncoSimulPop require >= 1 indiv", {
     pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
                                                         "TP53", "TP53", "MLL3"),

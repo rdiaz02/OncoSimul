@@ -400,9 +400,13 @@ oncoSimulIndiv <- function(fp,
                           )
     if(initSize < 1)
         stop("initSize < 1")
-    if( (K < 1) && !(model %in% c("McFL", "McFarlandLog") )) {
-        K <- 1 ## K is ONLY used for McFarland
-    }
+    
+    if( (K < 1) && (model %in% c("McFL", "McFarlandLog") )) {
+        stop("Using McFarland's model: K cannot be < 1")
+    }       ##  if ( !(model %in% c("McFL", "McFarlandLog") )) {
+            ## K <- 1 ## K is ONLY used for McFarland; set it to 1, to avoid
+            ##        ## C++ blowing.
+
     if(typeFitness == "exp") {
         death <- 1
         ## mutationPropGrowth <- 1
