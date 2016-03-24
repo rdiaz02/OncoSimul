@@ -4,15 +4,15 @@ test_that("exercising the sampling code, v1 objects", {
               data(examplePosets)
               p705 <- examplePosets[["p705"]]
               r1 <- oncoSimulIndiv(p705)
-              p1 <- oncoSimulPop(4, p705, mc.cores = 2)
+              p1 <- oncoSimulPop(4, p705, numPassengers = 30, mc.cores = 2)
               expect_message(samplePop(p1  ),
-                            "Subjects by Genes matrix of 4 subjects and 7 genes")
+                            "Subjects by Genes matrix of 4 subjects and 37 genes")
               expect_message(samplePop(p1, typeSample = "single"),
-                             "Subjects by Genes matrix of 4 subjects and 7 genes")
+                             "Subjects by Genes matrix of 4 subjects and 37 genes")
               expect_message(samplePop(p1, typeSample = "whole", timeSample = "unif"),
-                             "Subjects by Genes matrix of 4 subjects and 7 genes")
+                             "Subjects by Genes matrix of 4 subjects and 37 genes")
               expect_message(samplePop(p1, typeSample = "single", timeSample = "unif"),
-                            "Subjects by Genes matrix of 4 subjects and 7 genes")
+                            "Subjects by Genes matrix of 4 subjects and 37 genes")
               expect_message(samplePop(r1, typeSample = "whole", timeSample = "last"),
                              "Subjects by Genes matrix of 1 subjects and 7 genes")
               expect_message(samplePop(r1, typeSample = "single", timeSample = "last"),
@@ -26,7 +26,7 @@ test_that("exercising the sampling code, v1 objects", {
 test_that("exercising the sampling code, v1 objects, possibly NAs", {
               data(examplePosets)
               p705 <- examplePosets[["p705"]]
-              r1 <- oncoSimulIndiv(p705, onlyCancer = FALSE)
+              r1 <- oncoSimulIndiv(p705, numPassengers = 30, onlyCancer = FALSE)
               p1 <- oncoSimulPop(4, p705, mc.cores = 2, onlyCancer = FALSE)
               expect_message(samplePop(p1),
                             "Subjects by Genes matrix of 4 subjects and 7 genes")
@@ -45,19 +45,19 @@ test_that("exercising the sampling code, v1 objects, possibly NAs", {
               expect_message(samplePop(p1, typeSample = "single"),
                              "Subjects by Genes matrix of 4 subjects and 7 genes")
               expect_message(samplePop(r1),
-                             "Subjects by Genes matrix of 1 subjects and 7 genes")
+                             "Subjects by Genes matrix of 1 subjects and 37 genes")
               expect_message(samplePop(r1, typeSample = "whole",
                                        timeSample = "last"),
-                             "Subjects by Genes matrix of 1 subjects and 7 genes")
+                             "Subjects by Genes matrix of 1 subjects and 37 genes")
               expect_message(samplePop(r1, typeSample = "whole",
                                        timeSample = "unif"),
-                            "Subjects by Genes matrix of 1 subjects and 7 genes")
+                            "Subjects by Genes matrix of 1 subjects and 37 genes")
               expect_message(samplePop(r1, typeSample = "single",
                                        timeSample = "last"),
-                            "Subjects by Genes matrix of 1 subjects and 7 genes")
+                            "Subjects by Genes matrix of 1 subjects and 37 genes")
               expect_message(samplePop(r1, typeSample = "single",
                                        timeSample = "uniform"),
-                            "Subjects by Genes matrix of 1 subjects and 7 genes")
+                            "Subjects by Genes matrix of 1 subjects and 37 genes")
           })
 
 test_that("exercising the sampling code, v1 objects, possibly NAs, more", {
