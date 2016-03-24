@@ -277,7 +277,7 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
 oncoSimulPop <- function(Nindiv,
                          fp,
                          model = "Exp",
-                         numPassengers = 30,
+                         numPassengers = 0,
                          mu = 1e-6,
                          detectionSize = 1e8,
                          detectionDrivers = 4,
@@ -354,7 +354,7 @@ oncoSimulPop <- function(Nindiv,
 
 oncoSimulIndiv <- function(fp,
                            model = "Exp",
-                           numPassengers = 30,
+                           numPassengers = 0,
                            mu = 1e-6,
                            detectionSize = 1e8,
                            detectionDrivers = 4,
@@ -421,7 +421,7 @@ oncoSimulIndiv <- function(fp,
             stop("Unknown model")
     }
 
-    if(mu < 0) {
+    if(any(mu < 0)) {
         stop("mutation rate (mu) is negative")
     }
     ## We do not test for equality to 0. That might be a weird but
@@ -506,6 +506,12 @@ oncoSimulIndiv <- function(fp,
                   silent = !verbosity)
         objClass <- "oncosimul"
     } else {
+        if(numPassengers != 0)
+            warning(paste("Specifying numPassengers has no effect",
+                          " when using fitnessEffects objects. ",
+                          " The fitnessEffects objects are much more ",
+                          "flexible and you can use, for example,",
+                          "the noIntGenes component for passengers."))
         if(is.null(seed)) {## Passing a null creates a random seed
             ## We use a double, to be able to pass in range > 2^16.
             ## Do not use 0, as that is our way of signaling to C++ to

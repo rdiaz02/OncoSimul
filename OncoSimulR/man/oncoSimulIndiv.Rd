@@ -19,7 +19,7 @@
   al., 2012.
 }
 \usage{
- oncoSimulIndiv(fp, model = "Exp", numPassengers = 30, mu = 1e-6,
+ oncoSimulIndiv(fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -39,7 +39,7 @@
                 initMutant = NULL,
                 seed = NULL)
 
-oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
+oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -119,18 +119,24 @@ oncoSimulSample(Nindiv,
     v.1. Otherwise, a fitnessEffects object (see
     \code{\link{allFitnessEffects}}).
 
-    Other arguments below (s, sh) make sense only if you use a poset, as
-    they are included in the fitnessEffects object.
+    Other arguments below (s, sh, numPassengers) make sense only if you
+    use a poset, as they are included in the fitnessEffects object.
 
 }
+
 \item{model}{
   One of "Bozic", "Exp", "McFarlandLog" (the last one can be abbreviated
   to "McFL"). The default is "Exp".
 
 }
+
 \item{numPassengers}{
+
+  This has no effect if you use the \code{\link{allFitnessEffects}}
+  specification.
   
-  The number of passenger genes.The total number of genes (drivers plus
+  If you use the specification of v.1., the number of passenger
+  genes. Note that using v.1 the total number of genes (drivers plus
   passengers) must be smaller than 64.
   
   All driver genes should be included in the poset (even if they depend
@@ -140,6 +146,7 @@ oncoSimulSample(Nindiv,
   of passengers).
 
 }
+
 \item{mu}{
   Mutation rate. See also \code{mutationPropGrowth}.
 
@@ -159,8 +166,8 @@ between 2 and 0.75 the total number of drivers.
 \item{sampleEvery}{
   
   How often the whole population is sampled. This is not the same as the
-  interval between successive samples that keep stored (for that, see
-  \code{keepEvery}).
+  interval between successive samples that are kept or stored (for that,
+  see \code{keepEvery}).
 
   For very fast growing clones, you might need to have a small value
   here to minimize possible numerical problems (such as huge increase in

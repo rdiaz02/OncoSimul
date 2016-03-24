@@ -1,3 +1,15 @@
+test_that("numPassengers no effect with fitnessEffects objects", {
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = rexp(5, 10),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2") )
+    expect_warning(oi1 <- oncoSimulIndiv(o1, numPassengers = 10),
+                   "Specifying numPassengers", fixed = TRUE)
+})
+
 test_that("initSize cannot be less than 1", {
     np <- 20
     s <- 0.015
