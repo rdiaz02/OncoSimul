@@ -66,7 +66,8 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
     cat("\n mpc1: the seed is", pseed, "\n")
     ft <- 2.5
     pops <- 200
-    lni <- 400
+    lni <- 500 ## with, say, 40 or a 100, sometimes fails the comparisons
+               ## with small differences.
     no <- 10
     ni <- c(5, 3, rep(0, lni))
     names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
@@ -138,7 +139,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
     ## nca2.
     ft <- 15 ## going beyond 16 or so, gets it to bail because of reaching max
     ## pop
-    pops <- 200
+    pops <- 400
     lni <- 300
     no <- 10
     ni <- c(1, 0.5, rep(0, lni))
@@ -187,6 +188,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
                  median(summary(ncb2)$NumClones))
     expect_true( mean(mutsPerClone(nca)) >
                  mean(mutsPerClone(ncb)))
+    ## next can fail, as differences are small
     expect_true( mean(mutsPerClone(ncb)) >
                  mean(mutsPerClone(ncb2)))
     ## These can fail in this case, since small diffs. as small mutlipliers
