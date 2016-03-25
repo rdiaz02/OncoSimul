@@ -156,7 +156,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
     cat("\n mpc2a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no,
+                        initSize = no, keepEvery = 1,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -165,7 +165,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
     cat("\n mpc2b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no,
+                        initSize = no, keepEvery = 1,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -174,7 +174,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
     cat("\n mpc2c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no,
+                         initSize = no, keepEvery = 1,
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -183,7 +183,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
     cat("\n mpc2d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no,
+                         initSize = no, keepEvery = 1,
                          initMutant = "b",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -233,7 +233,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         mu = mu,
-                        initSize = no,
+                        initSize = no, keepEvery = 1,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -243,7 +243,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         mu = mu,
-                        initSize = no,
+                        initSize = no, keepEvery = 1,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -253,7 +253,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          mu = mu,
-                         initSize = no,
+                         initSize = no, keepEvery = 1,
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -263,7 +263,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          mu = mu,                     
-                         initSize = no,
+                         initSize = no, keepEvery = 1,
                          initMutant = "b",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
@@ -307,7 +307,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
-                        initMutant = "a",
+                        initMutant = "a", keepEvery = 1,
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     pseed <- sample(9999999, 1)
@@ -316,7 +316,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
-                        initMutant = "b",
+                        initMutant = "b", keepEvery = 1,
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     pseed <- sample(9999999, 1)
@@ -325,7 +325,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
-                         initMutant = "a",
+                         initMutant = "a", keepEvery = 1,
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     pseed <- sample(9999999, 1)
@@ -334,7 +334,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
-                         initMutant = "b",
+                         initMutant = "b", keepEvery = 1,
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     expect_true(var(summary(nca)$NumClones) > 1e-4)
@@ -379,7 +379,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
-                        initMutant = "a",
+                        initMutant = "a", keepEvery = 1,
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     pseed <- sample(9999999, 1)
@@ -388,7 +388,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ncb <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
-                        initMutant = "b",
+                        initMutant = "b", keepEvery = 1,
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     pseed <- sample(9999999, 1)
@@ -397,7 +397,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
-                         initMutant = "a",
+                         initMutant = "a", keepEvery = 1,
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     pseed <- sample(9999999, 1)
@@ -406,7 +406,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
-                         initMutant = "b",
+                         initMutant = "b", keepEvery = 1,
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
     expect_true(var(summary(nca)$NumClones) > 1e-4)
@@ -469,9 +469,9 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     cat("\n mpcmcf3a: the seed is", pseed, "\n")
     nca <- oncoSimulPop(pops, f1, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        mu = mu,
+                        mu = mu, keepEvery = 1,
                         initSize = no, model = "McFL",
-                        initMutant = "a1",
+                        initMutant = "a1", 
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pseed <- sample(9999999, 1)
     gc()
@@ -479,7 +479,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     cat("\n mpcmcf3b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, f1, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        mu = mu,
+                        mu = mu, keepEvery = 1,
                         initSize = no, model = "McFL",
                         initMutant = "b1",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
@@ -497,7 +497,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     cat("\n mpcmcf3c: the seed is", pseed, "\n")
     nca2 <- oncoSimulPop(pops, f1, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         mu = mu,
+                         mu = mu, keepEvery = 1,
                          initSize = no, model = "McFL",
                          initMutant = "a1",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
@@ -506,7 +506,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     cat("\n mpcmcf3d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, f1, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         mu = mu,                     
+                         mu = mu, keepEvery = 1,                    
                          initSize = no, model = "McFL",
                          initMutant = "b1",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
@@ -615,7 +615,7 @@ test_that("Without initmutant, 2", {
                           mu = mu,
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
-                          initSize = no,
+                          initSize = no, keepEvery = 1,
                           onlyCancer = FALSE,
                           seed = NULL, mc.cores = 2)
     gc(); pseed <- sample(9999999, 1)
@@ -626,7 +626,7 @@ test_that("Without initmutant, 2", {
                          mu = mu,
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
-                         initSize = no,
+                         initSize = no, keepEvery = 1,
                          onlyCancer = FALSE,
                          seed = NULL, mc.cores = 2)
     ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
@@ -646,7 +646,7 @@ test_that("McFL: Without initmutant", {
     cat("\n mcfls2: the seed is", pseed, "\n")
     s2 <- 2.0
     ft <- 250
-    pops <- 200
+    pops <- 200 ## 200
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e3
@@ -667,7 +667,7 @@ test_that("McFL: Without initmutant", {
                           mu = mu,
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
-                          initSize = no,
+                          initSize = no, keepEvery = 5,
                           onlyCancer = FALSE, model = "McFL",
                           seed = NULL, mc.cores = 2)
     gc(); pseed <- sample(9999999, 1)
@@ -678,7 +678,7 @@ test_that("McFL: Without initmutant", {
                          mu = mu,
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
-                         initSize = no,
+                         initSize = no, keepEvery = 5, 
                          onlyCancer = FALSE, model = "McFL",
                          seed = NULL, mc.cores = 2)
     ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
@@ -716,7 +716,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1a: the seed is", pseed, "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no,
+                        initSize = no, keepEvery = 0.5,
                         initMutant = "a",
                         onlyCancer = FALSE,  sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -728,7 +728,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1b: the seed is", pseed, "\n")
     ncb <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no,
+                        initSize = no, keepEvery = 0.5,
                         initMutant = "b",
                         onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -740,7 +740,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1c: the seed is", pseed, "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no,
+                         initSize = no, keepEvery = 0.5,
                          initMutant = "a",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -752,7 +752,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no,
+                         initSize = no, keepEvery = 0.5,
                          initMutant = "b",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -816,7 +816,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLa: the seed is", pseed, "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no,
+                        initSize = no, keepEvery = 0.5,
                         initMutant = "a",
                         onlyCancer = FALSE,  sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -828,7 +828,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLb: the seed is", pseed, "\n")
     ncb <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no,
+                        initSize = no, keepEvery = 0.5,
                         initMutant = "b",
                         onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -840,7 +840,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLc: the seed is", pseed, "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no,
+                         initSize = no, keepEvery = 0.5,
                          initMutant = "a",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -852,7 +852,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLd: the seed is", pseed, "\n")
     ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no,
+                         initSize = no, keepEvery = 0.5,
                          initMutant = "b",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
