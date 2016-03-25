@@ -21,7 +21,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 2
+        sE <- .2
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Bozic", 
@@ -43,7 +43,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 2
+        sE <- .2
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Exp", 
@@ -82,7 +82,7 @@ for(i in 1:length(examplesFitnessEffects)) {
     if (names(examplesFitnessEffects)[16] == "e2") {
         sE <- 0.05
     } else {
-        sE <- 1
+        sE <- .1
     }
     tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
                             onlyCancer = FALSE,
@@ -100,7 +100,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 2
+        sE <- .2
     }
     tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
                          onlyCancer = FALSE,
