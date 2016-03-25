@@ -1,3 +1,4 @@
+cat(paste("\n Starting at mutPropGrowth long", date(), "\n"))
 
 ## Why this does not really reflect what we want, and why number of clones
 ## is better that capture the idea of "more mutations". NumClones reflects
@@ -45,13 +46,14 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 
 
 
+
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## If crashes I want to see where: thus output seed.
 
 ## The tests below can occasionally fail (but that probability decreases
 ## as we increase number of pops), as they should.
 ## Same of these tests take some time. For now, show times.
-cat(paste("\n Starting at", date(), "\n"))
+
 
 ## Beware of exiting because max number of subjects reached, and that
 ## could happen sooner for the faster growing, so less time to accumulate
@@ -665,4 +667,201 @@ cat("\n", date(), "\n")
 
 
 
-cat(paste("\n Ending at", date(), "\n"))
+cat("\n", date(), "\n")
+test_that("Ordering of number of clones and mutsPerClone with initMutant and modules, oncoSimulSample", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1: the seed is", pseed, "\n")
+    ft <- 2  
+    pops <- 100
+    lni <- 500 ## with, say, 40 or a 100, sometimes fails the comparisons
+               ## with small differences.
+    no <- 10
+    x <- 1e-40
+    ni <- c(5, 3, rep(0, lni))
+    names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
+    fe <- allFitnessEffects(noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1a: the seed is", pseed, "\n")
+    nca <- oncoSimulSample(pops, fe, finalTime = ft,
+                        mutationPropGrowth = TRUE,
+                        initSize = no,
+                        initMutant = "a",
+                        onlyCancer = FALSE,  sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1b: the seed is", pseed, "\n")
+    ncb <- oncoSimulSample(pops, fe, finalTime = ft,
+                        mutationPropGrowth = TRUE,
+                        initSize = no,
+                        initMutant = "b",
+                        onlyCancer = FALSE, sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1c: the seed is", pseed, "\n")
+    nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
+                         mutationPropGrowth = FALSE,
+                         initSize = no,
+                         initMutant = "a",
+                         onlyCancer = FALSE, sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1d: the seed is", pseed, "\n")
+    ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
+                         mutationPropGrowth = FALSE,
+                         initSize = no,
+                         initMutant = "b",
+                         onlyCancer = FALSE, sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                         thresholdWhole = x)
+    ## nca$popSummary[1:5, c(1:3, 8:9)]
+    ## ncb$popSummary[1:5, c(1:3, 8:9)]
+    ## nca2$popSummary[1:5, c(1:3, 8:9)]
+    ## ncb2$popSummary[1:5, c(1:3, 8:9)]
+    ## summary(nca$popSummary[, "NumClones"])
+    ## summary(ncb$popSummary[, "NumClones"])
+    ## summary(nca2$popSummary[, "NumClones"])
+    ## summary(ncb2$popSummary[, "NumClones"])
+    ## cat("\n mutsperclone\n")
+    ## summary(mutsPerCloneNCA <- rowSums(nca$popSample))
+    ## summary(mutsPerCloneNCB <- rowSums(ncb$popSample))
+    ## summary(mutsPerCloneNCA2 <- rowSums(nca2$popSample))
+    ## summary(mutsPerCloneNCB2 <- rowSums(ncb2$popSample))
+    ## (cc1 <- colSums(nca$popSample))
+    ## Because of how we do the "mutsPerClone", mutsPerClone almost the
+    ## same ans number of clones (except for the few cases when a clone
+    ## has gone extinct)
+    mutsPerCloneNCA <- rowSums(nca$popSample)
+    mutsPerCloneNCB <- rowSums(ncb$popSample)
+    mutsPerCloneNCA2 <- rowSums(nca2$popSample)
+    mutsPerCloneNCB2 <- rowSums(ncb2$popSample)
+    expect_true( mean(mutsPerCloneNCA) >
+                 mean(mutsPerCloneNCA2))
+    expect_true( mean(mutsPerCloneNCB) >
+                 mean(mutsPerCloneNCB2))
+    expect_true( mean(mutsPerCloneNCA) >
+                 mean(mutsPerCloneNCB))
+    expect_true( median(nca$popSummary[, "NumClones"]) >
+                 median(nca2$popSummary[, "NumClones"]))
+    expect_true( median(ncb$popSummary[, "NumClones"]) >
+                 median(ncb2$popSummary[, "NumClones"]))
+    expect_true( median(nca$popSummary[, "NumClones"]) >
+                 median(ncb$popSummary[, "NumClones"]))
+})
+cat("\n", date(), "\n")
+
+
+cat("\n", date(), "\n")
+test_that("Ordering of number of clones and mutsPerClone with initMutant and modules, oncoSimulSample, McFL", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1McFL: the seed is", pseed, "\n")
+    ft <- 2  
+    pops <- 100
+    lni <- 500 ## with, say, 40 or a 100, sometimes fails the comparisons
+               ## with small differences.
+    no <- 10
+    x <- 1e-40
+    ni <- c(5, 3, rep(0, lni))
+    names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
+    fe <- allFitnessEffects(noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1McFLa: the seed is", pseed, "\n")
+    nca <- oncoSimulSample(pops, fe, finalTime = ft,
+                        mutationPropGrowth = TRUE,
+                        initSize = no,
+                        initMutant = "a",
+                        onlyCancer = FALSE,  sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1McFLb: the seed is", pseed, "\n")
+    ncb <- oncoSimulSample(pops, fe, finalTime = ft,
+                        mutationPropGrowth = TRUE,
+                        initSize = no,
+                        initMutant = "b",
+                        onlyCancer = FALSE, sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1McFLc: the seed is", pseed, "\n")
+    nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
+                         mutationPropGrowth = FALSE,
+                         initSize = no,
+                         initMutant = "a",
+                         onlyCancer = FALSE, sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n ossmpc1McFLd: the seed is", pseed, "\n")
+    ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
+                         mutationPropGrowth = FALSE,
+                         initSize = no,
+                         initMutant = "b",
+                         onlyCancer = FALSE, sampleEvery = 0.01,
+                          detectionSize = 1e9,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                         thresholdWhole = x)
+    ## nca$popSummary[1:5, c(1:3, 8:9)]
+    ## ncb$popSummary[1:5, c(1:3, 8:9)]
+    ## nca2$popSummary[1:5, c(1:3, 8:9)]
+    ## ncb2$popSummary[1:5, c(1:3, 8:9)]
+    ## summary(nca$popSummary[, "NumClones"])
+    ## summary(ncb$popSummary[, "NumClones"])
+    ## summary(nca2$popSummary[, "NumClones"])
+    ## summary(ncb2$popSummary[, "NumClones"])
+    ## cat("\n mutsperclone\n")
+    ## summary(mutsPerCloneNCA <- rowSums(nca$popSample))
+    ## summary(mutsPerCloneNCB <- rowSums(ncb$popSample))
+    ## summary(mutsPerCloneNCA2 <- rowSums(nca2$popSample))
+    ## summary(mutsPerCloneNCB2 <- rowSums(ncb2$popSample))
+    ## (cc1 <- colSums(nca$popSample))
+    ## Because of how we do the "mutsPerClone", mutsPerClone almost the
+    ## same ans number of clones (except for the few cases when a clone
+    ## has gone extinct)
+    mutsPerCloneNCA <- rowSums(nca$popSample)
+    mutsPerCloneNCB <- rowSums(ncb$popSample)
+    mutsPerCloneNCA2 <- rowSums(nca2$popSample)
+    mutsPerCloneNCB2 <- rowSums(ncb2$popSample)
+    expect_true( mean(mutsPerCloneNCA) >
+                 mean(mutsPerCloneNCA2))
+    expect_true( mean(mutsPerCloneNCB) >
+                 mean(mutsPerCloneNCB2))
+    expect_true( mean(mutsPerCloneNCA) >
+                 mean(mutsPerCloneNCB))
+    expect_true( median(nca$popSummary[, "NumClones"]) >
+                 median(nca2$popSummary[, "NumClones"]))
+    expect_true( median(ncb$popSummary[, "NumClones"]) >
+                 median(ncb2$popSummary[, "NumClones"]))
+    expect_true( median(nca$popSummary[, "NumClones"]) >
+                 median(ncb$popSummary[, "NumClones"]))
+})
+cat("\n", date(), "\n")
+
+cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
