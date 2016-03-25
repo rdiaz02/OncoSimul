@@ -634,7 +634,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     set.seed(pseed)
     cat("\n ossmpc1: the seed is", pseed, "\n")
     ft <- 2  
-    pops <- 300
+    pops <- 400
     lni <- 500 ## with, say, 40 or a 100, sometimes fails the comparisons
                ## with small differences.
     no <- 10
@@ -714,7 +714,6 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
         cat(dim(nca$popSample))
         cat(str(nca$popSample))
     }
-        
     mutsPerCloneNCA <- rowSums(nca$popSample)
     mutsPerCloneNCB <- rowSums(ncb$popSample)
     mutsPerCloneNCA2 <- rowSums(nca2$popSample)
@@ -760,7 +759,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                         onlyCancer = FALSE,  sampleEvery = 0.01,
                           detectionSize = 1e9,
                           detectionDrivers = 99,
-                          seed =NULL,
+                          seed =NULL, max.wall.time = 400,
                           thresholdWhole = x)
     gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
@@ -772,7 +771,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                         onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
                           detectionDrivers = 99,
-                          seed =NULL,
+                          seed =NULL, max.wall.time = 400,
                           thresholdWhole = x)
     gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
@@ -784,7 +783,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
                           detectionDrivers = 99,
-                          seed =NULL,
+                          seed =NULL, max.wall.time = 400,
                           thresholdWhole = x)
     gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
@@ -796,7 +795,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
                           detectionDrivers = 99,
-                          seed =NULL,
+                          seed =NULL, max.wall.time = 400,
                          thresholdWhole = x)
     ## nca$popSummary[1:5, c(1:3, 8:9)]
     ## ncb$popSummary[1:5, c(1:3, 8:9)]
@@ -815,6 +814,20 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     ## Because of how we do the "mutsPerClone", mutsPerClone almost the
     ## same ans number of clones (except for the few cases when a clone
     ## has gone extinct)
+    if(!is.array(nca$popSample)) {
+        ## occasionally, I get funny things
+        warning("nca$popSample not an array")
+        cat(class(nca$popSample))
+        cat(dim(nca$popSample))
+        cat(str(nca$popSample))
+    }
+    if(!is.array(ncb$popSample)) {
+        ## occasionally, I get funny things
+        warning("ncb$popSample not an array")
+        cat(class(ncb$popSample))
+        cat(dim(ncb$popSample))
+        cat(str(ncb$popSample))
+    }
     mutsPerCloneNCA <- rowSums(nca$popSample)
     mutsPerCloneNCB <- rowSums(ncb$popSample)
     mutsPerCloneNCA2 <- rowSums(nca2$popSample)
