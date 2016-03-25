@@ -707,7 +707,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     ## Because of how we do the "mutsPerClone", mutsPerClone almost the
     ## same ans number of clones (except for the few cases when a clone
     ## has gone extinct)
-    if(!is.arrray(nca$popSample)) {
+    if(!is.array(nca$popSample)) {
         ## occasionally, I get funny things
         warning("nca$popSample not an array")
         cat(class(nca$popSample))
