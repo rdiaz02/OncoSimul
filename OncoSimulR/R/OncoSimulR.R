@@ -29,7 +29,7 @@ oncoSimulSample <- function(Nindiv,
                                     if(length(fp$drv)) {
                                         nd <- (2: round(0.75 * length(fp$drv)))
                                     } else {
-                                        nd <- 0
+                                        nd <- 9e6 
                                     }
                                 } else {
                                     nd <- (2 : round(0.75 * max(fp)))
@@ -69,6 +69,10 @@ oncoSimulSample <- function(Nindiv,
     ## leaving detectionSize and detectionDrivers as they are, produces
     ## the equivalente of uniform sampling. For last, fix a single number
 
+    ## detectionDrivers when there are none: had we left it at 0, then
+    ## when there are no drivers we would stop at the first sampling
+    ## period.
+    
     if(Nindiv < 1)
         stop("Nindiv must be >= 1")
     if(keepPhylog)

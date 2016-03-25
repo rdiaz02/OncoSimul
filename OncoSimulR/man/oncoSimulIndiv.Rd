@@ -73,7 +73,7 @@ oncoSimulSample(Nindiv,
                                     if(length(fp$drv)) {
                                         nd <- (2: round(0.75 * length(fp$drv)))
                                     } else {
-                                        nd <- 0
+                                        nd <- 9e6
                                     }
                                 } else {
                                     nd <- (2 : round(0.75 * max(fp)))
@@ -158,8 +158,17 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 \item{detectionDrivers}{ The minimal number of drivers (not modules,
 drivers, whether or not they are from the same module) present in any
 clone for cancer to be detected. For \code{oncoSimulSample} this can be
-a vector. The default in this case is a vector of drivers from a uniform
-between 2 and 0.75 the total number of drivers.
+a vector.
+
+For \code{oncoSimulSample}, if there are drivers (either because you are
+using a v.1 object or because you are using a fitnessEffects object with
+a \code{drvNames} component ---see \code{\link{allFitnessEffects}}---)
+the default is a vector of drivers from a uniform between 2 and 0.75 the
+total number of drivers. If there are no drivers (because you are using
+a fitnessEffects object without a \code{drvNames}, either because you
+specified it explicitly or because all of the genes are in the
+noIntGenes component) the simulations should not stop based on the
+number of drivers (and, thus, the default is set to 9e6).
 
 }
 
