@@ -1,3 +1,5 @@
+cat(paste("\n Starting warning-mutPropGrowth tests", date(), "\n"))
+
 RNGkind("Mersenne-Twister")
 
 test_that("mutationPropGrowth warning with Bozic, indiv", {
@@ -129,6 +131,6 @@ test_that("mutationPropGrowth OK  with McFL, sample", {
                              "Successfully", fixed = TRUE)
 })
 
-
+cat(paste("\n Ending warning-mutPropGrowth tests", date(), "\n"))
 
 

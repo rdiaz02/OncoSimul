@@ -1,3 +1,5 @@
+cat(paste("\n Starting wide2long tests", date(), "\n"))
+
 RNGkind("Mersenne-Twister")
 test_that("wide2long, two basic cases, minimal testing",
 {
@@ -40,3 +42,4 @@ test_that("wide2long, two basic cases, minimal testing",
     expect_true(names(tt2) == as.character(length(unique(lsm$Genotype))))
 })
 
+cat(paste("\n Ending wide2long tests", date(), "\n"))

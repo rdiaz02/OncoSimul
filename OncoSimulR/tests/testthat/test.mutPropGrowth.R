@@ -1,3 +1,5 @@
+cat(paste("\n Starting at mutPropGrowth ", date(), "\n"))
+
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## If crashes I want to see where: thus output seed.
 ## The tests below can occasionally fail (but that probability decreases

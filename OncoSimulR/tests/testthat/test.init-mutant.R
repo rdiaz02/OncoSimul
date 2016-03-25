@@ -1,3 +1,5 @@
+cat(paste("\n Starting init-mutant tests", date(), "\n"))
+
 RNGkind("Mersenne-Twister")
 
 ## Processing this file takes about 3 seconds on my laptop
@@ -358,3 +360,4 @@ test_that("initMutant with oncoSimulPop, 2", {
                    as.character(x$other$PhylogDF[1, 1])) == "m > d _ v"))
 ##                   as.character(x$other$PhylogDF[1, 1])) == "m, d_v"))
 })
+cat(paste("\n Ending init-mutant tests", date(), "\n"))

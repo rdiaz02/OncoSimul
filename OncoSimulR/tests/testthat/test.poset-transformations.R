@@ -16,6 +16,7 @@
 ## all the code for new simulations is based upon going from adjmat to rT.
 ## verify that.
 
+cat(paste("\n Starting oposet-transformations tests", date(), "\n"))
 
 RNGkind("Mersenne-Twister")
 
@@ -781,3 +782,4 @@ tmp <- replicate(numSimul, checkAdjMatOGraph(rangeNodes = 2:50,
 ## stopifnot(length(resT) == numTests)
 ## stopifnot(all(resT))
 
+cat(paste("\n Ending oposet-transformations tests", date(), "\n"))

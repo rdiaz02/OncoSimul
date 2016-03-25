@@ -1,3 +1,5 @@
+cat(paste("\n Starting total-present-drivers tests", date(), "\n"))
+
 test_that("Count TotalPresentDrivers", {
     ## There once was a bug here (in the driverCounts C++ function)
     ## Testing we are OK
@@ -77,3 +79,5 @@ test_that("Count TotalPresentDrivers", {
     expect_true(s3.l$TotalPresentDrivers ==
                 length(strsplit(s3.l$OccurringDrivers, ", ")[[1]]))
 })
+
+cat(paste("\n Ending total-present-drivers tests", date(), "\n"))

@@ -1,3 +1,5 @@
+cat(paste("\n Starting oncoSimulIndiv-miscell tests", date(), "\n"))
+
 RNGkind("Mersenne-Twister")
 test_that("can start from 1 individual but error if McFL", {
     oi <- allFitnessEffects(orderEffects =
@@ -568,6 +570,7 @@ expect_identical(samplePop(s1, timeSample = "last", typeSample = "whole",
 })
 
 
+cat(paste("\n Ending oncoSimulIndiv-miscell tests", date(), "\n"))
 
 
 

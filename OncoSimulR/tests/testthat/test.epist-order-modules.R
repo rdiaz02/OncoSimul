@@ -1,3 +1,5 @@
+cat(paste("\n Starting epist-order-modules at", date()))
+
 ## A minimal thing, to make sure no screw ups
 
 ## We no longer accept data frames. Those checks disabled
@@ -121,3 +123,4 @@ test_that("error if root out of place in gm", {
           })
 
 
+cat(paste("\n Ending epist-order-modules at", date()))

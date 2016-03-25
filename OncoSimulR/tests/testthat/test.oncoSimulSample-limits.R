@@ -1,3 +1,5 @@
+cat(paste("\n Starting oncoSimulSample-limits tests", date(), "\n"))
+
 RNGkind("Mersenne-Twister")
 data(examplePosets)
 
@@ -56,3 +58,4 @@ test_that("oncoSimulSample exits with small num tries", {
     expect_true(is.na(p6$popSummary))
 })
 
+cat(paste("\n Ending oncoSimulSample-limits tests", date(), "\n"))

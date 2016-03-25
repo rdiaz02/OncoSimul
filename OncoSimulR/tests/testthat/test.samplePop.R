@@ -1,3 +1,6 @@
+
+cat(paste("\n Starting samplePop tests", date(), "\n"))
+
 RNGkind("Mersenne-Twister")
 
 test_that("exercising the sampling code, v1 objects", {
@@ -313,3 +316,5 @@ test_that("exercising sampling code, single sampled period", {
                        "Subjects", fixed = TRUE)
     }
 })
+
+cat(paste("\n Ending samplePop tests", date(), "\n"))

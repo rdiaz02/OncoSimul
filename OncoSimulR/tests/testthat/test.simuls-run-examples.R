@@ -1,3 +1,5 @@
+cat(paste("\n Starting simuls-runs-examples tests", date(), "\n"))
+
 ## None should crash or give an uncaught error
 ## Just a minimal set. Will later check warnings when they should, etc.
 
@@ -113,3 +115,4 @@ for(i in 1:length(examplesFitnessEffects)) {
     expect_true(inherits(tmp2, "matrix"))
 }
 
+cat(paste("\n Ending simuls-runs-examples tests", date(), "\n"))

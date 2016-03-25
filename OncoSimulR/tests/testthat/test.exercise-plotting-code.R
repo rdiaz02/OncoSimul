@@ -1,3 +1,5 @@
+cat(paste("\n Starting exercise-plotting-code at", date()))
+
 ## These are all used in the vignette and the help functions but we add
 ## them here because we want to make sure we exercise the code even if we
 ## just run the test routines.
@@ -7,7 +9,7 @@
 RNGkind("Mersenne-Twister") ## be explicit
 
 ## Takes about 11 seconds on my laptop
-cat(paste("\n Starting plots tests", date(), "\n"))
+
 test_that("exercising the oncosimul plotting code", {
               data(examplePosets)
               p701 <- examplePosets[["p701"]]
@@ -429,4 +431,5 @@ test_that("exercise single clone and single driver", {
 ## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
 ## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
 
-cat(paste("\n Ending plots tests", date(), "\n"))
+cat(paste("\n Ending exercise-plotting-code at", date()))
+
