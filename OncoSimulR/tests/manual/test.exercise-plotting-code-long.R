@@ -203,7 +203,14 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     data(examplePosets)
     ## An object of class oncosimul
     p705 <- examplePosets[["p705"]]
-    p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+    p1 <- oncoSimulIndiv(p705, keepEvery = 1.1) ## if keepEvery is too
+                                                ## large, from time to
+                                                ## time you end up with
+                                                ## less than 4 sample
+                                                ## points and the stream
+                                                ## plot breaks
+
+
     ## p1 <- oncoSimulIndiv(p705, model = "McFL",
     ##                      mu = 5e-6,
     ##                      sampleEvery = 0.02,
