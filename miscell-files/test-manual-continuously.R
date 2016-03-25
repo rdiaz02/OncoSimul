@@ -19,7 +19,9 @@ while(TRUE) {
     cat("\n\n Doing iteration ", i, "\n")
     cat("\n And this is the first random uniform number ", runif(1), "\n")
     the.seed <- .Random.seed ## tests set the seed in several places
+    gc()
     test_dir("../OncoSimulR/tests/manual/")
+    gc()
     .Random.seed <- the.seed
     cat("\n         And this is the second random uniform number ", runif(1), "\n")
 }

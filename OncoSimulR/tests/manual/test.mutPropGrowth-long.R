@@ -82,6 +82,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
                         initSize = no,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc1b: the seed is", pseed, "\n")
@@ -90,6 +91,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
                         initSize = no,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc1c: the seed is", pseed, "\n")
@@ -106,6 +108,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
                          initSize = no,
                          initMutant = "b",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -128,6 +131,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 1",
     ## between a and a2, but minor or non detectable between b and b2. In
     ## a we expect them because, since those affect a lot the mutation
     ## rate, we expect them to get b faster, and thus grow faster noticeably.
+gc() 
 })
 cat("\n", date(), "\n")
 
@@ -155,6 +159,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
                         initSize = no,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc2b: the seed is", pseed, "\n")
@@ -163,6 +168,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
                         initSize = no,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc2c: the seed is", pseed, "\n")
@@ -171,6 +177,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
                          initSize = no,
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc2d: the seed is", pseed, "\n")
@@ -179,6 +186,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
                          initSize = no,
                          initMutant = "b",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -198,6 +206,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 2",
                  mean(mutsPerClone(nca2)))
     expect_true( median(summary(nca)$NumClones) >
                  median(summary(nca2)$NumClones))
+gc() 
 })
 
 
@@ -227,6 +236,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
                         initSize = no,
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc3b: the seed is", pseed, "\n")
@@ -236,6 +246,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
                         initSize = no,
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc3c: the seed is", pseed, "\n")
@@ -245,6 +256,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
                          initSize = no,
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpc3d: the seed is", pseed, "\n")
@@ -254,6 +266,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
                          initSize = no,
                          initMutant = "b",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -272,6 +285,7 @@ test_that("Ordering of number of clones and mutsPerClone with mutpropgrowth, 3",
                  mean(mutsPerClone(nca2)))
     expect_true( median(summary(nca)$NumClones) >
                  median(summary(nca2)$NumClones))
+gc() 
 })
 
 
@@ -295,6 +309,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                         initSize = no, model = "McFL",
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcm1b: the seed is", pseed, "\n")
@@ -303,6 +318,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                         initSize = no, model = "McFL",
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcm1c: the seed is", pseed, "\n")
@@ -311,6 +327,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                          initSize = no, model = "McFL",
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcm1d: the seed is", pseed, "\n")
@@ -319,6 +336,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                          initSize = no, model = "McFL",
                          initMutant = "b",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -337,6 +355,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                  mean(mutsPerClone(nca2)))
     expect_true( median(summary(nca)$NumClones) >
                  median(summary(nca2)$NumClones))
+gc() 
 })
 cat("\n", date(), "\n")
 
@@ -362,6 +381,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                         initSize = no, model = "McFL",
                         initMutant = "a",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf2b: the seed is", pseed, "\n")
@@ -370,6 +390,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                         initSize = no, model = "McFL",
                         initMutant = "b",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf2c: the seed is", pseed, "\n")
@@ -378,6 +399,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                          initSize = no, model = "McFL",
                          initMutant = "a",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf2d: the seed is", pseed, "\n")
@@ -386,6 +408,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                          initSize = no, model = "McFL",
                          initMutant = "b",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+    gc()
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -404,6 +427,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ## These can fail in this case, since small diffs. as small mutlipliers
     expect_true( mean(mutsPerClone(nca)) >
                  mean(mutsPerClone(nca2)))
+gc() 
 })
 
 
@@ -450,6 +474,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                         initMutant = "a1",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pseed <- sample(9999999, 1)
+    gc()
     set.seed(pseed)
     cat("\n mpcmcf3b: the seed is", pseed, "\n")
     ncb <- oncoSimulPop(pops, f1, finalTime = ft,
@@ -466,6 +491,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     ## get a b), even when mutationPropGrowth is false, the population
     ## gets larger. And thus, it is easier to get a clone with three
     ## mutations, etc.
+    gc()
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf3c: the seed is", pseed, "\n")
@@ -475,7 +501,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                          initSize = no, model = "McFL",
                          initMutant = "a1",
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mpcmcf3d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulPop(pops, f1, finalTime = ft,
@@ -502,6 +528,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                  mean(mutsPerClone(nca2)))
     expect_true( median(summary(nca)$NumClones) >
                  median(summary(nca2)$NumClones))
+gc() 
 })
 
 
@@ -547,12 +574,13 @@ test_that("Without initmutant", {
                          initSize = no,
                          onlyCancer = FALSE,
                          seed = NULL, mc.cores = 2)
-    summary(s3.g)[, c(1, 2, 3, 8, 9)]
-    summary(s3.ng)[, c(1, 2, 3, 8, 9)]
+    ## summary(s3.g)[, c(1, 2, 3, 8, 9)]
+    ## summary(s3.ng)[, c(1, 2, 3, 8, 9)]
     expect_true( mean(mutsPerClone(s3.g)) >
                  mean(mutsPerClone(s3.ng)))
     expect_true( median(summary(s3.g)$NumClones) >
                  median(summary(s3.ng)$NumClones))
+gc() 
 })
 cat("\n", date(), "\n")
 
@@ -590,7 +618,7 @@ test_that("Without initmutant, 2", {
                           initSize = no,
                           onlyCancer = FALSE,
                           seed = NULL, mc.cores = 2)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n s2b: the seed is", pseed, "\n")
     s2.g <- oncoSimulPop(pops,
@@ -601,12 +629,13 @@ test_that("Without initmutant, 2", {
                          initSize = no,
                          onlyCancer = FALSE,
                          seed = NULL, mc.cores = 2)
-    summary(s2.g)[, c(1, 2, 3, 8, 9)]
-    summary(s2.ng)[, c(1, 2, 3, 8, 9)]
+    ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
+    ## summary(s2.ng)[, c(1, 2, 3, 8, 9)]
     expect_true( mean(mutsPerClone(s2.g)) >
                  mean(mutsPerClone(s2.ng)))
     expect_true( median(summary(s2.g)$NumClones) >
                  median(summary(s2.ng)$NumClones))
+gc() 
 })
 cat("\n", date(), "\n")
 
@@ -641,7 +670,7 @@ test_that("McFL: Without initmutant", {
                           initSize = no,
                           onlyCancer = FALSE, model = "McFL",
                           seed = NULL, mc.cores = 2)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcfls2b: the seed is", pseed, "\n")
     s2.g <- oncoSimulPop(pops,
@@ -652,16 +681,17 @@ test_that("McFL: Without initmutant", {
                          initSize = no,
                          onlyCancer = FALSE, model = "McFL",
                          seed = NULL, mc.cores = 2)
-    summary(s2.g)[, c(1, 2, 3, 8, 9)]
-    summary(s2.ng)[, c(1, 2, 3, 8, 9)]
+    ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
+    ## summary(s2.ng)[, c(1, 2, 3, 8, 9)]
     expect_true( mean(mutsPerClone(s2.g)) >
                  mean(mutsPerClone(s2.ng)))
     expect_true( median(summary(s2.g)$NumClones) >
                  median(summary(s2.ng)$NumClones))
-    summary(mutsPerClone(s2.g))
-    summary(mutsPerClone(s2.ng))
-    summary(summary(s2.g)$NumClones)
-    summary(summary(s2.ng)$NumClones)
+    ## summary(mutsPerClone(s2.g))
+    ## summary(mutsPerClone(s2.ng))
+    ## summary(summary(s2.g)$NumClones)
+    ## summary(summary(s2.ng)$NumClones)
+gc() 
 })
 cat("\n", date(), "\n")
 
@@ -693,7 +723,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                           detectionDrivers = 99,
                           seed =NULL,
                           thresholdWhole = x)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmpc1b: the seed is", pseed, "\n")
     ncb <- oncoSimulSample(pops, fe, finalTime = ft,
@@ -705,7 +735,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                           detectionDrivers = 99,
                           seed =NULL,
                           thresholdWhole = x)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmpc1c: the seed is", pseed, "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
@@ -717,7 +747,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                           detectionDrivers = 99,
                           seed =NULL,
                           thresholdWhole = x)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmpc1d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
@@ -762,6 +792,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                  median(ncb2$popSummary[, "NumClones"]))
     expect_true( median(nca$popSummary[, "NumClones"]) >
                  median(ncb$popSummary[, "NumClones"]))
+gc() 
 })
 cat("\n", date(), "\n")
 
@@ -792,7 +823,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                           detectionDrivers = 99,
                           seed =NULL,
                           thresholdWhole = x)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmpc1McFLb: the seed is", pseed, "\n")
     ncb <- oncoSimulSample(pops, fe, finalTime = ft,
@@ -804,7 +835,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                           detectionDrivers = 99,
                           seed =NULL,
                           thresholdWhole = x)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmpc1McFLc: the seed is", pseed, "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
@@ -816,7 +847,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                           detectionDrivers = 99,
                           seed =NULL,
                           thresholdWhole = x)
-    pseed <- sample(9999999, 1)
+    gc(); pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmpc1McFLd: the seed is", pseed, "\n")
     ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
@@ -861,6 +892,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
                  median(ncb2$popSummary[, "NumClones"]))
     expect_true( median(nca$popSummary[, "NumClones"]) >
                  median(ncb$popSummary[, "NumClones"]))
+gc() 
 })
 cat("\n", date(), "\n")
 
