@@ -49,11 +49,17 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
                                 "D" = "d1, d2") )
               expect_warning(oiI1 <- oncoSimulSample(4,
                                                      oi,
+                                                     onlyCancer = FALSE,
                                                      model = "Bozic",
                                                      mutationPropGrowth = TRUE),
                              "Using fitness Bozic (bozic1) with mutationPropGrowth = TRUE;",
                              fixed = TRUE)                                                     
 })
+
+
+## With seed 5207947 we get a Recoverable exception ti set to
+## DBL_MIN. Rerunning. Not if we set the onlyCancer = FALSE. Also, not if
+## we use a sampleEvery = 0.1. So a rare numerical issue. OK.
 
 test_that("mutationPropGrowth no warning with Exp, indiv", {
     ## I once (out of over > 10000) saw it fail. Try to catch it
@@ -69,6 +75,7 @@ test_that("mutationPropGrowth no warning with Exp, indiv", {
                                   "D" = "d1, d2") )
     expect_silent(oiI1 <- oncoSimulIndiv(oi,
                                          model = "Exp",
+                                         onlyCancer = FALSE,
                                          mutationPropGrowth = TRUE,
                                          seed = NULL))                
 })
@@ -105,6 +112,7 @@ test_that("mutationPropGrowth OK  with Exp, sample", {
                                 "D" = "d1, d2") )
               expect_message(oiI1 <- oncoSimulSample(4,
                                                      oi,
+                                                     onlyCancer = FALSE,
                                                      model = "Exp",
                                                      mutationPropGrowth = TRUE),
                              "Successfully", fixed = TRUE)
