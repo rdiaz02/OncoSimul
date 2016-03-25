@@ -367,7 +367,7 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     cat("\n mpcmcf2: the seed is", pseed, "\n")
     ## Increase ft
     ft <- 50 
-    pops <- 200
+    pops <- 300
     lni <- 30
     no <- 1e3
     ni <- c(2, 0.5, rep(0, lni))
@@ -716,7 +716,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1a: the seed is", pseed, "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no, keepEvery = 0.5,
+                        initSize = no, 
                         initMutant = "a",
                         onlyCancer = FALSE,  sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -728,7 +728,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1b: the seed is", pseed, "\n")
     ncb <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no, keepEvery = 0.5,
+                        initSize = no, 
                         initMutant = "b",
                         onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -740,7 +740,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1c: the seed is", pseed, "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no, keepEvery = 0.5,
+                         initSize = no, 
                          initMutant = "a",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -752,7 +752,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1d: the seed is", pseed, "\n")
     ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no, keepEvery = 0.5,
+                         initSize = no, 
                          initMutant = "b",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -816,7 +816,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLa: the seed is", pseed, "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no, keepEvery = 0.5,
+                        initSize = no, 
                         initMutant = "a",
                         onlyCancer = FALSE,  sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -828,7 +828,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLb: the seed is", pseed, "\n")
     ncb <- oncoSimulSample(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
-                        initSize = no, keepEvery = 0.5,
+                        initSize = no, 
                         initMutant = "b",
                         onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -840,7 +840,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLc: the seed is", pseed, "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no, keepEvery = 0.5,
+                         initSize = no, 
                          initMutant = "a",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
@@ -852,7 +852,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     cat("\n ossmpc1McFLd: the seed is", pseed, "\n")
     ncb2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mutationPropGrowth = FALSE,
-                         initSize = no, keepEvery = 0.5,
+                         initSize = no, 
                          initMutant = "b",
                          onlyCancer = FALSE, sampleEvery = 0.01,
                           detectionSize = 1e9,
