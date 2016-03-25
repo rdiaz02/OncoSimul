@@ -617,7 +617,7 @@ test_that("McFL: Without initmutant", {
     cat("\n mcfls2: the seed is", pseed, "\n")
     s2 <- 2.0
     ft <- 250
-    pops <- 50
+    pops <- 200
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e3
@@ -673,7 +673,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     set.seed(pseed)
     cat("\n ossmpc1: the seed is", pseed, "\n")
     ft <- 2  
-    pops <- 100
+    pops <- 300
     lni <- 500 ## with, say, 40 or a 100, sometimes fails the comparisons
                ## with small differences.
     no <- 10
@@ -772,7 +772,7 @@ test_that("Ordering of number of clones and mutsPerClone with initMutant and mod
     set.seed(pseed)
     cat("\n ossmpc1McFL: the seed is", pseed, "\n")
     ft <- 2  
-    pops <- 100
+    pops <- 200
     lni <- 500 ## with, say, 40 or a 100, sometimes fails the comparisons
                ## with small differences.
     no <- 10
