@@ -366,11 +366,11 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
     set.seed(pseed)
     cat("\n mpcmcf2: the seed is", pseed, "\n")
     ## Increase ft
-    ft <- 50 
-    pops <- 300
+    ft <- 350 
+    pops <- 150
     lni <- 30
     no <- 1e3
-    ni <- c(2, 0.5, rep(0, lni))
+    ni <- c(2, 0.8, rep(0, lni))
     names(ni) <- c("a", "b", paste0("n", seq.int(lni)))
     fe <- allFitnessEffects(noIntGenes = ni)
     pseed <- sample(9999999, 1)
@@ -409,6 +409,10 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                          initMutant = "b", keepEvery = 1,
                          onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     gc()
+    ## summary(nca)[, c(1, 2, 3, 8, 9)]
+    ## summary(nca2)[, c(1, 2, 3, 8, 9)]
+    ## summary(ncb)[, c(1, 2, 3, 8, 9)]
+    ## summary(ncb2)[, c(1, 2, 3, 8, 9)]
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -422,14 +426,14 @@ test_that("McFL: Ordering of number of clones and mutsPerClone with mutpropgrowt
                  median(summary(nca2)$NumClones))
     expect_true( mean(mutsPerClone(nca)) >
                  mean(mutsPerClone(ncb)))
+    expect_true( mean(mutsPerClone(nca)) >
+                 mean(mutsPerClone(nca2)))
     expect_true( mean(mutsPerClone(ncb)) >
                  mean(mutsPerClone(ncb2)))
     ## These can fail in this case, since small diffs. as small mutlipliers
-    expect_true( mean(mutsPerClone(nca)) >
-                 mean(mutsPerClone(nca2)))
 gc() 
 })
-
+date()
 
 
 ## When diffs are very tiny in s, as we increase ft, it is easy to get a
