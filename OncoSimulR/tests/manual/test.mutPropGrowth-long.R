@@ -56,12 +56,11 @@ RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## ones.
 date()
 test_that("mutPropGrowth diffs with s> 0", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mgp1: the seed is", pseed, "\n")
     ft <- 4 ## 2.7
-    pops <- 50
+    pops <- 100
     lni <- 150 ## 100
     no <- 1e3 ## 5e1 
     ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
@@ -101,9 +100,6 @@ test_that("mutPropGrowth diffs with s> 0", {
                  median(summary(nca2)$NumClones))
     expect_true( mean(mutsPerClone(nca)) >
                  mean(mutsPerClone(nca2)))
-    
-
-    
 })
 cat("\n", date(), "\n")
 
@@ -113,8 +109,10 @@ cat("\n", date(), "\n")
 
 
 ### Now, test mutPropGrowth does not lead to differences when there are no differences in growth.
-## Same settings as other tests with similar names, but now no fitness,
-### so no growth. So no effect of mutationPropGrowth.
+## Same settings as other tests with similar names, but now no fitness, so
+## no growth. So no effect of mutationPropGrowth. Note that if we carry
+## out the tests below when there are differences as in previous tests, we
+## p <<< 1e-6.
 
 ## Note that these tests will fail, as they are based on p-values, with
 ## ... well, a frequency given approx. by the p-value. Thus, we do not use
@@ -125,12 +123,11 @@ cat("\n", date(), "\n")
 
 date()
 test_that("mutPropGrowth no diffs with s = 0", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mgp1ND: the seed is", pseed, "\n")
     ft <- 4 ## 2.7
-    pops <- 50
+    pops <- 200
     lni <- 150 ## 100
     no <- 1e3 ## 5e1 
     ni <- c(0, rep(0, lni)) ## 2 ## 4 ## 5
@@ -170,19 +167,18 @@ test_that("mutPropGrowth no diffs with s = 0", {
     ## summary(summary(nca2)$NumClones)
     ## summary(mutsPerClone(nca))
     ## summary(mutsPerClone(nca2))
-    
 })
 cat("\n", date(), "\n")
 
 
 
 date()
-test_that("mutPropGrowth diffs with s = 0, McFL", {
+test_that("mutPropGrowth no diffs with s = 0, McFL", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcfND1: the seed is", pseed, "\n")
     ft <- 3 
-    pops <- 50
+    pops <- 200
     lni <- 100
     no <- 1e3 ## 5e1 
     ni <- c(0, rep(0, lni)) ## 5
@@ -224,12 +220,11 @@ cat("\n", date(), "\n")
 
 date()
 test_that("mutPropGrowth no diffs with s = 0, oncoSimulSample", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n oss1: the seed is", pseed, "\n")
     ft <- 3.5 ## 4
-    pops <- 50
+    pops <- 200
     lni <- 200 ## 150
     no <- 1e3 ## 5e1 
     ni <- c(0, rep(0, lni)) ## 2 ## 4 ## 5
@@ -286,20 +281,16 @@ test_that("mutPropGrowth no diffs with s = 0, oncoSimulSample", {
                        sqrt( nca2$popSummary[, "NumClones"]  ))$p.value > p.fail)
     expect_true(t.test(sqrt(mutsPerClone1),
                        sqrt(mutsPerClone2))$p.value > p.fail)
-    
-
-    
 })
 
 
 date()
 test_that("mutPropGrowth no diffs with s = 0, oncoSimulSample, McFL", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmcfND1: the seed is", pseed, "\n")
     ft <- 40 ## 4
-    pops <- 50
+    pops <- 200
     lni <- 200 ## 150
     no <- 1e3 ## 5e1 
     ni <- c(0, rep(0, lni)) ## 2 ## 4 ## 5
@@ -356,8 +347,6 @@ test_that("mutPropGrowth no diffs with s = 0, oncoSimulSample, McFL", {
                        sqrt( nca2$popSummary[, "NumClones"]  ))$p.value > p.fail)
     expect_true(t.test(sqrt(mutsPerClone1),
                        sqrt(mutsPerClone2))$p.value > p.fail)  
-
-    
 })
 cat("\n", date(), "\n")
 
