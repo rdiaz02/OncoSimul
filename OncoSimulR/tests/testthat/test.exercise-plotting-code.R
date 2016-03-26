@@ -88,6 +88,8 @@ test_that("exercising plotClonePhylog", {
               plotClonePhylog(tmp, N = 10, timeEvents = TRUE)
               ## This can take a few seconds
               plotClonePhylog(tmp, N = 10, keepEvents = TRUE)
+              ## Reaching the fixOverlap code
+              plotClonePhylog(tmp, N = 0, timeEvents = TRUE)
           })
 
 ## the next is slightly slow
