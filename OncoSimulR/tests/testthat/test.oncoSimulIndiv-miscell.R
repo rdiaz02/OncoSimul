@@ -10,7 +10,10 @@ test_that("can start from 1 individual but error if McFL", {
                                   "F" = "f1, f2, f3",
                                   "D" = "d1, d2") )
 
-    expect_output(oncoSimulIndiv(oi, initSize = 1, onlyCancer = FALSE),
+    expect_output(oncoSimulIndiv(oi, initSize = 1,
+                                 sampleEvery = 0.03,
+                                 keepEvery = 5,
+                                 onlyCancer = FALSE),
                   "Individual OncoSimul trajectory", fixed = TRUE)
     
     expect_error(oncoSimulIndiv(oi, initSize = 1,
@@ -50,7 +53,10 @@ test_that("numPassengers no effect with fitnessEffects objects", {
                                 c("Root" = "Root",
                                   "F" = "f1, f2, f3",
                                   "D" = "d1, d2") )
-    expect_warning(oi1 <- oncoSimulIndiv(oi, numPassengers = 10),
+    expect_warning(oi1 <- oncoSimulIndiv(oi,
+                                         sampleEvery = 0.03,
+                                         keepEvery = 5,
+                                         numPassengers = 10),
                    "Specifying numPassengers", fixed = TRUE)
 })
 
@@ -77,7 +83,10 @@ test_that("samplePop with oncoSimulIndiv object", {
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-              oiI1 <- oncoSimulIndiv(oi, model = "Exp")
+              oiI1 <- oncoSimulIndiv(oi,
+                                     sampleEvery = 0.03,
+                                     keepEvery = 5,
+                                     model = "Exp")
               expect_message(out <- samplePop(oiI1),
                              "Subjects by Genes matrix of 1 subjects and 10 genes.",
                              fixed = TRUE)
@@ -95,7 +104,8 @@ test_that("McFl warning with small sampleEvery", {
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
               expect_warning(oiI1 <- oncoSimulIndiv(oi, model = "McFL",
-                                                    sampleEvery = 1,
+                                                    sampleEvery = 0.06,
+                                                    keepEvery = 5,
                                                     onlyCancer = FALSE),
                              "With the McFarland model you often want smaller sampleEvery")
           })
@@ -108,11 +118,13 @@ test_that("mu < 0 error", {
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-              expect_error(oiI1 <- oncoSimulIndiv(oi, mu = -1))                                                     
+              expect_error(oiI1 <- oncoSimulIndiv(oi, mu = -1),
+                           "mutation rate (mu) is negative",
+                           fixed = TRUE)                                                     
           })
 
 
-test_that("keepEevery and sampleEvery consitency", {
+test_that("keepEevery and sampleEvery consistency", {
               oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.4),
                noIntGenes = rexp(5, 10),
@@ -120,8 +132,11 @@ test_that("keepEevery and sampleEvery consitency", {
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-              expect_warning(oiI1 <- oncoSimulIndiv(oi, keepEvery = 2,
-                                                    sampleEvery = 5),
+              expect_warning(oiI1 <- oncoSimulIndiv(oi,
+                                                    finalTime = 0.5,
+                                                    keepEvery = 0.25,
+                                                    onlyCancer = FALSE,
+                                                    sampleEvery = 0.3),
                              "setting keepEvery <- sampleEvery",
                              fixed = TRUE)                                                     
           })
@@ -157,7 +172,10 @@ test_that("verbosity options", {
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
               expect_output(oncoSimulIndiv(oi, verbosity = 2,
-                                           detectionSize = 1e4,
+                                           detectionSize = 1e3,
+                                           sampleEvery = 0.03,
+                                           keepEvery = 2,
+                                           finalTime = 3,
                                            onlyCancer = FALSE),
                             "Total Pop Size = ")
           })
@@ -171,8 +189,11 @@ test_that("printing oncosimul object", {
                                           c("Root" = "Root",
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
-              out <- oncoSimulIndiv(oi, 
-                                    detectionSize = 1e4,
+              out <- oncoSimulIndiv(oi,
+                                    sampleEvery = 0.03,
+                                    keepEvery = 2,
+                                    detectionSize = 1e3,
+                                    finalTime = 3,
                                     onlyCancer = FALSE)
               expect_output(print(out),
                             "Individual OncoSimul trajectory with call")
@@ -188,8 +209,11 @@ test_that("printing oncosimul pop object", {
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
               out <- oncoSimulPop(4,
-                                  oi, 
-                                  detectionSize = 1e4,
+                                  oi,
+                                  sampleEvery = 0.03,
+                                  keepEvery = 2,
+                                  finalTime = 3,
+                                  detectionSize = 1e3,
                                   onlyCancer = FALSE, mc.cores = 2)
               expect_output(print(out),
                             "Population of OncoSimul trajectories of 4 individuals")
@@ -200,9 +224,17 @@ test_that("printing oncosimul pop object", {
 test_that("exercising oncoSimulSample, old format", {
               data(examplePosets)
               p701 <- examplePosets[["p701"]]
-              expect_message(ofw <- oncoSimulSample(2, p701),
+              expect_message(ofw <- oncoSimulSample(2, p701,
+                                                    sampleEvery = 0.03,
+                                                    detectionSize = 1e3,
+                                                    finalTime = 3,
+                                                    onlyCancer = FALSE),
                              "Successfully sampled 2 individuals")
               expect_message(ofs <- oncoSimulSample(2, p701,
+                                                    sampleEvery = 0.03,
+                                                    detectionSize = 1e3,
+                                                    finalTime = 3,
+                                                    onlyCancer = FALSE,
                                                     typeSample = "single"),
                              "Successfully sampled 2 individuals")
               expect_equal(dim(ofw$popSample), c(2, 7))
@@ -219,12 +251,19 @@ test_that("exercising oncoSimulSample, new format", {
                                                     s = 0.05,
                                                     sh = -0.3,
                                                     typeDep = "MN"))
-              expect_message(pS <- oncoSimulSample(2, pancr),
+              expect_message(pS <- oncoSimulSample(2, pancr, sampleEvery = 0.03,
+                                                    detectionSize = 1e3,
+                                                    finalTime = 3,
+                                                    onlyCancer = FALSE),
                              "Successfully sampled 2 individuals")
               expect_message(
                   pSs <- oncoSimulSample(2,
-                                                pancr,
-                                                typeSample = "single"),
+                                         pancr,
+                                         sampleEvery = 0.03,
+                                         detectionSize = 1e3,
+                                         finalTime = 3,
+                                         onlyCancer = FALSE,
+                                         typeSample = "single"),
                   "Successfully sampled 2 individuals")
               expect_equal(dim(pS$popSample), c(2, 7))
               expect_equal(dim(pSs$popSample), c(2, 7))
@@ -286,9 +325,15 @@ test_that("oncosimul sample without drivers", {
                               drvNames = integer(0))
     mcf2 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
                               drvNames = character(0))
-    expect_message(o1 <- oncoSimulSample(2, mcf1),
+    expect_message(o1 <- oncoSimulSample(2, mcf1, sampleEvery = 0.03,
+                                                    detectionSize = 1e3,
+                                                    finalTime = 3,
+                                                    onlyCancer = FALSE),
                    "Successfully sampled 2 individuals")
-    expect_message(o2 <- oncoSimulSample(5, mcf2),
+    expect_message(o2 <- oncoSimulSample(5, mcf2, sampleEvery = 0.03,
+                                                    detectionSize = 1e3,
+                                                    finalTime = 3,
+                                                    onlyCancer = FALSE),
                    "Successfully sampled 5 individuals")
 })
 

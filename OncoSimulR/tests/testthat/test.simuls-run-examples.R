@@ -23,7 +23,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 0.2 ## smaller than usual but very rarely (< 1/1000) I can
+        sE <- 0.02 ## smaller than usual but very rarely (< 1/1000) I can
                   ## get crashes of Algo 2 as popSize > 1e15
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
@@ -31,7 +31,7 @@ for(i in 1:length(examplesFitnessEffects)) {
                            mu = 1e-6,
                            detectionSize = 1e8, 
                            detectionDrivers = detectionDrv,
-                           sampleEvery = sE,
+                           sampleEvery = sE, keepEvery = 1,
                            max.num.tries = 100,
                            initSize = 2000,
                            onlyCancer = FALSE)
@@ -46,14 +46,14 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 0.2
+        sE <- 0.02
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Exp", 
                            mu = 1e-6,
                            detectionSize = 1e8, 
                            detectionDrivers = detectionDrv,
-                           sampleEvery = sE,
+                           sampleEvery = sE, keepEvery = 1,
                            max.num.tries = 100,
                            initSize = 2000,
                            onlyCancer = FALSE)
@@ -68,6 +68,7 @@ for(i in 1:length(examplesFitnessEffects)) {
                            detectionSize = 1e8, 
                            detectionDrivers = 2,
                            sampleEvery = 0.025,
+                           keepEvery = 1,
                            max.num.tries = 10,
                            initSize = 2000,
                            finalTime = 15000,
@@ -103,12 +104,12 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- 0.05
     } else {
         detectionDrv <- 4
-        sE <- 0.2
+        sE <- 0.02
     }
     tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
                          onlyCancer = FALSE,
                          detectionDrivers = detectionDrv,
-                         sampleEvery = sE,
+                         sampleEvery = sE, keepEvery = 1,
                          mc.cores = 2)
     expect_true(inherits(tmp, "oncosimulpop"))
     tmp2 <- samplePop(tmp)

@@ -11,6 +11,8 @@ test_that("mutationPropGrowth warning with Bozic, indiv", {
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
               expect_warning(oiI1 <- oncoSimulIndiv(oi,
+                                                    sampleEvery = 0.03,
+                                                    keepEvery = 2,
                                                     model = "Bozic",
                                                     mutationPropGrowth = TRUE),
                              "Using fitness Bozic (bozic1) with mutationPropGrowth = TRUE;",
@@ -49,6 +51,7 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
                                 "D" = "d1, d2") )
               expect_warning(oiI1 <- oncoSimulSample(4,
                                                      oi,
+                                                     sampleEvery = 0.03,
                                                      onlyCancer = FALSE,
                                                      model = "Bozic",
                                                      mutationPropGrowth = TRUE),
@@ -99,6 +102,7 @@ test_that("mutationPropGrowth no warning with McFl, indiv", {
                                                    detectionSize = 1e8, 
                                                    detectionDrivers = 2,
                                                    sampleEvery = 0.025,
+                                                   keepEvery = 2,
                                                    onlyCancer = TRUE,
                                                    mutationPropGrowth = TRUE))                
 })
@@ -118,7 +122,7 @@ test_that("mutationPropGrowth OK  with Exp, sample", {
                                                      oi,
                                                      onlyCancer = FALSE,
                                                      model = "Exp",
-                                                     sampleEvery = 0.1, 
+                                                     sampleEvery = 0.1,
                                                      mutationPropGrowth = TRUE),
                              "Successfully", fixed = TRUE)
 })

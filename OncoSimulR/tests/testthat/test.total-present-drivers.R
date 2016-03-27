@@ -27,6 +27,8 @@ test_that("Count TotalPresentDrivers", {
                             mutationPropGrowth = FALSE,
                             finalTime =ft,
                             initSize = no,
+                            sampleEvery = 0.03,
+                            keepEvery = 1,
                             onlyCancer = FALSE,
                             seed = NULL)
     s3.ng
@@ -45,6 +47,8 @@ test_that("Count TotalPresentDrivers", {
                             mutationPropGrowth = FALSE,
                             finalTime =ft,
                             initSize = no,
+                            sampleEvery = 0.03,
+                            keepEvery = 1,
                             onlyCancer = FALSE,
                             ## verbosity = 4,
                             seed = NULL)
@@ -60,6 +64,8 @@ test_that("Count TotalPresentDrivers", {
                            mutationPropGrowth = FALSE,
                            finalTime = 28,
                            initSize = no,
+                           sampleEvery = 0.03,
+                           keepEvery = 1,
                            onlyCancer = FALSE,
                            ## verbosity = 4,
                            seed = NULL)
@@ -72,9 +78,11 @@ test_that("Count TotalPresentDrivers", {
                            mutationPropGrowth = FALSE,
                            finalTime = 35,
                            initSize = no,
+                           sampleEvery = 0.03,
+                           keepEvery = 1,
                            onlyCancer = FALSE,
                            ## verbosity = 4,
-                            seed = NULL)
+                           seed = NULL)
     s3.l
     expect_true(s3.l$TotalPresentDrivers ==
                 length(strsplit(s3.l$OccurringDrivers, ", ")[[1]]))

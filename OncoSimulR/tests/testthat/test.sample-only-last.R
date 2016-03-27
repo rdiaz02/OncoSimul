@@ -3,11 +3,16 @@ cat(paste("\n Starting sample-only-last tests", date(), "\n"))
 data(examplePosets)
 RNGkind("Mersenne-Twister") 
 
-bozic <- function(poset) oncoSimulIndiv(poset)
-bozic9 <- function(poset) oncoSimulIndiv(poset, keepEvery = -9)
+bozic <- function(poset) oncoSimulIndiv(poset, sampleEvery = 0.03,
+                                        keepEvery = 1)
+bozic9 <- function(poset) oncoSimulIndiv(poset, sampleEvery = 0.03,
+                                         keepEvery = -9)
     
-Exp <- function(poset) oncoSimulIndiv(poset, model = "Exp")
-Exp9 <- function(poset) oncoSimulIndiv(poset, model = "Exp", keepEvery = -9)
+Exp <- function(poset) oncoSimulIndiv(poset, sampleEvery = 0.03, keepEvery = 1,
+                                      model = "Exp")
+Exp9 <- function(poset) oncoSimulIndiv(poset, model = "Exp",
+                                       sampleEvery = 0.03,
+                                       keepEvery = -9)
 
 mc <- function(poset) oncoSimulIndiv(poset, model = "McFL",
                                      mu = 5e-7,

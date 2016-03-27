@@ -25,8 +25,11 @@ test_that("exercising the oncosimul plotting code", {
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
               out <- oncoSimulPop(4,
-                                  oi, 
+                                  oi,
+                                  sampleEvery = 0.03,
+                                  keepEvery = 3,
                                   detectionSize = 1e4,
+                                  finalTime = 500,
                                   onlyCancer = FALSE, mc.cores = 2)
               plot(out)
           })
@@ -46,8 +49,11 @@ test_that("exercising the oncosimul plotting code, thinning", {
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
               out <- oncoSimulPop(4,
-                                  oi, 
+                                  oi,
+                                  sampleEvery = 0.03,
                                   detectionSize = 1e4,
+                                  finalTime = 500,
+                                  keepEvery = 3,
                                   onlyCancer = FALSE, mc.cores = 2)
               plot(out, thinData = TRUE)
           })
@@ -71,7 +77,7 @@ test_that("exercising plotClonePhylog", {
                                      mu = 5e-6,
                                      detectionSize = 1e8, 
                                      detectionDrivers = 3,
-                                     sampleEvery = 0.05, ## to make it fast
+                                     sampleEvery = 0.03, 
                                      max.num.tries = 10,
                                      keepEvery = 15,
                                      initSize = 2000,
@@ -146,43 +152,34 @@ test_that("stacked, stream, genotypes and some colors", {
                              mu = 5e-5,
                              detectionSize = 1e8, 
                              detectionDrivers = 3,
-                             sampleEvery = 0.05,
+                             sampleEvery = 0.03,
                              max.num.tries = 10,
                              keepEvery = 100,
                              initSize = 2000,
                              finalTime = 3000,
                              onlyCancer = FALSE,
                              keepPhylog = TRUE)
-      
       plot(tmp, type = "stacked", show = "genotypes")
       plot(tmp, type = "stream", show = "genotypes")
       plot(tmp, type = "line", show = "genotypes")
-
       plot(tmp, type = "stacked", show = "drivers")
       plot(tmp, type = "stream", show = "drivers")
       plot(tmp, type = "line", show = "drivers")
-
       plot(tmp, type = "stacked", order.method = "max")
       plot(tmp, type = "stacked", order.method = "first")
-
       plot(tmp, type = "stream", order.method = "max")
       plot(tmp, type = "stream", order.method = "first")
-
       plot(tmp, type = "stream", stream.center = TRUE)
       plot(tmp, type = "stream", stream.center = FALSE)
-
       plot(tmp, type = "stream", stream.center = TRUE, log = "x")
       plot(tmp, type = "stacked", stream.center = TRUE, log = "x")
-      
       plot(tmp, type = "stacked", show = "genotypes",
            breakSortColors = "random")
       plot(tmp, type = "stream", show = "genotypes",
            breakSortColors = "distave")
-
       plot(tmp, type = "stacked", show = "genotypes", col = rainbow(9))
       plot(tmp, type = "stream", show = "genotypes", col = rainbow(3))
       plot(tmp, type = "line", show = "genotypes", col = rainbow(20))
-      
 })
 
 

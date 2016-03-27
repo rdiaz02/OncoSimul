@@ -77,7 +77,6 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 
 date()
 test_that("mutPropGrowth diffs with s> 0, McFL", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcf1: the seed is", pseed, "\n")
@@ -95,6 +94,8 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no,
+                        sampleEvery = 0.03,
+                        keepEvery = 1,
                         initMutant = "a", model = "McFL",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pseed <- sample(9999999, 1)
@@ -103,6 +104,8 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = FALSE,
                         initSize = no,
+                        sampleEvery = 0.03,
+                        keepEvery = 1,
                         initMutant = "a", model = "McFL",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ## summary(nca)[1:20, c(1, 2, 3, 8, 9)]
@@ -119,9 +122,6 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
                  median(summary(nca2)$NumClones))
     expect_true( mean(mutsPerClone(nca)) >
                  mean(mutsPerClone(nca2)))
-    
-
-    
 })
 cat("\n", date(), "\n")
 
@@ -130,7 +130,6 @@ cat("\n", date(), "\n")
 
 date()
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n oss1: the seed is", pseed, "\n")
@@ -150,7 +149,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mu = mu,
                         mutationPropGrowth = TRUE,
-                        initSize = no, sampleEvery = 0.1,
+                        initSize = no, sampleEvery = 0.02,
                         initMutant = "a", 
                         onlyCancer = FALSE, seed = NULL,
                         detectionSize = 1e9,
@@ -162,7 +161,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mu = mu,
                         mutationPropGrowth = FALSE,
-                        initSize = no, sampleEvery = 0.1,
+                        initSize = no, sampleEvery = 0.02,
                         initMutant = "a", 
                         onlyCancer = FALSE, seed = NULL,
                         detectionSize = 1e9,
@@ -191,16 +190,11 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                  mean(mutsPerClone2))
     expect_true( median(nca$popSummary[, "NumClones"]) >
                  median(nca2$popSummary[, "NumClones"]))
-
-    
-
-    
 })
 
 
 date()
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n ossmcf1: the seed is", pseed, "\n")
