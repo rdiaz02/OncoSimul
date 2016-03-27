@@ -21,26 +21,26 @@
 
 
 
-#plot.stream makes a "stream plot" where each y series is plotted 
-#as stacked filled polygons on alternating sides of a baseline.
-#
-#Arguments include:
-#'x' - a vector of values
-#'y' - a matrix of data series (columns) corresponding to x
-#'order.method' = c("as.is", "max", "first") 
-#  "as.is" - plot in order of y column
-#  "max" - plot in order of when each y series reaches maximum value
-#  "first" - plot in order of when each y series first value > 0
-#'center' - if TRUE, the stacked polygons will be centered so that the middle,
-#i.e. baseline ("g0"), of the stream is approximately equal to zero. 
-#Centering is done before the addition of random wiggle to the baseline. 
-#'frac.rand' - fraction of the overall data "stream" range used to define the range of
-#random wiggle (uniform distrubution) to be added to the baseline 'g0'
-#'spar' - setting for smooth.spline function to make a smoothed version of baseline "g0"
-#'col' - fill colors for polygons corresponding to y columns (will recycle)
-#'border' - border colors for polygons corresponding to y columns (will recycle) (see ?polygon for details)
-#'lwd' - border line width for polygons corresponding to y columns (will recycle)
-#'...' - other plot arguments
+## plot.stream makes a "stream plot" where each y series is plotted 
+## as stacked filled polygons on alternating sides of a baseline.
+
+## Arguments include:
+## 'x' - a vector of values
+## 'y' - a matrix of data series (columns) corresponding to x
+## 'order.method' = c("as.is", "max", "first") 
+##  "as.is" - plot in order of y column
+##  "max" - plot in order of when each y series reaches maximum value
+##  "first" - plot in order of when each y series first value > 0
+## 'center' - if TRUE, the stacked polygons will be centered so that the middle,
+## i.e. baseline ("g0"), of the stream is approximately equal to zero. 
+## Centering is done before the addition of random wiggle to the baseline. 
+## 'frac.rand' - fraction of the overall data "stream" range used to define the range of
+## random wiggle (uniform distrubution) to be added to the baseline 'g0'
+## 'spar' - setting for smooth.spline function to make a smoothed version of baseline "g0"
+## 'col' - fill colors for polygons corresponding to y columns (will recycle)
+## 'border' - border colors for polygons corresponding to y columns (will recycle) (see ?polygon for details)
+## 'lwd' - border line width for polygons corresponding to y columns (will recycle)
+## '...' - other plot arguments
 
 plot.stream2 <- function(
                         x, y, 
@@ -135,20 +135,20 @@ plot.stream2 <- function(
 
 
 
-#plot.stacked makes a stacked plot where each y series is plotted on top
-#of the each other using filled polygons
-#
-#Arguments include:
-#'x' - a vector of values
-#'y' - a matrix of data series (columns) corresponding to x
-#'order.method' = c("as.is", "max", "first") 
-#  "as.is" - plot in order of y column
-#  "max" - plot in order of when each y series reaches maximum value
-#  "first" - plot in order of when each y series first value > 0
-#'col' - fill colors for polygons corresponding to y columns (will recycle)
-#'border' - border colors for polygons corresponding to y columns (will recycle) (see ?polygon for details)
-#'lwd' - border line width for polygons corresponding to y columns (will recycle)
-#'...' - other plot arguments
+## plot.stacked makes a stacked plot where each y series is plotted on top
+## of the each other using filled polygons
+
+## Arguments include:
+## 'x' - a vector of values
+## 'y' - a matrix of data series (columns) corresponding to x
+## 'order.method' = c("as.is", "max", "first") 
+##  "as.is" - plot in order of y column
+##  "max" - plot in order of when each y series reaches maximum value
+##  "first" - plot in order of when each y series first value > 0
+## 'col' - fill colors for polygons corresponding to y columns (will recycle)
+## 'border' - border colors for polygons corresponding to y columns (will recycle) (see ?polygon for details)
+## 'lwd' - border line width for polygons corresponding to y columns (will recycle)
+## '...' - other plot arguments
 
 plot.stacked2 <- function(
                          x, y, 
