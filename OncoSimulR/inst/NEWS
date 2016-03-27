@@ -1,4 +1,4 @@
-Changes in version 2.1.2 (2016-03-18):
+Changes in version 2.1.2 (2016-03-27):
 	- Arguments to BNB_Algo5 explicit.
 	- Example of modules and no epistasis.
 	- Remove requirement of Root in geneToModule.
