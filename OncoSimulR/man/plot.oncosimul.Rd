@@ -223,7 +223,13 @@
     clone is not among the non-shown data (i.e., so that we can see when
     each clone/driver originates).
     
-    Thining is done to reduce the plot size and to speed up plotting..
+    Thinning is done to reduce the plot size and to speed up plotting.
+
+    Note that thinning is carried out before dealing with the plot axis,
+    so the actual number of points to be plotted could be a lot less (if
+    you reduce the x-axis considerably) than those returned from the
+    thinning. (In extreme cases this could lead to crashes when trying
+    to use stream plots if, say, you end up plotting only three values).
     
   }
   \item{thinData.keep}{
