@@ -73,16 +73,20 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   (only genes, not modules) that show no interactions. These genes
       cannot be part of modules. But you can specify modules that have
       no epistatic interactions. See examples and vignette.
-}
-\item{geneToModule}{
+    }
+    
+    \item{geneToModule}{
+      
   A named character vector that allows to match genes and modules. The
   names are the modules, and each of the values is a character vector
   with the gene names, separated by a comma, that correspond to a
   module. Note that modules cannot share genes. There is no need for
-  modules to contain more than one gene.
-  %% If you specify a geneToModule
-  %% argument, it must necessarily contain "Root".  
+  modules to contain more than one gene.  If you specify a geneToModule
+  argument, and you used a restriction table, the \code{geneToModule} 
+  must necessarily contain, in the first position, "Root" (since the
+  restriction table contains a node named "Root"). See examples below.
 }
+    
 
 \item{drvNames}{The names of genes that are considered drivers. This is
   only used for: a) deciding when to stop the simulations, in case you
