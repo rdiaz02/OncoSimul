@@ -1,0 +1,29 @@
+# Sample .travis.yml for R projects +
+# https://github.com/travis-ci/travis-ci/issues/5775
+
+language: r
+r: bioc-devel
+
+warnings_are_errors: true
+
+sudo: required
+
+cache: packages
+
+r_github_packages:
+  - jimhester/covr
+
+after_success:
+  - Rscript -e 'library(covr);covr::codecov()'
+
+
+install:
+  - Rscript -e 'install.packages(c("devtools","knitr","roxygen2","testthat"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR")'
+script:
+  - Rscript -e 'devtools::check("OncoSimulR")'
+
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change

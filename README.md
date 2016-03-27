@@ -1,3 +1,7 @@
+[![Travis-CI Build Status](https://travis-ci.org/rdiaz02/OncoSimul.svg?branch=master)](https://travis-ci.org/rdiaz02/OncoSimul)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rdiaz02/OncoSimul?branch=master&svg=true)](https://ci.appveyor.com/project/rdiaz02/OncoSimul)
+[![codecov.io](https://codecov.io/github/rdiaz02/OncoSimul/coverage.svg?branch=master)](https://codecov.io/github/rdiaz02/cOncoSimul?branch=master)
+
 OncoSimul
 =========
 
