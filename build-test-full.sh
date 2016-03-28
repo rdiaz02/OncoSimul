@@ -55,3 +55,12 @@ echo " "
 echo " =======     done long manual tests   =======     "
 echo " "
 ## --force-multiarch in windoze?
+
+
+## To do it the Hadley way
+## Rscript --vanilla -e 'library(devtools); devtools::check("OncoSimulR", document = FALSE)'
+
+## But: I set document to FALSE, as it insists on roxygen.  And the above
+## will CHANGE files if it deems appropriate (e.g., RcppExports) without
+## asking you. However, it can point out things that I miss with the
+## BUILD and check. So do it in a tmp directory or git checkout changes.
