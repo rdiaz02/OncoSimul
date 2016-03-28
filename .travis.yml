@@ -14,14 +14,15 @@ r_github_packages:
   - jimhester/covr
 
 after_success:
-  - Rscript -e 'library(covr);covr::codecov()'
+  - Rscript -e 'library(covr);covr::codecov("./OncoSimulR")'
 
 
 install:
   - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR")'
-  
-script:
+ 
+before_script:
    - R CMD build --keep-empty-dirs OncoSimulR
+script:
    - R CMD check OncoSimulR_*.tar.gz
 
 ## - Rscript -e 'devtools::check("OncoSimulR", document = FALSE, force_suggests = TRUE)'
