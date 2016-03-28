@@ -7,6 +7,7 @@
 <<echo=FALSE,results='hide',error=FALSE>>=
 require(knitr, quietly = TRUE)
 opts_knit$set(concordance = TRUE)
+options(width = 65)
 ##opts_knit$set(stop_on_error = 2L)
 @ 
 \usepackage{amsmath}
@@ -3386,14 +3387,33 @@ are examining a large number of different scenarios.
 \subsection{Dealing with errors in
   \Rfunction{oncoSimulPop}}\label{errorosp}
 
-Suppose you did something like
+When running OncoSimulR under Windows \Rfunction{mclapply} does not use
+multiple cores, and errors from \Rfunction{oncoSimulPop} are reported
+directly. For example:
 
 <<>>=
-pancrError <- oncoSimulPop(10, pancr,
-                           initSize = 1e-5,
-                           detectionSize = 1e7,
-                           keepEvery = 10,
-                           mc.cores = 2)
+## This code will only be evaluated under Windows
+if(.Platform$OS.type == "windows")
+    try(pancrError <- oncoSimulPop(10, pancr,
+                               initSize = 1e-5,
+                               detectionSize = 1e7,
+                               keepEvery = 10,
+                               mc.cores = 2))
+@ 
+
+
+Under POSIX operating systems (e.g., GNU/Linux or Mac OSX)
+\Rfunction{oncoSimulPop} can ran parallelized by calling
+\Rfunction{mclapply}. Now, suppose you did something like
+
+<<>>=
+## Do not run under Windows
+if(.Platform$OS.type != "windows")
+    pancrError <- oncoSimulPop(10, pancr,
+                               initSize = 1e-5,
+                               detectionSize = 1e7,
+                               keepEvery = 10,
+                               mc.cores = 2)
 @ 
 
 The warning you are seeing tells you there was an error in the functions
@@ -3402,13 +3422,15 @@ called by \Rfunction{mclapply}. If you check the help for
 can inspect it. For instance, we can do:
 
 <<>>=
-pancrError[[1]]
+if(.Platform$OS.type != "windows")
+    pancrError[[1]]
 @ 
 
 But that output is hard to read. This is better:
 
 <<>>=
-pancrError[[1]][1]
+if(.Platform$OS.type != "windows")
+    pancrError[[1]][1]
 @ 
  
 And from here you can clearly see the error that was returned by
