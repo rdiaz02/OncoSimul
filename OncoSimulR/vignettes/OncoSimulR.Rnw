@@ -7,7 +7,7 @@
 <<echo=FALSE,results='hide',error=FALSE>>=
 require(knitr, quietly = TRUE)
 opts_knit$set(concordance = TRUE)
-options(width = 65)
+options(width = 68)
 ##opts_knit$set(stop_on_error = 2L)
 @ 
 \usepackage{amsmath}
@@ -261,6 +261,10 @@ library(OncoSimulR)
 library(graph)
 library(igraph)
 igraph_options(vertex.color = "SkyBlue2")
+@ 
+
+<<echo=FALSE, results='hide'>>=
+options(width = 68)
 @ 
 
 To be explicit, what version are we running?
@@ -3419,21 +3423,19 @@ if(.Platform$OS.type != "windows")
 The warning you are seeing tells you there was an error in the functions
 called by \Rfunction{mclapply}. If you check the help for
 \Rfunction{mclpapply} you'll see that it returns a try-error object, so we
-can inspect it. For instance, we can do:
+can inspect it. For instance, we could do:
 
-<<>>=
-if(.Platform$OS.type != "windows")
-    pancrError[[1]]
+<<eval=FALSE>>=
+pancrError[[1]]
 @ 
 
-But that output is hard to read. This is better:
+But the output of this call might be easier to read:
 
-<<>>=
-if(.Platform$OS.type != "windows")
-    pancrError[[1]][1]
+<<eval=FALSE>>=
+pancrError[[1]][1]
 @ 
  
-And from here you can clearly see the error that was returned by
+And from here you could see the error that was returned by
 \Rfunction{oncoSimulIndiv}: \texttt{initSize < 1} (which is indeed true:
 we pass \texttt{initSize = 1e-5}).
 
