@@ -16,10 +16,9 @@ install:
 ## http://stackoverflow.com/questions/33411765/check-multiple-subdirectories-using-appveyor
 
 environment:
-  matrix:
-  - TEST_DIR: OncoSimulR
-  - R_VERSION: devel
-  - USE_RTOOLS: true
+  TEST_DIR: OncoSimulR
+  R_VERSION: devel
+  USE_RTOOLS: true
 
 
 ## before_build:
@@ -33,21 +32,6 @@ before_build:
    - cp travis-tool.sh.cmd %TEST_DIR%\travis-tool.sh.cmd
    - cd %TEST_DIR%
    - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
-
-
-## The next fails when
-## travis-tool.sh install_bioc_deps
-## bash.exe: ../travis-tool.sh: No such file or directory
-## Command exited with code 127
-
-## before_build:
-##   - cp travis-tool.sh.cmd %TEST_DIR%\travis-tool.sh.cmd	
-##   - cd %TEST_DIR%
-
-## before_build:
-##   - cp travis-tool.sh.cmd %TEST_DIR%\travis-tool.sh.cmd
-##   - cp travis-tool.sh %TEST_DIR%\travis-tool.sh	
-##   - cd %TEST_DIR%
 
 
 build_script:
