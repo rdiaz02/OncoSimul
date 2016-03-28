@@ -19,8 +19,12 @@ after_success:
 
 install:
   - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR")'
+  
 script:
-  - Rscript -e 'devtools::check("OncoSimulR", document = FALSE, force_suggests = TRUE)'
+   - R CMD build --keep-empty-dirs OncoSimulR
+   - R CMD check OncoSimulR_*.tar.gz
+
+## - Rscript -e 'devtools::check("OncoSimulR", document = FALSE, force_suggests = TRUE)'
 
 
 notifications:
