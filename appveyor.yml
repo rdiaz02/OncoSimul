@@ -17,7 +17,7 @@ install:
 
 environment:
   TEST_DIR: OncoSimulR
-  R_VERSION: devel
+  R_VERSION: 3.3.0alpha
   USE_RTOOLS: true
 
 
