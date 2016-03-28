@@ -19,7 +19,7 @@ environment:
   TEST_DIR: OncoSimulR
   R_VERSION: devel
   USE_RTOOLS: true
-
+  GCC_PATH: gcc-4.6.3
 
 before_build:
    - cp ../travis-tool.sh travis-tool.sh
