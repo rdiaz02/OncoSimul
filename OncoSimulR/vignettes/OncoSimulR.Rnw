@@ -4291,7 +4291,7 @@ four, so as not to fill the vignette with plots) we can do, with the same
 settings as above:
 
 <<ch2>>=
-p1 <- oncoSimulPop(4, p1101)
+p1 <- oncoSimulPop(4, p1101, mc.cores = 2)
 par(mfrow = c(2, 2))
 plot(p1, ask = FALSE)
 @ 
@@ -4323,7 +4323,7 @@ subjects by genes):
 <<>>=
 
 m1 <- oncoSimulPop(100, examplePosets[["p1101"]], 
-                   numPassengers = 0)
+                   numPassengers = 0, mc.cores = 2)
 
 @ 
 
