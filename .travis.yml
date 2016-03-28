@@ -13,8 +13,6 @@ cache: packages
 r_github_packages:
   - jimhester/covr
 
-after_success:
-  - Rscript -e 'library(covr);covr::codecov("./OncoSimulR")'
 
 
 install:
@@ -25,10 +23,18 @@ before_script:
 script:
    - R CMD check OncoSimulR_*.tar.gz
 
-## - Rscript -e 'devtools::check("OncoSimulR", document = FALSE, force_suggests = TRUE)'
+after_success:
+  - Rscript -e 'devtools::install_github("jimhester/covr");library(covr);covr::codecov("OncoSimulR")'
+
+
 
 
 notifications:
   email:
     on_success: change
     on_failure: change
+
+
+
+##  I prefer to mimic the build and check dance
+## - Rscript -e 'devtools::check("OncoSimulR", document = FALSE, force_suggests = TRUE)'
