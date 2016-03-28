@@ -17,16 +17,17 @@ install:
 
 environment:
   TEST_DIR: OncoSimulR
-  R_VERSION: devel
+  R_VERSION: 3.3.0alpha
   USE_RTOOLS: true
   GCC_PATH: gcc-4.6.3
+  R_ARCH: i386
 
 before_build:
    - cp ../travis-tool.sh travis-tool.sh
    - cp travis-tool.sh.cmd %TEST_DIR%\travis-tool.sh.cmd
    - cd %TEST_DIR%
    - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
-
+   - cp C:/projects/oncosimul/miscell-files/Windoze-testing/Makeconf C:/R/etc/i386/.
 
 build_script:
   - travis-tool.sh install_bioc_deps
