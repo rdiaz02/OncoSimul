@@ -19,6 +19,7 @@ environment:
   matrix:
   - TEST_DIR: OncoSimulR
   - R_VERSION: devel
+  - USE_RTOOLS: true
 
 
 ## before_build:
