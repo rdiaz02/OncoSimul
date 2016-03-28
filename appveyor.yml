@@ -17,10 +17,11 @@ install:
 
 environment:
   TEST_DIR: OncoSimulR
-  R_VERSION: 3.3.0alpha
+  R_VERSION: test
   USE_RTOOLS: true
 
 
+## R_VERSION: 3.3.0alpha
 ##  GCC_PATH: gcc-4.6.3
 ##  R_ARCH: i386
 
