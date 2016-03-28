@@ -1100,16 +1100,16 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 }
 
 
-// [[Rcpp::export]]
-void readFitnessEffects(Rcpp::List rFE,
-			bool echo) {
-  // fitnessEffectsAll fitnessEffects;
-  // convertFitnessEffects(rFE, fitnessEffects);
-  fitnessEffectsAll fitnessEffects = convertFitnessEffects(rFE);
-  if(echo) {
-     printFitnessEffects(fitnessEffects);
-  }
-}
+// // [[Rcpp::export]]
+// void readFitnessEffects(Rcpp::List rFE,
+// 			bool echo) {
+//   // fitnessEffectsAll fitnessEffects;
+//   // convertFitnessEffects(rFE, fitnessEffects);
+//   fitnessEffectsAll fitnessEffects = convertFitnessEffects(rFE);
+//   if(echo) {
+//      printFitnessEffects(fitnessEffects);
+//   }
+// }
 
 
 

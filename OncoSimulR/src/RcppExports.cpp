@@ -88,17 +88,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// readFitnessEffects
-void readFitnessEffects(Rcpp::List rFE, bool echo);
-RcppExport SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< Rcpp::List >::type rFE(rFESEXP);
-    Rcpp::traits::input_parameter< bool >::type echo(echoSEXP);
-    readFitnessEffects(rFE, echo);
-    return R_NilValue;
-END_RCPP
-}
+
+// // readFitnessEffects
+// void readFitnessEffects(Rcpp::List rFE, bool echo);
+// RcppExport SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP) {
+// BEGIN_RCPP
+//     Rcpp::RNGScope __rngScope;
+//     Rcpp::traits::input_parameter< Rcpp::List >::type rFE(rFESEXP);
+//     Rcpp::traits::input_parameter< bool >::type echo(echoSEXP);
+//     readFitnessEffects(rFE, echo);
+//     return R_NilValue;
+// END_RCPP
+// }
+
 // evalRGenotype
 double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose, bool prodNeg);
 RcppExport SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP) {
