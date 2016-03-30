@@ -113,6 +113,10 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
     ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(nca2)$NumClones) > 1e-4)
+    ## Pop sizes here do not really differ, as we start with the
+    ## initMutant with increased s
+    summary(summary(nca)[, 2])
+    summary(summary(nca2)[, 2])
     ## summary(summary(nca)$NumClones)
     ## summary(summary(nca2)$NumClones)
     ## summary(mutsPerClone(nca))
@@ -190,6 +194,10 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                  mean(mutsPerClone2))
     expect_true( median(nca$popSummary[, "NumClones"]) >
                  median(nca2$popSummary[, "NumClones"]))
+    ## Pop sizes here do not really differ, as we start with the
+    ## initMutant with increased s
+    summary(nca$popSummary[, "TotalPopSize"])
+    summary(nca2$popSummary[, "TotalPopSize"])
 })
 
 
@@ -256,9 +264,10 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
     expect_true( median(nca$popSummary[, "NumClones"]) >
                  median(nca2$popSummary[, "NumClones"]))
 
-    
-
-    
+    ## Pop sizes here do not really differ, as we start with the
+    ## initMutant with increased s. And this is McFL, so bounded from above.
+    summary(nca$popSummary[, "TotalPopSize"])
+    summary(nca2$popSummary[, "TotalPopSize"])
 })
 cat("\n", date(), "\n")
 
