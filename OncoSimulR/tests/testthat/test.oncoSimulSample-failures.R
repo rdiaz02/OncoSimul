@@ -1,3 +1,6 @@
+cat(paste("\n Starting oncoSimulSample-failures tests", date(), "\n"))
+
+RNGkind("Mersenne-Twister")
 test_that("oncoSimulSample out of time triggered", {
               oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.1),
@@ -106,3 +109,4 @@ test_that("oncoSimulSample C++ exception triggered", {
               expect_true(out$UnrecoverExcept)
           })
 
+cat(paste("\n Ending oncoSimulSample-failures tests", date(), "\n"))

@@ -1,0 +1,48 @@
+# Sample .travis.yml for R projects +
+# https://github.com/travis-ci/travis-ci/issues/5775
+
+language: r
+r: bioc-devel
+
+warnings_are_errors: true
+
+sudo: required
+
+cache: packages
+
+r_github_packages:
+  - jimhester/covr
+
+
+
+install:
+  - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR")'
+ 
+before_script:
+   - R CMD build --keep-empty-dirs OncoSimulR
+script:
+   - R CMD check OncoSimulR_*.tar.gz
+
+after_success:
+  - Rscript -e 'devtools::install_github("jimhester/covr");library(covr);covr::codecov("OncoSimulR")'
+
+
+
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+
+
+##  I prefer to mimic the build and check dance
+## - Rscript -e 'devtools::check("OncoSimulR", document = FALSE, force_suggests = TRUE)'
+
+
+## Remember to fix the file paths as:
+
+## R/::OncoSimulR/R
+## src/::OncoSimulR/src
+
+##  so that codecov info is shown.

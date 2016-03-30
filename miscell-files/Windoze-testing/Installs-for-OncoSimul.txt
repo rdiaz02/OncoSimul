@@ -1,0 +1,6 @@
+
+source("http://bioconductor.org/biocLite.R")
+biocLite("OncoSimulR")
+chooseCRANmirror() ## and choose the http ones
+install.packages(c("knitr", "Oncotree", "Rcpp", "testthat"))
+biocLite("BiocStyle")

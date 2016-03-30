@@ -14,12 +14,12 @@ SEXP OncoSimulR_evalRGenotypeAndMut(SEXP rGSEXP, SEXP rFESEXP, SEXP muEFSEXP, SE
 
 
 R_CallMethodDef callMethods[]  = {
-  {"C_OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 30},
-  {"C_OncoSimulR_BNB_Algo5", (DL_FUNC) &OncoSimulR_BNB_Algo5, 32},
-  {"C_OncoSimulR_readFitnessEffects", (DL_FUNC) &OncoSimulR_readFitnessEffects, 2},
-  {"C_OncoSimulR_evalRGenotype", (DL_FUNC) &OncoSimulR_evalRGenotype, 5},
-  {"C_OncoSimulR_evalRGenotypeAndMut", (DL_FUNC) &OncoSimulR_evalRGenotypeAndMut, 6},  
-  {NULL, NULL, 0}
+  {"OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 30},
+  {"OncoSimulR_BNB_Algo5", (DL_FUNC) &OncoSimulR_BNB_Algo5, 32},
+  {"OncoSimulR_readFitnessEffects", (DL_FUNC) &OncoSimulR_readFitnessEffects, 2},
+  {"OncoSimulR_evalRGenotype", (DL_FUNC) &OncoSimulR_evalRGenotype, 5},
+  {"OncoSimulR_evalRGenotypeAndMut", (DL_FUNC) &OncoSimulR_evalRGenotypeAndMut, 6},  
+ {NULL, NULL, 0}
 };
 
 void R_init_OncoSimulR(DllInfo *info) {

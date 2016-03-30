@@ -1,3 +1,4 @@
+cat(paste("\n Starting all fitness at", date()))
 RNGkind("Mersenne-Twister") ## we have some examples below with random
 ## genotype generation. We leave the default. We use L'Ecuyer when using
 ## mclapply and that file could run before this one
@@ -1212,3 +1213,5 @@ test_that("No epistasis, modules", {
     expect_identical(ea[ea$Genotype == "a2, b1, c1", "Fitness"],
     (1 + sa) * (1 + sb) * (1 + sc))
 })
+
+cat(paste("\n Ending all-fitness at", date()))

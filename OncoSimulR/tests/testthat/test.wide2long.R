@@ -1,9 +1,13 @@
+cat(paste("\n Starting wide2long tests", date(), "\n"))
+
+RNGkind("Mersenne-Twister")
 test_that("wide2long, two basic cases, minimal testing",
 {
     data(examplePosets)
     ## An object of class oncosimul
     p705 <- examplePosets[["p705"]]
-    p1 <- oncoSimulIndiv(p705, onlyCancer = FALSE)
+    p1 <- oncoSimulIndiv(p705, sampleEvery = 0.025,
+                         keepEvery = 5, onlyCancer = FALSE)
     class(p1)
     lp1 <- OncoSimulWide2Long(p1)
     head(lp1)
@@ -39,3 +43,4 @@ test_that("wide2long, two basic cases, minimal testing",
     expect_true(names(tt2) == as.character(length(unique(lsm$Genotype))))
 })
 
+cat(paste("\n Ending wide2long tests", date(), "\n"))

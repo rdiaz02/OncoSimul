@@ -1194,8 +1194,6 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 }
 
 
-
-
 double evalMutator(const Genotype& fullge,
 		  const std::vector<int>& full2mutator,
 		  const fitnessEffectsAll& muEF,

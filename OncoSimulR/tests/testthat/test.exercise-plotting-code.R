@@ -1,11 +1,15 @@
+cat(paste("\n Starting exercise-plotting-code at", date()))
+
 ## These are all used in the vignette and the help functions but we add
 ## them here because we want to make sure we exercise the code even if we
 ## just run the test routines.
 
 ## BEWARE: this do not test that the plotting is correct! It just calls it.
 
+RNGkind("Mersenne-Twister") ## be explicit
+
 ## Takes about 11 seconds on my laptop
-cat(paste("\n Starting plots tests", date(), "\n"))
+
 test_that("exercising the oncosimul plotting code", {
               data(examplePosets)
               p701 <- examplePosets[["p701"]]
@@ -21,8 +25,11 @@ test_that("exercising the oncosimul plotting code", {
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
               out <- oncoSimulPop(4,
-                                  oi, 
+                                  oi,
+                                  sampleEvery = 0.03,
+                                  keepEvery = 3,
                                   detectionSize = 1e4,
+                                  finalTime = 500,
                                   onlyCancer = FALSE, mc.cores = 2)
               plot(out)
           })
@@ -42,8 +49,11 @@ test_that("exercising the oncosimul plotting code, thinning", {
                                             "F" = "f1, f2, f3",
                                             "D" = "d1, d2") )
               out <- oncoSimulPop(4,
-                                  oi, 
+                                  oi,
+                                  sampleEvery = 0.03,
                                   detectionSize = 1e4,
+                                  finalTime = 500,
+                                  keepEvery = 3,
                                   onlyCancer = FALSE, mc.cores = 2)
               plot(out, thinData = TRUE)
           })
@@ -67,7 +77,7 @@ test_that("exercising plotClonePhylog", {
                                      mu = 5e-6,
                                      detectionSize = 1e8, 
                                      detectionDrivers = 3,
-                                     sampleEvery = 0.05, ## to make it fast
+                                     sampleEvery = 0.03, 
                                      max.num.tries = 10,
                                      keepEvery = 15,
                                      initSize = 2000,
@@ -84,6 +94,8 @@ test_that("exercising plotClonePhylog", {
               plotClonePhylog(tmp, N = 10, timeEvents = TRUE)
               ## This can take a few seconds
               plotClonePhylog(tmp, N = 10, keepEvents = TRUE)
+              ## Reaching the fixOverlap code
+              plotClonePhylog(tmp, N = 0, timeEvents = TRUE)
           })
 
 ## the next is slightly slow
@@ -140,43 +152,34 @@ test_that("stacked, stream, genotypes and some colors", {
                              mu = 5e-5,
                              detectionSize = 1e8, 
                              detectionDrivers = 3,
-                             sampleEvery = 0.05,
+                             sampleEvery = 0.03,
                              max.num.tries = 10,
                              keepEvery = 100,
                              initSize = 2000,
                              finalTime = 3000,
                              onlyCancer = FALSE,
                              keepPhylog = TRUE)
-      
       plot(tmp, type = "stacked", show = "genotypes")
       plot(tmp, type = "stream", show = "genotypes")
       plot(tmp, type = "line", show = "genotypes")
-
       plot(tmp, type = "stacked", show = "drivers")
       plot(tmp, type = "stream", show = "drivers")
       plot(tmp, type = "line", show = "drivers")
-
       plot(tmp, type = "stacked", order.method = "max")
       plot(tmp, type = "stacked", order.method = "first")
-
       plot(tmp, type = "stream", order.method = "max")
       plot(tmp, type = "stream", order.method = "first")
-
       plot(tmp, type = "stream", stream.center = TRUE)
       plot(tmp, type = "stream", stream.center = FALSE)
-
       plot(tmp, type = "stream", stream.center = TRUE, log = "x")
       plot(tmp, type = "stacked", stream.center = TRUE, log = "x")
-      
       plot(tmp, type = "stacked", show = "genotypes",
            breakSortColors = "random")
       plot(tmp, type = "stream", show = "genotypes",
            breakSortColors = "distave")
-
       plot(tmp, type = "stacked", show = "genotypes", col = rainbow(9))
       plot(tmp, type = "stream", show = "genotypes", col = rainbow(3))
       plot(tmp, type = "line", show = "genotypes", col = rainbow(20))
-      
 })
 
 
@@ -427,4 +430,5 @@ test_that("exercise single clone and single driver", {
 ## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
 ## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
 
-cat(paste("\n Ending plots tests", date(), "\n"))
+cat(paste("\n Ending exercise-plotting-code at", date()))
+

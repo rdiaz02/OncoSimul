@@ -91,6 +91,7 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+
 // readFitnessEffects
 void readFitnessEffects(Rcpp::List rFE, bool echo);
 RcppExport SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP) {
@@ -102,6 +103,7 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+
 // evalRGenotype
 double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, bool verbose, bool prodNeg, Rcpp::CharacterVector calledBy_);
 RcppExport SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP, SEXP calledBy_SEXP) {

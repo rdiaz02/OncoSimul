@@ -30,7 +30,7 @@ oncoSimulSample <- function(Nindiv,
                                     if(length(fp$drv)) {
                                         nd <- (2: round(0.75 * length(fp$drv)))
                                     } else {
-                                        nd <- 0
+                                        nd <- 9e6 
                                     }
                                 } else {
                                     nd <- (2 : round(0.75 * max(fp)))
@@ -70,6 +70,12 @@ oncoSimulSample <- function(Nindiv,
     ## leaving detectionSize and detectionDrivers as they are, produces
     ## the equivalente of uniform sampling. For last, fix a single number
 
+    ## detectionDrivers when there are none: had we left it at 0, then
+    ## when there are no drivers we would stop at the first sampling
+    ## period.
+    
+    if(Nindiv < 1)
+        stop("Nindiv must be >= 1")
     if(keepPhylog)
         warning(paste("oncoSimulSample does not return the phylogeny",
                       "for now, so there is little point in storing it."))
@@ -279,7 +285,7 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
 oncoSimulPop <- function(Nindiv,
                          fp,
                          model = "Exp",
-                         numPassengers = 30,
+                         numPassengers = 0,
                          mu = 1e-6,
                          muEF = NULL,
                          detectionSize = 1e8,
@@ -311,6 +317,9 @@ oncoSimulPop <- function(Nindiv,
                          mc.cores = detectCores(),
                          seed = "auto") {
 
+    if(Nindiv < 1)
+        stop("Nindiv must be >= 1")
+    
     if(.Platform$OS.type == "windows") {
         if(mc.cores != 1)
             message("You are running Windows. Setting mc.cores = 1")
@@ -358,7 +367,7 @@ oncoSimulPop <- function(Nindiv,
 
 oncoSimulIndiv <- function(fp,
                            model = "Exp",
-                           numPassengers = 30,
+                           numPassengers = 0,
                            mu = 1e-6,
                            muEF = NULL,
                            detectionSize = 1e8,
@@ -400,9 +409,13 @@ oncoSimulIndiv <- function(fp,
                           )
     if(initSize < 1)
         stop("initSize < 1")
-    if( (K < 1) && !(model %in% c("McFL", "McFarlandLog") )) {
-        K <- 1 ## K is ONLY used for McFarland
-    }
+    
+    if( (K < 1) && (model %in% c("McFL", "McFarlandLog") )) {
+        stop("Using McFarland's model: K cannot be < 1")
+    }       ##  if ( !(model %in% c("McFL", "McFarlandLog") )) {
+            ## K <- 1 ## K is ONLY used for McFarland; set it to 1, to avoid
+            ##        ## C++ blowing.
+
     if(typeFitness == "exp") {
         death <- 1
         ## mutationPropGrowth <- 1
@@ -516,6 +529,12 @@ oncoSimulIndiv <- function(fp,
                   silent = !verbosity)
         objClass <- "oncosimul"
     } else {
+        if(numPassengers != 0)
+            warning(paste("Specifying numPassengers has no effect",
+                          " when using fitnessEffects objects. ",
+                          " The fitnessEffects objects are much more ",
+                          "flexible and you can use, for example,",
+                          "the noIntGenes component for passengers."))
         if(is.null(seed)) {## Passing a null creates a random seed
             ## We use a double, to be able to pass in range > 2^16.
             ## Do not use 0, as that is our way of signaling to C++ to

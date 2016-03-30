@@ -19,8 +19,7 @@
   al., 2012.
 }
 \usage{
- oncoSimulIndiv(fp, model = "Exp", numPassengers = 30, mu = 1e-6,
-                muEF = NULL,
+ oncoSimulIndiv(fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -40,8 +39,7 @@
                 initMutant = NULL,
                 seed = NULL)
 
-oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 30, mu = 1e-6,
-             muEF = NULL,
+oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -76,7 +74,7 @@ oncoSimulSample(Nindiv,
                                     if(length(fp$drv)) {
                                         nd <- (2: round(0.75 * length(fp$drv)))
                                     } else {
-                                        nd <- 0
+                                        nd <- 9e6
                                     }
                                 } else {
                                     nd <- (2 : round(0.75 * max(fp)))
@@ -122,18 +120,24 @@ oncoSimulSample(Nindiv,
     v.1. Otherwise, a fitnessEffects object (see
     \code{\link{allFitnessEffects}}).
 
-    Other arguments below (s, sh) make sense only if you use a poset, as
-    they are included in the fitnessEffects object.
+    Other arguments below (s, sh, numPassengers) make sense only if you
+    use a poset, as they are included in the fitnessEffects object.
 
 }
+
 \item{model}{
   One of "Bozic", "Exp", "McFarlandLog" (the last one can be abbreviated
   to "McFL"). The default is "Exp".
 
 }
+
 \item{numPassengers}{
+
+  This has no effect if you use the \code{\link{allFitnessEffects}}
+  specification.
   
-  The number of passenger genes.The total number of genes (drivers plus
+  If you use the specification of v.1., the number of passenger
+  genes. Note that using v.1 the total number of genes (drivers plus
   passengers) must be smaller than 64.
   
   All driver genes should be included in the poset (even if they depend
@@ -143,6 +147,7 @@ oncoSimulSample(Nindiv,
   of passengers).
 
 }
+
 \item{mu}{
   Mutation rate. Can be a single value or a named vector. If a single
   value, all genes will have the same mutation rate. If a named vector,
@@ -178,16 +183,25 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 \item{detectionDrivers}{ The minimal number of drivers (not modules,
 drivers, whether or not they are from the same module) present in any
 clone for cancer to be detected. For \code{oncoSimulSample} this can be
-a vector. The default in this case is a vector of drivers from a uniform
-between 2 and 0.75 the total number of drivers.
+a vector.
+
+For \code{oncoSimulSample}, if there are drivers (either because you are
+using a v.1 object or because you are using a fitnessEffects object with
+a \code{drvNames} component ---see \code{\link{allFitnessEffects}}---)
+the default is a vector of drivers from a uniform between 2 and 0.75 the
+total number of drivers. If there are no drivers (because you are using
+a fitnessEffects object without a \code{drvNames}, either because you
+specified it explicitly or because all of the genes are in the
+noIntGenes component) the simulations should not stop based on the
+number of drivers (and, thus, the default is set to 9e6).
 
 }
 
 \item{sampleEvery}{
   
   How often the whole population is sampled. This is not the same as the
-  interval between successive samples that keep stored (for that, see
-  \code{keepEvery}).
+  interval between successive samples that are kept or stored (for that,
+  see \code{keepEvery}).
 
   For very fast growing clones, you might need to have a small value
   here to minimize possible numerical problems (such as huge increase in

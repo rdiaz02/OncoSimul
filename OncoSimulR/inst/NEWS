@@ -1,7 +1,9 @@
-Changes in version 2.1.2 (2016-03-18):
+Changes in version 2.1.2 (2016-03-27):
 	- Arguments to BNB_Algo5 explicit.
 	- Example of modules and no epistasis.
 	- Remove requirement of Root in geneToModule.
+	- More tests (and reorganized them)
+	- Miscell. improvements in documentation and vignette.
 
 Changes in version 2.1.1 (2016-03-07):
 	- Added mutationPropGrowth as argument.

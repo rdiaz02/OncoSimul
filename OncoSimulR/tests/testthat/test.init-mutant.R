@@ -1,3 +1,7 @@
+cat(paste("\n Starting init-mutant tests", date(), "\n"))
+
+RNGkind("Mersenne-Twister")
+
 ## Processing this file takes about 3 seconds on my laptop
 test_that("initMutant crashes",
           {
@@ -58,6 +62,8 @@ test_that("initMutant lexicog order",
               tmp <- oncoSimulIndiv(o3, model = "McFL",
                       mu = 5e-5, finalTime = 500,
                       detectionDrivers = 3,
+                      sampleEvery = 0.03,
+                      keepEvery = 1,
                       onlyCancer = FALSE,
                       initSize = 1000,
                       keepPhylog = TRUE
@@ -89,6 +95,8 @@ test_that("initMutant lexicog order with noint",
               tmp <- oncoSimulIndiv(o3, model = "McFL",
                       mu = 5e-5, finalTime = 500,
                       detectionDrivers = 3,
+                      sampleEvery = 0.03,
+                      keepEvery = 1,
                       onlyCancer = FALSE,
                       initSize = 1000,
                       keepPhylog = TRUE
@@ -124,6 +132,8 @@ test_that("initMutant non lexicog order",
               tmp <- oncoSimulIndiv(o3, model = "McFL",
                       mu = 5e-5, finalTime = 500,
                       detectionDrivers = 3,
+                      sampleEvery = 0.03,
+                      keepEvery = 1,
                       onlyCancer = FALSE,
                       initSize = 1000,
                       keepPhylog = TRUE
@@ -155,6 +165,8 @@ test_that("initMutant non lexicog order",
               tmp <- oncoSimulIndiv(o3, model = "McFL",
                       mu = 5e-5, finalTime = 500,
                       detectionDrivers = 3,
+                      sampleEvery = 0.03,
+                      keepEvery = 1,
                       onlyCancer = FALSE,
                       initSize = 1000,
                       keepPhylog = TRUE
@@ -193,6 +205,7 @@ test_that("initMutant with oncoSimulSample", {
                         detectionDrivers = 2,
                         onlyCancer = TRUE,
                         initSize = 500,
+                        sampleEvery = 0.03,
                         initMutant = c("z > d"),
                         thresholdWhole = 1 ## check presence of initMutant
                         )
@@ -235,6 +248,7 @@ test_that("initMutant with oncoSimulSample, 2", {
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
+                        sampleEvery = 0.03,
                         onlyCancer = TRUE,
                         initSize = 500,
                         initMutant = c("z > a"),
@@ -275,6 +289,8 @@ test_that("initMutant with oncoSimulPop", {
                         detectionDrivers = 3,
                         onlyCancer = TRUE,
                         keepPhylog = TRUE,
+                        sampleEvery = 0.03,
+                        keepEvery = 1,
                         initSize = 500,
                         initMutant = c("d > m > y"),
                         mc.cores = 2
@@ -328,6 +344,8 @@ test_that("initMutant with oncoSimulPop, 2", {
                         detectionDrivers = 4, ## yes, reach end
                         onlyCancer = FALSE,
                         keepPhylog = TRUE,
+                        sampleEvery = 0.03,
+                        keepEvery = 1,
                         initSize = 100,
                         initMutant = c("m > v > d"),
                         mc.cores = 2
@@ -356,3 +374,5 @@ test_that("initMutant with oncoSimulPop, 2", {
                    as.character(x$other$PhylogDF[1, 1])) == "m > d _ v"))
 ##                   as.character(x$other$PhylogDF[1, 1])) == "m, d_v"))
 })
+
+cat(paste("\n Ending init-mutant tests", date(), "\n"))

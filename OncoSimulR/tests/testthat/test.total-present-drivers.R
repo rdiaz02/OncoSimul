@@ -1,5 +1,7 @@
+cat(paste("\n Starting total-present-drivers tests", date(), "\n"))
+
 test_that("Count TotalPresentDrivers", {
-    ## The once was a bug here (in the driverCounts C++ function)
+    ## There once was a bug here (in the driverCounts C++ function)
     ## Testing we are OK
     ## Below, I use specific seeds for a few cases where I got
     ## errors. This actual cases might not be the same with other
@@ -25,6 +27,8 @@ test_that("Count TotalPresentDrivers", {
                             mutationPropGrowth = FALSE,
                             finalTime =ft,
                             initSize = no,
+                            sampleEvery = 0.03,
+                            keepEvery = 1,
                             onlyCancer = FALSE,
                             seed = NULL)
     s3.ng
@@ -43,6 +47,8 @@ test_that("Count TotalPresentDrivers", {
                             mutationPropGrowth = FALSE,
                             finalTime =ft,
                             initSize = no,
+                            sampleEvery = 0.03,
+                            keepEvery = 1,
                             onlyCancer = FALSE,
                             ## verbosity = 4,
                             seed = NULL)
@@ -58,6 +64,8 @@ test_that("Count TotalPresentDrivers", {
                            mutationPropGrowth = FALSE,
                            finalTime = 28,
                            initSize = no,
+                           sampleEvery = 0.03,
+                           keepEvery = 1,
                            onlyCancer = FALSE,
                            ## verbosity = 4,
                            seed = NULL)
@@ -70,10 +78,14 @@ test_that("Count TotalPresentDrivers", {
                            mutationPropGrowth = FALSE,
                            finalTime = 35,
                            initSize = no,
+                           sampleEvery = 0.03,
+                           keepEvery = 1,
                            onlyCancer = FALSE,
                            ## verbosity = 4,
-                            seed = NULL)
+                           seed = NULL)
     s3.l
     expect_true(s3.l$TotalPresentDrivers ==
                 length(strsplit(s3.l$OccurringDrivers, ", ")[[1]]))
 })
+
+cat(paste("\n Ending total-present-drivers tests", date(), "\n"))

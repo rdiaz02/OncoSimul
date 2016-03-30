@@ -1,3 +1,4 @@
+RNGkind("Mersenne-Twister")
 cat(date())
 test_that("exercising plotClonePhylog", {
               data(examplesFitnessEffects)
@@ -23,6 +24,8 @@ test_that("exercising plotClonePhylog", {
               plotClonePhylog(tmp, N = 10, timeEvents = TRUE)
               ## This can take a few seconds
               plotClonePhylog(tmp, N = 10, keepEvents = TRUE)
+              ## Reaching the fixOverlap code
+              plotClonePhylog(tmp, N = 0, timeEvents = TRUE)
           })
 cat(date())
 
@@ -202,7 +205,14 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     data(examplePosets)
     ## An object of class oncosimul
     p705 <- examplePosets[["p705"]]
-    p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+    p1 <- oncoSimulIndiv(p705, keepEvery = 1.1) ## if keepEvery is too
+                                                ## large, from time to
+                                                ## time you end up with
+                                                ## less than 4 sample
+                                                ## points and the stream
+                                                ## plot breaks
+
+
     ## p1 <- oncoSimulIndiv(p705, model = "McFL",
     ##                      mu = 5e-6,
     ##                      sampleEvery = 0.02,

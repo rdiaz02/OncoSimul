@@ -9,5 +9,5 @@ rm ./OncoSimulR/src/OncoSimul.o
 rm ./OncoSimulR/src/OncoSimulR_init.o
 rm ./OncoSimulR/src/symbols.rds
 
-$V_R CMD INSTALL ./OncoSimulR
+$V_R CMD INSTALL --install-tests ./OncoSimulR
 

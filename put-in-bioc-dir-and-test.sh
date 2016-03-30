@@ -24,6 +24,9 @@ cp OncoSimulR/src/Makevars* ./Subversion-in-BioC/OncoSimulR/src/.
 cp OncoSimulR/R/*.R ./Subversion-in-BioC/OncoSimulR/R/.
 
 cp OncoSimulR/tests/testthat/*.R ./Subversion-in-BioC/OncoSimulR/tests/testthat/.
+cp OncoSimulR/tests/manual/*.R ./Subversion-in-BioC/OncoSimulR/tests/manual/.
+cp OncoSimulR/tests/manual/*.txt ./Subversion-in-BioC/OncoSimulR/tests/manual/.
+
 
 cp OncoSimulR/man/*.Rd ./Subversion-in-BioC/OncoSimulR/man/.
 
