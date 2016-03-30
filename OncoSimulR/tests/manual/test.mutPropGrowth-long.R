@@ -533,6 +533,171 @@ test_that("oncoSimulSample Without initmutant and modules, McFL", {
 cat("\n", date(), "\n")
 
 
+
+
+
+
+
+
+
+## Same as above, but we stop in detectionSize, so no differences are
+## attributable just to differences in population size.
+
+
+cat("\n", date(), "\n")
+test_that("oncoSimulSample Without initmutant and modules, fixed size", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSFPS: the seed is", pseed, "\n")
+    pops <- 60
+    lni <- 1 ## no fitness effects genes
+    fni <- 50 ## fitness effects genes
+    no <- 1e4 
+    ft <- 9  #4 
+    s3 <- 2.5 
+    mu <- 1e-5 
+    ## noInt have no fitness effects, but can accumulate mutations
+    ni <- rep(0, lni)
+    ## Those with fitness effects in one module, so
+    ## neither fitness nor mut. rate blow up
+    gn <- paste(paste0("a", 1:fni), collapse = ", ")
+    f3 <- allFitnessEffects(epistasis = c("A" = s3),
+                            geneToModule = c("A" = gn),
+                            noIntGenes = ni)
+    x <- 1e-9 ## so basically anything that appears once
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSFPSa: the seed is", pseed, "\n")
+    b1 <- oncoSimulSample(pops,
+                          f3,
+                          mu = mu,
+                          mutationPropGrowth = FALSE,
+                          finalTime =ft,
+                          initSize = no,
+                          onlyCancer = FALSE,
+                          sampleEvery = 0.01,
+                          detectionSize = 6e4,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSFPSb: the seed is", pseed, "\n")
+    b2 <- oncoSimulSample(pops,
+                         f3,
+                         mu = mu,
+                         mutationPropGrowth = TRUE,
+                         finalTime =ft,
+                         initSize = no,
+                         onlyCancer = FALSE,
+                         sampleEvery = 0.01,
+                          detectionSize = 6e4,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                         thresholdWhole = x)
+    b1$popSummary[1:5, c(1:3, 8:9)]
+    summary(b1$popSummary[, "NumClones"])
+    summary(b1$popSummary[, "TotalPopSize"])
+    b2$popSummary[1:5, c(1:3, 8:9)]
+    summary(b2$popSummary[, "NumClones"])
+    summary(b2$popSummary[, "TotalPopSize"])
+    ## cc1 and cc2 should all be smaller than pops, or you are maxing
+    ## things and not seeing patterns
+    (cc1 <- colSums(b1$popSample))
+    (cc2 <- colSums(b2$popSample))
+    ## Of course, these are NOT really mutationsPerClone: we collapse over
+    ## whole population.
+    (mutsPerClone1 <- rowSums(b1$popSample))
+    (mutsPerClone2 <- rowSums(b2$popSample))
+    summary(mutsPerClone1)
+    summary(mutsPerClone2)
+    expect_true( mean(mutsPerClone2) >
+                 mean(mutsPerClone1))
+    expect_true( median(b2$popSummary[, "NumClones"]) >
+                 median(b1$popSummary[, "NumClones"]))
+})
+cat("\n", date(), "\n")
+
+
+cat("\n", date(), "\n")
+test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSFPSMcFL: the seed is", pseed, "\n")
+    pops <- 60
+    lni <- 1 ## no fitness effects genes
+    fni <- 50 ## fitness effects genes
+    no <- 1e4 ## note we use only 10 in the other example below
+    ft <- 10  ##4 
+    s3 <- 2.5 
+    mu <- 1e-5 
+    ## noInt have no fitness effects, but can accumulate mutations
+    ni <- rep(0, lni)
+    ## Those with fitness effects in one module, so
+    ## neither fitness nor mut. rate blow up
+    gn <- paste(paste0("a", 1:fni), collapse = ", ")
+    f3 <- allFitnessEffects(epistasis = c("A" = s3),
+                            geneToModule = c("A" = gn),
+                            noIntGenes = ni)
+    x <- 1e-9 ## 1/no
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSFPSMcFLa: the seed is", pseed, "\n")
+    b1 <- oncoSimulSample(pops,
+                          f3,
+                          mu = mu,
+                          mutationPropGrowth = FALSE,
+                          finalTime =ft,
+                          initSize = no,
+                          onlyCancer = FALSE,
+                          sampleEvery = 0.01,
+                          detectionSize = 2.5e4,
+                          detectionDrivers = 99,
+                          seed =NULL,
+                          model = "McFL",
+                          thresholdWhole = x)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n osSFPSMcFLb: the seed is", pseed, "\n")
+    b2 <- oncoSimulSample(pops,
+                         f3,
+                         mu = mu,
+                         mutationPropGrowth = TRUE,
+                         finalTime =ft,
+                         initSize = no,
+                         onlyCancer = FALSE,
+                         sampleEvery = 0.01,
+                          detectionSize = 2.5e4,
+                          detectionDrivers = 99,
+                         seed =NULL,
+                         model = "McFL",
+                         thresholdWhole = x)
+    b1$popSummary[1:5, c(1:3, 8:9)]
+    summary(b1$popSummary[, "NumClones"])
+    summary(b1$popSummary[, "TotalPopSize"])
+    b2$popSummary[1:5, c(1:3, 8:9)]
+    summary(b2$popSummary[, "NumClones"])
+    summary(b2$popSummary[, "TotalPopSize"])
+    ## cc1 and cc2 should all be smaller than pops, or you are maxing
+    ## things and not seeing patterns
+    (cc1 <- colSums(b1$popSample))
+    (cc2 <- colSums(b2$popSample))
+    (mutsPerClone1 <- rowSums(b1$popSample))
+    (mutsPerClone2 <- rowSums(b2$popSample))
+    summary(mutsPerClone1)
+    summary(mutsPerClone2)
+    expect_true( mean(mutsPerClone2) >
+                 mean(mutsPerClone1))
+    expect_true( median(b2$popSummary[, "NumClones"]) >
+                 median(b1$popSummary[, "NumClones"]))
+})
+cat("\n", date(), "\n")
+
+
+
+
+
+
 ## This generally works, but not always. Because: a) starting with a you
 ## can get a mutation in b. Or starting with b you can get a mutation in
 ## a. When either happens is stochastic. And we are also mixing the
@@ -822,6 +987,212 @@ test_that("McFL: Without initmutant", {
 gc() 
 })
 cat("\n", date(), "\n")
+
+
+
+
+
+### As before, but fixing final population size.
+cat("\n", date(), "\n")
+test_that("detectionSize. Without initmutant", {
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s3FPS: the seed is", pseed, "\n")
+    pops <- 100
+    lni <- 1 ## no fitness effects genes
+    fni <- 50 ## fitness effects genes
+    no <- 1e3
+    ft <- 10 ## 5
+    s3 <- 3.0
+    mu <- 5e-5 ## easier to see
+    ## noInt have no fitness effects, but can accumulate mutations
+    ni <- rep(0, lni)
+    ## Those with fitness effects in one module, so
+    ## neither fitness nor mut. rate blow up
+    gn <- paste(paste0("a", 1:fni), collapse = ", ")
+    f3 <- allFitnessEffects(epistasis = c("A" = s3),
+                            geneToModule = c("A" = gn),
+                            noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s3FPSa: the seed is", pseed, "\n")
+    s3.ng <- oncoSimulPop(pops,
+                          f3,
+                          mu = mu,
+                          mutationPropGrowth = FALSE,
+                          detectionDrivers = 9999,
+                          detectionSize = 5e5,
+                          sampleEvery = 0.01,
+                          keepEvery = 1,
+                          finalTime =ft,
+                          initSize = no,
+                          onlyCancer = FALSE,
+                          seed = NULL, mc.cores = 2)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s3FPSb: the seed is", pseed, "\n")
+    s3.g <- oncoSimulPop(pops,
+                         f3,
+                         mu = mu,
+                         mutationPropGrowth = TRUE,
+                         detectionDrivers = 9999,
+                          detectionSize = 5e5,
+                          sampleEvery = 0.01,
+                          keepEvery = 1,
+                         finalTime =ft,
+                         initSize = no,
+                         onlyCancer = FALSE,
+                         seed = NULL, mc.cores = 2)
+    ## summary(s3.g)[, c(1, 2, 3, 8, 9)]
+    ## summary(s3.ng)[, c(1, 2, 3, 8, 9)]
+    expect_true( mean(mutsPerClone(s3.g)) >
+                 mean(mutsPerClone(s3.ng)))
+    expect_true( median(summary(s3.g)$NumClones) >
+                 median(summary(s3.ng)$NumClones))
+    summary(summary(s3.g)[, 2])
+    summary(summary(s3.ng)[, 2])
+    
+gc() 
+})
+cat("\n", date(), "\n")
+
+cat("\n", date(), "\n")
+test_that("detectionSize. Without initmutant, 2", {
+    ## More of the above. Use smaller s2 and smaller mutation, but then to
+    ## see it reliably you need large ft and we also increase
+    ## init. pop. size.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s2FPS: the seed is", pseed, "\n")
+    s2 <- 1.0
+    ft <- 50  ## 15
+    pops <- 100
+    lni <- 1 ## no fitness effects genes
+    fni <- 50 ## fitness effects genes
+    no <- 1e4
+    mu <- 5e-6 ## easier to see
+    ## noInt have no fitness effects, but can accumulate mutations
+    ni <- rep(0, lni)
+    ## Those with fitness effects in one module, so
+    ## neither fitness nor mut. rate blow up
+    gn <- paste(paste0("a", 1:fni), collapse = ", ")
+    f2 <- allFitnessEffects(epistasis = c("A" = s2),
+                            geneToModule = c("A" = gn),
+                            noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s2FPSa: the seed is", pseed, "\n")
+    s2.ng <- oncoSimulPop(pops,
+                          f2,
+                          mu = mu,
+                          detectionDrivers = 9999,
+                          detectionSize = 1e7,
+                          sampleEvery = 0.01,
+                          mutationPropGrowth = FALSE,
+                          finalTime =ft,
+                          initSize = no, keepEvery = 1,
+                          onlyCancer = FALSE,
+                          seed = NULL, mc.cores = 2)
+    gc(); pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n s2FPSb: the seed is", pseed, "\n")
+    s2.g <- oncoSimulPop(pops,
+                         f2,
+                         mu = mu,
+                         detectionDrivers = 9999,
+                          detectionSize = 1e7,
+                          sampleEvery = 0.01,
+                         mutationPropGrowth = TRUE,
+                         finalTime =ft,
+                         initSize = no, keepEvery = 1,
+                         onlyCancer = FALSE,
+                         seed = NULL, mc.cores = 2)
+    ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
+    ## summary(s2.ng)[, c(1, 2, 3, 8, 9)]
+    expect_true( mean(mutsPerClone(s2.g)) >
+                 mean(mutsPerClone(s2.ng)))
+    expect_true( median(summary(s2.g)$NumClones) >
+                 median(summary(s2.ng)$NumClones))
+    summary(summary(s2.g)[, 2])
+    summary(summary(s2.ng)[, 2])
+    
+gc() 
+})
+cat("\n", date(), "\n")
+
+cat("\n", date(), "\n")
+test_that("detectionSize. McFL: Without initmutant", {
+    ## with McFL limiting popSize in the simuls is not that relevant, as
+    ## already limited.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n FPSmcfls2: the seed is", pseed, "\n")
+    s2 <- 2.0
+    ft <- 250
+    pops <- 200 ## 200
+    lni <- 1 ## no fitness effects genes
+    fni <- 50 ## fitness effects genes
+    no <- 1e3
+    mu <- 1e-5 ## easier to see
+    ## noInt have no fitness effects, but can accumulate mutations
+    ni <- rep(0, lni)
+    ## Those with fitness effects in one module, so
+    ## neither fitness nor mut. rate blow up
+    gn <- paste(paste0("a", 1:fni), collapse = ", ")
+    f2 <- allFitnessEffects(epistasis = c("A" = s2),
+                            geneToModule = c("A" = gn),
+                            noIntGenes = ni)
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n FPSmcfls2a: the seed is", pseed, "\n")
+    s2.ng <- oncoSimulPop(pops,
+                          f2,
+                          mu = mu,
+                          mutationPropGrowth = FALSE,
+                          finalTime =ft,
+                          detectionDrivers = 9999,
+                          detectionSize = 1e4,
+                          sampleEvery = 0.01,
+                          initSize = no, keepEvery = 5,
+                          onlyCancer = FALSE, model = "McFL",
+                          seed = NULL, mc.cores = 2)
+    gc(); pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n FPSmcfls2b: the seed is", pseed, "\n")
+    s2.g <- oncoSimulPop(pops,
+                         f2,
+                         mu = mu,
+                         mutationPropGrowth = TRUE,
+                         finalTime =ft,
+                         detectionDrivers = 9999,
+                          detectionSize = 1e4,
+                          sampleEvery = 0.01,
+                         initSize = no, keepEvery = 5, 
+                         onlyCancer = FALSE, model = "McFL",
+                         seed = NULL, mc.cores = 2)
+    ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
+    ## summary(s2.ng)[, c(1, 2, 3, 8, 9)]
+    expect_true( mean(mutsPerClone(s2.g)) >
+                 mean(mutsPerClone(s2.ng)))
+    expect_true( median(summary(s2.g)$NumClones) >
+                 median(summary(s2.ng)$NumClones))
+    summary(summary(s2.g)[, 2])
+    summary(summary(s2.ng)[, 2])
+    ## summary(mutsPerClone(s2.g))
+    ## summary(mutsPerClone(s2.ng))
+    ## summary(summary(s2.g)$NumClones)
+    ## summary(summary(s2.ng)$NumClones)
+gc() 
+})
+cat("\n", date(), "\n")
+
+
+
+
+
+
+
+
 
 
 cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
