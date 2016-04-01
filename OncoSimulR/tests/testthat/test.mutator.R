@@ -285,17 +285,13 @@ test_that("fails if genes in mutator not in fitness", {
                  fixed = TRUE)
 })
 
-
-
-## FIXME: starting here, add also mutsPerClone
-
 test_that("Relative ordering of number of clones with mutator effects", {
     
     ## Can occasionally blow up with pE.f: pE not finite.
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n x1: the seed is", pseed, "\n")
-    pops <- 5
+    pops <- 20
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
                                            "c" = 0.16,
@@ -332,7 +328,8 @@ test_that("Relative ordering of number of clones with mutator effects", {
                         onlyCancer = FALSE)
     expect_true(median(summary(nc1)$NumClones) > median(summary(nc2)$NumClones))
     expect_true(median(summary(nc2)$NumClones) > median(summary(nc3)$NumClones))
-
+    expect_true(mean(mutsPerClone(nc1)) > mean(mutsPerClone(nc2)))
+    expect_true(mean(mutsPerClone(nc2)) > mean(mutsPerClone(nc3)))
     summary(nc1)[, c(1:3, 8:9)]
     summary(nc2)[, c(1:3, 8:9)]
     summary(nc3)[, c(1:3, 8:9)]
@@ -393,7 +390,9 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                 median(summary(ncc)$NumClones) )
     expect_true( median(summary(ncc)$NumClones) <
                  median(summary(ncd)$NumClones) )
-    
+    expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
+    expect_true(mean(mutsPerClone(ncb)) > mean(mutsPerClone(ncc)))
+    expect_true(mean(mutsPerClone(ncc)) > mean(mutsPerClone(ncd)))
     summary(nca)[, c(1:3, 8:9)]
     summary(ncb)[, c(1:3, 8:9)]
     summary(ncc)[, c(1:3, 8:9)]
@@ -405,6 +404,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 
 test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Can occasionally blow up with pE.f: pE not finite.
+
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n x2cd: the seed is", pseed, "\n")
@@ -456,6 +456,10 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                 median(summary(ncc)$NumClones) )
     expect_true( median(summary(ncc)$NumClones) <
                  median(summary(ncd)$NumClones) )
+    expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
+    expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
+    expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
+
 })
 
 test_that("MCFL Relative ordering of number of clones with mutator effects", {
@@ -504,6 +508,8 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
     summary(nc1)[, c(1:3, 8:9)]
     summary(nc2)[, c(1:3, 8:9)]
     summary(nc3)[, c(1:3, 8:9)]
+    expect_true(mean(mutsPerClone(nc1)) > mean(mutsPerClone(nc2)))
+    expect_true(mean(mutsPerClone(nc2)) > mean(mutsPerClone(nc3)))
     
 })
 date()
@@ -565,6 +571,9 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     summary(ncb)[, c(1:3, 8:9)]
     summary(ncc)[, c(1:3, 8:9)]
     summary(ncd)[, c(1:3, 8:9)]
+    expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
+    expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
+    expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
        
 })
 
@@ -576,7 +585,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcx2cd: the seed is", pseed, "\n")
-    pops <- 10
+    pops <- 20
     ni <- rep(0, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
     fe <- allFitnessEffects(noIntGenes = ni)
@@ -624,12 +633,16 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
                 median(summary(ncc)$NumClones) )
     expect_true( median(summary(ncc)$NumClones) <
                  median(summary(ncd)$NumClones) )
+    expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
+    expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
+    expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
     
 })
 
 
 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
+
     ## Can occasionally blow up with pE.f: pE not finite.
     pseed <- sample(99999999, 1)
     set.seed(pseed)
@@ -685,6 +698,11 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
                  median(summary(npg)$NumClones) )
     expect_true( median(summary(pg)$NumClones) >
                  median(summary(npg)$NumClones) )
+    expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(mnpg)))
+    expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(pg)))
+    expect_true(mean(mutsPerClone(mnpg)) > mean(mutsPerClone(npg)))
+    expect_true(mean(mutsPerClone(pg)) > mean(mutsPerClone(npg)))
+    
 })
 
 
@@ -744,12 +762,13 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                  median(summary(npg)$NumClones) )
     expect_true( median(summary(pg)$NumClones) >
                  median(summary(npg)$NumClones) )
+    expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(mnpg)))
+    expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(pg)))
+    expect_true(mean(mutsPerClone(mnpg)) > mean(mutsPerClone(npg)))
+    expect_true(mean(mutsPerClone(pg)) > mean(mutsPerClone(npg)))
 })
 
-## FIXME: ending the add mutsPerClone
 
-
-## FIXME: new stuff, fixed
 ##### Comparisons against expected freqs, using a chi-square
 
 ## If any mu is very large or any lni is very large, it can fail unless
@@ -912,11 +931,6 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 })
 date()
 
-
-
-
-
-
 date()
 test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
     
@@ -969,8 +983,6 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
     summary(m1.pg1.b)[, c(1:3, 8:9)]
     
-
-
 })
 date()
 
@@ -1022,10 +1034,8 @@ test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
 })
 date()
 
-
-
-
 test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
+
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
     ## We test:
@@ -1074,10 +1084,13 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
     expect_true(medianNClones(pop10) < medianNClones(pop100))
+    expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
+    
 })
 
 
 test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
+    
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
     pseed <- sample(9999999, 1)
@@ -1122,6 +1135,8 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
     expect_true(medianNClones(pop10) < medianNClones(pop100))
+    expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
+
 })
 
 
@@ -1130,6 +1145,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
 
 date()
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t", {
+
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
     ## We test:
@@ -1180,6 +1196,8 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
     expect_true(medianNClones(pop10) < medianNClones(pop100))
+    expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
+
 })
 date()
 
@@ -1232,6 +1250,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
     expect_true(medianNClones(pop10) < medianNClones(pop100))
+        expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
 })
 date()
 
@@ -1298,6 +1317,8 @@ test_that(" Init with different mutators", {
                            onlyCancer = FALSE, mc.cores = 2)
     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
     expect_true(medianNClones(m1.pg1.b) > medianNClones(m1.pg1.c))
+    expect_true(mean(mutsPerClone(m1.pg1.a)) > mean(mutsPerClone(m1.pg1.b)))
+    expect_true(mean(mutsPerClone(m1.pg1.b)) > mean(mutsPerClone(m1.pg1.c)))
     expect_true(smAnomPi(m1.pg1.a, "hereisoneagene") >
                 smAnomPi(m1.pg1.b, "oreoisasabgene"))
     expect_true(smAnomPi(m1.pg1.b, "oreoisasabgene") >
@@ -1373,6 +1394,8 @@ test_that(" MCFL Init with different mutators", {
                            onlyCancer = FALSE, mc.cores = 2)
     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
     expect_true(medianNClones(m1.pg1.b) > medianNClones(m1.pg1.c))
+    expect_true(mean(mutsPerClone(m1.pg1.a)) > mean(mutsPerClone(m1.pg1.b)))
+    expect_true(mean(mutsPerClone(m1.pg1.b)) > mean(mutsPerClone(m1.pg1.c)))
     expect_true(smAnomPi(m1.pg1.a, "hereisoneagene") >
                 smAnomPi(m1.pg1.b, "oreoisasabgene"))
     expect_true(smAnomPi(m1.pg1.b, "oreoisasabgene") >
