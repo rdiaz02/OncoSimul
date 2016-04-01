@@ -544,6 +544,8 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
 ## specified passing a vector of same size as genome. It would be faster
 ## to use just the name of mutator gene.
 
+
+## Do next also with equal freqs.
 date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     
@@ -552,10 +554,12 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u6: the seed is", pseed, "\n")
-    pops <- 40
-    ft <- .0001
-    lni <- 80 
-    no <- 5e7
+    pops <- 1000
+    ft <- 1e-5 ## small, as we cannot afford to accumulate many mutations
+               ## or else, given that we have a wholePopulation sample, we
+               ## get the wrong result. Not the case with single cell sampling.
+    lni <- 70  ##80 
+    no <- 5e5
     ni <- c(0, 0, 0, rep(0, lni))
     ## scramble around names
     names(ni) <- c("hereisoneagene",
@@ -568,16 +572,16 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     ## of course, passing a mutator of 1 makes everything slow.
     mutator1 <- rep(1, lni + 3)
     ## pg1 <- rep(1e-5, lni + 3)
-    pg1 <- runif(lni + 3, min = 1e-7, max = 1e-4) ## max should not be
+    pg1 <- runif(lni + 3, min = 5e-4, max = 5e-4) ## max should not be
                                                   ## huge here as mutator
                                                   ## is 34. Can get beyond
                                                   ## 1
     names(mutator1) <- sample(names(ni))
     names(pg1) <- sample(names(ni))
-    mutator1["oreoisasabgene"] <- 34    ## 53
+    mutator1["oreoisasabgene"] <- 10 ## 34    ## 53
     m1 <- allMutatorEffects(noIntGenes = mutator1)
     ## have something with much larger mutation rate
-    pg1["hereisoneagene"] <- 1e-3 ## 1e-3
+    pg1["hereisoneagene"] <- 1e-3 ## have something huge
     m1.pg1.b <- oncoSimulSample(pops,
                            fe,
                            mu = pg1,
@@ -587,19 +591,113 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            initSize = no,
                            initMutant ="oreoisasabgene",
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            onlyCancer = FALSE, seed = NULL)
+    ## If numclones is much larger than 2, that signals trouble as you are
+    ## smoothing differences between frequencies with oncoSimulSample,
+    ## whole pop
+    summary(m1.pg1.b$popSummary[, "NumClones"])
     ## stopping here
-    ## next ain't true as the sum gives number of populations
-    ## Do some tests of oncoSimulSample where thresholdWhole is popSize
-    ## do them here and maybe in other places? Like initMutant
-    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == totalindSampl(m1.pg1.b))
-    enom("oreoisasabgene", pg1, no, pops)
-    snom("oreoisasabgene", m1.pg1.b)
+    ## FIXME
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3)) 
+    pnom("oreoisasabgene", pg1, no, pops)
+    snomSampl("oreoisasabgene", m1.pg1.b)
+    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
+         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
+         ## yes, if very large prob for one, it is slightly underestimated
     p.fail <- 1e-3
-    expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+
+
+
 })
 date()
+
+
+## FIXME: playing with singleCell. Stop on 1 driver, mark all except init
+## as drivers.??? Nope, as driver present, but not abundant. So stop on
+## two. Too convoluted. If I want to test sampling, test sampling. Period.
+
+date()
+test_that("Expect freq genotypes, mutator and var mut rates", {
+    
+    ## We test that mutator does not affect expected frequencies of
+    ## mutated genes: they are given by the mutation rate of each gene.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n u6: the seed is", pseed, "\n")
+    pops <- 100
+    ft <- 1e-3 ## small, as we cannot afford to accumulate many mutations
+               ## or else, given that we have a wholePopulation sample, we
+               ## get the wrong result. Not the case with single cell sampling.
+    lni <- 70  ##80 
+    no <- 5e4
+    ni <- c(0, 0, 0, rep(0, lni))
+    ## scramble around names
+    names(ni) <- c("hereisoneagene",
+                   "oreoisasabgene",
+                   "nnhsisthecgene",
+                   replicate(lni,
+                             paste(sample(letters, 12), collapse = "")))
+    ni <- ni[order(names(ni))]
+    fe <- allFitnessEffects(noIntGenes = ni)
+    ## of course, passing a mutator of 1 makes everything slow.
+    mutator1 <- rep(1, lni + 3)
+    ## pg1 <- rep(1e-5, lni + 3)
+    pg1 <- runif(lni + 3, min = 5e-4, max = 5e-4) ## max should not be
+                                                  ## huge here as mutator
+                                                  ## is 34. Can get beyond
+                                                  ## 1
+    names(mutator1) <- sample(names(ni))
+    names(pg1) <- sample(names(ni))
+    mutator1["oreoisasabgene"] <- 200 ## 34    ## 53
+    m1 <- allMutatorEffects(noIntGenes = mutator1)
+    ## have something with much larger mutation rate
+    pg1["hereisoneagene"] <- 1e-3 ## have something huge
+    m1.pg1.b <- oncoSimulSample(pops,
+                           fe,
+                           mu = pg1,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                           typeSample = "single",
+                           onlyCancer = FALSE, seed = NULL)
+    ## If numclones is much larger than 2, that signals trouble as you are
+    ## smoothing differences between frequencies with oncoSimulSample,
+    ## whole pop
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## stopping here
+    ## FIXME
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3)) 
+    pnom("oreoisasabgene", pg1, no, pops)
+    snomSampl("oreoisasabgene", m1.pg1.b)
+    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
+         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
+         ## yes, if very large prob for one, it is slightly underestimated
+    p.fail <- 1e-3
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
+                           p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+
+
+
+})
+date()
+
 
 
 
