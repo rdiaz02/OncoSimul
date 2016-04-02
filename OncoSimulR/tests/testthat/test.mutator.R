@@ -1409,8 +1409,9 @@ test_that(" MCFL Init with different mutators", {
 date()
 
 
-
-
+## FIXME: move to long, later, and increase reps.
+## very slow, because huge number of clones. But tests several phenomena comprehensively.
+## same with McFL below
 date()
 test_that("per-gene-mut rates and mutator", {
 
@@ -1426,15 +1427,13 @@ test_that("per-gene-mut rates and mutator", {
     fe1 <- allFitnessEffects(noIntGenes = ni)
     ft <- 50
     no <- 5e5 
-    reps <- 20
+    reps <- 40
     gn <- paste(names(ni), collapse = ", ")
-    
-    mutator1 <- allMutatorEffects(epistasis = c("MU" = 25),
+    ## MUs used to be 25 and 100. Way too slow.
+    mutator1 <- allMutatorEffects(epistasis = c("MU" = 15),
                                   geneToModule = c("MU" = gn))
-    
-    mutator2 <- allMutatorEffects(epistasis = c("MU" = 100),
+    mutator2 <- allMutatorEffects(epistasis = c("MU" = 30),
                                   geneToModule = c("MU" = gn))
-    
     m1.mutator0 <- oncoSimulPop(reps,
                            fe1,
                            mu = m1,
@@ -1500,14 +1499,12 @@ test_that("per-gene-mut rates and mutator", {
                            keepEvery = 5,
                            seed = NULL, mc.cores = 2
                        )
-
     summary(m1.mutator0)[, c(1:3, 8:9)]
     summary(m1.mutator1)[, c(1:3, 8:9)]
     summary(m1.mutator2)[, c(1:3, 8:9)]
     summary(m2.mutator0)[, c(1:3, 8:9)]
     summary(m2.mutator1)[, c(1:3, 8:9)]
     summary(m2.mutator2)[, c(1:3, 8:9)]
-    
     ## Mutator increases if larger mutator and compared to no mutator
     ## within levels of per-gene mutation rates
     expect_true( median(summary(m1.mutator2)$NumClones) >
@@ -1526,10 +1523,8 @@ test_that("per-gene-mut rates and mutator", {
                  mean(mutsPerClone(m2.mutator1)))
     expect_true( mean(mutsPerClone(m2.mutator1)) >
                  mean(mutsPerClone(m2.mutator0)))
-
     ## Increases in mutation rates increase clones, etc, within levels of
     ## mutator.
-    
     expect_true( median(summary(m1.mutator0)$NumClones) <
                  median(summary(m2.mutator0)$NumClones))
     expect_true( median(summary(m1.mutator1)$NumClones) <
@@ -1564,16 +1559,12 @@ test_that("McFL: per-gene-mut rates and mutator", {
     fe1 <- allFitnessEffects(noIntGenes = ni)
     ft <- 50
     no <- 5e5 
-    reps <- 20
+    reps <- 40
     gn <- paste(names(ni), collapse = ", ")
-    
-    mutator1 <- allMutatorEffects(epistasis = c("MU" = 25),
+    mutator1 <- allMutatorEffects(epistasis = c("MU" = 15),
                                   geneToModule = c("MU" = gn))
-    
-    mutator2 <- allMutatorEffects(epistasis = c("MU" = 100),
+    mutator2 <- allMutatorEffects(epistasis = c("MU" = 30),
                                   geneToModule = c("MU" = gn))
-    
-
     m1.mutator0 <- oncoSimulPop(reps,
                            fe1,
                            mu = m1,
@@ -1606,6 +1597,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                            keepEvery = 5,
                            seed = NULL, mc.cores = 2, model = "McFL"
                            )
+    cat("\n starting m2\n")
     m2.mutator0 <- oncoSimulPop(reps,
                            fe1,
                            mu = m2,
@@ -1638,14 +1630,12 @@ test_that("McFL: per-gene-mut rates and mutator", {
                            keepEvery = 5,
                            seed = NULL, mc.cores = 2, model = "McFL"
                        )
-
     summary(m1.mutator0)[, c(1:3, 8:9)]
     summary(m1.mutator1)[, c(1:3, 8:9)]
     summary(m1.mutator2)[, c(1:3, 8:9)]
     summary(m2.mutator0)[, c(1:3, 8:9)]
     summary(m2.mutator1)[, c(1:3, 8:9)]
     summary(m2.mutator2)[, c(1:3, 8:9)]
-    
     ## Mutator increases if larger mutator and compared to no mutator
     ## within levels of per-gene mutation rates
     expect_true( median(summary(m1.mutator2)$NumClones) >
@@ -1664,10 +1654,8 @@ test_that("McFL: per-gene-mut rates and mutator", {
                  mean(mutsPerClone(m2.mutator1)))
     expect_true( mean(mutsPerClone(m2.mutator1)) >
                  mean(mutsPerClone(m2.mutator0)))
-
     ## Increases in mutation rates increase clones, etc, within levels of
     ## mutator.
-    
     expect_true( median(summary(m1.mutator0)$NumClones) <
                  median(summary(m2.mutator0)$NumClones))
     expect_true( median(summary(m1.mutator1)$NumClones) <
@@ -1686,7 +1674,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
 
 
 
-
+## FIXME move later to long
 ## Slow (~ 3 seconds) but tests modules of mutator nicely.
 date() ## Beware: this uses a lot of RAM without the gc()
 test_that("Mutator modules differences", {
@@ -1921,7 +1909,9 @@ date()
 
 date() 
 test_that("Mutator, several modules differences, McFL", {
+    
     pseed <- sample(99999999, 1)
+    pseed <- 91339980
     set.seed(pseed)
     cat("\n mmd1: the seed is", pseed, "\n")
     reps <- 10
@@ -1955,6 +1945,9 @@ test_that("Mutator, several modules differences, McFL", {
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
+                       sampleEvery = 0.01, 
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                        seed = NULL, mc.cores = 2, model = "McFL"
                        )
     gc()
@@ -1965,6 +1958,9 @@ test_that("Mutator, several modules differences, McFL", {
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
+                       sampleEvery = 0.01, 
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                        seed = NULL, mc.cores = 2, model = "McFL"
                        )
     gc()
@@ -1978,6 +1974,7 @@ test_that("Mutator, several modules differences, McFL", {
                  median(summary(b1)$NumClones))
     expect_true( mean(mutsPerClone(b2)) >
                  mean(mutsPerClone(b1)))
+
 })
 date()
 

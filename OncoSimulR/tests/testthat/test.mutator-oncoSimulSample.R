@@ -1,24 +1,11 @@
 ## Repeat tests in test.mutator, using oncoSimulSample.
 ## This is a concession to extreme paranoia.
 
-## converted from test.mutator using
-
-## sed -i 's/median(summary(\([A-Za-z0-9]*\))$NumClones)/median(\1$popSummary\[, "NumClones"\])/g' test.mutator-oncoSimulSample.R
-## sed -i  's/mutsPerClone(\([A-Za-z0-9]*\))/rowSums(\1$popSample)/g' test.mutator-oncoSimulSample.R
-## sed -i 's/oncoSimulPop(/oncoSimulSample(/' test.mutator-oncoSimulSample.R
-## sed -i 's/, mc.cores = 2//' test.mutator-oncoSimulSample.R
-## sed -i 's/mc.cores = 2,//' test.mutator-oncoSimulSample.R
-## sed -i 's/mc.cores = 2)/)/' test.mutator-oncoSimulSample.R
-
-## sed -i 's/keepEvery = [0-9],//' test.mutator-oncoSimulSample.R
-## sed -i 's/, keepEvery = [0-9]//' test.mutator-oncoSimulSample.R
-## sed -i 's/keepEvery = [0-9])/)/' test.mutator-oncoSimulSample.R
-## sed -i 's/summary(\([A-Za-z0-9]*\))/\1$popSummary\[, c(1:3, 8:9)\]/g' test.mutator-oncoSimulSample.R
-## the last is not quite ok. Leaves to sets of the [, c(1:3, 8:9)][, c(1:3, 8:9)]. Replace in emacs.
 
 cat(paste("\n Starting test.mutator-oncoSimulSample.R test at", date()))
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
+## require(car) ## for linearHypothesis, below. In the namespace
 
 enom <- function(name, mu, ni = no, pp = pops) {
     ## expected without a given name for init
@@ -51,6 +38,605 @@ totalindSampl <- function(out) {
     ## total num indivs
   sum(out$popSummary$TotalPopSize)  
 }
+
+medianNClonesOSS <- function(x) {
+    median(x$popSummary[, "NumClones"])
+}
+
+
+
+## ugly hack. Of course, not really mutations per clone. But the closest iwth oncoSimulSample and sampling whole pop.
+mutsPerCloneOSS <- function(out) {
+    rowSums(out$popSample)
+}
+
+## These next two tests are probably the strongest (provided we accept
+## using the initMutant) as we compare observed with expected and the
+## estimated effect of mutator
+
+date()
+test_that("Mutator increases by given factor with per-gene-mut rates: major axis and chi-sq test", {
+
+    ## Two cases: mutator and no mutator, with variable mutation rates.
+    ## rates such that rates of no mutator = rates of mutator * mutator.
+
+    ## Why not compare mutlitplication factor keeping mutation rates
+    ## constant? Because specially with mutator and large diffs in mut
+    ## rates, with oncoSimulSample you undersample variation with
+    ## wholePop, etc.
+
+    ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
+    
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n AEu8: the seed is", pseed, "\n")
+    pops <- 2000
+    ft <- 5e-3
+    lni <- 7
+    no <- 5e5
+    ni <- c(0, 0, 0, rep(0, lni))
+    ## scramble around names
+    names(ni) <- c("hereisoneagene",
+                   "oreoisasabgene",
+                   "nnhsisthecgene",
+                   replicate(lni,
+                             paste(sample(letters, 12), collapse = "")))
+    ni <- ni[order(names(ni))]
+    fe <- allFitnessEffects(noIntGenes = ni)
+    mutator1 <- rep(1, lni + 3)
+    pg1 <- seq(from = 1e-9, to = 1e-6, length.out = lni + 3) ## max should not be
+                                                  ## huge here as mutator
+                                                  ## is 34. Can get beyond
+                                                  ## 1
+    names(mutator1) <- sample(names(ni))
+    names(pg1) <- sample(names(ni))
+    mutator1["oreoisasabgene"] <- 100
+    m1 <- allMutatorEffects(noIntGenes = mutator1)
+    ## pg1["hereisoneagene"] <- 1e-4 ## if this gets huge, then you are
+    ##                               ## undersampling and the chi-square will
+    ##                               ## fail. But then, we probably are
+    ##                               ## running into numerical issues: 3
+    ##                               ## orders of magnitude differences.
+    m1.pg1.b <- oncoSimulSample(pops,
+                           fe,
+                           mu = pg1,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                           onlyCancer = FALSE, seed = NULL)
+    ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3))
+    ## next two, to compare with oss1a
+    sort(enom("oreoisasabgene", pg1, no, pops))
+    sort(snomSampl("oreoisasabgene", m1.pg1.b))
+    ## Compare with the expected for this scenario
+    p.fail <- 1e-3
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
+                           p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+
+    
+    pg2 <- seq(from = 1e-7, to = 1e-4, length.out = lni + 3)
+    names(pg2) <- names(pg1)
+    m1.pg2.b <- oncoSimulSample(pops,
+                           fe,
+                           mu = pg2,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                           onlyCancer = FALSE, seed = NULL)
+    ## m1.pg2.b$popSummary[, c(1:3, 8:9)]
+    summary(m1.pg2.b$popSummary[, "NumClones"])
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg2.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg2.b$popSample) == pops * (lni + 3))
+    ## next two, to compare with oss1a
+    sort(enom("oreoisasabgene", pg2, no, pops))
+    sort(snomSampl("oreoisasabgene", m1.pg2.b))
+    p.fail <- 1e-3
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg2.b),
+                           p = pnom("oreoisasabgene", pg2, no, pops))$p.value > p.fail)
+
+
+    ## Compare the mutator with the no mutator
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
+                           snomSampl("oreoisasabgene", m1.pg2.b))$p.value > p.fail)
+    y <- sqrt(snomSampl("oreoisasabgene", m1.pg1.b))
+    x <- sqrt(snomSampl("oreoisasabgene", m1.pg2.b))
+    mma <- smatr::ma(y ~ x, slope.test = 1, elev.test = 0) ## From smatr package, for major axis
+    ## intercept not different from 0
+    expect_true(mma$elevtest[[1]]$p > p.fail)
+    expect_true(mma$slopetest[[1]]$p > p.fail)
+    
+    ## We could use a lm and do a simultaneous test on both slope and
+    ## intercept as. But this is really asking for major axis regression
+
+    ## lm1 <- lm(snomSampl("oreoisasabgene", m1.pg1.b) ~
+    ##               snomSampl("oreoisasabgene", m1.pg2.b))
+    ## ## test intercept is 0, slope is 1. Not technically fully correct, as
+    ## ## X variable has noise. We should do major axis or similar and these
+    ## ## are counts.
+    ## expect_true(linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
+    ##             p.fail)
+
+})
+date()
+
+
+
+
+
+date()
+test_that("McFL: Mutator increases by given factor with per-gene-mut rates: major axis and chi-sq test", {
+
+    ## Two cases: mutator and no mutator, with variable mutation rates.
+    ## rates such that rates of no mutator = rates of mutator * mutator.
+
+    ## Why not compare mutlitplication factor keeping mutation rates
+    ## constant? Because specially with mutator and large diffs in mut
+    ## rates, with oncoSimulSample you undersample variation with
+    ## wholePop, etc.
+
+    ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
+    
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n MCFL: AEu8: the seed is", pseed, "\n")
+    pops <- 2000
+    ft <- 5e-3
+    lni <- 7
+    no <- 5e5
+    ni <- c(0, 0, 0, rep(0, lni))
+    ## scramble around names
+    names(ni) <- c("hereisoneagene",
+                   "oreoisasabgene",
+                   "nnhsisthecgene",
+                   replicate(lni,
+                             paste(sample(letters, 12), collapse = "")))
+    ni <- ni[order(names(ni))]
+    fe <- allFitnessEffects(noIntGenes = ni)
+    mutator1 <- rep(1, lni + 3)
+    pg1 <- seq(from = 1e-9, to = 1e-6, length.out = lni + 3) ## max should not be
+                                                  ## huge here as mutator
+                                                  ## is 34. Can get beyond
+                                                  ## 1
+    names(mutator1) <- sample(names(ni))
+    names(pg1) <- sample(names(ni))
+    mutator1["oreoisasabgene"] <- 100
+    m1 <- allMutatorEffects(noIntGenes = mutator1)
+    ## pg1["hereisoneagene"] <- 1e-4 ## if this gets huge, then you are
+    ##                               ## undersampling and the chi-square will
+    ##                               ## fail. But then, we probably are
+    ##                               ## running into numerical issues: 3
+    ##                               ## orders of magnitude differences.
+    m1.pg1.b <- oncoSimulSample(pops,
+                           fe,
+                           mu = pg1,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant ="oreoisasabgene",
+                           model = "McFL",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                           onlyCancer = FALSE, seed = NULL)
+    ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3))
+    ## next two, to compare with oss1a
+    sort(enom("oreoisasabgene", pg1, no, pops))
+    sort(snomSampl("oreoisasabgene", m1.pg1.b))
+    ## Compare with the expected for this scenario
+    p.fail <- 1e-3
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
+                           p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+
+    pg2 <- seq(from = 1e-7, to = 1e-4, length.out = lni + 3)
+    names(pg2) <- names(pg1)
+    m1.pg2.b <- oncoSimulSample(pops,
+                           fe,
+                           mu = pg2,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant ="oreoisasabgene",
+                           model = "McFL",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                           onlyCancer = FALSE, seed = NULL)
+    ## m1.pg2.b$popSummary[, c(1:3, 8:9)]
+    summary(m1.pg2.b$popSummary[, "NumClones"])
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg2.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg2.b$popSample) == pops * (lni + 3))
+    ## next two, to compare with oss1a
+    sort(enom("oreoisasabgene", pg2, no, pops))
+    sort(snomSampl("oreoisasabgene", m1.pg2.b))
+    p.fail <- 1e-3
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg2.b),
+                           p = pnom("oreoisasabgene", pg2, no, pops))$p.value > p.fail)
+
+
+    ## Compare mutator with no mutator
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
+                           snomSampl("oreoisasabgene", m1.pg2.b))$p.value > p.fail)
+    y <- sqrt(snomSampl("oreoisasabgene", m1.pg1.b))
+    x <- sqrt(snomSampl("oreoisasabgene", m1.pg2.b))
+    mma <- smatr::ma(y ~ x, slope.test = 1, elev.test = 0) ## From smatr package, for major axis
+    ## intercept not different from 0
+    expect_true(mma$elevtest[[1]]$p > p.fail)
+    expect_true(mma$slopetest[[1]]$p > p.fail)
+    
+    ## We could use a lm and do a simultaneous test on both slope and
+    ## intercept as. But this is really asking for major axis regression
+
+    ## lm1 <- lm(snomSampl("oreoisasabgene", m1.pg1.b) ~
+    ##               snomSampl("oreoisasabgene", m1.pg2.b))
+    ## ## test intercept is 0, slope is 1. Not technically fully correct, as
+    ## ## X variable has noise. We should do major axis or similar and these
+    ## ## are counts.
+    ## expect_true(linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
+    ##             p.fail)
+
+})
+date()
+
+
+
+
+## Slow (~ 3 seconds) but tests modules of mutator nicely.
+date() ## Beware: this uses a lot of RAM without the gc()
+test_that("Mutator modules differences", {
+    
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n mmd1: the seed is", pseed, "\n")
+    reps <- 10
+    no <- 5e3
+    ft <- 100
+    mu <- 1e-5
+    lni <- 50
+    m1 <- 1
+    m2 <- 25
+    m3 <- 50
+    ni <- rep(0, lni)
+    gn <- paste0("a", 1:lni)
+    names(ni) <- gn
+    gn <- paste(gn, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m2),
+                              geneToModule = c("A" = gn))
+    mut3 <- allMutatorEffects(epistasis = c("A" = m3),
+                              geneToModule = c("A" = gn))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                       seed = NULL
+                       )
+    gc()
+    b2 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                       seed = NULL
+                       )
+    gc()
+    b3 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut3,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                       seed = NULL
+                       )
+    gc()
+    b3$popSummary[, c(1:3, 8:9)]
+    b2$popSummary[, c(1:3, 8:9)]
+    b1$popSummary[, c(1:3, 8:9)]
+    ## mean(rowSums(b3$popSample))
+    ## mean(rowSums(b2$popSample))
+    ## mean(rowSums(b1$popSample))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    p.fail <- 0.05
+    expect_true( t.test( b3$popSummary[, "NumClones"], 
+                 b2$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( b2$popSummary[, "NumClones"], 
+                 b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( rowSums(b3$popSample) ,
+                 rowSums(b2$popSample), alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( rowSums(b2$popSample) ,
+                 rowSums(b1$popSample), alternative = "greater")$p.value < p.fail)
+    
+})
+date()
+
+
+
+
+date() ## Beware: this uses a lot of RAM without the gc()
+test_that("McFL: Mutator modules differences", {
+    
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n MCFLmmd1: the seed is", pseed, "\n")
+    reps <- 10
+    no <- 5e3
+    ft <- 100
+    mu <- 1e-5
+    lni <- 50
+    m1 <- 1
+    m2 <- 25
+    m3 <- 50
+    ni <- rep(0, lni)
+    gn <- paste0("a", 1:lni)
+    names(ni) <- gn
+    gn <- paste(gn, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m2),
+                              geneToModule = c("A" = gn))
+    mut3 <- allMutatorEffects(epistasis = c("A" = m3),
+                              geneToModule = c("A" = gn))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                        model = "McFL",
+                       seed = NULL
+                       )
+    gc()
+    b2 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                        model = "McFL",
+                       seed = NULL
+                       )
+    gc()
+    b3 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut3,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                        model = "McFL",
+                       seed = NULL
+                       )
+    gc()
+    b3$popSummary[, c(1:3, 8:9)]
+    b2$popSummary[, c(1:3, 8:9)]
+    b1$popSummary[, c(1:3, 8:9)]
+    ## mean(rowSums(b3$popSample))
+    ## mean(rowSums(b2$popSample))
+    ## mean(rowSums(b1$popSample))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    p.fail <- 0.05
+    expect_true( t.test( b3$popSummary[, "NumClones"], 
+                 b2$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( b2$popSummary[, "NumClones"], 
+                 b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( rowSums(b3$popSample) ,
+                 rowSums(b2$popSample), alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( rowSums(b2$popSample) ,
+                 rowSums(b1$popSample), alternative = "greater")$p.value < p.fail)
+    
+})
+date()
+
+    
+
+date() 
+test_that("Mutator, several modules differences", {
+    pseed <- sample(99999999, 1)
+    set.seed(pseed)
+    cat("\n mmd1: the seed is", pseed, "\n")
+    reps <- 10
+    no <- 5e3
+    ft <- 50 ## you need it large enough to get enough hits
+    mu <- 1e-5
+    ln <- 50 
+    m1 <- 5 ## if this is too large, easy to get it to blow.
+    ni <- rep(0, 3 * ln)
+    gna <- paste0("a", 1:ln)
+    gnb <- paste0("b", 1:ln)
+    gnc <- paste0("c", 1:ln)
+    names(ni) <- c(gna, gnb, gnc)
+    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
+    gna <- paste(gna, collapse = ", ")
+    gnb <- paste(gnb, collapse = ", ")
+    gnc <- paste(gnc, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn1))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
+                                            "B" = m1,
+                                            "C" = m1),
+                              geneToModule = c("A" = gna,
+                                               "B" = gnb,
+                                               "C" = gnc))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                       seed = NULL
+                       )
+    gc()
+    b2 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                       seed = NULL
+                       )
+    gc()
+    ## b2$popSummary[, c(1:3, 8:9)]
+    ## b1$popSummary[, c(1:3, 8:9)]
+    ## mean(rowSums(b2$popSample))
+    ## mean(rowSums(b1$popSample))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    p.fail <- 0.05
+    expect_true( t.test( b2$popSummary[, "NumClones"], 
+                 b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( rowSums(b2$popSample) ,
+                 rowSums(b1$popSample), alternative = "greater")$p.value < p.fail)
+})
+date()
+
+
+## Remember that numClones is underestimated, possibly severly, by
+## oncoSimulSample compared to oncoSimulPop, since we only look at the
+## clones that exist at the end.
+
+date() 
+test_that("Mutator, several modules differences, McFL", {
+    
+    pseed <- sample(99999999, 1)
+    pseed <- 91339980
+    set.seed(pseed)
+    cat("\n mmd1: the seed is", pseed, "\n")
+    reps <- 60
+    no <- 5e3
+    ft <- 50 ## you need it large enough to get enough hits
+    mu <- 1e-5
+    ln <- 50 
+    m1 <- 5 ## if this is too large, easy to get it to blow.
+    ni <- rep(0, 3 * ln)
+    gna <- paste0("a", 1:ln)
+    gnb <- paste0("b", 1:ln)
+    gnc <- paste0("c", 1:ln)
+    names(ni) <- c(gna, gnb, gnc)
+    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
+    gna <- paste(gna, collapse = ", ")
+    gnb <- paste(gnb, collapse = ", ")
+    gnc <- paste(gnc, collapse = ", ")
+    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+                              geneToModule = c("A" = gn1))
+    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
+                                            "B" = m1,
+                                            "C" = m1),
+                              geneToModule = c("A" = gna,
+                                               "B" = gnb,
+                                               "C" = gnc))
+    f1 <- allFitnessEffects(noIntGenes = ni)
+    b1 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut1,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                       seed = NULL, model = "McFL"
+                       )
+    gc()
+    b2 <- oncoSimulSample(reps,
+                       f1,
+                       mu = mu,
+                       muEF = mut2,
+                       onlyCancer = FALSE,
+                       initSize = no,
+                       finalTime = ft,
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                       seed = NULL, model = "McFL"
+                       )
+    gc()
+    b2$popSummary[, c(1:3, 8:9)]
+    b1$popSummary[, c(1:3, 8:9)]
+    mean(rowSums(b2$popSample))
+    mean(rowSums(b1$popSample))
+    ## This is, of course, affected by sampling only at end: we do not see
+    ## the many intermediate events.
+    p.fail <- 0.05
+    expect_true( t.test( b2$popSummary[, "NumClones"], 
+                 b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( rowSums(b2$popSample) ,
+                 rowSums(b1$popSample), alternative = "greater")$p.value < p.fail)
+
+})
+date()
+
+
+
+
+
 
 
 test_that("Relative ordering of number of clones with mutator effects", {
@@ -572,6 +1158,77 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     ## of course, passing a mutator of 1 makes everything slow.
     mutator1 <- rep(1, lni + 3)
     ## pg1 <- rep(1e-5, lni + 3)
+    pg1 <- runif(lni + 3, min = 1e-5, max = 5e-4) ## max should not be
+                                                  ## huge here as mutator
+                                                  ## is 34. Can get beyond
+                                                  ## 1
+    names(mutator1) <- sample(names(ni))
+    names(pg1) <- sample(names(ni))
+    mutator1["oreoisasabgene"] <- 10 ## 34    ## 53
+    m1 <- allMutatorEffects(noIntGenes = mutator1)
+    ## have something with much larger mutation rate
+    pg1["hereisoneagene"] <- 1e-3 ## have something huge
+    m1.pg1.b <- oncoSimulSample(pops,
+                           fe,
+                           mu = pg1,
+                           muEF = m1,
+                           finalTime = ft,
+                           mutationPropGrowth = FALSE,
+                           initSize = no,
+                           initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
+                           onlyCancer = FALSE, seed = NULL)
+    ## If numclones is much larger than 2, that signals trouble as you are
+    ## smoothing differences between frequencies with oncoSimulSample,
+    ## whole pop
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3)) 
+    pnom("oreoisasabgene", pg1, no, pops)
+    snomSampl("oreoisasabgene", m1.pg1.b)
+    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
+         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
+         ## yes, if very large prob for one, it is slightly underestimated
+    p.fail <- 1e-3
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
+                           p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+
+})
+date()
+
+
+
+date()
+test_that("Expect freq genotypes, mutator and var mut rates", {
+    
+    ## We test that mutator does not affect expected frequencies of
+    ## mutated genes: they are given by the mutation rate of each gene.
+    pseed <- sample(9999999, 1)
+    set.seed(pseed)
+    cat("\n sameu6: the seed is", pseed, "\n")
+    pops <- 1000
+    ft <- 1e-5 ## small, as we cannot afford to accumulate many mutations
+               ## or else, given that we have a wholePopulation sample, we
+               ## get the wrong result. Not the case with single cell sampling.
+    lni <- 70  ##80 
+    no <- 5e5
+    ni <- c(0, 0, 0, rep(0, lni))
+    ## scramble around names
+    names(ni) <- c("hereisoneagene",
+                   "oreoisasabgene",
+                   "nnhsisthecgene",
+                   replicate(lni,
+                             paste(sample(letters, 12), collapse = "")))
+    ni <- ni[order(names(ni))]
+    fe <- allFitnessEffects(noIntGenes = ni)
+    ## of course, passing a mutator of 1 makes everything slow.
+    mutator1 <- rep(1, lni + 3)
+    ## pg1 <- rep(1e-5, lni + 3)
     pg1 <- runif(lni + 3, min = 5e-4, max = 5e-4) ## max should not be
                                                   ## huge here as mutator
                                                   ## is 34. Can get beyond
@@ -598,8 +1255,6 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     ## smoothing differences between frequencies with oncoSimulSample,
     ## whole pop
     summary(m1.pg1.b$popSummary[, "NumClones"])
-    ## stopping here
-    ## FIXME
     ## Recall that init-mutant tests check always present of initMutant
     ## against a thresholWhole of 1. Here it is slightly different.
     expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
@@ -614,102 +1269,20 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
 
-
-
 })
 date()
 
-
-## FIXME: playing with singleCell. Stop on 1 driver, mark all except init
-## as drivers.??? Nope, as driver present, but not abundant. So stop on
-## two. Too convoluted. If I want to test sampling, test sampling. Period.
 
 date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     
-    ## We test that mutator does not affect expected frequencies of
-    ## mutated genes: they are given by the mutation rate of each gene.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n u6: the seed is", pseed, "\n")
-    pops <- 100
-    ft <- 1e-3 ## small, as we cannot afford to accumulate many mutations
-               ## or else, given that we have a wholePopulation sample, we
-               ## get the wrong result. Not the case with single cell sampling.
-    lni <- 70  ##80 
-    no <- 5e4
-    ni <- c(0, 0, 0, rep(0, lni))
-    ## scramble around names
-    names(ni) <- c("hereisoneagene",
-                   "oreoisasabgene",
-                   "nnhsisthecgene",
-                   replicate(lni,
-                             paste(sample(letters, 12), collapse = "")))
-    ni <- ni[order(names(ni))]
-    fe <- allFitnessEffects(noIntGenes = ni)
-    ## of course, passing a mutator of 1 makes everything slow.
-    mutator1 <- rep(1, lni + 3)
-    ## pg1 <- rep(1e-5, lni + 3)
-    pg1 <- runif(lni + 3, min = 5e-4, max = 5e-4) ## max should not be
-                                                  ## huge here as mutator
-                                                  ## is 34. Can get beyond
-                                                  ## 1
-    names(mutator1) <- sample(names(ni))
-    names(pg1) <- sample(names(ni))
-    mutator1["oreoisasabgene"] <- 200 ## 34    ## 53
-    m1 <- allMutatorEffects(noIntGenes = mutator1)
-    ## have something with much larger mutation rate
-    pg1["hereisoneagene"] <- 1e-3 ## have something huge
-    m1.pg1.b <- oncoSimulSample(pops,
-                           fe,
-                           mu = pg1,
-                           muEF = m1,
-                           finalTime = ft,
-                           mutationPropGrowth = FALSE,
-                           initSize = no,
-                           initMutant ="oreoisasabgene",
-                           sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                           typeSample = "single",
-                           onlyCancer = FALSE, seed = NULL)
-    ## If numclones is much larger than 2, that signals trouble as you are
-    ## smoothing differences between frequencies with oncoSimulSample,
-    ## whole pop
-    summary(m1.pg1.b$popSummary[, "NumClones"])
-    ## stopping here
-    ## FIXME
-    ## Recall that init-mutant tests check always present of initMutant
-    ## against a thresholWhole of 1. Here it is slightly different.
-    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
-    ## catch a pattern that would make the previous trivially true
-    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3)) 
-    pnom("oreoisasabgene", pg1, no, pops)
-    snomSampl("oreoisasabgene", m1.pg1.b)
-    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
-         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
-         ## yes, if very large prob for one, it is slightly underestimated
-    p.fail <- 1e-3
-    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
-                           p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
-
-
-
-})
-date()
-
-
-
-
-date()
-test_that("Expect freq genotypes, mutator and var mut rates", {
     ## Similar to above, but mutator has a single element, not the whole
     ## vector.
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u7: the seed is", pseed, "\n")
-    pops <- 200
-    ft <- .0001
+    pops <- 2000
+    ft <- 1e-7
     lni <- 80 
     no <- 5e7
     ni <- c(0, 0, 0, rep(0, lni))
@@ -726,7 +1299,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                                                   ## is 34. Can get beyond
                                                   ## 1
     names(pg1) <- sample(names(ni))
-    mutator1 <- c("oreoisasabgene" = 50)
+    mutator1 <- c("oreoisasabgene" = 50) ## a single entry
     m1 <- allMutatorEffects(noIntGenes = mutator1)
     pg1["hereisoneagene"] <- 1e-3 ## to compare with a laarge one
     m1.pg1.b <- oncoSimulSample(pops,
@@ -737,26 +1310,47 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            onlyCancer = FALSE, seed = NULL)
-    expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
-    enom("oreoisasabgene", pg1, no, pops)
-    snom("oreoisasabgene", m1.pg1.b)
+    ## If numclones is much larger than 2, that signals trouble as you are
+    ## smoothing differences between frequencies with oncoSimulSample,
+    ## whole pop
+    m1.pg1.b$popSummary[, c(1:3, 8:9)]
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3)) 
+    pnom("oreoisasabgene", pg1, no, pops)
+    snomSampl("oreoisasabgene", m1.pg1.b)
+    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
+         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
+         ## yes, if very large prob for one, it is slightly underestimated
     p.fail <- 1e-3
-    expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+
+
 })
 date()
 
 date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
+    
     ## increase mutator, decrease max mu
+
+    ## similar to oss11 in per-gene-mutation-rates but with the mutator
+    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u8: the seed is", pseed, "\n")
-    pops <- 100
-    ft <- .0001
-    lni <- 80 
-    no <- 5e7
+    pops <- 5000
+    ft <- 5e-3
+    lni <- 7
+    no <- 5e5
     ni <- c(0, 0, 0, rep(0, lni))
     ## scramble around names
     names(ni) <- c("hereisoneagene",
@@ -767,15 +1361,19 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     ni <- ni[order(names(ni))]
     fe <- allFitnessEffects(noIntGenes = ni)
     mutator1 <- rep(1, lni + 3)
-    pg1 <- runif(lni + 3, min = 1e-9, max = 1e-5) ## max should not be
+    pg1 <- seq(from = 1e-9, to = 1e-6, length.out = lni + 3) ## max should not be
                                                   ## huge here as mutator
                                                   ## is 34. Can get beyond
                                                   ## 1
     names(mutator1) <- sample(names(ni))
     names(pg1) <- sample(names(ni))
-    mutator1["oreoisasabgene"] <- 200
+    mutator1["oreoisasabgene"] <- 100
     m1 <- allMutatorEffects(noIntGenes = mutator1)
-    pg1["hereisoneagene"] <- 1e-3 ## 1e-3
+    ## pg1["hereisoneagene"] <- 1e-4 ## if this gets huge, then you are
+    ##                               ## undersampling and the chi-square will
+    ##                               ## fail. But then, we probably are
+    ##                               ## running into numerical issues: 3
+    ##                               ## orders of magnitude differences.
     m1.pg1.b <- oncoSimulSample(pops,
                            fe,
                            mu = pg1,
@@ -784,14 +1382,32 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            onlyCancer = FALSE, seed = NULL)
-    expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
-    ## If you want to see the numbers
-    ## enom("oreoisasabgene", pg1)
-    ## snom("oreoisasabgene", m1.pg1.b)
+    m1.pg1.b$popSummary[, c(1:3, 8:9)]
+    ## If numclones is much larger than 2, that signals trouble as you are
+    ## smoothing differences between frequencies with oncoSimulSample,
+    ## whole pop
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## Recall that init-mutant tests check always present of initMutant
+    ## against a thresholWhole of 1. Here it is slightly different.
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    ## catch a pattern that would make the previous trivially true
+    expect_false(sum(m1.pg1.b$popSample) == pops * (lni + 3))
+    ## next two, to compare with oss1a
+    sort(enom("oreoisasabgene", pg1, no, pops))
+    sort(snomSampl("oreoisasabgene", m1.pg1.b))
+    ## pnom("oreoisasabgene", pg1, no, pops)
+    ## snomSampl("oreoisasabgene", m1.pg1.b)
+    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
+         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
+         ## yes, if very large prob for one, it is slightly underestimated
     p.fail <- 1e-3
-    expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+
 })
 date()
 
@@ -803,10 +1419,10 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcfu6: the seed is", pseed, "\n")
-    pops <- 40
-    ft <- .0001
+    pops <- 2000
+    ft <- 1e-7
     lni <- 80 
-    no <- 5e7
+    no <- 2e7
     ni <- c(0, 0, 0, rep(0, lni))
     ## scramble around names
     names(ni) <- c("hereisoneagene",
@@ -838,30 +1454,38 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
                            initSize = no,
                            model = "McFL",
                            initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            onlyCancer = FALSE, seed = NULL)
-    expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
     enom("oreoisasabgene", pg1, no, pops)
-    snom("oreoisasabgene", m1.pg1.b)
+    snomSampl("oreoisasabgene", m1.pg1.b)
+    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
+         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
     p.fail <- 1e-3
-    expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
-    summary(m1.pg1.b)[, c(1:3, 8:9)]
+    
     
 })
 date()
 
 
-
 date()
-test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
-    ## increase mutator
+test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
+    
+    ## We test that mutator does not affect expected frequencies of
+    ## mutated genes: they are given by the mutation rate of each gene.
     pseed <- sample(9999999, 1)
     set.seed(pseed)
-    cat("\n u8: the seed is", pseed, "\n")
-    pops <- 200
-    ft <- .0001
+    cat("\n mcfu7: the seed is", pseed, "\n")
+    pops <- 2000
+    ft <- 3e-7
     lni <- 80 
-    no <- 5e7
+    no <- 2e7
     ni <- c(0, 0, 0, rep(0, lni))
     ## scramble around names
     names(ni) <- c("hereisoneagene",
@@ -871,32 +1495,48 @@ test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
                              paste(sample(letters, 12), collapse = "")))
     ni <- ni[order(names(ni))]
     fe <- allFitnessEffects(noIntGenes = ni)
-    pg1 <- runif(lni + 3, min = 1e-7, max = 1e-4) ## max should not be
+    pg1 <- seq(from = 1e-7, to = 1e-4, length.out = lni + 3) ## max should not be
                                                   ## huge here as mutator
                                                   ## is 34. Can get beyond
                                                   ## 1
     names(pg1) <- sample(names(ni))
-    mutator1 <- c("oreoisasabgene" = 50)
+    mutator1 <- c("oreoisasabgene" = 20) ## a single entry
     m1 <- allMutatorEffects(noIntGenes = mutator1)
-    pg1["hereisoneagene"] <- 1e-3 ## to compare with a laarge one
+    m1 <- allMutatorEffects(noIntGenes = mutator1)
+    ## have something with much larger mutation rate
+    pg1["hereisoneagene"] <- 1e-3 ## 1e-3
     m1.pg1.b <- oncoSimulSample(pops,
                            fe,
                            mu = pg1,
                            muEF = m1,
-                           model = "McFL",
                            finalTime = ft,
                            mutationPropGrowth = FALSE,
                            initSize = no,
+                           model = "McFL",
                            initMutant ="oreoisasabgene",
+                           sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            onlyCancer = FALSE, seed = NULL)
-    expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
-    ## enom("oreoisasabgene", pg1)
-    ## snom("oreoisasabgene", m1.pg1.b)
+    summary(m1.pg1.b$popSummary[, "NumClones"])
+    ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
+    expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
+    enom("oreoisasabgene", pg1, no, pops)
+    snomSampl("oreoisasabgene", m1.pg1.b)
+    plot(snomSampl("oreoisasabgene", m1.pg1.b)/sum(snomSampl("oreoisasabgene", m1.pg1.b)) ~ 
+         pnom("oreoisasabgene", pg1, no, pops)); abline(a = 0, b = 1)
     p.fail <- 1e-3
-    expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
+    expect_true(chisq.test(snomSampl("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
+    
+    
 })
 date()
+
+
+
+
+
 
 test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
 
@@ -909,7 +1549,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm0: the seed is", pseed, "\n")
-    pops <- 6
+    pops <- 20
     ft <- .0001
     lni <- 100
     no <- 1e7
@@ -934,6 +1574,9 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
     pop100 <- oncoSimulSample(pops,
                         fe,
@@ -943,12 +1586,16 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
-    ## number of total mutations
-    expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
-    ## number of clones
-    expect_true(medianNClones(pop10) < medianNClones(pop100))
-    expect_true(mean(rowSums(pop10$popSample)) < mean(rowSums(pop100$popSample)))
+    ## number of total mutations do not make sense with oncoSimulSample,
+    ## since we cannot estimate them. we approximate wit sum of
+    ## mutations. but that is too thick grain.  number of clones is much cleaner
+    expect_true(medianNClonesOSS(pop10) < medianNClonesOSS(pop100))
+    expect_true(mean(rowSums(pop10$popSample)) <
+                mean(rowSums(pop100$popSample)))
     
 })
 
@@ -960,7 +1607,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm1: the seed is", pseed, "\n")
-    pops <- 6
+    pops <- 20
     ft <- 1
     lni <- 100
     no <- 1e5
@@ -985,6 +1632,9 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
     pop100 <- oncoSimulSample(pops,
                         fe,
@@ -994,13 +1644,16 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
-    ## number of total mutations
-    expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
-    ## number of clones
-    expect_true(medianNClones(pop10) < medianNClones(pop100))
-    expect_true(mean(rowSums(pop10$popSample)) < mean(rowSums(pop100$popSample)))
+        ## number of clones
+    expect_true(medianNClonesOSS(pop10) < medianNClonesOSS(pop100))
+    expect_true(mean(rowSums(pop10$popSample)) <
+                mean(rowSums(pop100$popSample)))
 
+    
 })
 
 
@@ -1019,7 +1672,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm2: the seed is", pseed, "\n")
-    pops <- 6
+    pops <- 20
     ft <- .0001
     lni <- 100
     no <- 1e7
@@ -1045,6 +1698,9 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
     pop100 <- oncoSimulSample(pops,
                         fe,
@@ -1055,12 +1711,14 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
-    ## number of total mutations
-    expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
-    ## number of clones
-    expect_true(medianNClones(pop10) < medianNClones(pop100))
-    expect_true(mean(rowSums(pop10$popSample)) < mean(rowSums(pop100$popSample)))
+    expect_true(medianNClonesOSS(pop10) < medianNClonesOSS(pop100))
+    expect_true(mean(rowSums(pop10$popSample)) <
+                mean(rowSums(pop100$popSample)))
+
 
 })
 date()
@@ -1068,12 +1726,13 @@ date()
 
 date()
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger t", {
+    
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm3: the seed is", pseed, "\n")
-    pops <- 6
+    pops <- 20
     ft <- 1
     lni <- 100
     no <- 1e5
@@ -1099,6 +1758,9 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
     pop100 <- oncoSimulSample(pops,
                         fe,
@@ -1109,12 +1771,15 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
+                        sampleEvery = 0.01, thresholdWhole = 1e-20,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                         onlyCancer = FALSE)
-    ## number of total mutations
-    expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
-    ## number of clones
-    expect_true(medianNClones(pop10) < medianNClones(pop100))
-        expect_true(mean(rowSums(pop10$popSample)) < mean(rowSums(pop100$popSample)))
+    expect_true(medianNClonesOSS(pop10) < medianNClonesOSS(pop100))
+    expect_true(mean(rowSums(pop10$popSample)) <
+                mean(rowSums(pop100$popSample)))
+
+    
 })
 date()
 
@@ -1124,6 +1789,7 @@ date()
 
 date()
 test_that(" Init with different mutators", {
+    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n z2: the seed is", pseed, "\n")
@@ -1157,6 +1823,8 @@ test_that(" Init with different mutators", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "hereisoneagene",
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,  seed = NULL,
                            onlyCancer = FALSE)
     m1.pg1.b <- oncoSimulSample(pops,
@@ -1167,6 +1835,8 @@ test_that(" Init with different mutators", {
                              mutationPropGrowth = FALSE,
                              initSize = no,
                              initMutant = "oreoisasabgene",
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                              sampleEvery = 0.01, thresholdWhole = 1e-20,  seed = NULL,
                              onlyCancer = FALSE)
     m1.pg1.c <- oncoSimulSample(pops,
@@ -1177,19 +1847,18 @@ test_that(" Init with different mutators", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant = "nnhsisthecgene",
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,  seed = NULL,
                            onlyCancer = FALSE)
-    expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
-    expect_true(medianNClones(m1.pg1.b) > medianNClones(m1.pg1.c))
-    expect_true(mean(mutsPerClone(m1.pg1.a)) > mean(mutsPerClone(m1.pg1.b)))
-    expect_true(mean(mutsPerClone(m1.pg1.b)) > mean(mutsPerClone(m1.pg1.c)))
-    expect_true(smAnomPi(m1.pg1.a, "hereisoneagene") >
-                smAnomPi(m1.pg1.b, "oreoisasabgene"))
-    expect_true(smAnomPi(m1.pg1.b, "oreoisasabgene") >
-                smAnomPi(m1.pg1.c, "nnhsisthecgene"))
-    summary(m1.pg1.a)[, c(1:3, 8:9)]
-    summary(m1.pg1.b)[, c(1:3, 8:9)]
-    summary(m1.pg1.c)[, c(1:3, 8:9)]
+    expect_true(medianNClonesOSS(m1.pg1.a) > medianNClonesOSS(m1.pg1.b))
+    expect_true(medianNClonesOSS(m1.pg1.b) > medianNClonesOSS(m1.pg1.c))
+    expect_true(mean(rowSums(m1.pg1.a$popSample)) >
+                mean(rowSums(m1.pg1.b$popSample)))
+    expect_true(mean(rowSums(m1.pg1.b$popSample)) >
+                mean(rowSums(m1.pg1.c$popSample)))
+
+
 })
 date()
 
@@ -1200,7 +1869,7 @@ test_that(" MCFL Init with different mutators", {
     
     pseed <- sample(9999999, 1)
     set.seed(pseed)
-    cat("\n z2: the seed is", pseed, "\n")
+    cat("\n mcz2: the seed is", pseed, "\n")
     pops <- 40
     ft <- .005
     lni <- 50
@@ -1232,6 +1901,8 @@ test_that(" MCFL Init with different mutators", {
                            initSize = no,
                            model = "McFL",
                            initMutant = "hereisoneagene",
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,  seed = NULL,
                            onlyCancer = FALSE)
     m1.pg1.b <- oncoSimulSample(pops,
@@ -1243,6 +1914,8 @@ test_that(" MCFL Init with different mutators", {
                              initSize = no,
                              model = "McFL",                             
                              initMutant = "oreoisasabgene",
+                                                        detectionSize = 1e9,
+                           detectionDrivers = 9999,
                              sampleEvery = 0.01, thresholdWhole = 1e-20,  seed = NULL,
                              onlyCancer = FALSE)
     m1.pg1.c <- oncoSimulSample(pops,
@@ -1254,27 +1927,26 @@ test_that(" MCFL Init with different mutators", {
                            initSize = no,
                            model = "McFL",                           
                            initMutant = "nnhsisthecgene",
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,  seed = NULL,
                            onlyCancer = FALSE)
-    expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
-    expect_true(medianNClones(m1.pg1.b) > medianNClones(m1.pg1.c))
-    expect_true(mean(mutsPerClone(m1.pg1.a)) > mean(mutsPerClone(m1.pg1.b)))
-    expect_true(mean(mutsPerClone(m1.pg1.b)) > mean(mutsPerClone(m1.pg1.c)))
-    expect_true(smAnomPi(m1.pg1.a, "hereisoneagene") >
-                smAnomPi(m1.pg1.b, "oreoisasabgene"))
-    expect_true(smAnomPi(m1.pg1.b, "oreoisasabgene") >
-                smAnomPi(m1.pg1.c, "nnhsisthecgene"))
-    summary(m1.pg1.a)[, c(1:3, 8:9)]
-    summary(m1.pg1.b)[, c(1:3, 8:9)]
-    summary(m1.pg1.c)[, c(1:3, 8:9)]
+    expect_true(medianNClonesOSS(m1.pg1.a) > medianNClonesOSS(m1.pg1.b))
+    expect_true(medianNClonesOSS(m1.pg1.b) > medianNClonesOSS(m1.pg1.c))
+    expect_true(mean(rowSums(m1.pg1.a$popSample)) >
+                mean(rowSums(m1.pg1.b$popSample)))
+    expect_true(mean(rowSums(m1.pg1.b$popSample)) >
+                mean(rowSums(m1.pg1.c$popSample)))
+  
 
 
 })
 date()
 
 
-
-
+## FIXME: move to long, later, and increase reps. from here till end
+## very slow, because huge number of clones. But tests several phenomena comprehensively.
+## same with McFL below
 date()
 test_that("per-gene-mut rates and mutator", {
 
@@ -1290,11 +1962,11 @@ test_that("per-gene-mut rates and mutator", {
     fe1 <- allFitnessEffects(noIntGenes = ni)
     ft <- 50
     no <- 5e5 
-    reps <- 20
+    reps <- 40
     gn <- paste(names(ni), collapse = ", ")
-    mutator1 <- allMutatorEffects(epistasis = c("MU" = 25),
+    mutator1 <- allMutatorEffects(epistasis = c("MU" = 20),
                                   geneToModule = c("MU" = gn))
-    mutator2 <- allMutatorEffects(epistasis = c("MU" = 100),
+    mutator2 <- allMutatorEffects(epistasis = c("MU" = 40),
                                   geneToModule = c("MU" = gn))
     m1.mutator0 <- oncoSimulSample(reps,
                            fe1,
@@ -1302,6 +1974,8 @@ test_that("per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL
                            )
@@ -1312,10 +1986,11 @@ test_that("per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL
                            )
-    runif(1)
     m1.mutator2 <- oncoSimulSample(reps,
                            fe1,
                            mu = m1,
@@ -1323,15 +1998,20 @@ test_that("per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL
                            )
+    runif(1)
     m2.mutator0 <- oncoSimulSample(reps,
                            fe1,
                            mu = m2,
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL
                            )
@@ -1342,6 +2022,8 @@ test_that("per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL
                            )
@@ -1352,47 +2034,50 @@ test_that("per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL
                        )
-    summary(m1.mutator0)[, c(1:3, 8:9)]
-    summary(m1.mutator1)[, c(1:3, 8:9)]
-    summary(m1.mutator2)[, c(1:3, 8:9)]
-    summary(m2.mutator0)[, c(1:3, 8:9)]
-    summary(m2.mutator1)[, c(1:3, 8:9)]
-    summary(m2.mutator2)[, c(1:3, 8:9)]
+    m1.mutator0$popSummary[, c(1:3, 8:9)]
+    m1.mutator1$popSummary[, c(1:3, 8:9)]
+    m1.mutator2$popSummary[, c(1:3, 8:9)]
+    m2.mutator0$popSummary[, c(1:3, 8:9)]
+    m2.mutator1$popSummary[, c(1:3, 8:9)]
+    m2.mutator2$popSummary[, c(1:3, 8:9)]
     ## Mutator increases if larger mutator and compared to no mutator
     ## within levels of per-gene mutation rates
-    expect_true( median(summary(m1.mutator2)$NumClones) >
-                 median(summary(m1.mutator1)$NumClones))
-    expect_true( median(summary(m1.mutator1)$NumClones) >
-                 median(summary(m1.mutator0)$NumClones))
-    expect_true( median(summary(m2.mutator2)$NumClones) >
-                 median(summary(m2.mutator1)$NumClones))
-    expect_true( median(summary(m2.mutator1)$NumClones) >
-                 median(summary(m2.mutator0)$NumClones))
-    expect_true( mean(mutsPerClone(m1.mutator2)) >
-                 mean(mutsPerClone(m1.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) >
-                 mean(mutsPerClone(m1.mutator0)))
-    expect_true( mean(mutsPerClone(m2.mutator2)) >
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m2.mutator1)) >
-                 mean(mutsPerClone(m2.mutator0)))
+    expect_true( median(m1.mutator2$popSummary[, "NumClones"]) >
+                 median(m1.mutator1$popSummary[, "NumClones"]))
+    expect_true( median(m1.mutator1$popSummary[, "NumClones"]) >
+                 median(m1.mutator0$popSummary[, "NumClones"]))
+    expect_true( median(m2.mutator2$popSummary[, "NumClones"]) >
+                 median(m2.mutator1$popSummary[, "NumClones"]))
+    expect_true( median(m2.mutator1$popSummary[, "NumClones"]) >
+                 median(m2.mutator0$popSummary[, "NumClones"]))
+    ## can fail easily, because all are equal to pops: all genes mutated in at least one indiv.
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator2)) >
+    ##              mean(mutsPerCloneOSS(m1.mutator1)))
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator1)) >
+    ##              mean(mutsPerCloneOSS(m1.mutator0)))
+    ## expect_true( mean(mutsPerCloneOSS(m2.mutator2)) >
+    ##              mean(mutsPerCloneOSS(m2.mutator1)))
+    ## expect_true( mean(mutsPerCloneOSS(m2.mutator1)) >
+    ##              mean(mutsPerCloneOSS(m2.mutator0)))
     ## Increases in mutation rates increase clones, etc, within levels of
     ## mutator.
-    expect_true( median(summary(m1.mutator0)$NumClones) <
-                 median(summary(m2.mutator0)$NumClones))
-    expect_true( median(summary(m1.mutator1)$NumClones) <
-                 median(summary(m2.mutator1)$NumClones))
-    expect_true( median(summary(m1.mutator2)$NumClones) <
-                 median(summary(m2.mutator2)$NumClones))
-    expect_true( mean(mutsPerClone(m1.mutator0)) <
-                 mean(mutsPerClone(m2.mutator0)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) <
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator2)) <
-                 mean(mutsPerClone(m2.mutator2)))
+    expect_true( median(m1.mutator0$popSummary[, "NumClones"]) <
+                 median(m2.mutator0$popSummary[, "NumClones"]))
+    expect_true( median(m1.mutator1$popSummary[, "NumClones"]) <
+                 median(m2.mutator1$popSummary[, "NumClones"]))
+    expect_true( median(m1.mutator2$popSummary[, "NumClones"]) <
+                 median(m2.mutator2$popSummary[, "NumClones"]))
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator0)) <
+    ##              mean(mutsPerCloneOSS(m2.mutator0)))
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator1)) <
+    ##              mean(mutsPerCloneOSS(m2.mutator1)))
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator2)) <
+    ##              mean(mutsPerCloneOSS(m2.mutator2)))
     
 })
 
@@ -1408,19 +2093,21 @@ test_that("McFL: per-gene-mut rates and mutator", {
     cat("\n mcfloss11: the seed is", pseed, "\n")
     ng <- 10
     ni <- rep(0, ng)
-    m1 <- runif(ng, min = 1e-7, max = 5e-6)
+    m1 <- rep(5e-6, ng) ## too much variation and hard to pick the diffs.;
+                        ## runif(ng, min = 1e-7, max = 5e-6) And if too
+                        ## tiny, you do not pick them up unless huge ft
+                        ## and then it is way too slow for m2, etc.
     m2 <- runif(ng, min = 1e-5, max = 1e-4)
     names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
                                  paste(sample(letters, 12), collapse = "")))
     fe1 <- allFitnessEffects(noIntGenes = ni)
     ft <- 50
     no <- 5e5 
-    reps <- 20
+    reps <- 40
     gn <- paste(names(ni), collapse = ", ")
-    
-    mutator1 <- allMutatorEffects(epistasis = c("MU" = 25),
+    mutator1 <- allMutatorEffects(epistasis = c("MU" = 20),
                                   geneToModule = c("MU" = gn))
-    mutator2 <- allMutatorEffects(epistasis = c("MU" = 100),
+    mutator2 <- allMutatorEffects(epistasis = c("MU" = 40),
                                   geneToModule = c("MU" = gn))
     m1.mutator0 <- oncoSimulSample(reps,
                            fe1,
@@ -1428,6 +2115,8 @@ test_that("McFL: per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL, model = "McFL"
                            )
@@ -1438,6 +2127,8 @@ test_that("McFL: per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL, model = "McFL"
                            )
@@ -1448,15 +2139,20 @@ test_that("McFL: per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL, model = "McFL"
                            )
+    cat("\n starting m2\n")
     m2.mutator0 <- oncoSimulSample(reps,
                            fe1,
                            mu = m2,
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL, model = "McFL"
                            )
@@ -1467,6 +2163,8 @@ test_that("McFL: per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL, model = "McFL"
                            )
@@ -1477,344 +2175,85 @@ test_that("McFL: per-gene-mut rates and mutator", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = ft,
+                           detectionSize = 1e9,
+                           detectionDrivers = 9999,     
                            sampleEvery = 0.01, thresholdWhole = 1e-20,
                            seed = NULL, model = "McFL"
-                       )
-    summary(m1.mutator0)[, c(1:3, 8:9)]
-    summary(m1.mutator1)[, c(1:3, 8:9)]
-    summary(m1.mutator2)[, c(1:3, 8:9)]
-    summary(m2.mutator0)[, c(1:3, 8:9)]
-    summary(m2.mutator1)[, c(1:3, 8:9)]
-    summary(m2.mutator2)[, c(1:3, 8:9)]
-    
+                           )
+    m1.mutator0$popSummary[, c(1:3, 8:9)]
+    m1.mutator1$popSummary[, c(1:3, 8:9)]
+    m1.mutator2$popSummary[, c(1:3, 8:9)]
+    m2.mutator0$popSummary[, c(1:3, 8:9)]
+    m2.mutator1$popSummary[, c(1:3, 8:9)]
+    m2.mutator2$popSummary[, c(1:3, 8:9)]
     ## Mutator increases if larger mutator and compared to no mutator
     ## within levels of per-gene mutation rates
-    expect_true( median(summary(m1.mutator2)$NumClones) >
-                 median(summary(m1.mutator1)$NumClones))
-    expect_true( median(summary(m1.mutator1)$NumClones) >
-                 median(summary(m1.mutator0)$NumClones))
-    expect_true( median(summary(m2.mutator2)$NumClones) >
-                 median(summary(m2.mutator1)$NumClones))
-    expect_true( median(summary(m2.mutator1)$NumClones) >
-                 median(summary(m2.mutator0)$NumClones))
-    expect_true( mean(mutsPerClone(m1.mutator2)) >
-                 mean(mutsPerClone(m1.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) >
-                 mean(mutsPerClone(m1.mutator0)))
-    expect_true( mean(mutsPerClone(m2.mutator2)) >
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m2.mutator1)) >
-                 mean(mutsPerClone(m2.mutator0)))
-
+    ## we could use wilcoxon or t tests actually, specially because often diffs
+    ## are not huge.
+    p.fail <- 0.05
+    expect_true( t.test( m1.mutator2$popSummary[, "NumClones"] ,
+                 m1.mutator1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( m1.mutator1$popSummary[, "NumClones"] ,
+                 m1.mutator0$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( m2.mutator2$popSummary[, "NumClones"] ,
+                 m2.mutator1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    expect_true( t.test( m2.mutator1$popSummary[, "NumClones"] ,
+                 m2.mutator0$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator2)) >
+    ##              mean(mutsPerCloneOSS(m1.mutator1)))
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator1)) >
+    ##              mean(mutsPerCloneOSS(m1.mutator0)))
+    ## expect_true( mean(mutsPerCloneOSS(m2.mutator2)) >
+    ##              mean(mutsPerCloneOSS(m2.mutator1)))
+    ## expect_true( mean(mutsPerCloneOSS(m2.mutator1)) >
+    ##              mean(mutsPerCloneOSS(m2.mutator0)))
     ## Increases in mutation rates increase clones, etc, within levels of
     ## mutator.
-    
-    expect_true( median(summary(m1.mutator0)$NumClones) <
-                 median(summary(m2.mutator0)$NumClones))
-    expect_true( median(summary(m1.mutator1)$NumClones) <
-                 median(summary(m2.mutator1)$NumClones))
-    expect_true( median(summary(m1.mutator2)$NumClones) <
-                 median(summary(m2.mutator2)$NumClones))
-    expect_true( mean(mutsPerClone(m1.mutator0)) <
-                 mean(mutsPerClone(m2.mutator0)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) <
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator2)) <
-                 mean(mutsPerClone(m2.mutator2)))
-    
-})
-
-
-
-
-
-## Slow (~ 3 seconds) but tests modules of mutator nicely.
-date() ## Beware: this uses a lot of RAM without the gc()
-test_that("Mutator modules differences", {
-    
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mmd1: the seed is", pseed, "\n")
-    reps <- 10
-    no <- 5e3
-    ft <- 100
-    mu <- 1e-5
-    lni <- 50
-    m1 <- 1
-    m2 <- 25
-    m3 <- 50
-    ni <- rep(0, lni)
-    gn <- paste0("a", 1:lni)
-    names(ni) <- gn
-    gn <- paste(gn, collapse = ", ")
-    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
-                              geneToModule = c("A" = gn))
-    mut2 <- allMutatorEffects(epistasis = c("A" = m2),
-                              geneToModule = c("A" = gn))
-    mut3 <- allMutatorEffects(epistasis = c("A" = m3),
-                              geneToModule = c("A" = gn))
-    f1 <- allFitnessEffects(noIntGenes = ni)
-    b1 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut1,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       sampleEvery = 0.01, thresholdWhole = 1e-20,
-                       seed = NULL
-                       )
-    gc()
-    b2 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut2,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       sampleEvery = 0.01, thresholdWhole = 1e-20,
-                       seed = NULL
-                       )
-    gc()
-    b3 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut3,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       sampleEvery = 0.01, thresholdWhole = 1e-20,
-                       seed = NULL
-                       )
-    gc()
-    b3$popSummary[, c(1:3, 8:9)]
-    b2$popSummary[, c(1:3, 8:9)]
-    b1$popSummary[, c(1:3, 8:9)]
-    ## mean(rowSums(b3$popSample))
-    ## mean(rowSums(b2$popSample))
-    ## mean(rowSums(b1$popSample))
-    ## This is, of course, affected by sampling only at end: we do not see
-    ## the many intermediate events.
-    expect_true( median(b3$popSummary[, "NumClones"]) >
-                 median(b2$popSummary[, "NumClones"]))
-    expect_true( median(b2$popSummary[, "NumClones"]) >
-                 median(b1$popSummary[, "NumClones"]))
-    expect_true( mean(rowSums(b3$popSample)) >
-                 mean(rowSums(b2$popSample)))
-    expect_true( mean(rowSums(b2$popSample)) >
-                 mean(rowSums(b1$popSample)))
+    expect_true( t.test( m1.mutator0$popSummary[, "NumClones"] , 
+                 m2.mutator0$popSummary[, "NumClones"], alternative = "less")$p.value < p.fail)
+    expect_true( t.test( m1.mutator1$popSummary[, "NumClones"] , 
+                 m2.mutator1$popSummary[, "NumClones"], alternative = "less")$p.value < p.fail)
+    expect_true( t.test( m1.mutator2$popSummary[, "NumClones"] , 
+                 m2.mutator2$popSummary[, "NumClones"], alternative = "less")$p.value < p.fail)
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator0)) <
+    ##              mean(mutsPerCloneOSS(m2.mutator0)))
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator1)) <
+    ##              mean(mutsPerCloneOSS(m2.mutator1)))
+    ## expect_true( mean(mutsPerCloneOSS(m1.mutator2)) <
+    ##              mean(mutsPerCloneOSS(m2.mutator2)))
     
 })
-date()
 
 
 
 
-date() ## Beware: this uses a lot of RAM without the gc()
-test_that("McFL: Mutator modules differences", {
-    
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n MCFLmmd1: the seed is", pseed, "\n")
-    reps <- 10
-    no <- 5e3
-    ft <- 100
-    mu <- 1e-5
-    lni <- 50
-    m1 <- 1
-    m2 <- 25
-    m3 <- 50
-    ni <- rep(0, lni)
-    gn <- paste0("a", 1:lni)
-    names(ni) <- gn
-    gn <- paste(gn, collapse = ", ")
-    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
-                              geneToModule = c("A" = gn))
-    mut2 <- allMutatorEffects(epistasis = c("A" = m2),
-                              geneToModule = c("A" = gn))
-    mut3 <- allMutatorEffects(epistasis = c("A" = m3),
-                              geneToModule = c("A" = gn))
-    f1 <- allFitnessEffects(noIntGenes = ni)
-    b1 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut1,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        model = "McFL",
-                       seed = NULL
-                       )
-    gc()
-    b2 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut2,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        model = "McFL",
-                       seed = NULL
-                       )
-    gc()
-    b3 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut3,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        model = "McFL",
-                       seed = NULL
-                       )
-    gc()
-    b3$popSummary[, c(1:3, 8:9)]
-    b2$popSummary[, c(1:3, 8:9)]
-    b1$popSummary[, c(1:3, 8:9)]
-    ## mean(rowSums(b3$popSample))
-    ## mean(rowSums(b2$popSample))
-    ## mean(rowSums(b1$popSample))
-    ## This is, of course, affected by sampling only at end: we do not see
-    ## the many intermediate events.
-    expect_true( median(b3$popSummary[, "NumClones"]) >
-                 median(b2$popSummary[, "NumClones"]))
-    expect_true( median(b2$popSummary[, "NumClones"]) >
-                 median(b1$popSummary[, "NumClones"]))
-    expect_true( mean(rowSums(b3$popSample)) >
-                 mean(rowSums(b2$popSample)))
-    expect_true( mean(rowSums(b2$popSample)) >
-                 mean(rowSums(b1$popSample)))
-    
-})
-date()
-
-    
-
-date() 
-test_that("Mutator, several modules differences", {
-    pseed <- sample(99999999, 1)
-    set.seed(pseed)
-    cat("\n mmd1: the seed is", pseed, "\n")
-    reps <- 10
-    no <- 5e3
-    ft <- 50 ## you need it large enough to get enough hits
-    mu <- 1e-5
-    ln <- 50 
-    m1 <- 5 ## if this is too large, easy to get it to blow.
-    ni <- rep(0, 3 * ln)
-    gna <- paste0("a", 1:ln)
-    gnb <- paste0("b", 1:ln)
-    gnc <- paste0("c", 1:ln)
-    names(ni) <- c(gna, gnb, gnc)
-    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
-    gna <- paste(gna, collapse = ", ")
-    gnb <- paste(gnb, collapse = ", ")
-    gnc <- paste(gnc, collapse = ", ")
-    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
-                              geneToModule = c("A" = gn1))
-    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
-                                            "B" = m1,
-                                            "C" = m1),
-                              geneToModule = c("A" = gna,
-                                               "B" = gnb,
-                                               "C" = gnc))
-    f1 <- allFitnessEffects(noIntGenes = ni)
-    b1 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut1,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       seed = NULL
-                       )
-    gc()
-    b2 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut2,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       seed = NULL
-                       )
-    gc()
-    ## b2$popSummary[, c(1:3, 8:9)]
-    ## b1$popSummary[, c(1:3, 8:9)]
-    ## mean(rowSums(b2$popSample))
-    ## mean(rowSums(b1$popSample))
-    ## This is, of course, affected by sampling only at end: we do not see
-    ## the many intermediate events.
-    expect_true( median(b2$popSummary[, "NumClones"]) >
-                 median(b1$popSummary[, "NumClones"]))
-    expect_true( mean(rowSums(b2$popSample)) >
-                 mean(rowSums(b1$popSample)))
-})
-date()
 
 
 
-date() 
-test_that("Mutator, several modules differences, McFL", {
-    pseed <- sample(99999999, 1)
-    set.seed(pseed)
-    cat("\n mmd1: the seed is", pseed, "\n")
-    reps <- 10
-    no <- 5e3
-    ft <- 50 ## you need it large enough to get enough hits
-    mu <- 1e-5
-    ln <- 50 
-    m1 <- 5 ## if this is too large, easy to get it to blow.
-    ni <- rep(0, 3 * ln)
-    gna <- paste0("a", 1:ln)
-    gnb <- paste0("b", 1:ln)
-    gnc <- paste0("c", 1:ln)
-    names(ni) <- c(gna, gnb, gnc)
-    gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
-    gna <- paste(gna, collapse = ", ")
-    gnb <- paste(gnb, collapse = ", ")
-    gnc <- paste(gnc, collapse = ", ")
-    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
-                              geneToModule = c("A" = gn1))
-    mut2 <- allMutatorEffects(epistasis = c("A" = m1,
-                                            "B" = m1,
-                                            "C" = m1),
-                              geneToModule = c("A" = gna,
-                                               "B" = gnb,
-                                               "C" = gnc))
-    f1 <- allFitnessEffects(noIntGenes = ni)
-    b1 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut1,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       seed = NULL, model = "McFL"
-                       )
-    gc()
-    b2 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut2,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                       seed = NULL, model = "McFL"
-                       )
-    gc()
-    b2$popSummary[, c(1:3, 8:9)]
-    b1$popSummary[, c(1:3, 8:9)]
-    mean(rowSums(b2$popSample))
-    mean(rowSums(b1$popSample))
-    ## This is, of course, affected by sampling only at end: we do not see
-    ## the many intermediate events.
-    expect_true( median(b2$popSummary[, "NumClones"]) >
-                 median(b1$popSummary[, "NumClones"]))
-    expect_true( mean(rowSums(b2$popSample)) >
-                 mean(rowSums(b1$popSample)))
-})
-date()
+cat(paste("\n Finished test.mutator-oncoSimulSample.R test at", date()))
+
+
+
+## singleCell. Stop on 1 driver, mark all except init as drivers.??? Nope,
+## as driver present, but not abundant. So stop on two. Too convoluted. If
+## I want to test sampling, test sampling. Period.
+
+
+
+
+
+## converted from test.mutator using
+
+## sed -i 's/median(summary(\([A-Za-z0-9]*\))$NumClones)/median(\1$popSummary\[, "NumClones"\])/g' test.mutator-oncoSimulSample.R
+## sed -i  's/mutsPerClone(\([A-Za-z0-9]*\))/rowSums(\1$popSample)/g' test.mutator-oncoSimulSample.R
+## sed -i 's/oncoSimulPop(/oncoSimulSample(/' test.mutator-oncoSimulSample.R
+## sed -i 's/, mc.cores = 2//' test.mutator-oncoSimulSample.R
+## sed -i 's/mc.cores = 2,//' test.mutator-oncoSimulSample.R
+## sed -i 's/mc.cores = 2)/)/' test.mutator-oncoSimulSample.R
+
+## sed -i 's/keepEvery = [0-9],//' test.mutator-oncoSimulSample.R
+## sed -i 's/, keepEvery = [0-9]//' test.mutator-oncoSimulSample.R
+## sed -i 's/keepEvery = [0-9])/)/' test.mutator-oncoSimulSample.R
+## sed -i 's/summary(\([A-Za-z0-9]*\))/\1$popSummary\[, c(1:3, 8:9)\]/g' test.mutator-oncoSimulSample.R
+## the last is not quite ok. Leaves to sets of the [, c(1:3, 8:9)][, c(1:3, 8:9)]. Replace in emacs.
+## and a few others are missed. 
