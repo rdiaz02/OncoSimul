@@ -1959,6 +1959,11 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
     ## Here, we test that freqs as they should, but so that the test is
     ## not eternal, we use different settings of reps and no
 
+    ## We want to get about 2 mutations in each population, but not more
+    ## than 2, as that would mean we are not picking diffrences between
+    ## muts with different mut rate, because we have
+    ## wholePopulationSample.
+    
     ## We probably want about a mean or median number of clones of about 2
     ## or so. Though if fewer, better but then to have power in the
     ## chi-square we need much larger reps (as usual, if ft increase, etc,
@@ -1969,16 +1974,17 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
     cat("\n oss11: the seed is", pseed, "\n")
     ng <- 10
     ni <- rep(0, ng)
-    m1 <- runif(ng, min = 1e-6, max = 1e-5)
-    m2 <- runif(ng, min = 1e-4, max = 1e-3)
+    m1 <- seq(from = 1e-7, to = 1e-4, length.out = ng)
+    m2 <- runif(ng, min = 1e-6, max = 1e-3)
     names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
                                  paste(sample(letters, 12), collapse = "")))
     fe1 <- allFitnessEffects(noIntGenes = ni)
-    ft <- 0.03
+    ft <- 5e-3
     no <- 5e5 # delicate as if this is huge, we get the cc1 or cc2 below
               # to be equal to reps in many genes, because they are
               # present in at least one cell in all populations
-    reps <- 500
+    reps <- 5000 ## large because few events with small mut
+                 ## freqs. o.w. chi has many small cells.
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     x <- 1e-20
@@ -1991,8 +1997,11 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
                           finalTime = ft,
                           mutationPropGrowth = FALSE, ## cleaner, though no real effect
                           seed =NULL,
-                          thresholdWhole = x
+                          sampleEvery = 0.01, thresholdWhole = 1e-20,
+                          detectionSize = 1e9,
+                          detectionDrivers = 9999,
                           )
+    b1$popSummary[, c(1:3, 8:9)]
     summary(b1$popSummary[, "NumClones"])
     (expected1 <- no*reps*m1)
     (cc1 <- colSums(b1$popSample))
@@ -2002,6 +2011,7 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
     p.fail <- 1e-3
     expect_true(chisq.test(cc1,
                            p = expected1/sum(expected1))$p.value > p.fail)
+
     reps <- 500
     no <- 1e4
     ft <- 0.03
@@ -2016,7 +2026,9 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
-                       thresholdWhole = x
+                       sampleEvery = 0.01, thresholdWhole = 1e-20,
+                       detectionSize = 1e9,
+                       detectionDrivers = 9999,
                        )
     summary(b2$popSummary[, "NumClones"])
     ## we detect anything that is present in at least one case.
@@ -2119,7 +2131,7 @@ test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-m
     cat("\n mcoss11: the seed is", pseed, "\n")
     ng <- 10
     ni <- rep(0, ng)
-    m1 <- runif(ng, min = 1e-6, max = 1e-5)
+    m1 <- runif(ng, min = 5e-8, max = 1e-5)
     m2 <- runif(ng, min = 1e-4, max = 1e-3)
     names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
                                  paste(sample(letters, 12), collapse = "")))
@@ -2145,6 +2157,7 @@ test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-m
                           thresholdWhole = x
                           )
     summary(b1$popSummary[, "NumClones"])
+    b1$popSummary[, c(1:3, 8:9)]
     (expected1 <- no*reps*m1)
     (cc1 <- colSums(b1$popSample))
     if( (any(cc1 == reps)) )
