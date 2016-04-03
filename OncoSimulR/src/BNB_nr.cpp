@@ -163,17 +163,19 @@ inline void driverCounts(int& maxNumDrivers,
   // We used to do count_NumDrivers and then whichDrivers
   maxNumDrivers = 0;
   int tmpdr = 0;
-  int driver_indx;
+  int driver_indx; // the index in the driver table
   
   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
     tmpdr = 0;
+    driver_indx = 0;
     for(int i : drv) {
-      driver_indx = i - 1;
-      tmpdr += returnGenotypes(driver_indx, j);
-      countByDriver[driver_indx] += returnGenotypes(driver_indx, j);
+      tmpdr += returnGenotypes(i - 1, j);
+      countByDriver[driver_indx] += returnGenotypes(i - 1, j);
+      ++driver_indx;
     }
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
+  STOPASSERT(driver_indx == countByDriver.size());
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {
       presentDrivers.push_back(i + 1);
@@ -1596,10 +1598,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   double totPopSize = 0;
   std::vector<double> sampleTotPopSize;
   std::vector<double> sampleLargestPopSize;
-  std::vector<int> sampleMaxNDr; //The number of drivers in the population
-  // with the largest number of drivers; and this for each time sample
-  std::vector<int> sampleNDrLargestPop; //Number of drivers in population
-  // with largest size (at each time sample)
+  std::vector<int> sampleMaxNDr; //The largest number of drivers in any
+				 //genotype or clone at each  time sample
+  std::vector<int> sampleNDrLargestPop; //Number of drivers in the clone
+					// with largest size (at each time
+					// sample)
   sampleTotPopSize.reserve(initIt);
   sampleLargestPopSize.reserve(initIt);
   sampleMaxNDr.reserve(initIt);
