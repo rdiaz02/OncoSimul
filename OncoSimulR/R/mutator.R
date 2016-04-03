@@ -52,7 +52,9 @@ evalAllGenotypesMut <- function(fitnessEffects,
 evalGenotypeMut <- function(genotype, fitnessEffects,
                          verbose = FALSE,
                          echo = FALSE) {
-
+    if(inherits(fitnessEffects, "fitnessEffects"))
+        stop("You are trying to get the mutator effects of a fitness specification. ",
+             "You did not pass an object of class mutatorEffects.")
     evalGenotypeORMut(genotype = genotype,
                        fitnessEffects = fitnessEffects,
                        verbose = verbose,

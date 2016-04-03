@@ -888,6 +888,10 @@ evalGenotype <- function(genotype, fitnessEffects,
                          verbose = FALSE,
                          echo = FALSE,
                          model = "") {
+    if(inherits(fitnessEffects, "mutatorEffects"))
+         stop("You are trying to get the fitness of a mutator specification. ",
+             "You did not pass an object of class fitnessEffects.")
+
     evalGenotypeORMut(genotype = genotype,
                        fitnessEffects = fitnessEffects,
                        verbose = verbose,

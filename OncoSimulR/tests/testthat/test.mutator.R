@@ -137,8 +137,8 @@ test_that("eval fitness and mut OK", {
     fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
                             noIntGenes = c("e" = 0.1))
-    fm <- OncoSimulR:::allMutatorEffects(noIntGenes = c("a" = 10,
-                                                        "c" = 5))
+    fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                           "c" = 5))
     expect_output(ou <- evalGenotypeFitAndMut("a", fe, fm, verbose = TRUE),
                   "10", fixed = TRUE)
     expect_identical(ou, c(1, 10))
@@ -284,6 +284,40 @@ test_that("fails if genes in mutator not in fitness", {
                  "Genes in mutatorEffects not present in fitnessEffects",
                  fixed = TRUE)
 })
+
+
+test_that("We cannot pass mutator/fitness objects to the wrong functions", {
+    fe2 <- allFitnessEffects(noIntGenes =
+                                 c(a1 = 0.1, a2 = 0.2,
+                                   b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                                   c1 = 0.3, c2 = -0.2))
+    
+    fm2 <- allMutatorEffects(epistasis = c("A" = 5,
+                                           "B" = 10,
+                                           "C" = 3),
+                             geneToModule = c("A" = "a1, a2",
+                                              "B" = "b1, b2, b3",
+                                              "C" = "c1, c2"))
+    expect_error(evalAllGenotypesMut(fe2),
+                 "You are trying to get the mutator effects of a fitness specification.",
+                 fixed = TRUE)
+    expect_error(evalAllGenotypes(fm2),
+                 "You are trying to get the fitness of a mutator specification.",
+                 fixed = TRUE)
+    expect_error(evalGenotypeMut("a1, b2", fe2),
+                 "You are trying to get the mutator effects of a fitness specification.",
+                 fixed = TRUE)
+    expect_error(evalGenotype("a2, c2", fm2),
+                 "You are trying to get the fitness of a mutator specification.",
+                 fixed = TRUE)
+
+
+})
+
+
+
+
+
 
 test_that("Relative ordering of number of clones with mutator effects", {
     
