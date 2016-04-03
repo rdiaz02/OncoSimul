@@ -13,8 +13,8 @@ readFitnessEffects <- function(rFE, echo) {
      invisible(.Call('OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
 }
 
-evalRGenotype <- function(rG, rFE, verbose, prodNeg) {
-    .Call('OncoSimulR_evalRGenotype', PACKAGE = 'OncoSimulR', rG, rFE, verbose, prodNeg, calledBy)
+evalRGenotype <- function(rG, rFE, verbose, prodNeg, calledBy_) {
+    .Call('OncoSimulR_evalRGenotype', PACKAGE = 'OncoSimulR', rG, rFE, verbose, prodNeg, calledBy_)
 }
 
 evalRGenotypeAndMut <- function(rG, rFE, muEF, full2mutator_, verbose, prodNeg) {
