@@ -23,6 +23,9 @@ options(width = 68)
 %\definecolor{light-gray}{gray}{0.72}
 \newcommand{\cyan}[1]{{\textcolor {cyan} {#1}}}
 \newcommand{\blu}[1]{{\textcolor {blue} {#1}}}
+%% FIXME: remove the red thing later
+\newcommand{\red}[1]{{\textcolor {red} {NEW: #1}}}
+
 \newcommand{\Burl}[1]{\blu{\url{#1}}}
 \usepackage{gitinfo}
 
@@ -2202,6 +2205,188 @@ If you have multiple copies you can proceed similarly. As you can see,
 these are nothing but special cases of synthetic mortality (\ref{sl}),
 synthetic viability (\ref{sv}) and epistasis (\ref{epi}).
 
+
+\subsection{\red{Gene-specific mutation rates}}\label{per-gene-mutation}
+
+It is now possible to specify \red{gene-specific mutation rates}. Instead
+of passing a scalar value for \texttt{mu}, you pass a named vector. (This
+does not work with the old v.\ 1 format, though; yet another reason to
+stop using that format). This is a simple example (many more are available
+in the tests, see file \texttt{/tests/testthat/test.per-gene-mutation-rates.R}).
+
+<<>>=
+
+muvar2 <- c("U" = 1e-6, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
+ni1 <- rep(0, 5)
+names(ni1) <- names(muvar2) ## We use the same names, of course
+fe1 <- allFitnessEffects(noIntGenes = ni1)
+bb <- oncoSimulIndiv(fe1, 
+                     mu = muvar2, onlyCancer = FALSE,
+                     initSize = 1e5,
+                     finalTime = 25,
+                     seed =NULL)
+
+@ 
+
+\subsection{\red{Mutator genes}}\label{mutator}
+
+It is now possible to specify mutator genes (FIXMEzz: cite some paper,
+e.g., Tomlinson or Gerrish): these are genes that, when mutated, lead to
+an increase in the mutation rate all over the genome (not unlike what
+happens with, say, microsatellite instability in cancer ---FIXME: cite
+Vogelstein/Nowak).
+
+The specification is very similar to that for fitness effects, except we
+do not (at least for now) use DAGs for poset-like structures nor allow for
+order effects (we have seen no reference in the literature to suggest any
+of these would be relevant). You can, however, specify epistasis and use
+modules. Note that the mutator genes must be a subset of the genes in the
+fitness effects; if you want to have mutator genes that have no direct
+fitness effects, give them a fitness effect of 0.
+
+
+This first is a very simple example with simple fitness effects and
+modules for mutators. We will specify the fitness and mutator effects and
+evaluate the fitness and mutator effects:
+<<>>=
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+fm2 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+
+## Show the fitness effect of a specific genotype
+evalGenotype("a1, c2", fe2, verbose = TRUE)
+
+## Show the mutator effect of a specific genotype
+evalGenotypeMut("a1, c2", fm2, verbose = TRUE)
+
+## Fitness and mutator of a specific genotype
+evalGenotypeFitAndMut("a1, c2", fe2, fm2, verbose = TRUE)
+@ 
+
+You can also use the \texttt{evalAll} functions. We do not show the output
+here to avoid cluttering the vignette:
+
+<<eval=FALSE>>=
+## Show only all the fitness effects
+evalAllGenotypes(fe2, order = FALSE)
+
+## Show only all mutator effects
+evalAllGenotypesMut(fm2)
+
+## Show all fitness and mutator
+evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
+@ 
+
+
+Building upon the above, the next is an example where we have a bunch of
+no interaction genes that affect fitness, and a small set of genes that
+affect the mutation rate (but have no fitness effects).
+
+
+<<>>=
+set.seed(1) ## for reproducibility
+## 17 genes, 7 with no direct fitness effects
+ni <- c(rep(0, 7), runif(10, min = -0.01, max = 0.1))
+names(ni) <- c("a1", "a2", "b1", "b2", "b3", "c1", "c2",
+               paste0("g", 1:10))
+
+fe3 <- allFitnessEffects(noIntGenes = ni,
+                         drvNames = paste0("g", 1:10))
+
+
+fm3 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3,
+                                       "A:C" = 70),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+@ 
+
+Let us check what the effects are of a few genotypes:
+
+<<>>=
+## These only affect mutation, not fitness
+evalGenotypeFitAndMut("a1, a2", fe3, fm3, verbose = TRUE)
+evalGenotypeFitAndMut("a1, b3", fe3, fm3, verbose = TRUE)
+
+## These only affect fitness: the mutator multiplier is 1
+evalGenotypeFitAndMut("g1", fe3, fm3, verbose = TRUE)                      
+evalGenotypeFitAndMut("g3, g9", fe3, fm3, verbose = TRUE)
+
+## These affect both
+evalGenotypeFitAndMut("g3, g9, a2, b3", fe3, fm3, verbose = TRUE)
+@ 
+
+
+Finally, we will do a simulation with those data
+<<>>=
+
+set.seed(1) ## so that it is easy to reproduce
+mue1 <- oncoSimulIndiv(fe3, muEF = fm3, 
+                       mu = 1e-6,
+                       initSize = 1e5,
+                       model = "McFL",
+                       detectionSize = 5e6,
+                       finalTime = 500,
+                       onlyCancer = FALSE)
+@ 
+
+<<eval=FALSE>>=
+## We do not show this in the vignette to avoid cluttering it
+## with output
+mue1
+@ 
+
+
+Of course, it is up to you to keep things reasonable: mutator effects are
+multiplicative, so if you specify, say, 20 genes (without modules), or 
+20 modules, each with a mutator effect of 50, the overall mutation rate
+can be increased by a factor of $50^{20}$ and that is unlikely to be what
+you really want.
+
+In the above example, you can play with the following case, where a clone
+with a mutator phenotype and some fitness enhancing mutations starts
+giving rise to many other clones, some with additional mutator effects,
+and thus leading to the number of clones blowing up (as some also
+accumulate additional fitness-enhancing mutations). Things start getting
+out of hand starting at around time 250. The code below takes a few
+minutes and is commented, but you can run it to get an idea of the
+increase in the number of clones and their relationships (the usage of
+\Rfunction{plotClonePhylog} is explained in section \ref{phylog}).
+
+<<eval=FALSE>>=
+
+set.seed(12)
+mue1 <- oncoSimulIndiv(fe3, muEF = fm3, 
+                       mu = 1e-6,
+                       initSize = 1e5,
+                       model = "McFL",
+                       detectionSize = 5e6,
+                       finalTime = 270,
+                       keepPhylog = TRUE,
+                       onlyCancer = FALSE)
+mue1
+## If you decrease N even further it gets even more cluttered
+op <- par(ask = TRUE)
+plotClonePhylog(mue1, N = 10, timeEvents = TRUE) 
+plot(mue1, plotDrivers = FALSE, addtot = TRUE,
+     plotDiversity = TRUE)
+## The stacked plot is slow; be patient
+## Most clones have tiny population sizes, and their lines
+## are piled on top of each other
+plot(mue1, addtot = TRUE,
+     plotDiversity = TRUE, type = "stacked")
+par(op)
+@ 
 
 \section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}

@@ -214,7 +214,11 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 }
 
 \seealso{
-  \code{\link{evalGenotype}}, \code{\link{oncoSimulIndiv}}, \code{\link{plot.fitnessEffects}}
+  
+  \code{\link{evalGenotype}}, \code{\link{oncoSimulIndiv}},
+  \code{\link{plot.fitnessEffects}},
+  \code{\link{evalGenotypeFitAndMut}}
+
 }
 \examples{
 ## A simple poset or CBN-like example
@@ -271,6 +275,40 @@ fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                            "B" = "b1"))
 
 evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
+
+
+
+## Epistasis for fitness and simple mutator effects
+
+fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                          "b : c" = 0.5),
+                            noIntGenes = c("e" = 0.1))
+
+fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                       "c" = 5))
+
+evalAllGenotypesFitAndMut(fe, fm, order = FALSE)
+
+
+## Simple fitness effects (noIntGenes) and modules
+## for mutators
+
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+fm2 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+
+evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
+
+
+
 
 }
 

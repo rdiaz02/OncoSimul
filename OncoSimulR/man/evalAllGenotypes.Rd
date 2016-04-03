@@ -228,6 +228,65 @@ evalGenotype("a1 > b2 > e1 > f2", fp4m, verbose = TRUE)
 
 evalGenotype(c(1L, 3L, 7L, 9L), fp4m, verbose = TRUE)
 
+
+
+## Epistasis for fitness and simple mutator effects
+
+fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                          "b : c" = 0.5),
+                            noIntGenes = c("e" = 0.1))
+
+fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                       "c" = 5))
+
+evalAllGenotypesFitAndMut(fe, fm, order = "FALSE")
+
+
+## Simple fitness effects (noIntGenes) and modules
+## for mutators
+
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+fm2 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+
+## Show only all the fitness effects
+evalAllGenotypes(fe2, order = FALSE)
+
+## Show only all mutator effects
+evalAllGenotypesMut(fm2)
+
+## Show all fitness and mutator
+evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
+
+## This is probably not what you want
+try(evalAllGenotypesMut(fe2))
+## ... nor this
+try(evalAllGenotypes(fm2))
+
+## Show the fitness effect of a specific genotype
+evalGenotype("a1, c2", fe2, verbose = TRUE)
+
+## Show the mutator effect of a specific genotype
+evalGenotypeMut("a1, c2", fm2, verbose = TRUE)
+
+## Fitness and mutator of a specific genotype
+evalGenotypeFitAndMut("a1, c2", fe2, fm2, verbose = TRUE)
+
+## This is probably not what you want
+try(evalGenotype("a1, c2", fm2, verbose = TRUE))
+
+## Not what you want either
+try(evalGenotypeMut("a1, c2", fe2, verbose = TRUE))
+
+
 }
 
 \keyword{ misc }
