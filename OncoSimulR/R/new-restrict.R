@@ -500,10 +500,23 @@ allFitnessEffects <- function(rT = NULL,
     }
     
     if(!is.null(noIntGenes)) {
+        if(inherits(noIntGenes, "character")) {
+            wm <- paste("noIntGenes is a character vector.",
+                        "This is probably not what you want, and will",
+                        "likely result in an error downstream.",
+                        "You can get messages like",
+                        " 'not compatible with requested type', and others.",
+                        "We are stopping.")
+            stop(wm)
+        }
+            
         mg <- max(geneModule[, "GeneNumID"])
         gnum <- seq_along(noIntGenes) + mg
         if(!is.null(names(noIntGenes))) {
             ng <- names(noIntGenes)
+            if( grepl(",", ng, fixed = TRUE) || grepl(">", ng, fixed = TRUE)
+                || grepl(":", ng, fixed = TRUE))
+                stop("The name of some noIntGenes contain a ',' or a '>' or a ':'")
             if(any(ng %in% geneModule[, "Gene"] ))
                 stop("A gene in noIntGenes also present in the other terms")
         } else {

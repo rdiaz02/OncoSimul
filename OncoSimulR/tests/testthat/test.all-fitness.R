@@ -1214,4 +1214,31 @@ test_that("No epistasis, modules", {
     (1 + sa) * (1 + sb) * (1 + sc))
 })
 
+
+test_that("noIntGenes, two common errors: character vector and ,>:", {
+    expect_error(allFitnessEffects(noIntGenes =
+                                       c("a1, a2, b1, b2, b3, c1, c2")),
+                 "noIntGenes is a character vector", fixed = TRUE)
+
+    expect_error(allFitnessEffects(noIntGenes =
+                                       c("a1", "a2")),
+                 "noIntGenes is a character vector", fixed = TRUE)
+    u <- 0.3
+    names(u) <- "a,b"
+    v <- 0.3
+    names(v) <- "a > b"
+    w <- 0.3
+    names(w) <- "a : b"
+
+    expect_error(allFitnessEffects(noIntGenes = u),
+                 "The name of some noIntGenes contain a ',' or a '>' or a ':'",
+                 fixed = TRUE)
+    expect_error(allFitnessEffects(noIntGenes = v),
+                 "The name of some noIntGenes contain a ',' or a '>' or a ':'",
+                 fixed = TRUE)
+    expect_error(allFitnessEffects(noIntGenes = w),
+                 "The name of some noIntGenes contain a ',' or a '>' or a ':'",
+                 fixed = TRUE)
+})
+
 cat(paste("\n Ending all-fitness at", date()))
