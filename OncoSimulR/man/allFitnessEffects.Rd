@@ -87,11 +87,14 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   A numeric vector (optionally named) with the fitness coefficients (or
       mutator multiplier factor) of genes
   (only genes, not modules) that show no interactions. These genes
-      cannot be part of modules. But you can specify modules that have
-      no epistatic interactions. See examples and vignette.
-    }
-    
-    \item{geneToModule}{
+  cannot be part of modules. But you can specify modules that have
+  no epistatic interactions. See examples and vignette.
+
+  Of course, avoid using potentially confusing characters in the
+  names. In particular, "," and ">" are not allowed as gene names.
+}
+
+\item{geneToModule}{
       
   A named character vector that allows to match genes and modules. The
   names are the modules, and each of the values is a character vector
@@ -191,11 +194,21 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 
 }
 
-\note{Please, note that the meaning of the fitness effects in the
+\note{
+  Please, note that the meaning of the fitness effects in the
   McFarland model is not the same as in the original paper; the fitness
   coefficients are transformed to allow for a simpler fitness function
   as a product of terms. This differs with respect to v.1. See the
-  vignette for details.}
+  vignette for details.
+
+  The names of the genes and modules can be fairly arbitrary. But if you
+  try hard you can confuse the parser. For instance, using gene or
+  module names that contain "," or ":", or ">" is likely to get you into
+  trouble. Of course, you know you should not try to use those
+  characters because you know those characters have special meanings to
+  separate names or indicate epistasis or order relationships.  Right
+  now, using those characters as names is caught (and result in
+  stopping) if passed as names for noIntGenes.  }
 
 \author{ Ramon Diaz-Uriarte
 }

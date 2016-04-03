@@ -375,4 +375,210 @@ test_that("initMutant with oncoSimulPop, 2", {
 ##                   as.character(x$other$PhylogDF[1, 1])) == "m, d_v"))
 })
 
+
+
+
+test_that("initMutant with oncoSimulPop, McFL", {
+    o3init <- allFitnessEffects(orderEffects = c(
+                            "M > D > F" = 0.99,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.2,
+                            "M > D"     = 0.9),
+                        noIntGenes = c("u" = 0.01, 
+                                       "v" = 0.01,
+                                       "w" = 0.001,
+                                       "x" = 0.0001,
+                                       "y" = -0.0001,
+                                       "z" = -0.001),
+                        geneToModule =
+                            c("Root" = "Root",
+                              "M" = "m",
+                              "F" = "f",
+                              "D" = "d") )
+    ospI <- oncoSimulPop(4, 
+                        o3init, model = "McFL",
+                        mu = 5e-5, finalTime = 5000,
+                        detectionDrivers = 3,
+                        onlyCancer = TRUE,
+                        keepPhylog = TRUE,
+                        sampleEvery = 0.03,
+                        keepEvery = 1,
+                        initSize = 500,
+                        initMutant = c("d > m > y"),
+                        mc.cores = 2
+                        )
+    genepos <- match(c("d", "m", "y"), ospI[[1]]$geneNames)
+    expect_true( all(
+        unlist(lapply(ospI,
+                      function(x) x$Genotypes[genepos, , drop = FALSE])) == 1))
+    ## make sure not all 1, by error, which would render previous useless
+    expect_false( all( 
+        unlist(lapply(ospI,
+                      function(x) x$Genotypes)) == 1))
+    expect_true(all(unlist(lapply(ospI,
+                                  function(x) (
+                                      lapply(x$GenotypesWDistinctOrderEff,
+                                             function(z) genepos %in% z))))))
+    ## Like before, check no silly things
+    allgenepos <- seq_along(ospI[[1]]$geneNames)
+    expect_false(all(unlist(lapply(ospI,
+                                  function(x) (
+                                      lapply(x$GenotypesWDistinctOrderEff,
+                                             function(z) allgenepos %in% z))))))
+    expect_true(all(
+        lapply(ospI,
+               function(x)
+                   as.character(x$other$PhylogDF[1, 1])) == "d > m _ y"))
+})
+
+
+
+test_that("initMutant with oncoSimulPop, Bozic", {
+    o3init <- allFitnessEffects(orderEffects = c(
+                            "M > D > F" = 0.99,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.2,
+                            "M > D"     = 0.9),
+                        noIntGenes = c("u" = 0.01, 
+                                       "v" = 0.01,
+                                       "w" = 0.001,
+                                       "x" = 0.0001,
+                                       "y" = -0.0001,
+                                       "z" = -0.001),
+                        geneToModule =
+                            c("Root" = "Root",
+                              "M" = "m",
+                              "F" = "f",
+                              "D" = "d") )
+    ospI <- oncoSimulPop(4, 
+                        o3init, model = "Bozic",
+                        mu = 5e-5, finalTime = 5000,
+                        detectionDrivers = 3,
+                        onlyCancer = TRUE,
+                        keepPhylog = TRUE,
+                        sampleEvery = 0.03,
+                        keepEvery = 1,
+                        initSize = 500,
+                        initMutant = c("d > m > y"),
+                        mc.cores = 2
+                        )
+    genepos <- match(c("d", "m", "y"), ospI[[1]]$geneNames)
+    expect_true( all(
+        unlist(lapply(ospI,
+                      function(x) x$Genotypes[genepos, , drop = FALSE])) == 1))
+    ## make sure not all 1, by error, which would render previous useless
+    expect_false( all( 
+        unlist(lapply(ospI,
+                      function(x) x$Genotypes)) == 1))
+    expect_true(all(unlist(lapply(ospI,
+                                  function(x) (
+                                      lapply(x$GenotypesWDistinctOrderEff,
+                                             function(z) genepos %in% z))))))
+    ## Like before, check no silly things
+    allgenepos <- seq_along(ospI[[1]]$geneNames)
+    expect_false(all(unlist(lapply(ospI,
+                                  function(x) (
+                                      lapply(x$GenotypesWDistinctOrderEff,
+                                             function(z) allgenepos %in% z))))))
+    expect_true(all(
+        lapply(ospI,
+               function(x)
+                   as.character(x$other$PhylogDF[1, 1])) == "d > m _ y"))
+})
+
+
+
+test_that("initMutant with oncoSimulSample, 2, McFL", {
+    o3init <- allFitnessEffects(orderEffects = c(
+                            "M > D > F" = 0.99,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.1,
+                            "M > D"     = 0.9,
+                            "M > A"     = 0.25,
+                            "A > H"     = 0.2,
+                            "A > G"     = 0.3),
+                        noIntGenes = c("u" = 0.1, 
+                                       "v" = 0.2,
+                                       "w" = 0.001,
+                                       "x" = 0.0001,
+                                       "y" = -0.0001,
+                                       "z" = -0.001),
+                        geneToModule =
+                            c("Root" = "Root",
+                              "A" = "a",
+                              "M" = "m",
+                              "F" = "f",
+                              "D" = "d",
+                              "H" = "h",
+                              "G" = "g") )
+    ossI <- oncoSimulSample(4, 
+                        o3init, model = "McFL",
+                        mu = 5e-5, finalTime = 5000,
+                        detectionDrivers = 3,
+                        sampleEvery = 0.03,
+                        onlyCancer = TRUE,
+                        initSize = 500,
+                        initMutant = c("z > a"),
+                        thresholdWhole = 1 ## check presence of initMutant
+                        )
+    ssp <- ossI$popSample
+    expect_equal(ssp[, c("a", "z")],
+                 matrix(1, nrow = 4, ncol = 2,
+                        dimnames = list(NULL, c("a", "z"))))
+    expect_false(sum(ssp) == prod(dim(ssp))) ## we don't just have all of
+                                             ## them, which would turn the
+                                             ## previous into irrelevant
+    expect_equal(grep("a",
+                      as.character(ossI$popSummary$OccurringDrivers)), 1:4)
+})
+
+
+test_that("initMutant with oncoSimulSample, 2, Bozic", {
+    o3init <- allFitnessEffects(orderEffects = c(
+                            "M > D > F" = 0.99,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.1,
+                            "M > D"     = 0.9,
+                            "M > A"     = 0.25,
+                            "A > H"     = 0.2,
+                            "A > G"     = 0.3),
+                        noIntGenes = c("u" = 0.1, 
+                                       "v" = 0.2,
+                                       "w" = 0.001,
+                                       "x" = 0.0001,
+                                       "y" = -0.0001,
+                                       "z" = -0.001),
+                        geneToModule =
+                            c("Root" = "Root",
+                              "A" = "a",
+                              "M" = "m",
+                              "F" = "f",
+                              "D" = "d",
+                              "H" = "h",
+                              "G" = "g") )
+    ossI <- oncoSimulSample(4, 
+                        o3init, model = "Bozic",
+                        mu = 5e-5, finalTime = 5000,
+                        detectionDrivers = 3,
+                        sampleEvery = 0.03,
+                        onlyCancer = TRUE,
+                        initSize = 500,
+                        initMutant = c("z > a"),
+                        thresholdWhole = 1 ## check presence of initMutant
+                        )
+    ssp <- ossI$popSample
+    expect_equal(ssp[, c("a", "z")],
+                 matrix(1, nrow = 4, ncol = 2,
+                        dimnames = list(NULL, c("a", "z"))))
+    expect_false(sum(ssp) == prod(dim(ssp))) ## we don't just have all of
+                                             ## them, which would turn the
+                                             ## previous into irrelevant
+    expect_equal(grep("a",
+                      as.character(ossI$popSummary$OccurringDrivers)), 1:4)
+})
+
+
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
+
+
+
