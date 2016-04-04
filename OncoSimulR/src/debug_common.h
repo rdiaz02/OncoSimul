@@ -5,7 +5,7 @@
 
 //#define DEBUGZ
 // #define DEBUGV
-//#define DEBUGW
+#define DEBUGW
 
 #define DP1(x) {Rcpp::Rcout << "\n DEBUG2: I am at " << x << std::endl;}
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
