@@ -163,17 +163,19 @@ inline void driverCounts(int& maxNumDrivers,
   // We used to do count_NumDrivers and then whichDrivers
   maxNumDrivers = 0;
   int tmpdr = 0;
-  int driver_indx;
+  int driver_indx; // the index in the driver table
   
   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
     tmpdr = 0;
+    driver_indx = 0;
     for(int i : drv) {
-      driver_indx = i - 1;
-      tmpdr += returnGenotypes(driver_indx, j);
-      countByDriver[driver_indx] += returnGenotypes(driver_indx, j);
+      tmpdr += returnGenotypes(i - 1, j);
+      countByDriver[driver_indx] += returnGenotypes(i - 1, j);
+      ++driver_indx;
     }
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
+  STOPASSERT(driver_indx == countByDriver.size());
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {
       presentDrivers.push_back(i + 1);
@@ -1596,10 +1598,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   double totPopSize = 0;
   std::vector<double> sampleTotPopSize;
   std::vector<double> sampleLargestPopSize;
-  std::vector<int> sampleMaxNDr; //The number of drivers in the population
+  std::vector<int> sampleMaxNDr; //The number of drivers in the clone
   // with the largest number of drivers; and this for each time sample
-  std::vector<int> sampleNDrLargestPop; //Number of drivers in population
-  // with largest size (at each time sample)
+  std::vector<int> sampleNDrLargestPop; //Number of drivers in clone
+  // with largest pop size (at each time sample)
   sampleTotPopSize.reserve(initIt);
   sampleLargestPopSize.reserve(initIt);
   sampleMaxNDr.reserve(initIt);
@@ -1827,12 +1829,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       countByDriver, presentDrivers,
 	       returnGenotypes, fitnessEffects.drv);
   
-  // nr_count_NumDrivers(maxNumDrivers, countByDriver,
-  //   		      returnGenotypes, fitnessEffects.drv);
-
-  // whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
-
-  // std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
   std::vector<std::string> genotypesAsStrings =
     genotypesToNameString(uniqueGenotypes_vector_nr, genesInFitness, intName);
   std::string driversAsString =
@@ -1850,31 +1846,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
   	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
-
-  // // // debuggin: precompute things
-  // DP2(simulsDone);
-  // DP2(maxWallTime);
-  // DP2(hittedWallTime);
-  // DP2(outNS_i);
-  // DP2( sampleMaxNDr[outNS_i]);
-  // DP2(sampleNDrLargestPop[outNS_i]);
-  // DP2(sampleLargestPopSize[outNS_i]);
-  // DP2(sampleLargestPopProp[outNS_i]);
-  // DP2((runningWallTime > maxWallTime));
-  // here("after precomp");
-  // here("*******************************************");
-
-  // Rcpp::List returnGenotypesO = Rcpp::wrap(uniqueGenotypesV);
-
-  // if(keepPhylog) {
-  //   Rcpp::DataFrame PhylogDF = Rcpp::DataFrame::create(Named("parent") = phylog.parent,
-  // 						       Named("child") = phylog.child,
-  // 						       Named("time") = phylog.time);
-  // } else {
-  //   Rcpp::DataFrame PhylogDF = Rcpp::DataFrame::create(Named("parent") = NA,
-  // 						       Named("child") = NA,
-  // 						       Named("time") = NA);
-  // }
  
   return
     List::create(Named("pops.by.time") = outNS,
@@ -1920,9 +1891,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 					       Named("UnrecoverExcept") = false)
 		 );
 
-  //  END_RCPP
-    
-    }
+}
 
 
 // Creating return object:
