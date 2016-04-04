@@ -2292,15 +2292,14 @@ affect the mutation rate (but have no fitness effects).
 
 
 <<>>=
+
 set.seed(1) ## for reproducibility
 ## 17 genes, 7 with no direct fitness effects
 ni <- c(rep(0, 7), runif(10, min = -0.01, max = 0.1))
 names(ni) <- c("a1", "a2", "b1", "b2", "b3", "c1", "c2",
                paste0("g", 1:10))
 
-fe3 <- allFitnessEffects(noIntGenes = ni,
-                         drvNames = paste0("g", 1:10))
-
+fe3 <- allFitnessEffects(noIntGenes = ni)
 
 fm3 <- allMutatorEffects(epistasis = c("A" = 5,
                                        "B" = 10,
@@ -2353,17 +2352,31 @@ multiplicative, so if you specify, say, 20 genes (without modules), or
 can be increased by a factor of $50^{20}$ and that is unlikely to be what
 you really want.
 
-In the above example, you can play with the following case, where a clone
-with a mutator phenotype and some fitness enhancing mutations starts
-giving rise to many other clones, some with additional mutator effects,
-and thus leading to the number of clones blowing up (as some also
-accumulate additional fitness-enhancing mutations). Things start getting
-out of hand starting at around time 250. The code below takes a few
-minutes and is commented, but you can run it to get an idea of the
+You can play with the following case (an extension of the example above),
+where a clone with a mutator phenotype and some fitness enhancing
+mutations starts giving rise to many other clones, some with additional
+mutator effects, and thus leading to the number of clones blowing up (as
+some also accumulate additional fitness-enhancing mutations). Things start
+getting out of hand shortly after time 250. The code below takes a
+few minutes and is commented, but you can run it to get an idea of the
 increase in the number of clones and their relationships (the usage of
 \Rfunction{plotClonePhylog} is explained in section \ref{phylog}).
 
 <<eval=FALSE>>=
+
+set.seed(1) ## for reproducibility
+## 17 genes, 7 with no direct fitness effects
+ni <- c(rep(0, 7), runif(10, min = -0.01, max = 0.1))
+names(ni) <- c("a1", "a2", "b1", "b2", "b3", "c1", "c2",
+               paste0("g", 1:10))
+
+## Next is for nicer figure labeling.
+## consider drivers those with s >0
+gp <- which(ni > 0) 
+
+fe3 <- allFitnessEffects(noIntGenes = ni,
+                         drvNames = names(ni)[gp])
+
 
 set.seed(12)
 mue1 <- oncoSimulIndiv(fe3, muEF = fm3, 
@@ -2378,7 +2391,7 @@ mue1
 ## If you decrease N even further it gets even more cluttered
 op <- par(ask = TRUE)
 plotClonePhylog(mue1, N = 10, timeEvents = TRUE) 
-plot(mue1, plotDrivers = FALSE, addtot = TRUE,
+plot(mue1, plotDrivers = TRUE, addtot = TRUE,
      plotDiversity = TRUE)
 ## The stacked plot is slow; be patient
 ## Most clones have tiny population sizes, and their lines
