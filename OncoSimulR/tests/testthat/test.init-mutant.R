@@ -198,7 +198,8 @@ test_that("initMutant with oncoSimulSample", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ossI <- oncoSimulSample(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
@@ -243,7 +244,8 @@ test_that("initMutant with oncoSimulSample, 2", {
                               "F" = "f",
                               "D" = "d",
                               "H" = "h",
-                              "G" = "g") )
+                              "G" = "g"),
+                        drvNames = c("m", "f", "d", "a", "h", "g"))
     ossI <- oncoSimulSample(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
@@ -282,7 +284,8 @@ test_that("initMutant with oncoSimulPop", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
@@ -337,7 +340,8 @@ test_that("initMutant with oncoSimulPop, 2", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 70,
@@ -394,7 +398,8 @@ test_that("initMutant with oncoSimulPop, McFL", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "McFL",
                         mu = 5e-5, finalTime = 5000,
@@ -449,7 +454,8 @@ test_that("initMutant with oncoSimulPop, Bozic", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "Bozic",
                         mu = 5e-5, finalTime = 5000,
@@ -510,7 +516,9 @@ test_that("initMutant with oncoSimulSample, 2, McFL", {
                               "F" = "f",
                               "D" = "d",
                               "H" = "h",
-                              "G" = "g") )
+                              "G" = "g"),
+                        drvNames = c("m", "f", "d", "a", "h", "g")
+                        )
     ossI <- oncoSimulSample(4, 
                         o3init, model = "McFL",
                         mu = 5e-5, finalTime = 5000,
@@ -555,7 +563,8 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
                               "F" = "f",
                               "D" = "d",
                               "H" = "h",
-                              "G" = "g") )
+                              "G" = "g"),
+                        drvNames = c("m", "f", "d", "a", "h", "g"))
     ossI <- oncoSimulSample(4, 
                         o3init, model = "Bozic",
                         mu = 5e-5, finalTime = 5000,
@@ -579,6 +588,7 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
 
 
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
+
 
 
 
