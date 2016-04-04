@@ -1,5 +1,4 @@
-
-//     Copyright 2013, 2014, 2015 Ramon Diaz-Uriarte
+//     Copyright 2013, 2014, 2015, 2016 Ramon Diaz-Uriarte
 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -1830,12 +1829,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 	       countByDriver, presentDrivers,
 	       returnGenotypes, fitnessEffects.drv);
   
-  // nr_count_NumDrivers(maxNumDrivers, countByDriver,
-  //   		      returnGenotypes, fitnessEffects.drv);
-
-  // whichDrivers(totalPresentDrivers, occurringDrivers, countByDriver);
-
-  // std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
   std::vector<std::string> genotypesAsStrings =
     genotypesToNameString(uniqueGenotypes_vector_nr, genesInFitness, intName);
   std::string driversAsString =
@@ -1853,31 +1846,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
   	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
-
-  // // // debuggin: precompute things
-  // DP2(simulsDone);
-  // DP2(maxWallTime);
-  // DP2(hittedWallTime);
-  // DP2(outNS_i);
-  // DP2( sampleMaxNDr[outNS_i]);
-  // DP2(sampleNDrLargestPop[outNS_i]);
-  // DP2(sampleLargestPopSize[outNS_i]);
-  // DP2(sampleLargestPopProp[outNS_i]);
-  // DP2((runningWallTime > maxWallTime));
-  // here("after precomp");
-  // here("*******************************************");
-
-  // Rcpp::List returnGenotypesO = Rcpp::wrap(uniqueGenotypesV);
-
-  // if(keepPhylog) {
-  //   Rcpp::DataFrame PhylogDF = Rcpp::DataFrame::create(Named("parent") = phylog.parent,
-  // 						       Named("child") = phylog.child,
-  // 						       Named("time") = phylog.time);
-  // } else {
-  //   Rcpp::DataFrame PhylogDF = Rcpp::DataFrame::create(Named("parent") = NA,
-  // 						       Named("child") = NA,
-  // 						       Named("time") = NA);
-  // }
  
   return
     List::create(Named("pops.by.time") = outNS,
@@ -1923,9 +1891,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 					       Named("UnrecoverExcept") = false)
 		 );
 
-  //  END_RCPP
-    
-    }
+}
 
 
 // Creating return object:
