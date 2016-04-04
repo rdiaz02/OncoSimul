@@ -353,8 +353,11 @@ test_that("Complex fitness specification, s diffs, tiny finalTime, systematic mu
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
     noint <- runif(5, min = 0.051, max = 0.1)
     names(noint) <- paste0("n", 1:5)
+    drvN <- paste0(letters[c(1:11, 13, 2, 4, 6, 8, 10, 11)],
+               c(rep(1, 12), rep(2, 6)))
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
-                             noIntGenes = noint, geneToModule = modules)
+                             noIntGenes = noint, geneToModule = modules,
+                             drvNames = drvN)
     nfea <- OncoSimulR:::allNamedGenes(fea)$Gene
     ## systematic spacing
     muvar <- sample(seq(from = 5e-6, to = 1e-3, length.out = length(nfea)))
@@ -409,8 +412,11 @@ test_that("Complex fitness specification, tiny s diffs", {
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
     noint <- runif(5, min = 0.0000051, max = 0.00001)
     names(noint) <- paste0("n", 1:5)
+    drvN <- paste0(letters[c(1:11, 13, 2, 4, 6, 8, 10, 11)],
+                   c(rep(1, 12), rep(2, 6)))
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
-                             noIntGenes = noint, geneToModule = modules)
+                             noIntGenes = noint, geneToModule = modules,
+                             drvNames = drvN)
     nfea <- OncoSimulR:::allNamedGenes(fea)$Gene
     ## Now, random muvar
     ## muvar <- sample(seq(from = 5e-6, to = 1e-3, length.out = length(nfea)))
@@ -706,8 +712,11 @@ test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systema
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
     noint <- runif(5, min = 0.051, max = 0.1)
     names(noint) <- paste0("n", 1:5)
+    drvN <- paste0(letters[c(1:11, 13, 2, 4, 6, 8, 10, 11)],
+                   c(rep(1, 12), rep(2, 6)))
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
-                             noIntGenes = noint, geneToModule = modules)
+                             noIntGenes = noint, geneToModule = modules,
+                             drvNames = drvN)
     nfea <- OncoSimulR:::allNamedGenes(fea)$Gene
     ## systematic spacing
     muvar <- sample(seq(from = 5e-6, to = 1e-3, length.out = length(nfea)))
@@ -756,8 +765,11 @@ test_that("McFL:Complex fitness specification, tiny s diffs", {
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
     noint <- runif(5, min = 0.0000051, max = 0.00001)
     names(noint) <- paste0("n", 1:5)
+    drvN <- paste0(letters[c(1:11, 13, 2, 4, 6, 8, 10, 11)],
+                   c(rep(1, 12), rep(2, 6)))
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
-                             noIntGenes = noint, geneToModule = modules)
+                             noIntGenes = noint, geneToModule = modules,
+                             drvNames = drvN)
     nfea <- OncoSimulR:::allNamedGenes(fea)$Gene
     ## Now, random muvar
     ## muvar <- sample(seq(from = 5e-6, to = 1e-3, length.out = length(nfea)))
@@ -842,8 +854,11 @@ test_that("Init mutant  with tiny mutation always present", {
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
     noint <- runif(5, min = 0.01, max = 0.1)
     names(noint) <- paste0("n", 1:5)
+    drvN <- paste0(letters[c(1:11, 13, 2, 4, 6, 8, 10, 11)],
+                   c(rep(1, 12), rep(2, 6)))
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
-                             noIntGenes = noint, geneToModule = modules)
+                             noIntGenes = noint, geneToModule = modules,
+                             drvNames = drvN)
     nfea <- OncoSimulR:::allNamedGenes(fea)$Gene
     ## muvar <- runif(length(nfea), min = 1e-7, max = 1e-3) ## too tiny
     ## diffs sometimes for order comp
@@ -905,8 +920,11 @@ test_that("McFL: Init mutant with tiny mutation always present", {
                  "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
     noint <- runif(5, min = 0.01, max = 0.1)
     names(noint) <- paste0("n", 1:5)
+    drvN <- paste0(letters[c(1:11, 13, 2, 4, 6, 8, 10, 11)],
+                   c(rep(1, 12), rep(2, 6)))
     fea <- allFitnessEffects(rT = p4, epistasis = epist, orderEffects = oe,
-                             noIntGenes = noint, geneToModule = modules)
+                             noIntGenes = noint, geneToModule = modules,
+                             drvNames = drvN)
     nfea <- OncoSimulR:::allNamedGenes(fea)$Gene
     ## muvar <- runif(length(nfea), min = 1e-7, max = 1e-3) ## too tiny
     ## diffs sometimes for order comp
