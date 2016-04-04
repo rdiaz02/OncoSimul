@@ -573,6 +573,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
         ## }
         ## drv <- getGeneIDNum(geneModule, NULL, drvNames)
     } else {
+        ## we used to have this default
+        ## drv <- geneModule$GeneNumID[-1]
         drv <- vector(mode = "integer", length = 0)
     }
     
@@ -873,17 +875,20 @@ evalGenotypeORMut <- function(genotype,
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
-    ff <- evalRGenotype(genotype, fitnessEffects, verbose, prodNeg,
-                        calledBy_)
+    ff <- evalRGenotype(rG = genotype,
+                        rFE = fitnessEffects,
+                        verbose = verbose,
+                        prodNeg = prodNeg,
+                        calledBy_ = calledBy_)
 
     
     if(echo) {
-        if(calledBy == "evalGenotype") {
+        if(calledBy_ == "evalGenotype") {
             if(!prodNeg)
                 cat(" Fitness: ", ff, "\n")
             else
                 cat(" Death rate: ", ff, "\n")
-        } else if(calledBy == "evalGenotypeMut") {
+        } else if(calledBy_ == "evalGenotypeMut") {
             cat(" Mutation rate product :", ff, "\n")
         }
         
@@ -1105,6 +1110,7 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
         fitnessEffects = fitnessEffects,
         order = order,
         max = max,
+        addwt = addwt,
         model = model,
         calledBy_= "evalGenotype"
     )
