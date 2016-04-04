@@ -185,7 +185,7 @@ inline void driverCounts(int& maxNumDrivers,
       ++totalPresentDrivers;
     }
   }
-  
+}
 
 
 
