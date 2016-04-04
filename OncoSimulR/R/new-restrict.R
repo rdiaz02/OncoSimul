@@ -540,19 +540,21 @@ allFitnessEffects <- function(rT = NULL,
     }
 
     if(!is.null(drvNames)) {
-        ## drivers should never be in the geneNoInt; so comment next out,
+        ## drivers should never be in the geneNoInt; Why!!!???
+        ## so comment next out,
         ## and pass a null. Still, catch the problem. This is an overkill,
         ## so since we catch the issue, we could leave the geneNoInt. But
         ## that should not be there in this call.
+        
        
-        ## drv <- getGeneIDNum(geneModule, geneNoInt, drvNames)
-        if(any(drvNames %in% geneNoInt$Gene)) {
-            stop(paste("At least one gene in drvNames is a geneNoInt gene.",
-                       "That is not allowed.",
-                       "If that gene is a driver, pass it as gene in the epistasis",
-                       "component."))
-        }
-        drv <- getGeneIDNum(geneModule, NULL, drvNames)
+        drv <- getGeneIDNum(geneModule, geneNoInt, drvNames)
+        ## if(any(drvNames %in% geneNoInt$Gene)) {
+        ##     stop(paste("At least one gene in drvNames is a geneNoInt gene.",
+        ##                "That is not allowed.",
+        ##                "If that gene is a driver, pass it as gene in the epistasis",
+        ##                "component."))
+        ## }
+        ## drv <- getGeneIDNum(geneModule, NULL, drvNames)
     } else {
         drv <- geneModule$GeneNumID[-1]
     }
