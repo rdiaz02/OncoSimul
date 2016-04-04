@@ -2961,7 +2961,7 @@ s <- 0.1
 sp <- 1e-3 
 spp <- -sp/(1 + sp)
 mcf1 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
-                          drv = seq.int(nd))
+                          drvNames = seq.int(nd))
 mcf1s <-  oncoSimulIndiv(mcf1,
                          model = "McFL", 
                          mu = 1e-7,
@@ -3009,7 +3009,7 @@ s <- 0.1
 sp <- 1e-4 ## as we have many more passengers
 spp <- -sp/(1 + sp)
 mcfL <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
-                          drv = seq.int(nd))
+                          drvNames = seq.int(nd))
 mcfLs <-  oncoSimulIndiv(mcfL,
                          model = "McFL", 
                          mu = 1e-7,
