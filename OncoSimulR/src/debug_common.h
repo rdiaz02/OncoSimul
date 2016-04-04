@@ -7,9 +7,16 @@
 // #define DEBUGV
 #define DEBUGW
 
-
 #define DP1(x) {Rcpp::Rcout << "\n DEBUG2: I am at " << x << std::endl;}
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
+#define DP3(x, t){                                                    \
+    Rcpp::Rcout <<"\n DEBUG2:" ;                                      \
+    for(int xut = 0; xut < t; ++xut) Rcpp::Rcout << "\t ";            \
+    Rcpp::Rcout << "  I am at " << x << std::endl;}
+#define DP4(x, t){                                                    \
+    Rcpp::Rcout <<"\n DEBUG2:" ;                                      \
+    for(int xut = 0; xut < t; ++xut) Rcpp::Rcout << "\t ";            \
+    Rcpp::Rcout << "  Value of " << #x << " = " << x << std::endl; }
 
 /* void here(std::string x) { */
 /*   Rcpp::Rcout << "\n DEBUG: HERE at " << x << std::endl; */

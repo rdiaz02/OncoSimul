@@ -559,12 +559,19 @@ allFitnessORMutatorEffects <- function(rT = NULL,
     } else {
         graphE <- NULL
     }
-    if(calledBy == "allFitnessEffects") {
-        if(!is.null(drvNames)) {
-            drv <- getGeneIDNum(geneModule, geneNoInt, drvNames)
-        } else {
-            drv <- geneModule$GeneNumID[-1]
-        }
+    if(!is.null(drvNames)) {
+        drv <- unique(getGeneIDNum(geneModule, geneNoInt, drvNames))
+        ## drivers should never be in the geneNoInt; Why!!!???
+        ## Catch the problem. This is an overkill,
+        ## so since we catch the issue, we could leave the geneNoInt. But
+        ## that should not be there in this call.
+        ## if(any(drvNames %in% geneNoInt$Gene)) {
+        ##     stop(paste("At least one gene in drvNames is a geneNoInt gene.",
+        ##                "That is not allowed.",
+        ##                "If that gene is a driver, pass it as gene in the epistasis",
+        ##                "component."))
+        ## }
+        ## drv <- getGeneIDNum(geneModule, NULL, drvNames)
     } else {
         drv <- vector(mode = "integer", length = 0)
     }
