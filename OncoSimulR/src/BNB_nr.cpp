@@ -165,7 +165,6 @@ inline void driverCounts(int& maxNumDrivers,
   maxNumDrivers = 0;
   int tmpdr = 0;
   int driver_indx = 0; // the index in the driver table
-  
   for(int j = 0; j < returnGenotypes.ncol(); ++j) {
     tmpdr = 0;
     driver_indx = 0;
@@ -176,7 +175,11 @@ inline void driverCounts(int& maxNumDrivers,
     }
     if(tmpdr > maxNumDrivers) maxNumDrivers = tmpdr;
   }
-  STOPASSERT(driver_indx == static_cast<int>( countByDriver.size()));
+  if(returnGenotypes.ncol() > 0) {
+    STOPASSERT(driver_indx == static_cast<int>( countByDriver.size()));
+  } else {
+    STOPASSERT(driver_indx <= static_cast<int>( countByDriver.size()));
+  }
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {
       presentDrivers.push_back(i + 1);

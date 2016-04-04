@@ -62,6 +62,7 @@ date()
 
 date()
 test_that("driverCounts: we get the right results", {
+    RNGkind("Mersenne-Twister") 
     ## Comparing against know results with something that used to give
     ## wrong ones
 
@@ -362,5 +363,51 @@ test_that("driverCounts: we get the right results", {
     
 })
 date()
+
+date()
+test_that("Assertion is correct when nothing returned",{
+    RNGkind("L'Ecuyer-CMRG") 
+    set.seed(13)
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = runif(5, 0.01, 0.06),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2"),
+                            drvNames = c("d1", "d2", "f1", "f2", "f3"))
+    set.seed(13)
+    expect_message(ou <- oncoSimulSample(1, 
+                                  oi,
+                                  sampleEvery = 0.03,
+                                  onlyCancer = FALSE,
+                                  model = "Bozic",
+                                  mutationPropGrowth = TRUE,
+                                  seed = NULL),
+                  "Subjects by Genes", fixed = TRUE)
+
+
+
+    RNGkind("Mersenne-Twister") 
+    set.seed(13)
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = runif(5, 0.01, 0.06),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2"),
+                            drvNames = c("d1", "d2", "f1", "f2", "f3"))
+    set.seed(13)
+    expect_message(ou2 <- oncoSimulSample(1, 
+                    oi,
+                    sampleEvery = 0.03,
+                    onlyCancer = FALSE,
+                    model = "Bozic",
+                    mutationPropGrowth = TRUE,
+                    seed = NULL),
+                  "Subjects by Genes", fixed = TRUE)
+
+} )
 
 cat(paste("\n Ending driverCounts at", date(), "\n"))
