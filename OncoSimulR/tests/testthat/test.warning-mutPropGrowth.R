@@ -9,7 +9,8 @@ test_that("mutationPropGrowth warning with Bozic, indiv", {
                           geneToModule =
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
+                                "D" = "d1, d2"),
+               drvNames = c("d1", "d2", "f1", "f2", "f3"))
               expect_warning(oiI1 <- oncoSimulIndiv(oi,
                                                     sampleEvery = 0.03,
                                                     keepEvery = 2,
@@ -42,21 +43,31 @@ test_that("mutationPropGrowth warning with Bozic, indiv", {
 test_that("mutationPropGrowth warning with Bozic, sample", {
     ## Bozic will crash on purpose if any s >= 1. Make sure
     ## that does not happen here
-              oi <- allFitnessEffects(orderEffects =
-               c("F > D" = -0.3, "D > F" = 0.4),
-               noIntGenes = runif(5, 0.01, 0.06),
-                          geneToModule =
-                              c("Root" = "Root",
-                                "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
-              expect_warning(oiI1 <- oncoSimulSample(4,
-                                                     oi,
-                                                     sampleEvery = 0.03,
-                                                     onlyCancer = FALSE,
-                                                     model = "Bozic",
-                                                     mutationPropGrowth = TRUE),
-                             "Using fitness Bozic (bozic1) with mutationPropGrowth = TRUE;",
-                             fixed = TRUE)                                                     
+
+    RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+    
+    RNGkind("Mersenne-Twister")
+    set.seed(13)
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = runif(5, 0.01, 0.06),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2"),
+                            drvNames = c("d1", "d2", "f1", "f2", "f3"))
+    
+    set.seed(10)
+    expect_warning(oiI1 <- oncoSimulSample(4,
+                                           oi,
+                                           sampleEvery = 0.03,
+                                           onlyCancer = FALSE,
+                                           model = "Bozic",
+                                           mutationPropGrowth = TRUE,
+                                           seed = NULL),
+                   "Using fitness Bozic (bozic1) with mutationPropGrowth = TRUE;",
+                   fixed = TRUE)
+    
 })
 
 
@@ -77,7 +88,8 @@ test_that("mutationPropGrowth no warning with Exp, indiv", {
                             geneToModule =
                                 c("Root" = "Root",
                                   "F" = "f1, f2, f3",
-                                  "D" = "d1, d2") )
+                                  "D" = "d1, d2"),
+                            drvNames = c("d1", "d2", "f1", "f2", "f3"))
     expect_silent(oiI1 <- oncoSimulIndiv(oi,
                                          model = "Exp",
                                          onlyCancer = TRUE,
@@ -89,13 +101,14 @@ test_that("mutationPropGrowth no warning with Exp, indiv", {
 
 
 test_that("mutationPropGrowth no warning with McFl, indiv", {
-              oi <- allFitnessEffects(orderEffects =
-               c("F > D" = -0.3, "D > F" = 0.4),
-               noIntGenes = rexp(5, 10),
-                          geneToModule =
-                              c("Root" = "Root",
-                                "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = rexp(5, 10),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2"),
+               drvNames = c("d1", "d2", "f1", "f2", "f3"))
               expect_silent(oiI1 <- oncoSimulIndiv(oi,
                                                    model = "McFL",
                                                    mu = 5e-6,
@@ -117,7 +130,8 @@ test_that("mutationPropGrowth OK  with Exp, sample", {
                           geneToModule =
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
+                                "D" = "d1, d2"),
+               drvNames = c("d1", "d2", "f1", "f2", "f3"))
               expect_message(oiI1 <- oncoSimulSample(4,
                                                      oi,
                                                      onlyCancer = FALSE,
@@ -135,7 +149,8 @@ test_that("mutationPropGrowth OK  with McFL, sample", {
                           geneToModule =
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
+                                "D" = "d1, d2"),
+              drvNames = c("d1", "d2", "f1", "f2", "f3") )
               expect_message(oiI1 <- oncoSimulSample(4,
                                                      oi,
                                                      model = "McFL",
