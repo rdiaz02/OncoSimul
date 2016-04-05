@@ -30,36 +30,10 @@ rm ./OncoSimulR/vignettes/*.out
 rm ./OncoSimulR/vignettes/*.blg
 rm ./OncoSimulR/vignettes/*.synctex.*
 
-
-echo " ************************************** "
-echo " **********   R CMD build   *********** "
-echo ""
-time $V_R  CMD build --keep-empty-dirs OncoSimulR
-echo " "
-echo " =======      done R CMD build   ======= "
-echo " "
-## time $V_R CMD build --keep-empty-dirs --resave-data OncoSimulR
-echo " ************************************** "
-echo " *********     R CMD check   ********** "
-echo " "
-time $V_R  CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
-echo " "
-echo " =======      done R CMD check   =======  "
-echo " "
-## time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
-echo " ******************************************* "
-echo " *******      long manual tests ************ "
-$V_R  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
-time $V_R -e 'library(OncoSimulR); library(testthat); library(gtools); library(smatr); test_dir("./OncoSimulR/tests/manual/")'
-echo " "
-echo " =======     done long manual tests   =======     "
-echo " "
-
-
 echo " ************************************** "
 echo " **********   R CMD build --vanilla  *********** "
 echo ""
-time $V_R --vanilla CMD build --keep-empty-dirs OncoSimulR
+time $V_R --vanilla CMD build --no-resave-data --keep-empty-dirs OncoSimulR
 echo " "
 echo " =======      done R CMD build --vanilla  ======= "
 echo " "
@@ -71,6 +45,7 @@ time $V_R --vanilla CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 echo " "
 echo " =======      done R CMD check --vanilla  =======  "
 echo " "
+
 ## time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 echo " ******************************************* "
 echo " *******      long manual tests  --vanilla ************ "
@@ -79,6 +54,34 @@ time $V_R --vanilla -e 'library(OncoSimulR); library(testthat); library(gtools);
 echo " "
 echo " =======     done long manual tests  --vanilla =======     "
 echo " "
+
+
+
+# echo " ************************************** "
+# echo " **********   R CMD build   *********** "
+# echo ""
+# time $V_R  CMD build --keep-empty-dirs OncoSimulR
+# echo " "
+# echo " =======      done R CMD build   ======= "
+# echo " "
+# ## time $V_R CMD build --keep-empty-dirs --resave-data OncoSimulR
+# echo " ************************************** "
+# echo " *********     R CMD check   ********** "
+# echo " "
+# time $V_R  CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
+# echo " "
+# echo " =======      done R CMD check   =======  "
+# echo " "
+# ## time $V_R CMD check --as-cran --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
+# echo " ******************************************* "
+# echo " *******      long manual tests ************ "
+# $V_R  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
+# time $V_R -e 'library(OncoSimulR); library(testthat); library(gtools); library(smatr); test_dir("./OncoSimulR/tests/manual/")'
+# echo " "
+# echo " =======     done long manual tests   =======     "
+echo " "
+
+
 
 
 
