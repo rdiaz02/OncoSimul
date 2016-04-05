@@ -575,7 +575,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
     } else {
         ## we used to have this default
         ## drv <- geneModule$GeneNumID[-1]
-        drv <- vector(mode = "integer", length = 0)
+        drv <- vector(mode = "integer", length = 0L)
     }
     
     if(!keepInput) {

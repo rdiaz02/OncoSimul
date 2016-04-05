@@ -87,7 +87,8 @@ test_that("This should not crash", {
     ## This used to crash because of not nulling the empty mutator effects
     fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
-                            noIntGenes = c("e" = 0.1))
+                            noIntGenes = c("e" = 0.1),
+                            drvNames = c("a", "b", "c"))
     moo <- rep(1e-5, 4)
     names(moo) <- c("a", "b", "c", "e")
     expect_output(print(oncoSimulIndiv(fe,
@@ -174,7 +175,8 @@ test_that("expect output oncoSimulIndiv", {
 test_that("eval mut genotypes", {
     fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
-                            noIntGenes = c("e" = 0.1))
+                            noIntGenes = c("e" = 0.1),
+                            drvNames = c(letters[1:3]))
     fm <- allMutatorEffects(noIntGenes = c("a" = 10,
                                            "c" = 5))
     expect_identical(evalAllGenotypesMut(fm)[, 2],
@@ -234,7 +236,8 @@ test_that("we evaluate the WT, 2", {
 test_that("evaluating genotype and mutator", {
     fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
-                            noIntGenes = c("e" = 0.1))
+                            noIntGenes = c("e" = 0.1),
+                            drvNames = letters[1:3])
     fm <- allMutatorEffects(noIntGenes = c("a" = 10,
                                            "c" = 5))
     ou <- evalAllGenotypesFitAndMut(fe, fm, order = FALSE)
@@ -285,13 +288,11 @@ test_that("fails if genes in mutator not in fitness", {
                  fixed = TRUE)
 })
 
-
 test_that("We cannot pass mutator/fitness objects to the wrong functions", {
     fe2 <- allFitnessEffects(noIntGenes =
                                  c(a1 = 0.1, a2 = 0.2,
                                    b1 = 0.01, b2 = 0.3, b3 = 0.2,
                                    c1 = 0.3, c2 = -0.2))
-    
     fm2 <- allMutatorEffects(epistasis = c("A" = 5,
                                            "B" = 10,
                                            "C" = 3),
@@ -310,17 +311,11 @@ test_that("We cannot pass mutator/fitness objects to the wrong functions", {
     expect_error(evalGenotype("a2, c2", fm2),
                  "You are trying to get the fitness of a mutator specification.",
                  fixed = TRUE)
-
-
 })
 
-
-
-
-
-
+## FIXME: about 20 seconds. Move to long tests later
+date()
 test_that("Relative ordering of number of clones with mutator effects", {
-    
     ## Can occasionally blow up with pE.f: pE not finite.
     pseed <-sample(9999999, 1)
     set.seed(pseed)
@@ -367,16 +362,13 @@ test_that("Relative ordering of number of clones with mutator effects", {
     summary(nc1)[, c(1:3, 8:9)]
     summary(nc2)[, c(1:3, 8:9)]
     summary(nc3)[, c(1:3, 8:9)]
-    
 })
 date()
 
 
 
-
-
+date()
 test_that("Relative ordering of number of clones with init mutant of mutator effects", {
-
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
     pseed <-sample(9999999, 1)
@@ -425,20 +417,18 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     expect_true( median(summary(ncc)$NumClones) <
                  median(summary(ncd)$NumClones) )
     expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
-    expect_true(mean(mutsPerClone(ncb)) > mean(mutsPerClone(ncc)))
-    expect_true(mean(mutsPerClone(ncc)) > mean(mutsPerClone(ncd)))
+    expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
+    expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
     summary(nca)[, c(1:3, 8:9)]
     summary(ncb)[, c(1:3, 8:9)]
     summary(ncc)[, c(1:3, 8:9)]
     summary(ncd)[, c(1:3, 8:9)]
-       
 })
-
+date()
 
 
 test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Can occasionally blow up with pE.f: pE not finite.
-
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n x2cd: the seed is", pseed, "\n")
@@ -493,11 +483,9 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
     expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
     expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
-
 })
 
 test_that("MCFL Relative ordering of number of clones with mutator effects", {
-    
     ## Can occasionally blow up with pE.f: pE not finite.
     pseed <-sample(9999999, 1)
     set.seed(pseed)
@@ -544,16 +532,10 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
     summary(nc3)[, c(1:3, 8:9)]
     expect_true(mean(mutsPerClone(nc1)) > mean(mutsPerClone(nc2)))
     expect_true(mean(mutsPerClone(nc2)) > mean(mutsPerClone(nc3)))
-    
 })
 date()
 
-
-
-
-
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
-
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
     pseed <-sample(9999999, 1)
@@ -608,14 +590,12 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
     expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
     expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
-       
 })
 
 
 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Can occasionally blow up with pE.f: pE not finite.
-
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcx2cd: the seed is", pseed, "\n")
@@ -670,13 +650,11 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
     expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
     expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
-    
 })
 
 
 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
-
     ## Can occasionally blow up with pE.f: pE not finite.
     pseed <- sample(99999999, 1)
     set.seed(pseed)
@@ -736,7 +714,6 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
     expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(pg)))
     expect_true(mean(mutsPerClone(mnpg)) > mean(mutsPerClone(npg)))
     expect_true(mean(mutsPerClone(pg)) > mean(mutsPerClone(npg)))
-    
 })
 
 
@@ -801,7 +778,7 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
     expect_true(mean(mutsPerClone(mnpg)) > mean(mutsPerClone(npg)))
     expect_true(mean(mutsPerClone(pg)) > mean(mutsPerClone(npg)))
 })
-
+date()
 
 ##### Comparisons against expected freqs, using a chi-square
 
@@ -1448,7 +1425,6 @@ date()
 ## same with McFL below
 date()
 test_that("per-gene-mut rates and mutator", {
-
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n oss11: the seed is", pseed, "\n")
@@ -1571,16 +1547,14 @@ test_that("per-gene-mut rates and mutator", {
                  mean(mutsPerClone(m2.mutator1)))
     expect_true( mean(mutsPerClone(m1.mutator2)) <
                  mean(mutsPerClone(m2.mutator2)))
-    
 })
+date()
 
 
 
-
-
+## FIXME: very slow, move to long later
 date()
 test_that("McFL: per-gene-mut rates and mutator", {
-
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcfloss11: the seed is", pseed, "\n")
@@ -1702,17 +1676,15 @@ test_that("McFL: per-gene-mut rates and mutator", {
                  mean(mutsPerClone(m2.mutator1)))
     expect_true( mean(mutsPerClone(m1.mutator2)) <
                  mean(mutsPerClone(m2.mutator2)))
-    
 })
-
+date()
 
 
 
 ## FIXME move later to long
-## Slow (~ 3 seconds) but tests modules of mutator nicely.
+## Slow (~ 5 seconds) but tests modules of mutator nicely.
 date() ## Beware: this uses a lot of RAM without the gc()
 test_that("Mutator modules differences", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mmd1: the seed is", pseed, "\n")
@@ -1787,7 +1759,6 @@ test_that("Mutator modules differences", {
                  mean(mutsPerClone(b2)))
     expect_true( mean(mutsPerClone(b2)) >
                  mean(mutsPerClone(b1)))
-    
 })
 date()
 
@@ -1796,7 +1767,6 @@ date()
 
 date() ## Beware: this uses a lot of RAM without the gc()
 test_that("McFL: Mutator modules differences", {
-    
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n MCFLmmd1: the seed is", pseed, "\n")
@@ -1871,7 +1841,6 @@ test_that("McFL: Mutator modules differences", {
                  mean(mutsPerClone(b2)))
     expect_true( mean(mutsPerClone(b2)) >
                  mean(mutsPerClone(b1)))
-    
 })
 date()
 
@@ -1943,7 +1912,6 @@ date()
 
 date() 
 test_that("Mutator, several modules differences, McFL", {
-    
     pseed <- sample(99999999, 1)
     pseed <- 91339980
     set.seed(pseed)
@@ -2008,21 +1976,13 @@ test_that("Mutator, several modules differences, McFL", {
                  median(summary(b1)$NumClones))
     expect_true( mean(mutsPerClone(b2)) >
                  mean(mutsPerClone(b1)))
-
 })
 date()
-
-
-### FIXME: up to here, use also oncoSimulSample
-
-
-
 
 
 date() 
 test_that("Mutator, several modules differences, fitness eval", {
     ## the basis of what we do below, but fewer genes here
-    
     ln <- 2 
     m1 <- 5
     ni <- rep(0, 3 * ln)
@@ -2043,7 +2003,6 @@ test_that("Mutator, several modules differences, fitness eval", {
                                                "B" = gnb,
                                                "C" = gnc))
     f1 <- allFitnessEffects(noIntGenes = ni)
-
     evalAllGenotypesFitAndMut(f1, mut1, order = FALSE)
     evalAllGenotypesFitAndMut(f1, mut2, order = FALSE)
     ## FIXME: complete these evals
