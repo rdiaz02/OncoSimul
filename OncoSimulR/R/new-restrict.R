@@ -837,13 +837,13 @@ allFitnessEffects <- function(rT = NULL,
 
 
 evalGenotypeORMut <- function(genotype,
-                              fitnessEffects,
+                              fmEffects,
                               verbose = FALSE,
                               echo = FALSE,
                               model = "",
                               calledBy_= NULL) {
     ## genotype can be a vector of integers, that are the exact same in
-    ## the table of fitnessEffects or a vector of strings, or a vector (a
+    ## the table of fmEffects or a vector of strings, or a vector (a
     ## string) with genes separated by "," or ">"
 
     if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
@@ -857,14 +857,14 @@ evalGenotypeORMut <- function(genotype,
         } else if(length(grep(",", genotype))) {
             genotype <- nice.vector.eo(genotype, ",")
         }
-        all.g.nums <- c(fitnessEffects$geneModule$GeneNumID,
-                        fitnessEffects$long.geneNoInt$GeneNumID)
-        all.g.names <- c(fitnessEffects$geneModule$Gene,
-                         fitnessEffects$long.geneNoInt$Gene)
+        all.g.nums <- c(fmEffects$geneModule$GeneNumID,
+                        fmEffects$long.geneNoInt$GeneNumID)
+        all.g.names <- c(fmEffects$geneModule$Gene,
+                         fmEffects$long.geneNoInt$Gene)
         genotype <- all.g.nums[match(genotype, all.g.names)]
     }
     if(any(is.na(genotype)))
-        stop("genotype contains NAs or genes not in fitnessEffects")
+        stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
     if(!length(genotype))
         stop("genotypes must have at least one mutated gene")
     if(any(genotype < 0)) {
@@ -876,7 +876,7 @@ evalGenotypeORMut <- function(genotype,
     else
         prodNeg <- FALSE
     ff <- evalRGenotype(rG = genotype,
-                        rFE = fitnessEffects,
+                        rFE = fmEffects,
                         verbose = verbose,
                         prodNeg = prodNeg,
                         calledBy_ = calledBy_)
@@ -905,7 +905,7 @@ evalGenotype <- function(genotype, fitnessEffects,
              "You did not pass an object of class fitnessEffects.")
 
     evalGenotypeORMut(genotype = genotype,
-                       fitnessEffects = fitnessEffects,
+                       fmEffects = fitnessEffects,
                        verbose = verbose,
                        echo = echo,
                        model  = model ,
@@ -1013,7 +1013,8 @@ evalGenotypeFitAndMut <- function(genotype,
 
 ## I am here: simplify this
 
-evalAllGenotypesORMut <- function(fitnessEffects, order = TRUE, max = 256,
+evalAllGenotypesORMut <- function(fmEffects,
+                                  order = TRUE, max = 256,
                              addwt = FALSE,
                              model = "",
                              calledBy_ = "") {
@@ -1021,15 +1022,15 @@ evalAllGenotypesORMut <- function(fitnessEffects, order = TRUE, max = 256,
         stop("How did you call this function?. Bug.")
     
     if( (calledBy_ == "evalGenotype" ) &&
-        (!inherits(fitnessEffects, "fitnessEffects")))
+        (!inherits(fmEffects, "fitnessEffects")))
         stop("You are trying to get the fitness of a mutator specification. ",
              "You did not pass an object of class fitnessEffects.")
     if( (calledBy_ == "evalGenotypeMut" ) &&
-        (!inherits(fitnessEffects, "mutatorEffects")))
+        (!inherits(fmEffects, "mutatorEffects")))
         stop("You are trying to get the mutator effects of a fitness specification. ",
              "You did not pass an object of class mutatorEffects.")
 
-    allg <- generateAllGenotypes(fitnessEffects = fitnessEffects,
+    allg <- generateAllGenotypes(fitnessEffects = fmEffects,
                                  order = order, max = max)
     ## if(order)
     ##     tot <- function(n) {sum(sapply(seq.int(n),
@@ -1079,7 +1080,7 @@ evalAllGenotypesORMut <- function(fitnessEffects, order = TRUE, max = 256,
     else
         prodNeg <- FALSE
     allf <- vapply(allg$genotNums,
-                   function(x) evalRGenotype(x, fitnessEffects, FALSE,
+                   function(x) evalRGenotype(x, fmEffects, FALSE,
                                              prodNeg,
                                              calledBy_),
                    1.1)
@@ -1107,7 +1108,7 @@ evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
                              addwt = FALSE,
                              model = "") {
     evalAllGenotypesORMut(
-        fitnessEffects = fitnessEffects,
+        fmEffects = fitnessEffects,
         order = order,
         max = max,
         addwt = addwt,
@@ -1519,7 +1520,7 @@ nr_oncoSimul.internal <- function(rFE,
         if(any(is.na(full2mutator_$Full)))
             stop("Genes in mutatorEffects not present in fitnessEffects")
         if(any(is.na(full2mutator_)))
-            step("full2mutator failed for unknown reasons")
+            stop("full2mutator failed for unknown reasons")
         full2mutator_ <- full2mutator_$Reduced
     } else {
         full2mutator_ <- vector(mode = "numeric", length = 0)
@@ -1682,8 +1683,12 @@ matchGeneIDs <- function(x, refFE) {
     n2 <- allNamedGenes(refFE)
     colnames(n1)[2] <- "Reduced"
     colnames(n2)[2] <- "Full"
+    ## Non standard evaluation thing and a note being generated in check.
+    ## See also http://stackoverflow.com/questions/33299845/when-writing-functions-for-an-r-package-should-i-avoid-non-standard-evaluation
+    ## But does not work well with replace. So use the NULL trick
+    Reduced <- NULL
     dplyr::full_join(n2, n1, by = "Gene") %>%
-        mutate(Reduced = replace(Reduced, is.na(Reduced), -9))
+         mutate(Reduced = replace(Reduced, is.na(Reduced), -9))
 }
 
 

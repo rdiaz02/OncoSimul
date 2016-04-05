@@ -194,7 +194,7 @@ test_that("eval mut genotypes", {
     expect_identical(evalGenotypeMut("c > a", fm),
                      50)
     expect_error(evalGenotypeMut("b", fm),
-                 "genotype contains NAs or genes not in fitnessEffects",
+                 "genotype contains NAs or genes not in fitnessEffects/mutatorEffects",
                  fixed = TRUE)
 })
 

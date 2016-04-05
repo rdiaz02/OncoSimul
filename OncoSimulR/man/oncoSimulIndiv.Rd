@@ -19,7 +19,8 @@
   al., 2012.
 }
 \usage{
- oncoSimulIndiv(fp, model = "Exp", numPassengers = 0, mu = 1e-6,
+ oncoSimulIndiv(fp, model = "Exp", 
+                numPassengers = 0, mu = 1e-6, muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -40,6 +41,7 @@
                 seed = NULL)
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
+                muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -161,10 +163,15 @@ oncoSimulSample(Nindiv,
 }
 
 \item{muEF}{
+
   Mutator effects. A mutatorEffects object as obtained from
   \code{\link{allMutatorEffects}}. This specifies how mutations in
-  certain genes change the mutation rate over all the genome.
-
+  certain genes change the mutation rate over all the genome. Therefore,
+  this allows you to specify mutator phenotypes: models where mutation
+  of one (or more) gene(s) leads to an increase in the mutation
+  rate. This is only available for version 2 (and above) specifications.
+  
+  
   All the genes specified in \code{muEF} MUST be included in
   \code{fp}. If you want to have genes that have no direct effect on
   fitness, but that affect mutation rate, you MUST specify them in
