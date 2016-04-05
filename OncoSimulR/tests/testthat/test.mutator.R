@@ -208,6 +208,36 @@ test_that("eval mut genotypes", {
                  fixed = TRUE)
 })
 
+
+
+test_that("mut and fitness both needed when needed", {
+    fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                          "b : c" = 0.5),
+                            noIntGenes = c("e" = 0.1),
+                            drvNames = c(letters[1:3]))
+    fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                           "c" = 5))
+    expect_error(evalGenotypeFitAndMut("a, b", fe),
+                 'argument "mutatorEffects" is missing',
+                 fixed = TRUE)
+    expect_error(evalGenotypeFitAndMut("a, b", fm),
+                 "genotype contains NAs or genes not in fitnessEffects",
+                 fixed = TRUE)
+    expect_error(evalGenotypeFitAndMut("a, b", mutatorEffects = fm),
+                 'argument "fitnessEffects" is missing',
+                 fixed = TRUE)
+    expect_error(evalAllGenotypesFitAndMut(fe),
+                 'argument "mutatorEffects" is missing',
+                 fixed = TRUE)
+    expect_error(evalAllGenotypesFitAndMut(fm),
+                 'argument "mutatorEffects" is missing',
+                 fixed = TRUE)
+    expect_error(evalAllGenotypesFitAndMut(mutatorEffects = fm),
+                'argument "fitnessEffects" is missing',
+                 fixed = TRUE)
+})
+
+
 test_that("we evaluate the WT", {
     ## Is fitness of wildtype always 0? Really? Evaluate it.
     ## It is: see evalGenotypeFitness
@@ -844,15 +874,6 @@ test_that("Mutator, several modules differences, fitness eval", {
 
 ## 7. Check fail in 1., 2., 3., 4., where some genes in mutator not in
 ## fitness.
-
-## 8. check fail if mutator and fitness not both given in the FitAndMut
-## functions.
-
-
-## docs:
-##    - help
-##  -fignete
-##  - finish docs
 
 
 
