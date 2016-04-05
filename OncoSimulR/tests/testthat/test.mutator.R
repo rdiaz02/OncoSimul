@@ -347,25 +347,25 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
                          finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
                          initMutant = "thisistheagene",
-                         onlyCancer = FALSE, mc.cores = 2)
+                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pg <- oncoSimulPop(pops, fe, 
                        finalTime = ft,
                        mutationPropGrowth = TRUE,
                        initSize = no, model = "McFL",
                        initMutant = "thisistheagene",
-                       onlyCancer = FALSE, mc.cores = 2)
+                       onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     npg <- oncoSimulPop(pops, fe, 
                         finalTime = ft,
                         mutationPropGrowth = FALSE,
                         initSize = no, model = "McFL",
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ##   ## I once saw a weird thing
     ## expect_true(var(summary(mpg)$NumClones) > 1e-4)
     ## expect_true(var(summary(mnpg)$NumClones) > 1e-4)
@@ -553,7 +553,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pop100 <- oncoSimulPop(pops,
                         fe,
                         mu = muvector,
@@ -563,7 +563,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
@@ -607,7 +607,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pop100 <- oncoSimulPop(pops,
                         fe,
                         mu = muvector,
@@ -617,7 +617,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones

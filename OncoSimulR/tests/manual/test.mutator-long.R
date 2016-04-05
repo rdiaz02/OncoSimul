@@ -1,4 +1,4 @@
-## This test takes about 6 to 7 minutes in my laptop
+## This test takes about 12 to 13 minutes in my laptop
 
 cat(paste("\n Starting test.mutator-long.R test at", date()))
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
@@ -96,7 +96,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcx2bc: the seed is", pseed, "\n")
-    pops <- 30
+    pops <- 50
     ni <- rep(0.01, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
     fe <- allFitnessEffects(noIntGenes = ni)
@@ -110,28 +110,28 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
                         initMutant = "a",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "b",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "c",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "d",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     expect_true( wilcox.test(summary(nca)$NumClones, 
                  summary(ncb)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(ncb)$NumClones ,
@@ -154,7 +154,7 @@ test_that(" Init with different mutators", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n z2: the seed is", pseed, "\n")
-    pops <- 40
+    pops <- 60
     ft <- .005
     lni <- 50
     no <- 1e7
@@ -233,7 +233,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm0: the seed is", pseed, "\n")
-    pops <- 20
+    pops <- 40
     ft <- .0001
     lni <- 100
     no <- 1e7
@@ -258,7 +258,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pop100 <- oncoSimulPop(pops,
                         fe,
                         mu = muvector,
@@ -267,7 +267,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
@@ -285,7 +285,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm1: the seed is", pseed, "\n")
-    pops <- 20
+    pops <- 40
     ft <- 1
     lni <- 100
     no <- 1e5
@@ -310,7 +310,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pop100 <- oncoSimulPop(pops,
                         fe,
                         mu = muvector,
@@ -319,7 +319,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
@@ -335,7 +335,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
     pseed <- sample(99999999, 1)
     set.seed(pseed)
     cat("\n x2ef: the seed is", pseed, "\n")
-    pops <- 70
+    pops <- 90
     ft <- 1
     lni <- 200
     no <- 5e3
@@ -353,25 +353,25 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
                          finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no,
                          initMutant = "thisistheagene",
-                         onlyCancer = FALSE, mc.cores = 2)
+                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     pg <- oncoSimulPop(pops, fe, 
                        finalTime = ft,
                        mutationPropGrowth = TRUE,
                        initSize = no,
                        initMutant = "thisistheagene",
-                       onlyCancer = FALSE, mc.cores = 2)
+                       onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     npg <- oncoSimulPop(pops, fe, 
                         finalTime = ft,
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
       ## I once saw a weird thing
     expect_true(var(summary(mpg)$NumClones) > 1e-4)
     expect_true(var(summary(mnpg)$NumClones) > 1e-4)
@@ -400,7 +400,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n u8_1: the seed is", pseed, "\n")
-    pops <- 100
+    pops <- 120
     ft <- .0001
     lni <- 80 
     no <- 5e7
@@ -449,7 +449,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n x2cd: the seed is", pseed, "\n")
-    pops <- 30
+    pops <- 50
     ni <- rep(0, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
     fe <- allFitnessEffects(noIntGenes = ni)
@@ -463,28 +463,28 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                         initMutant = "a",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "b",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "c",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "d",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
@@ -512,7 +512,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n x2bc: the seed is", pseed, "\n")
-    pops <- 40
+    pops <- 60
     ni <- rep(0.01, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
     fe <- allFitnessEffects(noIntGenes = ni)
@@ -526,28 +526,28 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                         initMutant = "a",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "b",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "c",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "d",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2)
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
     expect_true( wilcox.test(summary(nca)$NumClones,
                  summary(ncb)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(ncb)$NumClones,
@@ -570,7 +570,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcx1: the seed is", pseed, "\n")
-    pops <- 40
+    pops <- 60
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
                                            "c" = 0.16,
@@ -584,7 +584,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                         sampleEvery = 0.01,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2, model = "McFL",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, seed = NULL)
     fm8 <- allMutatorEffects(noIntGenes = c("a" = 1,
                                             "b" = 1,
                                             "c" = 1,
@@ -594,7 +594,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                         sampleEvery = 0.01,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2, model = "McFL",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, seed = NULL)
     fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
                                             "b" = 1e-6,
                                             "c" = 1e-6,
@@ -604,7 +604,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                         sampleEvery = 0.01,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2, model = "McFL",
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, seed = NULL)
     expect_true(wilcox.test(summary(nc1)$NumClones, summary(nc2)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(nc2)$NumClones, summary(nc3)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     summary(nc1)[, c(1:3, 8:9)]
@@ -621,7 +621,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcx2cd: the seed is", pseed, "\n")
-    pops <- 40
+    pops <- 60
     ni <- rep(0, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
     fe <- allFitnessEffects(noIntGenes = ni)
@@ -635,28 +635,28 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
                         initMutant = "a",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     ncb <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "b",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     ncc <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "c",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     ncd <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "d",
                         sampleEvery = 0.01,
                         keepEvery = 5,
-                        onlyCancer = FALSE, mc.cores = 2, model = "McFL")
+                        onlyCancer = FALSE, seed = NULL, mc.cores = 2, model = "McFL")
     ## I once saw a weird thing
     expect_true(var(summary(nca)$NumClones) > 1e-4)
     expect_true(var(summary(ncb)$NumClones) > 1e-4)
@@ -683,7 +683,7 @@ test_that("Mutator modules differences", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mmd1: the seed is", pseed, "\n")
-    reps <- 40
+    reps <- 60
     no <- 5e3
     ft <- 100
     mu <- 1e-5
@@ -763,7 +763,7 @@ test_that("McFL: Mutator modules differences", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n MCFLmmd1: the seed is", pseed, "\n")
-    reps <- 40
+    reps <- 60
     no <- 5e3
     ft <- 100
     mu <- 1e-5
@@ -842,7 +842,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n x1: the seed is", pseed, "\n")
-    pops <- 60
+    pops <- 80
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
                                            "c" = 0.16,
@@ -856,7 +856,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                         sampleEvery = 0.01,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2,
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, seed = NULL)
     fm8 <- allMutatorEffects(noIntGenes = c("a" = 1,
                                             "b" = 1,
                                             "c" = 1,
@@ -866,7 +866,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                         sampleEvery = 0.01,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2,
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, seed = NULL)
     fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
                                             "b" = 1e-6,
                                             "c" = 1e-6,
@@ -876,7 +876,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                         sampleEvery = 0.01,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2,
-                        onlyCancer = FALSE)
+                        onlyCancer = FALSE, seed = NULL)
     expect_true(wilcox.test(summary(nc1)$NumClones, summary(nc2)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(nc2)$NumClones, summary(nc3)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(nc1), mutsPerClone(nc2), alternative = "greater")$p.value < p.value.threshold)
@@ -905,7 +905,7 @@ test_that("per-gene-mut rates and mutator", {
     fe1 <- allFitnessEffects(noIntGenes = ni)
     ft <- 50
     no <- 5e5 
-    reps <- 60
+    reps <- 100
     gn <- paste(names(ni), collapse = ", ")
     ## MUs used to be 25 and 100. Way too slow.
     mutator1 <- allMutatorEffects(epistasis = c("MU" = 15),
@@ -1026,7 +1026,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
     fe1 <- allFitnessEffects(noIntGenes = ni)
     ft <- 50
     no <- 5e5 
-    reps <- 60
+    reps <- 150
     gn <- paste(names(ni), collapse = ", ")
     mutator1 <- allMutatorEffects(epistasis = c("MU" = 15),
                                   geneToModule = c("MU" = gn))
@@ -1138,7 +1138,7 @@ test_that("Mutator, several modules differences, McFL", {
     pseed <- 91339980
     set.seed(pseed)
     cat("\n mmdSMMC1: the seed is", pseed, "\n")
-    reps <- 30
+    reps <- 50
     no <- 5e3
     ft <- 50 ## you need it large enough to get enough hits
     mu <- 1e-5
