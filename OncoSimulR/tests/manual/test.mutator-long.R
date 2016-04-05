@@ -1,3 +1,5 @@
+## This test takes about 6 to 7 minutes in my laptop
+
 cat(paste("\n Starting test.mutator-long.R test at", date()))
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
@@ -85,6 +87,8 @@ smAnomPi <- function(out, name) {
     smAnom(out, name)/totalind(out)
 }
 
+p.value.threshold <- 0.001
+
 date()
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on finalTime, not popSize
@@ -92,7 +96,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     pseed <-sample(9999999, 1)
     set.seed(pseed)
     cat("\n mcx2bc: the seed is", pseed, "\n")
-    pops <- 10
+    pops <- 30
     ni <- rep(0.01, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
     fe <- allFitnessEffects(noIntGenes = ni)
@@ -129,18 +133,18 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
                         keepEvery = 5,
                         onlyCancer = FALSE, mc.cores = 2, model = "McFL")
     expect_true( wilcox.test(summary(nca)$NumClones, 
-                 summary(ncb)$NumClones, alternative = "less")$p.value < p.fail)
+                 summary(ncb)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(ncb)$NumClones ,
-                summary(ncc)$NumClones, alternative = "less")$p.value < p.fail)
+                summary(ncc)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(ncc)$NumClones,
-                 summary(ncd)$NumClones, alternative = "less")$p.value < p.fail)
+                 summary(ncd)$NumClones, alternative = "less")$p.value < p.value.threshold)
     summary(nca)[, c(1:3, 8:9)]
     summary(ncb)[, c(1:3, 8:9)]
     summary(ncc)[, c(1:3, 8:9)]
     summary(ncd)[, c(1:3, 8:9)]
-    expect_true(t.test(mutsPerClone(nca), mutsPerClone(ncb), alternative = "less")$p.value < p.fail)
-    expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.fail)
-    expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.fail)
+    expect_true(t.test(mutsPerClone(nca), mutsPerClone(ncb), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.value.threshold)
 })
 date()
 
@@ -202,10 +206,10 @@ test_that(" Init with different mutators", {
                            initMutant = "nnhsisthecgene",
                            sampleEvery = 0.01, keepEvery = 5, seed = NULL,
                            onlyCancer = FALSE, mc.cores = 2)
-    expect_true(wilcox.test(NClones(m1.pg1.a),  NClones(m1.pg1.b), alternative = "greater")$p.value < p.fail)
-    expect_true(wilcox.test(NClones(m1.pg1.b),  NClones(m1.pg1.c), alternative = "greater")$p.value < p.fail)
-    expect_true(mean(mutsPerClone(m1.pg1.a)) > mean(mutsPerClone(m1.pg1.b)))
-    expect_true(mean(mutsPerClone(m1.pg1.b)) > mean(mutsPerClone(m1.pg1.c)))
+    expect_true(wilcox.test(NClones(m1.pg1.a),  NClones(m1.pg1.b), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(wilcox.test(NClones(m1.pg1.b),  NClones(m1.pg1.c), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.pg1.a), mutsPerClone(m1.pg1.b), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.pg1.b), mutsPerClone(m1.pg1.c), alternative = "greater")$p.value < p.value.threshold)
     expect_true(smAnomPi(m1.pg1.a, "hereisoneagene") >
                 smAnomPi(m1.pg1.b, "oreoisasabgene"))
     expect_true(smAnomPi(m1.pg1.b, "oreoisasabgene") >
@@ -229,7 +233,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm0: the seed is", pseed, "\n")
-    pops <- 6
+    pops <- 20
     ft <- .0001
     lni <- 100
     no <- 1e7
@@ -267,8 +271,8 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
-    expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.fail)
-    expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
+    expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(pop100), mutsPerClone(pop10), alternative = "greater")$p.value < p.value.threshold)
     
 })
 date()
@@ -281,7 +285,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n nm1: the seed is", pseed, "\n")
-    pops <- 6
+    pops <- 20
     ft <- 1
     lni <- 100
     no <- 1e5
@@ -319,8 +323,8 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
-    expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.fail)
-    expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
+    expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(pop100), mutsPerClone(pop10), alternative = "greater")$p.value < p.value.threshold)
 
 })
 
@@ -331,7 +335,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
     pseed <- sample(99999999, 1)
     set.seed(pseed)
     cat("\n x2ef: the seed is", pseed, "\n")
-    pops <- 30
+    pops <- 70
     ft <- 1
     lni <- 200
     no <- 5e3
@@ -375,17 +379,17 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
     expect_true(var(summary(npg)$NumClones) > 1e-4)
     ## These are the real tests
     expect_true( wilcox.test(summary(mpg)$NumClones, 
-                 summary(mnpg)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(mnpg)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(mpg)$NumClones, 
-                summary(pg)$NumClones), alternative = "greater")$p.value < p.fail)
+                summary(pg)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(mnpg)$NumClones, 
-                 summary(npg)$NumClones), alternative = "greater")$p.value < p.fail)
+                 summary(npg)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(pg)$NumClones, 
-                 summary(npg)$NumClones), alternative = "greater")$p.value < p.fail)
-    expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(mnpg)))
-    expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(pg)))
-    expect_true(mean(mutsPerClone(mnpg)) > mean(mutsPerClone(npg)))
-    expect_true(mean(mutsPerClone(pg)) > mean(mutsPerClone(npg)))
+                 summary(npg)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(mpg), mutsPerClone(mnpg), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(mpg), mutsPerClone(pg), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(mnpg), mutsPerClone(npg), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(pg), mutsPerClone(npg), alternative = "greater")$p.value < p.value.threshold)
 })
 date()
 
@@ -488,14 +492,14 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     expect_true(var(summary(ncd)$NumClones) > 1e-4)
     ## These are the real tests
     expect_true( wilcox.test(summary(nca)$NumClones,
-                 summary(ncb)$NumClones, alternative = "less")$p.value < p.fail)
+                 summary(ncb)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(ncb)$NumClones,
-                summary(ncc)$NumClones, alternative = "less")$p.value < p.fail)
+                summary(ncc)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(ncc)$NumClones,
-                 summary(ncd)$NumClones, alternative = "less")$p.value < p.fail)
-    expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
-    expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
-    expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
+                 summary(ncd)$NumClones, alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(nca), mutsPerClone(ncb), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.value.threshold)
 })
 date()
 
@@ -545,14 +549,14 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                         keepEvery = 5,
                         onlyCancer = FALSE, mc.cores = 2)
     expect_true( wilcox.test(summary(nca)$NumClones,
-                 summary(ncb)$NumClones, alternative = "less")$p.value < p.fail)
+                 summary(ncb)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(ncb)$NumClones,
-                summary(ncc)$NumClones, alternative = "less")$p.value < p.fail)
+                summary(ncc)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(ncc)$NumClones,
-                 summary(ncd)$NumClones, alternative = "less")$p.value < p.fail)
-    expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
-    expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
-    expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
+                 summary(ncd)$NumClones, alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(nca), mutsPerClone(ncb), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.value.threshold)
     summary(nca)[, c(1:3, 8:9)]
     summary(ncb)[, c(1:3, 8:9)]
     summary(ncc)[, c(1:3, 8:9)]
@@ -601,13 +605,13 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2, model = "McFL",
                         onlyCancer = FALSE)
-    expect_true(wilcox.test(summary(nc1)$NumClones) > median(summary(nc2)$NumClones))
-    expect_true(wilcox.test(summary(nc2)$NumClones) > median(summary(nc3)$NumClones))
+    expect_true(wilcox.test(summary(nc1)$NumClones, summary(nc2)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(wilcox.test(summary(nc2)$NumClones, summary(nc3)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     summary(nc1)[, c(1:3, 8:9)]
     summary(nc2)[, c(1:3, 8:9)]
     summary(nc3)[, c(1:3, 8:9)]
-    expect_true(mean(mutsPerClone(nc1)) > mean(mutsPerClone(nc2)))
-    expect_true(mean(mutsPerClone(nc2)) > mean(mutsPerClone(nc3)))
+    expect_true(t.test(mutsPerClone(nc1), mutsPerClone(nc2), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(nc2), mutsPerClone(nc3), alternative = "greater")$p.value < p.value.threshold)
 })
 date()
 
@@ -660,14 +664,14 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     expect_true(var(summary(ncd)$NumClones) > 1e-4)
     ## These are the real tests
     expect_true( wilcox.test(summary(nca)$NumClones,
-                 summary(ncb)$NumClones, alternative = "less")$p.value < p.fail)
+                 summary(ncb)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true(wilcox.test(summary(ncb)$NumClones,
-                summary(ncc)$NumClones, alternative = "less")$p.value < p.fail)
+                summary(ncc)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(ncc)$NumClones,
-                 summary(ncd)$NumClones, alternative = "less")$p.value < p.fail)
-    expect_true(mean(mutsPerClone(nca)) < mean(mutsPerClone(ncb)))
-    expect_true(mean(mutsPerClone(ncb)) < mean(mutsPerClone(ncc)))
-    expect_true(mean(mutsPerClone(ncc)) < mean(mutsPerClone(ncd)))
+                 summary(ncd)$NumClones, alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(nca), mutsPerClone(ncb), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.value.threshold)
 })
 date()
 
@@ -679,7 +683,7 @@ test_that("Mutator modules differences", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n mmd1: the seed is", pseed, "\n")
-    reps <- 20
+    reps <- 40
     no <- 5e3
     ft <- 100
     mu <- 1e-5
@@ -743,13 +747,11 @@ test_that("Mutator modules differences", {
     ## This is, of course, affected by sampling only at end: we do not see
     ## the many intermediate events.
     expect_true( wilcox.test(summary(b3)$NumClones, 
-                 summary(b2)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(b2)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(b2)$NumClones, 
-                 summary(b1)$NumClones, alternative = "greater")$p.value < p.fail)
-    expect_true( mean(mutsPerClone(b3)) >
-                 mean(mutsPerClone(b2)))
-    expect_true( mean(mutsPerClone(b2)) >
-                 mean(mutsPerClone(b1)))
+                 summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(b3), mutsPerClone(b2), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
 })
 date()
 
@@ -761,7 +763,7 @@ test_that("McFL: Mutator modules differences", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n MCFLmmd1: the seed is", pseed, "\n")
-    reps <- 20
+    reps <- 40
     no <- 5e3
     ft <- 100
     mu <- 1e-5
@@ -825,13 +827,11 @@ test_that("McFL: Mutator modules differences", {
     ## This is, of course, affected by sampling only at end: we do not see
     ## the many intermediate events.
     expect_true( wilcox.test(summary(b3)$NumClones, 
-                 summary(b2)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(b2)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(b2)$NumClones, 
-                 summary(b1)$NumClones, alternative = "greater")$p.value < p.fail)
-    expect_true( mean(mutsPerClone(b3)) >
-                 mean(mutsPerClone(b2)))
-    expect_true( mean(mutsPerClone(b2)) >
-                 mean(mutsPerClone(b1)))
+                 summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(b3), mutsPerClone(b2), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
 })
 date()
 
@@ -877,10 +877,10 @@ test_that("Relative ordering of number of clones with mutator effects", {
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2,
                         onlyCancer = FALSE)
-    expect_true(wilcox.test(summary(nc1)$NumClones) > median(summary(nc2)$NumClones))
-    expect_true(wilcox.test(summary(nc2)$NumClones) > median(summary(nc3)$NumClones))
-    expect_true(mean(mutsPerClone(nc1)) > mean(mutsPerClone(nc2)))
-    expect_true(mean(mutsPerClone(nc2)) > mean(mutsPerClone(nc3)))
+    expect_true(wilcox.test(summary(nc1)$NumClones, summary(nc2)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(wilcox.test(summary(nc2)$NumClones, summary(nc3)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(nc1), mutsPerClone(nc2), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(nc2), mutsPerClone(nc3), alternative = "greater")$p.value < p.value.threshold)
     summary(nc1)[, c(1:3, 8:9)]
     summary(nc2)[, c(1:3, 8:9)]
     summary(nc3)[, c(1:3, 8:9)]
@@ -986,35 +986,28 @@ test_that("per-gene-mut rates and mutator", {
     ## Mutator increases if larger mutator and compared to no mutator
     ## within levels of per-gene mutation rates
     expect_true( wilcox.test(summary(m1.mutator2)$NumClones, 
-                 summary(m1.mutator1)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(m1.mutator1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m1.mutator1)$NumClones, 
-                 summary(m1.mutator0)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(m1.mutator0)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m2.mutator2)$NumClones, 
-                 summary(m2.mutator1)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(m2.mutator1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m2.mutator1)$NumClones, 
-                 summary(m2.mutator0)$NumClones, alternative = "greater")$p.value < p.fail)
-    expect_true( mean(mutsPerClone(m1.mutator2)) >
-                 mean(mutsPerClone(m1.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) >
-                 mean(mutsPerClone(m1.mutator0)))
-    expect_true( mean(mutsPerClone(m2.mutator2)) >
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m2.mutator1)) >
-                 mean(mutsPerClone(m2.mutator0)))
+                 summary(m2.mutator0)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator2), mutsPerClone(m1.mutator1), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator1), mutsPerClone(m1.mutator0), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m2.mutator2), mutsPerClone(m2.mutator1), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m2.mutator1), mutsPerClone(m2.mutator0), alternative = "greater")$p.value < p.value.threshold)
     ## Increases in mutation rates increase clones, etc, within levels of
     ## mutator.
     expect_true( wilcox.test(summary(m1.mutator0)$NumClones,
-                 summary(m2.mutator0, alternative = "less")$p.value < p.fail)NumClones))
+                 summary(m2.mutator0)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m1.mutator1)$NumClones,
-                 summary(m2.mutator1, alternative = "less")$p.value < p.fail)NumClones))
+                 summary(m2.mutator1)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m1.mutator2)$NumClones,
-                 summary(m2.mutator2, alternative = "less")$p.value < p.fail)NumClones))
-    expect_true( mean(mutsPerClone(m1.mutator0)) <
-                 mean(mutsPerClone(m2.mutator0)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) <
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator2)) <
-                 mean(mutsPerClone(m2.mutator2)))
+                 summary(m2.mutator2)$NumClones, alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator0), mutsPerClone(m2.mutator0), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator1), mutsPerClone(m2.mutator1), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator2), mutsPerClone(m2.mutator2), alternative = "less")$p.value < p.value.threshold)
 })
 date()
 
@@ -1113,35 +1106,28 @@ test_that("McFL: per-gene-mut rates and mutator", {
     ## Mutator increases if larger mutator and compared to no mutator
     ## within levels of per-gene mutation rates
     expect_true( wilcox.test(summary(m1.mutator2)$NumClones, 
-                 summary(m1.mutator1)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(m1.mutator1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m1.mutator1)$NumClones, 
-                 summary(m1.mutator0)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(m1.mutator0)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m2.mutator2)$NumClones, 
-                 summary(m2.mutator1)$NumClones, alternative = "greater")$p.value < p.fail)
+                 summary(m2.mutator1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m2.mutator1)$NumClones, 
-                 summary(m2.mutator0)$NumClones, alternative = "greater")$p.value < p.fail)
-    expect_true( mean(mutsPerClone(m1.mutator2)) >
-                 mean(mutsPerClone(m1.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) >
-                 mean(mutsPerClone(m1.mutator0)))
-    expect_true( mean(mutsPerClone(m2.mutator2)) >
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m2.mutator1)) >
-                 mean(mutsPerClone(m2.mutator0)))
+                 summary(m2.mutator0)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator2), mutsPerClone(m1.mutator1), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator1), mutsPerClone(m1.mutator0), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m2.mutator2), mutsPerClone(m2.mutator1), alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m2.mutator1), mutsPerClone(m2.mutator0), alternative = "greater")$p.value < p.value.threshold)
     ## Increases in mutation rates increase clones, etc, within levels of
     ## mutator.
     expect_true( wilcox.test(summary(m1.mutator0)$NumClones,
-                 summary(m2.mutator0, alternative = "less")$p.value < p.fail)NumClones))
+                 summary(m2.mutator0)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m1.mutator1)$NumClones,
-                 summary(m2.mutator1, alternative = "less")$p.value < p.fail)NumClones))
+                 summary(m2.mutator1)$NumClones, alternative = "less")$p.value < p.value.threshold)
     expect_true( wilcox.test(summary(m1.mutator2)$NumClones,
-                 summary(m2.mutator2, alternative = "less")$p.value < p.fail)NumClones))
-    expect_true( mean(mutsPerClone(m1.mutator0)) <
-                 mean(mutsPerClone(m2.mutator0)))
-    expect_true( mean(mutsPerClone(m1.mutator1)) <
-                 mean(mutsPerClone(m2.mutator1)))
-    expect_true( mean(mutsPerClone(m1.mutator2)) <
-                 mean(mutsPerClone(m2.mutator2)))
+                 summary(m2.mutator2)$NumClones, alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator0), mutsPerClone(m2.mutator0), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator1), mutsPerClone(m2.mutator1), alternative = "less")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.mutator2), mutsPerClone(m2.mutator2), alternative = "less")$p.value < p.value.threshold)
 })
 date()
 
@@ -1209,9 +1195,8 @@ test_that("Mutator, several modules differences, McFL", {
     ## This is, of course, affected by sampling only at end: we do not see
     ## the many intermediate events.
     expect_true( wilcox.test(summary(b2)$NumClones, 
-                 summary(b1)$NumClones, alternative = "greater")$p.value < p.fail)
-    expect_true( mean(mutsPerClone(b2)) >
-                 mean(mutsPerClone(b1)))
+                 summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
 })
 date()
 
@@ -1321,4 +1306,755 @@ cat(paste("\n Finished test.mutator-long.R test at", date(), "\n"))
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## ### These are too convoluted and trying to pick too tiny diffs. Substitute
+## ###  by diffs initMutant and by per-gene-mut rates and mutator
+
+## date()
+## test_that("Num clones: Mutator and var mut rates and init and really scrambled names", {
+##     pseed <- sample(9999999, 1)
+##     set.seed(pseed)
+##     cat("\n z2: the seed is", pseed, "\n")
+##     pops <- 40
+##     ft <- .005
+##     lni <- 50
+##     no <- 1e7
+##     ni <- c(0, 0, 0, rep(0, lni))
+##     ## scramble around names
+##     names(ni) <- c("hereisoneagene",
+##                    "oreoisasabgene",
+##                    "nnhsisthecgene",
+##                    replicate(lni,
+##                              paste(sample(letters, 12), collapse = "")))
+##     ni <- ni[order(names(ni))]
+##     fe <- allFitnessEffects(noIntGenes = ni)
+##     mutator1 <- mutator2 <- rep(1, lni + 3)
+##     pg1 <- pg2 <- rep(5e-6, lni + 3)
+##     ## scramble names of mutator and per-gene too
+##     names(mutator1) <- sample(names(ni))
+##     names(mutator2) <- sample(names(ni))
+##     names(pg1) <- sample(names(ni))
+##     names(pg2) <- sample(names(ni))
+##     mutator1["hereisoneagene"] <- 100
+##     mutator2["hereisoneagene"] <- 1
+##     mutator1["oreoisasabgene"] <- 1
+##     mutator2["oreoisasabgene"] <- 0.01
+##     mutator1["nnhsisthecgene"] <- 0.01
+##     mutator2["nnhsisthecgene"] <- 100
+##     m1 <- allMutatorEffects(noIntGenes = mutator1)
+##     m2 <- allMutatorEffects(noIntGenes = mutator2)
+##     pg1["hereisoneagene"] <- 1e-3
+##     pg2["hereisoneagene"] <- 1e-14
+##     pg1["oreoisasabgene"] <- 1e-7
+##     pg2["oreoisasabgene"] <- 1e-7
+##     pg1["nnhsisthecgene"] <- 1e-14
+##     pg2["nnhsisthecgene"] <- 1e-3
+##     m1.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg1.b <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "oreoisasabgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
+##     ## Too tiny diffs
+##     ## expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
+##     m2.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m2.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m2.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m2.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     ## too tiny
+##     ## expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
+##     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg1.a))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg2.a))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg1.c))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m2.pg1.c, "nnhsisthecgene"))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m1.pg1.a, "hereisoneagene"))
+## })
+## date()
+
+## ## This is slow and very fragile, because unless we want to increase pops
+## ## a lots, we can often miss differences in
+## ## medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a)
+## ## and
+## ## medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c)
+## ## and
+## ## medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c)
+## date()
+## test_that("McFL: Num clones: Mutator and var mut rates and init and really scrambled names", {
+##     pseed <- sample(300:400, 1)
+##     set.seed(pseed)
+##     cat("\n x3: the seed is", pseed, "\n")
+##     pops <- 80
+##     ft <- .002
+##     lni <- 20
+##     no <- 3e5
+##     ni <- c(0, 0, 0, rep(0, lni))
+##     ## scramble around names
+##     names(ni) <- c("hereisoneagene",
+##                    "oreoisasabgene",
+##                    "nnhsisthecgene",
+##                    replicate(lni,
+##                              paste(sample(letters, 12), collapse = "")))
+##     ni <- ni[order(names(ni))]
+##     fe <- allFitnessEffects(noIntGenes = ni)
+##     mutator1 <- mutator2 <- rep(1, lni + 3)
+##     pg1 <- pg2 <-  rep(1e-4, lni + 3)
+##     ## this: runif(lni + 3, min = 1e-6, max = 1e-5) 
+##     ## adds too much variation in mutation rates between runs
+##     ## scramble names of mutator and per-gene too
+##     names(mutator1) <- sample(names(ni))
+##     names(mutator2) <- sample(names(ni))
+##     names(pg1) <- sample(names(ni))
+##     names(pg2) <- sample(names(ni))
+##     mutator1["hereisoneagene"] <- 50
+##     mutator2["hereisoneagene"] <- 5 # 1
+##     mutator1["oreoisasabgene"] <- 1
+##     mutator2["oreoisasabgene"] <- 0.01
+##     mutator1["nnhsisthecgene"] <- 1 # 0.5
+##     mutator2["nnhsisthecgene"] <- 50
+##     m1 <- allMutatorEffects(noIntGenes = mutator1)
+##     m2 <- allMutatorEffects(noIntGenes = mutator2)
+##     pg1["hereisoneagene"] <- 5e-3
+##     pg2["hereisoneagene"] <- 5e-15
+##     pg1["oreoisasabgene"] <- 1e-7
+##     pg2["oreoisasabgene"] <- 1e-7
+##     pg1["nnhsisthecgene"] <- 5e-15
+##     pg2["nnhsisthecgene"] <- 5e-3
+##     m1.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m1.pg1.b <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "oreoisasabgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
+##     ## Too tiny diffs
+##     ## expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
+##     m2.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m2.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m2.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     m2.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, mc.cores = 2)
+##     ## too small.
+##     ## expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
+##     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg1.a))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg2.a))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg1.c))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m2.pg1.c, "nnhsisthecgene"))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m1.pg1.a, "hereisoneagene"))
+## })
+## date()
+
+
+
+
+
+
+## ## Tiny diffs often missed. Again, culprits are often
+## ## * Not expected: medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a) isn't true.
+## ## * Not expected: medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c) isn't true.
+## ## * Not expected: medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c) isn't true.
+
+## date()
+## test_that("Num clones: Mutator and var mut rates and init and really scrambled names, mutPropgrowth", {
+##     pseed <- sample(1:100, 1)
+##     set.seed(pseed)
+##     cat("\n x4: the seed is", pseed, "\n")
+##     pops <- 100 ## the more, the better, but takes long.
+##     ft <- .001
+##     lni <- 30  ## 200
+##     no <- 1e7
+##     ni <- c(0, 0, 0, rep(0, lni))
+##     ## scramble around names
+##     names(ni) <- c("hereisoneagene",
+##                    "oreoisasabgene",
+##                    "nnhsisthecgene",
+##                    replicate(lni,
+##                              paste(sample(letters, 12), collapse = "")))
+##     ni <- ni[order(names(ni))]
+##     fe <- allFitnessEffects(noIntGenes = ni)
+##     mutator1 <- mutator2 <- rep(1, lni + 3)
+##     pg1 <- pg2 <- rep(1e-5, lni + 3)
+##     ## scramble names of mutator and per-gene too
+##     names(mutator1) <- sample(names(ni))
+##     names(mutator2) <- sample(names(ni))
+##     names(pg1) <- sample(names(ni))
+##     names(pg2) <- sample(names(ni))
+##     mutator1["hereisoneagene"] <- 100
+##     mutator2["hereisoneagene"] <- 1
+##     mutator1["oreoisasabgene"] <- 1
+##     mutator2["oreoisasabgene"] <- 0.01
+##     mutator1["nnhsisthecgene"] <- 0.5
+##     mutator2["nnhsisthecgene"] <- 100
+##     m1 <- allMutatorEffects(noIntGenes = mutator1)
+##     m2 <- allMutatorEffects(noIntGenes = mutator2)
+##     pg1["hereisoneagene"] <- 1e-3
+##     pg2["hereisoneagene"] <- 1e-14
+##     pg1["oreoisasabgene"] <- 1e-7
+##     pg2["oreoisasabgene"] <- 1e-7
+##     pg1["nnhsisthecgene"] <- 1e-14
+##     pg2["nnhsisthecgene"] <- 1e-3
+##     m1.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg1.b <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "oreoisasabgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
+##     ## next can fail sometimes. Similar to why
+##     ## expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a)) can fail
+##     ## but here, differences might even be smaller. So commented out.
+##     ## expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
+##     m2.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m2.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m2.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m2.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     ## next test sometimes fails; it can, as we use a small difference in total mut. rate.
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
+##     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg1.a))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg2.a))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg1.c))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m2.pg1.c, "nnhsisthecgene"))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m1.pg1.a, "hereisoneagene"))
+## })
+## date()
+
+## date()
+## test_that("McFL: Num clones: Mutator and var mut rates and init and really scrambled names, mutPropGrowt", {
+##     pseed <- sample(1:100, 1)
+##     set.seed(pseed)
+##     cat("\n x5: the seed is", pseed, "\n")
+##     pops <- 200
+##     ft <- .051
+##     lni <- 200
+##     no <- 1e5
+##     ni <- c(0, 0, 0, rep(0, lni))
+##     ## scramble around names
+##     names(ni) <- c("hereisoneagene",
+##                    "oreoisasabgene",
+##                    "nnhsisthecgene",
+##                    replicate(lni,
+##                              paste(sample(letters, 12), collapse = "")))
+##     ni <- ni[order(names(ni))]
+##     fe <- allFitnessEffects(noIntGenes = ni)
+##     mutator1 <- mutator2 <- rep(1, lni + 3)
+##     pg1 <- pg2 <- rep(1e-6, lni + 3)
+##     ## scramble names of mutator and per-gene too
+##     names(mutator1) <- sample(names(ni))
+##     names(mutator2) <- sample(names(ni))
+##     names(pg1) <- sample(names(ni))
+##     names(pg2) <- sample(names(ni))
+##     mutator1["hereisoneagene"] <- 100
+##     mutator2["hereisoneagene"] <- 1
+##     mutator1["oreoisasabgene"] <- 1
+##     mutator2["oreoisasabgene"] <- 0.01
+##     mutator1["nnhsisthecgene"] <- 0.01
+##     mutator2["nnhsisthecgene"] <- 100
+##     m1 <- allMutatorEffects(noIntGenes = mutator1)
+##     m2 <- allMutatorEffects(noIntGenes = mutator2)
+##     pg1["hereisoneagene"] <- 1e-3
+##     pg2["hereisoneagene"] <- 1e-14
+##     pg1["oreoisasabgene"] <- 1e-7
+##     pg2["oreoisasabgene"] <- 1e-7
+##     pg1["nnhsisthecgene"] <- 1e-14
+##     pg2["nnhsisthecgene"] <- 1e-3
+##     m1.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m1.pg1.b <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "oreoisasabgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     expect_true(medianNClones(m1.pg1.a) < medianNClones(m1.pg2.a))
+##     ## Again, too tiny diffs to be detectable with reasonable time
+##     ## expect_true(medianNClones(m1.pg1.c) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg2.c))
+##     expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
+##     m2.pg1.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m2.pg2.a <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "hereisoneagene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m2.pg1.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     m2.pg2.c <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg2,
+##                            muEF = m2,
+##                            finalTime = ft, model = "McFL",
+##                            mutationPropGrowth = TRUE,
+##                            initSize = no,
+##                            initMutant = "nnhsisthecgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg2.a))
+##     expect_true(medianNClones(m2.pg1.c) > medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg1.c) < medianNClones(m2.pg2.c))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg1.a))
+##     expect_true(medianNClones(m2.pg1.a) < medianNClones(m1.pg2.a))
+##     expect_true(medianNClones(m2.pg2.a) < medianNClones(m2.pg1.c))
+##     expect_true(medianNClones(m1.pg2.a) > medianNClones(m1.pg1.c))
+##     ## some of these differences are actually tiny, as the largest clone
+##     ## is the initial one, with a single mutation, which is the same for
+##     ## both in many cases
+##     ## expect_true(smA(m2.pg1.a) < smA(m2.pg1.c))
+##     ## expect_true(smA(m2.pg1.a) < smA(m1.pg1.a))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m2.pg1.c, "nnhsisthecgene"))
+##     expect_true(smAnomPi(m2.pg1.a, "hereisoneagene") <
+##                 smAnomPi(m1.pg1.a, "hereisoneagene"))
+## })
+## date()
+
+
+## ## This is probably getting silly. Too many of the same thing.
+## ## And done more cleanly in "Init with different mutators"
+## test_that("Yet another test of ordering, add scrambling", {
+##     pseed <- sample(6789:26789, 1)
+##     set.seed(pseed)
+##     cat("\n u5: the seed is", pseed, "\n")
+##     pops <- 10
+##     ft <- 1
+##     lni <- 100 
+##     no <- 1e5
+##     ni <- c(0.1, 0.01, 0.1, rep(0, lni))
+##     ## scramble around names
+##     names(ni) <- c("hereisoneagene",
+##                    "oreoisasabgene",
+##                    "nnhsisthecgene",
+##                    replicate(lni,
+##                              paste(sample(letters, 12), collapse = "")))
+##     ni <- ni[order(names(ni))]
+##     fe <- allFitnessEffects(noIntGenes = ni)
+##     pg1 <- runif(lni + 3, min = 1e-8, max = 1e-6) 
+##     names(pg1) <- sample(names(ni))
+##     m1 <- allMutatorEffects(noIntGenes = c("oreoisasabgene" = 5))
+##     m1.pg1.b <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m1,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant ="oreoisasabgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
+##     m1.pg1.b
+##     m2 <- allMutatorEffects(noIntGenes = c("oreoisasabgene" = 20))
+##     m2.pg1.b <- oncoSimulPop(pops,
+##                            fe,
+##                            mu = pg1,
+##                            muEF = m2,
+##                            finalTime = ft,
+##                            mutationPropGrowth = FALSE,
+##                            initSize = no,
+##                            initMutant ="oreoisasabgene",
+##                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+##     expect_true(sm("oreoisasabgene", m2.pg1.b) == totalind(m2.pg1.b))
+##     m2.pg1.b
+##     expect_true(medianNClones(m2.pg1.b) > medianNClones(m1.pg1.b))
+##     ## the next is swamped again by the initMutant gene
+##     ## expect_true(smA(m2.pg1.b) > smA(m1.pg1.b))
+##     expect_true(smAnomPi(m2.pg1.b, "oreoisasabgene") >
+##                 smAnomPi(m1.pg1.b, "oreoisasabgene"))
+## })
+## date()
+
+
+
+## ## Too convoluted, and sampling at end covered by oncoSimulSample
+## date() 
+## test_that("Mutator, several modules differences, sample at end only, and smaller effect", {
+##     ## we also change the effect (smaller) and finalTime (longer)
+##     ## you can increase ln, but then occasionally will take very long.
+##     ## or increase my, or increase m1, etc.
+##     pseed <- sample(99999999, 1)
+##     set.seed(pseed)
+##     cat("\n l-mmd2: the seed is", pseed, "\n")
+##     reps <- 10
+##     no <- 5e3
+##     ft <- 1000 ## you need it large enough to get enough hits
+##     mu <- 1e-5
+##     ln <- 20 
+##     m1 <- 2 ## if this is too large, easy to get it to blow.
+##     ni <- rep(0, 3 * ln)
+##     gna <- paste0("a", 1:ln)
+##     gnb <- paste0("b", 1:ln)
+##     gnc <- paste0("c", 1:ln)
+##     names(ni) <- c(gna, gnb, gnc)
+##     gn1 <- paste(c(gna, gnb, gnc), collapse = ", ")
+##     gna <- paste(gna, collapse = ", ")
+##     gnb <- paste(gnb, collapse = ", ")
+##     gnc <- paste(gnc, collapse = ", ")
+##     mut1 <- allMutatorEffects(epistasis = c("A" = m1),
+##                               geneToModule = c("A" = gn1))
+##     mut2 <- allMutatorEffects(epistasis = c("A" = m1,
+##                                             "B" = m1,
+##                                             "C" = m1),
+##                               geneToModule = c("A" = gna,
+##                                                "B" = gnb,
+##                                                "C" = gnc))
+##     f1 <- allFitnessEffects(noIntGenes = ni)
+##     b1 <- oncoSimulPop(reps,
+##                        f1,
+##                        mu = mu,
+##                        muEF = mut1,
+##                        onlyCancer = FALSE,
+##                        initSize = no,
+##                        finalTime = ft,
+##                        seed = NULL, keepEvery = ft
+##                        )
+##     gc()
+##     b2 <- oncoSimulPop(reps,
+##                        f1,
+##                        mu = mu,
+##                        muEF = mut2,
+##                        onlyCancer = FALSE,
+##                        initSize = no,
+##                        finalTime = ft,
+##                        seed = NULL, keepEvery = ft
+##                        )
+##     gc()
+##     summary(b2)[, c(1:3, 8:9)]
+##     summary(b1)[, c(1:3, 8:9)]
+##     mean(mutsPerClone(b2))
+##     mean(mutsPerClone(b1))
+##     ## This is, of course, affected by sampling only at end: we do not see
+##     ## the many intermediate events.
+##     expect_true( median(summary(b2)$NumClones) >
+##                  median(summary(b1)$NumClones))
+##     expect_true( mean(mutsPerClone(b2)) >
+##                  mean(mutsPerClone(b1)))
+## })
+## date()
 
