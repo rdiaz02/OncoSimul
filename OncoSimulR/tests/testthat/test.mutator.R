@@ -24,6 +24,10 @@ medianNClones <- function(x) {
     median(summary(x)$NumClones)
 }
 
+NClones <- function(x) {
+    summary(x)$NumClones
+}
+
 enom <- function(name, mu, ni = no, pp = pops) {
     ## expected without a given name for init
     ii <- which(names(mu) == name)
@@ -357,20 +361,20 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                         initSize = no, model = "McFL",
                         initMutant = "thisistheagene",
                         onlyCancer = FALSE, mc.cores = 2)
-      ## I once saw a weird thing
-    expect_true(var(summary(mpg)$NumClones) > 1e-4)
-    expect_true(var(summary(mnpg)$NumClones) > 1e-4)
-    expect_true(var(summary(pg)$NumClones) > 1e-4)
-    expect_true(var(summary(npg)$NumClones) > 1e-4)
+    ##   ## I once saw a weird thing
+    ## expect_true(var(summary(mpg)$NumClones) > 1e-4)
+    ## expect_true(var(summary(mnpg)$NumClones) > 1e-4)
+    ## expect_true(var(summary(pg)$NumClones) > 1e-4)
+    ## expect_true(var(summary(npg)$NumClones) > 1e-4)
     ## These are the real tests
-    expect_true( median(summary(mpg)$NumClones) >
-                 median(summary(mnpg)$NumClones))
-    expect_true(median(summary(mpg)$NumClones) >
-                median(summary(pg)$NumClones) )
-    expect_true( median(summary(mnpg)$NumClones) >
-                 median(summary(npg)$NumClones) )
-    expect_true( median(summary(pg)$NumClones) >
-                 median(summary(npg)$NumClones) )
+    expect_true( wilcox.test(summary(mpg)$NumClones, 
+                 summary(mnpg)$NumClones, alternative = "greater")$p.value < p.fail)
+    expect_true(wilcox.test(summary(mpg)$NumClones, 
+                summary(pg)$NumClones), alternative = "greater" $p.value < p.fail)
+    expect_true( wilcox.test(summary(mnpg)$NumClones, 
+                 summary(npg)$NumClones), alternative = "greater" $p.value < p.fail)
+    expect_true( wilcox.test(summary(pg)$NumClones, 
+                 summary(npg)$NumClones), alternative = "greater" $p.value < p.fail)
     expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(mnpg)))
     expect_true(mean(mutsPerClone(mpg)) > mean(mutsPerClone(pg)))
     expect_true(mean(mutsPerClone(mnpg)) > mean(mutsPerClone(npg)))
@@ -558,7 +562,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
-    expect_true(medianNClones(pop10) < medianNClones(pop100))
+    expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.fail)
     expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
 
 })
@@ -612,7 +616,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
-    expect_true(medianNClones(pop10) < medianNClones(pop100))
+    expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.fail)
         expect_true(mean(mutsPerClone(pop10)) < mean(mutsPerClone(pop100)))
 })
 date()
@@ -681,8 +685,8 @@ test_that(" MCFL Init with different mutators", {
                            initMutant = "nnhsisthecgene",
                            sampleEvery = 0.01, keepEvery = 5, seed = NULL,
                            onlyCancer = FALSE, mc.cores = 2)
-    expect_true(medianNClones(m1.pg1.a) > medianNClones(m1.pg1.b))
-    expect_true(medianNClones(m1.pg1.b) > medianNClones(m1.pg1.c))
+    expect_true(wilcox.test(NClones(m1.pg1.a),  NClones(m1.pg1.b), alternative = "greater")$p.value < p.fail)
+    expect_true(wilcox.test(NClones(m1.pg1.b),  NClones(m1.pg1.c), alternative = "greater")$p.value < p.fail)
     expect_true(mean(mutsPerClone(m1.pg1.a)) > mean(mutsPerClone(m1.pg1.b)))
     expect_true(mean(mutsPerClone(m1.pg1.b)) > mean(mutsPerClone(m1.pg1.c)))
     expect_true(smAnomPi(m1.pg1.a, "hereisoneagene") >
@@ -762,7 +766,7 @@ test_that("Mutator, several modules differences", {
     ## mean(mutsPerClone(b1))
     ## This is, of course, affected by sampling only at end: we do not see
     ## the many intermediate events.
-    expect_true( median(summary(b2)$NumClones) >
+    expect_true( wilcox.test(summary(b2)$NumClones) >
                  median(summary(b1)$NumClones))
     expect_true( mean(mutsPerClone(b2)) >
                  mean(mutsPerClone(b1)))
