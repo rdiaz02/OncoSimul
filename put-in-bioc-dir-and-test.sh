@@ -50,15 +50,15 @@ if [[ $# == 1 ]]; then
     rm OncoSimulR_$V_P.tar.gz
     ## As shown in build report from BioC
     echo " ***************************************** "
-    echo " *********     R CMD build  ************** "
+    echo " *********  R CMD build   ************** "
     echo " "
     time $V_R CMD build --keep-empty-dirs --no-resave-data OncoSimulR
     echo " "
-    echo " ===========  done R CMD build   ========== "
+    echo " ===========  done R CMD build  ========== "
     echo " "
     ## As shown in check report from BioC
-    echo " ***************************************** "
-    echo " **** R CMD check, as in check report **** "
+    echo " *************************************************** "
+    echo " **** R CMD check , as in check report **** "
     echo ""
     time $V_R CMD check --no-vignettes --timings OncoSimulR_$V_P.tar.gz
     echo " "
@@ -71,6 +71,23 @@ if [[ $# == 1 ]]; then
     time $V_R CMD check --no-build-vignettes OncoSimulR_$V_P.tar.gz
     echo " "
     echo " ===========  done R CMD check time OK?   ========== "
+    ## As shown in build report from BioC
+    echo " ***************************************** "
+    echo " *********  R CMD build vanilla  ************** "
+    echo " "
+    time $V_R --vanilla CMD build --keep-empty-dirs --no-resave-data OncoSimulR
+    echo " "
+    echo " ===========  done R CMD build   vanilla ========== "
+    echo " "
+    ## As shown in check report from BioC
+    echo " *************************************************** "
+    echo " **** R CMD check vanilla , as in check report **** "
+    echo ""
+    time $V_R --vanilla CMD check --no-vignettes --timings OncoSimulR_$V_P.tar.gz
+    echo " "
+    echo " =========   done R CMD check vanilla as in check report  =======  "
+    echo " "
+
 fi
 
 
