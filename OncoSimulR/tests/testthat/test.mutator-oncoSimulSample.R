@@ -495,7 +495,7 @@ test_that("Mutator, several modules differences", {
     pseed <- sample(99999999, 1)
     set.seed(pseed)
     cat("\n mmd1: the seed is", pseed, "\n")
-    reps <- 10
+    reps <- 100
     no <- 5e3
     ft <- 50 ## you need it large enough to get enough hits
     mu <- 1e-5
@@ -551,10 +551,12 @@ test_that("Mutator, several modules differences", {
     ## mean(rowSums(b1$popSample))
     ## This is, of course, affected by sampling only at end: we do not see
     ## the many intermediate events.
+    ## Variances for NumClones are hugely unequal, even after log transform.;
+    ## might want Wilcoxon? Similar for rowSums of popSample
     p.fail <- 0.05
-    expect_true( t.test( b2$popSummary[, "NumClones"], 
+    expect_true( wilcox.test( b2$popSummary[, "NumClones"], 
                  b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
-    expect_true( t.test( rowSums(b2$popSample) ,
+    expect_true( wilcox.test( rowSums(b2$popSample) ,
                  rowSums(b1$popSample), alternative = "greater")$p.value < p.fail)
 })
 date()
