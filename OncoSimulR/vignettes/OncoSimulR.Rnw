@@ -2208,7 +2208,7 @@ synthetic viability (\ref{sv}) and epistasis (\ref{epi}).
 
 \subsection{\red{Gene-specific mutation rates}}\label{per-gene-mutation}
 
-It is now possible to specify \red{gene-specific mutation rates}. Instead
+It is now possible to specify gene-specific mutation rates. Instead
 of passing a scalar value for \texttt{mu}, you pass a named vector. (This
 does not work with the old v.\ 1 format, though; yet another reason to
 stop using that format). This is a simple example (many more are available
