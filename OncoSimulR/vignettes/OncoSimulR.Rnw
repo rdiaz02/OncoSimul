@@ -1959,13 +1959,14 @@ Sometimes you might want something like having several modules, say ``A''
 and ``B'', each with a number of genes, but with ``A'' and ``B'' showing
 no interaction. 
 
-It is a semantic issue whether we should allow \texttt{noIntGenes} (no
-interaction genes), as explained in section \ref{noint} to actually be
+It is a terminological issue whether we should allow \texttt{noIntGenes}
+(no interaction genes), as explained in section \ref{noint} to actually be
 modules. The reasoning for not allowing them is that the situation
-depicted above actually is one of interaction: the members of ``A'' are
-combined using an ``OR'' operator, not just simply multiplying their
-fitness; similarly for ``B''. This is why no interaction genes also mean
-no modules allowed.
+depicted above (several genes in module A, for example) actually is one of
+interaction: the members of ``A'' are combined using an ``OR'' operator
+(i.e., the fitness consequences of having one or more genes of A mutated
+are the same), not just simply multiplying their fitness; similarly for
+``B''. This is why no interaction genes also mean no modules allowed.
 
 So how do you get what you want in this case?  Enter the names of the
 modules in the \texttt{epistasis} component but have no term for
@@ -1977,7 +1978,7 @@ modules in the \texttt{epistasis} component but have no term for
 fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2),
                           geneToModule = c("A" = "a1, a2",
-                                           "B" = "b1"))
+                                           "B" = "b1, b2, b3"))
 
 evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
 
@@ -1992,7 +1993,7 @@ fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2,
                                         "A : B" = 0.0),
                           geneToModule = c("A" = "a1, a2",
-                                           "B" = "b1"))
+                                           "B" = "b1, b2, b3"))
 
 evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
 
