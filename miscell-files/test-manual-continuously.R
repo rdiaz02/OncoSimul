@@ -4,6 +4,7 @@ library(testthat)
 library(OncoSimulR)
 library(help = "OncoSimulR")
 library(tools)
+library(gtools)
 ## recall to install with --install-tests
 
 if (Sys.info()["nodename"] == "Gallotia") {
