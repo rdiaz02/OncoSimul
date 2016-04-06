@@ -150,6 +150,7 @@ void remove_zero_sp_nr(std::vector<int>& sp_to_remove,
   }
 }
 
+
 inline void driverCounts(int& maxNumDrivers,
 			 int& totalPresentDrivers,
 			 std::vector<int>& countByDriver,
@@ -186,7 +187,6 @@ inline void driverCounts(int& maxNumDrivers,
       ++totalPresentDrivers;
     }
   }
-  
 }
 
 

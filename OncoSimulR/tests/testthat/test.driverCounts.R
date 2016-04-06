@@ -409,5 +409,6 @@ test_that("Assertion is correct when nothing returned",{
                   "Subjects by Genes", fixed = TRUE)
 
 } )
+date()
 
 cat(paste("\n Ending driverCounts at", date(), "\n"))
