@@ -1076,7 +1076,7 @@ test_that("detectionSize. Without initmutant, 2", {
     cat("\n s2FPS: the seed is", pseed, "\n")
     s2 <- 1.0
     ft <- 50  ## 15
-    pops <- 250
+    pops <- 500
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e4
