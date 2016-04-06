@@ -1299,6 +1299,129 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 date()
 
 
+
+
+
+
+
+
+
+
+
+date() 
+test_that("Mutator and mutPropGrowth", {
+    ## we stop on size
+    pseed <- sample(99999999, 1)
+    set.seed(pseed)
+    cat("\n mmpg: the seed is", pseed, "\n")
+    reps <- 20
+    no <- 5e3
+    ds <- 7e4
+    ft <- 1000 
+    mu <- 1e-5
+    ln <- 60
+    m1 <- 1 ## if this is too large, easy to get it to blow.
+    m50 <- 50
+    gna <- paste0("a", 1:ln)
+    gna <- paste(gna, collapse = ", ")
+    f1 <- allFitnessEffects(epistasis = c("A" = 0.4),
+                            geneToModule = c("A" = gna))
+    mut1 <- allMutatorEffects(epistasis = c("M" = m1),
+                              geneToModule = c("M" = gna))
+    mut50 <- allMutatorEffects(epistasis = c("M" = m50),
+                              geneToModule = c("M" = gna))
+    m1.pg <- oncoSimulPop(reps,
+                          f1,
+                          mu = mu,
+                          muEF = mut1,
+                          mutationPropGrowth = TRUE,
+                          onlyCancer = FALSE,
+                          initSize = no,
+                          finalTime = ft,
+                          detectionSize = ds,
+                          sampleEvery = 0.05,
+                          keepEvery = 5,
+                          seed = NULL, mc.cores = 2
+                          )
+    ## gc()
+    m1.npg <- oncoSimulPop(reps,
+                          f1,
+                          mu = mu,
+                          muEF = mut1,
+                          mutationPropGrowth = FALSE,
+                          onlyCancer = FALSE,
+                          initSize = no,
+                          finalTime = ft,
+                          detectionSize = ds,
+                          sampleEvery = 0.05,
+                          keepEvery = 5,
+                          seed = NULL, mc.cores = 2
+                          )
+    ##gc()
+    m50.pg <- oncoSimulPop(reps,
+                          f1,
+                          mu = mu,
+                          muEF = mut50,
+                          mutationPropGrowth = TRUE,
+                          onlyCancer = FALSE,
+                          initSize = no,
+                          finalTime = ft,
+                          detectionSize = ds,
+                          sampleEvery = 0.05,
+                          keepEvery = 5,
+                          seed = NULL, mc.cores = 2
+                          )
+    ## gc()
+    m50.npg <- oncoSimulPop(reps,
+                          f1,
+                          mu = mu,
+                          muEF = mut50,
+                          mutationPropGrowth = FALSE,
+                          onlyCancer = FALSE,
+                          initSize = no,
+                          finalTime = ft,
+                          detectionSize = ds,
+                          sampleEvery = 0.05,
+                          keepEvery = 5,
+                          seed = NULL, mc.cores = 2
+                          )
+    ##gc()
+    summary(m1.pg)[, c(1:3, 8:9)]
+    summary(m50.pg)[, c(1:3, 8:9)]
+    summary(m1.npg)[, c(1:3, 8:9)]
+    summary(m50.npg)[, c(1:3, 8:9)]
+    ## Over mutator, as we have mutPropGrowth, clones, etc, increase
+    expect_true( wilcox.test(summary(m1.pg)$NumClones,
+                             summary(m1.npg)$NumClones,
+                             alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m1.pg),
+                       mutsPerClone(m1.npg),
+                       alternative = "greater")$p.value < p.value.threshold)
+    expect_true( wilcox.test(summary(m50.pg)$NumClones,
+                             summary(m50.npg)$NumClones,
+                             alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m50.pg),
+                       mutsPerClone(m50.npg),
+                       alternative = "greater")$p.value < p.value.threshold)
+    ## Over mutPropGrowth, as we increase mutator, clones, etc, increase
+    expect_true( wilcox.test(summary(m50.pg)$NumClones,
+                             summary(m1.pg)$NumClones,
+                             alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m50.pg),
+                       mutsPerClone(m1.pg),
+                       alternative = "greater")$p.value < p.value.threshold)
+    expect_true( wilcox.test(summary(m50.npg)$NumClones,
+                             summary(m1.npg)$NumClones,
+                             alternative = "greater")$p.value < p.value.threshold)
+    expect_true(t.test(mutsPerClone(m50.npg),
+                       mutsPerClone(m1.npg),
+                       alternative = "greater")$p.value < p.value.threshold)
+})
+date()
+
+
+
+
 cat(paste("\n Finished test.mutator-long.R test at", date(), "\n"))
 
 
