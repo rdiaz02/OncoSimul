@@ -1,5 +1,10 @@
 cat(paste("\n Starting at mutPropGrowth long", date(), "\n"))
 
+## Note that many of the tests below where we do a test and have a
+## comparison like "whatever$p.value > p.fail " are, of course, expected
+## to fail with prob. ~ p.fail even if things are perfectly OK.
+
+
 ## Why this does not really reflect what we want, and why number of clones
 ## is better that capture the idea of "more mutations". NumClones reflects
 ## the creation of a new clone, something that happens whenever there is a
@@ -382,7 +387,7 @@ test_that("oncoSimulSample Without initmutant and modules", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n osS: the seed is", pseed, "\n")
-    pops <- 100
+    pops <- 150
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e4 
@@ -459,7 +464,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n osSMcFL: the seed is", pseed, "\n")
-    pops <- 100
+    pops <- 150
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e4 ## note we use only 10 in the other example below
@@ -541,7 +546,7 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n osSFPS: the seed is", pseed, "\n")
-    pops <- 100
+    pops <- 150
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e4 
@@ -618,7 +623,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n osSFPSMcFL: the seed is", pseed, "\n")
-    pops <- 100
+    pops <- 150
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e4 ## note we use only 10 in the other example below
@@ -883,6 +888,7 @@ cat("\n", date(), "\n")
 
 cat("\n", date(), "\n")
 test_that("Without initmutant, 2", {
+    
     ## More of the above. Use smaller s2 and smaller mutation, but then to
     ## see it reliably you need large ft and we also increase
     ## init. pop. size.
@@ -891,9 +897,9 @@ test_that("Without initmutant, 2", {
     cat("\n s2: the seed is", pseed, "\n")
     s2 <- 1.0
     ft <- 15
-    pops <- 250
+    pops <- 150
     lni <- 1 ## no fitness effects genes
-    fni <- 50 ## fitness effects genes
+    fni <- 200 ## fitness effects genes
     no <- 1e4
     mu <- 5e-6 ## easier to see
     ## noInt have no fitness effects, but can accumulate mutations
@@ -926,8 +932,8 @@ test_that("Without initmutant, 2", {
                          initSize = no, keepEvery = 1,
                          onlyCancer = FALSE,
                          seed = NULL, mc.cores = 2)
-    ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
-    ## summary(s2.ng)[, c(1, 2, 3, 8, 9)]
+    summary(s2.g)[, c(1, 2, 3, 8, 9)]
+    summary(s2.ng)[, c(1, 2, 3, 8, 9)]
     expect_true( wilcox.test(mutsPerClone(s2.g),
                              mutsPerClone(s2.ng),
                              alternative = "greater")$p.value < p.value.threshold)
@@ -935,6 +941,7 @@ test_that("Without initmutant, 2", {
                              summary(s2.ng)$NumClones,
                              alternative = "greater")$p.value < p.value.threshold)
 gc() 
+
 })
 cat("\n", date(), "\n")
 
@@ -945,7 +952,7 @@ test_that("McFL: Without initmutant", {
     cat("\n mcfls2: the seed is", pseed, "\n")
     s2 <- 2.0
     ft <- 250
-    pops <- 200 ## 200
+    pops <- 200
     lni <- 1 ## no fitness effects genes
     fni <- 50 ## fitness effects genes
     no <- 1e3
@@ -1068,27 +1075,25 @@ cat("\n", date(), "\n")
 
 cat("\n", date(), "\n")
 test_that("detectionSize. Without initmutant, 2", {
+    
     ## More of the above. Use smaller s2 and smaller mutation, but then to
-    ## see it reliably you need large ft and we also increase
-    ## init. pop. size.
+    ## see it reliably you need large final popsize
+    ## Can fail sometimes because differences are small
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n s2FPS: the seed is", pseed, "\n")
     s2 <- 1.0
-    ft <- 50  ## 15
-    pops <- 500
-    lni <- 1 ## no fitness effects genes
-    fni <- 50 ## fitness effects genes
-    no <- 1e4
-    mu <- 5e-6 ## easier to see
+    ft <- 500  ## very large, so we stop on size
+    pops <- 200 
+    fni <- 300 ## fitness effects genes
+    no <- 1e3
+    mu <- 5e-6 
     ## noInt have no fitness effects, but can accumulate mutations
-    ni <- rep(0, lni)
     ## Those with fitness effects in one module, so
     ## neither fitness nor mut. rate blow up
     gn <- paste(paste0("a", 1:fni), collapse = ", ")
     f2 <- allFitnessEffects(epistasis = c("A" = s2),
-                            geneToModule = c("A" = gn),
-                            noIntGenes = ni)
+                            geneToModule = c("A" = gn))
     pseed <- sample(9999999, 1)
     set.seed(pseed)
     cat("\n s2FPSa: the seed is", pseed, "\n")
@@ -1096,7 +1101,7 @@ test_that("detectionSize. Without initmutant, 2", {
                           f2,
                           mu = mu,
                           detectionDrivers = 9999,
-                          detectionSize = 1e7,
+                          detectionSize = 5e6,
                           sampleEvery = 0.01,
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
@@ -1110,7 +1115,7 @@ test_that("detectionSize. Without initmutant, 2", {
                          f2,
                          mu = mu,
                          detectionDrivers = 9999,
-                          detectionSize = 1e7,
+                          detectionSize = 5e6,
                           sampleEvery = 0.01,
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
@@ -1127,8 +1132,8 @@ test_that("detectionSize. Without initmutant, 2", {
                              alternative = "greater")$p.value < p.value.threshold)
     summary(summary(s2.g)[, 2])
     summary(summary(s2.ng)[, 2])
-    
-gc() 
+
+    gc() 
 })
 cat("\n", date(), "\n")
 
