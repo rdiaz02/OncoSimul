@@ -8,6 +8,10 @@ Changes in version 2.2.0 (for BioC 3.3):
 	- Added mutationPropGrowth as argument.
 	- Some minor bug fixes and additional checks for user errors.
 
+Changes in version 2.1.4 (2016-04-09):
+	- Moved to manual tests that depend on OS/compiler (for
+	reproduction of random number stream in C++).
+
 Changes in version 2.1.3 (2016-04-04):
 	- Fixed sporadic bug in countDrivers
 
