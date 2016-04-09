@@ -33,8 +33,12 @@ environment:
       GCC_PATH: mingw_32
       RTOOLS_VERSION: 33
     - RTOOLS_VERSION: 32
+      R_ARCH: i386
+    - RTOOLS_VERSION: 32
+      R_ARCH: x64
     
-
+## As soon as R-3.3 is new stable, and all migrated to Rtools 3.3
+## we will remove the last two entries
 
 ## R_VERSION: 3.3.0alpha
 ##  GCC_PATH: gcc-4.6.3
