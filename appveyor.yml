@@ -17,7 +17,7 @@ install:
 
 environment:
   TEST_DIR: OncoSimulR
-  R_VERSION: test
+  R_VERSION: patched
   USE_RTOOLS: true
 
 
