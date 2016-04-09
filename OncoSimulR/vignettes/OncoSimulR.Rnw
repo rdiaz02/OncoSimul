@@ -4264,6 +4264,9 @@ Note that in the McF model \texttt{detectionSize} really plays no
 role. Note also how we pass the poset: it is the same as before, but now
 we directly access the poset in the list of posets.
 
+<<echo=FALSE,eval=TRUE>>=
+set.seed(1) ## for repeatability. Once I saw it not reach cancer.
+@ 
 <<>>=
 
 m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL", 
@@ -4273,6 +4276,11 @@ m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL",
                      finalTime = 25000, keepEvery = 5, 
                      detectionSize = 1e6) 
 @ 
+
+(Very rarely the above run will fail to reach cancer. If that
+happens, execute it again.)
+
+
 As usual, we will plot using both a line and a stacked plot:
 
 <<m2x1,fig.width=6.5, fig.height=10>>=
@@ -4282,7 +4290,6 @@ plot(m2, addtot = TRUE, log = "",
 plot(m2, type = "stacked",
      thinData = TRUE, thinData.keep = 0.5)
 @ 
-
 
 The default is to simulate progression until a simulation reaches cancer
 (i.e., only simulations that satisfy the detectionDrivers or the
