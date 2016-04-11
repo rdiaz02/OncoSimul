@@ -58,7 +58,15 @@ inline void R_f_st(spParamsP& spP) {
 inline double pE_f_st(double& pM, const spParamsP& spP){
   double pE = (spP.death * (1.0 - pM ) )/(spP.W - spP.death - spP.birth * pM );
   if( !std::isfinite(pE) ) {
-    throw std::range_error("pE.f: pE not finite");
+    DP2(spP.death);  DP2(spP.birth); DP2(pM); DP2(spP.W);
+    DP2(spP.mutation);
+    std::string error_message = "pE.f: pE not finite";
+    error_message += 
+      ". This is expected to happen when mutationPropGrowth = TRUE\n " +
+      "and you have have an initMutant with death >> birth,\n " +
+      "as that inevitably leads to net birth rate of 0\n " +
+      "and mutation rate of 0.";
+    throw std::range_error(error_message);
   }
   return pE;
 }
@@ -97,7 +105,8 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 			     int& ti_e3);
 
 double Algo2_st(const spParamsP& spP,
-		const double& ti);
+		const double& ti,
+		const int& mutationPropGrowth);
 
 double Algo3_st(const spParamsP& spP, const double& t);
 
