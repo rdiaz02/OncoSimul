@@ -100,6 +100,54 @@ outNO <- rbind(outNO, OandE(feo, so, 300, "McFL", "b > a", 1e2, reps, TRUE))
 
 
 
+
+so <- 0.15
+niG <- c(so, rep(0, nig))
+names(niG) <- replicate(nig + 1, paste(sample(letters, 12, replace = TRUE),
+                                       collapse = ""))
+names(niG)[1] <- "ThisisA"
+feo <- allFitnessEffects(noIntGenes = niG)
+out <- rbind(out, OandE(feo, so, 40, "Exp", "ThisisA", 1e3, reps, TRUE))
+out <- rbind(out, OandE(feo, so, 40, "McFL", "ThisisA", 1e3, reps, TRUE))
+
+
+so <- 0.32
+niG <- c(so, rep(0, nig))
+names(niG) <- replicate(nig + 1, paste(sample(letters, 12, replace = TRUE),
+                                       collapse = ""))
+names(niG)[1] <- "ThisisA"
+feo <- allFitnessEffects(noIntGenes = niG)
+out <- rbind(out, OandE(feo, so, 40, "Exp", "ThisisA", 1e3, reps, TRUE))
+out <- rbind(out, OandE(feo, so, 40, "McFL", "ThisisA", 1e3, reps, TRUE))
+
+
+
+so <- 0.17
+feo <- allFitnessEffects(data.frame(parent = c("Root", "Root", "A"),
+                                    child  = c("A", "B", "C"),
+                                    s = c(0, -1, so),
+                                    sh = rep(-1, 3),
+                                    typeDep = "MN"
+                                    ),
+                         noIntGenes = rep(0, nig))
+out <- rbind(out, OandE(feo, so, 40, "Exp", "A, C", 1e3, reps, TRUE))
+out <- rbind(out, OandE(feo, so, 40, "McFL", "A, C", 1e3, reps, TRUE))
+
+so <- 0.09
+feo <- allFitnessEffects(data.frame(parent = c("Root", "Root", "A"),
+                                    child  = c("A", "B", "C"),
+                                    s = c(0, -1, so),
+                                    sh = rep(-1, 3),
+                                    typeDep = "MN"
+                                    ),
+                         noIntGenes = rep(0, nig))
+out <- rbind(out, OandE(feo, so, 40, "Exp", "A, C", 1e3, reps, TRUE))
+out <- rbind(out, OandE(feo, so, 40, "McFL", "A, C", 1e3, reps, TRUE))
+
+
+
+
+
 ## below is just playing around
 
 
