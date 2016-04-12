@@ -53,7 +53,7 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
 
 date()
 test_that("Observed vs expected, case I", {
-    cat("\n Observer vs expected, case I\n")
+    cat("\n Observed vs expected, case I\n")
     ## Create a set of scenarios where we know what to expect
     ## We write a small set of helper functions.
     reps <- 60
@@ -163,7 +163,7 @@ date()
 
 date()
 test_that("Observed vs expected, case II", {
-    cat("\n Observer vs expected, case II\n")
+    cat("\n Observed vs expected, case II\n")
     genmodule <- function(l, num) {
         paste(paste0(l, 1:num), collapse = ", ")
     }
@@ -355,7 +355,7 @@ date()
 date()
 test_that("Observed vs expected, case III", {
     
-    cat("\n Observer vs expected, case III\n")
+    cat("\n Observed vs expected, case III\n")
     genmodule <- function(l, num) {
         paste(paste0(l, 1:num), collapse = ", ")
     }
