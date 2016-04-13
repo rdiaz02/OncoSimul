@@ -581,13 +581,14 @@ date()
 
 date()
 test_that("Init mutant no effects if fitness is 0", {
+    
     cat("\n Init mutant no effect if fitness is 0\n")
     ## Create a set of scenarios where we know what to expect
     ## We write a small set of helper functions.
     ## s should never be relevant concern, so increase reps but
     ## keep fast by decreasing sampling
     sEvery <- 1
-    reps <- 250 ## there is a lot of variation here
+    reps <- 300 ## there is a lot of variation here
     mu <- 1e-7
     nig <- 50
     out <- NULL
@@ -653,14 +654,14 @@ test_that("Init mutant no effects if fitness is 0", {
     fe02 <- allFitnessEffects(epistasis = c("A" = sa02),
                               noIntGenes = rep(0, nig))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 2e4, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 2e4, reps, mu, verboseOandE))
+    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 2e4, reps, mu, verboseOandE)) ## 15
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 5e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 5e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 1e5, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 1e5, reps, mu, verboseOandE))
+    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 1e5, reps, mu, verboseOandE)) ## 11
     out <- rbind(out, OandE(fe02, sa02, 30, "Exp", "A", 1e4, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, 30, "McFL", "A", 1e4, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 2e3, reps, mu, verboseOandE))
+    out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 2e3, reps, mu, verboseOandE)) ## 8 
     out <- rbind(out, OandE(fe02, sa02, ft, "McFL", NULL, 1e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 5.3e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "McFL", NULL, 5.3e3, reps, mu, verboseOandE))
@@ -685,18 +686,16 @@ test_that("Init mutant no effects if fitness is 0", {
                    function(x) t.test(log(x[2:(reps + 1)] + 1), mu = log(x[1] + 1))$p.value
                    )
     p.value.threshold <- 1e-6
-
-
     T.not <- (all(no.t < p.value.threshold))
     T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
     T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
              p.fail)
-
     if(! (T.not && T.yest && T.lm) ) {
         cat("\n T.not is \n"); print(T.not)
         print(no.t)
         cat("\n T.yest \n"); print(T.yest)
         print(yes.t)
+        ytbug <<- ytbug
         cat("\n larger values of T.yest \n")
         print(which(p.adjust(yes.t, method = "BH") <= p.fail))
         cat("\n lm and plot\n")
@@ -704,9 +703,10 @@ test_that("Init mutant no effects if fitness is 0", {
         plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
     }
     expect_true((T.not && T.yest && T.lm) )
+
+    
 })
 date()
-
 
 
 cat(paste("\n Ending fitness preds long at", date()))
