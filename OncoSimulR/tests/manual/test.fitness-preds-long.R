@@ -4,7 +4,7 @@
 
 cat(paste("\n Starting fitness preds long at", date(), "\n"))
 RNGkind("Mersenne-Twister") ## but this is irrelevant now.
-
+cat(paste("\n            a runif ", runif(1), "\n"))
 
 rm(list = ls())
 
@@ -587,7 +587,7 @@ test_that("Init mutant no effects if fitness is 0", {
     ## s should never be relevant concern, so increase reps but
     ## keep fast by decreasing sampling
     sEvery <- 1
-    reps <- 300 ## there is a lot of variation here
+    reps <- 400 ## there is a lot of variation here
     mu <- 1e-7
     nig <- 50
     out <- NULL
@@ -629,7 +629,7 @@ test_that("Init mutant no effects if fitness is 0", {
     names(niG)[1] <- "ThisisA"
     feo <- allFitnessEffects(noIntGenes = niG)
     out <- rbind(out, OandE(feo, so, 40, "Exp", "ThisisA", 5e3, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(feo, so, 40, "McFL", "ThisisA", 5e3, reps, mu, verboseOandE))
+    out <- rbind(out, OandE(feo, so, 40, "McFL", "ThisisA", 4.6e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(feo, so, 40, "Exp", NULL, 1e4, reps, mu, verboseOandE))
     out <- rbind(out, OandE(feo, so, 40, "McFL", NULL, 1e4, reps, mu, verboseOandE))
     out <- rbind(out, OandE(feo, so, 40, "Exp", names(nig)[2], 4e4, reps, mu, verboseOandE))
@@ -657,7 +657,7 @@ test_that("Init mutant no effects if fitness is 0", {
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 5e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 5e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 1e5, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 1e5, reps, mu, verboseOandE)) ## 11
+    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 4.8e4, reps, mu, verboseOandE)) ## 11
     out <- rbind(out, OandE(fe02, sa02, 30, "Exp", "A", 1e4, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, 30, "McFL", "A", 1e4, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 2e3, reps, mu, verboseOandE)) ## 8 
@@ -708,7 +708,7 @@ test_that("Init mutant no effects if fitness is 0", {
 })
 date()
 
-
+cat(paste("\n            a final runif ", runif(1), "\n"))
 cat(paste("\n Ending fitness preds long at", date()))
 
 

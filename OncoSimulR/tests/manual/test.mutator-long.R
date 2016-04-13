@@ -2,11 +2,9 @@
 
 cat(paste("\n Starting test.mutator-long.R test at", date()))
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+cat(paste("\n            a runif ", runif(1), "\n"))
 
 
-date()
-
-RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
 mutsPerClone <- function(x, per.pop.mean = TRUE) {
     perCl <- function(z)
@@ -89,7 +87,10 @@ smAnomPi <- function(out, name) {
 
 p.value.threshold <- 0.001
 
+cat(paste("\n            a second runif ", runif(1), "\n"))
 date()
+
+cat(paste("\n            a third runif ", runif(1), "\n"))
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
@@ -1135,7 +1136,6 @@ date()
 date() 
 test_that("Mutator, several modules differences, McFL", {
     pseed <- sample(99999999, 1)
-    pseed <- 91339980
     set.seed(pseed)
     cat("\n mmdSMMC1: the seed is", pseed, "\n")
     reps <- 50

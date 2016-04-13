@@ -4,6 +4,7 @@
 
 cat(paste("\n Starting test.mutator-oncoSimulSample-long.R test at", date()))
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+cat(paste("\n         a runif ", runif(1), "\n")
 
 ## require(car) ## for linearHypothesis, below. In the namespace
 
@@ -674,7 +675,6 @@ date()
 date() 
 test_that("Mutator, several modules differences, McFL", {
     pseed <- sample(99999999, 1)
-    pseed <- 91339980
     set.seed(pseed)
     cat("\n mmd1_2_mc: the seed is", pseed, "\n")
     reps <- 80
