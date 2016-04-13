@@ -586,7 +586,8 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 				std::vector<spParamsP>& popParams,
 				// next only used with DEBUGV
 				const std::vector<Genotype>& Genotypes,
-				const double& tSample){
+				const double& tSample,
+				const int& mutationPropGrowth){
   sp_to_remove.clear();
 
   for(size_t i = 0; i < popParams.size(); i++) {
@@ -616,7 +617,7 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
     // was updated in previous loop, so we skip that one
     if(tSample > popParams[i].timeLastUpdate) {
       popParams[i].popSize = 
-	Algo2_st(popParams[i], tSample);
+	Algo2_st(popParams[i], tSample, mutationPropGrowth);
     }
     if( popParams[i].popSize <=  0.0 ) {
       // this i has never been non-zero in any sampling time
@@ -1434,7 +1435,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    // last sampled/updated it.
 	  if(popParams[sp].popSize > 0.0) { 
 	    popParams[sp].popSize = 1.0 + 
-	      Algo2_st(popParams[sp], currentTime);
+	      Algo2_st(popParams[sp], currentTime, mutationPropGrowth);
 	    if(verbosity >= 2) {
 	      Rcpp::Rcout << "\n New popSize = " << popParams[sp].popSize << "\n";
 	    }
@@ -1485,7 +1486,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() << "\n";
 
       nr_sample_all_pop_P(sp_to_remove, 
-		       popParams, Genotypes, tSample);
+			  popParams, Genotypes, tSample,
+			  mutationPropGrowth);
       timeNextPopSample += sampleEvery;
       // When we call nr_totPopSize ... species that existed between
       // their creation and sampling time are never reflected. That is OK.

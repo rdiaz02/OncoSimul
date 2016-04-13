@@ -36,6 +36,9 @@ void print_spP(const spParamsP& spP) {
 
 double pM_f_st(const double& t, 
 	       const spParamsP& spP){
+  // For interpretation, recall, from suppl. mat. of their paper, p.2 that
+  // p M (t)^n0 = G(0, t) is the probability that a mutation has not yet occurred.
+  
   long double Ct = cosh(spP.R * t/2.0);
   long double St = sinh(spP.R * t/2.0);
   long double lpM = -99.99;
@@ -286,7 +289,10 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 }
 
 double Algo2_st(const spParamsP& spP,
-		       const double& ti) {
+		const double& ti,
+		const int& mutationPropGrowth) { // need mutPropGrowth to
+						 // know if we should
+						 // throw
 
   // beware the use of t: now as it used to be, as we pass the value
   // and take the diff in here: t is the difference
@@ -308,9 +314,10 @@ double Algo2_st(const spParamsP& spP,
   }
 
 
-  if(spP.mutation == 0.0) {
+  if( (spP.mutation == 0.0) &&
+      !(spP.birth <= 0 && mutationPropGrowth) ) {
     Rcpp::Rcout << "\n Entered Algo2 with mutation rate = 0\n";
-    if(spP.numMutablePos != 0)
+    if( spP.numMutablePos != 0 ) 
       throw std::range_error("mutation = 0 with numMutable != 0?");
   }
 

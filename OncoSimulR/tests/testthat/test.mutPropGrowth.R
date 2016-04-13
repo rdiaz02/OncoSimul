@@ -276,6 +276,57 @@ cat("\n", date(), "\n")
 
 
 
+test_that("We crash as we should", {
+    so <- 0.2
+    feo <- allFitnessEffects(orderEffects = c("a > b" = so,
+                                              "b > a" = -5),
+                             noIntGenes = rep(0, 50))
+    ## with testthat 0.11.0.9000 we should be able
+    ## to use use_catch to catch the C++ exception directly
+    o1 <- oncoSimulIndiv(feo,
+               mu = 1e-7,
+               initSize = 1e4,
+               K = 1e4,
+               model = "Exp",
+               detectionDrivers = 99,
+               finalTime = 0.01,
+               detectionSize = 1e12,
+               sampleEvery = 0.001,
+               keepEvery = 30,
+               initMutant = "b > a",
+               mutationPropGrowth = TRUE, 
+               onlyCancer = FALSE,
+               verbosity = 0)
+    expect_true(grepl("pE not finite", o1$other$ExceptionMessage,
+                      fixed = TRUE))
+})
+
+test_that("...and we don't when we shouldn't", {
+    so <- 0.2
+    feo <- allFitnessEffects(orderEffects = c("a > b" = so,
+                                              "b > a" = -5),
+                             noIntGenes = rep(0, 50))
+    ## with testthat 0.11.0.9000 we should be able
+    ## to use use_catch to catch the C++ exception directly
+    o1 <- oncoSimulIndiv(feo,
+               mu = 1e-7,
+               initSize = 1e4,
+               K = 1e4,
+               model = "Exp",
+               detectionDrivers = 99,
+               finalTime = 0.01,
+               detectionSize = 1e12,
+               sampleEvery = 0.001,
+               keepEvery = 30,
+               initMutant = "b > a",
+               mutationPropGrowth = FALSE, 
+               onlyCancer = FALSE,
+               verbosity = 0)
+    expect_true(length(grepl("pE not finite", o1$other$ExceptionMessage,
+                      fixed = TRUE)) == 0)
+})
+
+
 
 
 cat("\n Ended test.mutPropGrowth: ", date(), "\n")
