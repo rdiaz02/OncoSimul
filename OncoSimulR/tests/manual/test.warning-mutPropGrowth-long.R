@@ -61,12 +61,11 @@ test_that("mutationPropGrowth OK  with McFL, sample", {
 ##                              fixed = TRUE)                                                     
 ##           })
 
+the.seed <- .Random.seed 
 test_that("mutationPropGrowth warning with Bozic, sample", {
     ## Bozic will crash on purpose if any s >= 1. Make sure
     ## that does not happen here
 
-    RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
-    
     RNGkind("Mersenne-Twister")
     set.seed(13)
     oi <- allFitnessEffects(orderEffects =
@@ -91,4 +90,5 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
     
 })
 
+.Random.seed <- the.seed
 cat(paste("\n Ending warning-mutPropGrowth-long tests", date(), "\n"))

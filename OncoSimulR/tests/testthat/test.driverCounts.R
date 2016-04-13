@@ -65,6 +65,7 @@ test_that("Runs without crashes", {
 })
 date()
 
+the.seed <- .Random.seed
 date()
 test_that("Assertion is correct when nothing returned",{
     ## Fixing the seed here isn't really needed. These are just a few
@@ -135,5 +136,6 @@ test_that("driverCounts: a run that used to cause crashes", {
     cat("\n ... output from mue11\n")
     print(mue11)
 })
+.Random.seed <- the.seed
 
 cat(paste("\n Ending driverCounts at", date(), "\n"))

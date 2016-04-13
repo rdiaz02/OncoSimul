@@ -816,7 +816,7 @@ test_that("breaks if not all modules", {
                                        "F" = "f1, f2")))
 })
 
-
+the.seed <- .Random.seed
 test_that("catches identical gene names in different modules", {
     ## long, because it uses a complex and easy to miss problem
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -939,7 +939,7 @@ test_that("long example OK", {
     ##  Individual s terms are : 0.03 -0.95
     ##  Fitness:  0.0515 
 })
-
+.Random.seed <- the.seed
 
 
 

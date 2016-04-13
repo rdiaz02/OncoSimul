@@ -65,7 +65,7 @@ date()
 ## machines (e.g., using clang), as the details depend on the random
 ## numbers generated in R and C++.
 
-
+the.seed <- .Random.seed ## examples and vignette set the seed in several
 date()
 test_that("driverCounts: we get the right results", {
     ## Comparing against know results with something that used to give
@@ -73,7 +73,6 @@ test_that("driverCounts: we get the right results", {
 
     ## I also check mue11$Genotypes
     ## to know what to expect
-    
     set.seed(1)
     ni <- runif(10, min = -0.01, max = 0.1)
     names(ni) <- paste0("g", 2:11)
@@ -368,7 +367,7 @@ test_that("driverCounts: we get the right results", {
     
 })
 date()
-
+.Random.seed <- the.seed
 
 
 cat(paste("\n Ending driverCounts long at", date()))

@@ -315,7 +315,7 @@ test_that("We cannot pass mutator/fitness objects to the wrong functions", {
 })
 
 
-
+the.seed <- .Random.seed
 test_that("Mutator genes missing from fitness", {
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
@@ -389,6 +389,7 @@ test_that("all genes must be in geneToModule even if present in fitness", {
                  "Some values in geneToModule not present in any of",
                  fixed = TRUE)
 })
+.Random.seed <- the.seed
 
 
 test_that("evaluating genotype and mutator", {
@@ -432,6 +433,7 @@ test_that("evaluating genotype and mutator", {
                     c(1.3 * 1.5 * 1.1, 10 * 5)))
 })
 
+the.seed <- .Random.seed
 test_that("fitness and mutator effects evaluation of actual values, long example",  {
     ## Based on "long example OK" in "test.all-fitness.R"
     ## Fitness and mutator effects are evaluated OK when modules, epist, etc,
@@ -624,7 +626,7 @@ test_that("fitness and mutator effects evaluation of actual values, long example
     ##  Individual s terms are : 0.03 -0.95
     ##  Fitness:  0.0515 
 })
-
+.Random.seed <- the.seed
 
 date() 
 test_that("Mutator, several modules differences, fitness eval", {
