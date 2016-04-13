@@ -90,5 +90,5 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
     
 })
 
-.Random.seed <- the.seed
+set.seed(NULL)
 cat(paste("\n Ending warning-mutPropGrowth-long tests", date(), "\n"))

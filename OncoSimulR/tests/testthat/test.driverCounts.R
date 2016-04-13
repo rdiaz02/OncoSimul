@@ -136,6 +136,6 @@ test_that("driverCounts: a run that used to cause crashes", {
     cat("\n ... output from mue11\n")
     print(mue11)
 })
-.Random.seed <- the.seed
+set.seed(NULL)
 
 cat(paste("\n Ending driverCounts at", date(), "\n"))

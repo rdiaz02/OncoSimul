@@ -389,7 +389,7 @@ test_that("all genes must be in geneToModule even if present in fitness", {
                  "Some values in geneToModule not present in any of",
                  fixed = TRUE)
 })
-.Random.seed <- the.seed
+set.seed(NULL)
 
 
 test_that("evaluating genotype and mutator", {
@@ -626,7 +626,7 @@ test_that("fitness and mutator effects evaluation of actual values, long example
     ##  Individual s terms are : 0.03 -0.95
     ##  Fitness:  0.0515 
 })
-.Random.seed <- the.seed
+set.seed(NULL)
 
 date() 
 test_that("Mutator, several modules differences, fitness eval", {

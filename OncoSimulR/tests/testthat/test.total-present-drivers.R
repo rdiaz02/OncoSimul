@@ -88,5 +88,5 @@ test_that("Count TotalPresentDrivers", {
     expect_true(s3.l$TotalPresentDrivers ==
                 length(strsplit(s3.l$OccurringDrivers, ", ")[[1]]))
 })
-.Random.seed <- the.seed
+set.seed(NULL)
 cat(paste("\n Ending total-present-drivers tests", date(), "\n"))

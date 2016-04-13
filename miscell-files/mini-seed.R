@@ -1,75 +1,48 @@
-cat(paste("\n Starting driverCounts long at", date()))
+## this works OK
+runif(1)
+the.seed <- .Random.seed
+runif(1)
 
-cat(paste("\n             a runif", runif(1), "\n"))
-date()
-test_that("Runs without crashes", {
-    
-    iteration <- 1
-    ni <- runif(10, min = -0.01, max = 0.1)
-    names(ni) <- paste0("g", 2:11)
-    ## each single one
-    for(i in 2:11) {
-        cat("\n doing iteration", iteration, "\n")
-        ni[] <- runif(10, min = -0.01, max = 0.1)
-        ni <- sample(ni)
-        drvN <- paste0("g", i)
-        fe31 <- allFitnessEffects(noIntGenes = ni,
-                                  drvNames = drvN)
-        expect_silent(uu <- oncoSimulPop(20,
-                                         fe31, 
-                                         mu = 1e-6,
-                                         initSize = 1e5,
-                                         model = "McFL",
-                                         detectionSize = 5e6,
-                                         finalTime = 5,
-                                         keepEvery = 1,
-                                         onlyCancer = FALSE,
-                                         mc.cores = 2,
-                                         sampleEvery = 0.03
-                                         ))
-        iteration <- iteration + 1
-    }
-    ## all pairs, trios, etc, shuffled order
-    for(n in 2:10) {
-        m <- combinations(10, n, 2:11)
-        for(j in 1:nrow(m)) {
-            cat("\n doing iteration", iteration, "\n")
-            ni[] <- runif(10, min = -0.01, max = 0.1)
-            ni <- sample(ni)
-            drvN <- paste0("g", sample(m[j, ]))
-            fe31 <- allFitnessEffects(noIntGenes = ni,
-                                  drvNames = drvN)
-            expect_silent(uu <- oncoSimulPop(10,
-                                             fe31, 
-                                             mu = 1e-6,
-                                             initSize = 1e5,
-                                             model = "McFL",
-                                             detectionSize = 5e6,
-                                             finalTime = 5,
-                                             keepEvery = 1,
-                                             onlyCancer = FALSE,
-                                             mc.cores = 2,
-                                             sampleEvery = 0.03
-                                             ))
-            iteration <- iteration + 1
-        }
-    }
+cat("\n set seed\n")
+set.seed(1)
+runif(3)
 
-})
-date()
+cat("\n reset the seed\n")
+.Random.seed <- the.seed
+runif(1)
 
 
 
 
-cat(paste("\n             a second runif", runif(1), "\n"))
-## The following tests is likely to crash in non-Linux and/or non-gcc
-## machines (e.g., using clang), as the details depend on the random
-## numbers generated in R and C++.
-the.seed <- .Random.seed ## examples and vignette set the seed in several
-cat(paste("\n             runif after setting the.seed", runif(1), "\n"))
 
-cat("\n the.seed before\n")
-print(the.seed)
+runif(1)
+the.seed <- .Random.seed
+cat("after \n")
+runif(1)
+
+
+## test_that("this is a dummy test", {
+##     cat("\n set seed\n")
+##     set.seed(1)
+##     runif(3)
+##     expect_true(TRUE)
+
+##     set.seed(1) ## for reproducibility
+##     ni <- c(rep(0, 7), runif(10, min = -0.01, max = 0.1))
+##     names(ni) <- c("a1", "a2", "b1", "b2", "b3", "c1", "c2",
+##                    paste0("g", 1:10))
+##     fe31 <- allFitnessEffects(noIntGenes = ni,
+##                               drvNames = c("g1"))
+##     set.seed(1) ## so that it is easy to reproduce
+##     mue11 <- oncoSimulIndiv(fe31, 
+##                             mu = 1e-6,
+##                             initSize = 1e6,
+##                             model = "McFL",
+##                             detectionSize = 5e6,
+##                             finalTime = 2,
+##                             onlyCancer = FALSE)
+##     expect_true(mue11$MaxNumDrivers == 1)
+##     expect_true(mue11$MaxDriversLast == 1)
 
 date()
 test_that("driverCounts: we get the right results", {
@@ -351,25 +324,10 @@ test_that("driverCounts: we get the right results", {
     expect_true(mue11$MaxDriversLast == 1)
 })
 date()
-cat(paste("\n             a pre-third runif", runif(1), "\n"))
 
-cat("\n the.seed after\n")
-print(the.seed)
-
-set.seed(NULL)
+cat("\n reset the seed\n")
+.Random.seed <- the.seed
 runif(1)
-set.seed(NULL)
-runif(1)
-set.seed(NULL)
-runif(1)
-set.seed(NULL)
 
-cat(paste("\n             a third runif", runif(1), "\n"))
-
-cat(paste("\n Ending driverCounts long at", date()))
-
-
-
-
-
+save(file = "aSeed.RData", the.seed)
 

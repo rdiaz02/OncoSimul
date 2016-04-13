@@ -4,7 +4,7 @@
 
 cat(paste("\n Starting test.mutator-oncoSimulSample-long.R test at", date()))
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
-cat(paste("\n         a runif ", runif(1), "\n")
+cat(paste("\n         a runif ", runif(1), "\n"))
 
 ## require(car) ## for linearHypothesis, below. In the namespace
 

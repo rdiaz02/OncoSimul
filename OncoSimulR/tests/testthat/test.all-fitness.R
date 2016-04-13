@@ -939,7 +939,7 @@ test_that("long example OK", {
     ##  Individual s terms are : 0.03 -0.95
     ##  Fitness:  0.0515 
 })
-.Random.seed <- the.seed
+set.seed(NULL)
 
 
 
