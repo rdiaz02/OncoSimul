@@ -583,8 +583,7 @@ date()
 test_that("Init mutant no effects if fitness is 0", {
     
     cat("\n Init mutant no effect if fitness is 0\n")
-    ## Create a set of scenarios where we know what to expect
-    ## We write a small set of helper functions.
+    ## This can give false positives often.
     ## s should never be relevant concern, so increase reps but
     ## keep fast by decreasing sampling
     sEvery <- 1
@@ -695,7 +694,8 @@ test_that("Init mutant no effects if fitness is 0", {
         print(no.t)
         cat("\n T.yest \n"); print(T.yest)
         print(yes.t)
-        ytbug <<- ytbug
+        ytbug <<- yes.t
+        outbug <<- out
         cat("\n larger values of T.yest \n")
         print(which(p.adjust(yes.t, method = "BH") <= p.fail))
         cat("\n lm and plot\n")
