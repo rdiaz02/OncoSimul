@@ -25,15 +25,9 @@ biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
 BugReports: https://github.com/rdiaz02/OncoSimul/issues
-<<<<<<< HEAD
-Depends: R (>= 3.1.0)
-Imports: Rcpp (>= 0.11.1), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, dplyr
-Suggests: BiocStyle, knitr, Oncotree, testthat, smatr
-=======
 Depends: R (>= 3.2.0)
-Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, car
+Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, car, dplyr
 Suggests: BiocStyle, knitr, Oncotree, testthat
->>>>>>> fittest
 LinkingTo: Rcpp
 VignetteBuilder: knitr
 
