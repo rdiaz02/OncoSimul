@@ -122,47 +122,6 @@ test_that("mutationPropGrowth no warning with McFl, indiv", {
 
 
 
-
-test_that("mutationPropGrowth OK  with Exp, sample", {
-              oi <- allFitnessEffects(orderEffects =
-               c("F > D" = -0.3, "D > F" = 0.4),
-               noIntGenes = rexp(5, 10),
-                          geneToModule =
-                              c("Root" = "Root",
-                                "F" = "f1, f2, f3",
-                                "D" = "d1, d2"),
-               drvNames = c("d1", "d2", "f1", "f2", "f3"))
-              expect_message(oiI1 <- oncoSimulSample(4,
-                                                     oi,
-                                                     onlyCancer = FALSE,
-                                                     model = "Exp",
-                                                     sampleEvery = 0.1,
-                                                     mutationPropGrowth = TRUE),
-                             "Successfully", fixed = TRUE)
-})
-
-
-test_that("mutationPropGrowth OK  with McFL, sample", {
-              oi <- allFitnessEffects(orderEffects =
-               c("F > D" = -0.3, "D > F" = 0.4),
-               noIntGenes = rexp(5, 10),
-                          geneToModule =
-                              c("Root" = "Root",
-                                "F" = "f1, f2, f3",
-                                "D" = "d1, d2"),
-              drvNames = c("d1", "d2", "f1", "f2", "f3") )
-              expect_message(oiI1 <- oncoSimulSample(4,
-                                                     oi,
-                                                     model = "McFL",
-                                                     mu = 5e-6,
-                                                     detectionSize = 1e8, 
-                                                     detectionDrivers = 2,
-                                                     sampleEvery = 0.025,
-                                                     onlyCancer = FALSE,
-                                                     mutationPropGrowth = TRUE),
-                             "Successfully", fixed = TRUE)
-})
-
 cat(paste("\n Ending warning-mutPropGrowth tests", date(), "\n"))
 
 

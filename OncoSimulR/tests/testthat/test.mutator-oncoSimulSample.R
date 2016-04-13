@@ -1,8 +1,6 @@
 ## Repeat tests in test.mutator, using oncoSimulSample.
 ## This is a concession to extreme paranoia.
 
-## Takes abut 25 seconds in my laptop. Slightly too long; can move two
-## tests, MCFLmmd1 and nm3 to long.
 
 cat(paste("\n Starting test.mutator-oncoSimulSample.R test at", date(), "\n"))
 RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
@@ -309,92 +307,6 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
 date()
 
 
-## FIXME: candidate to moving to long tests
-date() ## Beware: this uses a lot of RAM without the gc()
-test_that("McFL: Mutator modules differences", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n MCFLmmd1: the seed is", pseed, "\n")
-    reps <- 10
-    no <- 5e3
-    ft <- 100
-    mu <- 1e-5
-    lni <- 50
-    m1 <- 1
-    m2 <- 25
-    m3 <- 50
-    ni <- rep(0, lni)
-    gn <- paste0("a", 1:lni)
-    names(ni) <- gn
-    gn <- paste(gn, collapse = ", ")
-    mut1 <- allMutatorEffects(epistasis = c("A" = m1),
-                              geneToModule = c("A" = gn))
-    mut2 <- allMutatorEffects(epistasis = c("A" = m2),
-                              geneToModule = c("A" = gn))
-    mut3 <- allMutatorEffects(epistasis = c("A" = m3),
-                              geneToModule = c("A" = gn))
-    f1 <- allFitnessEffects(noIntGenes = ni)
-    b1 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut1,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                        model = "McFL",
-                       seed = NULL
-                       )
-    gc()
-    b2 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut2,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                        model = "McFL",
-                       seed = NULL
-                       )
-    gc()
-    b3 <- oncoSimulSample(reps,
-                       f1,
-                       mu = mu,
-                       muEF = mut3,
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = ft,
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                        model = "McFL",
-                       seed = NULL
-                       )
-    gc()
-    b3$popSummary[, c(1:3, 8:9)]
-    b2$popSummary[, c(1:3, 8:9)]
-    b1$popSummary[, c(1:3, 8:9)]
-    ## mean(rowSums(b3$popSample))
-    ## mean(rowSums(b2$popSample))
-    ## mean(rowSums(b1$popSample))
-    ## This is, of course, affected by sampling only at end: we do not see
-    ## the many intermediate events.
-    p.fail <- 0.05
-    expect_true( t.test( b3$popSummary[, "NumClones"], 
-                 b2$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
-    expect_true( t.test( b2$popSummary[, "NumClones"], 
-                 b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
-    expect_true( t.test( rowSums(b3$popSample) ,
-                 rowSums(b2$popSample), alternative = "greater")$p.value < p.fail)
-    expect_true( t.test( rowSums(b2$popSample) ,
-                 rowSums(b1$popSample), alternative = "greater")$p.value < p.fail)
-})
-date()
 
 
 
@@ -758,63 +670,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
 })
 date()
 
-## FIXME: canditate to moving to long tests
-date()
-test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger t", {
-    ## reproduction, death, and double and possibly triple mutants. We
-    ## decrease init pop size to make this fast.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n nm3: the seed is", pseed, "\n")
-    pops <- 20
-    ft <- 1
-    lni <- 100
-    no <- 1e5
-    fi <- rep(0, lni)
-    muvector <- rep(5e-6, lni)
-    ## scrambling names
-    names(fi) <- replicate(lni,
-                           paste(sample(letters, 12), collapse = ""))
-    names(muvector) <- sample(names(fi))
-    ## choose something for mutator
-    mutator10 <- mutator100 <- fi[5]
-    mutator10[] <- 10
-    mutator100[] <- 100
-    fe <- allFitnessEffects(noIntGenes = fi)
-    m10 <- allMutatorEffects(noIntGenes = mutator10)
-    m100 <- allMutatorEffects(noIntGenes = mutator100)
-    pop10 <- oncoSimulSample(pops,
-                        fe,
-                        mu = muvector,
-                        muEF = m10,
-                        model = "McFL",                        
-                        finalTime = ft,
-                        mutationPropGrowth = FALSE,
-                        initSize = no,
-                        initMutant = names(mutator10),
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                        seed = NULL, onlyCancer = FALSE)
-    pop100 <- oncoSimulSample(pops,
-                        fe,
-                        mu = muvector,
-                        muEF = m100,
-                        model = "McFL",                        
-                        finalTime = ft,
-                        mutationPropGrowth = FALSE,
-                        initSize = no,
-                        initMutant = names(mutator10),
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                        seed = NULL, onlyCancer = FALSE)
-    expect_true(wilcox.test(NClonesOSS(pop10), NClonesOSS(pop100),
-                            alternative = "less")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(pop10$popSample), rowSums(pop100$popSample),
-                       alternative = "less")$p.value < p.value.threshold)
-})
-date()
+
 
 date()
 test_that(" Init with different mutators", {
