@@ -1,5 +1,9 @@
 cat("\n Starting at", date(), "\n") ## whole file takes about 30 seconds
-## When submitting, probably move half of the tests (mcfl?) to the "long" file.
+## When submitting, probably move half of the tests (mcfl?) to the "long"
+## file.
+
+## FIXME wrap some of the p-value based tests on a loop to catch
+## occasional mistakes. See, e.g., test.mutator-oncoSimulSample.R.
 
 mutsPerClone <- function(x, per.pop.mean = TRUE) {
     perCl <- function(z)
