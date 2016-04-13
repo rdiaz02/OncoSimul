@@ -4,7 +4,7 @@ ff <- dir(pattern = "^test.*R$")
 ff <- ff[-which(ff == "test.exercise-plotting-code.R")]
 
 system.time({
-for(i in ff[-4]) {
+for(i in ff) {
     ## tt <- system.time(source(i))
     tt <- system.time(test_file(i))
     cat(paste("\n*************************************************  Time of ",
