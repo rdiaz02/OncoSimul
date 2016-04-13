@@ -75,7 +75,7 @@ echo " "
 echo " ******************************************* "
 echo " *******      long manual tests  --vanilla ************ "
 $V_R  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
-time $V_R --vanilla -e 'library(OncoSimulR); library(testthat); library(gtools); library(smatr); test_dir("./OncoSimulR/tests/manual/")'
+time $V_R --vanilla -e 'library(OncoSimulR); library(testthat); library(car); library(gtools); library(smatr); test_dir("./OncoSimulR/tests/manual/")'
 echo " "
 echo " =======     done long manual tests  --vanilla =======     "
 echo " "

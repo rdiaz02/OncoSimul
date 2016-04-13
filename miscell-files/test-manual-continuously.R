@@ -3,7 +3,8 @@
 library(testthat)
 library(OncoSimulR)
 library(help = "OncoSimulR")
-library(tools)
+library(car)
+library(smatr)
 library(gtools)
 ## recall to install with --install-tests
 
