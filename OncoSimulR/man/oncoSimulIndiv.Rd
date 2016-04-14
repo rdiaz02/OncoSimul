@@ -834,6 +834,7 @@ pancrSamp <- oncoSimulSample(2, pancr)
 pancrSamp
 
 
+
 ## Using gene-specific mutation rates
 muv <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
 ni <- rep(0.01, 5)
@@ -841,6 +842,10 @@ names(ni) <- names(muv)
 femuv <- allFitnessEffects(noIntGenes = ni)
 oncoSimulIndiv(femuv, mu = muv)
                       
+
+## Reinitialize the RNG
+set.seed(NULL)                      
+
 }
 \keyword{misc}
 \keyword{iteration}

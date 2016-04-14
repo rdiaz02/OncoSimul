@@ -282,7 +282,6 @@ fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
 evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
 
 
-
 ## Epistasis for fitness and simple mutator effects
 
 fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
@@ -314,6 +313,9 @@ evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
 
 
 
+
+## Reinitialize the seed
+set.seed(NULL)
 
 }
 

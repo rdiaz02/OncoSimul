@@ -1,6 +1,6 @@
 cat(paste("\n Starting at mutPropGrowth ", date(), "\n"))
 
-RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+## RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## If crashes I want to see where: thus output seed.
 ## The tests below can occasionally fail (but that probability decreases
 ## as we increase number of pops), as they should.
@@ -23,9 +23,9 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 ## date()
 ## test_that("mutPropGrowth diffs with s> 0", {
     
-##     pseed <- sample(9999999, 1)
-##     set.seed(pseed)
-##     cat("\n mgp1: the seed is", pseed, "\n")
+##     
+##     
+##     cat("\n mgp1: a runif is", runif(1), "\n")
 ##     ft <- 4 ## 2.7
 ##     pops <- 50
 ##     lni <- 150 ## 100
@@ -35,18 +35,18 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 ##     names(ni) <- c("a", paste0("n", seq.int(lni)))
 ##     ni <- sample(ni) ## scramble 
 ##     fe <- allFitnessEffects(noIntGenes = ni)
-##     pseed <- sample(9999999, 1)
-##     set.seed(pseed)
-##     cat("\n mpg1a: the seed is", pseed, "\n")
+##     
+##     
+##     cat("\n mpg1a: a runif is", runif(1), "\n")
 ##     nca <- oncoSimulPop(pops, fe, finalTime = ft,
 ##                         mu = mu,
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, sampleEvery = 0.1,
 ##                         initMutant = "a", keepEvery = 1,
 ##                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-##     pseed <- sample(9999999, 1)
-##     set.seed(pseed)
-##     cat("\n mpg1c: the seed is", pseed, "\n")
+##     
+##     
+##     cat("\n mpg1c: a runif is", runif(1), "\n")
 ##     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
 ##                          mu = mu,
 ##                         mutationPropGrowth = FALSE,
@@ -77,9 +77,9 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 
 date()
 test_that("mutPropGrowth diffs with s> 0, McFL", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcf1: the seed is", pseed, "\n")
+    
+    
+    cat("\n mcf1: a runif is", runif(1), "\n")
     ft <- 3 
     pops <- 50
     lni <- 100
@@ -88,9 +88,9 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
     names(ni) <- c("a", paste0("n", seq.int(lni)))
     ni <- sample(ni) ## scramble
     fe <- allFitnessEffects(noIntGenes = ni)
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcf1a: the seed is", pseed, "\n")
+    
+    
+    cat("\n mcf1a: a runif is", runif(1), "\n")
     nca <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = TRUE,
                         initSize = no,
@@ -98,9 +98,9 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
                         keepEvery = 1,
                         initMutant = "a", model = "McFL",
                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcf1c: the seed is", pseed, "\n")
+    
+    
+    cat("\n mcf1c: a runif is", runif(1), "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                         mutationPropGrowth = FALSE,
                         initSize = no,
@@ -134,9 +134,9 @@ cat("\n", date(), "\n")
 
 date()
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n oss1: the seed is", pseed, "\n")
+    
+    
+    cat("\n oss1: a runif is", runif(1), "\n")
     ft <- 3.5 ## 4
     pops <- 50
     lni <- 200 ## 150
@@ -147,9 +147,9 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     names(ni) <- c("a", paste0("n", seq.int(lni)))
     ni <- sample(ni) ## scramble
     fe <- allFitnessEffects(noIntGenes = ni)
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n oss1a: the seed is", pseed, "\n")
+    
+    
+    cat("\n oss1a: a runif is", runif(1), "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mu = mu,
                         mutationPropGrowth = TRUE,
@@ -159,9 +159,9 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n oss1c: the seed is", pseed, "\n")
+    
+    
+    cat("\n oss1c: a runif is", runif(1), "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mu = mu,
                         mutationPropGrowth = FALSE,
@@ -203,9 +203,9 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
 
 date()
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n ossmcf1: the seed is", pseed, "\n")
+    
+    
+    cat("\n ossmcf1: a runif is", runif(1), "\n")
     ft <- 40 ## 4
     pops <- 50
     lni <- 200 ## 150
@@ -216,9 +216,9 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
     names(ni) <- c("a", paste0("n", seq.int(lni)))
     ni <- sample(ni) ## scramble
     fe <- allFitnessEffects(noIntGenes = ni)
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n ossmcf1a: the seed is", pseed, "\n")
+    
+    
+    cat("\n ossmcf1a: a runif is", runif(1), "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mu = mu, model = "McFL",
                         mutationPropGrowth = TRUE,
@@ -228,9 +228,9 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n ossmcf1c: the seed is", pseed, "\n")
+    
+    
+    cat("\n ossmcf1c: a runif is", runif(1), "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mu = mu, model = "McFL",
                         mutationPropGrowth = FALSE,

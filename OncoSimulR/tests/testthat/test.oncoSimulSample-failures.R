@@ -1,6 +1,6 @@
 cat(paste("\n Starting oncoSimulSample-failures tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 test_that("oncoSimulSample out of time triggered", {
               oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.1),

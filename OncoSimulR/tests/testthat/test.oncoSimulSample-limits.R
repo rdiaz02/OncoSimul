@@ -1,6 +1,6 @@
 cat(paste("\n Starting oncoSimulSample-limits tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 data(examplePosets)
 
 p701 <- examplePosets[["p701"]]

@@ -20,12 +20,13 @@ while(TRUE) {
     i <- i + 1
     cat("\n\n Doing iteration ", i, "\n")
     cat("\n And this is the first random uniform number ", runif(1), "\n")
-    ## the.seed <- .Random.seed ## tests set the seed in several places
     gc()
     test_dir("../OncoSimulR/tests/manual/")
     gc()
-    ## .Random.seed <- the.seed
-    set.seed(NULL)
+    gc()
+    test_dir("../OncoSimulR/tests/manual/")
+    gc()
+    ## set.seed(NULL) ## not needed, as all clean after themselves
     cat("\n         And this is the second random uniform number ", runif(1), "\n")
 }
 

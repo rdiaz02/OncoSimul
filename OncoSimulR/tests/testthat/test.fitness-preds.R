@@ -7,7 +7,7 @@
 ## specifications 
 
 cat(paste("\n Starting fitness preds at", date(), "\n"))
-RNGkind("Mersenne-Twister") ## but this is irrelevant now.
+## RNGkind("Mersenne-Twister") ## but this is irrelevant now.
 
 
 ## rm(list = ls())
