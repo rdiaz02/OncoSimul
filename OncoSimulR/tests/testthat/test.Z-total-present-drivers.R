@@ -1,6 +1,6 @@
 cat(paste("\n Starting total-present-drivers tests", date(), "\n"))
 
-the.seed <- .Random.seed
+
 test_that("Count TotalPresentDrivers", {
     ## There once was a bug here (in the driverCounts C++ function)
     ## Testing we are OK
