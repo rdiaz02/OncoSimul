@@ -93,7 +93,6 @@ time $V_R --vanilla CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 echo " "
 echo " =======      done R CMD check --vanilla  =======  "
 echo " "
-
 echo " =======  installing with tests "
 $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 
@@ -104,10 +103,9 @@ $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 # echo " ******************************************* "
 # echo " *******      long manual tests  --vanilla ************ "
 # $V_R  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
-# time $V_R --vanilla -e 'library(OncoSimulR); library(testthat); library(car); library(gtools); library(smatr); test_dir("./OncoSimulR/tests/manual/")'
-# echo " "
 # echo " =======     done long manual tests  --vanilla =======     "
 # echo " "
+
 
 
 
@@ -134,6 +132,8 @@ $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 # echo " "
 # echo " =======     done long manual tests   =======     "
 echo " "
+=======
+>>>>>>> no manual tests in routine build
 
 
 
