@@ -800,7 +800,9 @@ pancrSPop
 
 pancrSamp <- oncoSimulSample(2, pancr)
 pancrSamp
-                      
+
+## Reinitialize the RNG
+set.seed(NULL)                      
 }
 \keyword{misc}
 \keyword{iteration}

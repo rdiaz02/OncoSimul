@@ -1,7 +1,7 @@
 cat(paste("\n Starting sample-only-last tests", date(), "\n"))
 
 data(examplePosets)
-RNGkind("Mersenne-Twister") 
+## RNGkind("Mersenne-Twister") 
 
 bozic <- function(poset) oncoSimulIndiv(poset, sampleEvery = 0.03,
                                         keepEvery = 1)

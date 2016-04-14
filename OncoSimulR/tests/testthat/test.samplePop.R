@@ -1,6 +1,6 @@
 cat(paste("\n Starting samplePop tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 
 test_that("exercising the sampling code, v1 objects", {
               data(examplePosets)

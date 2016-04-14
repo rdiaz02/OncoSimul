@@ -21,7 +21,7 @@
 ## all the code for new simulations is based upon going from adjmat to rT.
 ## verify that.
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 
 
 test_that("posetToGraph stop in incorrect entry type", {

@@ -4460,6 +4460,11 @@ This is the information about the version of R and packages used:
 sessionInfo()
 @ 
 
+
+<<echo=FALSE, eval=TRUE>>=
+## reinitialize the seed
+set.seed(NULL)
+@ 
 %\newpage
 %%\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm
 %% does the URL without turning into note?

@@ -6,7 +6,7 @@ cat(paste("\n Starting exercise-plotting-code at", date()))
 
 ## BEWARE: this do not test that the plotting is correct! It just calls it.
 
-RNGkind("Mersenne-Twister") ## be explicit
+## RNGkind("Mersenne-Twister") ## be explicit
 
 ## Takes about 11 seconds on my laptop
 

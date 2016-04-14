@@ -1,6 +1,6 @@
 cat(paste("\n Starting wide2long tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 test_that("wide2long, two basic cases, minimal testing",
 {
     data(examplePosets)

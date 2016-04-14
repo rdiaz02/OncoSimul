@@ -1,6 +1,6 @@
 cat(paste("\n Starting warning-mutPropGrowth tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 
 test_that("mutationPropGrowth warning with Bozic, indiv", {
               oi <- allFitnessEffects(orderEffects =
@@ -68,9 +68,9 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
 
 test_that("mutationPropGrowth no warning with Exp, indiv", {
     ## I once (out of over > 10000) saw it fail. Try to catch it
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n the seed is", pseed, "\n")
+    
+    
+    cat("\n a runif is", runif(1), "\n")
     oi <- allFitnessEffects(orderEffects =
                                 c("F > D" = -0.3, "D > F" = 0.4),
                             noIntGenes = rexp(5, 10),

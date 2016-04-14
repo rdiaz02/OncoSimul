@@ -4,7 +4,7 @@ cat(paste("\n Starting simuls-runs-examples tests", date(), "\n"))
 ## Just a minimal set. Will later check warnings when they should, etc.
 
 data(examplesFitnessEffects)
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 ## sometimes cancer is not reached. No problem.
 
 ## Very rarely, popSize > 1e15, and we get an exception. Decrease

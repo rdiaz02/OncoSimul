@@ -18,7 +18,7 @@
 
 cat(paste("\n Starting oposet-transformations tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 
 test_that("posetToGraph stop in incorrect entry type", {
     expect_error(OncoSimulR:::posetToGraph(1:5, letters[1:5]),
