@@ -3,7 +3,7 @@
 
 
 cat(paste("\n Starting test.mutator-oncoSimulSample.R test at", date(), "\n"))
-RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+## RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 
 ## require(car) ## for linearHypothesis, below. In the namespace
 
@@ -80,9 +80,9 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
     ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
     max.tries <- 3
     for(tries in 1:max.tries) {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n MCFL: AEu8: the seed is", pseed, "\n")
+    
+    
+    cat("\n MCFL: AEu8: a runif is", runif(1), "\n")
     pops <- 200
     ft <- 5e-3
     lni <- 7
@@ -198,8 +198,8 @@ date()
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on  popSize after short model. All have same small s.
     pseed <-sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcx2bc: the seed is", pseed, "\n")
+    
+    cat("\n mcx2bc: a runif is", runif(1), "\n")
     pops <- 50
     ni <- rep(0.01, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -259,8 +259,8 @@ date()
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 , but all have same growth rate.
     pseed <- sample(99999999, 1)
-    set.seed(pseed)
-    cat("\n x2ef: the seed is", pseed, "\n")
+    
+    cat("\n x2ef: a runif is", runif(1), "\n")
     pops <- 10
     ft <- 1
     lni <- 200
@@ -338,8 +338,8 @@ date()
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 but all same growth rate.
     pseed <-sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n x2gh: the seed is", pseed, "\n")
+    
+    cat("\n x2gh: a runif is", runif(1), "\n")
     pops <- 10
     ft <- 1
     lni <- 200
@@ -438,9 +438,9 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
     ##  - mutator increases mutation rates as seen in:
     ##        - number of clones created
     ##        - number of total mutation events
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n nm2: the seed is", pseed, "\n")
+    
+    
+    cat("\n nm2: a runif is", runif(1), "\n")
     pops <- 20
     ft <- .0001
     lni <- 100
@@ -497,9 +497,9 @@ date()
 
 date()
 test_that(" MCFL Init with different mutators", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcz2: the seed is", pseed, "\n")
+    
+    
+    cat("\n mcz2: a runif is", runif(1), "\n")
     pops <- 40
     ft <- .005
     lni <- 50

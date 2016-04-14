@@ -3,8 +3,9 @@
 
 
 cat(paste("\n Starting test.mutator-oncoSimulSample-long.R test at", date()))
-RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 cat(paste("\n         a runif ", runif(1), "\n"))
+## RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
+
 
 ## require(car) ## for linearHypothesis, below. In the namespace
 
@@ -64,9 +65,9 @@ p.value.threshold <- 0.005
 date()
 test_that("per-gene-mut rates and mutator", {
 
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n oss11: the seed is", pseed, "\n")
+    
+    
+    cat("\n oss11: a runif is", runif(1), "\n")
     ng <- 40
     ni <- rep(0, ng)
     m1 <- runif(ng, min = 1e-7, max = 5e-6)
@@ -202,9 +203,9 @@ test_that("per-gene-mut rates and mutator", {
 date()
 test_that("McFL: per-gene-mut rates and mutator", {
 
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcfloss11: the seed is", pseed, "\n")
+    
+    
+    cat("\n mcfloss11: a runif is", runif(1), "\n")
     ng <- 40
     ni <- rep(0, ng)
     m1 <- rep(5e-6, ng) ## too much variation and hard to pick the diffs.;
@@ -360,9 +361,9 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
 
     ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
     
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n AEu8_long: the seed is", pseed, "\n")
+    
+    
+    cat("\n AEu8_long: a runif is", runif(1), "\n")
     pops <- 8000
     ft <- 5e-3
     lni <- 7
@@ -487,9 +488,9 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
 
     ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
     
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n MCFL: long_AEu8: the seed is", pseed, "\n")
+    
+    
+    cat("\n MCFL: long_AEu8: a runif is", runif(1), "\n")
     pops <- 8000
     ft <- 5e-3
     lni <- 7
@@ -603,9 +604,7 @@ date()
 
 date() 
 test_that("Mutator, several modules differences", {
-    pseed <- sample(99999999, 1)
-    set.seed(pseed)
-    cat("\n mmd1_2: the seed is", pseed, "\n")
+    cat("\n mmd1_2: a runif is", runif(1), "\n")
     reps <- 140
     no <- 5e3
     ft <- 80 ## you need it large enough to get enough hits
@@ -674,9 +673,7 @@ date()
 
 date() 
 test_that("Mutator, several modules differences, McFL", {
-    pseed <- sample(99999999, 1)
-    set.seed(pseed)
-    cat("\n mmd1_2_mc: the seed is", pseed, "\n")
+    cat("\n mmd1_2_mc: a runif is", runif(1), "\n")
     reps <- 80
     no <- 5e3
     ft <- 50 ## you need it large enough to get enough hits
@@ -741,9 +738,7 @@ date()
 ## Slow (~ 3 seconds) but tests modules of mutator nicely.
 date() ## Beware: this uses a lot of RAM without the gc()
 test_that("Mutator modules differences", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mmd1: the seed is", pseed, "\n")
+    cat("\n mmd1: a runif is", runif(1), "\n")
     reps <- 40
     no <- 5e3
     ft <- 100
@@ -826,10 +821,7 @@ date()
 
 date()
 test_that("Relative ordering of number of clones with mutator effects", {
-    ## We stop on popSize, not final time
-    pseed <-sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n x1: the seed is", pseed, "\n")
+    cat("\n x1: a runif is", runif(1), "\n")
     pops <- 40
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                            "b" = 0.14,
@@ -893,9 +885,9 @@ date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## Similar to above, but mutator has a single element, not the whole
     ## vector.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n u7: the seed is", pseed, "\n")
+    
+    
+    cat("\n u7: a runif is", runif(1), "\n")
     pops <- 2000
     ft <- 1e-7
     lni <- 80 
@@ -959,9 +951,9 @@ date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator, decrease max mu
     ## similar to oss11 in per-gene-mutation-rates but with the mutator
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n u8: the seed is", pseed, "\n")
+    
+    
+    cat("\n u8: a runif is", runif(1), "\n")
     pops <- 5000
     ft <- 5e-3
     lni <- 7
@@ -1030,9 +1022,9 @@ date()
 test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcfu6: the seed is", pseed, "\n")
+    
+    
+    cat("\n mcfu6: a runif is", runif(1), "\n")
     pops <- 2000
     ft <- 1e-7
     lni <- 80 
@@ -1091,9 +1083,8 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
     
     ## Stop on size, and do a fast model (stop shortly after)
     ## But note we have only four positions left, so difficult to detect
-    pseed <-sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcx1: the seed is", pseed, "\n")
+    
+    cat("\n mcx1: a runif is", runif(1), "\n")
     pops <- 160
     mu <- 1e-6
     ft <- 500
@@ -1157,9 +1148,7 @@ date()
 test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
 
     ## Here stop by time, as s = 0
-    pseed <-sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n x2cd: the seed is", pseed, "\n")
+    cat("\n x2cd: a runif is", runif(1), "\n")
     pops <- 80
     ni <- rep(0, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -1228,9 +1217,9 @@ date()
 test_that("McFL, Expect freq genotypes, mutator and var mut rates, ct mut", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n ct_mcfu6: the seed is", pseed, "\n")
+    
+    
+    cat("\n ct_mcfu6: a runif is", runif(1), "\n")
     pops <- 2500
     ft <- 1e-7
     lni <- 80 
@@ -1288,9 +1277,9 @@ date()
 test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcfu7: the seed is", pseed, "\n")
+    
+    
+    cat("\n mcfu7: a runif is", runif(1), "\n")
     pops <- 2500
     ft <- 3e-7
     lni <- 80 
@@ -1346,9 +1335,9 @@ date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n sameu6: the seed is", pseed, "\n")
+    
+    
+    cat("\n sameu6: a runif is", runif(1), "\n")
     pops <- 1500
     ft <- 1e-5 ## small, as we cannot afford to accumulate many mutations
                ## or else, given that we have a wholePopulation sample, we
@@ -1415,9 +1404,9 @@ date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n u6: the seed is", pseed, "\n")
+    
+    
+    cat("\n u6: a runif is", runif(1), "\n")
     pops <- 1500
     ft <- 1e-5 ## small, as we cannot afford to accumulate many mutations
                ## or else, given that we have a wholePopulation sample, we
@@ -1481,9 +1470,7 @@ date()
 date()
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Stopping on time: all s = 0.
-    pseed <-sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n mcx2cd: the seed is", pseed, "\n")
+    cat("\n mcx2cd: a runif is", runif(1), "\n")
     pops <- 40
     ni <- rep(0, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -1543,9 +1530,7 @@ date()
 test_that("Relative ordering of number of clones with init mutant of mutator effects", {
     ## here we do not fill all positions, except maybe for ncd
     ## We stop on finalTime, not popsize
-    pseed <-sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n x2bc: the seed is", pseed, "\n")
+    cat("\n x2bc: a runif is", runif(1), "\n")
     pops <- 30
     ni <- rep(0.01, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -1614,9 +1599,9 @@ date()
 test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n nm1: the seed is", pseed, "\n")
+    
+    
+    cat("\n nm1: a runif is", runif(1), "\n")
     pops <- 20
     ft <- 1
     lni <- 100
@@ -1673,9 +1658,9 @@ date()
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n nm3: the seed is", pseed, "\n")
+    
+    
+    cat("\n nm3: a runif is", runif(1), "\n")
     pops <- 20
     ft <- 1
     lni <- 100
@@ -1730,9 +1715,9 @@ date()
 
 date() ## Beware: this uses a lot of RAM without the gc()
 test_that("McFL: Mutator modules differences", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n MCFLmmd1: the seed is", pseed, "\n")
+    
+    
+    cat("\n MCFLmmd1: a runif is", runif(1), "\n")
     reps <- 10
     no <- 5e3
     ft <- 100
@@ -1831,9 +1816,9 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
     ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
     max.tries <- 3
     for(tries in 1:max.tries) {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n AEu8: the seed is", pseed, "\n")
+    
+    
+    cat("\n AEu8: a runif is", runif(1), "\n")
     pops <- 200
     ft <- 5e-3
     lni <- 7
@@ -1948,9 +1933,9 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     ##  - mutator increases mutation rates as seen in:
     ##        - number of clones created
     ##        - number of total mutation events
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n nm0: the seed is", pseed, "\n")
+    
+    
+    cat("\n nm0: a runif is", runif(1), "\n")
     pops <- 20
     ft <- .0001
     lni <- 100
@@ -2006,9 +1991,9 @@ date()
 
 date()
 test_that(" Init with different mutators", {
-    pseed <- sample(9999999, 1)
-    set.seed(pseed)
-    cat("\n z2: the seed is", pseed, "\n")
+    
+    
+    cat("\n z2: a runif is", runif(1), "\n")
     pops <- 40
     ft <- .005
     lni <- 50
