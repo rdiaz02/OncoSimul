@@ -52,6 +52,7 @@ date()
 ## Just to check no crashes and to show output
 date()
 test_that("driverCounts: a run that used to cause crashes", {
+    RNGkind("Mersenne-Twister")
     set.seed(1)
     ni <- runif(10, min = -0.01, max = 0.1)
     names(ni) <- paste0("g", 2:11)
