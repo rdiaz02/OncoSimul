@@ -8,6 +8,9 @@ Changes in version 2.2.0 (for BioC 3.3):
 	- Added mutationPropGrowth as argument.
 	- Some minor bug fixes and additional checks for user errors.
 
+Changes in version 2.1.6 (2016-04-14):
+	- Adapt to changes in today's release of testthat (1.0.0)
+
 Changes in version 2.1.5 (2016-04-09):
 	- Added a test of driverCounts, that does not depend on
           OS/compiler.
