@@ -1,5 +1,5 @@
 cat(paste("\n Starting driverCounts long at", date()))
-
+cat(paste("\n             a runif", runif(1), "\n"))
 date()
 test_that("Runs without crashes", {
     
