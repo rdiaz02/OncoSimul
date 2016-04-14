@@ -1,3 +1,4 @@
+RNGkind("Mersenne-Twister")
 
 test_that("catches identical gene names in different modules", {
     ## long, because it uses a complex and easy to miss problem
