@@ -132,8 +132,6 @@ $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 # echo " "
 # echo " =======     done long manual tests   =======     "
 echo " "
-=======
->>>>>>> no manual tests in routine build
 
 
 
