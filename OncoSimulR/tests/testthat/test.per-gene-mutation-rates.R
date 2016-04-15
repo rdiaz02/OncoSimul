@@ -605,8 +605,8 @@ test_that("McFL: Init mutant with tiny mutation always present", {
     names(muvar) <- nfea
     muvar["h2"] <- 3e-13
     muvar["i1"] <- 1e-13
-    no <- 1e4
-    reps <- 10
+    no <- 5e3
+    reps <- 20
     cat("\n s12b: a runif is", runif(1), "\n")
     bb <- oncoSimulPop(5, ##reps,
                        fea, mu = muvar,
@@ -615,7 +615,7 @@ test_that("McFL: Init mutant with tiny mutation always present", {
                        model = "McFL",
                        sampleEvery = 0.02,
                        keepEvery = 2,
-                       finalTime = 300,
+                       finalTime = 50,
                        mutationPropGrowth = FALSE, ## yes, exclude this possible effect
                        initMutant = "h2 > i1",
                        mc.cores = 2
