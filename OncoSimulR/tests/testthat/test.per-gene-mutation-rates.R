@@ -79,9 +79,9 @@ test_that("Only no-int, and sorting", {
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
     muvar <- c("m" = 1e-5, "D" = 1e-7)
-    expect_output(oncoSimulIndiv(fea9, mu = muvar,
+    expect_output(print(oncoSimulIndiv(fea9, mu = muvar,
                                  sampleEvery = 0.03,
-                                 keepEvery = 5),
+                                 keepEvery = 5)),
                   "Individual OncoSimul trajectory",
                   fixed = TRUE)
     fea8 <- allFitnessEffects(noIntGenes =
@@ -93,8 +93,8 @@ test_that("Only no-int, and sorting", {
                                     ))
     ## OncoSimulR:::allNamedGenes(fea8)
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
-    expect_output(oncoSimulIndiv(fea8, mu = muvar2, sampleEvery = 0.03,
-                                 keepEvery = 5),
+    expect_output(print(oncoSimulIndiv(fea8, mu = muvar2, sampleEvery = 0.03,
+                                 keepEvery = 5)),
                   "Individual OncoSimul trajectory",
                   fixed = TRUE)
 } )
@@ -215,10 +215,10 @@ test_that("McFL: Only no-int, and sorting", {
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
     muvar <- c("m" = 1e-5, "D" = 1e-7)
-    expect_output(oncoSimulIndiv(fea9, mu = muvar, model = "McFL",
+    expect_output(print(oncoSimulIndiv(fea9, mu = muvar, model = "McFL",
                                  sampleEvery = 0.03,
                                  keepEvery = 5,
-                                 finalTime = 20),
+                                 finalTime = 20)),
                   "Individual OncoSimul trajectory",
                   fixed = TRUE)
     fea8 <- allFitnessEffects(noIntGenes =
@@ -230,12 +230,12 @@ test_that("McFL: Only no-int, and sorting", {
                                     ))
     ## OncoSimulR:::allNamedGenes(fea8)
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
-    expect_output(oncoSimulIndiv(fea8, mu = muvar2,
+    expect_output(print(oncoSimulIndiv(fea8, mu = muvar2,
                                  model = "McFL",
                                  sampleEvery = 0.03,
                                  keepEvery = 5,
                                  seed = NULL,
-                                 finalTime = 20),
+                                 finalTime = 20)),
                   "Individual OncoSimul trajectory", 
                   fixed = TRUE)
 } )
@@ -551,7 +551,8 @@ date()
 
 date()
 test_that("get.gene.counts exercising for NA case", {
-    
+    ## The NA case refers to getting NAs in get.the.time.for.sample
+    ## as this almost certainly goes extinct
     
     cat("\n s10: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -559,15 +560,17 @@ test_that("get.gene.counts exercising for NA case", {
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     ou1 <- oncoSimulIndiv(fe1, mu = muvar2,
-                          initSize = 100,
+                          initSize = 20,
                           onlyCancer = FALSE,
                           seed = NULL)
-    expect_output(OncoSimulR:::get.gene.counts(ou1),
-                  "$counts",
+    expect_output(str(OncoSimulR:::get.gene.counts(ou1)),
+                  "$ counts",
                   fixed = TRUE)
-    expect_output(OncoSimulR:::geneCounts(ou1),
+    expect_output(str(OncoSimulR:::geneCounts(ou1)),
                   "0",
                   fixed = TRUE)
+
+
 })
 
 

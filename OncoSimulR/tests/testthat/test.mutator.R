@@ -172,12 +172,12 @@ test_that("expect output oncoSimulIndiv", {
                                            "e" = 0.1))
     fm <- allMutatorEffects(noIntGenes = c("a" = 10,
                                            "c" = 5))
-    expect_output(oncoSimulIndiv(fe, muEF = fm, sampleEvery = 0.01,
-                                 keepEvery = 5),
+    expect_output(print(oncoSimulIndiv(fe, muEF = fm, sampleEvery = 0.01,
+                                 keepEvery = 5)),
                   "Individual OncoSimul trajectory",
                   fixed = TRUE)
-    expect_output(oncoSimulIndiv(fe, muEF = fm, sampleEvery = 0.01,
-                                 keepEvery = 5),
+    expect_output(print(oncoSimulIndiv(fe, muEF = fm, sampleEvery = 0.01,
+                                 keepEvery = 5)),
                   "Individual OncoSimul trajectory",
                   fixed = TRUE)
 })
