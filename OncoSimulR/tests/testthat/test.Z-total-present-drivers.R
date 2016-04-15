@@ -89,6 +89,7 @@ test_that("Count TotalPresentDrivers", {
                 length(strsplit(s3.l$OccurringDrivers, ", ")[[1]]))
 })
 set.seed(NULL)
+set.seed(NULL)
 cat(paste("\n Ending total-present-drivers tests", date(), "\n"))
 
 

@@ -10,10 +10,10 @@ test_that("can start from 1 individual but error if McFL", {
                                   "F" = "f1, f2, f3",
                                   "D" = "d1, d2") )
 
-    expect_output(oncoSimulIndiv(oi, initSize = 1,
+    expect_output(print(oncoSimulIndiv(oi, initSize = 1,
                                  sampleEvery = 0.03,
                                  keepEvery = 5,
-                                 onlyCancer = FALSE),
+                                 onlyCancer = FALSE)),
                   "Individual OncoSimul trajectory", fixed = TRUE)
     
     expect_error(oncoSimulIndiv(oi, initSize = 1,
@@ -177,7 +177,7 @@ test_that("verbosity options", {
                                            keepEvery = 2,
                                            finalTime = 3,
                                            onlyCancer = FALSE),
-                            "Total Pop Size = ")
+                            "Total Pop Size = ", fixed = TRUE)
           })
 
 

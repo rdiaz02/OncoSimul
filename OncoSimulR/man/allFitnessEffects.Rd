@@ -317,6 +317,8 @@ evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
 ## Reinitialize the seed
 set.seed(NULL)
 
+## Reinitialize the seed
+set.seed(NULL)
 }
 
 \keyword{ manip }

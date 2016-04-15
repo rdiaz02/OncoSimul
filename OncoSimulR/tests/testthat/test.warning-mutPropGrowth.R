@@ -21,7 +21,6 @@ test_that("mutationPropGrowth warning with Bozic, indiv", {
 })
 
 
-
 ## With seed 5207947 we get a Recoverable exception ti set to
 ## DBL_MIN. Rerunning. Not if we set the onlyCancer = FALSE. Also, not if
 ## we use a sampleEvery = 0.1. Setting it to 0.1 still same issue with
