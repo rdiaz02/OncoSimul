@@ -73,7 +73,7 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
 
 
 verboseOandE <- FALSE
-
+sEvery <- 0.05
 
 ## we could now use try_again
 date()
@@ -85,16 +85,16 @@ test_that("Observed vs expected, case III", {
     }
     max.tries <- 3
     for(tries in 1:max.tries) {
-    ## Like II, but we combine several effects.
-    reps <- 25
-    mu <- 1e-7
-    nig <- 20 ## there are lots of genes with modules with many genes
-    out <- NULL
-    outNO <- NULL
+        ## Like II, but we combine several effects.
+        reps <- 25
+        mu <- 1e-7
+        nig <- 20 ## there are lots of genes with modules with many genes
+        out <- NULL
+        outNO <- NULL
     so <- 0.2
     sni <- 0.1
-    niG <- c(sni, rep(0, nig - 1))
-    names(niG) <- paste0("nint", 1:nig)
+        niG <- c(sni, rep(0, nig - 1))
+        names(niG) <- paste0("nint", 1:nig)
     feo <- allFitnessEffects(orderEffects = c("A > B" = so,
                                               "B > A" = -5),
                              noIntGenes = niG,
