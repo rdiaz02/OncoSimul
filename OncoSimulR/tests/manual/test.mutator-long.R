@@ -94,7 +94,7 @@ cat(paste("\n            a third runif ", runif(1), "\n"))
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
-    pseed <-sample(9999999, 1)
+    
     
     cat("\n mcx2bc: a runif is", runif(1), "\n")
     pops <- 50

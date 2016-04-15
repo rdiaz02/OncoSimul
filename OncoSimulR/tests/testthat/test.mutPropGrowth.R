@@ -76,6 +76,7 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 
 
 date()
+try_again(2, 
 test_that("mutPropGrowth diffs with s> 0, McFL", {
     
     
@@ -127,15 +128,15 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
     expect_true( mean(mutsPerClone(nca)) >
                  mean(mutsPerClone(nca2)))
 })
+)
 cat("\n", date(), "\n")
 
 
 
 
 date()
+try_again(2, 
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
-    
-    
     cat("\n oss1: a runif is", runif(1), "\n")
     ft <- 3.5 ## 4
     pops <- 50
@@ -147,8 +148,6 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     names(ni) <- c("a", paste0("n", seq.int(lni)))
     ni <- sample(ni) ## scramble
     fe <- allFitnessEffects(noIntGenes = ni)
-    
-    
     cat("\n oss1a: a runif is", runif(1), "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mu = mu,
@@ -159,8 +158,6 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
-    
-    
     cat("\n oss1c: a runif is", runif(1), "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mu = mu,
@@ -199,12 +196,11 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     summary(nca$popSummary[, "TotalPopSize"])
     summary(nca2$popSummary[, "TotalPopSize"])
 })
-
+)
 
 date()
+try_again(2, 
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
-    
-    
     cat("\n ossmcf1: a runif is", runif(1), "\n")
     ft <- 40 ## 4
     pops <- 50
@@ -216,8 +212,6 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
     names(ni) <- c("a", paste0("n", seq.int(lni)))
     ni <- sample(ni) ## scramble
     fe <- allFitnessEffects(noIntGenes = ni)
-    
-    
     cat("\n ossmcf1a: a runif is", runif(1), "\n")
     nca <- oncoSimulSample(pops, fe, finalTime = ft,
                         mu = mu, model = "McFL",
@@ -228,8 +222,6 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
-    
-    
     cat("\n ossmcf1c: a runif is", runif(1), "\n")
     nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
                          mu = mu, model = "McFL",
@@ -263,12 +255,12 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                  mean(mutsPerClone2))
     expect_true( median(nca$popSummary[, "NumClones"]) >
                  median(nca2$popSummary[, "NumClones"]))
-
     ## Pop sizes here do not really differ, as we start with the
     ## initMutant with increased s. And this is McFL, so bounded from above.
     summary(nca$popSummary[, "TotalPopSize"])
     summary(nca2$popSummary[, "TotalPopSize"])
 })
+)
 cat("\n", date(), "\n")
 
 

@@ -195,9 +195,10 @@ date()
 
 
 date()
+try_again(2, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on  popSize after short model. All have same small s.
-    pseed <-sample(9999999, 1)
+    
     
     cat("\n mcx2bc: a runif is", runif(1), "\n")
     pops <- 50
@@ -252,14 +253,14 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     expect_true(t.test(rowSums(ncc$popSample), rowSums(ncd$popSample),
                        alternative = "less")$p.value < p.value.threshold)
 })
+)
 date()
 
 
 date()
+try_again(2, 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 , but all have same growth rate.
-    pseed <- sample(99999999, 1)
-    
     cat("\n x2ef: a runif is", runif(1), "\n")
     pops <- 10
     ft <- 1
@@ -332,12 +333,14 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
     ## pg$popSummary[, c(1:3, 8:9)]
     ## npg$popSummary[, c(1:3, 8:9)]
 })
+)
 date()
 
 date()
+try_again(2, 
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 but all same growth rate.
-    pseed <-sample(9999999, 1)
+    
     
     cat("\n x2gh: a runif is", runif(1), "\n")
     pops <- 10
@@ -407,6 +410,7 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
     expect_true(t.test(rowSums(pg$popSample),rowSums(npg$popSample),
                        alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
 
 
@@ -431,6 +435,7 @@ date()
 
 
 date()
+try_again(2, 
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
@@ -489,6 +494,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
     expect_true(t.test(rowSums(pop10$popSample), rowSums(pop100$popSample),
                        alternative = "less")$p.value < p.value.threshold)
 })
+)
 date()
 
 
@@ -496,9 +502,8 @@ date()
 
 
 date()
+try_again(2, 
 test_that(" MCFL Init with different mutators", {
-    
-    
     cat("\n mcz2: a runif is", runif(1), "\n")
     pops <- 40
     ft <- .005
@@ -570,6 +575,7 @@ test_that(" MCFL Init with different mutators", {
     expect_true(t.test(rowSums(m1.pg1.b$popSample),rowSums(m1.pg1.c$popSample),
                        alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
 
 cat(paste("\n Finished test.mutator-oncoSimulSample.R test at", date()))

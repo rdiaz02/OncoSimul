@@ -63,7 +63,7 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
 verboseOandE <- FALSE
 
 
-
+## we could now use try_again
 date()
 test_that("Observed vs expected, case III", {
     
