@@ -15,15 +15,15 @@ expe <- function(no, s, ft) {
 }
 
 mce <- function(s, K) {
-    ## yes, at equilibrium
+    ## yes, at equilibrium, when birth = death
     return( K * (exp(1 + s) - 1))
 }
 
 expected <- function(no, s, ft, model) {
     if(model == "Exp")
         return(expe(no = no, s = s, ft = ft))
-    if(model == "McFL")  ## take no as K
-        return(mce(s = s, K = no))
+    if(model == "McFL") ## this K has to be the same as in OandE, of course.        
+        return(mce(s = s, K = no/(exp(1) - 1) ))
 }
 
 OandE <- function(fe, s, ft,  model, initMutant, no,
@@ -37,7 +37,7 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
                       fe,
                       mu = mu,
                       initSize = no,
-                      K = no,
+                      ## K = no,
                       model = model,
                       detectionDrivers = 99,
                       finalTime = ft,
@@ -55,6 +55,17 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
     return(c(E,
              unlist(lapply(O, function(x) x$TotalPopSize))))
 }
+
+
+## A comment about the McFL model and what we do in OandE
+
+##  We set K as given by default, so initSize/(exp(1) - 1).  This does not
+##  have a major effect iff you run the thing for long enough. Why?
+##  Because if you set K to, say, initSize, then, especially with the s =
+##  0, you need to run it for long for it to reach equilibrium. In
+##  addition, I am testing here in the most general, usual, circumstances,
+##  given that especial ones (other values of K) work if you use long
+##  enough finalTimes.
 
 
 ## Yes, the linear model is not really correct, as variance is different
@@ -183,7 +194,7 @@ test_that("Observed vs expected, case I", {
         print(no.t)
         cat("\n T.yest \n"); print(T.yest)
         print(yes.t)
-        cat("\n larger values of T.yest \n")
+        cat("\n larger values of T.yest I \n")
         print(which(p.adjust(yes.t, method = "BH") <= p.fail))
         cat("\n lm and plot\n")
         print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
@@ -236,7 +247,6 @@ test_that("Observed vs expected, case II", {
     outNO <- rbind(outNO, OandE(feo, so, 30, "McFL", "b5 > a5", 1e4, reps, mu, verboseOandE))
     outNO <- rbind(outNO, OandE(feo, so, 200, "McFL", "b2 > a1", 1e2, reps, mu, verboseOandE))
     outNO <- rbind(outNO, OandE(feo, so, 300, "McFL", "b1 > a2", 1e2, reps, mu, verboseOandE))
-    
     so <- 0.32
     niG <- c(so, rep(0, nig))
     names(niG) <- replicate(nig + 1, paste(sample(letters, 12, replace = TRUE),
@@ -260,7 +270,6 @@ test_that("Observed vs expected, case II", {
     outNO <- rbind(outNO, OandE(feo, so, 40, "McFL",
                                 paste(names(niG)[2], ">", names(niG)[5]),
                                 1.33e3, reps, mu, verboseOandE))
-    
     so <- 0.17
     niG <- rep(0, nig)
     names(niG) <- paste0("nint", 1:nig)
@@ -379,18 +388,16 @@ test_that("Observed vs expected, case II", {
                    function(x) t.test(log(x[2:(reps + 1)] + 1), mu = log(x[1] + 1))$p.value
                    )
     p.value.threshold <- 1e-6
-    
     T.not <- (all(no.t < p.value.threshold))
     T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
     T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
              p.fail)
-
     if(! (T.not && T.yest && T.lm) ) {
         cat("\n T.not is \n"); print(T.not)
         print(no.t)
         cat("\n T.yest \n"); print(T.yest)
         print(yes.t)
-        cat("\n larger values of T.yest \n")
+        cat("\n larger values of T.yest II \n")
         print(which(p.adjust(yes.t, method = "BH") <= p.fail))
         cat("\n lm and plot\n")
         print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
@@ -400,10 +407,8 @@ test_that("Observed vs expected, case II", {
 })
 date()
 
-
 date()
 test_that("Observed vs expected, case III", {
-    
     cat("\n Observed vs expected, case III\n")
     genmodule <- function(l, num) {
         paste(paste0(l, 1:num), collapse = ", ")
@@ -545,7 +550,6 @@ test_that("Observed vs expected, case III", {
     d1 <- data.frame(Expected = out[, 1], Observed = rowMeans(out[, -1]))
     p.fail <- 0.05
     lm1 <- lm(log(Observed) ~ log(Expected), data = d1)
-    
     ## For NO, do a t.test by row.
     no.t <- apply(outNO, 1,
                   function(x) t.test(log(x[2:(reps + 1)] + 1), mu = log(x[1] + 1))$p.value
@@ -555,40 +559,35 @@ test_that("Observed vs expected, case III", {
                    function(x) t.test(log(x[2:(reps + 1)] + 1), mu = log(x[1] + 1))$p.value
                    )
     p.value.threshold <- 1e-6
-
     T.not <- (all(no.t < p.value.threshold))
     T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
     T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
              p.fail)
-
     if(! (T.not && T.yest && T.lm) ) {
         cat("\n T.not is \n"); print(T.not)
         print(no.t)
         cat("\n T.yest \n"); print(T.yest)
         print(yes.t)
-        cat("\n larger values of T.yest \n")
+        cat("\n larger values of T.yest III \n")
         print(which(p.adjust(yes.t, method = "BH") <= p.fail))
         cat("\n lm and plot\n")
         print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
         plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
     }
     expect_true((T.not && T.yest && T.lm) )
-    
 })
 date()
 
 
 
-
 date()
 test_that("Init mutant no effects if fitness is 0", {
-    
     cat("\n Init mutant no effect if fitness is 0\n")
     ## This can give false positives often.
     ## s should never be relevant concern, so increase reps but
     ## keep fast by decreasing sampling
     sEvery <- 1
-    reps <- 400 ## there is a lot of variation here
+    reps <- 200 
     mu <- 1e-7
     nig <- 50
     out <- NULL
@@ -654,19 +653,19 @@ test_that("Init mutant no effects if fitness is 0", {
     fe02 <- allFitnessEffects(epistasis = c("A" = sa02),
                               noIntGenes = rep(0, nig))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 2e4, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 2e4, reps, mu, verboseOandE)) ## 15
+    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 2e4, reps, mu, verboseOandE)) ## 28
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 5e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 5e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "A", 1e5, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 4.8e4, reps, mu, verboseOandE)) ## 11
-    out <- rbind(out, OandE(fe02, sa02, 30, "Exp", "A", 1e4, reps, mu, verboseOandE))
+    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", "A", 4.8e4, reps, mu, verboseOandE)) ## 32
+    out <- rbind(out, OandE(fe02, sa02, 30, "Exp", "A", 1e4, reps, mu, verboseOandE)) ## 33
     out <- rbind(out, OandE(fe02, sa02, 30, "McFL", "A", 1e4, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 2e3, reps, mu, verboseOandE)) ## 8 
+    out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 2e3, reps, mu, verboseOandE))  
     out <- rbind(out, OandE(fe02, sa02, ft, "McFL", NULL, 1e3, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 5.3e3, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", NULL, 5.3e3, reps, mu, verboseOandE))
+    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", NULL, 5.3e3, reps, mu, verboseOandE)) ## 38
     out <- rbind(out, OandE(fe02, sa02, ft, "Exp", NULL, 5.7e4, reps, mu, verboseOandE))
-    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", NULL, 5.7e4, reps, mu, verboseOandE))
+    out <- rbind(out, OandE(fe02, sa02, ft, "McFL", NULL, 5.7e4, reps, mu, verboseOandE)) ## 40
     out <- rbind(out, OandE(fe02, sa02, 30, "Exp", NULL, 1.4e4, reps, mu, verboseOandE))
     out <- rbind(out, OandE(fe02, sa02, 30, "McFL", NULL, 1.4e4, reps, mu, verboseOandE))
     out <- data.frame(out)
@@ -697,18 +696,15 @@ test_that("Init mutant no effects if fitness is 0", {
         print(yes.t)
         ytbug <<- yes.t
         outbug <<- out
-        cat("\n larger values of T.yest \n")
+        cat("\n larger values of T.yest 0 \n")
         print(which(p.adjust(yes.t, method = "BH") <= p.fail))
         cat("\n lm and plot\n")
         print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
         plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
     }
     expect_true((T.not && T.yest && T.lm) )
-
-    
 })
 date()
-
 cat(paste("\n            a final runif ", runif(1), "\n"))
 cat(paste("\n Ending fitness preds long at", date()))
 

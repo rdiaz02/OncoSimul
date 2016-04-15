@@ -22,15 +22,17 @@ mce <- function(s, K) {
     return( K * (exp(1 + s) - 1))
 }
 
+
 expected <- function(no, s, ft, model) {
     if(model == "Exp")
         return(expe(no = no, s = s, ft = ft))
-    if(model == "McFL")  ## take no as K
-        return(mce(s = s, K = no))
+    if(model == "McFL") ## this K has to be the same as in OandE, of course.        
+        return(mce(s = s, K = no/(exp(1) - 1) ))
 }
 
 OandE <- function(fe, s, ft,  model, initMutant, no,
-                  reps, mu, verbose = FALSE) {
+                  reps, mu, verbose = FALSE,
+                  sampleEvery = sEvery) {
     ## sampleEevery can be large, as we stop on ft.
     ## But not too large, to avoid numerical issues
     ## with large s
@@ -39,12 +41,12 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
                       fe,
                       mu = mu,
                       initSize = no,
-                      K = no,
+                      ## K = no,
                       model = model,
                       detectionDrivers = 99,
                       finalTime = ft,
                       detectionSize = 1e12,
-                      sampleEvery = 0.05, 
+                      sampleEvery = sampleEvery,
                       keepEvery = ft,
                       initMutant = initMutant,
                       mutationPropGrowth = FALSE,
@@ -58,6 +60,16 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
              unlist(lapply(O, function(x) x$TotalPopSize))))
 }
 
+
+## A comment about the McFL model and what we do in OandE
+
+##  We set K as given by default, so initSize/(exp(1) - 1).  This does not
+##  have a major effect iff you run the thing for long enough. Why?
+##  Because if you set K to, say, initSize, then, especially with the s =
+##  0, you need to run it for long for it to reach equilibrium. In
+##  addition, I am testing here in the most general, usual, circumstances,
+##  given that especial ones (other values of K) work if you use long
+##  enough finalTimes.
 
 
 verboseOandE <- FALSE
