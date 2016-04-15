@@ -1180,7 +1180,8 @@ test_that("Bozic limit cases handled consistently", {
     expect_output(print(evalAllGenotypes(svff3, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
-    expect_output(print(oncoSimulIndiv(svff3, model = "Bozic")),
+    expect_output(print(oncoSimulIndiv(svff3, model = "Bozic", 
+                        sampleEvery = 0.02)),
                  "Individual OncoSimul trajectory with call"
                  ) 
 })
