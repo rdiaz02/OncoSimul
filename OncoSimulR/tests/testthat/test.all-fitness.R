@@ -1054,7 +1054,7 @@ test_that("Bozic limit cases handled consistently", {
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_output(print(oncoSimulIndiv(svff3, model = "Bozic",
-                        sampleEvery = 0.02)),
+                                       sampleEvery = 0.02)),
                  "Individual OncoSimul trajectory with call"
                  ) 
 })
