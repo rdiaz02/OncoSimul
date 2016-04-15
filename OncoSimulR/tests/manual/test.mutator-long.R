@@ -840,8 +840,6 @@ date()
 date()
 test_that("Relative ordering of number of clones with mutator effects", {
     ## Can occasionally blow up with pE.f: pE not finite.
-
-    
     cat("\n x1: a runif is", runif(1), "\n")
     pops <- 80
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
@@ -854,7 +852,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                             "d" = 14))
     nc1 <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =250,
                         mutationPropGrowth = FALSE,
-                        sampleEvery = 0.01,
+                        sampleEvery = 0.001,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2,
                         onlyCancer = FALSE, seed = NULL)
@@ -864,7 +862,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                             "d" = 1))
     nc2 <- oncoSimulPop(pops, fe, muEF = fm8, finalTime =250,
                         mutationPropGrowth = FALSE,
-                        sampleEvery = 0.01,
+                        sampleEvery = 0.001,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2,
                         onlyCancer = FALSE, seed = NULL)
@@ -874,7 +872,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                             "d" = 1e-6))
     nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =250,
                         mutationPropGrowth = FALSE,
-                        sampleEvery = 0.01,
+                        sampleEvery = 0.001,
                         keepEvery = 5,
                         initSize = 1e6, mc.cores = 2,
                         onlyCancer = FALSE, seed = NULL)
