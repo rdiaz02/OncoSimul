@@ -358,7 +358,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0",
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 1e7
-    reps <- 250
+    reps <- 400
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        model = "McFL",
