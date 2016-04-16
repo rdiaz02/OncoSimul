@@ -20,7 +20,7 @@ try_again_message <- function (times, code, message_times = TRUE)
             if(message_times)
                 message("\n times run: ", init_times - times + 1)
             ## is something funny?
-            cat(paste("\n cat time run: ", init_times - times + 1, "\n")
+            cat(paste("\n cat sentinel time run: ", init_times - times + 1, "\n"))
             return(invisible(TRUE))
         }
         times <- times - 1L
