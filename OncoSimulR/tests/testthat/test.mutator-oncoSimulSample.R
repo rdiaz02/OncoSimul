@@ -79,7 +79,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
     ## rates, with oncoSimulSample you undersample variation with
     ## wholePop, etc.
     ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
-    max.tries <- 6
+    max.tries <- 4
     for(tries in 1:max.tries) {
     
     
@@ -196,217 +196,233 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(6, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
-    ## Here we stop on  popSize after short model. All have same small s.
-    cat("\n mcx2bc: a runif is", runif(1), "\n")
-    pops <- 50
-    ni <- rep(0.01, 50)
-    names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
-    fe <- allFitnessEffects(noIntGenes = ni)
-    fm6 <- allMutatorEffects(noIntGenes = c("a" = .05,
-                                            "b" = 1,
-                                            "c" = 10,
-                                            "d" = 50))
-    nca <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
-                        mutationPropGrowth = FALSE,
-                        initSize = 1e4,
-                        initMutant = "a", detectionSize = 10200,
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, model = "McFL")
-    ncb <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
-                        mutationPropGrowth = FALSE,
-                        initSize = 1e4,
-                        initMutant = "b", detectionSize = 10200,
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, model = "McFL")
-    ncc <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
-                        mutationPropGrowth = FALSE,
-                        initSize = 1e4,
-                        initMutant = "c",detectionSize = 10200,
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, model = "McFL")
-    ncd <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
-                        mutationPropGrowth = FALSE,
-                        initSize = 1e4,
-                        initMutant = "d",detectionSize = 10200,
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, model = "McFL")
-    expect_true( wilcox.test(nca$popSummary[, "NumClones"],
-                             ncb$popSummary[, "NumClones"],
-                             alternative = "less")$p.value < p.value.threshold)
-    expect_true(wilcox.test(ncb$popSummary[, "NumClones"],
-                            ncc$popSummary[, "NumClones"],
-                            alternative = "less")$p.value < p.value.threshold)
-    expect_true( wilcox.test(ncc$popSummary[, "NumClones"],
-                             ncd$popSummary[, "NumClones"],
-                alternative = "less")$p.value < p.value.threshold)
-    nca$popSummary[, c(1:3, 8:9)]
-    ncb$popSummary[, c(1:3, 8:9)]
-    ncc$popSummary[, c(1:3, 8:9)]
-    ncd$popSummary[, c(1:3, 8:9)]
-    expect_true(t.test(rowSums(nca$popSample), rowSums(ncb$popSample),
-                       alternative = "less")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(ncb$popSample), rowSums(ncc$popSample),
-                       alternative = "less")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(ncc$popSample), rowSums(ncd$popSample),
-                       alternative = "less")$p.value < p.value.threshold)
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        ## Here we stop on  popSize after short model. All have same small s.
+        cat("\n mcx2bc: a runif is", runif(1), "\n")
+        pops <- 50
+        ni <- rep(0.01, 50)
+        names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
+        fe <- allFitnessEffects(noIntGenes = ni)
+        fm6 <- allMutatorEffects(noIntGenes = c("a" = .05,
+                                                "b" = 1,
+                                                "c" = 10,
+                                                "d" = 50))
+        nca <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
+                               mutationPropGrowth = FALSE,
+                               initSize = 1e4,
+                               initMutant = "a", detectionSize = 10200,
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               onlyCancer = FALSE, model = "McFL")
+        ncb <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
+                               mutationPropGrowth = FALSE,
+                               initSize = 1e4,
+                               initMutant = "b", detectionSize = 10200,
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               onlyCancer = FALSE, model = "McFL")
+        ncc <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
+                               mutationPropGrowth = FALSE,
+                               initSize = 1e4,
+                               initMutant = "c",detectionSize = 10200,
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               onlyCancer = FALSE, model = "McFL")
+        ncd <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =250,
+                               mutationPropGrowth = FALSE,
+                               initSize = 1e4,
+                               initMutant = "d",detectionSize = 10200,
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               onlyCancer = FALSE, model = "McFL")
+        expect_true( wilcox.test(nca$popSummary[, "NumClones"],
+                                 ncb$popSummary[, "NumClones"],
+                                 alternative = "less")$p.value < p.value.threshold)
+        expect_true(wilcox.test(ncb$popSummary[, "NumClones"],
+                                ncc$popSummary[, "NumClones"],
+                                alternative = "less")$p.value < p.value.threshold)
+        expect_true( wilcox.test(ncc$popSummary[, "NumClones"],
+                                 ncd$popSummary[, "NumClones"],
+                                 alternative = "less")$p.value < p.value.threshold)
+        nca$popSummary[, c(1:3, 8:9)]
+        ncb$popSummary[, c(1:3, 8:9)]
+        ncc$popSummary[, c(1:3, 8:9)]
+        ncd$popSummary[, c(1:3, 8:9)]
+        T1 <- (t.test(rowSums(nca$popSample), rowSums(ncb$popSample),
+                           alternative = "less")$p.value < p.value.threshold)
+        T2 <- (t.test(rowSums(ncb$popSample), rowSums(ncc$popSample),
+                           alternative = "less")$p.value < p.value.threshold)
+        T3 <- (t.test(rowSums(ncc$popSample), rowSums(ncd$popSample),
+                           alternative = "less")$p.value < p.value.threshold)
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
 date()
 
 date()
-OncoSimulR:::try_again_message(6, 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
-    ## Stopping on time; s > 0 , but all have same growth rate.
-    cat("\n x2ef: a runif is", runif(1), "\n")
-    pops <- 10
-    ft <- 1
-    lni <- 200
-    no <- 5e3
-    ni <- c(5, 0, rep(0, lni))
-    ## scramble around names
-    names(ni) <- c("thisistheagene",
-                   "thisisthebgene",
-                   replicate(lni,
-                             paste(sample(letters, 12), collapse = "")))
-    ni <- ni[order(names(ni))]
-    fe <- allFitnessEffects(noIntGenes = ni)
-    fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
-    mpg <- oncoSimulSample(pops, fe, muEF = fm1,
-                           finalTime = ft,
-                           mutationPropGrowth = TRUE,
-                           initSize = no,
-                           sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           initMutant = "thisistheagene",
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999, seed = NULL,
-                           onlyCancer = FALSE)
-    mnpg <- oncoSimulSample(pops, fe, muEF = fm1,
-                            finalTime = ft,
-                            mutationPropGrowth = FALSE,
-                            initSize = no,
-                            sampleEvery = 0.01, thresholdWhole = 1e-20,
-                            initMutant = "thisistheagene",
-                            detectionSize = 1e9,
-                            detectionDrivers = 9999, seed = NULL,
-                            onlyCancer = FALSE)
-    pg <- oncoSimulSample(pops, fe, 
-                          finalTime = ft,
-                          mutationPropGrowth = TRUE,
-                          initSize = no,
-                          sampleEvery = 0.01, thresholdWhole = 1e-20,
-                          initMutant = "thisistheagene",
-                          detectionSize = 1e9,
-                          detectionDrivers = 9999, seed = NULL,
-                          onlyCancer = FALSE)
-    npg <- oncoSimulSample(pops, fe, 
-                           finalTime = ft,
-                           mutationPropGrowth = FALSE,
-                           initSize = no,
-                           sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           initMutant = "thisistheagene",
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999, seed = NULL,
-                           onlyCancer = FALSE)
-    ## These are the real tests
-    expect_true( wilcox.test(mpg$popSummary[, "NumClones"], mnpg$popSummary[, "NumClones"],
-                             alternative = "greater")$p.value < p.value.threshold)
-    expect_true(wilcox.test(mpg$popSummary[, "NumClones"], pg$popSummary[, "NumClones"],
-                            alternative = "greater")$p.value < p.value.threshold)
-    expect_true( wilcox.test(mnpg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
-                             alternative = "greater")$p.value < p.value.threshold)
-    expect_true( wilcox.test(pg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
-                             alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(mpg$popSample),rowSums(mnpg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(mpg$popSample),rowSums(pg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(mnpg$popSample),rowSums(npg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(pg$popSample),rowSums(npg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    ## mpg$popSummary[, c(1:3, 8:9)]
-    ## mnpg$popSummary[, c(1:3, 8:9)]
-    ## pg$popSummary[, c(1:3, 8:9)]
-    ## npg$popSummary[, c(1:3, 8:9)]
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        ## Stopping on time; s > 0 , but all have same growth rate.
+        cat("\n x2ef: a runif is", runif(1), "\n")
+        pops <- 10
+        ft <- 1
+        lni <- 200
+        no <- 5e3
+        ni <- c(5, 0, rep(0, lni))
+        ## scramble around names
+        names(ni) <- c("thisistheagene",
+                       "thisisthebgene",
+                       replicate(lni,
+                                 paste(sample(letters, 12), collapse = "")))
+        ni <- ni[order(names(ni))]
+        fe <- allFitnessEffects(noIntGenes = ni)
+        fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
+        mpg <- oncoSimulSample(pops, fe, muEF = fm1,
+                               finalTime = ft,
+                               mutationPropGrowth = TRUE,
+                               initSize = no,
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               initMutant = "thisistheagene",
+                               detectionSize = 1e9,
+                               detectionDrivers = 9999, seed = NULL,
+                               onlyCancer = FALSE)
+        mnpg <- oncoSimulSample(pops, fe, muEF = fm1,
+                                finalTime = ft,
+                                mutationPropGrowth = FALSE,
+                                initSize = no,
+                                sampleEvery = 0.01, thresholdWhole = 1e-20,
+                                initMutant = "thisistheagene",
+                                detectionSize = 1e9,
+                                detectionDrivers = 9999, seed = NULL,
+                                onlyCancer = FALSE)
+        pg <- oncoSimulSample(pops, fe, 
+                              finalTime = ft,
+                              mutationPropGrowth = TRUE,
+                              initSize = no,
+                              sampleEvery = 0.01, thresholdWhole = 1e-20,
+                              initMutant = "thisistheagene",
+                              detectionSize = 1e9,
+                              detectionDrivers = 9999, seed = NULL,
+                              onlyCancer = FALSE)
+        npg <- oncoSimulSample(pops, fe, 
+                               finalTime = ft,
+                               mutationPropGrowth = FALSE,
+                               initSize = no,
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               initMutant = "thisistheagene",
+                               detectionSize = 1e9,
+                               detectionDrivers = 9999, seed = NULL,
+                               onlyCancer = FALSE)
+        ## These are the real tests
+        T1 <- ( wilcox.test(mpg$popSummary[, "NumClones"], mnpg$popSummary[, "NumClones"],
+                                 alternative = "greater")$p.value < p.value.threshold)
+        T2 <- (wilcox.test(mpg$popSummary[, "NumClones"], pg$popSummary[, "NumClones"],
+                                alternative = "greater")$p.value < p.value.threshold)
+        T3 <-  (wilcox.test(mnpg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
+                                 alternative = "greater")$p.value < p.value.threshold)
+        T4 <-  (wilcox.test(pg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
+                                 alternative = "greater")$p.value < p.value.threshold)
+        T5 <- (t.test(rowSums(mpg$popSample),rowSums(mnpg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        T6 <- (t.test(rowSums(mpg$popSample),rowSums(pg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        T7 <- (t.test(rowSums(mnpg$popSample),rowSums(npg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        T8 <- (t.test(rowSums(pg$popSample),rowSums(npg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        ## mpg$popSummary[, c(1:3, 8:9)]
+        ## mnpg$popSummary[, c(1:3, 8:9)]
+        ## pg$popSummary[, c(1:3, 8:9)]
+        ## npg$popSummary[, c(1:3, 8:9)]
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
 date()
 
+
 date()
-OncoSimulR:::try_again_message(6, 
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
-    ## Stopping on time; s > 0 but all same growth rate.
-    cat("\n x2gh: a runif is", runif(1), "\n")
-    pops <- 15
-    ft <- 1
-    lni <- 200
-    no <- 1e3
-    ni <- c(5, 0, rep(0, lni))
-    ## scramble around names
-    names(ni) <- c("thisistheagene",
-                   "thisisthebgene",
-                   replicate(lni,
-                             paste(sample(letters, 12), collapse = "")))
-    ni <- ni[order(names(ni))]
-    fe <- allFitnessEffects(noIntGenes = ni)
-    fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
-    mpg <- oncoSimulSample(pops, fe, muEF = fm1,
-                           finalTime = ft,
-                           mutationPropGrowth = TRUE,
-                           initSize = no, model = "McFL",
-                           initMutant = "thisistheagene",
-                           sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999, seed = NULL,
-                           onlyCancer = FALSE)
-    mnpg <- oncoSimulSample(pops, fe, muEF = fm1,
-                            finalTime = ft,
-                            mutationPropGrowth = FALSE,
-                            initSize = no, model = "McFL",
-                            initMutant = "thisistheagene",
-                            sampleEvery = 0.01, thresholdWhole = 1e-20,
-                            detectionSize = 1e9,
-                            detectionDrivers = 9999, seed = NULL,
-                            onlyCancer = FALSE)
-    pg <- oncoSimulSample(pops, fe, 
-                          finalTime = ft,
-                          mutationPropGrowth = TRUE,
-                          initSize = no, model = "McFL",
-                          initMutant = "thisistheagene",
-                          sampleEvery = 0.01, thresholdWhole = 1e-20,
-                          detectionSize = 1e9,
-                          detectionDrivers = 9999, seed = NULL,
-                          onlyCancer = FALSE)
-    npg <- oncoSimulSample(pops, fe, 
-                           finalTime = ft,
-                           mutationPropGrowth = FALSE,
-                           initSize = no, model = "McFL",
-                           initMutant = "thisistheagene",
-                           sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999, seed = NULL,
-                           onlyCancer = FALSE)
-    ## These are the real tests
-    expect_true( wilcox.test(mpg$popSummary[, "NumClones"], mnpg$popSummary[, "NumClones"],
-                             alternative = "greater")$p.value < p.value.threshold)
-    expect_true(wilcox.test(mpg$popSummary[, "NumClones"], pg$popSummary[, "NumClones"],
-                            alternative = "greater")$p.value < p.value.threshold)
-    expect_true( wilcox.test(mnpg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
-                             alternative = "greater")$p.value < p.value.threshold)
-    expect_true( wilcox.test(pg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
-                             alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(mpg$popSample),rowSums(mnpg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(mpg$popSample),rowSums(pg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(mnpg$popSample),rowSums(npg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(pg$popSample),rowSums(npg$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        ## Stopping on time; s > 0 but all same growth rate.
+        cat("\n x2gh: a runif is", runif(1), "\n")
+        pops <- 15
+        ft <- 1
+        lni <- 200
+        no <- 1e3
+        ni <- c(5, 0, rep(0, lni))
+        ## scramble around names
+        names(ni) <- c("thisistheagene",
+                       "thisisthebgene",
+                       replicate(lni,
+                                 paste(sample(letters, 12), collapse = "")))
+        ni <- ni[order(names(ni))]
+        fe <- allFitnessEffects(noIntGenes = ni)
+        fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
+        mpg <- oncoSimulSample(pops, fe, muEF = fm1,
+                               finalTime = ft,
+                               mutationPropGrowth = TRUE,
+                               initSize = no, model = "McFL",
+                               initMutant = "thisistheagene",
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               detectionSize = 1e9,
+                               detectionDrivers = 9999, seed = NULL,
+                               onlyCancer = FALSE)
+        mnpg <- oncoSimulSample(pops, fe, muEF = fm1,
+                                finalTime = ft,
+                                mutationPropGrowth = FALSE,
+                                initSize = no, model = "McFL",
+                                initMutant = "thisistheagene",
+                                sampleEvery = 0.01, thresholdWhole = 1e-20,
+                                detectionSize = 1e9,
+                                detectionDrivers = 9999, seed = NULL,
+                                onlyCancer = FALSE)
+        pg <- oncoSimulSample(pops, fe, 
+                              finalTime = ft,
+                              mutationPropGrowth = TRUE,
+                              initSize = no, model = "McFL",
+                              initMutant = "thisistheagene",
+                              sampleEvery = 0.01, thresholdWhole = 1e-20,
+                              detectionSize = 1e9,
+                              detectionDrivers = 9999, seed = NULL,
+                              onlyCancer = FALSE)
+        npg <- oncoSimulSample(pops, fe, 
+                               finalTime = ft,
+                               mutationPropGrowth = FALSE,
+                               initSize = no, model = "McFL",
+                               initMutant = "thisistheagene",
+                               sampleEvery = 0.01, thresholdWhole = 1e-20,
+                               detectionSize = 1e9,
+                               detectionDrivers = 9999, seed = NULL,
+                               onlyCancer = FALSE)
+        ## These are the real tests
+        T1 <- ( wilcox.test(mpg$popSummary[, "NumClones"], mnpg$popSummary[, "NumClones"],
+                                 alternative = "greater")$p.value < p.value.threshold)
+        T2 <- (wilcox.test(mpg$popSummary[, "NumClones"], pg$popSummary[, "NumClones"],
+                                alternative = "greater")$p.value < p.value.threshold)
+        T3 <- ( wilcox.test(mnpg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
+                                 alternative = "greater")$p.value < p.value.threshold)
+        T4 <- ( wilcox.test(pg$popSummary[, "NumClones"], npg$popSummary[, "NumClones"],
+                                 alternative = "greater")$p.value < p.value.threshold)
+        T5 <- (t.test(rowSums(mpg$popSample),rowSums(mnpg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        T6 <- (t.test(rowSums(mpg$popSample),rowSums(pg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        T7 <- (t.test(rowSums(mnpg$popSample),rowSums(npg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        T8 <- (t.test(rowSums(pg$popSample),rowSums(npg$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
 date()
 
 
@@ -431,150 +447,157 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(6, 
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t", {
-    ## Here, there is no reproduction or death. Just mutation. And no double
-    ## mutants either.
-    ## We test:
-    ##  - mutator increases mutation rates as seen in:
-    ##        - number of clones created
-    ##        - number of total mutation events
-    
-    
-    cat("\n nm2: a runif is", runif(1), "\n")
-    pops <- 20
-    ft <- .0001
-    lni <- 100
-    no <- 1e7
-    fi <- rep(0, lni)
-    muvector <- rep(5e-6, lni)
-    ## scrambling names
-    names(fi) <- replicate(lni,
-                           paste(sample(letters, 12), collapse = ""))
-    names(muvector) <- sample(names(fi))
-    ## choose something for mutator
-    mutator10 <- mutator100 <- fi[5]
-    mutator10[] <- 10
-    mutator100[] <- 100
-    fe <- allFitnessEffects(noIntGenes = fi)
-    m10 <- allMutatorEffects(noIntGenes = mutator10)
-    m100 <- allMutatorEffects(noIntGenes = mutator100)
-    pop10 <- oncoSimulSample(pops,
-                        fe,
-                        mu = muvector,
-                        muEF = m10,
-                        model = "McFL",
-                        finalTime = ft,
-                        mutationPropGrowth = FALSE,
-                        initSize = no,
-                        initMutant = names(mutator10),
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                        seed = NULL, onlyCancer = FALSE)
-    pop100 <- oncoSimulSample(pops,
-                        fe,
-                        mu = muvector,
-                        muEF = m100,
-                        model = "McFL",                        
-                        finalTime = ft,
-                        mutationPropGrowth = FALSE,
-                        initSize = no,
-                        initMutant = names(mutator10),
-                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                        seed = NULL, onlyCancer = FALSE)
-    expect_true(wilcox.test(NClonesOSS(pop10), NClonesOSS(pop100),
-                            alternative = "less")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(pop10$popSample), rowSums(pop100$popSample),
-                       alternative = "less")$p.value < p.value.threshold)
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        ## Here, there is no reproduction or death. Just mutation. And no double
+        ## mutants either.
+        ## We test:
+        ##  - mutator increases mutation rates as seen in:
+        ##        - number of clones created
+        ##        - number of total mutation events
+        cat("\n nm2: a runif is", runif(1), "\n")
+        pops <- 20
+        ft <- .0001
+        lni <- 100
+        no <- 1e7
+        fi <- rep(0, lni)
+        muvector <- rep(5e-6, lni)
+        ## scrambling names
+        names(fi) <- replicate(lni,
+                               paste(sample(letters, 12), collapse = ""))
+        names(muvector) <- sample(names(fi))
+        ## choose something for mutator
+        mutator10 <- mutator100 <- fi[5]
+        mutator10[] <- 10
+        mutator100[] <- 100
+        fe <- allFitnessEffects(noIntGenes = fi)
+        m10 <- allMutatorEffects(noIntGenes = mutator10)
+        m100 <- allMutatorEffects(noIntGenes = mutator100)
+        pop10 <- oncoSimulSample(pops,
+                                 fe,
+                                 mu = muvector,
+                                 muEF = m10,
+                                 model = "McFL",
+                                 finalTime = ft,
+                                 mutationPropGrowth = FALSE,
+                                 initSize = no,
+                                 initMutant = names(mutator10),
+                                 sampleEvery = 0.01, thresholdWhole = 1e-20,
+                                 detectionSize = 1e9,
+                                 detectionDrivers = 9999,
+                                 seed = NULL, onlyCancer = FALSE)
+        pop100 <- oncoSimulSample(pops,
+                                  fe,
+                                  mu = muvector,
+                                  muEF = m100,
+                                  model = "McFL",                        
+                                  finalTime = ft,
+                                  mutationPropGrowth = FALSE,
+                                  initSize = no,
+                                  initMutant = names(mutator10),
+                                  sampleEvery = 0.01, thresholdWhole = 1e-20,
+                                  detectionSize = 1e9,
+                                  detectionDrivers = 9999,
+                                  seed = NULL, onlyCancer = FALSE)
+        T1 <- (wilcox.test(NClonesOSS(pop10), NClonesOSS(pop100),
+                                alternative = "less")$p.value < p.value.threshold)
+        T2 <- (t.test(rowSums(pop10$popSample), rowSums(pop100$popSample),
+                           alternative = "less")$p.value < p.value.threshold)
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
 date()
 
 
 
 
-
 date()
-OncoSimulR:::try_again_message(6, 
 test_that(" MCFL Init with different mutators", {
-    cat("\n mcz2: a runif is", runif(1), "\n")
-    pops <- 40
-    ft <- .005
-    lni <- 50
-    no <- 1e7
-    ni <- c(0, 0, 0, rep(0, lni))
-    ## scramble around names
-    names(ni) <- c("hereisoneagene",
-                   "oreoisasabgene",
-                   "nnhsisthecgene",
-                   replicate(lni,
-                             paste(sample(letters, 12), collapse = "")))
-    ni <- ni[order(names(ni))]
-    fe <- allFitnessEffects(noIntGenes = ni)
-    mutator1 <- mutator2 <- rep(1, lni + 3)
-    pg1 <- rep(5e-6, lni + 3)
-    ## scramble names of mutator and per-gene too
-    names(mutator1) <- sample(names(ni))
-    names(pg1) <- sample(names(ni))
-    mutator1["hereisoneagene"] <- 100
-    mutator1["oreoisasabgene"] <- 1
-    mutator1["nnhsisthecgene"] <- 0.01
-    m1 <- allMutatorEffects(noIntGenes = mutator1)
-    m1.pg1.a <- oncoSimulSample(pops,
-                           fe,
-                           mu = pg1,
-                           muEF = m1,
-                           finalTime = ft,
-                           mutationPropGrowth = FALSE,
-                           initSize = no,
-                           model = "McFL",
-                           initMutant = "hereisoneagene",
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                           sampleEvery = 0.01, thresholdWhole = 1e-20, 
-                           seed = NULL, onlyCancer = FALSE)
-    m1.pg1.b <- oncoSimulSample(pops,
-                             fe,
-                             mu = pg1,
-                             muEF = m1,
-                             finalTime = ft,
-                             mutationPropGrowth = FALSE,
-                             initSize = no,
-                             model = "McFL",                             
-                             initMutant = "oreoisasabgene",
-                                                        detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                             sampleEvery = 0.01, thresholdWhole = 1e-20, 
-                             seed = NULL, onlyCancer = FALSE)
-    m1.pg1.c <- oncoSimulSample(pops,
-                           fe,
-                           mu = pg1,
-                           muEF = m1,
-                           finalTime = ft,
-                           mutationPropGrowth = FALSE,
-                           initSize = no,
-                           model = "McFL",                           
-                           initMutant = "nnhsisthecgene",
-                           detectionSize = 1e9,
-                           detectionDrivers = 9999,
-                           sampleEvery = 0.01, thresholdWhole = 1e-20,
-                           seed = NULL, onlyCancer = FALSE)
-    expect_true(wilcox.test(NClonesOSS(m1.pg1.b), NClonesOSS(m1.pg1.a),
-                            alternative = "less")$p.value < p.value.threshold)
-    expect_true(wilcox.test(NClonesOSS(m1.pg1.c), NClonesOSS(m1.pg1.b),
-                            alternative = "less")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(m1.pg1.a$popSample),rowSums(m1.pg1.b$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
-    expect_true(t.test(rowSums(m1.pg1.b$popSample),rowSums(m1.pg1.c$popSample),
-                       alternative = "greater")$p.value < p.value.threshold)
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        cat("\n mcz2: a runif is", runif(1), "\n")
+        pops <- 40
+        ft <- .005
+        lni <- 50
+        no <- 1e7
+        ni <- c(0, 0, 0, rep(0, lni))
+        ## scramble around names
+        names(ni) <- c("hereisoneagene",
+                       "oreoisasabgene",
+                       "nnhsisthecgene",
+                       replicate(lni,
+                                 paste(sample(letters, 12), collapse = "")))
+        ni <- ni[order(names(ni))]
+        fe <- allFitnessEffects(noIntGenes = ni)
+        mutator1 <- mutator2 <- rep(1, lni + 3)
+        pg1 <- rep(5e-6, lni + 3)
+        ## scramble names of mutator and per-gene too
+        names(mutator1) <- sample(names(ni))
+        names(pg1) <- sample(names(ni))
+        mutator1["hereisoneagene"] <- 100
+        mutator1["oreoisasabgene"] <- 1
+        mutator1["nnhsisthecgene"] <- 0.01
+        m1 <- allMutatorEffects(noIntGenes = mutator1)
+        m1.pg1.a <- oncoSimulSample(pops,
+                                    fe,
+                                    mu = pg1,
+                                    muEF = m1,
+                                    finalTime = ft,
+                                    mutationPropGrowth = FALSE,
+                                    initSize = no,
+                                    model = "McFL",
+                                    initMutant = "hereisoneagene",
+                                    detectionSize = 1e9,
+                                    detectionDrivers = 9999,
+                                    sampleEvery = 0.01, thresholdWhole = 1e-20, 
+                                    seed = NULL, onlyCancer = FALSE)
+        m1.pg1.b <- oncoSimulSample(pops,
+                                    fe,
+                                    mu = pg1,
+                                    muEF = m1,
+                                    finalTime = ft,
+                                    mutationPropGrowth = FALSE,
+                                    initSize = no,
+                                    model = "McFL",                             
+                                    initMutant = "oreoisasabgene",
+                                    detectionSize = 1e9,
+                                    detectionDrivers = 9999,
+                                    sampleEvery = 0.01, thresholdWhole = 1e-20, 
+                                    seed = NULL, onlyCancer = FALSE)
+        m1.pg1.c <- oncoSimulSample(pops,
+                                    fe,
+                                    mu = pg1,
+                                    muEF = m1,
+                                    finalTime = ft,
+                                    mutationPropGrowth = FALSE,
+                                    initSize = no,
+                                    model = "McFL",                           
+                                    initMutant = "nnhsisthecgene",
+                                    detectionSize = 1e9,
+                                    detectionDrivers = 9999,
+                                    sampleEvery = 0.01, thresholdWhole = 1e-20,
+                                    seed = NULL, onlyCancer = FALSE)
+        T1 <- (wilcox.test(NClonesOSS(m1.pg1.b), NClonesOSS(m1.pg1.a),
+                                alternative = "less")$p.value < p.value.threshold)
+        T2 <- (wilcox.test(NClonesOSS(m1.pg1.c), NClonesOSS(m1.pg1.b),
+                                alternative = "less")$p.value < p.value.threshold)
+        T3 <- (t.test(rowSums(m1.pg1.a$popSample),rowSums(m1.pg1.b$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        T4 <- (t.test(rowSums(m1.pg1.b$popSample),rowSums(m1.pg1.c$popSample),
+                           alternative = "greater")$p.value < p.value.threshold)
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
 date()
 
-cat(paste("\n Finished test.mutator-oncoSimulSample.R test at", date()))
+cat(paste("\n Finished test.mutator-oncoSimulSample.R test at", date(), "\n"))
 
 
 

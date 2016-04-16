@@ -76,192 +76,201 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 
 
 date()
-OncoSimulR:::try_again_message(6, 
 test_that("mutPropGrowth diffs with s> 0, McFL", {
-    
-    
-    cat("\n mcf1: a runif is", runif(1), "\n")
-    ft <- 3 
-    pops <- 50
-    lni <- 100
-    no <- 1e3 ## 5e1 
-    ni <- c(4, rep(0, lni)) ## 5
-    names(ni) <- c("a", paste0("n", seq.int(lni)))
-    ni <- sample(ni) ## scramble
-    fe <- allFitnessEffects(noIntGenes = ni)
-    
-    
-    cat("\n mcf1a: a runif is", runif(1), "\n")
-    nca <- oncoSimulPop(pops, fe, finalTime = ft,
-                        mutationPropGrowth = TRUE,
-                        initSize = no,
-                        sampleEvery = 0.03,
-                        keepEvery = 1,
-                        initMutant = "a", model = "McFL",
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-    
-    
-    cat("\n mcf1c: a runif is", runif(1), "\n")
-    nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
-                        mutationPropGrowth = FALSE,
-                        initSize = no,
-                        sampleEvery = 0.03,
-                        keepEvery = 1,
-                        initMutant = "a", model = "McFL",
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-    ## summary(nca)[1:20, c(1, 2, 3, 8, 9)]
-    ## summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
-    ## I once saw a weird thing
-    expect_true(var(summary(nca)$NumClones) > 1e-4)
-    expect_true(var(summary(nca2)$NumClones) > 1e-4)
-    ## Pop sizes here do not really differ, as we start with the
-    ## initMutant with increased s
-    summary(summary(nca)[, 2])
-    summary(summary(nca2)[, 2])
-    ## summary(summary(nca)$NumClones)
-    ## summary(summary(nca2)$NumClones)
-    ## summary(mutsPerClone(nca))
-    ## summary(mutsPerClone(nca2))
-    ## The real comparison
-    expect_true( median(summary(nca)$NumClones) >
-                 median(summary(nca2)$NumClones))
-    expect_true( mean(mutsPerClone(nca)) >
-                 mean(mutsPerClone(nca2)))
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        cat("\n mcf1: a runif is", runif(1), "\n")
+        ft <- 3 
+        pops <- 50
+        lni <- 100
+        no <- 1e3 ## 5e1 
+        ni <- c(4, rep(0, lni)) ## 5
+        names(ni) <- c("a", paste0("n", seq.int(lni)))
+        ni <- sample(ni) ## scramble
+        fe <- allFitnessEffects(noIntGenes = ni)
+        cat("\n mcf1a: a runif is", runif(1), "\n")
+        nca <- oncoSimulPop(pops, fe, finalTime = ft,
+                            mutationPropGrowth = TRUE,
+                            initSize = no,
+                            sampleEvery = 0.03,
+                            keepEvery = 1,
+                            initMutant = "a", model = "McFL",
+                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+        cat("\n mcf1c: a runif is", runif(1), "\n")
+        nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
+                             mutationPropGrowth = FALSE,
+                             initSize = no,
+                             sampleEvery = 0.03,
+                             keepEvery = 1,
+                             initMutant = "a", model = "McFL",
+                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+        ## summary(nca)[1:20, c(1, 2, 3, 8, 9)]
+        ## summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
+        ## I once saw a weird thing
+        expect_true(var(summary(nca)$NumClones) > 1e-4)
+        expect_true(var(summary(nca2)$NumClones) > 1e-4)
+        ## Pop sizes here do not really differ, as we start with the
+        ## initMutant with increased s
+        summary(summary(nca)[, 2])
+        summary(summary(nca2)[, 2])
+        ## summary(summary(nca)$NumClones)
+        ## summary(summary(nca2)$NumClones)
+        ## summary(mutsPerClone(nca))
+        ## summary(mutsPerClone(nca2))
+        ## The real comparison
+        T1 <- ( median(summary(nca)$NumClones) >
+                     median(summary(nca2)$NumClones))
+        T2 <- ( mean(mutsPerClone(nca)) >
+                     mean(mutsPerClone(nca2)))
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
 cat("\n", date(), "\n")
 
 
 
-
 date()
-OncoSimulR:::try_again_message(6, 
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
-    cat("\n oss1: a runif is", runif(1), "\n")
-    ft <- 3.5 ## 4
-    pops <- 50
-    lni <- 200 ## 150
-    no <- 1e3 ## 5e1 
-    ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
-    mu <- 5e-7 ## 1e-6
-    x <- 1e-9
-    names(ni) <- c("a", paste0("n", seq.int(lni)))
-    ni <- sample(ni) ## scramble
-    fe <- allFitnessEffects(noIntGenes = ni)
-    cat("\n oss1a: a runif is", runif(1), "\n")
-    nca <- oncoSimulSample(pops, fe, finalTime = ft,
-                        mu = mu,
-                        mutationPropGrowth = TRUE,
-                        initSize = no, sampleEvery = 0.02,
-                        initMutant = "a", 
-                        onlyCancer = FALSE, seed = NULL,
-                        detectionSize = 1e9,
-                        detectionDrivers = 99,
-                        thresholdWhole = x)
-    cat("\n oss1c: a runif is", runif(1), "\n")
-    nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
-                         mu = mu,
-                        mutationPropGrowth = FALSE,
-                        initSize = no, sampleEvery = 0.02,
-                        initMutant = "a", 
-                        onlyCancer = FALSE, seed = NULL,
-                        detectionSize = 1e9,
-                        detectionDrivers = 99,
-                        thresholdWhole = x)
-    ## nca$popSummary[1:5, c(1:3, 8:9)]
-    ## summary(nca$popSummary[, "NumClones"])
-    ## summary(nca$popSummary[, "TotalPopSize"])
-    ## nca2$popSummary[1:5, c(1:3, 8:9)]
-    ## summary(nca2$popSummary[, "NumClones"])
-    ## summary(nca2$popSummary[, "TotalPopSize"])
-    ## ## cc1 and cc2 should all be smaller than pops, or you are maxing
-    ## ## things and not seeing patterns
-    ## summary(cc1 <- colSums(nca$popSample))
-    ## summary(cc2 <- colSums(nca2$popSample))
-    ## which(cc1 == pops)
-    ## which(cc2 == pops)
-    ## Of course, these are NOT really mutationsPerClone: we collapse over
-    ## whole population. Ends up being very similar to NumClones, except
-    ## fr the few that go extinct.
-    mutsPerClone1 <- rowSums(nca$popSample)
-    mutsPerClone2 <- rowSums(nca2$popSample)
-    ## summary(mutsPerClone1)
-    ## summary(mutsPerClone2)
-    expect_true( mean(mutsPerClone1) >
-                 mean(mutsPerClone2))
-    expect_true( median(nca$popSummary[, "NumClones"]) >
-                 median(nca2$popSummary[, "NumClones"]))
-    ## Pop sizes here do not really differ, as we start with the
-    ## initMutant with increased s
-    summary(nca$popSummary[, "TotalPopSize"])
-    summary(nca2$popSummary[, "TotalPopSize"])
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        cat("\n oss1: a runif is", runif(1), "\n")
+        ft <- 3.5 ## 4
+        pops <- 50
+        lni <- 200 ## 150
+        no <- 1e3 ## 5e1 
+        ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
+        mu <- 5e-7 ## 1e-6
+        x <- 1e-9
+        names(ni) <- c("a", paste0("n", seq.int(lni)))
+        ni <- sample(ni) ## scramble
+        fe <- allFitnessEffects(noIntGenes = ni)
+        cat("\n oss1a: a runif is", runif(1), "\n")
+        nca <- oncoSimulSample(pops, fe, finalTime = ft,
+                               mu = mu,
+                               mutationPropGrowth = TRUE,
+                               initSize = no, sampleEvery = 0.02,
+                               initMutant = "a", 
+                               onlyCancer = FALSE, seed = NULL,
+                               detectionSize = 1e9,
+                               detectionDrivers = 99,
+                               thresholdWhole = x)
+        cat("\n oss1c: a runif is", runif(1), "\n")
+        nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
+                                mu = mu,
+                                mutationPropGrowth = FALSE,
+                                initSize = no, sampleEvery = 0.02,
+                                initMutant = "a", 
+                                onlyCancer = FALSE, seed = NULL,
+                                detectionSize = 1e9,
+                                detectionDrivers = 99,
+                                thresholdWhole = x)
+        ## nca$popSummary[1:5, c(1:3, 8:9)]
+        ## summary(nca$popSummary[, "NumClones"])
+        ## summary(nca$popSummary[, "TotalPopSize"])
+        ## nca2$popSummary[1:5, c(1:3, 8:9)]
+        ## summary(nca2$popSummary[, "NumClones"])
+        ## summary(nca2$popSummary[, "TotalPopSize"])
+        ## ## cc1 and cc2 should all be smaller than pops, or you are maxing
+        ## ## things and not seeing patterns
+        ## summary(cc1 <- colSums(nca$popSample))
+        ## summary(cc2 <- colSums(nca2$popSample))
+        ## which(cc1 == pops)
+        ## which(cc2 == pops)
+        ## Of course, these are NOT really mutationsPerClone: we collapse over
+        ## whole population. Ends up being very similar to NumClones, except
+        ## fr the few that go extinct.
+        mutsPerClone1 <- rowSums(nca$popSample)
+        mutsPerClone2 <- rowSums(nca2$popSample)
+        ## summary(mutsPerClone1)
+        ## summary(mutsPerClone2)
+        T1 <- ( mean(mutsPerClone1) >
+                     mean(mutsPerClone2))
+        T2 <- ( median(nca$popSummary[, "NumClones"]) >
+                     median(nca2$popSummary[, "NumClones"]))
+        ## Pop sizes here do not really differ, as we start with the
+        ## initMutant with increased s
+        summary(nca$popSummary[, "TotalPopSize"])
+        summary(nca2$popSummary[, "TotalPopSize"])
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
+date()
 
 date()
-OncoSimulR:::try_again_message(6, 
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
-    cat("\n ossmcf1: a runif is", runif(1), "\n")
-    ft <- 40 ## 4
-    pops <- 50
-    lni <- 200 ## 150
-    no <- 1e3 ## 5e1 
-    ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
-    mu <- 5e-7 ## 1e-6
-    x <- 1e-9
-    names(ni) <- c("a", paste0("n", seq.int(lni)))
-    ni <- sample(ni) ## scramble
-    fe <- allFitnessEffects(noIntGenes = ni)
-    cat("\n ossmcf1a: a runif is", runif(1), "\n")
-    nca <- oncoSimulSample(pops, fe, finalTime = ft,
-                        mu = mu, model = "McFL",
-                        mutationPropGrowth = TRUE,
-                        initSize = no, sampleEvery = 0.01,
-                        initMutant = "a", 
-                        onlyCancer = FALSE, seed = NULL,
-                        detectionSize = 1e9,
-                        detectionDrivers = 99,
-                        thresholdWhole = x)
-    cat("\n ossmcf1c: a runif is", runif(1), "\n")
-    nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
-                         mu = mu, model = "McFL",
-                        mutationPropGrowth = FALSE,
-                        initSize = no, sampleEvery = 0.01,
-                        initMutant = "a", 
-                        onlyCancer = FALSE, seed = NULL,
-                        detectionSize = 1e9,
-                        detectionDrivers = 99,
-                        thresholdWhole = x)
-    ## nca$popSummary[1:5, c(1:3, 8:9)]
-    ## summary(nca$popSummary[, "NumClones"])
-    ## summary(nca$popSummary[, "TotalPopSize"])
-    ## nca2$popSummary[1:5, c(1:3, 8:9)]
-    ## summary(nca2$popSummary[, "NumClones"])
-    ## summary(nca2$popSummary[, "TotalPopSize"])
-    ## ## cc1 and cc2 should all be smaller than pops, or you are maxing
-    ## ## things and not seeing patterns
-    ## summary(cc1 <- colSums(nca$popSample))
-    ## summary(cc2 <- colSums(nca2$popSample))
-    ## which(cc1 == pops)
-    ## which(cc2 == pops)
-    ## Of course, these are NOT really mutationsPerClone: we collapse over
-    ## whole population. Ends up being very similar to NumClones, except
-    ## fr the few that go extinct.
-    mutsPerClone1 <- rowSums(nca$popSample)
-    mutsPerClone2 <- rowSums(nca2$popSample)
-    ## summary(mutsPerClone1)
-    ## summary(mutsPerClone2)
-    expect_true( mean(mutsPerClone1) >
-                 mean(mutsPerClone2))
-    expect_true( median(nca$popSummary[, "NumClones"]) >
-                 median(nca2$popSummary[, "NumClones"]))
-    ## Pop sizes here do not really differ, as we start with the
-    ## initMutant with increased s. And this is McFL, so bounded from above.
-    summary(nca$popSummary[, "TotalPopSize"])
-    summary(nca2$popSummary[, "TotalPopSize"])
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        cat("\n ossmcf1: a runif is", runif(1), "\n")
+        ft <- 40 ## 4
+        pops <- 50
+        lni <- 200 ## 150
+        no <- 1e3 ## 5e1 
+        ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
+        mu <- 5e-7 ## 1e-6
+        x <- 1e-9
+        names(ni) <- c("a", paste0("n", seq.int(lni)))
+        ni <- sample(ni) ## scramble
+        fe <- allFitnessEffects(noIntGenes = ni)
+        cat("\n ossmcf1a: a runif is", runif(1), "\n")
+        nca <- oncoSimulSample(pops, fe, finalTime = ft,
+                               mu = mu, model = "McFL",
+                               mutationPropGrowth = TRUE,
+                               initSize = no, sampleEvery = 0.01,
+                               initMutant = "a", 
+                               onlyCancer = FALSE, seed = NULL,
+                               detectionSize = 1e9,
+                               detectionDrivers = 99,
+                               thresholdWhole = x)
+        cat("\n ossmcf1c: a runif is", runif(1), "\n")
+        nca2 <- oncoSimulSample(pops, fe, finalTime = ft,
+                                mu = mu, model = "McFL",
+                                mutationPropGrowth = FALSE,
+                                initSize = no, sampleEvery = 0.01,
+                                initMutant = "a", 
+                                onlyCancer = FALSE, seed = NULL,
+                                detectionSize = 1e9,
+                                detectionDrivers = 99,
+                                thresholdWhole = x)
+        ## nca$popSummary[1:5, c(1:3, 8:9)]
+        ## summary(nca$popSummary[, "NumClones"])
+        ## summary(nca$popSummary[, "TotalPopSize"])
+        ## nca2$popSummary[1:5, c(1:3, 8:9)]
+        ## summary(nca2$popSummary[, "NumClones"])
+        ## summary(nca2$popSummary[, "TotalPopSize"])
+        ## ## cc1 and cc2 should all be smaller than pops, or you are maxing
+        ## ## things and not seeing patterns
+        ## summary(cc1 <- colSums(nca$popSample))
+        ## summary(cc2 <- colSums(nca2$popSample))
+        ## which(cc1 == pops)
+        ## which(cc2 == pops)
+        ## Of course, these are NOT really mutationsPerClone: we collapse over
+        ## whole population. Ends up being very similar to NumClones, except
+        ## fr the few that go extinct.
+        mutsPerClone1 <- rowSums(nca$popSample)
+        mutsPerClone2 <- rowSums(nca2$popSample)
+        ## summary(mutsPerClone1)
+        ## summary(mutsPerClone2)
+        T1 <- ( mean(mutsPerClone1) >
+                     mean(mutsPerClone2))
+        T2 <- ( median(nca$popSummary[, "NumClones"]) >
+                     median(nca2$popSummary[, "NumClones"]))
+        ## Pop sizes here do not really differ, as we start with the
+        ## initMutant with increased s. And this is McFL, so bounded from above.
+        summary(nca$popSummary[, "TotalPopSize"])
+        summary(nca2$popSummary[, "TotalPopSize"])
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-)
-cat("\n", date(), "\n")
+date()
 
 
 
