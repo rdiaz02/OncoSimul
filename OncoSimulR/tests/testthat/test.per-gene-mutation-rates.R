@@ -296,9 +296,9 @@ test_that("McFL: Only no-int, different numbers, fail", {
 
 date()
 OncoSimulR:::try_again_message(6,  
-test_that("McFL: Same freqs, chisq, when s=0", {
-    cat("\n s3: a runif is", runif(1), "\n")
-    muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
+                               test_that("McFL: Same freqs, chisq, when s=0", {
+                                   cat("\n s3: a runif is", runif(1), "\n")
+                                   muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0, 5)
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
@@ -325,39 +325,38 @@ iii <- 0
 date()
 OncoSimulR:::try_again_message(6,  
                                test_that("McFL: Same freqs, chisq, when s", {
-                                   
                                    cat("\n s4: a runif is", runif(1), "\n")
                                    iii <<- iii + 1
                                    cat("\n check try_again_message, start; iii is ", iii, "\n")
-    muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
-    ni1 <- rep(0.02, 5)
-    names(ni1) <- names(muvar2)
-    fe1 <- allFitnessEffects(noIntGenes = ni1)
-    no <- 1e7
-    reps <- 200
-    bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2,
-                       model = "McFL",
-                       onlyCancer = FALSE,
-                       initSize = no,
-                       finalTime = 0.001,
-                       seed = NULL, mc.cores = 2
-                       )
-    (expectedC <- no*reps*muvar2)
-    colSums(OncoSimulR:::geneCounts(bb))
-    ## It will fail with prob ~ p.fail
-    cat("\n check try_again_message, before expectations ; iii is ", iii, "\n")
-    p.fail <- 1e-2
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
-                           p = expectedC/sum(expectedC))$p.value > p.fail)
-    cat("\n check try_again_message, end; iii is ", iii, "\n")
-})
-)
+                                   muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
+                                   ni1 <- rep(0.02, 5)
+                                   names(ni1) <- names(muvar2)
+                                   fe1 <- allFitnessEffects(noIntGenes = ni1)
+                                   no <- 1e7
+                                   reps <- 200
+                                   bb <- oncoSimulPop(reps,
+                                                      fe1, mu = muvar2,
+                                                      model = "McFL",
+                                                      onlyCancer = FALSE,
+                                                      initSize = no,
+                                                      finalTime = 0.001,
+                                                      seed = NULL, mc.cores = 2
+                                                      )
+                                   (expectedC <- no*reps*muvar2)
+                                   colSums(OncoSimulR:::geneCounts(bb))
+                                   ## It will fail with prob ~ p.fail
+                                   cat("\n check try_again_message, before expectations ; iii is ", iii, "\n")
+                                   p.fail <- 1e-2
+                                   expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+                                                          p = expectedC/sum(expectedC))$p.value > p.fail)
+                                   cat("\n check try_again_message, end; iii is ", iii, "\n")
+                               })
+                               )
 date()
 
 date()
 OncoSimulR:::try_again_message(6,  
-test_that("McFL: Different freqs as they should be ordered and chisq, when s=0", {
+                               test_that("McFL: Different freqs as they should be ordered and chisq, when s=0", {
     cat("\n s5: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
     ni1 <- rep(0, 5)
@@ -1438,14 +1437,14 @@ OncoSimulR:::try_again_message(6,
                        model = "McFL",
                        mc.cores = 2
                        )
-cat("\n check try_again_message, before expectations ; iii is ", iii, "\n")
-                                   expect_true( median(summary(b2)$NumClones) >
+    cat("\n check try_again_message, before expectations ; iii is ", iii, "\n")
+    expect_true( median(summary(b2)$NumClones) >
                  median(summary(b1)$NumClones))
     ## Note the short time, so this is not always very different as few
     ## have double or triple mutants
     expect_true( mean(mutsPerClone(b2)) >
                  mean(mutsPerClone(b1)))
-                                                                      cat("\n check try_again_message, end; iii is ", iii, "\n")
+    cat("\n check try_again_message, end; iii is ", iii, "\n")
 })
 )
 date()
