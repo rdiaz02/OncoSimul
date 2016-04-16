@@ -387,7 +387,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0",
         p.fail <- 1e-2
         T1 <- (chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                           p = expectedC/sum(expectedC))$p.value > p.fail)
-        T2 <- all.equal(
+        T2 <- identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
             order(expectedC))    
         ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
@@ -421,7 +421,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
-        T1 <- all.equal(
+        T1 <- identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
             order(expectedC))
         if( T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8 ) break;
@@ -455,7 +455,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
-        T1 <- all.equal(
+        T1 <- identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
             order(expectedC))
         if( T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8 ) break;
@@ -708,7 +708,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
         T4 <- (colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-        T2 <- all.equal(
+        T2 <- identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
             order(expectedC))
         ## A chisq will not work as we increase finalTime.
@@ -769,7 +769,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
         p.fail <- 1e-2
         T1 <- (chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-4],
                           p = expectedC[-4]/sum(expectedC[-4]))$p.value > p.fail)
-        T2 <- all.equal(
+        T2 <- identical(
             order(colSums(OncoSimulR:::geneCounts(bb))[-4]),
             order(expectedC[-4]))
         ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
@@ -1454,7 +1454,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
         expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-        expect_equal(
+        T2 <- (
             order(colSums(OncoSimulR:::geneCounts(bb))),
             order(expectedC))
         ## A chisq will not work as we increase finalTime.

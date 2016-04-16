@@ -234,13 +234,13 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
                                initMutant = "d",detectionSize = 10200,
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                onlyCancer = FALSE, model = "McFL")
-        expect_true( wilcox.test(nca$popSummary[, "NumClones"],
+        T4 <- ( wilcox.test(nca$popSummary[, "NumClones"],
                                  ncb$popSummary[, "NumClones"],
                                  alternative = "less")$p.value < p.value.threshold)
-        expect_true(wilcox.test(ncb$popSummary[, "NumClones"],
+        T5 <- (wilcox.test(ncb$popSummary[, "NumClones"],
                                 ncc$popSummary[, "NumClones"],
                                 alternative = "less")$p.value < p.value.threshold)
-        expect_true( wilcox.test(ncc$popSummary[, "NumClones"],
+        T6 <- ( wilcox.test(ncc$popSummary[, "NumClones"],
                                  ncd$popSummary[, "NumClones"],
                                  alternative = "less")$p.value < p.value.threshold)
         nca$popSummary[, c(1:3, 8:9)]
