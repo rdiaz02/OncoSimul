@@ -88,14 +88,13 @@ smAnomPi <- function(out, name) {
 p.value.threshold <- 0.001
 
 cat(paste("\n            a second runif ", runif(1), "\n"))
-date()
 
-cat(paste("\n            a third runif ", runif(1), "\n"))
+
+date()
+OncoSimulR:::try_again_message(3, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
-    
-    
     cat("\n mcx2bc: a runif is", runif(1), "\n")
     pops <- 50
     ni <- rep(0.01, 50)
@@ -147,13 +146,12 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.value.threshold)
 })
+)
 date()
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that(" Init with different mutators", {
-    
-    
     cat("\n z2: a runif is", runif(1), "\n")
     pops <- 60
     ft <- .005
@@ -219,20 +217,18 @@ test_that(" Init with different mutators", {
     summary(m1.pg1.b)[, c(1:3, 8:9)]
     summary(m1.pg1.c)[, c(1:3, 8:9)]
 })
+)
 date()
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
-
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
     ## We test:
     ##  - mutator increases mutation rates as seen in:
     ##        - number of clones created
     ##        - number of total mutation events
-    
-    
     cat("\n nm0: a runif is", runif(1), "\n")
     pops <- 40
     ft <- .0001
@@ -274,17 +270,15 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## number of clones
     expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(pop100), mutsPerClone(pop10), alternative = "greater")$p.value < p.value.threshold)
-    
 })
+)
 date()
 
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
-    
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
-    
-    
     cat("\n nm1: a runif is", runif(1), "\n")
     pops <- 40
     ft <- 1
@@ -326,15 +320,14 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## number of clones
     expect_true(wilcox.test(NClones(pop100),  NClones(pop10), alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(pop100), mutsPerClone(pop10), alternative = "greater")$p.value < p.value.threshold)
-
 })
-
+)
+date()
 
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Can occasionally blow up with pE.f: pE not finite.
-
-    
     cat("\n x2ef: a runif is", runif(1), "\n")
     pops <- 90
     ft <- 1
@@ -392,14 +385,13 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
     expect_true(t.test(mutsPerClone(mnpg), mutsPerClone(npg), alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(pg), mutsPerClone(npg), alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator, decrease max mu
-    
-    
     cat("\n u8_1: a runif is", runif(1), "\n")
     pops <- 120
     ft <- .0001
@@ -441,14 +433,13 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
 })
+)
 date()
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Can occasionally blow up with pE.f: pE not finite.
-
-    
     cat("\n x2cd: a runif is", runif(1), "\n")
     pops <- 50
     ni <- rep(0, 50)
@@ -502,16 +493,15 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.value.threshold)
 })
+)
 date()
 
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
-
-    
     cat("\n x2bc: a runif is", runif(1), "\n")
     pops <- 60
     ni <- rep(0.01, 50)
@@ -563,13 +553,13 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     summary(ncc)[, c(1:3, 8:9)]
     summary(ncd)[, c(1:3, 8:9)]
 })
+)
 date()
 
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("MCFL Relative ordering of number of clones with mutator effects", {
     ## Can occasionally blow up with pE.f: pE not finite.
-
-    
     cat("\n mcx1: a runif is", runif(1), "\n")
     pops <- 60
     fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
@@ -614,13 +604,13 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
     expect_true(t.test(mutsPerClone(nc1), mutsPerClone(nc2), alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(nc2), mutsPerClone(nc3), alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
 
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Can occasionally blow up with pE.f: pE not finite.
-
-    
     cat("\n mcx2cd: a runif is", runif(1), "\n")
     pops <- 60
     ni <- rep(0, 50)
@@ -674,15 +664,13 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     expect_true(t.test(mutsPerClone(ncb), mutsPerClone(ncc), alternative = "less")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(ncc), mutsPerClone(ncd), alternative = "less")$p.value < p.value.threshold)
 })
+)
 date()
 
-
-## FIXME move later to long
 ## Slow (~ 5 seconds) but tests modules of mutator nicely.
 date() ## Beware: this uses a lot of RAM without the gc()
+OncoSimulR:::try_again_message(3, 
 test_that("Mutator modules differences", {
-    
-    
     cat("\n mmd1: a runif is", runif(1), "\n")
     reps <- 60
     no <- 5e3
@@ -754,15 +742,12 @@ test_that("Mutator modules differences", {
     expect_true(t.test(mutsPerClone(b3), mutsPerClone(b2), alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
 
-
-
-
 date() ## Beware: this uses a lot of RAM without the gc()
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Mutator modules differences", {
-    
-    
     cat("\n MCFLmmd1: a runif is", runif(1), "\n")
     reps <- 60
     no <- 5e3
@@ -834,10 +819,11 @@ test_that("McFL: Mutator modules differences", {
     expect_true(t.test(mutsPerClone(b3), mutsPerClone(b2), alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Relative ordering of number of clones with mutator effects", {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n x1: a runif is", runif(1), "\n")
@@ -884,16 +870,14 @@ test_that("Relative ordering of number of clones with mutator effects", {
     summary(nc2)[, c(1:3, 8:9)]
     summary(nc3)[, c(1:3, 8:9)]
 })
+)
 date()
 
-
-## FIXME: move to long, later, and increase reps.
 ## very slow, because huge number of clones. But tests several phenomena comprehensively.
 ## same with McFL below
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("per-gene-mut rates and mutator", {
-    
-    
     cat("\n oss11: a runif is", runif(1), "\n")
     ng <- 10
     ni <- rep(0, ng)
@@ -1008,13 +992,12 @@ test_that("per-gene-mut rates and mutator", {
     expect_true(t.test(mutsPerClone(m1.mutator1), mutsPerClone(m2.mutator1), alternative = "less")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(m1.mutator2), mutsPerClone(m2.mutator2), alternative = "less")$p.value < p.value.threshold)
 })
+)
 date()
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: per-gene-mut rates and mutator", {
-    
-    
     cat("\n mcfloss11: a runif is", runif(1), "\n")
     ng <- 10
     ni <- rep(0, ng)
@@ -1128,10 +1111,11 @@ test_that("McFL: per-gene-mut rates and mutator", {
     expect_true(t.test(mutsPerClone(m1.mutator1), mutsPerClone(m2.mutator1), alternative = "less")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(m1.mutator2), mutsPerClone(m2.mutator2), alternative = "less")$p.value < p.value.threshold)
 })
+)
 date()
 
-
-date() 
+date()
+OncoSimulR:::try_again_message(3, 
 test_that("Mutator, several modules differences, McFL", {
     cat("\n mmdSMMC1: a runif is", runif(1), "\n")
     reps <- 50
@@ -1194,16 +1178,13 @@ test_that("Mutator, several modules differences, McFL", {
                  summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     expect_true(t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
 
-
-
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator
-    
-    
     cat("\n u8: a runif is", runif(1), "\n")
     pops <- 300
     ft <- .0001
@@ -1243,17 +1224,14 @@ test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
     expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
 })
+)
 date()
 
-
-
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## Similar to above, but mutator has a single element, not the whole
     ## vector.
-    
-    
     cat("\n u7_1: a runif is", runif(1), "\n")
     pops <- 300
     ft <- .0001
@@ -1292,22 +1270,13 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
     expect_true(chisq.test(snom("oreoisasabgene", m1.pg1.b),
                            p = pnom("oreoisasabgene", pg1, no, pops))$p.value > p.fail)
 })
+)
 date()
 
-
-
-
-
-
-
-
-
-
-
-date() 
+date()
+OncoSimulR:::try_again_message(3, 
 test_that("Mutator and mutPropGrowth", {
     ## we stop on size
-   
     cat("\n mmpg: a runif is", runif(1), "\n")
     reps <- 20
     no <- 5e3
@@ -1412,8 +1381,8 @@ test_that("Mutator and mutPropGrowth", {
                        mutsPerClone(m1.npg),
                        alternative = "greater")$p.value < p.value.threshold)
 })
+)
 date()
-
 
 
 

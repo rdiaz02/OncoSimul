@@ -79,6 +79,7 @@ verboseOandE <- FALSE
 sEvery <- 0.05
 
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Observed vs expected, case I", {
     cat("\n Observed vs expected, case I\n")
     ## Create a set of scenarios where we know what to expect
@@ -172,7 +173,6 @@ test_that("Observed vs expected, case I", {
     d1 <- data.frame(Expected = out[, 1], Observed = rowMeans(out[, -1]))
     p.fail <- 0.05
     lm1 <- lm(log(Observed) ~ log(Expected), data = d1)
-    
     ## For NO, do a t.test by row.
     no.t <- apply(outNO, 1,
                   function(x) t.test(log(x[2:(reps + 1)] + 1), mu = log(x[1] + 1))$p.value
@@ -182,13 +182,11 @@ test_that("Observed vs expected, case I", {
                    function(x) t.test(log(x[2:(reps + 1)] + 1), mu = log(x[1] + 1))$p.value
                    )
     p.value.threshold <- 1e-6
-    
     ## T.not <- (sum(no.t < p.value.threshold) > (nrow(outNO) * 0.9))
     T.not <- (all(no.t < p.value.threshold))
     T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
     T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
              p.fail)
-
     if(! (T.not && T.yest && T.lm) ) {
         cat("\n T.not is \n"); print(T.not)
         print(no.t)
@@ -202,10 +200,11 @@ test_that("Observed vs expected, case I", {
     }
     expect_true((T.not && T.yest && T.lm) )
 })
+)
 date()
 
-
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Observed vs expected, case II", {
     cat("\n Observed vs expected, case II\n")
     genmodule <- function(l, num) {
@@ -405,9 +404,11 @@ test_that("Observed vs expected, case II", {
     }
     expect_true((T.not && T.yest && T.lm) )
 })
+)
 date()
 
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Observed vs expected, case III", {
     cat("\n Observed vs expected, case III\n")
     genmodule <- function(l, num) {
@@ -576,11 +577,13 @@ test_that("Observed vs expected, case III", {
     }
     expect_true((T.not && T.yest && T.lm) )
 })
+)
 date()
 
 
 
 date()
+OncoSimulR:::try_again_message(3, 
 test_that("Init mutant no effects if fitness is 0", {
     cat("\n Init mutant no effect if fitness is 0\n")
     ## This can give false positives often.
@@ -704,7 +707,9 @@ test_that("Init mutant no effects if fitness is 0", {
     }
     expect_true((T.not && T.yest && T.lm) )
 })
+)
 date()
+
 cat(paste("\n            a final runif ", runif(1), "\n"))
 cat(paste("\n Ending fitness preds long at", date()))
 

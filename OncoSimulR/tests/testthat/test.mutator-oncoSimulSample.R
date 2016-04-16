@@ -7,6 +7,7 @@ cat(paste("\n Starting test.mutator-oncoSimulSample.R test at", date(), "\n"))
 
 ## require(car) ## for linearHypothesis, below. In the namespace
 
+
 enom <- function(name, mu, ni = no, pp = pops) {
     ## expected without a given name for init
     ii <- which(names(mu) == name)
@@ -195,11 +196,9 @@ date()
 
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on  popSize after short model. All have same small s.
-    
-    
     cat("\n mcx2bc: a runif is", runif(1), "\n")
     pops <- 50
     ni <- rep(0.01, 50)
@@ -256,9 +255,8 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
 )
 date()
 
-
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 , but all have same growth rate.
     cat("\n x2ef: a runif is", runif(1), "\n")
@@ -337,13 +335,11 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 but all same growth rate.
-    
-    
     cat("\n x2gh: a runif is", runif(1), "\n")
-    pops <- 10
+    pops <- 15
     ft <- 1
     lni <- 200
     no <- 1e3
@@ -435,7 +431,7 @@ date()
 
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
@@ -502,7 +498,7 @@ date()
 
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that(" MCFL Init with different mutators", {
     cat("\n mcz2: a runif is", runif(1), "\n")
     pops <- 40

@@ -295,7 +295,7 @@ test_that("McFL: Only no-int, different numbers, fail", {
 } )
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Same freqs, chisq, when s=0", {
     cat("\n s3: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
@@ -314,15 +314,16 @@ test_that("McFL: Same freqs, chisq, when s=0", {
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
 })
 )
 date()
 
+
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Same freqs, chisq, when s", {
     cat("\n s4: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
@@ -342,7 +343,7 @@ test_that("McFL: Same freqs, chisq, when s", {
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
 })
@@ -350,7 +351,7 @@ test_that("McFL: Same freqs, chisq, when s", {
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0", {
     cat("\n s5: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
@@ -369,7 +370,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0",
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
     expect_equal(
@@ -382,7 +383,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0",
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
     cat("\n s6: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
@@ -409,7 +410,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Different freqs as they should be ordered when s and t > 1, again", {
     cat("\n s7: a runif is", runif(1), "\n")
     ## Increase s and time
@@ -437,7 +438,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systematic mu", {
     cat("\n s8: a runif is", runif(1), "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -482,7 +483,7 @@ test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systema
     ## expectedC - colSums(OncoSimulR:::geneCounts(bb))
     ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
     ##                        p = expectedC/sum(expectedC))
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
 })
@@ -490,7 +491,7 @@ test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systema
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL:Complex fitness specification, tiny s diffs", {
     cat("\n s9: a runif is", runif(1), "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -535,7 +536,7 @@ test_that("McFL:Complex fitness specification, tiny s diffs", {
     colSums(OncoSimulR:::geneCounts(bb))
     ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
     ##                        p = expectedC/sum(expectedC))
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
     ## Even with systematic spacing, you need huge reps to even out the
@@ -572,7 +573,7 @@ test_that("get.gene.counts exercising for NA case", {
 
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Init mutant with tiny mutation always present", {
     cat("\n s12: a runif is", runif(1), "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -639,7 +640,7 @@ test_that("McFL: Init mutant with tiny mutation always present", {
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
     cat("\n s14: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -680,7 +681,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
     colSums(OncoSimulR:::geneCounts(bb))
     expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
     ## This will fail sometimes
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
                            p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
     ## expect_equal(
@@ -693,7 +694,7 @@ date()
 
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
     cat("\n s18: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-5, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -716,7 +717,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
     totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["m"] == totalindivs)
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-4],
                            p = expectedC[-4]/sum(expectedC[-4]))$p.value > p.fail)
     expect_equal(
@@ -730,7 +731,7 @@ date()
 
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Different freqs as they are expected with chisq, when s=0 and initMutant, many genotypes",{
     cat("\n mcs19: a runif is", runif(1), "\n")
     ft <- 0.001 ## yes, small
@@ -744,7 +745,7 @@ test_that("McFL: Different freqs as they are expected with chisq, when s=0 and i
     names(ni1) <- names(muvar2)
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 1e7
-    reps <- 100
+    reps <- 150
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
@@ -759,7 +760,7 @@ test_that("McFL: Different freqs as they are expected with chisq, when s=0 and i
     totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
 })
@@ -768,7 +769,7 @@ date()
 
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
     ## More on the above, with less variation. But yet another set of tests.
     cat("\n s20: a runif is", runif(1), "\n")
@@ -795,7 +796,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
     totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -822,7 +823,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
     totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
     ## nope, as many are equal
@@ -856,7 +857,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
     totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
 })
@@ -864,7 +865,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",{
 ## More on the above, with less variation. But yet another set of tests.
     cat("\n df1: a runif is", runif(1), "\n")
@@ -905,7 +906,7 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
     (cc1 <- colSums(OncoSimulR:::geneCounts(b1)))
     (cc2 <- colSums(OncoSimulR:::geneCounts(b2)))    
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b1)),
                            p = expected1/sum(expected1))$p.value > p.fail)
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b2)),
@@ -920,7 +921,7 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
 )
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.
@@ -982,7 +983,7 @@ date()
 ## populationSize.
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that(" McFL: And mutPropGrowth, 3",{
     cat("\n mcsz033: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-4, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
@@ -1050,7 +1051,7 @@ test_that(" McFL: And mutPropGrowth, 3",{
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("More mutpropgrowth, in modules of s", {
     ## From a similar test in mutPropGrowth, but we have a vector mu
     ## And here, we fix detectionSize, so effects are not due
@@ -1111,7 +1112,7 @@ test_that("More mutpropgrowth, in modules of s", {
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-mut",{
     ## Here, we test that freqs as they should, but so that the test is
     ## not eternal, we use different settings of reps and no
@@ -1153,7 +1154,7 @@ test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-m
     if( (any(cc1 == reps)) )
         warning("The test is likely to fail because reps == cc1 or cc2")
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(cc1,
                            p = expected1/sum(expected1))$p.value > p.fail)
     reps <- 500
@@ -1179,7 +1180,7 @@ test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-m
     if( (any(cc2 == reps)))
         warning("The test is likely to fail because reps == cc1 or cc2")
     ## It will fail with prob ~ p.fail
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(cc2,
                            p = expected2/sum(expected2))$p.value > p.fail)
 })
@@ -1187,7 +1188,7 @@ test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-m
 date()
 
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: oncoSimulSample comparing different per-gene-mut",{
     ## No attempt to compare against expected (other tests do that). We
     ## just verify that larger mutations rates lead to more total
@@ -1251,7 +1252,7 @@ test_that("McFL: oncoSimulSample comparing different per-gene-mut",{
 date()
 
 cat("\n", date(), "\n")
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
     cat("\n osSFPSMcFL: a runif is", runif(1), "\n")
     pops <- 60
@@ -1328,9 +1329,8 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
 
 
 ## Repeat some above, allowing for mutPropGrowth
-
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
     cat("\n mpg s14: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -1371,7 +1371,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
     colSums(OncoSimulR:::geneCounts(bb))
     expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
     ## This will fail sometimes
-    p.fail <- 1e-3
+    p.fail <- 1e-2
     expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
                            p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
     ## expect_equal(
@@ -1382,8 +1382,10 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
 )
 date()
 
+
+
 date()
-try_again(2, 
+OncoSimulR:::try_again_message(3, 
 test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.

@@ -410,7 +410,7 @@ date()
 
 date()
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
-    max.tries <- 2
+    max.tries <- 3
     for(tries in 1:max.tries) {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n x2gh: a runif is", runif(1), "\n")
@@ -496,7 +496,7 @@ date()
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
-    max.tries <- 2
+    max.tries <- 3
     for(tries in 1:max.tries) {
 
     
@@ -553,7 +553,7 @@ date()
 
 date()
 test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
-    max.tries <- 2
+    max.tries <- 3
     for(tries in 1:max.tries) {
     
     ## We test that mutator does not affect expected frequencies of
@@ -619,7 +619,7 @@ date()
 
 date()
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t", {
-    max.tries <- 2
+    max.tries <- 3
     for(tries in 1:max.tries) {
 
 
@@ -686,7 +686,7 @@ date()
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
-        max.tries <- 2
+        max.tries <- 3
     for(tries in 1:max.tries) {
 
 
@@ -747,7 +747,7 @@ date()
 
 date()
 test_that(" MCFL Init with different mutators", {
-        max.tries <- 2
+        max.tries <- 3
     for(tries in 1:max.tries) {
 
 
@@ -834,7 +834,7 @@ date()
 
 date() 
 test_that("Mutator, several modules differences", {
-    max.tries <- 2 
+    max.tries <- 3 
     for(tries in 1:max.tries) {
     cat("\n mmdSM1: a runif is", runif(1), "\n")
     reps <- 25
@@ -843,7 +843,6 @@ test_that("Mutator, several modules differences", {
     mu <- 1e-5
     ln <- 100
     m1 <- 5 ## if this is too large, easy to get it to blow.
-
     ## Having three renders it too unpredictable in time.
     ## ni <- rep(0, 3 * ln)
     ## gna <- paste0("a", 1:ln)
@@ -907,7 +906,6 @@ test_that("Mutator, several modules differences", {
                              summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     T2 <- (t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
     if( T1 && T2 ) break;
-    
     }
     cat(paste ("\n done tries ", tries, "\n"))
     expect_true( (T1 && T2) )
@@ -918,7 +916,7 @@ date()
 
 date() 
 test_that("Mutator and mutPropGrowth, mcfl", {
-        max.tries <- 2
+        max.tries <- 3
     for(tries in 1:max.tries) {
 
 
