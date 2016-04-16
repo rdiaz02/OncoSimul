@@ -150,7 +150,9 @@ test_that("initMutant non lexicog order",
 
 
 test_that("initMutant non lexicog order",
-          {
+{
+    max.tries <- 2
+    for(tries in 1:max.tries) {
               o3 <- allFitnessEffects(orderEffects = c(
                                           "M > D > F" = 0.99,
                                           "D > M > F" = 0.2,
@@ -178,8 +180,21 @@ test_that("initMutant non lexicog order",
               expect_false( "d > m _" %in% cn )
               expect_false( "d > m > f _" %in% cn )
               expect_true( "m > d _ u" %in% cn )
-              expect_true( "m > d > f _ u" %in% cn )
-          })
+              ## this next one will be true almost always
+              ## if there is pop growth. But very occasionally
+              ## it might not. The above must ALWAYS be true,
+              ## but this one we allow to repeat a couple of times
+              
+              T1 <- ( "m > d > f _ u" %in% cn )
+              if( T1 ) break;
+              if(! T1 ) {
+                  cat("\n pop in initMutant non lexicog order\n ")
+                  print(tmp)
+              }
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1)
+})
 
 ## FIXME: we could use stronger test: we will never see M > D
 test_that("initMutant with oncoSimulSample", {

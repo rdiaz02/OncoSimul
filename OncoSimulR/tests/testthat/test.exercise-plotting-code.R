@@ -167,6 +167,7 @@ test_that("stacked, stream, genotypes and some colors", {
         if(nrow(tmp$pops.by.time) >= 5) {
             break
         } else {
+            cat("\n hummm.. had to run again in the plot")
             if(i >= max.tries) {
                 print(tmp)
                 stop("stream will break")
@@ -261,6 +262,7 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
         if(nrow(e1$pops.by.time) >= 5) {
             break
         } else {
+            cat("\n hummm.. had to run again in the plot")
             if(i >= max.tries) {
                 print(e1)
                 stop("stream will break")
@@ -318,12 +320,13 @@ test_that("oncosimul v.1 objects and genotype plotting", {
                          onlyCancer = TRUE)
     if(nrow(p1$pops.by.time) >= 5) {
             break
-        } else {
-            if(i >= max.tries) {
-                print(p1)
-                stop("stream will break")
-            }
+    } else {
+        cat("\n hummm.. had to run again in the plot")
+        if(i >= max.tries) {
+            print(p1)
+            stop("stream will break")
         }
+    }
     }
     class(p1)
     plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
