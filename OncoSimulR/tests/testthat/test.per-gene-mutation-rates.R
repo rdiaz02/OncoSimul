@@ -856,7 +856,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
         expect_true(ccs["e"] == totalindivs)
         ## It will fail with prob ~ p.fail
         p.fail <- 1e-2
-        expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+        T3 <- (chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                                p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
         muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
         ## relatively large mu
@@ -883,7 +883,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
         expect_true(ccs["e"] == totalindivs)
         ## It will fail with prob ~ p.fail
         p.fail <- 1e-2
-        expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+        T2 <- (chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                                p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
         ## nope, as many are equal
         ## expect_equal(
