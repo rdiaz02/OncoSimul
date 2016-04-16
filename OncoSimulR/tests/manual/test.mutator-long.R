@@ -91,7 +91,7 @@ cat(paste("\n            a second runif ", runif(1), "\n"))
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
@@ -150,7 +150,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that(" Init with different mutators", {
     cat("\n z2: a runif is", runif(1), "\n")
     pops <- 60
@@ -221,7 +221,7 @@ test_that(" Init with different mutators", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
@@ -275,7 +275,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
@@ -325,7 +325,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n x2ef: a runif is", runif(1), "\n")
@@ -389,7 +389,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator, decrease max mu
     cat("\n u8_1: a runif is", runif(1), "\n")
@@ -437,7 +437,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n x2cd: a runif is", runif(1), "\n")
@@ -498,7 +498,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on finalTime, not popSize
     ## Can occasionally blow up with pE.f: pE not finite.
@@ -557,7 +557,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("MCFL Relative ordering of number of clones with mutator effects", {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n mcx1: a runif is", runif(1), "\n")
@@ -608,7 +608,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n mcx2cd: a runif is", runif(1), "\n")
@@ -669,7 +669,7 @@ date()
 
 ## Slow (~ 5 seconds) but tests modules of mutator nicely.
 date() ## Beware: this uses a lot of RAM without the gc()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Mutator modules differences", {
     cat("\n mmd1: a runif is", runif(1), "\n")
     reps <- 60
@@ -746,7 +746,7 @@ test_that("Mutator modules differences", {
 date()
 
 date() ## Beware: this uses a lot of RAM without the gc()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("McFL: Mutator modules differences", {
     cat("\n MCFLmmd1: a runif is", runif(1), "\n")
     reps <- 60
@@ -823,7 +823,7 @@ test_that("McFL: Mutator modules differences", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Relative ordering of number of clones with mutator effects", {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n x1: a runif is", runif(1), "\n")
@@ -876,7 +876,7 @@ date()
 ## very slow, because huge number of clones. But tests several phenomena comprehensively.
 ## same with McFL below
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("per-gene-mut rates and mutator", {
     cat("\n oss11: a runif is", runif(1), "\n")
     ng <- 10
@@ -996,7 +996,7 @@ test_that("per-gene-mut rates and mutator", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("McFL: per-gene-mut rates and mutator", {
     cat("\n mcfloss11: a runif is", runif(1), "\n")
     ng <- 10
@@ -1115,7 +1115,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Mutator, several modules differences, McFL", {
     cat("\n mmdSMMC1: a runif is", runif(1), "\n")
     reps <- 50
@@ -1182,7 +1182,7 @@ test_that("Mutator, several modules differences, McFL", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator
     cat("\n u8: a runif is", runif(1), "\n")
@@ -1228,7 +1228,7 @@ test_that("McFL: Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## Similar to above, but mutator has a single element, not the whole
     ## vector.
@@ -1274,7 +1274,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Mutator and mutPropGrowth", {
     ## we stop on size
     cat("\n mmpg: a runif is", runif(1), "\n")

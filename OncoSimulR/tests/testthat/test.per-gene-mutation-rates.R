@@ -295,7 +295,7 @@ test_that("McFL: Only no-int, different numbers, fail", {
 } )
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Same freqs, chisq, when s=0", {
     cat("\n s3: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
@@ -323,7 +323,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Same freqs, chisq, when s", {
     cat("\n s4: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
@@ -351,7 +351,7 @@ test_that("McFL: Same freqs, chisq, when s", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0", {
     cat("\n s5: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
@@ -383,7 +383,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0",
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
     cat("\n s6: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-3, "e" = 1e-4, "m" = 5e-5, "D" = 5e-4)
@@ -410,7 +410,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Different freqs as they should be ordered when s and t > 1, again", {
     cat("\n s7: a runif is", runif(1), "\n")
     ## Increase s and time
@@ -438,7 +438,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systematic mu", {
     cat("\n s8: a runif is", runif(1), "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -491,7 +491,7 @@ test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systema
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL:Complex fitness specification, tiny s diffs", {
     cat("\n s9: a runif is", runif(1), "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -573,7 +573,7 @@ test_that("get.gene.counts exercising for NA case", {
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Init mutant with tiny mutation always present", {
     cat("\n s12: a runif is", runif(1), "\n")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -640,7 +640,7 @@ test_that("McFL: Init mutant with tiny mutation always present", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
     cat("\n s14: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -694,7 +694,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
     cat("\n s18: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-3, "z" = 5e-5, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -731,7 +731,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Different freqs as they are expected with chisq, when s=0 and initMutant, many genotypes",{
     cat("\n mcs19: a runif is", runif(1), "\n")
     ft <- 0.001 ## yes, small
@@ -769,7 +769,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
     ## More on the above, with less variation. But yet another set of tests.
     cat("\n s20: a runif is", runif(1), "\n")
@@ -865,20 +865,20 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",{
 ## More on the above, with less variation. But yet another set of tests.
     cat("\n df1: a runif is", runif(1), "\n")
     ng <- 10
     ni <- rep(0, ng)
-    m1 <- runif(ng, min = 1e-6, max = 1e-5)
+    m1 <- runif(ng, min = 5e-6, max = 1e-5)
     m2 <- runif(ng, min = 1e-4, max = 1e-3)
     names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
                                  paste(sample(letters, 12), collapse = "")))
     fe1 <- allFitnessEffects(noIntGenes = ni)
-    ft <- 0.01
+    ft <- 0.001
     no <- 1e7
-    reps <- 80
+    reps <- 300
     cat("\n df1a: a runif is", runif(1), "\n")
     b1 <- oncoSimulPop(reps,
                        fe1,
@@ -921,7 +921,7 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
 )
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.
@@ -983,7 +983,7 @@ date()
 ## populationSize.
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that(" McFL: And mutPropGrowth, 3",{
     cat("\n mcsz033: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-4, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
@@ -1051,7 +1051,7 @@ test_that(" McFL: And mutPropGrowth, 3",{
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("More mutpropgrowth, in modules of s", {
     ## From a similar test in mutPropGrowth, but we have a vector mu
     ## And here, we fix detectionSize, so effects are not due
@@ -1112,7 +1112,7 @@ test_that("More mutpropgrowth, in modules of s", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-mut",{
     ## Here, we test that freqs as they should, but so that the test is
     ## not eternal, we use different settings of reps and no
@@ -1188,7 +1188,7 @@ test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-m
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: oncoSimulSample comparing different per-gene-mut",{
     ## No attempt to compare against expected (other tests do that). We
     ## just verify that larger mutations rates lead to more total
@@ -1252,7 +1252,7 @@ test_that("McFL: oncoSimulSample comparing different per-gene-mut",{
 date()
 
 cat("\n", date(), "\n")
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
     cat("\n osSFPSMcFL: a runif is", runif(1), "\n")
     pops <- 60
@@ -1330,7 +1330,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
 
 ## Repeat some above, allowing for mutPropGrowth
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
     cat("\n mpg s14: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
@@ -1385,7 +1385,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4,  
 test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.

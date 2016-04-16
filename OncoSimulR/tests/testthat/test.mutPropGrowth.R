@@ -76,7 +76,7 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("mutPropGrowth diffs with s> 0, McFL", {
     
     
@@ -135,7 +135,7 @@ cat("\n", date(), "\n")
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     cat("\n oss1: a runif is", runif(1), "\n")
     ft <- 3.5 ## 4
@@ -199,7 +199,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
 )
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
     cat("\n ossmcf1: a runif is", runif(1), "\n")
     ft <- 40 ## 4

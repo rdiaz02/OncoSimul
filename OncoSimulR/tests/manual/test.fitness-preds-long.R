@@ -79,7 +79,7 @@ verboseOandE <- FALSE
 sEvery <- 0.05
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Observed vs expected, case I", {
     cat("\n Observed vs expected, case I\n")
     ## Create a set of scenarios where we know what to expect
@@ -204,7 +204,7 @@ test_that("Observed vs expected, case I", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Observed vs expected, case II", {
     cat("\n Observed vs expected, case II\n")
     genmodule <- function(l, num) {
@@ -408,7 +408,7 @@ test_that("Observed vs expected, case II", {
 date()
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Observed vs expected, case III", {
     cat("\n Observed vs expected, case III\n")
     genmodule <- function(l, num) {
@@ -583,7 +583,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(3, 
+OncoSimulR:::try_again_message(4, 
 test_that("Init mutant no effects if fitness is 0", {
     cat("\n Init mutant no effect if fitness is 0\n")
     ## This can give false positives often.
