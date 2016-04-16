@@ -83,7 +83,7 @@ test_that("Observed vs expected, case III", {
     genmodule <- function(l, num) {
         paste(paste0(l, 1:num), collapse = ", ")
     }
-    max.tries <- 4
+    max.tries <- 6
     for(tries in 1:max.tries) {
         ## Like II, but we combine several effects.
         reps <- 25

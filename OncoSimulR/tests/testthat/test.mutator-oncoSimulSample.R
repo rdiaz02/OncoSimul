@@ -79,7 +79,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
     ## rates, with oncoSimulSample you undersample variation with
     ## wholePop, etc.
     ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
-    max.tries <- 4
+    max.tries <- 6
     for(tries in 1:max.tries) {
     
     
@@ -196,7 +196,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("MCFL Relative ordering of number of clones with init mutant of mutator effects", {
     ## Here we stop on  popSize after short model. All have same small s.
     cat("\n mcx2bc: a runif is", runif(1), "\n")
@@ -256,7 +256,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 , but all have same growth rate.
     cat("\n x2ef: a runif is", runif(1), "\n")
@@ -335,7 +335,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
     ## Stopping on time; s > 0 but all same growth rate.
     cat("\n x2gh: a runif is", runif(1), "\n")
@@ -431,7 +431,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
@@ -498,7 +498,7 @@ date()
 
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that(" MCFL Init with different mutators", {
     cat("\n mcz2: a runif is", runif(1), "\n")
     pops <- 40

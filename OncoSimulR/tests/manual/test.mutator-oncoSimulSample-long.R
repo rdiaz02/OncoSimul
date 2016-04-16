@@ -64,7 +64,7 @@ p.value.threshold <- 0.005
 ## same with McFL below
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("per-gene-mut rates and mutator", {
     cat("\n oss11: a runif is", runif(1), "\n")
     ng <- 40
@@ -197,7 +197,7 @@ test_that("per-gene-mut rates and mutator", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL: per-gene-mut rates and mutator", {
     cat("\n mcfloss11: a runif is", runif(1), "\n")
     ng <- 40
@@ -335,7 +335,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Mutator increases by given factor with per-gene-mut rates: major axis and chi-sq test", {
     ## Two cases: mutator and no mutator, with variable mutation rates.
     ## rates such that rates of no mutator = rates of mutator * mutator.
@@ -447,7 +447,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL: Mutator increases by given factor with per-gene-mut rates: major axis and chi-sq test", {
     ## Two cases: mutator and no mutator, with variable mutation rates.
     ## rates such that rates of no mutator = rates of mutator * mutator.
@@ -561,7 +561,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Mutator, several modules differences", {
     cat("\n mmd1_2: a runif is", runif(1), "\n")
     reps <- 140
@@ -631,7 +631,7 @@ date()
 ## oncoSimulSample compared to oncoSimulPop, since we only look at the
 ## clones that exist at the end.
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Mutator, several modules differences, McFL", {
     cat("\n mmd1_2_mc: a runif is", runif(1), "\n")
     reps <- 80
@@ -698,7 +698,7 @@ date()
 
 ## Slow (~ 3 seconds) but tests modules of mutator nicely.
 date() ## Beware: this uses a lot of RAM without the gc()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Mutator modules differences", {
     cat("\n mmd1: a runif is", runif(1), "\n")
     reps <- 40
@@ -781,7 +781,7 @@ test_that("Mutator modules differences", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Relative ordering of number of clones with mutator effects", {
     cat("\n x1: a runif is", runif(1), "\n")
     pops <- 40
@@ -839,7 +839,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## Similar to above, but mutator has a single element, not the whole
     ## vector.
@@ -900,7 +900,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## increase mutator, decrease max mu
     ## similar to oss11 in per-gene-mutation-rates but with the mutator
@@ -970,7 +970,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
@@ -1029,7 +1029,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("MCFL Relative ordering of number of clones with mutator effects", {
     ## Stop on size, and do a fast model (stop shortly after)
     ## But note we have only four positions left, so difficult to detect
@@ -1093,7 +1093,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Relative ordering of number of clones with init mutant of mutator effects and s = 0", {
     ## Here stop by time, as s = 0
     cat("\n x2cd: a runif is", runif(1), "\n")
@@ -1158,7 +1158,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL, Expect freq genotypes, mutator and var mut rates, ct mut", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
@@ -1217,7 +1217,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates, ct mut", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
@@ -1273,7 +1273,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
@@ -1340,7 +1340,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Expect freq genotypes, mutator and var mut rates", {
     ## We test that mutator does not affect expected frequencies of
     ## mutated genes: they are given by the mutation rate of each gene.
@@ -1461,7 +1461,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Relative ordering of number of clones with init mutant of mutator effects", {
     ## here we do not fill all positions, except maybe for ncd
     ## We stop on finalTime, not popsize
@@ -1530,7 +1530,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
@@ -1586,7 +1586,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger t", {
     ## reproduction, death, and double and possibly triple mutants. We
     ## decrease init pop size to make this fast.
@@ -1643,7 +1643,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
 date()
 
 date() ## Beware: this uses a lot of RAM without the gc()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("McFL: Mutator modules differences", {
     cat("\n MCFLmmd1: a runif is", runif(1), "\n")
     reps <- 10
@@ -1730,7 +1730,7 @@ date()
 
 ###### The following used to be in the non-long file. But that is just an overkill.
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Mutator increases by given factor with per-gene-mut rates: major axis and chi-sq test", {
     ## Two cases: mutator and no mutator, with variable mutation rates.
     ## rates such that rates of no mutator = rates of mutator * mutator.
@@ -1739,7 +1739,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
     ## rates, with oncoSimulSample you undersample variation with
     ## wholePop, etc.
     ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
-    max.tries <- 4
+    max.tries <- 6
     for(tries in 1:max.tries) {
     cat("\n AEu8: a runif is", runif(1), "\n")
     pops <- 200
@@ -1848,7 +1848,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
     ## Here, there is no reproduction or death. Just mutation. And no double
     ## mutants either.
@@ -1910,7 +1910,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
 date()
 
 date()
-OncoSimulR:::try_again_message(4, 
+OncoSimulR:::try_again_message(6, 
 test_that(" Init with different mutators", {
     cat("\n z2: a runif is", runif(1), "\n")
     pops <- 40
