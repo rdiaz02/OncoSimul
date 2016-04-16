@@ -146,40 +146,54 @@ test_that("only recognized options", {
 
 
 test_that("stacked, stream, genotypes and some colors", {
-      data(examplesFitnessEffects)
-      tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
-                             model = "McFL", 
-                             mu = 5e-5,
-                             detectionSize = 1e8, 
-                             detectionDrivers = 3,
-                             sampleEvery = 0.03,
-                             max.num.tries = 100,
-                             keepEvery = 100,
-                             initSize = 2000,
-                             finalTime = 3000,
-                             onlyCancer = TRUE, ## make sure there is data to plot!
-                             keepPhylog = TRUE)
-      plot(tmp, type = "stacked", show = "genotypes")
-      plot(tmp, type = "stream", show = "genotypes")
-      plot(tmp, type = "line", show = "genotypes")
-      plot(tmp, type = "stacked", show = "drivers")
-      plot(tmp, type = "stream", show = "drivers")
-      plot(tmp, type = "line", show = "drivers")
-      plot(tmp, type = "stacked", order.method = "max")
-      plot(tmp, type = "stacked", order.method = "first")
-      plot(tmp, type = "stream", order.method = "max")
-      plot(tmp, type = "stream", order.method = "first")
-      plot(tmp, type = "stream", stream.center = TRUE)
-      plot(tmp, type = "stream", stream.center = FALSE)
-      plot(tmp, type = "stream", stream.center = TRUE, log = "x")
-      plot(tmp, type = "stacked", stream.center = TRUE, log = "x")
-      plot(tmp, type = "stacked", show = "genotypes",
-           breakSortColors = "random")
-      plot(tmp, type = "stream", show = "genotypes",
-           breakSortColors = "distave")
-      plot(tmp, type = "stacked", show = "genotypes", col = rainbow(9))
-      plot(tmp, type = "stream", show = "genotypes", col = rainbow(3))
-      plot(tmp, type = "line", show = "genotypes", col = rainbow(20))
+    data(examplesFitnessEffects)
+    ## This is a quick test. We do not want to spend too much
+    ## generating the data, but we also need at least four data points for the
+    ## stream plots
+    max.tries <- 4
+    for(i in 1:max.tries) {
+        tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                               model = "McFL", 
+                               mu = 5e-5,
+                               detectionSize = 1e8, 
+                               detectionDrivers = 3,
+                               sampleEvery = 0.03,
+                               max.num.tries = 100,
+                               keepEvery = 100,
+                               initSize = 2000,
+                               finalTime = 3000,
+                               onlyCancer = TRUE, ## make sure there is data to plot!
+                               keepPhylog = TRUE)
+        if(nrow(tmp$pops.by.time) >= 5) {
+            break
+        } else {
+            if(i >= max.tries) {
+                print(tmp)
+                stop("stream will break")
+            }
+        }
+    }
+    plot(tmp, type = "stacked", show = "genotypes")
+    plot(tmp, type = "stream", show = "genotypes")
+    plot(tmp, type = "line", show = "genotypes")
+    plot(tmp, type = "stacked", show = "drivers")
+    plot(tmp, type = "stream", show = "drivers")
+    plot(tmp, type = "line", show = "drivers")
+    plot(tmp, type = "stacked", order.method = "max")
+    plot(tmp, type = "stacked", order.method = "first")
+    plot(tmp, type = "stream", order.method = "max")
+    plot(tmp, type = "stream", order.method = "first")
+    plot(tmp, type = "stream", stream.center = TRUE)
+    plot(tmp, type = "stream", stream.center = FALSE)
+    plot(tmp, type = "stream", stream.center = TRUE, log = "x")
+    plot(tmp, type = "stacked", stream.center = TRUE, log = "x")
+    plot(tmp, type = "stacked", show = "genotypes",
+         breakSortColors = "random")
+    plot(tmp, type = "stream", show = "genotypes",
+         breakSortColors = "distave")
+    plot(tmp, type = "stacked", show = "genotypes", col = rainbow(9))
+    plot(tmp, type = "stream", show = "genotypes", col = rainbow(3))
+    plot(tmp, type = "line", show = "genotypes", col = rainbow(20))
 })
 
 
@@ -232,7 +246,9 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                                  "A" = "a1, a2",
                                  "B" = "b",
                                  "C" = "c"))
-    e1 <- oncoSimulIndiv(sv2, model = "McFL",
+    max.tries <- 4
+    for(i in 1:max.tries) {
+        e1 <- oncoSimulIndiv(sv2, model = "McFL",
                          mu = 5e-6,
                          sampleEvery = 0.02,
                          keepEvery = 1,
@@ -242,6 +258,16 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          max.num.tries = 300,
                          detectionDrivers = 2,
                          onlyCancer = FALSE)
+        if(nrow(e1$pops.by.time) >= 5) {
+            break
+        } else {
+            if(i >= max.tries) {
+                print(e1)
+                stop("stream will break")
+            }
+        }
+    }
+    
     plot(e1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(1, 1000),
                   xlim = c(20, 70), thinData = TRUE,
@@ -280,6 +306,8 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     p705 <- examplePosets[["p705"]]
     ## Again, Exp model is much more variable and can take long.
     ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+    max.tries <- 4
+    for(i in 1:max.tries) {
     p1 <- oncoSimulIndiv(p705, model = "McFL",
                          mu = 5e-6,
                          sampleEvery = 0.02,
@@ -288,6 +316,15 @@ test_that("oncosimul v.1 objects and genotype plotting", {
                          finalTime = 3000,
                          max.num.tries = 100,
                          onlyCancer = TRUE)
+    if(nrow(p1$pops.by.time) >= 5) {
+            break
+        } else {
+            if(i >= max.tries) {
+                print(p1)
+                stop("stream will break")
+            }
+        }
+    }
     class(p1)
     plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
     plot(p1, type = "stream", show = "genotypes", thinData = TRUE)
@@ -301,6 +338,8 @@ test_that("passing colors", {
     p705 <- examplePosets[["p705"]]
     ## Again, Exp model is much more variable and can take long.
     ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+    max.tries <- 4
+    for(i in 1:max.tries) {
     p1 <- oncoSimulIndiv(p705, model = "McFL",
                          mu = 5e-6,
                          sampleEvery = 0.02,
@@ -309,6 +348,15 @@ test_that("passing colors", {
                          finalTime = 3000,
                          max.num.tries = 100,
                          onlyCancer = TRUE)
+    if(nrow(p1$pops.by.time) >= 5) {
+            break
+        } else {
+            if(i >= max.tries) {
+                print(p1)
+                stop("stream will break")
+            }
+        }
+    }
     class(p1)
     plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
     plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
