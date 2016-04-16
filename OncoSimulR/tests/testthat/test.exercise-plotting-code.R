@@ -153,11 +153,11 @@ test_that("stacked, stream, genotypes and some colors", {
                              detectionSize = 1e8, 
                              detectionDrivers = 3,
                              sampleEvery = 0.03,
-                             max.num.tries = 10,
+                             max.num.tries = 100,
                              keepEvery = 100,
                              initSize = 2000,
                              finalTime = 3000,
-                             onlyCancer = FALSE,
+                             onlyCancer = TRUE, ## make sure there is data to plot!
                              keepPhylog = TRUE)
       plot(tmp, type = "stacked", show = "genotypes")
       plot(tmp, type = "stream", show = "genotypes")
@@ -238,6 +238,9 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          keepEvery = 1,
                          initSize = 2000,
                          finalTime = 3000,
+                         initMutant = "a1",
+                         max.num.tries = 300,
+                         detectionDrivers = 2,
                          onlyCancer = FALSE)
     plot(e1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(1, 1000),
@@ -283,7 +286,8 @@ test_that("oncosimul v.1 objects and genotype plotting", {
                          keepEvery = 10,
                          initSize = 2000,
                          finalTime = 3000,
-                         onlyCancer = FALSE)
+                         max.num.tries = 100,
+                         onlyCancer = TRUE)
     class(p1)
     plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
     plot(p1, type = "stream", show = "genotypes", thinData = TRUE)
@@ -303,7 +307,8 @@ test_that("passing colors", {
                          keepEvery = 10,
                          initSize = 2000,
                          finalTime = 3000,
-                         onlyCancer = FALSE)
+                         max.num.tries = 100,
+                         onlyCancer = TRUE)
     class(p1)
     plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
     plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
