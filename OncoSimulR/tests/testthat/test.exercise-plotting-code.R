@@ -259,7 +259,7 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          max.num.tries = 300,
                          detectionDrivers = 2,
                          onlyCancer = FALSE)
-        if(nrow(e1$pops.by.time) >= 5) {
+        if(nrow(e1$pops.by.time) >= 11) {
             break
         } else {
             cat("\n hummm.. had to run again in the plot")
@@ -272,32 +272,32 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
     
     plot(e1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(1, 1000),
-                  xlim = c(20, 70), thinData = TRUE,
+                  xlim = c(20, 70), thinData = TRUE, thinData.keep = 0.5,
          plotDrivers = TRUE)
     plot(e1, show = "drivers", type = "stacked",
          xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000), thinData = TRUE,
+         ylab = "ylab", ylim = c(-1000, 1000), thinData = TRUE, thinData.keep = 0.5,
                   xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(e1, show = "drivers", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70), thinData = TRUE,
+                  xlim = c(20, 70), thinData = TRUE, thinData.keep = 0.5,
          plotDrivers = TRUE)
     plot(e1, show = "genotypes",
          addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000), 
-                  xlim = c(20, 70), thinData = TRUE,
+                  xlim = c(20, 70), thinData = TRUE, thinData.keep = 0.5,
          plotDrivers = TRUE)
     plot(e1, show = "genotypes", type = "stacked",
          xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70), thinData = TRUE,
+                  xlim = c(20, 70), thinData = TRUE, thinData.keep = 0.5,
          plotDrivers = TRUE)
     plot(e1, show = "genotypes", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70), thinData = TRUE,
+                  xlim = c(20, 70), thinData = TRUE, thinData.keep = 0.5,
          plotDrivers = TRUE)
 })
 
@@ -317,8 +317,8 @@ test_that("oncosimul v.1 objects and genotype plotting", {
                          initSize = 2000,
                          finalTime = 3000,
                          max.num.tries = 100,
-                         onlyCancer = TRUE)
-    if(nrow(p1$pops.by.time) >= 5) {
+                         onlyCancer = FALSE)
+    if(nrow(p1$pops.by.time) >= 11) {
             break
     } else {
         cat("\n hummm.. had to run again in the plot")
@@ -329,9 +329,9 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     }
     }
     class(p1)
-    plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
-    plot(p1, type = "stream", show = "genotypes", thinData = TRUE)
-    plot(p1, type = "line", show = "genotypes", thinData = TRUE)
+    plot(p1, type = "stacked", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
+    plot(p1, type = "stream", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
+    plot(p1, type = "line", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
 })
 
 
