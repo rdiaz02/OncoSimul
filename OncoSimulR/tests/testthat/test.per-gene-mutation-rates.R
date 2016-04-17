@@ -412,7 +412,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
         names(ni2) <- names(muvar2)
         fe1 <- allFitnessEffects(noIntGenes = ni2)
         no <- 1e5
-        reps <- 50
+        reps <- 70
         bb <- oncoSimulPop(reps,
                            fe1, mu = muvar2, onlyCancer = FALSE,
                            model = "McFL",
@@ -446,7 +446,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
         names(ni2) <- names(muvar2)
         fe1 <- allFitnessEffects(noIntGenes = ni2)
         no <- 1e5
-        reps <- 20
+        reps <- 40
         bb <- oncoSimulPop(reps,
                            fe1, mu = muvar2, onlyCancer = FALSE,
                            model = "McFL",
@@ -649,7 +649,7 @@ test_that("McFL: Init mutant with tiny mutation always present", {
         muvar["h2"] <- 3e-13
         muvar["i1"] <- 1e-13
         no <- 5e3
-        reps <- 20
+        reps <- 40
         cat("\n s12b: a runif is", runif(1), "\n")
         bb <- oncoSimulPop(5, ##reps,
                            fea, mu = muvar,
@@ -1007,7 +1007,7 @@ test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
         fe1 <- allFitnessEffects(noIntGenes = ni)
         ft <- 2
         no <- 1e5
-        reps <- 20
+        reps <- 40
         cat("\n mcdf2a: a runif is", runif(1), "\n")
         b1 <- oncoSimulPop(reps,
                            fe1,
@@ -1063,7 +1063,7 @@ test_that("More mutpropgrowth, in modules of s", {
         ## to larger population sizes.
         ## As previously, stop on population size
         cat("\n mpgs3: a runif is", runif(1), "\n")
-        pops <- 20
+        pops <- 40
         lni <- 1 ## no fitness effects genes
         fni <- 50 ## fitness effects genes
         no <- 1e3
@@ -1347,7 +1347,7 @@ test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
         fe1 <- allFitnessEffects(noIntGenes = ni)
         ft <- 2
         no <- 1e5
-        reps <- 20
+        reps <- 40
         cat("\n mpg mcdf2a: a runif is", runif(1), "\n")
         b1 <- oncoSimulPop(reps,
                            fe1,
