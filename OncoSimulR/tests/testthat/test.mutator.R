@@ -410,11 +410,11 @@ date()
 
 date()
 test_that("McFL: Relative ordering of number of clones with mut prop growth and init and scrambled names", {
-    max.tries <- 4
+    max.tries <- 4  
     for(tries in 1:max.tries) {
     ## Can occasionally blow up with pE.f: pE not finite.
     cat("\n x2gh: a runif is", runif(1), "\n")
-    pops <- 30
+    pops <- 50
     ft <- 1
     lni <- 200
     no <- 1e3
