@@ -49,6 +49,8 @@ mutsPerCloneLast <- function(x, per.pop.mean = TRUE) {
 ## RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## RNGkind("Mersenne-Twister")
 
+p.value.threshold <- 0.01
+
 test_that("single named gene in mut. fail", {
     
     
@@ -975,12 +977,12 @@ test_that("Expect freqs, num clones, muts per clone for different per-gene-mut",
                                p = expected1/sum(expected1))$p.value > p.fail)
         T2 <- (chisq.test(colSums(OncoSimulR:::geneCounts(b2)),
                                p = expected2/sum(expected2))$p.value > p.fail)
-        T3 <- ( median(summary(b2)$NumClones) >
-                     median(summary(b1)$NumClones))
+        T3 <- ( wilcox.test(summary(b2)$NumClones,
+                summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
         ## Note the short time, so this is not always very different as few
         ## have double or triple mutants
-        expect_true( mean(mutsPerClone(b2)) >
-                     mean(mutsPerClone(b1)))
+        T4 <- expect_true( t.test(mutsPerClone(b2) ,
+                     mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -1030,12 +1032,12 @@ test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
                            model = "McFL",
                            mc.cores = 2
                            )
-        T1 <- ( median(summary(b2)$NumClones) >
-                     median(summary(b1)$NumClones))
+        T1 <- ( wilcox.test(summary(b2)$NumClones,
+                     summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
         ## Note the short time, so this is not always very different as few
         ## have double or triple mutants
-        T2 <- ( mean(mutsPerClone(b2)) >
-                     mean(mutsPerClone(b1)))
+        T2 <- ( t.test(mutsPerClone(b2) ,
+                     mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -1050,83 +1052,6 @@ date()
 ## differences in birth rates between clones. So in most cases above
 ## setting it to FALSE makes little difference, but just to be cleaner.
 
-## Much nicer: we stop on population size. With mutPropGrowth = TRUE, we
-## actually stop slightly earlier. But we have much larger numbers of
-## clones, etc. So we are not affected by issues of differences in
-## populationSize.
-
-date()
-test_that(" McFL: And mutPropGrowth, 3",{
-    max.tries <- 4
-    for(tries in 1:max.tries) {
-        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n mcsz033: a runif is", runif(1), "\n")
-        muvar2 <- c("U" = 1e-4, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
-        ## muvar2 <- c("U" = 5e-5, "z" = 5e-5, "e" = 5e-5, "m" = 5e-5, "D" = 5e-5)
-        ni1 <- rep(1.9, 5)
-        names(ni1) <- names(muvar2)
-        fe1 <- allFitnessEffects(noIntGenes = ni1)
-        no <- 1e5
-        reps <- 10 
-        ft <- 16
-        cat("\n mcsz033a: a runif is", runif(1), "\n")
-        b1 <- oncoSimulPop(reps,
-                           fe1, mu = muvar2,
-                           mutationPropGrowth = FALSE,
-                           onlyCancer = FALSE,
-                           initSize = no,
-                           finalTime = ft,
-                           detectionSize = 5e6,
-                           sampleEvery = 0.01,
-                           model = "McFL",
-                           seed =NULL,
-                           mc.cores = 2
-                           )
-        cat("\n mcsz033b: a runif is", runif(1), "\n")
-        b2 <- oncoSimulPop(reps,
-                           fe1, mu = muvar2,
-                           mutationPropGrowth = TRUE,
-                           onlyCancer = FALSE,
-                           initSize = no,
-                           finalTime = ft,
-                           detectionSize = 5e6,
-                           sampleEvery = 0.01,
-                           model = "McFL",
-                           seed =NULL,
-                           mc.cores = 2
-                           )
-        summary(b1)[, c(1:3, 8:9)]
-        summary(b2)[, c(1:3, 8:9)]
-        mean(mutsPerClone(b1));mean(mutsPerClone(b2))
-        median(summary(b1)$NumClones)
-        median(summary(b2)$NumClones)
-        ## More mutations in mutationPropGrowth
-        T1 <- ( mean(mutsPerClone(b2)) >
-                     mean(mutsPerClone(b1)))
-        T2 <- ( median(summary(b2)$NumClones) >
-                     median(summary(b1)$NumClones))
-        ## But frequency of mutations about the same? Nope: since very fast
-        ## growth and thus non-indep, huge variation in geneCounts in each
-        ## run, etc. so hard to compare geneCounts
-        ## Just for reference, here
-        ## First, look at run to run variation
-        ## OncoSimulR:::geneCounts(b1)
-        ## OncoSimulR:::geneCounts(b2)
-        ## ## The next makes sense
-        ## fb1 <- colSums(OncoSimulR:::geneCounts(b1))
-        ## fb2 <- colSums(OncoSimulR:::geneCounts(b2))
-        ## fb1
-        ## fb2
-        ## fb2/fb1
-        ## fb1/sum(fb1)
-        ## fb2/sum(fb2)
-        ## (fb2/sum(fb2))/(fb1/sum(fb1))
-        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
-    }
-    cat(paste("\n done tries", tries, "\n"))
-    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
-})
-date()
 
 date()
 test_that("More mutpropgrowth, in modules of s", {
@@ -1183,10 +1108,10 @@ test_that("More mutpropgrowth, in modules of s", {
         summary(s3.ng)[, c(1, 2, 3, 8, 9)]
         summary(summary(s3.ng)[, 2])
         summary(summary(s3.g)[, 2])
-        T1 <- ( mean(mutsPerClone(s3.g)) >
-                     mean(mutsPerClone(s3.ng)))
-        T2 <- ( median(summary(s3.g)$NumClones) >
-                     median(summary(s3.ng)$NumClones))
+        T1 <- ( t.test(mutsPerClone(s3.g) ,
+                     mutsPerClone(s3.ng), alternative = "greater")$p.value < p.value.threshold)
+        T2 <- ( wilcox.test(summary(s3.g)$NumClones,
+                     summary(s3.ng)$NumClones, alternative = "greater")$p.value < p.value.threshold)
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -1331,10 +1256,10 @@ test_that("McFL: oncoSimulSample comparing different per-gene-mut",{
         ## This is very similar to above, like assimilating a pop to a clone
         mutsPerClone1 <- rowSums(b1$popSample)
         mutsPerClone2 <- rowSums(b2$popSample)
-        T1 <- ( mean(mutsPerClone2) >
-                     mean(mutsPerClone1))
-        T2 <- ( median(b2$popSummary[, "NumClones"]) >
-                     median(b1$popSummary[, "NumClones"]))
+        T1 <- ( t.test(mutsPerClone2 ,
+                     mutsPerClone1, alternative = "greater")$p.value < p.value.threshold)
+        T2 <- ( wilcox.test(b2$popSummary[, "NumClones"],
+                     b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
         ## Note the short time, so this is not always very different as few
         ## have double or triple mutants
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
@@ -1343,87 +1268,6 @@ test_that("McFL: oncoSimulSample comparing different per-gene-mut",{
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
 date()
-
-date()
-test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
-    max.tries <- 4
-    for(tries in 1:max.tries) {
-        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n osSFPSMcFL: a runif is", runif(1), "\n")
-        pops <- 60
-        lni <- 1 ## no fitness effects genes
-        fni <- 50 ## fitness effects genes
-        no <- 1e4 ## note we use only 10 in the other example below
-        ft <- 10  ##4 
-        s3 <- 2.5 
-        mu <- 1e-5 
-        ## noInt have no fitness effects, but can accumulate mutations
-        ni <- rep(0, lni)
-        names(ni) <- paste0("ni", 1:lni)
-        ## Those with fitness effects in one module, so
-        ## neither fitness nor mut. rate blow up
-        gn <- paste0("a", 1:fni)
-        mu <- runif(lni + fni, min = 1e-7, max = 1e-4)
-        names(mu) <- c(gn, names(ni))
-        gn <- paste(gn, collapse = ", ")
-        ## Those with fitness effects in one module, so
-        ## neither fitness nor mut. rate blow up
-        gn <- paste(paste0("a", 1:fni), collapse = ", ")
-        f3 <- allFitnessEffects(epistasis = c("A" = s3),
-                                geneToModule = c("A" = gn),
-                                noIntGenes = ni)
-        x <- 1e-9 ## 1/no
-        cat("\n osSFPSMcFLa: a runif is", runif(1), "\n")
-        b1 <- oncoSimulSample(pops,
-                              f3,
-                              mu = mu,
-                              mutationPropGrowth = FALSE,
-                              finalTime =ft,
-                              initSize = no,
-                              onlyCancer = FALSE,
-                              sampleEvery = 0.01,
-                              detectionSize = 2.5e4,
-                              detectionDrivers = 99,
-                              seed =NULL,
-                              model = "McFL",
-                              thresholdWhole = x)
-        cat("\n osSFPSMcFLb: a runif is", runif(1), "\n")
-        b2 <- oncoSimulSample(pops,
-                              f3,
-                              mu = mu,
-                              mutationPropGrowth = TRUE,
-                              finalTime =ft,
-                              initSize = no,
-                              onlyCancer = FALSE,
-                              sampleEvery = 0.01,
-                              detectionSize = 2.5e4,
-                              detectionDrivers = 99,
-                              seed =NULL,
-                              model = "McFL",
-                              thresholdWhole = x)
-        b1$popSummary[1:5, c(1:3, 8:9)]
-        summary(b1$popSummary[, "NumClones"])
-        summary(b1$popSummary[, "TotalPopSize"])
-        b2$popSummary[1:5, c(1:3, 8:9)]
-        summary(b2$popSummary[, "NumClones"])
-        summary(b2$popSummary[, "TotalPopSize"])
-        ## cc1 and cc2 should all be smaller than pops, or you are maxing
-        ## things and not seeing patterns
-        (cc1 <- colSums(b1$popSample))
-        (cc2 <- colSums(b2$popSample))
-        (mutsPerClone1 <- rowSums(b1$popSample))
-        (mutsPerClone2 <- rowSums(b2$popSample))
-        summary(mutsPerClone1)
-        summary(mutsPerClone2)
-        T1 <- ( mean(mutsPerClone2) >
-                     mean(mutsPerClone1))
-        T2 <- ( median(b2$popSummary[, "NumClones"]) >
-                     median(b1$popSummary[, "NumClones"]))
-        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
-    }
-    cat(paste("\n done tries", tries, "\n"))
-    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
-})
 
 
 
@@ -1528,18 +1372,200 @@ test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
                            model = "McFL",
                            mc.cores = 2
                            )
-        expect_true( median(summary(b2)$NumClones) >
-                     median(summary(b1)$NumClones))
+        T2 <- ( wilcox.test(summary(b2)$NumClones,
+                     summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
         ## Note the short time, so this is not always very different as few
         ## have double or triple mutants
-        T1 <- ( mean(mutsPerClone(b2)) >
-                mean(mutsPerClone(b1)))
+        T1 <- ( t.test(mutsPerClone(b2) ,
+                mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
 date()
+
+
+
+
+## These are really testing mutPropGrowth effects when per-gene mutation rates.
+
+## Much nicer: we stop on population size. With mutPropGrowth = TRUE, we
+## actually stop slightly earlier. But we have much larger numbers of
+## clones, etc. So we are not affected by issues of differences in
+## populationSize.
+
+date()
+test_that(" McFL: And mutPropGrowth, 3",{
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        cat("\n mcsz033: a runif is", runif(1), "\n")
+        ## with very variable mut rates, there is huge variation in trajectories
+        ## and we would need huge reps.
+        muvar2 <- c("U" = 1e-4, "z" = 5e-5, "e" = 3e-4, "m" = 5e-4, "D" = 2e-4)
+        ni1 <- rep(.7, 5) 
+        names(ni1) <- names(muvar2)
+        fe1 <- allFitnessEffects(noIntGenes = ni1)
+        no <- 1e3 ## 1e5
+        reps <- 50 
+        ft <- 16
+        cat("\n mcsz033a: a runif is", runif(1), "\n")
+        b1 <- oncoSimulPop(reps,
+                           fe1, mu = muvar2,
+                           mutationPropGrowth = FALSE,
+                           onlyCancer = FALSE,
+                           initSize = no,
+                           finalTime = ft,
+                           detectionSize = 9e8,
+                           sampleEvery = 0.001,
+                           model = "McFL",
+                           seed =NULL,
+                           keepEvery = .05, ## you want to keep often, because McFL con homogeneize
+                           mc.cores = 2
+                           )
+        cat("\n mcsz033b: a runif is", runif(1), "\n")
+        b2 <- oncoSimulPop(reps,
+                           fe1, mu = muvar2,
+                           mutationPropGrowth = TRUE,
+                           onlyCancer = FALSE,
+                           initSize = no,
+                           finalTime = ft,
+                           detectionSize = 9e8,
+                           sampleEvery = 0.001,
+                           model = "McFL",
+                           seed =NULL,
+                           keepEvery = .05,
+                           mc.cores = 2
+                           )
+        if(! (inherits(b1, "oncosimulpop") &&
+              inherits(b2, "oncosimulpop"))) {
+            cat("\n not proper objects")
+            next;
+        }
+        summary(b1)[, c(1:3, 8:9)]
+        summary(b2)[, c(1:3, 8:9)]
+        print(mean(mutsPerClone(b1)));print(mean(mutsPerClone(b2)))
+        print(median(summary(b1)$NumClones))
+        print(median(summary(b2)$NumClones))
+        ## More mutations in mutationPropGrowth
+        T1 <- ( t.test(mutsPerClone(b2) ,
+                     mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
+        T2 <- ( wilcox.test(summary(b2)$NumClones,
+                summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+        cat("\n T1 is", T1)
+        cat("\n T2 is", T2)
+        ## But frequency of mutations about the same? Nope: since very fast
+        ## growth and thus non-indep, huge variation in geneCounts in each
+        ## run, etc. so hard to compare geneCounts
+        ## Just for reference, here
+        ## First, look at run to run variation
+        ## OncoSimulR:::geneCounts(b1)
+        ## OncoSimulR:::geneCounts(b2)
+        ## ## The next makes sense
+        ## fb1 <- colSums(OncoSimulR:::geneCounts(b1))
+        ## fb2 <- colSums(OncoSimulR:::geneCounts(b2))
+        ## fb1
+        ## fb2
+        ## fb2/fb1
+        ## fb1/sum(fb1)
+        ## fb2/sum(fb2)
+        ## (fb2/sum(fb2))/(fb1/sum(fb1))
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
+})
+date()
+
+
+
+
+
+
+
+
+
+date()
+test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+        cat("\n osSFPSMcFL: a runif is", runif(1), "\n")
+        pops <- 60
+        lni <- 1 ## no fitness effects genes
+        fni <- 50 ## fitness effects genes
+        no <- 1e4 ## note we use only 10 in the other example below
+        ft <- 10  ##4 
+        s3 <- 2.5 
+        mu <- 1e-5 
+        ## noInt have no fitness effects, but can accumulate mutations
+        ni <- rep(0, lni)
+        names(ni) <- paste0("ni", 1:lni)
+        ## Those with fitness effects in one module, so
+        ## neither fitness nor mut. rate blow up
+        gn <- paste0("a", 1:fni)
+        mu <- runif(lni + fni, min = 1e-7, max = 1e-4)
+        names(mu) <- c(gn, names(ni))
+        gn <- paste(gn, collapse = ", ")
+        ## Those with fitness effects in one module, so
+        ## neither fitness nor mut. rate blow up
+        gn <- paste(paste0("a", 1:fni), collapse = ", ")
+        f3 <- allFitnessEffects(epistasis = c("A" = s3),
+                                geneToModule = c("A" = gn),
+                                noIntGenes = ni)
+        x <- 1e-9 ## 1/no
+        cat("\n osSFPSMcFLa: a runif is", runif(1), "\n")
+        b1 <- oncoSimulSample(pops,
+                              f3,
+                              mu = mu,
+                              mutationPropGrowth = FALSE,
+                              finalTime =ft,
+                              initSize = no,
+                              onlyCancer = FALSE,
+                              sampleEvery = 0.01,
+                              detectionSize = 2.5e4,
+                              detectionDrivers = 99,
+                              seed =NULL,
+                              model = "McFL",
+                              thresholdWhole = x)
+        cat("\n osSFPSMcFLb: a runif is", runif(1), "\n")
+        b2 <- oncoSimulSample(pops,
+                              f3,
+                              mu = mu,
+                              mutationPropGrowth = TRUE,
+                              finalTime =ft,
+                              initSize = no,
+                              onlyCancer = FALSE,
+                              sampleEvery = 0.01,
+                              detectionSize = 2.5e4,
+                              detectionDrivers = 99,
+                              seed =NULL,
+                              model = "McFL",
+                              thresholdWhole = x)
+        b1$popSummary[1:5, c(1:3, 8:9)]
+        summary(b1$popSummary[, "NumClones"])
+        summary(b1$popSummary[, "TotalPopSize"])
+        b2$popSummary[1:5, c(1:3, 8:9)]
+        summary(b2$popSummary[, "NumClones"])
+        summary(b2$popSummary[, "TotalPopSize"])
+        ## cc1 and cc2 should all be smaller than pops, or you are maxing
+        ## things and not seeing patterns
+        (cc1 <- colSums(b1$popSample))
+        (cc2 <- colSums(b2$popSample))
+        (mutsPerClone1 <- rowSums(b1$popSample))
+        (mutsPerClone2 <- rowSums(b2$popSample))
+        summary(mutsPerClone1)
+        summary(mutsPerClone2)
+        T1 <- ( t.test(mutsPerClone2 ,
+                     mutsPerClone1, alternative = "greater")$p.value < p.value.threshold)
+        T2 <- ( wilcox.test(b2$popSummary[, "NumClones"],
+                     b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
+        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
+})
 
 
 
