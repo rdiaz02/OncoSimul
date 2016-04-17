@@ -150,15 +150,15 @@ test_that("initMutant non lexicog order", {
         ## if there is pop growth. But very occasionally
         ## it might not. The above must ALWAYS be true,
         ## but this one we allow to repeat a couple of times
-        T1 <- expect_true( "m > d > f _ " %in% cn )
+        T1 <- ( "m > d > f _ " %in% cn )
         if( T1 ) break;
-        if(! T1 ) {
+        if( !T1 ) {
             cat("\n pop in initMutant non lexicog order\n ")
             print(tmp)
         }
     }
-        cat(paste("\n done tries", tries, "\n"))
-        expect_true(T1)
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1)
 })
 
 
