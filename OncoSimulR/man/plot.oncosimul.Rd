@@ -239,7 +239,7 @@
     
   }
   \item{thinData.min}{
-    Any time point for which a clone has a population size < thinData.min
+    Any time point for which a clone has a population size > thinData.min
     will be kept (i.e., will not be removed from) in the data.
     
     
