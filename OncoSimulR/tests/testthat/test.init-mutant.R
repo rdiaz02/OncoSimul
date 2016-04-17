@@ -116,37 +116,50 @@ test_that("initMutant lexicog order with noint",
           })
 
 
-test_that("initMutant non lexicog order",
-          {
-              o3 <- allFitnessEffects(orderEffects = c(
-                                          "M > D > F" = 0.99,
-                                          "D > M > F" = 0.2,
-                                          "D > M"     = 0.1,
-                                          "M > D"     = 0.9),
-                                      noIntGenes = c("u" = 0.01, "z" = 0.01),
-                                      geneToModule =
-                                          c("Root" = "Root",
-                                            "M" = "m",
-                                            "F" = "f",
-                                            "D" = "d") )
-              tmp <- oncoSimulIndiv(o3, model = "McFL",
-                      mu = 5e-5, finalTime = 500,
-                      detectionDrivers = 3,
-                      sampleEvery = 0.03,
-                      keepEvery = 1,
-                      onlyCancer = FALSE,
-                      initSize = 1000,
-                      keepPhylog = TRUE
-                     , initMutant = c("m > d")
-                      )
-              cn <- colnames(igraph::get.adjacency(plotClonePhylog(tmp, N = 0,
-                                                                   returnGraph = TRUE),
-                                                   sparse = FALSE))
-              expect_false( "d > m _" %in% cn )
-              expect_false( "d > m > f _" %in% cn )
-              expect_true( "m > d _ " %in% cn )
-              expect_true( "m > d > f _ " %in% cn )
-          })
+test_that("initMutant non lexicog order", {
+    max.tries <- 2
+    for(tries in 1:max.tries) {
+        o3 <- allFitnessEffects(orderEffects = c(
+                                    "M > D > F" = 0.99,
+                                    "D > M > F" = 0.2,
+                                    "D > M"     = 0.1,
+                                    "M > D"     = 0.9),
+                                noIntGenes = c("u" = 0.01, "z" = 0.01),
+                                geneToModule =
+                                    c("Root" = "Root",
+                                      "M" = "m",
+                                      "F" = "f",
+                                      "D" = "d") )
+        tmp <- oncoSimulIndiv(o3, model = "McFL",
+                              mu = 5e-5, finalTime = 500,
+                              detectionDrivers = 3,
+                              sampleEvery = 0.03,
+                              keepEvery = 1,
+                              onlyCancer = FALSE,
+                              initSize = 1000,
+                              keepPhylog = TRUE
+                            , initMutant = c("m > d")
+                              )
+        cn <- colnames(igraph::get.adjacency(plotClonePhylog(tmp, N = 0,
+                                                             returnGraph = TRUE),
+                                             sparse = FALSE))
+        expect_false( "d > m _" %in% cn )
+        expect_false( "d > m > f _" %in% cn )
+        expect_true( "m > d _ " %in% cn )
+        ## this next one will be true almost always
+        ## if there is pop growth. But very occasionally
+        ## it might not. The above must ALWAYS be true,
+        ## but this one we allow to repeat a couple of times
+        T1 <- expect_true( "m > d > f _ " %in% cn )
+        if( T1 ) break;
+        if(! T1 ) {
+            cat("\n pop in initMutant non lexicog order\n ")
+            print(tmp)
+        }
+    }
+        cat(paste("\n done tries", tries, "\n"))
+        expect_true(T1)
+})
 
 
 test_that("initMutant non lexicog order",
