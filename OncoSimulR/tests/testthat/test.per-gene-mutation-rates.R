@@ -1408,7 +1408,7 @@ test_that(" McFL: And mutPropGrowth, 3",{
         names(ni1) <- names(muvar2)
         fe1 <- allFitnessEffects(noIntGenes = ni1)
         no <- 1e3 ## 1e5
-        reps <- 50 
+        reps <- 100 ## differences are not large
         ft <- 16
         cat("\n mcsz033a: a runif is", runif(1), "\n")
         b1 <- oncoSimulPop(reps,
