@@ -47,7 +47,9 @@ test_that("initMutant crashes",
 
 
 test_that("initMutant lexicog order",
-          {
+{
+    max.tries <- 4
+    for(tries in 1:max.tries) {
               o3 <- allFitnessEffects(orderEffects = c(
                                           "M > D > F" = 0.99,
                                           "D > M > F" = 0.2,
@@ -73,14 +75,26 @@ test_that("initMutant lexicog order",
                                                                    returnGraph = TRUE),
                                                    sparse = FALSE))
               expect_true( "d > m _ " %in% cn )
-              expect_true( "d > m > f _ " %in% cn )
               expect_false( "m > d _" %in% cn )
               expect_false( "m > d > f _" %in% cn )
-          })
+              ## this next one will be true almost always
+              ## if there is pop growth. But very occasionally
+              ## it might not. The above must ALWAYS be true,
+              ## but this one we allow to repeat a couple of times
+              T1 <- ( "d > m > f _ " %in% cn )
+              if( T1 ) break;
+              if( !T1 ) {
+                  cat("\n pop in initMutant lexicog order\n ")
+                  print(tmp)
+        }
+    }
+})
 
 
 test_that("initMutant lexicog order with noint",
-          {
+{
+    max.tries <- 4
+    for(tries in 1:max.tries) {
               o3 <- allFitnessEffects(orderEffects = c(
                                           "M > D > F" = 0.99,
                                           "D > M > F" = 0.2,
@@ -106,18 +120,27 @@ test_that("initMutant lexicog order with noint",
                                                                    returnGraph = TRUE),
                                                    sparse = FALSE))
               expect_true( "d > m _ z" %in% cn )
-              expect_true( "d > m > f _ z" %in% cn )
               expect_false( "m > d _" %in% cn )
               expect_false( "m > d > f _" %in% cn )
+              
+              T1 <- ( "d > m > f _ z" %in% cn )
               ## expect_true( "d, m_z" %in% cn )
               ## expect_true( "d, m, f_z" %in% cn )
               ## expect_false( "m, d_" %in% cn )
               ## expect_false( "m, d, f_" %in% cn )
-          })
+              if( T1 ) break;
+              if(! T1 ) {
+                  cat("\n pop in initMutant lexicog order with no int\n ")
+                  print(tmp)
+              }
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1)
+})
 
 
 test_that("initMutant non lexicog order", {
-    max.tries <- 2
+    max.tries <- 4
     for(tries in 1:max.tries) {
         o3 <- allFitnessEffects(orderEffects = c(
                                     "M > D > F" = 0.99,
@@ -164,7 +187,7 @@ test_that("initMutant non lexicog order", {
 
 test_that("initMutant non lexicog order",
 {
-    max.tries <- 2
+    max.tries <- 4
     for(tries in 1:max.tries) {
               o3 <- allFitnessEffects(orderEffects = c(
                                           "M > D > F" = 0.99,

@@ -1297,7 +1297,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
-        expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
+        T3 <- (colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
         T2 <- identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
             order(expectedC))
