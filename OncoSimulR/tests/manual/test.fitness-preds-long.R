@@ -80,7 +80,7 @@ sEvery <- 0.05
 
 date()
 test_that("Observed vs expected, case I", {
-    max.tries <- 6
+    max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         cat("\n Observed vs expected, case I\n")
@@ -211,7 +211,7 @@ date()
 
 date()
 test_that("Observed vs expected, case II", {
-    max.tries <- 6
+    max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         cat("\n Observed vs expected, case II\n")
@@ -421,7 +421,7 @@ date()
 
 date()
 test_that("Observed vs expected, case III", {
-    max.tries <- 6
+    max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         cat("\n Observed vs expected, case III\n")
@@ -601,7 +601,7 @@ date()
 
 date()
 test_that("Init mutant no effects if fitness is 0", {
-    max.tries <- 6
+    max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         cat("\n Init mutant no effect if fitness is 0\n")
