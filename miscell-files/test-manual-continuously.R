@@ -23,9 +23,6 @@ while(TRUE) {
     gc()
     test_dir("../OncoSimulR/tests/manual/")
     gc()
-    gc()
-    test_dir("../OncoSimulR/tests/manual/")
-    gc()
     ## set.seed(NULL) ## not needed, as all clean after themselves
     cat("\n         And this is the second random uniform number ", runif(1), "\n")
 }
