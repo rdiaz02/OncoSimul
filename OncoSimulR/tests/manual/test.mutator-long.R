@@ -375,25 +375,25 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
         mpg <- oncoSimulPop(pops, fe, muEF = fm1,
                             finalTime = ft,
                             mutationPropGrowth = TRUE,
-                            initSize = no,
+                            initSize = no, sampleEvery = 0.01,
                             initMutant = "thisistheagene",
                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
         mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
                              finalTime = ft,
                              mutationPropGrowth = FALSE,
-                             initSize = no,
+                             initSize = no,sampleEvery = 0.01,
                              initMutant = "thisistheagene",
                              onlyCancer = FALSE, seed = NULL, mc.cores = 2)
         pg <- oncoSimulPop(pops, fe, 
                            finalTime = ft,
                            mutationPropGrowth = TRUE,
-                           initSize = no,
+                           initSize = no, sampleEvery = 0.01,
                            initMutant = "thisistheagene",
                            onlyCancer = FALSE, seed = NULL, mc.cores = 2)
         npg <- oncoSimulPop(pops, fe, 
                             finalTime = ft,
                             mutationPropGrowth = FALSE,
-                            initSize = no,
+                            initSize = no, sampleEvery = 0.01,
                             initMutant = "thisistheagene",
                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
         ## These are the real tests
@@ -1431,7 +1431,7 @@ test_that("Mutator and mutPropGrowth", {
                               initSize = no,
                               finalTime = ft,
                               detectionSize = ds,
-                              sampleEvery = 0.05,
+                              sampleEvery = 0.01,
                               keepEvery = 5,
                               seed = NULL, mc.cores = 2
                               )
@@ -1445,7 +1445,7 @@ test_that("Mutator and mutPropGrowth", {
                                initSize = no,
                                finalTime = ft,
                                detectionSize = ds,
-                               sampleEvery = 0.05,
+                               sampleEvery = 0.01,
                                keepEvery = 5,
                                seed = NULL, mc.cores = 2
                                )
@@ -1459,7 +1459,7 @@ test_that("Mutator and mutPropGrowth", {
                                initSize = no,
                                finalTime = ft,
                                detectionSize = ds,
-                               sampleEvery = 0.05,
+                               sampleEvery = 0.01,
                                keepEvery = 5,
                                seed = NULL, mc.cores = 2
                                )
@@ -1473,7 +1473,7 @@ test_that("Mutator and mutPropGrowth", {
                                 initSize = no,
                                 finalTime = ft,
                                 detectionSize = ds,
-                                sampleEvery = 0.05,
+                                sampleEvery = 0.01,
                                 keepEvery = 5,
                                 seed = NULL, mc.cores = 2
                                 )
