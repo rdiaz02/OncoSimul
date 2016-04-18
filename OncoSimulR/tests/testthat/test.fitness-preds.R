@@ -6,6 +6,11 @@
 ## Here we compare against expected population size for different fitness
 ## specifications 
 
+## FIXME: We might do equivalence testing, here and in its long
+## version. But since we have huge sample sizes, this is not bad. And we'd
+## need to be more careful about distributions (what transformation, if
+## any, etc).
+
 cat(paste("\n Starting fitness preds at", date(), "\n"))
 ## RNGkind("Mersenne-Twister") ## but this is irrelevant now.
 

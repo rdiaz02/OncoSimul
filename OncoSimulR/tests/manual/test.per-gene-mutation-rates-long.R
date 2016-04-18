@@ -49,7 +49,7 @@ mutsPerCloneLast <- function(x, per.pop.mean = TRUE) {
 ## RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## RNGkind("Mersenne-Twister")
 
-
+p.value.threshold <- 0.01
 
 date()
 test_that("Same freqs, chisq, when s=0", {
@@ -69,7 +69,7 @@ test_that("Same freqs, chisq, when s=0", {
                        fe1, mu = muvar2,
                        onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 0.001,
+                       finalTime = 0.001, max.wall.time = 900,
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -104,7 +104,7 @@ test_that("Same freqs, chisq, when s", {
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 0.001,
+                       finalTime = 0.001,max.wall.time = 900,
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -138,7 +138,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0",{
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = .00001,
+                       finalTime = .00001, max.wall.time = 900,
                        seed =NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar2)
@@ -175,7 +175,7 @@ test_that("Different freqs as they should be ordered, when s and t > 1", {
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 2,
+                       finalTime = 2, max.wall.time = 900,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed = NULL, mc.cores = 2
                        )
@@ -211,7 +211,7 @@ test_that("Different freqs as they should be ordered, when s and t> 1, again", {
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2, onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 4,
+                       finalTime = 4, max.wall.time = 900,
                        mutationPropGrowth = FALSE, ## cleaner, tough no real effect
                        seed = NULL, mc.cores = 2
                        )
@@ -268,7 +268,7 @@ test_that("Complex fitness specification, s diffs, tiny finalTime, systematic mu
                        fea, mu = muvar,
                        onlyCancer = FALSE,
                        initSize = no,
-                       finalTime = 0.0001,
+                       finalTime = 0.0001, max.wall.time = 900,
                        seed = NULL, mc.cores = 2
                        )
     (expectedC <- no*reps*muvar)
@@ -731,7 +731,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
-                       mc.cores = 2
+                       mc.cores = 2, max.wall.time = 900
                        )
     
     
@@ -744,7 +744,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
-                       mc.cores = 2
+                       mc.cores = 2, max.wall.time = 900
                        )
     TTT <- c(TTT,  wilcox.test(summary(b2)$NumClones, 
                  summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
@@ -794,7 +794,7 @@ test_that("McFL: Expect freqs, num clones, muts per clone for different per-gene
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
                        model = "McFL",
-                       mc.cores = 2
+                       mc.cores = 2, max.wall.time = 900
                        )
     
     
@@ -808,7 +808,7 @@ test_that("McFL: Expect freqs, num clones, muts per clone for different per-gene
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
                        seed =NULL,
                        model = "McFL",
-                       mc.cores = 2
+                       mc.cores = 2, max.wall.time = 900
                        )
     (expected1 <- no*reps*m1)
     (expected2 <- no*reps*m2)
@@ -863,7 +863,7 @@ test_that(" And mutPropGrowth, 3",{
                        detectionSize = 5e6,
                        sampleEvery = 0.01,
                        seed =NULL,
-                       mc.cores = 2
+                       mc.cores = 2, max.wall.time = 900
                        )
     
     
@@ -877,7 +877,7 @@ test_that(" And mutPropGrowth, 3",{
                        detectionSize = 5e6,
                        sampleEvery = 0.01,                       
                        seed =NULL,
-                       mc.cores = 2
+                       mc.cores = 2, max.wall.time = 900
                        )
     summary(b2)[, c(1:3, 8:9)]
     mean(mutsPerClone(b1));mean(mutsPerClone(b2))
@@ -957,7 +957,7 @@ test_that("McFL: More mutpropgrowth, in modules of s", {
                           detectionDrivers = 9999,
                           initSize = no,
                           onlyCancer = FALSE,
-                          model = "McFL",
+                          model = "McFL", max.wall.time = 900,
                           seed = NULL, mc.cores = 2)
     
     
@@ -972,7 +972,7 @@ test_that("McFL: More mutpropgrowth, in modules of s", {
                          detectionDrivers = 9999,
                          initSize = no,
                          onlyCancer = FALSE,
-                         model = "McFL",
+                         model = "McFL",  max.wall.time = 900,
                          seed = NULL, mc.cores = 2)
     summary(s3.g)[, c(1, 2, 3, 8, 9)]
     summary(s3.ng)[, c(1, 2, 3, 8, 9)]
@@ -1214,7 +1214,7 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
                           onlyCancer = FALSE,
                           sampleEvery = 0.01,
                           detectionSize = 6e4,
-                          detectionDrivers = 99,
+                          detectionDrivers = 99, max.wall.time = 900,
                           seed =NULL,
                           thresholdWhole = x)
     
@@ -1229,7 +1229,7 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
                          onlyCancer = FALSE,
                          sampleEvery = 0.01,
                           detectionSize = 6e4,
-                          detectionDrivers = 99,
+                          detectionDrivers = 99, max.wall.time = 900,
                           seed =NULL,
                          thresholdWhole = x)
     b1$popSummary[1:5, c(1:3, 8:9)]
@@ -1352,7 +1352,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = TRUE, 
-                       seed =NULL,
+                       seed =NULL, max.wall.time = 900,
                        mc.cores = 2
                        )
     
@@ -1365,7 +1365,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = TRUE, 
-                       seed =NULL,
+                       seed =NULL, max.wall.time = 900,
                        mc.cores = 2
                        )
     TTT <- c(TTT,  wilcox.test(summary(b2)$NumClones, 

@@ -237,21 +237,21 @@ test_that("Observed vs expected, case II", {
                                  geneToModule = c(A = genmodule("a", 19),
                                                   B = genmodule("b", 15)))
         out <- rbind(out, OandE(feo, so, 40, "Exp", "a1 > b2 > nint9", 1e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 90, "McFL", "a2 > nint6 > b8", 2.61e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 190, "McFL", "a2 > nint6 > b8", 2.61e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 40, "Exp", "a9 > b3", 1e4, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 90, "McFL", "nint3 > a3 > b2", 1e4, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 190, "McFL", "nint3 > a3 > b2", 1e4, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 20, "Exp", "a4 > nint9 > nint2 > b1", 5e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 90, "McFL", "nint3 > nint8 > a7 > b2", 1.5e2, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 190, "McFL", "nint3 > nint8 > a7 > b2", 1.5e2, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 30, "Exp", "a2 > b13 > nint7", 1.67e4, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 99, "McFL", "a19 > b10 > nint6", 1.67e4, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 199, "McFL", "a19 > b10 > nint6", 1.67e4, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 40, "Exp", "b13 > a2", 5e3, reps, mu, verboseOandE))
-        outNO <- rbind(outNO, OandE(feo, so, 99, "McFL", "b1 > a2", 1e3, reps, mu, verboseOandE))
+        outNO <- rbind(outNO, OandE(feo, so, 199, "McFL", "b1 > a2", 1e3, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 40, "Exp", "b14 > a8", 1e4, reps, mu, verboseOandE))
-        outNO <- rbind(outNO, OandE(feo, so, 99, "McFL", "b8 > a6", 1e4, reps, mu, verboseOandE))
+        outNO <- rbind(outNO, OandE(feo, so, 199, "McFL", "b8 > a6", 1e4, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 40, "Exp", "b7 > a2", 5e2, reps, mu, verboseOandE))
-        outNO <- rbind(outNO, OandE(feo, so, 99, "McFL", "b12 > a9", 1e2, reps, mu, verboseOandE))
+        outNO <- rbind(outNO, OandE(feo, so, 199, "McFL", "b12 > a9", 1e2, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 30, "Exp", "b15 > a4", 1e4, reps, mu, verboseOandE))
-        outNO <- rbind(outNO, OandE(feo, so, 70, "McFL", "b5 > a5", 1e4, reps, mu, verboseOandE))
+        outNO <- rbind(outNO, OandE(feo, so, 170, "McFL", "b5 > a5", 1e4, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 200, "McFL", "b2 > a1", 1e2, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 300, "McFL", "b1 > a2", 1e2, reps, mu, verboseOandE))
         so <- 0.32
@@ -263,18 +263,18 @@ test_that("Observed vs expected, case II", {
         ## add some fun 
         out <- rbind(out, OandE(feo, so, 30, "Exp", paste("ThisisA >", names(niG)[2]),
                                 5e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 30, "McFL", paste("ThisisA >", names(niG)[5]),
+        out <- rbind(out, OandE(feo, so, 130, "McFL", paste("ThisisA >", names(niG)[5]),
                                 1.3e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 33, "Exp",
                                 paste(names(niG)[3], "> ThisisA >", names(niG)[2]),
                                 4e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 33, "McFL",
+        out <- rbind(out, OandE(feo, so, 133, "McFL",
                                 paste(names(niG)[5], "> ThisisA >", names(niG)[5]),
                                 1.6e3, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 40, "Exp",
                                     paste(names(niG)[2], ">", names(niG)[4]),
                                     5.32e3, reps, mu, verboseOandE))
-        outNO <- rbind(outNO, OandE(feo, so, 40, "McFL",
+        outNO <- rbind(outNO, OandE(feo, so, 140, "McFL",
                                     paste(names(niG)[2], ">", names(niG)[5]),
                                     1.33e3, reps, mu, verboseOandE))
         so <- 0.17
@@ -293,18 +293,18 @@ test_that("Observed vs expected, case II", {
                                      C = genmodule("c", 7)),
                                  noIntGenes = niG)
         out <- rbind(out, OandE(feo, so, 29, "Exp", "a2, c3", 5e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 99, "McFL", "a5, c1", 1.2e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 199, "McFL", "a5, c1", 1.2e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 30, "Exp", "nint1, a2, c3", 4e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 86, "McFL", "nint6, a5, c1", 1.4e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 186, "McFL", "nint6, a5, c1", 1.4e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 42, "Exp", "nint1 > a2 > c3", 3e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 96, "McFL", "nint6 > a5 > c1", 1.8e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 196, "McFL", "nint6 > a5 > c1", 1.8e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 43, "Exp", "a2 > nint2 > c3", 2e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 146, "McFL", "a5 > nint9 > c1", 1.1e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 246, "McFL", "a5 > nint9 > c1", 1.1e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(feo, so, 40, "Exp", "c1, a7, c2, a3, a9, a8, nint6", 1e4, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(feo, so, 140, "McFL", "a5, c6, a2, nint3, c5", 1.21e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(feo, so, 340, "McFL", "a5, c6, a2, nint3, c5", 1.21e3, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(feo, so, 40, "Exp", "b2, c6", 1e3, reps, mu, verboseOandE))
-        outNO <- rbind(outNO, OandE(feo, so, 140, "McFL", "b4, c2", 2e3, reps, mu, verboseOandE))
-        so <- 0.09
+        outNO <- rbind(outNO, OandE(feo, so, 240, "McFL", "b4, c2", 2e3, reps, mu, verboseOandE))
+        so <- 0.29 ## 0.09
         niG <- rep(0, nig)
         names(niG) <- paste0("nint", 1:nig)
         feo <- allFitnessEffects(data.frame(parent = c("Root", "Root", "A"),
@@ -329,14 +329,14 @@ test_that("Observed vs expected, case II", {
                                   noIntGenes = niG,
                                   geneToModule = c(A = genmodule("a", 10)))
         out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "a2, nint3", 4.4e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sa02, 2 * ft, "McFL", "nint1, a7", 3.21e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sa02, 5 * ft, "McFL", "nint1, a7", 3.21e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "a1, a4, nint6", 5e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sa02, 2 * ft, "McFL", "a6, nint4, a3", 5.22e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sa02, 5 * ft, "McFL", "a6, nint4, a3", 5.22e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sa02, ft, "Exp", "a4, a1, a3", 4e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sa02, 2 * ft, "McFL", "a2, a8", 1.17e2, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sa02, 5 * ft, "McFL", "a2, a8", 1.17e2, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sa02, 30, "Exp", "a3, a6", 1e4, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sa02, 3 * 30, "McFL", "a7, a5, a4, a2, a3", 4.3e4, reps, mu, verboseOandE))
-        ft <- 10
+        out <- rbind(out, OandE(fe02, sa02, 6 * 30, "McFL", "a7, a5, a4, a2, a3", 4.3e4, reps, mu, verboseOandE))
+        ft <- 15
         sa02 <- 0.1
         sb02 <- 0.2
         sc <- sa02 + sb02 + sa02 * sb02 ## we pass the single one of the double mutant, when no epist
@@ -346,13 +346,13 @@ test_that("Observed vs expected, case II", {
                                   geneToModule = c(A = genmodule("a", 10),
                                                    B = genmodule("b", 5)))
         out <- rbind(out, OandE(fe02, sc, ft, "Exp", "nint3, nint6, a2, a3, b2", 3e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * ft, "McFL", "a7, b5", 1.8e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 10 * ft, "McFL", "a7, b5", 1.8e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sc, ft, "Exp", "a1 > b2 > b3 > a4", 5e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * ft, "McFL", "a6 > b2 > b4 > nint2 > a3", 5e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 10 * ft, "McFL", "a6 > b2 > b4 > nint2 > a3", 5e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sc, ft, "Exp", "a4, a1, a3, b4", 5e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * ft, "McFL", "a2 > a8 > b5 > b1 > b3", 1.8e2, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 10 * ft, "McFL", "a2 > a8 > b5 > b1 > b3", 1.8e2, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sc, 17, "Exp", "a3 > a6 > nint5 >  b3", 1e4, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * 19, "McFL", "a7 >  a8 > a9 > b5 > b4 > a2 > a3", 1e4, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 10 * 19, "McFL", "a7 >  a8 > a9 > b5 > b4 > a2 > a3", 1e4, reps, mu, verboseOandE))
         sd <- sa02 * sb02
         outNO <- rbind(outNO, OandE(fe02, sd, ft, "Exp", "a4, a1, a3, b4", 1e2, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(fe02, sd, ft, "McFL", "a2, a8, b5, b1, b3", 1.9e2, reps, mu, verboseOandE))
@@ -367,18 +367,18 @@ test_that("Observed vs expected, case II", {
                                   geneToModule = c(A = genmodule("a", 10),
                                                    B = genmodule("b", 5)))
         out <- rbind(out, OandE(fe02, sc, ft, "Exp", "a2 > a3 > b2 > nint5", 3e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * ft, "McFL", "a7 > nint3 > b5", 3.1e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * ft, "McFL", "a7 > nint3 > b5", 5e2, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 9 * ft, "McFL", "a7 > nint3 > b5", 3.1e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 8 * ft, "McFL", "a7 > nint3 > b5", 5e2, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sc, 17, "Exp", "a1, b2, b3, a4, nint2", 5e3, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * 49, "McFL", "a6, b2, b4, nint4, a3", 5.2e3, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 10 * 49, "McFL", "a6, b2, b4, nint4, a3", 5.2e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sc, 34, "Exp", "a4 > a1 > a3 > b4 > nint6", 5e3, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sc, 2 * 60, "McFL", "a4 > a1 > a3 > b4 > nint6", 4e2, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * ft, "McFL", "a2 > a8 > nint3 > b5 > b1 > b3", 1.45e2, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 9 * ft, "McFL", "a2 > a8 > nint3 > b5 > b1 > b3", 1.45e2, reps, mu, verboseOandE))
         out <- rbind(out, OandE(fe02, sc, 30, "Exp", "a3, a6, b3", 1e4, reps, mu, verboseOandE))
-        out <- rbind(out, OandE(fe02, sc, 3 * 30, "McFL", "a7, a8, a9, b5, b4, a2, a3", 1.26e4, reps, mu, verboseOandE))
+        out <- rbind(out, OandE(fe02, sc, 9 * 30, "McFL", "a7, a8, a9, b5, b4, a2, a3", 1.26e4, reps, mu, verboseOandE))
         sd <- sa02 + sb02 + sa02 * sb02
         outNO <- rbind(outNO, OandE(fe02, sd, ft, "Exp", "a4, a1, a3, b4, nint5", 1e2, reps, mu, verboseOandE))
-        outNO <- rbind(outNO, OandE(fe02, sd, 3 * ft, "McFL", "a2 > nint1 > a8 > b5 > b1 > b3", 1e2, reps, mu, verboseOandE))
+        outNO <- rbind(outNO, OandE(fe02, sd, 8 * ft, "McFL", "a2 > nint1 > a8 > b5 > b1 > b3", 1e2, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(fe02, sd, 30, "Exp", "a3 > a6 > b3", 1e4, reps, mu, verboseOandE))
         outNO <- rbind(outNO, OandE(fe02, sd, 90, "McFL", "a7, a8, a9, b5, b4, a2, a3", 1e4, reps, mu, verboseOandE))
         out <- data.frame(out)
@@ -410,11 +410,11 @@ test_that("Observed vs expected, case II", {
             print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
             plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
         }
+        plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
         if ((T.not && T.yest && T.lm) ) break;
     }
     cat(paste("\n done tries", tries, "\n"))
     expect_true((T.not && T.yest && T.lm) )
-
 })
 date()
 

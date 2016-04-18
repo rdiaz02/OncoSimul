@@ -1,5 +1,9 @@
 ## This test takes about 30 seconds
 
+data(examplePosets)
+
+p701 <- examplePosets[["p701"]]
+
 test_that("oncoSimulSample success with large num tries", {
     ## If nindiv small, sometimes you reach cancer at first try in every
     ## indiv.

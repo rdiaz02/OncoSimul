@@ -973,59 +973,65 @@ test_that("Without initmutant, 2", {
     ## More of the above. Use smaller s2 and smaller mutation, but then to
     ## see it reliably you need large ft and we also increase
     ## init. pop. size.
-     max.tries <- 4
+    max.tries <- 4
     for(tries in 1:max.tries) {
-TTT <- NULL
-    
-    
-    cat("\n s2: a runif is", runif(1), "\n")
-    s2 <- 1.0
-    ft <- 15
-    pops <- 150
-    lni <- 1 ## no fitness effects genes
-    fni <- 200 ## fitness effects genes
-    no <- 1e4
-    mu <- 5e-6 ## easier to see
-    ## noInt have no fitness effects, but can accumulate mutations
-    ni <- rep(0, lni)
-    ## Those with fitness effects in one module, so
-    ## neither fitness nor mut. rate blow up
-    gn <- paste(paste0("a", 1:fni), collapse = ", ")
-    f2 <- allFitnessEffects(epistasis = c("A" = s2),
-                            geneToModule = c("A" = gn),
-                            noIntGenes = ni)
-    
-    
-    cat("\n s2a: a runif is", runif(1), "\n")
-    s2.ng <- oncoSimulPop(pops,
-                          f2,
-                          mu = mu,
-                          mutationPropGrowth = FALSE,
-                          finalTime =ft,
-                          initSize = no, keepEvery = 1,
-                          onlyCancer = FALSE,
-                          seed = NULL, mc.cores = 2)
-    gc(); 
-    
-    cat("\n s2b: a runif is", runif(1), "\n")
-    s2.g <- oncoSimulPop(pops,
-                         f2,
-                         mu = mu,
-                         mutationPropGrowth = TRUE,
-                         finalTime =ft,
-                         initSize = no, keepEvery = 1,
-                         onlyCancer = FALSE,
-                         seed = NULL, mc.cores = 2)
-    summary(s2.g)[, c(1, 2, 3, 8, 9)]
-    summary(s2.ng)[, c(1, 2, 3, 8, 9)]
-    TTT <- c(TTT,  wilcox.test(mutsPerClone(s2.g),
-                             mutsPerClone(s2.ng),
-                             alternative = "greater")$p.value < p.value.threshold)
-    TTT <- c(TTT,  wilcox.test(summary(s2.g)$NumClones,
-                             summary(s2.ng)$NumClones,
-                             alternative = "greater")$p.value < p.value.threshold)
-gc() 
-if( all(TTT) ) break;
+        TTT <- NULL
+        
+        
+        cat("\n s2: a runif is", runif(1), "\n")
+        s2 <- 1.0
+        ft <- 15
+        pops <- 150
+        lni <- 1 ## no fitness effects genes
+        fni <- 200 ## fitness effects genes
+        no <- 1e4
+        mu <- 5e-6 ## easier to see
+        ## noInt have no fitness effects, but can accumulate mutations
+        ni <- rep(0, lni)
+        ## Those with fitness effects in one module, so
+        ## neither fitness nor mut. rate blow up
+        gn <- paste(paste0("a", 1:fni), collapse = ", ")
+        f2 <- allFitnessEffects(epistasis = c("A" = s2),
+                                geneToModule = c("A" = gn),
+                                noIntGenes = ni)
+        
+        
+        cat("\n s2a: a runif is", runif(1), "\n")
+        s2.ng <- oncoSimulPop(pops,
+                              f2,
+                              mu = mu,
+                              mutationPropGrowth = FALSE,
+                              finalTime =ft,
+                              initSize = no, keepEvery = 1,
+                              onlyCancer = FALSE, max.wall.time = 900,
+                              seed = NULL, mc.cores = 2)
+        gc(); 
+        
+        cat("\n s2b: a runif is", runif(1), "\n")
+        s2.g <- oncoSimulPop(pops,
+                             f2,
+                             mu = mu,
+                             mutationPropGrowth = TRUE,
+                             finalTime =ft,
+                             initSize = no, keepEvery = 1,
+                             onlyCancer = FALSE, max.wall.time = 900,
+                             seed = NULL, mc.cores = 2)
+        if(! (inherits(s2.ng, "oncosimulpop") &&
+              inherits(s2.g, "oncosimulpop"))) {
+            TTT <- FALSE
+        }
+        if(TTT) {
+        summary(s2.g)[, c(1, 2, 3, 8, 9)]
+        summary(s2.ng)[, c(1, 2, 3, 8, 9)]
+        TTT <- c(TTT,  wilcox.test(mutsPerClone(s2.g),
+                                   mutsPerClone(s2.ng),
+                                   alternative = "greater")$p.value < p.value.threshold)
+        TTT <- c(TTT,  wilcox.test(summary(s2.g)$NumClones,
+                                   summary(s2.ng)$NumClones,
+                                   alternative = "greater")$p.value < p.value.threshold)
+        gc()
+        }
+        if( all(TTT) ) break;
     }
     cat(paste("\n done tries", tries, "\n"))
     expect_true(all(TTT))
