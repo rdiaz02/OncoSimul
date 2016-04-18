@@ -132,7 +132,7 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
     max.tries <- 4
     for(i in 1:max.tries) {
         b1 <- oncoSimulIndiv(p701)
-        if(b1$FinalTimeime >= 90) {
+        if(b1$FinalTime >= 90) {
             break
         } else {
             cat("\n hummm.. had to run again in the plot")
@@ -194,7 +194,7 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          initSize = 2000,
                          finalTime = 3000,
                          onlyCancer = FALSE)
-    if(e1$FinalTimeime >= 90) {
+    if(e1$FinalTime >= 90) {
             break
         } else {
             cat("\n hummm.. had to run again in the plot")
