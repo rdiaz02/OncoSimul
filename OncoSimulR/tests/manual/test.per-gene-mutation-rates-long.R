@@ -53,7 +53,10 @@ mutsPerCloneLast <- function(x, per.pop.mean = TRUE) {
 
 date()
 test_that("Same freqs, chisq, when s=0", {
-    
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
+   
     
     cat("\n s08: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
@@ -74,13 +77,21 @@ test_that("Same freqs, chisq, when s=0", {
     ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)))
         ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
+         
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
 date()
 test_that("Same freqs, chisq, when s", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s09: a runif is", runif(1), "\n")
@@ -99,13 +110,20 @@ test_that("Same freqs, chisq, when s", {
     (expectedC <- no*reps*muvar2)
     ## colSums(OncoSimulR:::geneCounts(bb))
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
-})
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
+     })
 date()
 
 date()
 test_that("Different freqs as they should be ordered and chisq, when s=0",{
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s010: a runif is", runif(1), "\n")
@@ -127,17 +145,24 @@ test_that("Different freqs as they should be ordered and chisq, when s=0",{
     colSums(OncoSimulR:::geneCounts(bb))
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
     ## the ordering criterion could fail even if things are OK
-    expect_equal(
-        order(colSums(OncoSimulR:::geneCounts(bb))),
-        order(expectedC))    
-})
+    TTT <- c(TTT, identical(
+                      order(colSums(OncoSimulR:::geneCounts(bb))),
+        order(expectedC)))    
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
+     })
 date()
 
 date()
 test_that("Different freqs as they should be ordered, when s and t > 1", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s011: a runif is", runif(1), "\n")
@@ -158,14 +183,21 @@ test_that("Different freqs as they should be ordered, when s and t > 1", {
     colSums(OncoSimulR:::geneCounts(bb))
     ## A chisq will not work as we increase finalTime. But ordering of
     ## freqs. should.
-    expect_equal(
+    TTT <- c(TTT, identical(
         order(colSums(OncoSimulR:::geneCounts(bb))),
-        order(expectedC))
+        order(expectedC)))
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     TTT <- c(TTT, all(TTT))
 })
 date()
 
 date()
 test_that("Different freqs as they should be ordered, when s and t> 1, again", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s012: a runif is", runif(1), "\n")
@@ -185,14 +217,21 @@ test_that("Different freqs as they should be ordered, when s and t> 1, again", {
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
-    expect_equal(
+    TTT <- c(TTT, identical(
         order(colSums(OncoSimulR:::geneCounts(bb))),
-        order(expectedC))
+        order(expectedC)))
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
 date()
 test_that("Complex fitness specification, s diffs, tiny finalTime, systematic mu", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s1: a runif is", runif(1), "\n")
@@ -238,13 +277,17 @@ test_that("Complex fitness specification, s diffs, tiny finalTime, systematic mu
     ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
     ##                        p = expectedC/sum(expectedC))
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
     ## Order will not necessarily be OK, because of random fluctuations,
     ## when muvar diffs are tiny
     ## expect_equal(
     ##     order(colSums(OncoSimulR:::geneCounts(bb))),
     ##     order(expectedC))
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -252,6 +295,9 @@ date()
 
 date()
 test_that("Complex fitness specification, tiny s diffs", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s2: a runif is", runif(1), "\n")
@@ -297,7 +343,7 @@ test_that("Complex fitness specification, tiny s diffs", {
     ## chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
     ##                        p = expectedC/sum(expectedC))
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value > p.fail)
     ## Even with systematic spacing, you need huge reps to even out the
     ## sampling effects on order. And ordering tested above several
@@ -305,6 +351,10 @@ test_that("Complex fitness specification, tiny s diffs", {
     ## expect_equal(
     ##     order(colSums(OncoSimulR:::geneCounts(bb))),
     ##     order(expectedC))
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -313,6 +363,9 @@ date()
 
 date()
 test_that("Init mutant  with tiny mutation always present", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s11: a runif is", runif(1), "\n")
@@ -368,15 +421,19 @@ test_that("Init mutant  with tiny mutation always present", {
     totalindivs <- sum(unlist(lapply(bb, function(x) x$TotalPopSize)))
     expect_true(ccs["h2"] == ccs["i1"])
     expect_true(ccs["h2"] == totalindivs)
-    expect_true(all(ccs["h2"] > ccs[!(names(ccs) %in% c("h2", "i1"))]))
+    TTT <- c(TTT, all(ccs["h2"] > ccs[!(names(ccs) %in% c("h2", "i1"))]))
     ## of course, no agreement with chi-square or ordering
     p.fail <- 1e-6
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb)),
                            p = expectedC/sum(expectedC))$p.value < p.fail)
-    expect_false(
+    TTT <- c(TTT, !(
         identical(
             order(colSums(OncoSimulR:::geneCounts(bb))),
-            order(expectedC)))
+            order(expectedC))))
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -384,6 +441,9 @@ date()
 
 date()
 test_that("Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s13: a runif is", runif(1), "\n")
@@ -403,10 +463,10 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
-    expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-    expect_equal(
+    TTT <- c(TTT, colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
+    TTT <- c(TTT, identical(
         order(colSums(OncoSimulR:::geneCounts(bb))),
-        order(expectedC))
+        order(expectedC)))
     ## A chisq will not work as we increase finalTime.
     
     
@@ -420,15 +480,19 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
-    expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
+    TTT <- c(TTT, colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
     ## This will fail sometimes
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
                            p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
     ## could fail because very small freqs
     ## expect_equal(
     ##     order(colSums(OncoSimulR:::geneCounts(bb))),
-    ##     order(expectedC))
+         ##     order(expectedC))
+          if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 }
 )
 date()
@@ -437,6 +501,9 @@ date()
 
 date()
 test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s17: a runif is", runif(1), "\n")
@@ -460,11 +527,15 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
-    expect_equal(
+    TTT <- c(TTT, identical(
         order(colSums(OncoSimulR:::geneCounts(bb))[-3]),
-        order(expectedC[-3]))
+        order(expectedC[-3])))
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -473,6 +544,9 @@ date()
 
 date()
 test_that("Different freqs as they are expected with chisq, when s=0 and initMutant, many genotypes",{
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n s19: a runif is", runif(1), "\n")
@@ -502,8 +576,12 @@ test_that("Different freqs as they are expected with chisq, when s=0 and initMut
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -513,6 +591,9 @@ date()
 date()
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
     ## More on the above, with less variation. But yet another set of tests.
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n mcs20: a runif is", runif(1), "\n")
@@ -541,7 +622,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
     muvar2 <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
     ## relatively large mu
@@ -571,7 +652,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
     ## nope, as many are equal
     ## expect_equal(
@@ -608,8 +689,12 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
     expect_true(ccs["e"] == totalindivs)
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-3],
                            p = expectedC[-3]/sum(expectedC[-3]))$p.value > p.fail)
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -619,6 +704,9 @@ date()
 test_that("Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n df2: a runif is", runif(1), "\n")
@@ -658,12 +746,16 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        seed =NULL,
                        mc.cores = 2
                        )
-    expect_true( median(summary(b2)$NumClones) >
-                 median(summary(b1)$NumClones))
+    TTT <- c(TTT,  wilcox.test(summary(b2)$NumClones, 
+                 summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     ## Note the short time, so this is not always very different as few
     ## have double or triple mutants
-    expect_true( mean(mutsPerClone(b2)) >
-                 mean(mutsPerClone(b1)))
+    TTT <- c(TTT,  t.test(mutsPerClone(b2),
+                 mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -674,6 +766,9 @@ date()
 date()
 test_that("McFL: Expect freqs, num clones, muts per clone for different per-gene-mut",{
 ## More on the above, with less variation. But yet another set of tests.
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n mcdf1: a runif is", runif(1), "\n")
@@ -721,16 +816,20 @@ test_that("McFL: Expect freqs, num clones, muts per clone for different per-gene
     (cc2 <- colSums(OncoSimulR:::geneCounts(b2)))    
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b1)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(b1)),
                            p = expected1/sum(expected1))$p.value > p.fail)
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(b2)),
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(b2)),
                            p = expected2/sum(expected2))$p.value > p.fail)
-    expect_true( median(summary(b2)$NumClones) >
-                 median(summary(b1)$NumClones))
+    TTT <- c(TTT,  wilcox.test(summary(b2)$NumClones, 
+                 summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     ## Note the short time, so this is not always very different as few
     ## have double or triple mutants
-    expect_true( mean(mutsPerClone(b2)) >
-                 mean(mutsPerClone(b1)))
+    TTT <- c(TTT,  t.test(mutsPerClone(b2),
+                 mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -738,6 +837,9 @@ date()
 
 date()
 test_that(" And mutPropGrowth, 3",{
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n sz033: a runif is", runif(1), "\n")
@@ -782,10 +884,10 @@ test_that(" And mutPropGrowth, 3",{
     median(summary(b1)$NumClones)
     median(summary(b2)$NumClones)
     ## More mutations in mutationPropGrowth
-    expect_true( mean(mutsPerClone(b2)) >
-                 mean(mutsPerClone(b1)))
-    expect_true( median(summary(b2)$NumClones) >
-                 median(summary(b1)$NumClones))
+    TTT <- c(TTT,  t.test(mutsPerClone(b2),
+                 mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
+    TTT <- c(TTT,  wilcox.test(summary(b2)$NumClones, 
+                 summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     ## But frequency of mutations about the same? Nope: since very fast
     ## growth and thus non-indep, huge variation in geneCounts in each
     ## run, etc. so hard to compare geneCounts
@@ -802,6 +904,10 @@ test_that(" And mutPropGrowth, 3",{
     ## fb1/sum(fb1)
     ## fb2/sum(fb2)
     ## (fb2/sum(fb2))/(fb1/sum(fb1))
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -815,6 +921,9 @@ test_that("McFL: More mutpropgrowth, in modules of s", {
     ## With McFL, since total size is bounded from above, the effects of
     ## mutPropGrowth are rarely those of popSize. But we stop on popSize
     ## anyway here.
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n mcmpgs3: a runif is", runif(1), "\n")
@@ -869,10 +978,14 @@ test_that("McFL: More mutpropgrowth, in modules of s", {
     summary(s3.ng)[, c(1, 2, 3, 8, 9)]
     summary(summary(s3.ng)[, 2])
     summary(summary(s3.g)[, 2])
-    expect_true( mean(mutsPerClone(s3.g)) >
-                 mean(mutsPerClone(s3.ng)))
-    expect_true( median(summary(s3.g)$NumClones) >
-                 median(summary(s3.ng)$NumClones))
+         TTT <- c(TTT,  t.test(mutsPerClone(s3.g),
+                               mutsPerClone(s3.ng), alternative = "greater")$p.value < p.value.threshold)
+         TTT <- c(TTT,  wilcox.test(summary(s3.g)$NumClones, 
+                                    summary(s3.ng)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -894,6 +1007,9 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
     ## chi-square we need much larger reps (as usual, if ft increase, etc,
     ## we increase the reproduction/death events, which then screws up
     ## simple expectations for chi-square)
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n oss11: a runif is", runif(1), "\n")
@@ -934,7 +1050,7 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
         warning("The test is likely to fail because reps == cc1 or cc2")
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(cc1,
+    TTT <- c(TTT, chisq.test(cc1,
                            p = expected1/sum(expected1))$p.value > p.fail)
 
     reps <- 500
@@ -964,10 +1080,14 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
         warning("The test is likely to fail because reps == cc1 or cc2")
     ## It will fail with prob ~ p.fail
     p.fail <- 1e-3
-    expect_true(chisq.test(cc2,
+    TTT <- c(TTT, chisq.test(cc2,
                            p = expected2/sum(expected2))$p.value > p.fail)
 
 
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -980,6 +1100,9 @@ test_that("oncoSimulSample comparing different per-gene-mut",{
     ## No attempt to compare against expected (other tests do that). We
     ## just verify that larger mutations rates lead to more total
     ## mutations and clones.
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n oss2: a runif is", runif(1), "\n")
@@ -1028,16 +1151,20 @@ test_that("oncoSimulSample comparing different per-gene-mut",{
     ## Not exactly the same as what we did in oncoSimulPop
     (cc1 <- colSums(b1$popSample))
     (cc2 <- colSums(b2$popSample))
-    expect_true(sum(cc2) > sum(cc1))
+    TTT <- c(TTT, sum(cc2) > sum(cc1))
     ## This is very similar to above, like assimilating a pop to a clone
     mutsPerClone1 <- rowSums(b1$popSample)
     mutsPerClone2 <- rowSums(b2$popSample)
-    expect_true( mean(mutsPerClone2) >
-                 mean(mutsPerClone1))
-    expect_true( median(b2$popSummary[, "NumClones"]) >
-                 median(b1$popSummary[, "NumClones"]))
+    TTT <- c(TTT,  t.test(mutsPerClone2, 
+                          mutsPerClone1, alternative = "greater")$p.value < p.value.threshold)
+         TTT <- c(TTT,  wilcox.test(b2$popSummary[, "NumClones"], 
+                 b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
     ## Note the short time, so this is not always very different as few
     ## have double or triple mutants
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
 
@@ -1048,6 +1175,9 @@ date()
 
 cat("\n", date(), "\n")
 test_that("oncoSimulSample Without initmutant and modules, fixed size", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n osSFPS: a runif is", runif(1), "\n")
@@ -1118,10 +1248,14 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
     (mutsPerClone2 <- rowSums(b2$popSample))
     summary(mutsPerClone1)
     summary(mutsPerClone2)
-    expect_true( mean(mutsPerClone2) >
-                 mean(mutsPerClone1))
-    expect_true( median(b2$popSummary[, "NumClones"]) >
-                 median(b1$popSummary[, "NumClones"]))
+    TTT <- c(TTT,  t.test(mutsPerClone2,
+                          mutsPerClone1, alternative = "greater")$p.value < p.value.threshold)
+    TTT <- c(TTT,  wilcox.test(b2$popSummary[, "NumClones"], 
+                 b1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 cat("\n", date(), "\n")
 
@@ -1130,6 +1264,9 @@ cat("\n", date(), "\n")
 
 date()
 test_that("Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n mpg s13: a runif is", runif(1), "\n")
@@ -1149,10 +1286,10 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
-    expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-    expect_equal(
+    TTT <- c(TTT, colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
+    TTT <- c(TTT, identical(
         order(colSums(OncoSimulR:::geneCounts(bb))),
-        order(expectedC))
+        order(expectedC)))
     ## A chisq will not work as we increase finalTime.
     
     
@@ -1166,14 +1303,18 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
                        )
     (expectedC <- no*reps*muvar2)
     colSums(OncoSimulR:::geneCounts(bb))
-    expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
+    TTT <- c(TTT, colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
     ## This will fail sometimes
     p.fail <- 1e-3
-    expect_true(chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
+    TTT <- c(TTT, chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
                            p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
     ## expect_equal(
     ##     order(colSums(OncoSimulR:::geneCounts(bb))),
-    ##     order(expectedC))
+         ##     order(expectedC))
+          if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 }
 )
 date()
@@ -1185,6 +1326,9 @@ date()
 test_that("Num clones, muts per clone for different per-gene-mut",{
     ## Like previous, but larger finalTime, so no longer chi-square test
     ## here.
+     max.tries <- 4
+     for(tries in 1:max.tries) {
+         TTT <- NULL
     
     
     cat("\n mpg df2: a runif is", runif(1), "\n")
@@ -1224,11 +1368,18 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
                        seed =NULL,
                        mc.cores = 2
                        )
-    expect_true( median(summary(b2)$NumClones) >
-                 median(summary(b1)$NumClones))
+    TTT <- c(TTT,  wilcox.test(summary(b2)$NumClones, 
+                 summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     ## Note the short time, so this is not always very different as few
     ## have double or triple mutants
-    expect_true( mean(mutsPerClone(b2)) >
-                 mean(mutsPerClone(b1)))
+    TTT <- c(TTT,  t.test(mutsPerClone(b2), 
+                          mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
+         if( all(TTT) ) break;
+     }
+     cat(paste("\n done tries", tries, "\n"))
+     expect_true(all(TTT))
 })
 date()
+
+
+cat("\n Ending per-gene-mutation-rates long at", date(), "\n")
