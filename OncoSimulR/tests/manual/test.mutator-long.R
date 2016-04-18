@@ -1081,11 +1081,11 @@ test_that("per-gene-mut rates and mutator", {
         Te <- (t.test(mutsPerClone(m1.mutator1), mutsPerClone(m2.mutator1), alternative = "less")$p.value < p.value.threshold)
         Tf <- (t.test(mutsPerClone(m1.mutator2), mutsPerClone(m2.mutator2), alternative = "less")$p.value < p.value.threshold)
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8 &&
-           Ta && Tb && Tc && Td && Te Tf) break;
+           Ta && Tb && Tc && Td && Te && Tf) break;
     }
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8 &&
-                Ta && Tb && Tc && Td && Te Tf)
+                Ta && Tb && Tc && Td && Te && Tf)
 
 })
 date()
@@ -1209,11 +1209,11 @@ test_that("McFL: per-gene-mut rates and mutator", {
         Te <- (t.test(mutsPerClone(m1.mutator1), mutsPerClone(m2.mutator1), alternative = "less")$p.value < p.value.threshold)
         Tf <- (t.test(mutsPerClone(m1.mutator2), mutsPerClone(m2.mutator2), alternative = "less")$p.value < p.value.threshold)
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8 &&
-           Ta && Tb && Tc && Td && Te Tf) break;
+           Ta && Tb && Tc && Td && Te && Tf) break;
     }
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8 &&
-           Ta && Tb && Tc && Td && Te Tf)
+           Ta && Tb && Tc && Td && Te && Tf)
 
 })
 date()
