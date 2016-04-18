@@ -3,7 +3,7 @@
 test_that("oncoSimulSample success with large num tries", {
     ## If nindiv small, sometimes you reach cancer at first try in every
     ## indiv.
-    nindiv <- 70 ## this is decreased to increase speed
+    nindiv <- 200 
     p1 <- oncoSimulSample(nindiv, p701,
                           max.num.tries = 5000 * nindiv,
                           sampleEvery = 0.03, ## this to avoid large N all
