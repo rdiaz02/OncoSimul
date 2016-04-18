@@ -66,7 +66,9 @@ date()
 
 date()
 test_that("stacked, stream, genotypes and some colors", {
-      data(examplesFitnessEffects)
+    data(examplesFitnessEffects)
+    max.tries <- 4
+    for(i in 1:max.tries) {
       tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                              model = "McFL", 
                              mu = 5e-5,
@@ -80,8 +82,18 @@ test_that("stacked, stream, genotypes and some colors", {
                              onlyCancer = FALSE,
                              keepPhylog = TRUE)
       
-      plot(tmp, type = "stacked", show = "genotypes")
-      plot(tmp, type = "stream", show = "genotypes")
+      if(nrow(tmp$pops.by.time) >= 5) {
+          break
+      } else {
+          cat("\n hummm.. had to run again in the plot")
+          if(i >= max.tries) {
+              print(tmp)
+            stop("stream will break")
+          }
+      }
+    }
+    plot(tmp, type = "stacked", show = "genotypes")
+    plot(tmp, type = "stream", show = "genotypes")
       plot(tmp, type = "line", show = "genotypes")
 
       plot(tmp, type = "stacked", show = "drivers")
@@ -117,7 +129,19 @@ date()
 test_that("xlab, ylab, ylim, xlim can be passed", {
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
-    b1 <- oncoSimulIndiv(p701)
+    max.tries <- 4
+    for(i in 1:max.tries) {
+        b1 <- oncoSimulIndiv(p701)
+        if(b1$FinalTimeime >= 90) {
+            break
+        } else {
+            cat("\n hummm.. had to run again in the plot")
+            if(i >= max.tries) {
+                print(b1)
+                stop("stream might break")
+            }
+        }
+    }
     plot(b1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000), log = "",
          plotDrivers = TRUE, xlim = c(20, 70))
@@ -129,22 +153,22 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
     plot(b1, show = "drivers", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(b1, show = "genotypes",
          addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(1, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(b1, show = "genotypes", type = "stacked",
          xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(b1, show = "genotypes", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(-20, 70),
+         xlim = c(-20, 70),
          plotDrivers = TRUE)
     sa <- 0.1
     sb <- -0.2
@@ -161,6 +185,8 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                                  "A" = "a1, a2",
                                  "B" = "b",
                                  "C" = "c"))
+    max.tries <- 4
+    for(i in 1:max.tries) {
     e1 <- oncoSimulIndiv(sv2, model = "McFL",
                          mu = 5e-6,
                          sampleEvery = 0.02,
@@ -168,34 +194,44 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          initSize = 2000,
                          finalTime = 3000,
                          onlyCancer = FALSE)
+    if(e1$FinalTimeime >= 90) {
+            break
+        } else {
+            cat("\n hummm.. had to run again in the plot")
+            if(i >= max.tries) {
+                print(e1)
+                stop("stream might break")
+            }
+        }
+    }
     plot(e1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(1, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(e1, show = "drivers", type = "stacked",
          xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(e1, show = "drivers", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(e1, show = "genotypes",
          addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(e1, show = "genotypes", type = "stacked",
          xlab = "xlab",
          ylab = "ylab", ylim = c(-1000, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
     plot(e1, show = "genotypes", type = "stream",
          addtot = TRUE, xlab = "xlab",
          ylab = "ylab", ylim = c(-100, 1000),
-                  xlim = c(20, 70),
+         xlim = c(20, 70),
          plotDrivers = TRUE)
 })
 
@@ -205,6 +241,8 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     data(examplePosets)
     ## An object of class oncosimul
     p705 <- examplePosets[["p705"]]
+    max.tries <- 4
+    for(i in 1:max.tries) {
     p1 <- oncoSimulIndiv(p705, keepEvery = 1.1) ## if keepEvery is too
                                                 ## large, from time to
                                                 ## time you end up with
@@ -212,7 +250,16 @@ test_that("oncosimul v.1 objects and genotype plotting", {
                                                 ## points and the stream
                                                 ## plot breaks
 
-
+    if(nrow(p1$pops.by.time) >= 5) {
+            break
+    } else {
+        cat("\n hummm.. had to run again in the plot")
+        if(i >= max.tries) {
+            print(p1)
+            stop("stream will break")
+        }
+    }
+    }
     ## p1 <- oncoSimulIndiv(p705, model = "McFL",
     ##                      mu = 5e-6,
     ##                      sampleEvery = 0.02,
@@ -234,7 +281,20 @@ test_that("passing colors", {
     data(examplePosets)
     ## An object of class oncosimul
     p705 <- examplePosets[["p705"]]
+    max.tries <- 4
+    for(i in 1:max.tries) {
     p1 <- oncoSimulIndiv(p705)
+    if(nrow(p1$pops.by.time) >= 11) {
+            break
+    } else {
+        cat("\n hummm.. had to run again in the plot")
+        if(i >= max.tries) {
+            print(p1)
+            stop("stream will break")
+        }
+    }
+    }
+    
     class(p1)
     plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
     plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
