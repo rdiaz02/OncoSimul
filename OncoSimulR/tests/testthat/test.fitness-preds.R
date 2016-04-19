@@ -88,7 +88,7 @@ test_that("Observed vs expected, case III", {
     genmodule <- function(l, num) {
         paste(paste0(l, 1:num), collapse = ", ")
     }
-    max.tries <- 4
+    max.tries <- 5 ## yes, like 1 over 10000 or 20000 we get up to 4. We do lots of p-value tests.
     for(tries in 1:max.tries) {
         ## Like II, but we combine several effects.
         reps <- 25
