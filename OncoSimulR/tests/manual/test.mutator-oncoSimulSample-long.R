@@ -93,7 +93,7 @@ test_that("per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900
+                                       seed = NULL, max.wall.time = 2000
                                         )
         m1.mutator1 <- oncoSimulSample(reps,
                                        fe1,
@@ -105,7 +105,7 @@ test_that("per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900
+                                       seed = NULL, max.wall.time = 2000
                                        )
         m1.mutator2 <- oncoSimulSample(reps,
                                        fe1,
@@ -117,7 +117,7 @@ test_that("per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900
+                                       seed = NULL, max.wall.time = 2000
                                        )
         runif(1)
         m2.mutator0 <- oncoSimulSample(reps,
@@ -129,7 +129,7 @@ test_that("per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900
+                                       seed = NULL, max.wall.time = 2000
                                        )
         m2.mutator1 <- oncoSimulSample(reps,
                                        fe1,
@@ -141,7 +141,7 @@ test_that("per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900
+                                       seed = NULL, max.wall.time = 2000
                                        )
         m2.mutator2 <- oncoSimulSample(reps,
                                        fe1,
@@ -153,7 +153,7 @@ test_that("per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900
+                                       seed = NULL, max.wall.time = 2000
                                        )
         if(! (
             inherits(m1.mutator0$popSummary, "data.frame") &&
@@ -239,7 +239,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900, model = "McFL"
+                                       seed = NULL, max.wall.time = 2000, model = "McFL"
                                        )
         m1.mutator1 <- oncoSimulSample(reps,
                                        fe1,
@@ -251,7 +251,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900, model = "McFL"
+                                       seed = NULL, max.wall.time = 2000, model = "McFL"
                                        )
         m1.mutator2 <- oncoSimulSample(reps,
                                        fe1,
@@ -263,7 +263,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900, model = "McFL"
+                                       seed = NULL, max.wall.time = 2000, model = "McFL"
                                        )
         cat("\n starting m2\n")
         m2.mutator0 <- oncoSimulSample(reps,
@@ -275,7 +275,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900, model = "McFL"
+                                       seed = NULL, max.wall.time = 2000, model = "McFL"
                                        )
         m2.mutator1 <- oncoSimulSample(reps,
                                        fe1,
@@ -287,7 +287,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900, model = "McFL"
+                                       seed = NULL, max.wall.time = 2000, model = "McFL"
                                        )
         m2.mutator2 <- oncoSimulSample(reps,
                                        fe1,
@@ -299,7 +299,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        detectionSize = 1e9,
                                        detectionDrivers = 9999,     
                                        sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                       seed = NULL, max.wall.time = 900, model = "McFL"
+                                       seed = NULL, max.wall.time = 2000, model = "McFL"
                                        )
         
         if(! (
