@@ -189,7 +189,8 @@ test_that("Observed vs expected, case I", {
         T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
         T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
                  p.fail)
-        if(! (T.not && T.yest && T.lm) ) {
+        T.lm.diff <- all(abs(coefficients(lm1) - c(0, 1) ) < 0.1)
+        if(! (T.not && T.yest && T.lm && T.lm.diff) ) {
             cat("\n T.not is \n"); print(T.not)
             print(no.t)
             cat("\n T.yest \n"); print(T.yest)
@@ -200,10 +201,10 @@ test_that("Observed vs expected, case I", {
             print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
             plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
         }
-        if ((T.not && T.yest && T.lm) ) break;
+        if ((T.not && T.yest && T.lm && T.lm.diff) ) break;
     }
     cat(paste("\n done tries", tries, "\n"))
-    expect_true((T.not && T.yest && T.lm) )
+    expect_true((T.not && T.yest && T.lm && T.lm.diff) )
 
 })
 date()
@@ -399,7 +400,8 @@ test_that("Observed vs expected, case II", {
         T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
         T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
                  p.fail)
-        if(! (T.not && T.yest && T.lm) ) {
+        T.lm.diff <- all(abs(coefficients(lm1) - c(0, 1) ) < 0.1)
+        if(! (T.not && T.yest && T.lm && T.lm.diff) ) {
             cat("\n T.not is \n"); print(T.not)
             print(no.t)
             cat("\n T.yest \n"); print(T.yest)
@@ -411,10 +413,10 @@ test_that("Observed vs expected, case II", {
             plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
         }
         plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
-        if ((T.not && T.yest && T.lm) ) break;
+        if ((T.not && T.yest && T.lm && T.lm.diff) ) break;
     }
     cat(paste("\n done tries", tries, "\n"))
-    expect_true((T.not && T.yest && T.lm) )
+    expect_true((T.not && T.yest && T.lm && T.lm.diff) )
 })
 date()
 
@@ -578,7 +580,8 @@ test_that("Observed vs expected, case III", {
         T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
         T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
                  p.fail)
-        if(! (T.not && T.yest && T.lm) ) {
+        T.lm.diff <- all(abs(coefficients(lm1) - c(0, 1) ) < 0.1)
+        if(! (T.not && T.yest && T.lm && T.lm.diff) ) {
             cat("\n T.not is \n"); print(T.not)
             print(no.t)
             cat("\n T.yest \n"); print(T.yest)
@@ -589,10 +592,10 @@ test_that("Observed vs expected, case III", {
             print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
             plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
         }
-        if ((T.not && T.yest && T.lm) ) break;
+        if ((T.not && T.yest && T.lm && T.lm.diff) ) break;
     }
     cat(paste("\n done tries", tries, "\n"))
-    expect_true((T.not && T.yest && T.lm) )
+    expect_true((T.not && T.yest && T.lm && T.lm.diff) )
 
 })
 date()
@@ -711,7 +714,8 @@ test_that("Init mutant no effects if fitness is 0", {
         T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
         T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
                  p.fail)
-        if(! (T.not && T.yest && T.lm) ) {
+        T.lm.diff <- all(abs(coefficients(lm1) - c(0, 1) ) < 0.1)
+        if(! (T.not && T.yest && T.lm && T.lm.diff) ) {
             cat("\n T.not is \n"); print(T.not)
             print(no.t)
             cat("\n T.yest \n"); print(T.yest)
@@ -724,10 +728,10 @@ test_that("Init mutant no effects if fitness is 0", {
             print(summary(lm1)); print(car::linearHypothesis(lm1, diag(2), c(0, 1)))
             plot(log(Observed) ~ log(Expected), data = d1); abline(lm1); abline(a = 0, b = 1, col = "red")
         }
-        if ((T.not && T.yest && T.lm) ) break;
+        if ((T.not && T.yest && T.lm && T.lm.diff) ) break;
     }
     cat(paste("\n done tries", tries, "\n"))
-    expect_true((T.not && T.yest && T.lm) )
+    expect_true((T.not && T.yest && T.lm && T.lm.diff) )
 
 })
 date()

@@ -225,7 +225,7 @@ test_that("Observed vs expected, case III", {
         out <- data.frame(out)
         colnames(out) <- c("Expected", paste0("Observed_", 1:reps))
         d1 <- data.frame(Expected = out[, 1], Observed = rowMeans(out[, -1]))
-        p.fail <- 0.05
+        p.fail <- 0.01
         lm1 <- lm(log(Observed) ~ log(Expected), data = d1)
         
         ## For NO, do a t.test by row.
@@ -242,8 +242,11 @@ test_that("Observed vs expected, case III", {
         T.yest <- (min(p.adjust(yes.t, method = "BH")) > p.fail)
         T.lm <- (car::linearHypothesis(lm1, diag(2), c(0, 1))[["Pr(>F)"]][2] >
                  p.fail)
-        if( T.not && T.yest && T.lm ) break;
-        if(! (T.not && T.yest && T.lm) ) {
+        ## so a difference of 0.1 would be large enough, and this would
+        ## fail even if large sd in estimates
+        T.lm.diff <- all(abs(coefficients(lm1) - c(0, 1) ) < 0.1)
+        if( T.not && T.yest && T.lm && T.lm.diff ) break;
+        if(! (T.not && T.yest && T.lm && T.lm.diff) ) {
             cat("\n T.not is \n"); print(T.not)
             print(no.t)
             cat("\n T.yest \n"); print(T.yest)
@@ -256,7 +259,7 @@ test_that("Observed vs expected, case III", {
         }
     }
     cat(paste("\n done tries", tries, "\n"))
-    expect_true((T.not && T.yest && T.lm) )
+    expect_true((T.not && T.yest && T.lm && T.lm.diff) )
 })
 date()
 
