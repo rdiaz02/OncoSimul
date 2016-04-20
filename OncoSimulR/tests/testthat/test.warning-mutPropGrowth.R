@@ -9,7 +9,8 @@ test_that("mutationPropGrowth warning with Bozic, indiv", {
                           geneToModule =
                               c("Root" = "Root",
                                 "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
+                                "D" = "d1, d2"),
+               drvNames = c("d1", "d2", "f1", "f2", "f3"))
               expect_warning(oiI1 <- oncoSimulIndiv(oi,
                                                     sampleEvery = 0.03,
                                                     keepEvery = 2,
@@ -37,25 +38,28 @@ test_that("mutationPropGrowth no warning with Exp, indiv", {
                             geneToModule =
                                 c("Root" = "Root",
                                   "F" = "f1, f2, f3",
-                                  "D" = "d1, d2") )
+                                  "D" = "d1, d2"),
+                            drvNames = c("d1", "d2", "f1", "f2", "f3"))
     expect_silent(oiI1 <- oncoSimulIndiv(oi,
                                          model = "Exp",
-                                         onlyCancer = TRUE,
+                                         onlyCancer = FALSE,
                                          sampleEvery = 0.03,
                                          keepEvery = 5,
                                          mutationPropGrowth = TRUE,
                                          seed = NULL))                
+
 })
 
 
 test_that("mutationPropGrowth no warning with McFl, indiv", {
-              oi <- allFitnessEffects(orderEffects =
-               c("F > D" = -0.3, "D > F" = 0.4),
-               noIntGenes = rexp(5, 10),
-                          geneToModule =
-                              c("Root" = "Root",
-                                "F" = "f1, f2, f3",
-                                "D" = "d1, d2") )
+    oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = rexp(5, 10),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2"),
+               drvNames = c("d1", "d2", "f1", "f2", "f3"))
               expect_silent(oiI1 <- oncoSimulIndiv(oi,
                                                    model = "McFL",
                                                    mu = 5e-6,
@@ -63,11 +67,9 @@ test_that("mutationPropGrowth no warning with McFl, indiv", {
                                                    detectionDrivers = 2,
                                                    sampleEvery = 0.025,
                                                    keepEvery = 2,
-                                                   onlyCancer = TRUE,
+                                                   onlyCancer = FALSE,
                                                    mutationPropGrowth = TRUE))                
 })
-
-
 
 
 
