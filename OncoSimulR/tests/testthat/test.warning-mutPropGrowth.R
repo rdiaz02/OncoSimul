@@ -42,11 +42,12 @@ test_that("mutationPropGrowth no warning with Exp, indiv", {
                             drvNames = c("d1", "d2", "f1", "f2", "f3"))
     expect_silent(oiI1 <- oncoSimulIndiv(oi,
                                          model = "Exp",
-                                         onlyCancer = TRUE,
+                                         onlyCancer = FALSE,
                                          sampleEvery = 0.03,
                                          keepEvery = 5,
                                          mutationPropGrowth = TRUE,
                                          seed = NULL))                
+
 })
 
 
@@ -66,7 +67,7 @@ test_that("mutationPropGrowth no warning with McFl, indiv", {
                                                    detectionDrivers = 2,
                                                    sampleEvery = 0.025,
                                                    keepEvery = 2,
-                                                   onlyCancer = TRUE,
+                                                   onlyCancer = FALSE,
                                                    mutationPropGrowth = TRUE))                
 })
 
