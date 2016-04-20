@@ -711,20 +711,22 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
  
   const int numGenes = fitnessEffects.genomeSize;
 
-  double mymindummy = 1e-15;
+  double mymindummy = 1e-15; //1e-13
+  double targetmindummy = 1e-15; //1e-10
   double minmu = *std::min_element(mu.begin(), mu.end());
-  // Very small, but no less than 1e-15, for numerical issues.
-  double dummyMutationRate = std::max(std::min(minmu/1e6, mymindummy),
+  // Very small, but no less than 1e-13, for numerical issues.
+  double dummyMutationRate = std::max(std::min(minmu/1e4, targetmindummy),
 				      mymindummy);
   // This should very rarely happen:
-  if(minmu <= 1e-13 ) {
+  if(minmu <= 1e-9 ) {
     double newdd = minmu/100;
     Rcpp::Rcout << "WARNING: the smallest mutation rate is "
 		<< "<= " << mymindummy << ". That is a really small value"
 		<< "(per-base mutation rate in the human genome is"
 		<< " ~ 1e-11 to 1e-9). "
 		<< "Setting dummyMutationRate to your min/100 = "
-		<< newdd << "\n";
+		<< newdd
+		<< ". There can be numerical problems later.\n";
     dummyMutationRate = newdd;
   }
   // double dummyMutationRate = 1e-10;
@@ -1741,7 +1743,27 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   double currentTime = 0;
   int iter = 0;
   while(runAgain) {
+    DP2(numRuns);
+    DP2(maxNumTries);
 
+    if(numRuns >= maxNumTries) {
+      DP1("exiting at numRuns >=");
+      //  hittedMaxTries This we want here to avoid an extra run and
+      //  confusing output
+      hittedMaxTries = true;
+      Rcpp::Rcout << "\n Hitted maxtries. Exiting.";
+      runAgain = false;
+      if(errorHitMaxTries) {
+	Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
+	return
+	  List::create(Named("HittedWallTime") = false,
+		       Named("HittedMaxTries") = true,
+		       Named("other") =
+		       List::create(Named("UnrecoverExcept") = false));
+      }
+      break;
+    }
+    
     // Initialize a bunch of things
     
 // #ifdef MIN_RATIO_MUTS_NR
@@ -1752,8 +1774,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   
   // untilcancer goes here
-  
-
   
   
   //tmpParam is a temporary holder. 
@@ -1774,6 +1794,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
       // it is CRUCIAL that several entries are zeroed (or -1) at the
       // start of innerBNB now that we do multiple runs if onlyCancer = true.
+
       nr_innerBNB(
 		  fitnessEffects,
 		  initSize,
@@ -1843,8 +1864,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		     List::create(Named("UnrecoverExcept") = true,
 				  Named("ExceptionMessage") = "Unknown exception"));
     }
-
-
     if(hittedWallTime) {
       Rcpp::Rcout << "\n Hitted wall time. Exiting.";
       runAgain = false;
@@ -1858,19 +1877,23 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		       Named("other") =
 		       List::create(Named("UnrecoverExcept") = false));
       }
-    } else if(numRuns > maxNumTries) {
-      //  hittedMaxTries
-      hittedMaxTries = true;
-      Rcpp::Rcout << "\n Hitted maxtries. Exiting.";
-      runAgain = false;
-      if(errorHitMaxTries) {
-	Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
-	return
-	  List::create(Named("HittedWallTime") = false,
-		       Named("HittedMaxTries") = true,
-		       Named("other") =
-		       List::create(Named("UnrecoverExcept") = false));
-      }
+    // } else if(numRuns > maxNumTries) {
+    //   //  hittedMaxTries FIXME this is very, very confusing in limit
+    //   // cases.  suppose maxNumTries = 1. We will run two times, and the
+    //   // second might have reached cancer, but we will bail out here, as
+    //   // numRuns is actually 2. However, we report the value. And we run
+    //   // once more than needed.
+    //   hittedMaxTries = true;
+    //   Rcpp::Rcout << "\n Hitted maxtries. Exiting.";
+    //   runAgain = false;
+    //   if(errorHitMaxTries) {
+    // 	Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
+    // 	return
+    // 	  List::create(Named("HittedWallTime") = false,
+    // 		       Named("HittedMaxTries") = true,
+    // 		       Named("other") =
+    // 		       List::create(Named("UnrecoverExcept") = false));
+    //   }
     } else if(forceRerun) {
       runAgain = true;
       forceRerun = false;
