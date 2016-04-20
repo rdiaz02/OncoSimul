@@ -72,11 +72,11 @@ test_that("per-gene-mut rates and mutator", {
         ng <- 40
         ni <- rep(0, ng)
         m1 <- runif(ng, min = 1e-7, max = 5e-6)
-        m2 <- runif(ng, min = 1e-5, max = 1e-4)
+        m2 <- rep(1e-5, ng) ## runif(ng, min = 1e-5, max = 1e-4): ## crazy num of clones
         names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
                                                            paste(sample(letters, 12), collapse = "")))
         fe1 <- allFitnessEffects(noIntGenes = ni)
-        ft <- 50
+        ft <- 25 ## 50 this is crazy and takes forever
         no <- 5e5 
         reps <- 40
         gn <- paste(names(ni), collapse = ", ")
@@ -218,13 +218,13 @@ test_that("McFL: per-gene-mut rates and mutator", {
         ## runif(ng, min = 1e-7, max = 5e-6) And if too
         ## tiny, you do not pick them up unless huge ft
         ## and then it is way too slow for m2, etc.
-        m2 <- runif(ng, min = 1e-5, max = 1e-4)
+        m2 <- rep(5e-5, ng)
         names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
                                                            paste(sample(letters, 12), collapse = "")))
         fe1 <- allFitnessEffects(noIntGenes = ni)
-        ft <- 50
+        ft <- 20 ## 50
         no <- 5e5 
-        reps <- 40
+        reps <- 20 ## 40
         gn <- paste(names(ni), collapse = ", ")
         mutator1 <- allMutatorEffects(epistasis = c("MU" = 20),
                                       geneToModule = c("MU" = gn))
@@ -323,7 +323,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
         ## within levels of per-gene mutation rates
         ## we could use wilcoxon or t tests actually, specially because often diffs
         ## are not huge.
-        p.fail <- 0.05
+        p.fail <- 0.005
         T1 <- ( t.test( m1.mutator2$popSummary[, "NumClones"] ,
                             m1.mutator1$popSummary[, "NumClones"], alternative = "greater")$p.value < p.fail)
         T2 <- ( t.test( m1.mutator1$popSummary[, "NumClones"] ,
