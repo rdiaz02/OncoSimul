@@ -624,7 +624,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                                                 "d" = 30))
         nc1 <- oncoSimulPop(pops, fe, muEF = fm6, finalTime =100,
                             mutationPropGrowth = FALSE,
-                            sampleEvery = 0.01,
+                            sampleEvery = 0.001,
                             keepEvery = 5,
                             initSize = 1e6, mc.cores = 2, model = "McFL",
                             onlyCancer = FALSE, seed = NULL)
@@ -634,7 +634,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                                                 "d" = 1))
         nc2 <- oncoSimulPop(pops, fe, muEF = fm8, finalTime =100,
                             mutationPropGrowth = FALSE,
-                            sampleEvery = 0.01,
+                            sampleEvery = 0.001,
                             keepEvery = 5,
                             initSize = 1e6, mc.cores = 2, model = "McFL",
                             onlyCancer = FALSE, seed = NULL)
@@ -644,7 +644,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                                                 "d" = 1e-6))
         nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =100,
                             mutationPropGrowth = FALSE,
-                            sampleEvery = 0.01,
+                            sampleEvery = 0.001,
                             keepEvery = 5,
                             initSize = 1e6, mc.cores = 2, model = "McFL",
                             onlyCancer = FALSE, seed = NULL)
