@@ -1019,6 +1019,8 @@ test_that("Without initmutant, 2", {
         if(! (inherits(s2.ng, "oncosimulpop") &&
               inherits(s2.g, "oncosimulpop"))) {
             TTT <- FALSE
+        } else {
+            TTT <- TRUE
         }
         if(TTT) {
         summary(s2.g)[, c(1, 2, 3, 8, 9)]
