@@ -299,7 +299,8 @@ sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
                          geneToModule = c(
                              "A" = "a1, a2",
                              "B" = "b",
-                             "C" = "c"))
+                             "C" = "c"),
+                         drvNames = c("a1", "a2", "b", "c"))
 evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 
 ## 2. Simulate the data. Here we use the "McFL" model and set explicitly
