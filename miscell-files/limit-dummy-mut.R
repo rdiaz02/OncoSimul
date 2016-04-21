@@ -1,8 +1,13 @@
+## WIth low dummy mutations, the W and R and, then, eventually, the pE can
+## be screwed up. See notes in the C++ code. So this is done and settled.
+
+
 ## when dummy can be very low, say 1e-15, many things
 ## do not finish. Otherwise, they do, even if we get many of
 ## Note: mutation = 0; no positions left for mutation
 ## AND (and this is weird now to me) none of the
 ## "Note: updating in null mutation\n"
+
 
 data(examplesFitnessEffects)
 i <- 3
