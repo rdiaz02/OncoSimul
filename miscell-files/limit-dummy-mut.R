@@ -76,3 +76,131 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        verbosity = 1,
                        max.wall.time = 1000)         
 tmp
+
+
+
+
+
+
+
+
+
+
+
+
+
+data(examplesFitnessEffects)
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 5000,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+data(examplesFitnessEffects)
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.01,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 2,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+
+
+
+data(examplesFitnessEffects)
+i <- 593424
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = .1,
+                       max.num.tries = 20,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 500,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## significant that it finishes later often?
+
+##mindummy of 1e-15 is way too low probably and I think leads to strange
+## numerical issues when updating pops.
+
+## So try 1e-13 1e-17 1e-11 and compare
+set.seed(135)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                               model = "McFL", 
+                               mu = 5e-5,
+                               detectionSize = 1e8, 
+                               detectionDrivers = 3,
+                               sampleEvery = 0.03,
+                               max.num.tries = 100,
+                               keepEvery = 100,
+                               initSize = 2000,
+                               finalTime = 3000,
+                               onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       verbosity = 1)

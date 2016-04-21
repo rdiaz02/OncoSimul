@@ -711,8 +711,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
  
   const int numGenes = fitnessEffects.genomeSize;
 
-  double mymindummy = 1e-15; //1e-13
-  double targetmindummy = 1e-15; //1e-10
+  double mymindummy = 1e-6; //1e-13
+  double targetmindummy = 1e-6; //1e-10
   double minmu = *std::min_element(mu.begin(), mu.end());
   // Very small, but no less than 1e-13, for numerical issues.
   double dummyMutationRate = std::max(std::min(minmu/1e4, targetmindummy),
@@ -1743,11 +1743,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   double currentTime = 0;
   int iter = 0;
   while(runAgain) {
-    DP2(numRuns);
-    DP2(maxNumTries);
 
     if(numRuns >= maxNumTries) {
-      DP1("exiting at numRuns >=");
       //  hittedMaxTries This we want here to avoid an extra run and
       //  confusing output
       hittedMaxTries = true;
@@ -1763,31 +1760,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       }
       break;
     }
-    
-    // Initialize a bunch of things
-    
-// #ifdef MIN_RATIO_MUTS_NR
-//   g_min_birth_mut_ratio = DBL_MAX;
-//   g_min_death_mut_ratio = DBL_MAX;
-//   g_tmp = DBL_MAX;
-// #endif
-
-  
-  // untilcancer goes here
-  
-  
-  //tmpParam is a temporary holder. 
-  // init_tmpP(tmpParam);
-  // init_tmpP(popParams[0]);
-
-  // lastStoredSample = 0.0;
-  // Genotypes[0].reset();
-  // popParams[0].popSize = initSize;
-  // totPopSize = initSize;
-
-  // tps_0 = totPopSize;
-  // e1 = 0.0;
-  // tps_1 = totPopSize;
 
     try {
       Rcpp::checkUserInterrupt();
