@@ -1,3 +1,8 @@
+Changes in version 2.1.90002000 (2016-04-21):
+	- Mutator phenotype.
+	- Bug fixed: to_update set at 2 when mutating to pre-existing;
+	- Lots and lots of new tests.
+
 Changes in version 2.2.0 (for BioC 3.3):
 	- Plots of genotypes.
 	- Stacked area and stream plots (code from Marc Taylor).

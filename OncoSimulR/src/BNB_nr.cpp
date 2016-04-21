@@ -1119,7 +1119,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       popParams[0].timeLastUpdate = currentTime;
     } else { // any other iter
       if(to_update == 1) {
-	// we did not sample in previous period.
+	// we did not sample or mutate to a different species in previous period
 	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[u_1],
 					   currentTime,
 					   tSample, 
@@ -1410,7 +1410,12 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    }
 	  // #endif
 	} else {	// A mutation to pre-existing species
-	  to_update = 2; // yes, we will update both, and only these two.
+
+	  // What we do here is step 6 of Algorithm 5, in the "Otherwise",
+	  // in p. 5 of suppl mat. We will update both, and only these
+	  // two.
+	  to_update = 2; 
+
 #ifdef DEBUGW
 	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0) {
 	    DP2(currentTime);
@@ -1420,7 +1425,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    throw std::out_of_range("currentTime - timeLastUpdate out of range");
 	  }
 #endif
-	
 	  // if(verbosity >= 2) {
 #ifdef DEBUGV
 	    Rcpp::Rcout <<"\n     Mutated to existing species " << sp 
@@ -1446,47 +1450,37 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    // "Otherwise", in p. 5 of suppl mat.
 
 	    if(popParams[sp].popSize > 0.0) { 
-	    popParams[sp].popSize = 1.0 + 
-	      Algo2_st(popParams[sp], currentTime, mutationPropGrowth);
-	    if(verbosity >= 2) {
-	      Rcpp::Rcout << "\n New popSize = " << popParams[sp].popSize << "\n";
+	      popParams[sp].popSize = 1.0 + 
+		Algo2_st(popParams[sp], currentTime, mutationPropGrowth);
+	      if(verbosity >= 2) {
+		Rcpp::Rcout << "\n New popSize = " << popParams[sp].popSize << "\n";
+	      }
+	    } else {
+	      throw std::range_error("\n popSize == 0 but existing? \n");
 	    }
-	  } else {
-	    throw std::range_error("\n popSize == 0 but existing? \n");
-	  }
 #ifdef DEBUGW
 	  // This is wrong!!! if we set it to -999999, then the time to
   	  // next mutation will not be properly updated.  In fact, the
   	  // mapTimes map becomes a mess because the former pv in the
   	  // popParams is not removed so we end up inserting another pair
   	  // for the same species.
-	  
 	  // popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
 #endif
 	  //popParams[sp].Flag = true;
-	  DP1(" ending when mutating to pre-existing");
-	  DP2(to_update);
-
 	}
-	  DP1(" ending big loop of mutation");
-	 DP2(to_update);
 	//   ***************  5.7 ***************
 	// u_2 irrelevant if to_update = 1;
 	u_1 = nextMutant;
 	u_2 = static_cast<int>(sp);
       } else { // the null or dummy mutation case
-	// Rcpp::Rcout << "\n null mutation; before popSize" << std::endl;
-	// DP2(popParams[nextMutant].popSize);
+	// We increase size by 1, as we already called Algo3. And then
+	// update the ti.
 	++popParams[nextMutant].popSize;
 	to_update = 1;
 	u_1 = nextMutant;
 	u_2 = -99;
-	// FIXME: do this conditionally on flag
 	if(verbosity >= 1)
 	  Rcpp::Rcout << "Note: updating in null mutation\n";
-	// Rcpp::Rcout << "\n null mutation; after popSize" << std::endl;
-	// DP2(popParams[nextMutant].popSize);
-	// Rcpp::Rcout << "\n done null mutation; after popSize ********" << std::endl;
       }
     } else { //       *********** We are sampling **********
       to_update = 3; //short_update = false;
