@@ -711,15 +711,18 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
  
   const int numGenes = fitnessEffects.genomeSize;
 
-  double mymindummy = 1e-6; //1e-13
-  double targetmindummy = 1e-6; //1e-10
+  double mymindummy = 1.0e-11; //1e-10
+  double targetmindummy = 1.0e-10; //1e-9
   double minmu = *std::min_element(mu.begin(), mu.end());
-  // Very small, but no less than 1e-13, for numerical issues.
-  double dummyMutationRate = std::max(std::min(minmu/1e4, targetmindummy),
+  // Very small, but no less than mymindummy, for numerical issues.
+  // We can probably go down to 1e-13. 1e-16 is not good as we get lots
+  // of pE.f not finite. 1e-15 is probably too close, and even if no pE.f
+  // we can get strange behaviors.
+  double dummyMutationRate = std::max(std::min(minmu/1.0e4, targetmindummy),
 				      mymindummy);
   // This should very rarely happen:
   if(minmu <= 1e-9 ) {
-    double newdd = minmu/100;
+    double newdd = minmu/100.0;
     Rcpp::Rcout << "WARNING: the smallest mutation rate is "
 		<< "<= " << mymindummy << ". That is a really small value"
 		<< "(per-base mutation rate in the human genome is"
@@ -1125,7 +1128,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	popParams[u_1].timeLastUpdate = currentTime;
 
 #ifdef DEBUGV
-	Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime ******\n For to_update = \n " 
+	Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime, update one ******\n For to_update = \n " 
 		  << "     tSample  = " << tSample
 	    
 		  << "\n\n**   Species  = " << u_1 
@@ -1155,7 +1158,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	popParams[u_2].timeLastUpdate = currentTime;
 
 #ifdef DEBUGV
-	Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime ******\n " 
+	Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime, update two ******\n " 
 		  << "     tSample  = " << tSample
 	    
 		  << "\n\n**   Species  = " << u_1 
@@ -1182,7 +1185,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		  << " \n     species W " << popParams[u_2].W
 		  << " \n     species death " << popParams[u_2].death
 		  << " \n     species birth " << popParams[u_2].birth;
-
 #endif
 
       } else { // we sampled, so update all: i.e. to_update == 3
@@ -1194,18 +1196,19 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	  popParams[i].timeLastUpdate = currentTime;
 	  
 #ifdef DEBUGV
-	  Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime ******\n " 
+	  Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime, update all ******\n " 
 		    << "     Species  = " << i 
 		      << "\n       genotype =  ";
 	  print_Genotype(Genotypes[i]);
 	  Rcpp::Rcout << "\n       popSize = " << popParams[i].popSize 
 		    << "\n       currentTime = " << currentTime 
-	    // << "\n       popParams[i].nextMutationTime = " 
-	    // << popParams[i].nextMutationTime
+		      << "\n       popParams[i].nextMutationTime = " 
+		      << tmpdouble1
 		    << " \n     species R " << popParams[i].R
 		    << " \n     species W " << popParams[i].W
 		    << " \n     species death " << popParams[i].death
 		    << " \n     species birth " << popParams[i].birth;
+	  
 #endif
 	}
       }
@@ -1407,6 +1410,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    }
 	  // #endif
 	} else {	// A mutation to pre-existing species
+	  to_update = 2; // yes, we will update both, and only these two.
 #ifdef DEBUGW
 	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0) {
 	    DP2(currentTime);
@@ -1437,7 +1441,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    // in 1. Why? Because Algo2 can return a 0. The species
 	    // "exist" in the sense that it had non-zero pop size when we
 	    // last sampled/updated it.
-	  if(popParams[sp].popSize > 0.0) { 
+	    
+	    // What we do here is step 6 of Algorithm 5, in the
+	    // "Otherwise", in p. 5 of suppl mat.
+
+	    if(popParams[sp].popSize > 0.0) { 
 	    popParams[sp].popSize = 1.0 + 
 	      Algo2_st(popParams[sp], currentTime, mutationPropGrowth);
 	    if(verbosity >= 2) {
@@ -1456,7 +1464,12 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	  // popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
 #endif
 	  //popParams[sp].Flag = true;
+	  DP1(" ending when mutating to pre-existing");
+	  DP2(to_update);
+
 	}
+	  DP1(" ending big loop of mutation");
+	 DP2(to_update);
 	//   ***************  5.7 ***************
 	// u_2 irrelevant if to_update = 1;
 	u_1 = nextMutant;
