@@ -197,10 +197,493 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                                detectionSize = 1e8, 
                                detectionDrivers = 3,
                                sampleEvery = 0.03,
-                               max.num.tries = 100,
+                               max.num.tries = 10,
                                keepEvery = 100,
                                initSize = 2000,
                                finalTime = 3000,
                                onlyCancer = TRUE,
                        keepPhylog = TRUE,
                        verbosity = 1)
+tmp
+
+
+
+
+
+
+
+
+
+
+data(examplesFitnessEffects)
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 2,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+
+
+
+
+
+
+
+
+data(examplesFitnessEffects)
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 100,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 500,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 1000,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 2000,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3000,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3500,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3200,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+## nietieher -13 nor -11
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3480,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+## not -13
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3470,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+## not -13
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3460,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)         
+tmp
+
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3477,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3478,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+## with -11 we suddenly cannot get here and stop at 3218
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3479,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+## no number limit
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 1076.03,
+                       onlyCancer = FALSE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3479,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+
+
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 1078,
+                       onlyCancer = FALSE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3479,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 1077,
+                       onlyCancer = FALSE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3479,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 1076,
+                       onlyCancer = FALSE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3479,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 1075,
+                       onlyCancer = FALSE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3479,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## with -11 we suddenly cannot get here and stop at 3218
+i <- 3
+set.seed(i)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.03,
+                       max.num.tries = 1,
+                       keepEvery = 100,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       onlyCancer = TRUE,
+                       keepPhylog = TRUE,
+                       minDetectDrvCloneSz = 3700,
+                       errorHitMaxTries = FALSE,
+                       verbosity = 1,
+                       max.wall.time = 1000)
+tmp
+
+
+
+
+
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                               model = "McFL", 
+                               mu = 5e-5,
+                               detectionSize = 1e8, 
+                               detectionDrivers = 3,
+                               sampleEvery = 0.03,
+                               max.num.tries = 10,
+                               keepEvery = 100,
+                               initSize = 2000,
+                               finalTime = 3000,
+                               onlyCancer = TRUE,
+                               keepPhylog = TRUE)
