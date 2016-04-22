@@ -907,7 +907,7 @@ test_that("Without initmutant, 2", {
                                 geneToModule = c("A" = gn),
                                 noIntGenes = ni)
         s2.ng <- oncoSimulPop(pops,
-                          f3,
+                          f2,
                           mu = mu,
                           mutationPropGrowth = FALSE, sampleEvery = 0.01,
                           finalTime =ft, detectionSize = ds,
@@ -916,7 +916,7 @@ test_that("Without initmutant, 2", {
                           seed = NULL, mc.cores = 2)
         cat("\n s2b: a runif is", runif(1), "\n")
         s2.g <- oncoSimulPop(pops,
-                         f3,
+                         f2,
                          mu = mu,
                          mutationPropGrowth = TRUE, sampleEvery = 0.01,
                          finalTime =ft, detectionSize = ds,
