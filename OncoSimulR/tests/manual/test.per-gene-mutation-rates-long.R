@@ -837,22 +837,26 @@ date()
 
 date()
 test_that(" And mutPropGrowth, 3",{
+    ## This is extremely variable, so the pattern is hard to catch as few genes.
+    ## And one can even see apparently counterintuitive patterns if
+    ## if you make the number of genes tiny and s very large.
      max.tries <- 4
      for(tries in 1:max.tries) {
          TTT <- NULL
     
-    
-    cat("\n sz033: a runif is", runif(1), "\n")
-    muvar2 <- c("U" = 1e-4, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
-    ## muvar2 <- c("U" = 5e-5, "z" = 5e-5, "e" = 5e-5, "m" = 5e-5, "D" = 5e-5)
-    ni1 <- rep(1.9, 5)
-    names(ni1) <- names(muvar2)
-    fe1 <- allFitnessEffects(noIntGenes = ni1)
-    no <- 1e5
-    reps <- 10 
-    ft <- 16
-    
-    
+         cat("\n sz033: a runif is", runif(1), "\n")
+         
+         muvar2 <- c("U" = 1e-4, "Z" = 5e-5, "E" = 5e-4, "M" = 5e-3, "D" = 1e-3)
+         muvar2 <- c(muvar2, rep(1e-7, 10))
+         names(muvar2)[6:15] <- letters[1:10]
+         ## muvar2 <- c("U" = 5e-5, "z" = 5e-5, "e" = 5e-5, "m" = 5e-5, "D" = 5e-5)
+         ni1 <- rep(.5, 5)  ## 1.9
+         ni1 <- c(ni1, rep(0, 10))
+         names(ni1) <- names(muvar2)
+         fe1 <- allFitnessEffects(noIntGenes = ni1)
+    no <- 1e6
+    reps <- 25 
+    ft <- 36 ## irrelevant, we stop on size
     cat("\n sz033a: a runif is", runif(1), "\n")
     b1 <- oncoSimulPop(reps,
                        fe1, mu = muvar2,
@@ -860,13 +864,12 @@ test_that(" And mutPropGrowth, 3",{
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
-                       detectionSize = 5e6,
-                       sampleEvery = 0.01,
+                       detectionSize = 1e8,
+                       sampleEvery = 0.05,
+                       keepEvery = 1,
                        seed =NULL,
                        mc.cores = 2, max.wall.time = 900
                        )
-    
-    
     cat("\n sz033b: a runif is", runif(1), "\n")
     b2 <- oncoSimulPop(reps,
                        fe1, mu = muvar2,
@@ -874,16 +877,19 @@ test_that(" And mutPropGrowth, 3",{
                        onlyCancer = FALSE,
                        initSize = no,
                        finalTime = ft,
-                       detectionSize = 5e6,
-                       sampleEvery = 0.01,                       
+                       detectionSize = 1e8,
+                       sampleEvery = 0.05,
+                       keepEvery = 1,
                        seed =NULL,
                        mc.cores = 2, max.wall.time = 900
                        )
-    summary(b2)[, c(1:3, 8:9)]
-    mean(mutsPerClone(b1));mean(mutsPerClone(b2))
+         summary(b1)[, c(1:3, 8:9)]
+         summary(b2)[, c(1:3, 8:9)]
+         mean(mutsPerClone(b1));mean(mutsPerClone(b2))
     median(summary(b1)$NumClones)
     median(summary(b2)$NumClones)
-    ## More mutations in mutationPropGrowth
+
+         ## More mutations in mutationPropGrowth
     TTT <- c(TTT,  t.test(mutsPerClone(b2),
                  mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
     TTT <- c(TTT,  wilcox.test(summary(b2)$NumClones, 
