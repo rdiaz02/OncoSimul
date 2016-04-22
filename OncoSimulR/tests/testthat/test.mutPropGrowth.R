@@ -19,59 +19,7 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
         lapply(x, function(u) perCl(u))
 }
 
-## ## this tests takes 10 seconds. Moved to long.
-## date()
-## test_that("mutPropGrowth diffs with s> 0", {
-    
-##     
-##     
-##     cat("\n mgp1: a runif is", runif(1), "\n")
-##     ft <- 4 ## 2.7
-##     pops <- 50
-##     lni <- 150 ## 100
-##     no <- 1e3 ## 5e1 
-##     ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
-##     mu <- 1e-5 ## 1e-6
-##     names(ni) <- c("a", paste0("n", seq.int(lni)))
-##     ni <- sample(ni) ## scramble 
-##     fe <- allFitnessEffects(noIntGenes = ni)
-##     
-##     
-##     cat("\n mpg1a: a runif is", runif(1), "\n")
-##     nca <- oncoSimulPop(pops, fe, finalTime = ft,
-##                         mu = mu,
-##                         mutationPropGrowth = TRUE,
-##                         initSize = no, sampleEvery = 0.1,
-##                         initMutant = "a", keepEvery = 1,
-##                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-##     
-##     
-##     cat("\n mpg1c: a runif is", runif(1), "\n")
-##     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
-##                          mu = mu,
-##                         mutationPropGrowth = FALSE,
-##                         initSize = no, sampleEvery = 0.1,
-##                         initMutant = "a", keepEvery = 1,
-##                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-##     ## summary(nca)[1:20, c(1, 2, 3, 8, 9)]
-##     ## summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
-##     ## I once saw a weird thing
-##     expect_true(var(summary(nca)$NumClones) > 1e-4)
-##     expect_true(var(summary(nca2)$NumClones) > 1e-4)
-##     ## summary(summary(nca)$NumClones)
-##     ## summary(summary(nca2)$NumClones)
-##     ## summary(mutsPerClone(nca))
-##     ## summary(mutsPerClone(nca2))
-##     ## The real comparison
-##     expect_true( median(summary(nca)$NumClones) >
-##                  median(summary(nca2)$NumClones))
-##     expect_true( mean(mutsPerClone(nca)) >
-##                  mean(mutsPerClone(nca2)))
-    
-
-    
-## })
-## cat("\n", date(), "\n")
+p.value.threshold <- 0.001
 
 
 
@@ -80,8 +28,12 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
+
+        ## stopping on time or size is about the same
+        ## in these models, but we stop on size to
+        ## control for different  pop size.
         cat("\n mcf1: a runif is", runif(1), "\n")
-        ft <- 3 
+        ft <- 26  # 3 
         pops <- 50
         lni <- 100
         no <- 1e3 ## 5e1 
@@ -93,7 +45,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         nca <- oncoSimulPop(pops, fe, finalTime = ft,
                             mutationPropGrowth = TRUE,
                             initSize = no,
-                            sampleEvery = 0.03,
+                            sampleEvery = 0.03, detectionSize = 8e4,
                             keepEvery = 1,
                             initMutant = "a", model = "McFL",
                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
@@ -101,12 +53,12 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                              mutationPropGrowth = FALSE,
                              initSize = no,
-                             sampleEvery = 0.03,
+                             sampleEvery = 0.03, detectionSize = 8e4,
                              keepEvery = 1,
                              initMutant = "a", model = "McFL",
                              onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-        ## summary(nca)[1:20, c(1, 2, 3, 8, 9)]
-        ## summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
+        summary(nca)[1:20, c(1, 2, 3, 8, 9)]
+        summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
         ## I once saw a weird thing
         expect_true(var(summary(nca)$NumClones) > 1e-4)
         expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -119,10 +71,11 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         ## summary(mutsPerClone(nca))
         ## summary(mutsPerClone(nca2))
         ## The real comparison
-        T1 <- ( median(summary(nca)$NumClones) >
-                     median(summary(nca2)$NumClones))
-        T2 <- ( mean(mutsPerClone(nca)) >
-                     mean(mutsPerClone(nca2)))
+        T1 <- ( wilcox.test(summary(nca)$NumClones ,
+                     summary(nca2)$NumClones, alternative = "greater")$p.value < p.value.threshold)
+        T2 <- ( t.test(mutsPerClone(nca) ,
+                mutsPerClone(nca2), alternative = "greater")$p.value < p.value.threshold)
+        
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -138,7 +91,8 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         cat("\n oss1: a runif is", runif(1), "\n")
-        ft <- 3.5 ## 4
+        
+        ft <- 133 ## we stop on size way earlier 
         pops <- 50
         lni <- 200 ## 150
         no <- 1e3 ## 5e1 
@@ -155,7 +109,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                initSize = no, sampleEvery = 0.02,
                                initMutant = "a", 
                                onlyCancer = FALSE, seed = NULL,
-                               detectionSize = 1e9,
+                               detectionSize = 1e6,
                                detectionDrivers = 99,
                                thresholdWhole = x)
         cat("\n oss1c: a runif is", runif(1), "\n")
@@ -165,10 +119,11 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                 initSize = no, sampleEvery = 0.02,
                                 initMutant = "a", 
                                 onlyCancer = FALSE, seed = NULL,
-                                detectionSize = 1e9,
+                                detectionSize = 1e6,
                                 detectionDrivers = 99,
                                 thresholdWhole = x)
-        ## nca$popSummary[1:5, c(1:3, 8:9)]
+        nca$popSummary[1:5, c(1:3, 8:9)]
+        nca2$popSummary[1:5, c(1:3, 8:9)]
         ## summary(nca$popSummary[, "NumClones"])
         ## summary(nca$popSummary[, "TotalPopSize"])
         ## nca2$popSummary[1:5, c(1:3, 8:9)]
@@ -187,14 +142,15 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         mutsPerClone2 <- rowSums(nca2$popSample)
         ## summary(mutsPerClone1)
         ## summary(mutsPerClone2)
-        T1 <- ( mean(mutsPerClone1) >
-                     mean(mutsPerClone2))
-        T2 <- ( median(nca$popSummary[, "NumClones"]) >
-                     median(nca2$popSummary[, "NumClones"]))
+        T1 <- ( t.test(mutsPerClone1 ,
+                     mutsPerClone2, alternative = "greater")$p.value < p.value.threshold)
+        T2 <- ( wilcox.test(nca$popSummary[, "NumClones"] ,
+                     nca2$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
         ## Pop sizes here do not really differ, as we start with the
         ## initMutant with increased s
         summary(nca$popSummary[, "TotalPopSize"])
         summary(nca2$popSummary[, "TotalPopSize"])
+        
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -206,13 +162,14 @@ date()
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
     max.tries <- 4
     for(tries in 1:max.tries) {
+        
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         cat("\n ossmcf1: a runif is", runif(1), "\n")
-        ft <- 40 ## 4
+        ft <- 100  ## we stop on size
         pops <- 50
         lni <- 200 ## 150
         no <- 1e3 ## 5e1 
-        ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
+        ni <- c(3, rep(0, lni)) ## 2 ## 4 ## 5
         mu <- 5e-7 ## 1e-6
         x <- 1e-9
         names(ni) <- c("a", paste0("n", seq.int(lni)))
@@ -225,7 +182,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                                initSize = no, sampleEvery = 0.01,
                                initMutant = "a", 
                                onlyCancer = FALSE, seed = NULL,
-                               detectionSize = 1e9,
+                               detectionSize = 3e4,
                                detectionDrivers = 99,
                                thresholdWhole = x)
         cat("\n ossmcf1c: a runif is", runif(1), "\n")
@@ -235,13 +192,13 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                                 initSize = no, sampleEvery = 0.01,
                                 initMutant = "a", 
                                 onlyCancer = FALSE, seed = NULL,
-                                detectionSize = 1e9,
+                                detectionSize = 3e4,
                                 detectionDrivers = 99,
                                 thresholdWhole = x)
-        ## nca$popSummary[1:5, c(1:3, 8:9)]
+        nca$popSummary[1:5, c(1:3, 8:9)]
         ## summary(nca$popSummary[, "NumClones"])
         ## summary(nca$popSummary[, "TotalPopSize"])
-        ## nca2$popSummary[1:5, c(1:3, 8:9)]
+        nca2$popSummary[1:5, c(1:3, 8:9)]
         ## summary(nca2$popSummary[, "NumClones"])
         ## summary(nca2$popSummary[, "TotalPopSize"])
         ## ## cc1 and cc2 should all be smaller than pops, or you are maxing
@@ -257,14 +214,15 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
         mutsPerClone2 <- rowSums(nca2$popSample)
         ## summary(mutsPerClone1)
         ## summary(mutsPerClone2)
-        T1 <- ( mean(mutsPerClone1) >
-                     mean(mutsPerClone2))
-        T2 <- ( median(nca$popSummary[, "NumClones"]) >
-                     median(nca2$popSummary[, "NumClones"]))
+        T1 <- ( t.test(mutsPerClone1 ,
+                     mutsPerClone2, alternative = "greater")$p.value < p.value.threshold)
+        T2 <- ( wilcox.test(nca$popSummary[, "NumClones"] ,
+                     nca2$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
         ## Pop sizes here do not really differ, as we start with the
         ## initMutant with increased s. And this is McFL, so bounded from above.
         summary(nca$popSummary[, "TotalPopSize"])
         summary(nca2$popSummary[, "TotalPopSize"])
+        
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     cat(paste("\n done tries", tries, "\n"))
