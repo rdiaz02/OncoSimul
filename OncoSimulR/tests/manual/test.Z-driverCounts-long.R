@@ -2,6 +2,11 @@
 ## machines (e.g., using clang), as the details depend on the random
 ## numbers generated in R and C++.
 
+## In addition, changes in the C++ code can upset this. Say you change a
+## detail about the RNG, or multiply by 2 mindummy, etc.
+## So maybe I should remove these tests.
+
+RNGkind("Mersenne-Twister")
 
 date()
 test_that("driverCounts: we get the right results", {
@@ -240,33 +245,35 @@ test_that("driverCounts: we get the right results", {
     ni <- runif(10, min = -0.01, max = 0.1)
     names(ni) <- paste0("g", 2:11)
     fe31 <- allFitnessEffects(noIntGenes = ni,
-                              drvNames = c("g5", "g3"))
-    set.seed(4)
+                              drvNames = c("g5", "g9"))
+    set.seed(1124)
     mue11 <- oncoSimulIndiv(fe31, 
                             mu = 1e-6,
                             initSize = 1e5,
                             model = "McFL",
-                            detectionSize = 5e6,
-                            finalTime = 90, 
+                            detectionSize = 1e8,
+                            finalTime = 120, 
                             onlyCancer = FALSE)
     expect_true(mue11$MaxNumDrivers == 2)
     expect_true(mue11$MaxDriversLast == 2)
+    mue11
 
     set.seed(1)
     ni <- runif(10, min = -0.01, max = 0.1)
     names(ni) <- paste0("g", 2:11)
     fe31 <- allFitnessEffects(noIntGenes = ni,
-                              drvNames = c("g6", "g5"))
-    set.seed(4)
+                              drvNames = c("g9", "g5"))
+    set.seed(1124)
     mue11 <- oncoSimulIndiv(fe31, 
                             mu = 1e-6,
                             initSize = 1e5,
                             model = "McFL",
                             detectionSize = 5e6,
-                            finalTime = 90, 
+                            finalTime = 130, 
                             onlyCancer = FALSE)
     expect_true(mue11$MaxNumDrivers == 2)
     expect_true(mue11$MaxDriversLast == 1)
+    mue11
 
     set.seed(1)
     ni <- runif(10, min = -0.01, max = 0.1)
@@ -283,6 +290,7 @@ test_that("driverCounts: we get the right results", {
                             onlyCancer = FALSE)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 1)
+    mue11
 
 
     ## A different fe
