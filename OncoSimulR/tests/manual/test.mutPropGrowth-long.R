@@ -920,7 +920,7 @@ test_that("Without initmutant, 2", {
                          mu = mu,
                          mutationPropGrowth = TRUE, sampleEvery = 0.01,
                          finalTime =ft, detectionSize = ds,
-                         initSize = no,, detectionDrivers = 99999,
+                         initSize = no, detectionDrivers = 99999,
                          onlyCancer = FALSE,
                          seed = NULL, mc.cores = 2)
         if(! (inherits(s2.ng, "oncosimulpop") &&
