@@ -7,6 +7,7 @@ V_ADA=$(cat ./OncoSimulR/DESCRIPTION | grep Version | cut -d' ' -f2)
 rm OncoSimulR_$V_ADA.tar.gz
 
 rm ./OncoSimulR/Rplots.pdf
+rm ./OncoSimulR/.Rhistory
 rm ./OncoSimulR/*~
 rm ./OncoSimulR/inst/*~
 rm ./OncoSimulR/man/*~
@@ -31,6 +32,7 @@ rm ./OncoSimulR/vignettes/*~
 rm ./OncoSimulR/vignettes/Rplots.pdf
 rm ./OncoSimulR/vignettes/.Rhistory
 rm ./OncoSimulR/src/*.so
+rm ./OncoSimulR/src/*~
 rm ./OncoSimulR/src/*.o
 rm ./OncoSimulR/src/OncoSimulR.so
 rm ./OncoSimulR/src/OncoSimul.o
