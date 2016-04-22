@@ -68,7 +68,7 @@ test_that("per-gene-mut rates and mutator", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n oss11: a runif is", runif(1), "\n")
+        cat("\n oss11-ossl: a runif is", runif(1), "\n")
         ng <- 40
         ni <- rep(0, ng)
         m1 <- runif(ng, min = 1e-7, max = 5e-6)
@@ -211,7 +211,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n mcfloss11: a runif is", runif(1), "\n")
+        cat("\n mcfloss11-ossl: a runif is", runif(1), "\n")
         ng <- 40
         ni <- rep(0, ng)
         m1 <- rep(5e-6, ng) ## too much variation and hard to pick the diffs.;
@@ -362,7 +362,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
         ## rates, with oncoSimulSample you undersample variation with
         ## wholePop, etc.
         ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
-        cat("\n AEu8_long: a runif is", runif(1), "\n")
+        cat("\n AEu8_long-ossl: a runif is", runif(1), "\n")
         pops <- 8000
         ft <- 5e-3
         lni <- 7
@@ -473,7 +473,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
         ## rates, with oncoSimulSample you undersample variation with
         ## wholePop, etc.
         ## Setings similar to oss11 in per-gene-mutation-rates but with the mutator
-        cat("\n MCFL: long_AEu8: a runif is", runif(1), "\n")
+        cat("\n MCFL: long_AEu8-ossl: a runif is", runif(1), "\n")
         pops <- 8000
         ft <- 5e-3
         lni <- 7
@@ -577,7 +577,7 @@ test_that("Mutator, several modules differences", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n mmd1_2: a runif is", runif(1), "\n")
+        cat("\n mmd1_2-ossl: a runif is", runif(1), "\n")
         reps <- 140
         no <- 5e3
         ft <- 80 ## you need it large enough to get enough hits
@@ -655,7 +655,7 @@ test_that("Mutator, several modules differences, McFL", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n mmd1_2_mc: a runif is", runif(1), "\n")
+        cat("\n mmd1_2_mc-ossl: a runif is", runif(1), "\n")
         reps <- 80
         no <- 5e3
         ft <- 50 ## you need it large enough to get enough hits
@@ -729,7 +729,7 @@ test_that("Mutator modules differences", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n mmd1: a runif is", runif(1), "\n")
+        cat("\n mmd1-ossl: a runif is", runif(1), "\n")
         reps <- 40
         no <- 5e3
         ft <- 100
@@ -818,7 +818,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n x1: a runif is", runif(1), "\n")
+        cat("\n x1-ossl: a runif is", runif(1), "\n")
         pops <- 40
         fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                                "b" = 0.14,
@@ -846,10 +846,10 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                detectionSize = 1e8,
                                detectionDrivers = 9999, seed = NULL,
                                onlyCancer = FALSE)
-        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
-                                                "b" = 1e-6,
-                                                "c" = 1e-6,
-                                                "d" = 1e-6))
+        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-3,
+                                                "b" = 1e-3,
+                                                "c" = 1e-3,
+                                                "d" = 1e-3))
         nc3 <- oncoSimulSample(pops, fe, muEF = fm7, finalTime =250,
                                mutationPropGrowth = FALSE,
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -885,7 +885,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## Similar to above, but mutator has a single element, not the whole
         ## vector.
-        cat("\n u7: a runif is", runif(1), "\n")
+        cat("\n u7-ossl: a runif is", runif(1), "\n")
         pops <- 2000
         ft <- 1e-7
         lni <- 80 
@@ -953,7 +953,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## increase mutator, decrease max mu
         ## similar to oss11 in per-gene-mutation-rates but with the mutator
-        cat("\n u8: a runif is", runif(1), "\n")
+        cat("\n u8-ossl: a runif is", runif(1), "\n")
         pops <- 5000
         ft <- 5e-3
         lni <- 7
@@ -1030,7 +1030,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## We test that mutator does not affect expected frequencies of
         ## mutated genes: they are given by the mutation rate of each gene.
-        cat("\n mcfu6: a runif is", runif(1), "\n")
+        cat("\n mcfu6-ossl: a runif is", runif(1), "\n")
         pops <- 2000
         ft <- 1e-7
         lni <- 80 
@@ -1096,7 +1096,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## Stop on size, and do a fast model (stop shortly after)
         ## But note we have only four positions left, so difficult to detect
-        cat("\n mcx1: a runif is", runif(1), "\n")
+        cat("\n mcx1-ossl-ossl: a runif is", runif(1), "\n")
         pops <- 160
         mu <- 1e-6
         ft <- 500
@@ -1128,10 +1128,10 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                                detectionSize = 1.11e5,
                                detectionDrivers = 9999, seed = NULL,
                                onlyCancer = FALSE)
-        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-5,
-                                                "b" = 1e-5,
-                                                "c" = 1e-5,
-                                                "d" = 1e-5))
+        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-3,
+                                                "b" = 1e-3,
+                                                "c" = 1e-3,
+                                                "d" = 1e-3))
         nc3 <- oncoSimulSample(pops, mu = mu,
                                fe, muEF = fm7, finalTime = ft,
                                mutationPropGrowth = FALSE,
@@ -1166,7 +1166,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## Here stop by time, as s = 0
-        cat("\n x2cd: a runif is", runif(1), "\n")
+        cat("\n x2cd-ossl-ossl: a runif is", runif(1), "\n")
         pops <- 80
         ni <- rep(0, 50)
         names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -1239,7 +1239,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates, ct mut", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## We test that mutator does not affect expected frequencies of
         ## mutated genes: they are given by the mutation rate of each gene.
-        cat("\n ct_mcfu6: a runif is", runif(1), "\n")
+        cat("\n ct_mcfu6-ossl: a runif is", runif(1), "\n")
         pops <- 2500
         ft <- 1e-7
         lni <- 80 
@@ -1305,7 +1305,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## We test that mutator does not affect expected frequencies of
         ## mutated genes: they are given by the mutation rate of each gene.
-        cat("\n mcfu7: a runif is", runif(1), "\n")
+        cat("\n mcfu7-ossl: a runif is", runif(1), "\n")
         pops <- 2500
         ft <- 3e-7
         lni <- 80 
@@ -1368,7 +1368,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## We test that mutator does not affect expected frequencies of
         ## mutated genes: they are given by the mutation rate of each gene.
-        cat("\n sameu6: a runif is", runif(1), "\n")
+        cat("\n sameu6-ossl: a runif is", runif(1), "\n")
         pops <- 1500
         ft <- 1e-5 ## small, as we cannot afford to accumulate many mutations
         ## or else, given that we have a wholePopulation sample, we
@@ -1442,7 +1442,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## We test that mutator does not affect expected frequencies of
         ## mutated genes: they are given by the mutation rate of each gene.
-        cat("\n u6: a runif is", runif(1), "\n")
+        cat("\n u6-ossl: a runif is", runif(1), "\n")
         pops <- 1500
         ft <- 1e-5 ## small, as we cannot afford to accumulate many mutations
         ## or else, given that we have a wholePopulation sample, we
@@ -1514,7 +1514,7 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
     ## Stopping on time: all s = 0.
-    cat("\n mcx2cd: a runif is", runif(1), "\n")
+    cat("\n mcx2cd-ossl: a runif is", runif(1), "\n")
     pops <- 40
     ni <- rep(0, 50)
     names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -1579,7 +1579,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## here we do not fill all positions, except maybe for ncd
         ## We stop on finalTime, not popsize
-        cat("\n x2bc: a runif is", runif(1), "\n")
+        cat("\n x2bc-ossl: a runif is", runif(1), "\n")
         pops <- 30
         ni <- rep(0.01, 50)
         names(ni) <- c("a", "b", "c", "d", paste0("n", 1:46))
@@ -1655,7 +1655,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## reproduction, death, and double and possibly triple mutants. We
         ## decrease init pop size to make this fast.
-        cat("\n nm1: a runif is", runif(1), "\n")
+        cat("\n nm1-ossl: a runif is", runif(1), "\n")
         pops <- 20
         ft <- 1
         lni <- 100
@@ -1718,7 +1718,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## reproduction, death, and double and possibly triple mutants. We
         ## decrease init pop size to make this fast.
-        cat("\n nm3: a runif is", runif(1), "\n")
+        cat("\n nm3-ossl: a runif is", runif(1), "\n")
         pops <- 20
         ft <- 1
         lni <- 100
@@ -1780,7 +1780,7 @@ test_that("McFL: Mutator modules differences", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n MCFLmmd1: a runif is", runif(1), "\n")
+        cat("\n MCFLmmd1-ossl: a runif is", runif(1), "\n")
         reps <- 10
         no <- 5e3
         ft <- 100
@@ -1882,7 +1882,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n AEu8: a runif is", runif(1), "\n")
+        cat("\n AEu8-ossl: a runif is", runif(1), "\n")
         pops <- 200
         ft <- 5e-3
         lni <- 7
@@ -1990,7 +1990,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
         ##  - mutator increases mutation rates as seen in:
         ##        - number of clones created
         ##        - number of total mutation events
-        cat("\n nm0: a runif is", runif(1), "\n")
+        cat("\n nm0-ossl: a runif is", runif(1), "\n")
         pops <- 20
         ft <- .0001
         lni <- 100
@@ -2053,7 +2053,7 @@ test_that(" Init with different mutators", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n z2: a runif is", runif(1), "\n")
+        cat("\n z2-ossl: a runif is", runif(1), "\n")
         pops <- 40
         ft <- .005
         lni <- 50

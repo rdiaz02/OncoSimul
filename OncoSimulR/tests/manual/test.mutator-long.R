@@ -907,7 +907,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## Can occasionally blow up with pE.f: pE not finite.
-        cat("\n x1: a runif is", runif(1), "\n")
+        cat("\n x1-910: a runif is", runif(1), "\n")
         pops <- 80
         fe <- allFitnessEffects(noIntGenes = c("a" = 0.12,
                                                "b" = 0.14,
@@ -933,10 +933,10 @@ test_that("Relative ordering of number of clones with mutator effects", {
                             keepEvery = 5,
                             initSize = 1e6, mc.cores = 2,
                             onlyCancer = FALSE, seed = NULL)
-        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
-                                                "b" = 1e-6,
-                                                "c" = 1e-6,
-                                                "d" = 1e-6))
+        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-3,
+                                                "b" = 1e-3,
+                                                "c" = 1e-3,
+                                                "d" = 1e-3))
         nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =250,
                             mutationPropGrowth = FALSE,
                             sampleEvery = 0.001,
@@ -967,7 +967,7 @@ test_that("per-gene-mut rates and mutator", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n oss11: a runif is", runif(1), "\n")
+        cat("\n oss11-x970: a runif is", runif(1), "\n")
         ng <- 10
         ni <- rep(0, ng)
         m1 <- runif(ng, min = 1e-7, max = 5e-6)
