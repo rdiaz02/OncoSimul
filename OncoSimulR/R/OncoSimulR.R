@@ -63,6 +63,7 @@ oncoSimulSample <- function(Nindiv,
                             thresholdWhole = 0.5,
                             initMutant = NULL,
                             verbosity  = 1,
+                            showProgress = TRUE,
                             seed = "auto"){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
@@ -197,6 +198,14 @@ oncoSimulSample <- function(Nindiv,
         numToRun <- (numToRun - 1)
         attemptsUsed <- attemptsUsed + tmp$other$attemptsUsed
         attemptsLeft <- (max.num.tries.total - attemptsUsed)
+        if(showProgress) {
+            cat("......  Done individual ", indiv,
+                ". Used ", attemptsUsed, "attempts.",
+                ". Running for ", as.double(difftime(Sys.time(),
+                                                    startTime, units = "secs")),
+                " secs.\n"
+                )
+        }
         indiv <- indiv + 1
         
         ## We need to check in exactly this order. Attempts left only
