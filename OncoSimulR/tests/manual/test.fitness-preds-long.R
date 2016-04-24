@@ -209,6 +209,10 @@ test_that("Observed vs expected, case I", {
 })
 date()
 
+## This one will occasionally fail. I think there is a very slight
+## tendency to understimate. We do not see that in the individual comparisons,
+## but on the intercept of the lm: instead of 0, it seems to be sometimes around
+## -0.003 or -0.004. This is of course undetectable by eye, etc, and irrelevant.
 
 date()
 test_that("Observed vs expected, case II", {
