@@ -638,10 +638,10 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                             keepEvery = 5,
                             initSize = 1e6, mc.cores = 2, model = "McFL",
                             onlyCancer = FALSE, seed = NULL)
-        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-6,
-                                                "b" = 1e-6,
-                                                "c" = 1e-6,
-                                                "d" = 1e-6))
+        fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-3,
+                                                "b" = 1e-3,
+                                                "c" = 1e-3,
+                                                "d" = 1e-3))
         nc3 <- oncoSimulPop(pops, fe, muEF = fm7, finalTime =100,
                             mutationPropGrowth = FALSE,
                             sampleEvery = 0.001,
@@ -1406,7 +1406,7 @@ test_that("Mutator and mutPropGrowth", {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## we stop on size
         cat("\n mmpg: a runif is", runif(1), "\n")
-        reps <- 20
+        reps <- 200
         no <- 5e3
         ds <- 7e4
         ft <- 1000 
