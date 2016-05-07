@@ -1,3 +1,6 @@
+Changes in version 2.3.90002001 (2016-05-07):
+	- plot.oncosimulpop using auto for color.
+
 Changes in version 2.1.90002000 (2016-04-21):
 	- Mutator phenotype.
 	- Bug fixed: to_update set at 2 when mutating to pre-existing;
@@ -12,6 +15,9 @@ Changes in version 2.2.0 (for BioC 3.3):
 	- Miscell. improvements and typos fixed in documentation and vignette.
 	- Added mutationPropGrowth as argument.
 	- Some minor bug fixes and additional checks for user errors.
+
+Changes in version 2.1.6 (2016-04-14):
+	- Adapt to changes in today's release of testthat (1.0.0)
 
 Changes in version 2.1.5 (2016-04-09):
 	- Added a test of driverCounts, that does not depend on

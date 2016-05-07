@@ -162,7 +162,7 @@ test_that("stacked, stream, genotypes and some colors", {
                                keepEvery = 100,
                                initSize = 2000,
                                finalTime = 3000,
-                               onlyCancer = TRUE,
+                               onlyCancer = TRUE, ## make sure there is data to plot!
                                keepPhylog = TRUE)
         if(nrow(tmp$pops.by.time) >= 5) {
             break
