@@ -18,7 +18,6 @@ install:
 environment:
   global:
     TEST_DIR: OncoSimulR
-    R_VERSION: patched
     USE_RTOOLS: true
     R_BUILD_ARGS: --keep-empty-dirs --no-resave-data --no-manual
     R_CHECK_ARGS: --timings --no-vignettes --no-manual 
@@ -29,9 +28,33 @@ environment:
     - R_ARCH: x64
       GCC_PATH: mingw_64
       RTOOLS_VERSION: 33
+      R_VERSION: devel
+      
     - R_ARCH: i386
       GCC_PATH: mingw_32
       RTOOLS_VERSION: 33
+      R_VERSION: devel
+
+    - R_ARCH: x64
+      GCC_PATH: mingw_64
+      RTOOLS_VERSION: 33
+      R_VERSION: stable
+      
+    - R_ARCH: i386
+      GCC_PATH: mingw_32
+      RTOOLS_VERSION: 33
+      R_VERSION: stable
+
+    - R_ARCH: x64
+      GCC_PATH: mingw_64
+      RTOOLS_VERSION: 33
+      R_VERSION: patched
+      
+    - R_ARCH: i386
+      GCC_PATH: mingw_32
+      RTOOLS_VERSION: 33
+      R_VERSION: patched
+
 
 ## No longer make any sense starting with R-3.3
 ## - RTOOLS_VERSION: 32
