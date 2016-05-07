@@ -27,8 +27,6 @@ while(TRUE) {
     ## and you need to load the library first
     cat(paste("\n  done test_package", date(), "\n"))
     
-    the.seed <- .Random.seed ## examples and vignette set the seed in several
-    ## places
     cat("\n         And this is the second random uniform number ", runif(1), "\n")
 
     cat(paste("\n starting testInstalledPackage, examples", date()))
@@ -37,16 +35,12 @@ while(TRUE) {
     cat(paste("\n  done testInstalledPackage, examples", date(), "\n"))
 
     cat("\n                    And this is the third random uniform number ", runif(1), "\n")
-    .Random.seed <- the.seed
-
     cat(paste("\n starting testInstalledPackage, tests", date()))
     testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
                          types = c("tests"))
     cat(paste("\n  done testInstalledPackage, tests", date(), "\n"))
 
     cat("\n                          And this is the fourth random uniform number ", runif(1), "\n")
-    .Random.seed <- the.seed
-
     ## cat(paste("\n starting testInstalledPackage, vignette", date()))
     ## testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
     ##                      types = c("vignette"))
@@ -55,7 +49,7 @@ while(TRUE) {
     ## .Random.seed <- the.seed  ## note the seed does not advance here at all. Did above.
     ## checkVignettes("OncoSimulR", workdir = "src") ## yes, tmp or cur does not do it
     cat("\n                              And this is the FINAL random uniform number ", runif(1), "\n")
-    .Random.seed <- the.seed
+    ## set.seed(NULL) ## Not needed as files clean up after themselves
 }
 
 

@@ -1,6 +1,6 @@
 cat(paste("\n Starting init-mutant tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 
 ## Processing this file takes about 3 seconds on my laptop
 test_that("initMutant crashes",
@@ -47,7 +47,9 @@ test_that("initMutant crashes",
 
 
 test_that("initMutant lexicog order",
-          {
+{
+    max.tries <- 4
+    for(tries in 1:max.tries) {
               o3 <- allFitnessEffects(orderEffects = c(
                                           "M > D > F" = 0.99,
                                           "D > M > F" = 0.2,
@@ -73,14 +75,26 @@ test_that("initMutant lexicog order",
                                                                    returnGraph = TRUE),
                                                    sparse = FALSE))
               expect_true( "d > m _ " %in% cn )
-              expect_true( "d > m > f _ " %in% cn )
               expect_false( "m > d _" %in% cn )
               expect_false( "m > d > f _" %in% cn )
-          })
+              ## this next one will be true almost always
+              ## if there is pop growth. But very occasionally
+              ## it might not. The above must ALWAYS be true,
+              ## but this one we allow to repeat a couple of times
+              T1 <- ( "d > m > f _ " %in% cn )
+              if( T1 ) break;
+              if( !T1 ) {
+                  cat("\n pop in initMutant lexicog order\n ")
+                  print(tmp)
+        }
+    }
+})
 
 
 test_that("initMutant lexicog order with noint",
-          {
+{
+    max.tries <- 4
+    for(tries in 1:max.tries) {
               o3 <- allFitnessEffects(orderEffects = c(
                                           "M > D > F" = 0.99,
                                           "D > M > F" = 0.2,
@@ -106,51 +120,75 @@ test_that("initMutant lexicog order with noint",
                                                                    returnGraph = TRUE),
                                                    sparse = FALSE))
               expect_true( "d > m _ z" %in% cn )
-              expect_true( "d > m > f _ z" %in% cn )
               expect_false( "m > d _" %in% cn )
               expect_false( "m > d > f _" %in% cn )
+              
+              T1 <- ( "d > m > f _ z" %in% cn )
               ## expect_true( "d, m_z" %in% cn )
               ## expect_true( "d, m, f_z" %in% cn )
               ## expect_false( "m, d_" %in% cn )
               ## expect_false( "m, d, f_" %in% cn )
-          })
+              if( T1 ) break;
+              if(! T1 ) {
+                  cat("\n pop in initMutant lexicog order with no int\n ")
+                  print(tmp)
+              }
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1)
+})
+
+
+test_that("initMutant non lexicog order", {
+    max.tries <- 4
+    for(tries in 1:max.tries) {
+        o3 <- allFitnessEffects(orderEffects = c(
+                                    "M > D > F" = 0.99,
+                                    "D > M > F" = 0.2,
+                                    "D > M"     = 0.1,
+                                    "M > D"     = 0.9),
+                                noIntGenes = c("u" = 0.01, "z" = 0.01),
+                                geneToModule =
+                                    c("Root" = "Root",
+                                      "M" = "m",
+                                      "F" = "f",
+                                      "D" = "d") )
+        tmp <- oncoSimulIndiv(o3, model = "McFL",
+                              mu = 5e-5, finalTime = 500,
+                              detectionDrivers = 3,
+                              sampleEvery = 0.03,
+                              keepEvery = 1,
+                              onlyCancer = FALSE,
+                              initSize = 1000,
+                              keepPhylog = TRUE
+                            , initMutant = c("m > d")
+                              )
+        cn <- colnames(igraph::get.adjacency(plotClonePhylog(tmp, N = 0,
+                                                             returnGraph = TRUE),
+                                             sparse = FALSE))
+        expect_false( "d > m _" %in% cn )
+        expect_false( "d > m > f _" %in% cn )
+        expect_true( "m > d _ " %in% cn )
+        ## this next one will be true almost always
+        ## if there is pop growth. But very occasionally
+        ## it might not. The above must ALWAYS be true,
+        ## but this one we allow to repeat a couple of times
+        T1 <- ( "m > d > f _ " %in% cn )
+        if( T1 ) break;
+        if( !T1 ) {
+            cat("\n pop in initMutant non lexicog order\n ")
+            print(tmp)
+        }
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1)
+})
 
 
 test_that("initMutant non lexicog order",
-          {
-              o3 <- allFitnessEffects(orderEffects = c(
-                                          "M > D > F" = 0.99,
-                                          "D > M > F" = 0.2,
-                                          "D > M"     = 0.1,
-                                          "M > D"     = 0.9),
-                                      noIntGenes = c("u" = 0.01, "z" = 0.01),
-                                      geneToModule =
-                                          c("Root" = "Root",
-                                            "M" = "m",
-                                            "F" = "f",
-                                            "D" = "d") )
-              tmp <- oncoSimulIndiv(o3, model = "McFL",
-                      mu = 5e-5, finalTime = 500,
-                      detectionDrivers = 3,
-                      sampleEvery = 0.03,
-                      keepEvery = 1,
-                      onlyCancer = FALSE,
-                      initSize = 1000,
-                      keepPhylog = TRUE
-                     , initMutant = c("m > d")
-                      )
-              cn <- colnames(igraph::get.adjacency(plotClonePhylog(tmp, N = 0,
-                                                                   returnGraph = TRUE),
-                                                   sparse = FALSE))
-              expect_false( "d > m _" %in% cn )
-              expect_false( "d > m > f _" %in% cn )
-              expect_true( "m > d _ " %in% cn )
-              expect_true( "m > d > f _ " %in% cn )
-          })
-
-
-test_that("initMutant non lexicog order",
-          {
+{
+    max.tries <- 4
+    for(tries in 1:max.tries) {
               o3 <- allFitnessEffects(orderEffects = c(
                                           "M > D > F" = 0.99,
                                           "D > M > F" = 0.2,
@@ -178,8 +216,21 @@ test_that("initMutant non lexicog order",
               expect_false( "d > m _" %in% cn )
               expect_false( "d > m > f _" %in% cn )
               expect_true( "m > d _ u" %in% cn )
-              expect_true( "m > d > f _ u" %in% cn )
-          })
+              ## this next one will be true almost always
+              ## if there is pop growth. But very occasionally
+              ## it might not. The above must ALWAYS be true,
+              ## but this one we allow to repeat a couple of times
+              
+              T1 <- ( "m > d > f _ u" %in% cn )
+              if( T1 ) break;
+              if(! T1 ) {
+                  cat("\n pop in initMutant non lexicog order\n ")
+                  print(tmp)
+              }
+    }
+    cat(paste("\n done tries", tries, "\n"))
+    expect_true(T1)
+})
 
 ## FIXME: we could use stronger test: we will never see M > D
 test_that("initMutant with oncoSimulSample", {
@@ -198,7 +249,8 @@ test_that("initMutant with oncoSimulSample", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ossI <- oncoSimulSample(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
@@ -243,7 +295,8 @@ test_that("initMutant with oncoSimulSample, 2", {
                               "F" = "f",
                               "D" = "d",
                               "H" = "h",
-                              "G" = "g") )
+                              "G" = "g"),
+                        drvNames = c("m", "f", "d", "a", "h", "g"))
     ossI <- oncoSimulSample(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
@@ -282,7 +335,8 @@ test_that("initMutant with oncoSimulPop", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
@@ -337,7 +391,8 @@ test_that("initMutant with oncoSimulPop, 2", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 70,
@@ -394,7 +449,8 @@ test_that("initMutant with oncoSimulPop, McFL", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "McFL",
                         mu = 5e-5, finalTime = 5000,
@@ -449,7 +505,8 @@ test_that("initMutant with oncoSimulPop, Bozic", {
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("m", "f", "d"))
     ospI <- oncoSimulPop(4, 
                         o3init, model = "Bozic",
                         mu = 5e-5, finalTime = 5000,
@@ -510,7 +567,9 @@ test_that("initMutant with oncoSimulSample, 2, McFL", {
                               "F" = "f",
                               "D" = "d",
                               "H" = "h",
-                              "G" = "g") )
+                              "G" = "g"),
+                        drvNames = c("m", "f", "d", "a", "h", "g")
+                        )
     ossI <- oncoSimulSample(4, 
                         o3init, model = "McFL",
                         mu = 5e-5, finalTime = 5000,
@@ -555,7 +614,8 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
                               "F" = "f",
                               "D" = "d",
                               "H" = "h",
-                              "G" = "g") )
+                              "G" = "g"),
+                        drvNames = c("m", "f", "d", "a", "h", "g"))
     ossI <- oncoSimulSample(4, 
                         o3init, model = "Bozic",
                         mu = 5e-5, finalTime = 5000,
@@ -579,6 +639,7 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
 
 
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
+
 
 
 

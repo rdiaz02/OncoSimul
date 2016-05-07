@@ -16,9 +16,9 @@
 ## all the code for new simulations is based upon going from adjmat to rT.
 ## verify that.
 
-cat(paste("\n Starting oposet-transformations tests", date(), "\n"))
+cat(paste("\n Starting poset-transformations tests", date(), "\n"))
 
-RNGkind("Mersenne-Twister")
+## RNGkind("Mersenne-Twister")
 
 test_that("posetToGraph stop in incorrect entry type", {
     expect_error(OncoSimulR:::posetToGraph(1:5, letters[1:5]),
@@ -782,4 +782,4 @@ tmp <- replicate(numSimul, checkAdjMatOGraph(rangeNodes = 2:50,
 ## stopifnot(length(resT) == numTests)
 ## stopifnot(all(resT))
 
-cat(paste("\n Ending oposet-transformations tests", date(), "\n"))
+cat(paste("\n Ending poset-transformations tests", date(), "\n"))

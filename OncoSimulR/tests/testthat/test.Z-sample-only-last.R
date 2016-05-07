@@ -1,14 +1,18 @@
-## Like standard one, but with all 13 posets, which is an unneeded
-## overkill.
+cat(paste("\n Starting sample-only-last tests", date(), "\n"))
 
 data(examplePosets)
 RNGkind("Mersenne-Twister") 
 
-bozic <- function(poset) oncoSimulIndiv(poset)
-bozic9 <- function(poset) oncoSimulIndiv(poset, keepEvery = -9)
+bozic <- function(poset) oncoSimulIndiv(poset, sampleEvery = 0.03,
+                                        keepEvery = 1)
+bozic9 <- function(poset) oncoSimulIndiv(poset, sampleEvery = 0.03,
+                                         keepEvery = -9)
     
-Exp <- function(poset) oncoSimulIndiv(poset, model = "Exp")
-Exp9 <- function(poset) oncoSimulIndiv(poset, model = "Exp", keepEvery = -9)
+Exp <- function(poset) oncoSimulIndiv(poset, sampleEvery = 0.03, keepEvery = 1,
+                                      model = "Exp")
+Exp9 <- function(poset) oncoSimulIndiv(poset, model = "Exp",
+                                       sampleEvery = 0.03,
+                                       keepEvery = -9)
 
 mc <- function(poset) oncoSimulIndiv(poset, model = "McFL",
                                      mu = 5e-7,
@@ -46,7 +50,9 @@ runBothFuncts <- function(seed, Poset, functionPair) {
     return(list(all = b1, last = b2))
 }
 
-
+## We only use one from each of 11, 9, 7.
+## Whole collection tested in long tests
+examplePosets <- examplePosets[c(1, 5, 9)]
 for(i in 1:length(examplePosets)) {
     s1 <- round(runif(1) * 10000) ## do better as: as.integer(runif(1, 1, 1e9))
     Poset <- examplePosets[[i]]
@@ -93,3 +99,6 @@ for(i in 1:length(examplePosets)) {
                         })   
     }
 }
+
+set.seed(NULL)
+cat(paste("\n Ending sample-only-last tests", date(), "\n"))

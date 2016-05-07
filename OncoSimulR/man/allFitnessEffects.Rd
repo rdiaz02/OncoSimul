@@ -240,6 +240,8 @@ fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
 
 evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
 
+## Reinitialize the seed
+set.seed(NULL)
 }
 
 \keyword{ manip }
