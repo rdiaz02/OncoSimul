@@ -1,4 +1,7 @@
 * Chrmothripsis
+  - This can be enabled if we want to allow for double/triple/whatever
+    mutations in a single sweep. Start from a genotype with the "chtr
+    gene" mutated. 
   - Probability of occurrence
     - Altered if given gene(s) mutated?
   - Fraction of genome affected: chrt_frac
