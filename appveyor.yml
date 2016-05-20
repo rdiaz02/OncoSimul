@@ -25,15 +25,15 @@ environment:
 ## --install-args=--build --no-multiarch
     
   matrix:
-    - R_ARCH: x64
-      GCC_PATH: mingw_64
-      RTOOLS_VERSION: 33
-      R_VERSION: devel
+#    - R_ARCH: x64
+#      GCC_PATH: mingw_64
+#      RTOOLS_VERSION: 33
+#      R_VERSION: devel
       
-    - R_ARCH: i386
-      GCC_PATH: mingw_32
-      RTOOLS_VERSION: 33
-      R_VERSION: devel
+#    - R_ARCH: i386
+#      GCC_PATH: mingw_32
+#      RTOOLS_VERSION: 33
+#      R_VERSION: devel
 
     - R_ARCH: x64
       GCC_PATH: mingw_64
