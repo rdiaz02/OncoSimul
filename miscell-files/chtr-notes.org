@@ -27,9 +27,15 @@
       soon as a birth happens, we get the new species.
       - Beware with C++ code and birth being == 0 (a kludge would be to
         set birth to the minimal non-zero).
-
     - Alternatively: if clone gets hit, it immediately mutates. But this
       is not great.
+    - Of course, this is all much simpler if we have discrete time.
+
+  - Only once? If dealing with only once, etc:
+    - if only once and parent already mutated by chtr: no effect
+    - if not only once: do it using the prob. of chtr.
+    - if only once and parent not already mutated: do it using the prob. of chtr.
+
     
 
 
