@@ -36,6 +36,10 @@
     - if not only once: do it using the prob. of chtr.
     - if only once and parent not already mutated: do it using the prob. of chtr.
 
+  - Mutation mechanism: for each clone, the probability of mutation is
+    \sum mu + nu, where nu is chromothr? but this seems at odds with what
+    is written above.
+
     
 
 
