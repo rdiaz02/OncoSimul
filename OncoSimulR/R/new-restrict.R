@@ -1603,7 +1603,7 @@ get.gene.counts <- function(x) {
                                         # typeSample = "whole") {
     ## From get.mut.vector. Used for now just for testing
     timeSample <- "last"
-    the.time <- get.the.time.for.sample(x, timeSample)
+    the.time <- get.the.time.for.sample(x, timeSample, NULL)
     if(the.time < 0) {
         counts <- rep(0, length(x$geneNames))
         names(counts) <- x$geneNames

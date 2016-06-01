@@ -1,3 +1,6 @@
+Changes in version 2.3.90002002 (2016-06-01):
+	- samplePop: sample at arbitrary sizes.
+
 Changes in version 2.3.90002001 (2016-05-07):
 	- plot.oncosimulpop using auto for color.
 

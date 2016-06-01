@@ -105,6 +105,7 @@ oncoSimulSample(Nindiv,
                 thresholdWhole = 0.5,
                 initMutant = NULL,
                 verbosity  = 1,
+                showProgress = TRUE,
                 seed = "auto")
 
 
@@ -437,6 +438,9 @@ number of drivers (and, thus, the default is set to 9e6).
 
 \item{mc.cores}{Number of cores to use when simulating more than one
   individual (i.e., when calling oncoSimulPop).}
+
+\item{showProgress}{If TRUE, provide information, during exection,
+of the individual done, and the number of attempts and time used.}
 
 \item{seed}{The seed for the C++ PRNG. You can pass a value. If you set
   it to NULL, then a seed will be generated in R and passed to C++. If

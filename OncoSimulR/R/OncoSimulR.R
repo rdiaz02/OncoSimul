@@ -254,12 +254,12 @@ oncoSimulSample <- function(Nindiv,
 }
 
 
-samplePop <- function(x, timeSample = c("last", "unif"),
+samplePop <- function(x, timeSample = "last",
                       typeSample = "whole",
                       thresholdWhole = 0.5,
                       geneNames = NULL,
                       popSizeSample = NULL) {
-    timeSample <- match.arg(timeSample)
+    ## timeSample <- match.arg(timeSample)
     gN <- geneNames
     
     if(!is.null(popSizeSample) && (length(popSizeSample) > 1) &&
