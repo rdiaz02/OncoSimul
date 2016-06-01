@@ -254,17 +254,28 @@ oncoSimulSample <- function(Nindiv,
 }
 
 
-samplePop <- function(x, timeSample = "last", typeSample = "whole",
+samplePop <- function(x, timeSample = c("last", "unif"),
+                      typeSample = "whole",
                       thresholdWhole = 0.5,
-                      geneNames = NULL) {
+                      geneNames = NULL,
+                      popSizeSample = NULL) {
+    timeSample <- match.arg(timeSample)
     gN <- geneNames
+    
+    if(!is.null(popSizeSample) && (length(popSizeSample) > 1) &&
+       (length(popSizeSample) != length(x)))
+        warning("length popSizeSample != number of subjects")
+    ## A hack to prevent Map from crashing with a NULL
+    if(is.null(popSizeSample)) popSizeSample <- -99
     if(inherits(x, "oncosimulpop")) {
         z <- do.call(rbind,
-                     lapply(x,
-                            get.mut.vector,
-                            timeSample = timeSample,
-                            typeSample = typeSample,
-                            thresholdWhole = thresholdWhole))
+                     Map(get.mut.vector,
+                         x = x,
+                         timeSample = timeSample,
+                         typeSample = typeSample,
+                         thresholdWhole = thresholdWhole,
+                         popSizeSample = popSizeSample
+                         ))
         ## We need to check if the object is coming from v.2., to avoid
         ## having to force passing a vector of names
         if(is.null(gN) && (!is.null(x[[1]]$geneNames)))
@@ -273,7 +284,8 @@ samplePop <- function(x, timeSample = "last", typeSample = "whole",
         z <- get.mut.vector(x,
                             timeSample = timeSample,
                             typeSample = typeSample,
-                            thresholdWhole = thresholdWhole)
+                            thresholdWhole = thresholdWhole,
+                            popSizeSample = popSizeSample)
         dim(z) <- c(1, length(z))
         if(is.null(gN) && (!is.null(x$geneNames)))
             gN <- geneNames
@@ -1409,17 +1421,32 @@ plotClonePhylog <- function(x, N = 1, t = "last",
 
 ############# The rest are internal functions
 
+closest_time <- function(x, size) {
+    ## Find the first time when a given size is reached
+    sizes <- rowSums(x$pops.by.time[, -1, drop = FALSE])
+    candidates <- which(sizes >= size)
+    if(length(candidates) == 0) {
+        warning(paste("Pop size never >= requested size.",
+                      "Thus, there is nothing to sample. You will get NAs"))
+        return(-99)
+    } else {
+        return(candidates[1])
+    }
+}
 
-get.the.time.for.sample <- function(tmp, timeSample) {
-    if(timeSample == "last") {
+
+get.the.time.for.sample <- function(tmp, timeSample, popSizeSample) {
+    if( !is.null(popSizeSample) && (popSizeSample >= 0) )  {
+        the.time <- closest_time(tmp, popSizeSample)
+    } else if(timeSample == "last") {
         if(tmp$TotalPopSize == 0) {
             warning(paste("Final population size is 0.",
                           "Thus, there is nothing to sample with",
                           "sampling last. You will get NAs"))
             the.time <- -99
         } else {
-              the.time <- nrow(tmp$pops.by.time)
-          }
+            the.time <- nrow(tmp$pops.by.time)
+        }
     } else if (timeSample %in% c("uniform", "unif")) {
           candidate.time <- which(tmp$PerSampleStats[, 4] > 0)
           
@@ -1436,7 +1463,7 @@ get.the.time.for.sample <- function(tmp, timeSample) {
             } else {
                   the.time <- sample(candidate.time, 1)
               }
-      } else {
+    } else {
             stop("Unknown timeSample option")
         }
     return(the.time)
@@ -1444,8 +1471,8 @@ get.the.time.for.sample <- function(tmp, timeSample) {
 
 
 get.mut.vector <- function(x, timeSample, typeSample,
-                           thresholdWhole) {
-    the.time <- get.the.time.for.sample(x, timeSample)
+                           thresholdWhole, popSizeSample) {
+    the.time <- get.the.time.for.sample(x, timeSample, popSizeSample)
     if(the.time < 0) { 
         return(rep(NA, nrow(x$Genotypes)))
     } 
@@ -1461,10 +1488,10 @@ get.mut.vector <- function(x, timeSample, typeSample,
                                        x$Genotypes)/popSize) >= thresholdWhole) )
     } else if (typeSample %in%  c("singleCell", "single")) {
 
-          return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
-      } else {
-            stop("Unknown typeSample option")
-        }
+        return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+    } else {
+        stop("Unknown typeSample option")
+    }
 }
 
 
