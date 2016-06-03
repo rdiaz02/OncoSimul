@@ -10,13 +10,15 @@ Code for forward population genetic simulation in asexual populations,
 with special focus on cancer progression.  Fitness can be an arbitrary
 function of genetic interactions between multiple genes or modules of
 genes, including epistasis, order restrictions in mutation accumulation,
-and order effects.  Simulations so far use continuous-time models and can
-include driver and passenger genes and modules.  Also included are
-functions for simulating random DAGs of the type found in Oncogenetic
-Tress, Conjunctive Bayesian Networks, and other tumor progression models,
-and for plotting and sampling from single or multiple realizations of the
-simulations, including whole-tumor and single-cell sampling, as well as
-functions for plotting the true phylogenetic relationships of the clones.
+and order effects.  Mutation rates can differ between genes, and we can
+include mutator/antimutator genes (to model mutator
+phenotypes). Simulations so far use continuous-time models and can include
+driver and passenger genes and modules.  Also included are functions for
+simulating random DAGs of the type found in Oncogenetic Tress, Conjunctive
+Bayesian Networks, and other tumor progression models, and for plotting
+and sampling from single or multiple realizations of the simulations,
+including whole-tumor and single-cell sampling, as well as functions for
+plotting the true phylogenetic relationships of the clones.
 
 
 The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
