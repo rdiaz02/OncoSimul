@@ -58,5 +58,6 @@ rm ./OncoSimulR/vignettes/*.out
 rm ./OncoSimulR/vignettes/*.blg
 rm ./OncoSimulR/vignettes/*.synctex.*
 
+
 $V_R --vanilla CMD INSTALL --install-tests ./OncoSimulR
 
