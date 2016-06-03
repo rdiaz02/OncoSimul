@@ -460,7 +460,8 @@ void obtainMutations(const Genotype& parent,
     newMutations.push_back(nonmutated[rpos(ran_gen)]);
   } else { // per-gene mutation rate.
     // Remember that mutations always indexed from 1, not from 0.
-
+    // We take an element from a discrete distribution, with probabilities
+    // proportional to the rates.
     // FIXME:varmutrate give a warning if the only mu is for mu = 0.
     std::vector<double> mu_nm;
     for(auto const &nm : nonmutated) mu_nm.push_back(mu[nm - 1]);
