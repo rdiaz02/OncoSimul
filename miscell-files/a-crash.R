@@ -1,3 +1,42 @@
+##
+o1 <- allFitnessEffects(
+    noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+set.seed(1)
+
+oncoSimulIndiv(o1, initMutant = "b, a, c", verbosity = 1)
+oncoSimulIndiv(o1, initMutant = "b, a, c", verbosity = 3, mutationPropGrowth = FALSE)
+
+oncoSimulIndiv(o1, initMutant = "b, a, c, a", verbosity = 3)
+
+oncoSimulIndiv(o1, initMutant = "b, a, c, d", verbosity = 3)
+
+
+
+
+## so test correctness of the following and no crashes as lead to stop in R
+
+evalAllGenotypes(o1, order = TRUE, addwt = TRUE)
+## this crashes R
+oncoSimulIndiv(o1, initMutant = "a, b")
+
+oncoSimulIndiv(o1, initMutant = "a > b")
+
+oncoSimulIndiv(o1, initMutant = "b, a")
+
+## segfault
+oncoSimulIndiv(o1, initMutant = "b, a, c")
+
+
+
+  ## c > a > b: (1 + 0.9) * (1 - 0.2)
+  ## a > c > b: (1 + 0.9) * (1 - 0.2)
+  ## c > b > a: (1 + 0.9) * (1 + 0.3)
+  ## a > c = c > a:   (1 + .9)
+
+
+
+
+
 ## Some things to include in tests and things that crash R
 
 ## This shows same gene in orderEffects and epistasis

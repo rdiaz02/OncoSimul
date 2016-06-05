@@ -148,6 +148,7 @@ vector<int> genotypeSingleVector(const Genotype& ge) {
   allgG.insert(allgG.end(), ge.orderEff.begin(), ge.orderEff.end());
   allgG.insert(allgG.end(), ge.epistRtEff.begin(), ge.epistRtEff.end());
   allgG.insert(allgG.end(), ge.rest.begin(), ge.rest.end());
+  // this should not be unique'd as it aint' sorted
   return allgG;
 }
 
@@ -173,7 +174,17 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
     g0.push_back(b);
   }
   sort(g0.begin(), g0.end());
-  
+  // Can we assume the fitness IDs go from 0 to n? Nope: because of
+  // muEF. But we assume in several places that there are no repeated
+  // elements in the output from this function.
+
+  // FIXME we verify there are no repeated elements. That is to strongly
+  // check our assumptions are right. Alternatively, return the "uniqued"
+  // vector and do not check anything.
+  std::vector<int> g0_cp(g0);
+  g0.erase( unique( g0.begin(), g0.end() ), g0.end() );
+  if(g0.size() != g0_cp.size())
+    throw std::logic_error("\n allGenesinFitness: repeated genes");
   return g0;
 }
 
@@ -187,9 +198,15 @@ vector<int> allGenesinGenotype(const Genotype& ge){
   for(auto const &g3 : ge.rest)
     allgG.push_back(g3);
   sort(allgG.begin(), allgG.end());
-  // FIXME: remove duplicates?
-  // see speed comparisons here:
-  //http://stackoverflow.com/questions/1041620/whats-the-most-efficient-way-to-erase-duplicates-and-sort-a-vector
+  // Remove duplicates see speed comparisons here:
+  // http://stackoverflow.com/questions/1041620/whats-the-most-efficient-way-to-erase-duplicates-and-sort-a-vector
+  // We assume here there are no duplicates. Yes, a gene can have both
+  // fitness effects and order effects and be in the DAG. But it will be
+  // in only one of the buckets.
+  std::vector<int> g0_cp(allgG);
+  allgG.erase( unique( allgG.begin(), allgG.end() ), allgG.end() );
+  if(allgG.size() != g0_cp.size())
+    throw std::logic_error("\n allGenesinGenotype: repeated genes");
   return allgG;
 }
 
@@ -435,16 +452,25 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   return fe;
 }
 
-// Before making allGenesinGenotype return a unique vector.  We do a
+// Before making allGenesinGenotype return a unique vector: we do a
 // set_difference below. If we look at the help
-// (http://en.cppreference.com/w/cpp/algorithm/set_difference) if we hade
+// (http://en.cppreference.com/w/cpp/algorithm/set_difference) if we had
 // more repetitions of an element in allGenes than in sortedparent we
 // could have a problem. But if you look at function "allgenesinFitness",
 // which is the one used to give the allgenes vector, you will see that
 // that one returns only one entry per gene, as it parses the geneModule
-// structure. So even if allGenesinGenotype returns multiple entries,
-// there will be no bugs as the maximum number of entries in the output of
-// setdiff will be 0 or 1 as m is 1.
+// structure. So even if allGenesinGenotype returns multiple entries
+// (which they don't), there will be no bugs as the maximum number of
+// entries in the output of setdiff will be 0 or 1 as m is 1. But
+// allGenesinGenotype cannot return more than one element as can be seen
+// in createNewGenotype: an element only ends in the order component if it
+// is not in the epistasis component.  So there are no repeated elements
+// in allGenes or in sortedparent below. Also, beware that does not break
+// correct fitness evaluation of fitnessEffects where the same gene is in
+// epistasis and order, as can be seen in the tests and because of how we
+// evaluate fitness, where genes in a genotype in the orderEffects bucket
+// are placed also in the epist for fitness eval. See evalGenotypeFitness
+// and createNewGenotype.
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent, 
@@ -460,11 +486,11 @@ void obtainMutations(const Genotype& parent,
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 sortedparent.begin(), sortedparent.end(),
 		 back_inserter(nonmutated));
-
   // numMutablePos is used not only for mutation but also to decide about
   // the dummy or null mutation case.
   numMutablePosParent = nonmutated.size();
-
+  if(nonmutated.size() < 1)
+    throw std::out_of_range("Trying to obtain a mutation when nonmutated.size is 0");
   if(mu.size() == 1) { // common mutation rate
     // FIXME:chromothr would not use this, or this is the limit case with a
   // single mutant
@@ -480,7 +506,6 @@ void obtainMutations(const Genotype& parent,
     std::discrete_distribution<int> rpos(mu_nm.begin(), mu_nm.end());
     newMutations.push_back(nonmutated[rpos(ran_gen)]);
   }
-  
   // randutils
   // // Yes, the next will work, but pick is simpler!
   // // size_t rpos = ran_gen.uniform(static_cast<size_t>(0), nonmutated.size() - 1);
@@ -578,6 +603,15 @@ Genotype createNewGenotype(const Genotype& parent,
 
   // Order of ifs: I suspect order effects rare. No idea about
   // non-interaction genes, but if common the action is simple.
+
+  // A gene that is involved both in order effects and epistasis, only
+  // ends up in the orderEff container, for concision (even if a gene can
+  // be involved in both orderEff and epistasis and rT). But in the
+  // genotype evaluation, in evalGenotypeFitness, notice that we create
+  // the vector of genes to be checked against epistais and order effects
+  // using also those from orderEff:
+  //   std::vector<int> mutG (ge.epistRtEff);
+  //   mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
   for(auto const &g : mutations) {
     if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
       // We can be dealing with modules
@@ -668,7 +702,8 @@ void checkLegitGenotype(const Genotype& ge,
     // An empty genotype is always legitimate, even if silly
     return;
   }
-  vector<int> g0 = allGenesinFitness(F);
+  // vector<int> g0 = allGenesinFitness(F);
+  vector<int> g0 = F.allGenes;
   vector<int> allgG = allGenesinGenotype(ge);
   checkNoNegZeroGene(allgG);
   breakingGeneDiff(allgG, g0);
@@ -680,7 +715,8 @@ void checkLegitGenotype(const vector<int>& ge,
     // An empty genotype is always legitimate, even if silly
     return;
   }
-  std::vector<int> g0 = allGenesinFitness(F);
+  // std::vector<int> g0 = allGenesinFitness(F);
+  vector<int> g0 = F.allGenes;
   std::vector<int> allgG (ge);
   sort(allgG.begin(), allgG.end());
   checkNoNegZeroGene(allgG);
@@ -1015,14 +1051,17 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   
   // Epistatis and poset are checked against all mutations. Create single
   // sorted vector with all mutations and map to modules, if needed. Then
-  // eval.
+  // eval. 
 
   // Why not use a modified genotypeSingleVector without the no ints? We
   // could, but not necessary. And you can place genes in any order you
   // want, since this is not for order restrictions. That goes below.
-  // Why do I put the epist first? Se previous answer.
+  // Why do I put the epist first? See previous answer.
   // Why do I sort if one to one? binary searches. Not done below for order.
   std::vector<int> mutG (ge.epistRtEff);
+  // A gene can be involved in epistasis and order. This gene would only
+  // be in the orderEff vector, as seen in "createNewGenotype" or
+  // "convertGenotypeFromInts"
   mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
   std::vector<int> mutatedModules;
   if(F.gMOneToOne) {
