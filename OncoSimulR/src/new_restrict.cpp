@@ -187,6 +187,9 @@ vector<int> allGenesinGenotype(const Genotype& ge){
   for(auto const &g3 : ge.rest)
     allgG.push_back(g3);
   sort(allgG.begin(), allgG.end());
+  // FIXME: remove duplicates?
+  // see speed comparisons here:
+  //http://stackoverflow.com/questions/1041620/whats-the-most-efficient-way-to-erase-duplicates-and-sort-a-vector
   return allgG;
 }
 
@@ -432,7 +435,16 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   return fe;
 }
 
-
+// Before making allGenesinGenotype return a unique vector.  We do a
+// set_difference below. If we look at the help
+// (http://en.cppreference.com/w/cpp/algorithm/set_difference) if we hade
+// more repetitions of an element in allGenes than in sortedparent we
+// could have a problem. But if you look at function "allgenesinFitness",
+// which is the one used to give the allgenes vector, you will see that
+// that one returns only one entry per gene, as it parses the geneModule
+// structure. So even if allGenesinGenotype returns multiple entries,
+// there will be no bugs as the maximum number of entries in the output of
+// setdiff will be 0 or 1 as m is 1.
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
 		     int& numMutablePosParent, 
