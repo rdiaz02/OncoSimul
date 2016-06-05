@@ -330,7 +330,6 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 
 
 
-
 inline void nr_reshape_to_outNS(Rcpp::NumericMatrix& outNS,
 				const vector<vector<int> >& uniqueGenotV,
 				const vector<vector<int> >& genot_out_v,
@@ -886,12 +885,31 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
   if(initMutant.size() > 0) {
-    popParams[0].numMutablePos = numGenes - 1;
     Genotypes[0] = createNewGenotype(wtGenotype(),
 				     initMutant,
 				     fitnessEffects,
 				     ran_gen,
-				     false); 
+				     false);
+    int numGenesInitMut = Genotypes[0].orderEff.size() +
+      Genotypes[0].epistRtEff.size() + Genotypes[0].rest.size();
+    int numGenesGenotype = fitnessEffects.allGenes.size();
+    popParams[0].numMutablePos = numGenesGenotype - numGenesInitMut;
+    if(popParams[0].numMutablePos < 0)
+      throw std::invalid_argument("initMutant's genotype has more genes than are possible");
+    if(popParams[0].numMutablePos == 0)
+      Rcpp::Rcout << "initMutant has no mutable positions: genotype with all genes mutated";
+    // popParams[0].numMutablePos = numGenes - 1;
+    // From obtainMutations, but initMutant an int vector. But cumbersome.
+    // std::vector<int> sortedg = convertGenotypeFromInts(initMutant);
+    // sort(sortedg.begin(), sortedg.end());
+    // std::vector<int> nonmutated;
+    // set_difference(fitnessEffects.allGenes.begin(), fitnessEffects.allGenes.end(),
+    // 		   sortedg.begin(), sortedg.end(),
+    // 		   back_inserter(nonmutated));
+    // popParams[0].numMutablePos = nonmutated.size();
+
+
+
     // Commenting out the unused models!
     // if(typeModel == TypeModel::beerenwinkel) {
       
@@ -1232,12 +1250,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 		<< "; timeNextPopSample = " << timeNextPopSample 
 		<< "; popParams.size() = " << popParams.size() << "\n";
     }
-    
+
     // Do we need to sample the population?
     if( minNextMutationTime <= tSample ) {// We are not sampling
       // ************   5.3   **************
       currentTime = minNextMutationTime;
-
       // ************   5.4   ***************
       mutantTimeSinceLastUpdate = currentTime - 
 	popParams[nextMutant].timeLastUpdate;
@@ -1245,9 +1262,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       popParams[nextMutant].popSize = Algo3_st(popParams[nextMutant],
 					       mutantTimeSinceLastUpdate);
 
-
-
-      
       if(popParams[nextMutant].popSize > (ratioForce * detectionSize)) {
 	forceSample = true;
 	ratioForce = std::min(1.0, 2 * ratioForce);
@@ -1277,7 +1291,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 #endif
       }
 
-
       if(popParams[nextMutant].numMutablePos != 0) {
 	// this is the usual case. The alternative is the dummy or null mutation
 
@@ -1286,7 +1299,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 	newMutations.clear();
 	// FIXME: nonmutated also returned here
-	
 	obtainMutations(Genotypes[nextMutant],
 			fitnessEffects,
 			numMutablePosParent,
@@ -1301,13 +1313,11 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	// 		     numGenes);
       
 	// ************   5.6   ***************
-
 	newGenotype = createNewGenotype(Genotypes[nextMutant],
 					newMutations,
 					fitnessEffects,
 					ran_gen,
 					true);
-
 	// nr_change
 	// newGenotype = Genotypes[nextMutant];
 	// newGenotype.set(mutatedPos);
