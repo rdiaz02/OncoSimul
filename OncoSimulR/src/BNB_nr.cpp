@@ -895,9 +895,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     int numGenesGenotype = fitnessEffects.allGenes.size();
     popParams[0].numMutablePos = numGenesGenotype - numGenesInitMut;
     if(popParams[0].numMutablePos < 0)
-      throw std::invalid_argument("initMutant's genotype has more genes than are possible");
+      throw std::invalid_argument("initMutant's genotype has more genes than are possible.");
     if(popParams[0].numMutablePos == 0)
-      Rcpp::Rcout << "initMutant has no mutable positions: genotype with all genes mutated";
+      throw std::invalid_argument("initMutant has no mutable positions: genotype with all genes mutated.");
     // popParams[0].numMutablePos = numGenes - 1;
     // From obtainMutations, but initMutant an int vector. But cumbersome.
     // std::vector<int> sortedg = convertGenotypeFromInts(initMutant);

@@ -1418,7 +1418,7 @@ nr_oncoSimul.internal <- function(rFE,
              "you can enter a second gene (locus)",
              "with fitness effect of zero.")
     }
-
+    
     if( (length(mu) == 1) && !(is.null(names(mu)))) {
         stop("A length 1 mutation, but named. ",
              "This is ambiguous. ",
@@ -1463,7 +1463,12 @@ nr_oncoSimul.internal <- function(rFE,
         initMutant <- getGeneIDNum(rFE$geneModule,
                              rFE$long.geneNoInt,
                                    initMutant,
-                                   FALSE)
+                             FALSE)
+       if(length(initMutant) >= countGenesFe(rFE)) {
+        stop("For initMutant you passed as many, or more genes, mutated",
+             "than the number of genes in the genotype (fitness effects).")
+    }
+       
     } else {
         initMutant <- vector(mode = "integer")
     }

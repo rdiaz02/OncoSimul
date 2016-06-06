@@ -1115,4 +1115,48 @@ test_that("noIntGenes, two common errors: character vector and ,>:", {
                  fixed = TRUE)
 })
 
+
+test_that("Some same genes in epistasis and order effects", {
+    s1 <- 0.1
+    s2 <- 0.2
+    s3 <- 0.3
+    s4 <- 0.9
+    s5 <- 0.7
+    s0 <- 0.33
+    sh <- -Inf
+    o999 <- allFitnessEffects(rT = data.frame(parent = c("Root", "a", "f"),
+                                              child  = c("a", "f", "m"),
+                                              s = s0,
+                                              sh = sh,
+                                              typeDep = "MN"),
+                              orderEffects = c("a>b" = s1, "b > a" = s2, "b > m" = s3),
+                              epistasis = c("a:c" = s4, "b:e" = s5))
+    of <- evalAllGenotypes(o999, order = TRUE, max = 1956)
+    expect_equal(dplyr::filter(of, Genotype == "b > a > f > c")[, "Fitness"],
+    (1 + s2) * (1 + s0) * (1 + s0) * (1 + s4))
+    expect_equal(dplyr::filter(of, Genotype == "a > f > c > b > m")[, "Fitness"],
+    (1 + s0) * (1 + s0) * (1 + s0) * (1 + s1) * (1 + s4) * (1 + s3))
+    expect_equal(dplyr::filter(of, Genotype == "e > a > b")[, "Fitness"],
+    (1 + s0) * (1 + s5) * (1 + s1))
+    s1 <- -0.2
+    s2 <- 0.3
+    s3 <- 0.9
+    o99 <- allFitnessEffects(
+        orderEffects = c("a>b" = s1, "b > a" = s2),
+        epistasis = c("a:c" = s3))
+    eo99 <- evalAllGenotypes(o99, order = TRUE, addwt = TRUE)
+    expect_equal(dplyr::filter(eo99, Genotype == "a > c > b")[, "Fitness"],
+                 (1 + s3) * (1 + s1))
+    expect_equal(dplyr::filter(eo99, Genotype == "c > a > b")[, "Fitness"],
+                 (1 + s3) * (1 + s1))
+    expect_equal(dplyr::filter(eo99, Genotype == "c > b > a")[, "Fitness"],
+                 (1 + s3) * (1 + s2))
+    expect_equal(dplyr::filter(eo99, Genotype == "c > a")[, "Fitness"],
+                 (1 + s3))
+    expect_equal(dplyr::filter(eo99, Genotype == "a > c")[, "Fitness"],
+                 (1 + s3))
+})
+
+
 cat(paste("\n Ending all-fitness at", date()))
+
