@@ -837,7 +837,7 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
 
 bool match_order_effects(const std::vector<int>& O,
 			 const std::vector<int>& G) {
-  //As the name sayes: we check if the order effect is matched
+  //As the name says: we check if the order effect is matched
   if(G.size() < O.size()) return false;
   
   std::vector<int>::const_iterator p;
