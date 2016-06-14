@@ -1017,7 +1017,8 @@ evalAllGenotypesORMut <- function(fmEffects,
                                   order = TRUE, max = 256,
                              addwt = FALSE,
                              model = "",
-                             calledBy_ = "") {
+                             calledBy_ = "",
+                             minimal = FALSE) {
     if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
         stop("How did you call this function?. Bug.")
     
@@ -1030,8 +1031,12 @@ evalAllGenotypesORMut <- function(fmEffects,
         stop("You are trying to get the mutator effects of a fitness specification. ",
              "You did not pass an object of class mutatorEffects.")
 
-    allg <- generateAllGenotypes(fitnessEffects = fmEffects,
-                                 order = order, max = max)
+    if(!minimal)
+        allg <- generateAllGenotypes(fitnessEffects = fmEffects,
+                                     order = order, max = max)
+    else
+        allg <- generateAllGenotypes_minimal(fitnessEffects = fmEffects,
+                                             max = max)
     ## if(order)
     ##     tot <- function(n) {sum(sapply(seq.int(n),
     ##                                    function(x) choose(n, x) * factorial(x)))}
@@ -1167,10 +1172,15 @@ generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
 evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
                                    order = TRUE, max = 256,
                                    addwt = FALSE,
-                                   model = "") {
+                                   model = "",
+                                   minimal = FALSE) {
+    if(!minimal)
+        allg <- generateAllGenotypes(fitnessEffects = fitnessEffects,
+                                     order = order, max = max)
+    else
+        allg <- generateAllGenotypes_minimal(fitnessEffects = fitnessEffects,
+                                             max = max)
     
-    allg <- generateAllGenotypes(fitnessEffects = fitnessEffects,
-                                 order = order, max = max)
     if(model %in% c("Bozic", "bozic1", "bozic2") ) {
         prodNeg <- TRUE
     } else {
