@@ -14,9 +14,92 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+## For now, I stop the work on the ordered part.
+
+## This needs to be thought better, and there needs to be some demand.
+## Things missing now:
+##    1. Plotting fitness landscapes with ordered genotypes
+##    2. Reading a fitness spec with order
+##    3. Generating random fitness when order effects
+
+## A general issue has to do with interactions. 
+
+## Some of the code below is a nice idea, but can't really work because
+## suppose A, B are ordered, and C is not.
+
+## We get A, B, AB, BA, genotypes, each with and without C.
+
+## But for coefficients, in OncoSimul, we can only specify A, B, BA, AB,
+## and C, CA, CB, CAB. But CBA is missing from the previous, and cannot be
+## specified in OncoSimulR. We would need to expand the model, and
+## consider C as part of the order, and then make many terms identical
+## (e.g., BAC same as BCA same as CBA).
+
+## The problem is that order creates like new events (BA different from
+## AB) and thus we can conceivably say that BAC has a different
+## coefficient from ABC.
+
+
+## What code needs to be written:
+
+## 1. Plotting:
+
+##    - the adjacency matrix dance.
+##           - find genotypes with 1 more mutation (candidates)
+
+##           - prune these by considering only those with same order up to
+##             the new mutation. There is code below to see if an order
+##             effect included. But we ask for more. So probably see if a
+##             gsub(the_genotype, the_candidate) only returns " > a_gene"
+
+##           - what do we do with epistasis and no interactions? Think this.
+
+
+## 2. See comments above and the prototype code below.
+
+##   An additional issue is that if we allow order, the nubmer of
+##   genotypes blows up. Users might want to say "A > B _ C, D" which
+##   means order affects A and B, but not C and D. If they pass that, then
+##   we must neverthelss expand to a full thing with all four ordered, but this would be like the user said:
+
+##   I am saying A > B and a C and a D has a given fitness. So
+##   A > C > D > B  and C > A > B > D, etc, do have the same fitness.
+
+## Can be accommodated the following way in the code below:
+
+
+##    Take all genotypes given.
+##    For each genotype, generate all permutations of the ordered and unordered parts.
+##    Exclude those that have the wrong order for the originally ordered part.
+##    Return the rest as genotypes with identical fitness.
+##         How do I exclude/find out if order OK? See the order_term_present function below.
+##     This becomes, say, the g2 list.
+##    Finally, generate a huge list of ALL possible genotypes.: g3.
+##    Assign to g3 all a fitness of 1.
+##    Replace the fitness of g3 with those of g2, as appropriate.
+##    Solve the system.
+
+
+
+
+
+## 3. Should be easy. There is lots of code to generate all
+## combinations. The problem is what do do next and if we really want all
+## combinations.
+
+
 
 ## FIXME: is the way of getting the epist from fitness fully sound? I
 ## think so, but ... double check. (With tests)
+
+
+
+
+
+
+## Where is the next function useful? To get the smallest set of genotypes
+## for plotting landscapes, for instance. Or to obtain the list of
+## genotypes.
 
 generateAllGenotypes_minimal <- function(fitnessEffects, max = 256) {
     ## This generates the strictly needed set of genotypes: it uses order
@@ -415,6 +498,13 @@ unordered_term_present <- function(T, G) {
 
 ## If anything is ordered, everything is ordered. There is no simple way
 ## around that. See below.
+
+
+
+## The general idea here is to use a system of equations and solve:
+## log fitness = x*a
+## the coefficients are for log(1 + si)
+## we solve, so we then obtaini the si as exp(log(1 + si)) -1
 
 
 genot_fitness_to_order <- function(x) {
