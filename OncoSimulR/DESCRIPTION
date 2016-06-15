@@ -1,7 +1,7 @@
 Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progresion with Epistasis 
-Version: 2.3.90002003
+Version: 2.3.90002004
 Date: 2016-06-06
 Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
 		     email = "rdiaz02@gmail.com"),
@@ -28,7 +28,7 @@ License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
 BugReports: https://github.com/rdiaz02/OncoSimul/issues
 Depends: R (>= 3.2.0)
-Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, car, dplyr, smatr
+Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, car, dplyr, smatr, ggplot2, ggrepel
 Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0)
 LinkingTo: Rcpp
 VignetteBuilder: knitr

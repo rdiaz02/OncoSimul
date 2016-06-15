@@ -406,14 +406,14 @@ getGeneIDNum <- function(geneModule, geneNoInt, drv, sort = TRUE) {
 
 
 allFitnessORMutatorEffects <- function(rT = NULL,
-                                        epistasis = NULL,
-                                        orderEffects = NULL,
-                                        noIntGenes = NULL,
-                                        geneToModule = NULL,
-                                        drvNames = NULL,
-                                        keepInput = TRUE,
-                                        ## refFE = NULL,
-                                        calledBy = NULL) {
+                                       epistasis = NULL,
+                                       orderEffects = NULL,
+                                       noIntGenes = NULL,
+                                       geneToModule = NULL,
+                                       drvNames = NULL,
+                                       keepInput = TRUE,
+                                       ## refFE = NULL,
+                                       calledBy = NULL) {
     ## From allFitnessEffects. Generalized so we deal with Fitness
     ## and mutator.
     
@@ -610,7 +610,20 @@ allFitnessEffects <- function(rT = NULL,
                               noIntGenes = NULL,
                               geneToModule = NULL,
                               drvNames = NULL,
+                              genotFitness = NULL,
                               keepInput = TRUE) {
+
+    if(!is.null(fitnessMapping)) {
+        if(!is.null(rT) || !is.null(epistasis) ||
+           !is.null(orderEffects) || !is.null(noIntGenes) ||
+           !is.null(geneToModule)) {
+            stop("You have a non-null genotFitness.",
+                 " If you pass the complete genotype to fitness mapping",
+                 " you cannot pass any of rT, epistasis, orderEffects",
+                 " noIntGenes or geneToModule.")
+        }
+        epistasis <- from_genotype_fitness(genotFitness)
+    }
     allFitnessORMutatorEffects(
         rT = rT,
         epistasis = epistasis,
@@ -1103,8 +1116,10 @@ evalAllGenotypesORMut <- function(fmEffects,
     if(calledBy_ == "evalGenotype") { 
         if(prodNeg)
             colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
+        class(df) <- c(class(df), "evalAllGenotypes")
     } else if (calledBy_ == "evalGenotypeMut") {
         colnames(df)[match("Fitness", colnames(df))] <- "MutatorFactor"
+        class(df) <- c(class(df), "evalAllGenotypesMut")
     }
     return(df)
 }
@@ -1207,6 +1222,7 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
                                stringsAsFactors = FALSE), df)
     if(prodNeg)
         colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
+    class(df) <- c(class(df), "evalAllGenotypesFitAndMut")
     return(df)
 }
 

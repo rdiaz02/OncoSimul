@@ -6,7 +6,9 @@ export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "plotClonePhylog", "OncoSimulWide2Long",
        "allMutatorEffects", "evalAllGenotypesMut",
        "evalGenotypeMut", "evalGenotypeFitAndMut",
-       "evalAllGenotypesFitAndMut"       
+       "evalAllGenotypesFitAndMut",
+       "rfitness",
+       "plotFitnessLandscape"
        )
 
 S3method(plot, oncosimul)
@@ -16,7 +18,12 @@ S3method(plot, oncosimulpop)
 S3method(summary, oncosimulpop)
 S3method(print, oncosimulpop)
 S3method(plot, fitnessEffects)
+S3method(plot, genotype_fitness_matrix)
+S3method(plot, evalAllGenotypes)
+S3method(plot, evalAllGenotypesMut)
 
+import(ggplot2)
+importFrom("ggrepel", geom_text_repel, geom_label_repel)
 
 importFrom("data.table", rbindlist, .rbind.data.table) 
 importFrom(Rcpp, evalCpp)

@@ -23,8 +23,8 @@
 \usage{
 
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
-  noIntGenes = NULL, geneToModule = NULL, drvNames = NULL, keepInput =
-  TRUE)
+  noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
+  genotFitness = NULL,  keepInput = TRUE)
 
 allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
                    geneToModule = NULL,
@@ -121,6 +121,29 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 
 }
 
+\item{genotFitness}{A matrix or data frame that contains explicitly the
+  mapping of genotypes to fitness. For now, we only allow epistasis-like
+  relations between genes (so you cannot code order effects this way).
+
+  Genotypes can be specified in two ways:
+
+  \describe{ \item As a matrix (or data frame) with g + 1 columns, where
+    each of the first g columns contains a 1 or a 0 indicating that the
+    gene of that column is mutated or not. Column g+ 1 contains the
+    fitness values. This is, for instance, the output you will get from
+    \code{\link{rfitness}}.
+
+  \item As a two column data frame. The second column is fitness, and
+  the first column are genotypes, given as a character vector. For
+  instance, a row "A, B" would mean the genotype with both A and B mutated.
+}
+
+  In all cases, fitness must be \code{>= 0}. If any possible genotype is
+  missing, its fitness is assumed to be 1.
+
+}
+
+
 \item{keepInput}{
   If TRUE, whether to keep the original input. This is only useful for
   human consumption of the output. It is useful because it is easier to
@@ -147,7 +170,24 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   \code{allFitnessEffects} object. If you want to have genes that have
   no direct effect on fitness, but that affect mutation rate, you MUST
   specify them in the call to \code{allFitnessEffects}, for instance as
-  \code{noIntGenes} with an effect of 0.  }
+  \code{noIntGenes} with an effect of 0.
+
+
+  If you use \code{genotFitness} then you cannot pass modules,
+  noIntgenes, epistasis, or rT. This makes sense, because using
+  \code{genotFitness} is saying
+  "this is the mapping of genotypes to fitness. Period", so we should
+  not allow further modifications from other terms.
+
+  If you use \code{genotFitness} you need to be careful when you use
+  Bozic's model (as you get a death rate of 0).
+
+
+  If you use \code{genotFitness} note that we force the WT (wildtype) to
+  always be 1 so fitnesses are rescaled. 
+
+
+}
 
 
 \value{
@@ -215,6 +255,9 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   now, using those characters as names is caught (and result in
   stopping) if passed as names for noIntGenes.  }
 
+
+
+
 \author{ Ramon Diaz-Uriarte
 }
 
@@ -222,7 +265,9 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   
   \code{\link{evalGenotype}}, \code{\link{oncoSimulIndiv}},
   \code{\link{plot.fitnessEffects}},
-  \code{\link{evalGenotypeFitAndMut}}
+  \code{\link{evalGenotypeFitAndMut}},
+  \code{\link{rfitness}},
+  \code{\link{plotFitnessLandscape}}
 
 }
 \examples{
@@ -313,9 +358,52 @@ evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
 
 
 
+## Passing fitness directly, a complete fitness specification
+## with a two column data frame with genotypes as character vectors
 
-## Reinitialize the seed
-set.seed(NULL)
+m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4))
+fem4 <- allFitnessEffects(genotFitness = m4)
+
+## Verify it interprets what it should: m4 is the same as the evaluation
+## of the fitness effects (note row reordering)
+evalAllGenotypes(fem4, addwt = TRUE, order = FALSE)
+
+
+## Passing fitness directly, a complete fitness specification
+## that uses a three column matrix
+
+m5 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
+fem5 <- allFitnessEffects(genotFitness = m5)
+
+## Verify it interprets what it should: m5 is the same as the evaluation
+## of the fitness effects 
+evalAllGenotypes(fem5, addwt = TRUE, order = FALSE)
+
+
+## Passing fitness directly, an incomplete fitness specification
+## that uses a three column matrix
+
+m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
+fem6 <- allFitnessEffects(genotFitness = m6)
+evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
+
+
+
+## Plotting a fitness landscape
+
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+plot(evalAllGenotypes(fe2))
+
+## same as
+plotFitnessLandscape(evalAllGenotypes(fe2))
+
+## same as
+plotFitnessLandscape(fe2)
+
 
 ## Reinitialize the seed
 set.seed(NULL)

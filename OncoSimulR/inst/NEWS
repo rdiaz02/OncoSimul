@@ -1,3 +1,8 @@
+Changes in version 2.3.90002004 (2016-06-15):
+	- rfitness
+	- plot of fitness landscapes
+	- specify fitness by giving genotype-> fitness mapping
+
 Changes in version 2.3.90002003 (2016-06-06):
 	- tests showing same gene in epist./DAG/order
 	- clarified internal C++ unique/sorted in genotypes
