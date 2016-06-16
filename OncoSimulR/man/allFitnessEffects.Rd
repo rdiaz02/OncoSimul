@@ -64,7 +64,6 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 	  relationship to be satisfied. Specify it as "XOR" or "xmpn" or
 	  "XMPN".}
       }
-
       In addition, for the nodes that depend only on the root node, you
       can use "--" or "-" if you want (though using any of the other
       three would have the same effects if a node that connects to root
@@ -126,21 +125,17 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   relations between genes (so you cannot code order effects this way).
 
   Genotypes can be specified in two ways:
-
-  \describe{ \item As a matrix (or data frame) with g + 1 columns, where
-    each of the first g columns contains a 1 or a 0 indicating that the
+  \describe{
+    \item{As a matrix (or data frame) with g + 1 columns.}{Each of the first g columns contains a 1 or a 0 indicating that the
     gene of that column is mutated or not. Column g+ 1 contains the
     fitness values. This is, for instance, the output you will get from
-    \code{\link{rfitness}}.
-
-  \item As a two column data frame. The second column is fitness, and
-  the first column are genotypes, given as a character vector. For
-  instance, a row "A, B" would mean the genotype with both A and B mutated.
-}
-
+    \code{\link{rfitness}}}.
+    \item{As a two column data frame.}{The second column is fitness, and
+    the first column are genotypes, given as a character vector. For
+    instance, a row "A, B" would mean the genotype with both A and B mutated.}
+  }
   In all cases, fitness must be \code{>= 0}. If any possible genotype is
   missing, its fitness is assumed to be 1.
-
 }
 
 

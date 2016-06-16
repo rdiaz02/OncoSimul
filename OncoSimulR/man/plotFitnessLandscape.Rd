@@ -43,27 +43,18 @@ plotFitnessLandscape(x, show_labels = TRUE,
 \arguments{
   
   \item{x}{ One of the following:
-    
     \describe{
-      
-      \item A matrix (or data frame) with g + 1 columns, where
-      each of the first g columns contains a 1 or a 0 indicating that the
+      \item{A matrix (or data frame) with g + 1 columns.}{Each of the first g columns contains a 1 or a 0 indicating that the
       gene of that column is mutated or not. Column g+ 1 contains the
       fitness values. This is, for instance, the output you will get from
-      \code{\link{rfitness}}. 
-      
-      \item A two column data frame. The second column is fitness, and
+      \code{\link{rfitness}}}. 
+      \item{A two column data frame.}{The second column is fitness, and
       the first column are genotypes, given as a character vector. For
       instance, a row "A, B" would mean the genotype with both A and B
-      mutated.
-      
-      \item The output from a call to \code{\link{evalAllGenotypes}}.
-      
-      \item The output from a call to \code{\link{evalAllGenotypesMut}}.
-
-      \item The output from a call to \code{\link{allFitnessEffects}}.
-      
-    }
+      mutated.}
+      \item{The output from a call to \code{\link{evalAllGenotypes}}}{}.
+      \item{The output from a call to \code{\link{evalAllGenotypesMut}}}{}.
+      \item{The output from a call to \code{\link{allFitnessEffects}}.}{}}
     The first two are the same as the format for the \code{genotFitness}
     component in \code{\link{allFitnessEffects}}.
   }

@@ -48,7 +48,7 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
 
 
 \code{log}{If TRUE, log-transform fitness.}
-
+}
 \details{
 
   The model used here follows the Rough Mount Fuji model in Szendro et

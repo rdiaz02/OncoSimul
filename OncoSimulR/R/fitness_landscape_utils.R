@@ -13,16 +13,13 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+## plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
+##     plot.genotype_fitness_matrix <- plotFitnessLandscape 
 
-plot_fitness_landscape <- function(x,
-                                   show_labels = TRUE,
-                                   col = c("green4", "red", "yellow"),
-                                   lty = c(1, 2, 3),
-                                   use_ggrepel = FALSE,
-                                   log = FALSE,
-                                   max_num_genotypes = 2000,
-                                   ...) {
-    ## FIXME future:
+plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
+    plot.genotype_fitness_matrix <-
+        plot_fitness_landscape <-
+            plotFitnessLandscape <- function(x, show_labels = TRUE, col = c("green4", "red", "yellow"), lty = c(1, 2, 3), use_ggrepel = FALSE, log = FALSE, max_num_genotypes = 2000, ...) {## FIXME future:
     
     ## - Later add this as a plot.genotype_fitness_matrix and
     ## plot.allFitnessEffects. and plot.fitnessEffects will need to make
@@ -242,7 +239,7 @@ plot_fitness_landscape <- function(x,
     }
     p <- p + scale_fill_manual("Local\nmax/min",  values = col)
     p
-}
+        }
 
 
 
