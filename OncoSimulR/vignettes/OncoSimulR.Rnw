@@ -37,6 +37,8 @@ options(width = 68)
 
 \usepackage[latin1]{inputenc}
 
+\usepackage{nameref}
+\newcommand{\qref}[1]{\textit{``\ref{#1}''}}
 
 
 %Uncomment for BioC
@@ -199,6 +201,13 @@ is a summary of some of the key features:
       
     \item You can obtain the true sequence of events and the phylogenetic
       relationships between clones.
+    
+    \item Possibility to generate random fitness landscapes (under the
+      House of Cards, Rough Mount Fuji, or additive models, or
+      combinations of the former) and use those landscapes as input to the
+      simulation functions.
+      
+    \item Plotting of fitness landscapes.
       
 \end{itemize}
 
@@ -474,20 +483,144 @@ will introduce them right after \ref{posetslong}, and continue using them
 thereafter.
 
 
-\subsubsection{How to specify fitness effects effects}\label{howfit}
-
 A guiding design principle of OncoSimulR is to try to make the
 specification of those effects as simple as possible but also as flexible
-as possible. 
+as possible. Thus, there are two main ways of specifying fitness effects:
 
-Conceptually, the simplest way is to specify the mapping of all genotypes
-to fitness explicitly. This can be done with OncoSimulR (e.g., see
-sections \ref{e2}, \ref{e3} and \ref{theminus} or the example in
-\ref{weis1b}), but this only makes sense for subsets of the genes or for
-very small genotypes, as you probably do not want to be explicit about the
-mapping of $2^k$ genotypes to fitness when $k$ is larger than, say, four
-or five, and definitely not when $k$ is 10.
+\begin{itemize}
+\item \red{Combining different types of effects in a single specification. For
+  instance, you can combine epistasis, with order effects, with no
+  interaction genes, with modules. What you would do here is specify the
+  effects that different mutations (or their combinations) have on fitness
+  (the fitness effects) and then have OncoSimulR take care of combining
+  them as if each of these were lego pieces. We will refer to this as the
+  \textbf{lego system of fitness effects}}.
+  
+  
+\item \red{Explicitly passing to OncoSimulR a mapping of genotypes to
+  fitness. Here you specify the fitness of each genotype. We will refer to
+  this as the \textbf{explicit mapping of genotypes to fitness}.}
+\end{itemize}
 
+
+Both approaches have advantages and disadvantages. Here I emphasize some
+relevant differences.
+\begin{itemize}
+\item With the lego system you can specify huge genomes with an enormous
+  variety of interactions, since the possible genotypes are not
+  constructed in advance. You would not be able to do this with the
+  explicit mapping of genotypes to fitness if you wanted to, say,
+  construct that mapping for a modest genotype of 500 genes (you'd have
+  more genotypes than particles in the Universe).
+  
+\item For many models/data you often intuitively start with the fitness of
+  the genotypes, not the fitness consequences of the different
+  mutations. In these cases, you'd need to do the math to specify the
+  terms you want if you used the lego system.
+  
+\item Sometimes you already have a moderate size genotype $\rightarrow$
+  fitness mapping and \ldots you certainly do not want to do the math by
+  hand and here the lego system would be painful to use.
+  
+\item But sometimes we do think in terms of ``the effects on fitness of
+  such and such mutations are'' and that immediately calls for the lego
+  system, where you focus on the effects, and let OncoSimulR take care of
+  doing the math of combining.
+  
+\item If you want to use order effects, you must use the lego system (at
+  least for now).
+    
+\item If you want to specify modules, you must use the lego system (the
+  explicit mapping of genotypes is, by its very nature, ill-suited for
+  this).
+  
+\item The lego system might help you see what your model really means: in
+  many cases, you can obtain fairly succinct specification of complex
+  fitness models with just a few terms. Similarly, depending on what your
+  emphasis is, you can often specify the same fitness landscape in several
+  different ways.
+  
+\end{itemize}
+
+
+\red{Regardless of the route, you need to get that information into
+  OncoSimulR's functions. The main function we will use is
+  \Rfunction{allFitnessEffects}: this is the function in charge of reading
+  the fitness specifications. We also need to discuss how, what, and where
+  you have to pass to \Rfunction{allFitnessEffects}.}
+ 
+
+\subsubsection{\red{Explicit mapping of genotypes to fitness}}\label{explicitmap}
+
+Conceptually, the simplest way to specify fitness is to specify the
+mapping of all genotypes to fitness explicitly. An example will make this
+clear. Let's suppose you have simple two-gene scenario, so a total of four
+genotypes, and you have a data frame with genotypes and fitness, where
+genoytpes are specified as character vectors, with mutated genes separated
+by commas:
+
+<<>>=
+m4 <- data.frame(G = c("WT", "A", "B", "A, B"), F = c(1, 2, 3, 4))
+@ 
+
+Now, let's give that to the \Rfunction{allFitnessEffects} function:
+
+<<>>=
+fem4 <- allFitnessEffects(genotFitness = m4)
+@ 
+
+That's it. You can plot that object
+<<>>=
+plot(fem4)
+@ 
+or see what OncoSimulR thinks the fitnesses are, with the
+\Rfunction{evalAllGenotypes} function that we will use repeatedly below
+(of course, here we should see the same fitnesses we entered):
+
+<<>>=
+evalAllGenotypes(fem4)
+@ 
+
+
+
+To specify the mapping you can also use a matrix (or data frame) with
+$g + 1$ columns; each of the first $g$ columns contains a 1 or a 0
+indicating that the gene of that column is mutated or not. Column $g+ 1$
+contains the fitness values. And you do not even need to specify all the
+genotypes (we will assume that the missing genotypes have fitness 1):
+
+<<>>=
+m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
+fem6 <- allFitnessEffects(genotFitness = m6)
+evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
+plot(fem6)
+@ 
+
+
+This way of giving a fitness specification to OncoSimulR might be ideal if
+you directly generate random mappings of genotypes to fitness, as we will
+do in section \qref{gener-fit-land}.
+
+% Please see the documentation of \Rfunction{allFitnessEffects} for further
+% details and examples.
+
+
+
+
+
+% This can be done with OncoSimulR (e.g., see sections \ref{e2}, \ref{e3}
+% and \ref{theminus} or the example in \ref{weis1b}), but this only makes
+% sense for subsets of the genes or for very small genotypes, as you
+% probably do not want to be explicit about the mapping of $2^k$ genotypes
+% to fitness when $k$ is larger than, say, four or five, and definitely not
+% when $k$ is 10.
+
+
+\subsubsection{How to specify fitness effects effects with the lego system}\label{howfit}
+
+% A guiding design principle of OncoSimulR is to try to make the
+% specification of those effects as simple as possible but also as flexible
+% as possible. 
 
 
 An alternative general approach followed in many genetic simulators is to
@@ -501,12 +634,34 @@ of the ``A, B'' genotype is that of the wildtype (1, by default), plus
 (times) the effects of B, plus (times) the effects of ``A:B''.
 
 
-As we will see in the examples (e.g., see sections \ref{e2}, \ref{e3},
-\ref{exlong}) OncoSimulR makes it simple to be explicit about the mapping
-of specific genotypes, while also using the ``how this specific effects
-modifies previous effects'' logic, leading to a flexible
-specification. This also means that in many cases the same fitness
-effects can be specified in several different ways.
+\red{We will see below that with the ``lego system'' it is possible to do
+something very similar to that the explicit mapping of section
+\ref{explicitmap}.  But this will sometimes require a more cumbersome
+notation (and sometimes requiring you to do some math). We will see
+examples in sections \ref{e2}, \ref{e3} and \ref{theminus} or the example
+in \ref{weis1b}. But then, if we can be explicit about (at least some of)
+the mappings $genotype \rightarrow fitness$, how are these procedures
+different? When you use the ``lego system'' you can combine both a partial
+explicit mapping of genotypes to fitness with arbitrary fitness effects of
+other genes/modules. In other words, with the ``lego system'' OncoSimulR
+makes it simple to be explicit about the mapping of specific genotypes,
+while also using the ``how this specific effects modifies previous
+effects'' logic, leading to a flexible specification. This also means that
+in many cases the same fitness effects can be specified in several
+different ways.}
+
+Most of the rest of this section is devoted to explaining how to combine
+those pieces. Before that, however, we need to discuss the fitness model
+we use.
+
+
+
+% As we will see in the examples (e.g., see sections \ref{e2}, \ref{e3},
+% \ref{exlong}) OncoSimulR makes it simple to be explicit about the mapping
+% of specific genotypes, while also using the ``how this specific effects
+% modifies previous effects'' logic, leading to a flexible
+% specification. This also means that in many cases the same fitness
+% effects can be specified in several different ways.
 
 
 \subsection{Numeric values of fitness effects}\label{numfit}
@@ -2403,6 +2558,79 @@ plot(mue1, addtot = TRUE,
 par(op)
 @ 
 
+
+\section{\red{Plotting fitness landscapes}}
+\label{plot-fit-land}
+
+
+The \Rfunction{evalAllGenotypes} and related functions allow you to obtain
+tables of the genotype to fitness mappings. It might be more convenient to
+actually plot that, allowing us to quickly identify local minima and
+maxima and get an idea of how the fitness landscape looks.
+
+In \Rfunction{plotFitnessLandscape} I have blatantly and shamelessly
+copied most of the looks of the plots of MAGELLAN
+(\url{http://wwwabi.snv.jussieu.fr/public/Magellan/},
+\cite{brouillet_magellan:_2015}), a nice web-based tool for fitness
+landscape plotting and analysis.
+
+As an example, let us show the previous example of Weissman et al. we saw
+in \ref{weissmanex}:
+
+<<>>=
+
+d1 <- -0.05 ## single mutant fitness 0.95
+d2 <- -0.08 ## double mutant fitness 0.92
+d3 <- 0.2   ## triple mutant fitness 1.2
+s2 <- ((1 + d2)/(1 + d1)^2) - 1
+s3 <- ( (1 + d3)/((1 + d1)^3 * (1 + s2)^3) ) - 1
+
+wb <- allFitnessEffects(
+    epistasis = c(
+        "A" = d1,
+        "B" = d1,
+        "C" = d1,
+        "A:B" = s2,
+        "A:C" = s2,
+        "B:C" = s2,
+        "A:B:C" = s3))
+plotFitnessLandscape(wb, use_ggrepel = FALSE) ## use ggrepel to avoid overlap of labels
+
+@ 
+
+For some types of objects, directly invoking \Rfunction{plot} will give
+you the fitness plot
+
+<<>>=
+(ewb <- evalAllGenotypes(wb, order = FALSE))
+plot(ewb, use_ggrepel = TRUE) 
+
+@ 
+
+
+This is another example we saw before (\ref{pancreas}), that will give a
+very busy plot:
+
+<<>>=
+
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), 
+                   "SMAD4", "CDNK2A", 
+                   "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                   "TP53", "MLL3",
+                   rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.1,
+               sh = -0.9,
+               typeDep = "MN"))
+plot(evalAllGenotypes(pancr, order = FALSE), use_ggrepel = TRUE)
+
+@ 
+
+
+%% FIXME use better values, here as I am not being faitfhfull to Bauer's
+%% values and figure.
+
 \section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}
 
@@ -2686,7 +2914,7 @@ evalAllGenotypes(od, order = FALSE, addwt = TRUE)
 @ 
 
 
-\subsection{Weissman et al., 2009}
+\subsection{Weissman et al., 2009}\label{weissmanex}
 In their figure 1a, Weisman et al. \cite{Weissman2009} present this model
 (actual numeric values are set arbitrarily)
 
@@ -4392,6 +4620,60 @@ par(op)
 
 This is so far disabled in function \Rfunction{oncoSimulSample}, since
 that function is optimized for other uses. This might change in the future.
+
+
+
+\section{\red{Generating fitness landscapes}}
+\label{gener-fit-land}
+
+
+It is possible to generate mappings of genotype to fitness using the
+function \Rfunction{rfitness} that allows you to use from a pure House of
+Cards model to a purely additive model. I have followed
+\cite{szendro_quantitative_2013, franke_evolutionary_2011} and model
+fitness as
+
+\begin{equation}
+  \label{eq:1}
+  f_i = -c d(i, reference) + x_i
+\end{equation}
+
+where $d(i, j)$ is the Hamming distance between genotypes $i$ and $j$ (the
+number of positions that differ) and $x_i$ is a random variable (in this
+case, a normal deviate of mean 0 and standard deviation $sd$).  You can
+change the reference genotype to any of the genotypes: for the
+deterministic part, you make the fittest genotype be the one with all
+positions mutated by setting \texttt{reference = ``max''}, or use the
+wildtype by using a string of 0s, or randomly select a genotype as a
+reference by using \texttt{reference = ``random''}.  And by playing with $c$
+and $sd$ you can flexibly modify the relative weight of the purely House
+of Cards vs.\ additive component. The expression used above is also very
+similar to the one on \cite{greene_changing_2014} if you use
+\Rfunction{rfitness} with the argument \texttt{reference = ``max''}.
+
+
+What can you do with these genotype to fitness mappings? You could plot
+them, you could use them as input for \Rfunction{oncoSimulIndiv} and
+related functions, or you could export them and plot them externally
+(e.g., in MAGELLAN: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/},
+\cite{brouillet_magellan:_2015}).
+
+
+<<>>=
+## A small example
+rfitness(3)
+
+## A 5-gene example, where the reference genotype is the one 
+## the one with all positions mutated, similar to Greene and Crona.
+## We will plot the landscape and use it for simulations
+## We downplay the random component with a sd = 0.5
+
+r1 <- rfitness(5, reference = rep(1, 5), sd = 0.6)
+plot(r1)
+oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
+@ 
+
+
 
 
 \section{Using v.1 posets and simulations}\label{v1}
