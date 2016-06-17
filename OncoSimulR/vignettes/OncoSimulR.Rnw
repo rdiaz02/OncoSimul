@@ -4641,7 +4641,9 @@ fitness as
 \end{equation}
 
 where $d(i, j)$ is the Hamming distance between genotypes $i$ and $j$ (the
-number of positions that differ) and $x_i$ is a random variable (in this
+number of positions that differ), $c$ is the decrease in fitness of a
+genotype per each unit increase in Hamming distance from the reference
+genotype, and $x_i$ is a random variable (in this
 case, a normal deviate of mean 0 and standard deviation $sd$).  You can
 change the reference genotype to any of the genotypes: for the
 deterministic part, you make the fittest genotype be the one with all
