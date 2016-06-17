@@ -356,7 +356,7 @@ evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
 ## Passing fitness directly, a complete fitness specification
 ## with a two column data frame with genotypes as character vectors
 
-m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4))
+(m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4)))
 fem4 <- allFitnessEffects(genotFitness = m4)
 
 ## Verify it interprets what it should: m4 is the same as the evaluation

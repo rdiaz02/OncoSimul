@@ -108,9 +108,6 @@ r1 <- rfitness(4)
 plot(r1)
 oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 
-
-## Reinitialize the seed
-set.seed(NULL)
 }
 
 \keyword{ datagen }

@@ -31,12 +31,18 @@ from_genotype_fitness <- function(x) {
         omarker <- any(grepl(">", x[, 1], fixed = TRUE))
         emarker <- any(grepl(",", x[, 1], fixed = TRUE))
         nogoodepi <- any(grepl(":", x[, 1], fixed = TRUE))
-        if(omarker && emarker) stop("Specify only epistasis or order, not both.")
+        ## if(omarker && emarker) stop("Specify only epistasis or order, not both.")
         if(nogoodepi && emarker) stop("Specify the genotypes separated by a ',', not ':'.")
         if(nogoodepi && !emarker) stop("Specify the genotypes separated by a ',', not ':'.")
-        if(nogoodepi && omarker) stop("If you want order, use '>' and if epistasis ','.")
-        if(!omarker && !emarker) stop("You specified neither epistasis nor order")
-
+        ## if(nogoodepi && omarker) stop("If you want order, use '>' and if epistasis ','.")
+        ## if(!omarker && !emarker) stop("You specified neither epistasis nor order")
+        if(omarker) {
+            ## do something. To be completed
+            stop("This code not yet ready")
+            ## You can pass to allFitnessEffects genotype -> fitness mappings that
+            ## involve epistasis and order. But they must have different
+            ## genes. Otherwise, it is not manageable.
+        }
         if(emarker) {
             x <- x[, c(1, 2)]
             if(!all(colnames(x) == c("Genotype", "Fitness"))) {
@@ -47,13 +53,7 @@ from_genotype_fitness <- function(x) {
             ## Yes, we need to do this to  scale the fitness and put the "-"
             return(genot_fitness_to_epistasis(allGenotypes_to_matrix(x)))
         }
-        if(omarker) {
-            ## do something. To be completed
-            stop("This code not yet ready")
-            ## You can pass to allFitnessEffects genotype -> fitness mappings that
-            ## involve epistasis and order. But they must have different
-            ## genes. Otherwise, it is not manageable.
-        }
+        
     }
 }
 

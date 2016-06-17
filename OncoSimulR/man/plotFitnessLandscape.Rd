@@ -52,8 +52,11 @@ plotFitnessLandscape(x, show_labels = TRUE,
       the first column are genotypes, given as a character vector. For
       instance, a row "A, B" would mean the genotype with both A and B
       mutated.}
-      \item{The output from a call to \code{\link{evalAllGenotypes}}}{}.
-      \item{The output from a call to \code{\link{evalAllGenotypesMut}}}{}.
+      \item{The output from a call to
+    \code{\link{evalAllGenotypes}}}{Make sure you use \code{order =
+    FALSE} in that call.}.
+      \item{The output from a call to
+    \code{\link{evalAllGenotypesMut}}}{Make sure you use \code{order = FALSE}.}.
       \item{The output from a call to \code{\link{allFitnessEffects}}.}{}}
     The first two are the same as the format for the \code{genotFitness}
     component in \code{\link{allFitnessEffects}}.
@@ -136,7 +139,7 @@ plot(r1)
 ## Specify fitness in a matrix, and plot it
 
 m5 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
-plot(m5)
+plotFitnessLandscape(m5)
 
 
 ## Specify fitness with allFitnessEffects, and plot it
@@ -144,10 +147,11 @@ plot(m5)
 fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
                             noIntGenes = c("e" = 0.1))
-plot(evalAllGenotypes(fe))
+
+plot(evalAllGenotypes(fe, order = FALSE))
 
 ## same as
-plotFitnessLandscape(evalAllGenotypes(fe))
+plotFitnessLandscape(evalAllGenotypes(fe, order = FALSE))
 
 }
 

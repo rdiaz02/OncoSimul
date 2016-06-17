@@ -613,7 +613,7 @@ allFitnessEffects <- function(rT = NULL,
                               genotFitness = NULL,
                               keepInput = TRUE) {
 
-    if(!is.null(fitnessMapping)) {
+    if(!is.null(genotFitness)) {
         if(!is.null(rT) || !is.null(epistasis) ||
            !is.null(orderEffects) || !is.null(noIntGenes) ||
            !is.null(geneToModule)) {
@@ -1045,11 +1045,11 @@ evalAllGenotypesORMut <- function(fmEffects,
              "You did not pass an object of class mutatorEffects.")
 
     ## if(!minimal)
-    ##     allg <- generateAllGenotypes(fitnessEffects = fmEffects,
-    ##                                  order = order, max = max)
+    allg <- generateAllGenotypes(fitnessEffects = fmEffects,
+                                 order = order, max = max)
     ## else
-        allg <- generateAllGenotypes_minimal(fitnessEffects = fmEffects,
-                                             max = max)
+        ## allg <- generateAllGenotypes_minimal(fitnessEffects = fmEffects,
+        ##                                      max = max)
     ## if(order)
     ##     tot <- function(n) {sum(sapply(seq.int(n),
     ##                                    function(x) choose(n, x) * factorial(x)))}
@@ -1116,10 +1116,10 @@ evalAllGenotypesORMut <- function(fmEffects,
     if(calledBy_ == "evalGenotype") { 
         if(prodNeg)
             colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
-        class(df) <- c(class(df), "evalAllGenotypes")
+        class(df) <- c("evalAllGenotypes", class(df))
     } else if (calledBy_ == "evalGenotypeMut") {
         colnames(df)[match("Fitness", colnames(df))] <- "MutatorFactor"
-        class(df) <- c(class(df), "evalAllGenotypesMut")
+        class(df) <- c("evalAllGenotypesMut", class(df))
     }
     return(df)
 }
@@ -1222,7 +1222,7 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
                                stringsAsFactors = FALSE), df)
     if(prodNeg)
         colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
-    class(df) <- c(class(df), "evalAllGenotypesFitAndMut")
+    class(df) <- c("evalAllGenotypesFitAndMut", class(df))
     return(df)
 }
 

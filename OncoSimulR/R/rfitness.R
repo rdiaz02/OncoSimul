@@ -18,10 +18,12 @@ rfitness <- function(g, c= 0.5,
     ##    - do not generate a matrix of genotypes but a matrix of ordered genot.
     m <- generate_matrix_genotypes(g)
     f_r <- rnorm(nrow(m), mean = 0, sd = sd)
-    if(reference == "random") {
-        reference <- m[sample(nrow(m), 1), ]
-    } else if(reference == "max") {
-        reference <- rep(1, g)
+    if(inherits(reference, "character") && length(reference) == 1) {
+        if(reference == "random") {
+            reference <- m[sample(nrow(m), 1), ]
+        } else if(reference == "max") {
+            reference <- rep(1, g)
+        }
     }
     d_reference <- apply(m, 1, function(x) sum(abs(x - reference)))
     f_det <- -c * d_reference
