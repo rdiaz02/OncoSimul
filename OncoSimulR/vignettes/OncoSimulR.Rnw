@@ -391,13 +391,14 @@ pancr <- allFitnessEffects(
                    rep("PXDN", 3), rep("TGFBR2", 2)),
                s = 0.1,
                sh = -0.9,
-               typeDep = "MN"))
+               typeDep = "MN"),
+    drvNames = c("KRAS", "SMAD4", "CDNK2A", "TP53", "MLL3", "TGFBR2", "PXDN"))
 ## How does it look like?
 plot(pancr)
 @ 
 <<fig.width=6.5, fig.height=10>>=
 ## 2. Simulate from it. 
-set.seed(1) ## Fix the seed, so we can repeat it
+set.seed(4) ## Fix the seed, so we can repeat it
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      mu = 1e-6,
                      sampleEvery = 0.02,
@@ -411,11 +412,11 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
 ##    to show only parts of the data. We also thin them.
 par(mfrow = c(2, 1))
 par(cex = 0.7)
-plot(ep2, show = "genotypes", xlim = c(2000, 4000), 
+plot(ep2, show = "genotypes", xlim = c(1000, 8000), 
      ylim = c(0, 2400),
      thinData = TRUE, thinData.keep = 0.5)
 plot(ep2, show = "drivers", addtot = TRUE,
-     thinData = TRUE, thinData.keep = 0.5)
+     thinData = TRUE, thinData.keep = 0.2)
 @ 
 
 
@@ -2594,7 +2595,8 @@ wb <- allFitnessEffects(
         "A:C" = s2,
         "B:C" = s2,
         "A:B:C" = s3))
-plotFitnessLandscape(wb, use_ggrepel = FALSE) ## use ggrepel to avoid overlap of labels
+plotFitnessLandscape(wb, use_ggrepel = TRUE) ## use ggrepel to avoid overlap 
+                                             ## of labels
 
 @ 
 
@@ -2622,7 +2624,7 @@ pancr <- allFitnessEffects(
                    rep("PXDN", 3), rep("TGFBR2", 2)),
                s = 0.1,
                sh = -0.9,
-               typeDep = "MN"))
+g               typeDep = "MN"))
 plot(evalAllGenotypes(pancr, order = FALSE), use_ggrepel = TRUE)
 
 @ 
