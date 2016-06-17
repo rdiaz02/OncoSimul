@@ -2624,7 +2624,7 @@ pancr <- allFitnessEffects(
                    rep("PXDN", 3), rep("TGFBR2", 2)),
                s = 0.1,
                sh = -0.9,
-g               typeDep = "MN"))
+               typeDep = "MN"))
 plot(evalAllGenotypes(pancr, order = FALSE), use_ggrepel = TRUE)
 
 @ 
