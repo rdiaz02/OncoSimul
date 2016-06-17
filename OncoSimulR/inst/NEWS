@@ -1,4 +1,4 @@
-Changes in version 2.3.90002004 (2016-06-15):
+Changes in version 2.3.90002004 (2016-06-17):
 	- rfitness
 	- plot of fitness landscapes
 	- specify fitness by giving genotype-> fitness mapping

@@ -1190,11 +1190,11 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
                                    model = "" ){
 ##                                   minimal = FALSE) {
     ## if(!minimal)
-    ##     allg <- generateAllGenotypes(fitnessEffects = fitnessEffects,
-    ##                                  order = order, max = max)
+    allg <- generateAllGenotypes(fitnessEffects = fitnessEffects,
+                                 order = order, max = max)
     ## else
-        allg <- generateAllGenotypes_minimal(fitnessEffects = fitnessEffects,
-                                             max = max)
+        ## allg <- generateAllGenotypes_minimal(fitnessEffects = fitnessEffects,
+        ##                                      max = max)
     
     if(model %in% c("Bozic", "bozic1", "bozic2") ) {
         prodNeg <- TRUE

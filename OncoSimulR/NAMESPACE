@@ -25,6 +25,7 @@ S3method(plot, evalAllGenotypesMut)
 import(ggplot2)
 importFrom("ggrepel", geom_text_repel, geom_label_repel)
 
+importFrom("stats", "rnorm")
 importFrom("data.table", rbindlist, .rbind.data.table) 
 importFrom(Rcpp, evalCpp)
 importFrom("igraph", igraph.to.graphNEL, graph.data.frame, V, E,

@@ -133,7 +133,7 @@ allGenotypes_to_matrix <- function(x) {
         fwt <- 1
     }
     splitted_genots <- lapply(x$Genotype,
-                             function(z) OncoSimulR:::nice.vector.eo(z, ","))
+                             function(z) nice.vector.eo(z, ","))
 
     all_genes <- unique(unlist(splitted_genots))
 

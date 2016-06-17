@@ -16,10 +16,13 @@
 ## plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
 ##     plot.genotype_fitness_matrix <- plotFitnessLandscape 
 
-plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
-    plot.genotype_fitness_matrix <-
-        plot_fitness_landscape <-
-            plotFitnessLandscape <- function(x, show_labels = TRUE, col = c("green4", "red", "yellow"), lty = c(1, 2, 3), use_ggrepel = FALSE, log = FALSE, max_num_genotypes = 2000, ...) {## FIXME future:
+plotFitnessLandscape <- function(x, show_labels = TRUE,
+                                 col = c("green4", "red", "yellow"),
+                                 lty = c(1, 2, 3), use_ggrepel = FALSE,
+                                 log = FALSE, max_num_genotypes = 2000,
+                                 ...) {
+
+    ## FIXME future:
     
     ## - Later add this as a plot.genotype_fitness_matrix and
     ## plot.allFitnessEffects. and plot.fitnessEffects will need to make
@@ -165,6 +168,12 @@ plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
     ## axis(2)
     ## text(x = mutated, y = x$Fitness, labels = x$Genotype)
 
+    ## The R CMD CHEKC notes about no visible binding for global variable
+
+    x_from <- y_from <- x_to <- y_to <- Change <- muts <-
+        label <- fitness <- Type <- NULL
+                
+                
     dd <- data.frame(muts = mutated,
                      fitness = afe$Fitness,
                      label = afe$Genotype)
@@ -239,8 +248,13 @@ plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
     }
     p <- p + scale_fill_manual("Local\nmax/min",  values = col)
     p
-        }
+}
 
+
+plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
+    plot.genotype_fitness_matrix <-
+        plot_fitness_landscape <-
+            plotFitnessLandscape
 
 
 ######################################################################

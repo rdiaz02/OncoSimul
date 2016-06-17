@@ -19,25 +19,25 @@ plotFitnessLandscape(x, show_labels = TRUE,
                                    col = c("green4", "red", "yellow"),
                                    lty = c(1, 2, 3),
                                    use_ggrepel = FALSE,
-                                   log = FALSE, max.num.genotypes = 2000, ...)
+                                   log = FALSE, max_num_genotypes = 2000, ...)
 
 \method{plot}{genotype_fitness_matrix}(x, show_labels = TRUE,
                                    col = c("green4", "red", "yellow"),
                                    lty = c(1, 2, 3),
                                    use_ggrepel = FALSE,
-                                   log = FALSE, max.num.genotypes = 2000, ...)
+                                   log = FALSE, max_num_genotypes = 2000, ...)
 
 \method{plot}{evalAllGenotypes}(x, show_labels = TRUE,
                                    col = c("green4", "red", "yellow"),
                                    lty = c(1, 2, 3),
                                    use_ggrepel = FALSE,
-                                   log = FALSE, max.num.genotypes = 2000, ...)
+                                   log = FALSE, max_num_genotypes = 2000, ...)
 
 \method{plot}{evalAllGenotypesMut}(x, show_labels = TRUE,
                                    col = c("green4", "red", "yellow"),
                                    lty = c(1, 2, 3),
                                    use_ggrepel = FALSE,
-                                   log = FALSE, max.num.genotypes = 2000, ...)
+                                   log = FALSE, max_num_genotypes = 2000, ...)
 }
 
 \arguments{

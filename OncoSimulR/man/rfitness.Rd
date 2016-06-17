@@ -41,13 +41,13 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   two-element vector, fitness is re-scaled between \code{scale[1]} (the
   minimum) and \code{scale[2]} (the maximum).}
 
-\code{wt_is_1}{If TRUE, fitness will be scaled so that the wildtype (the
+\item{wt_is_1}{If TRUE, fitness will be scaled so that the wildtype (the
   genotype with no mutations) has fitness of 1. This is applied after
   \code{scale}, so if you specify both it is most likely that the final
   fitness will not respect the limits in \code{scale}.}
 
 
-\code{log}{If TRUE, log-transform fitness.}
+\item{log}{If TRUE, log-transform fitness.}
 }
 \details{
 

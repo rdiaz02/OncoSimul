@@ -11,7 +11,7 @@ rfitness <- function(g, c= 0.5,
                                  ## wt_is_1 = TRUE
                      ) {
     ## Like Franke et al., 2011 and others of Krug. Very similar to Greene
-    ## and Krona, 2014. And this allows moving from HoC to purely additive
+    ## and Crona, 2014. And this allows moving from HoC to purely additive
     ## changing c and sd.
 
     ## FIXME future: do this with order too?
