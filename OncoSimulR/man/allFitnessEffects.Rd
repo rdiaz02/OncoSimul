@@ -391,7 +391,7 @@ fe2 <- allFitnessEffects(noIntGenes =
                            b1 = 0.01, b2 = 0.3, b3 = 0.2,
                            c1 = 0.3, c2 = -0.2))
 
-plot(evalAllGenotypes(fe2))
+plot(evalAllGenotypes(fe2, order = FALSE))
 
 ## same as
 plotFitnessLandscape(evalAllGenotypes(fe2, order = FALSE))
