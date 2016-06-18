@@ -189,7 +189,8 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     
     p <- ggplot() +
         xlab("") + ylab("Fitness") + 
-        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              panel.grid.minor.x = element_blank()) +
         geom_segment(data = sg,
                        aes(x = x_from, y = y_from,
                            xend = x_to, yend = y_to,
