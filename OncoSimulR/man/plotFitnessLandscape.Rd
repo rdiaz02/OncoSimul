@@ -9,7 +9,7 @@
 \title{ Plot a fitness landscape.  }
 
 \description{ Show a plot of a fitness landscape. The plot is modeled
-  after (actually, a blatant copy of) that of MAGELLAN,
+  after (actually, mostly a blatant copy of) that of MAGELLAN,
   \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}. 
 
 }
@@ -90,6 +90,34 @@ plotFitnessLandscape(x, show_labels = TRUE,
   A fitness landscape plot: a plot showing paths between
   genotypes and peaks and sinks (local maxima and minima).
 
+}
+
+
+\note{
+
+  In addition to cosmetic differences, an important difference between
+  this plot and those of MAGELLAN is \bold{how sinks/peaks of more than
+  one genotype are dealt with}. This plot will correctly show as sinks
+  or peaks sets of one or more genotypes that are of identical fitness
+  (and separated by a Haming distance of one). So a sink or a peak might
+  actually be made of more than one genotype. MAGELLAN, as far as I can
+  tell, cannot do this: peaks and sinks are always made of a single
+  isolated genotype.
+
+  Does this matter? In most realistic cases where any two genotypes are
+  always different it does not. In some cases, though, it might
+  matter. Are multi-genotype sinks/peaks really sinks/peaks? Arguably
+  yes: suppose genotypes "AB" and "ABC" both have fitness 0, which is
+  minimal among the fitness in the set of genotypes, and genotypes "A"
+  and "ABCD" have fitness 0.1. To go from A to ABCD, if you want to
+  travel through AB, you have to go through the valley of AB and ABC;
+  once in ABC you can climb up to ABCD; and once in AB you can move to
+  ABC since it has identical fitness to AB. Mutatis mutandis for
+  multi-genotype peaks.
+
+  Note that ignoring the possibility of peaks/sinks made of more than
+  one genotype actually makes code much simpler.
+  
 }
 
 \author{
