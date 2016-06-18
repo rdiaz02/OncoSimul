@@ -43,24 +43,33 @@ plotFitnessLandscape(x, show_labels = TRUE,
 \arguments{
   
   \item{x}{ One of the following:
-    \describe{
-      \item{A matrix (or data frame) with g + 1 columns.}{Each of the first g columns contains a 1 or a 0 indicating that the
-      gene of that column is mutated or not. Column g+ 1 contains the
-      fitness values. This is, for instance, the output you will get from
-      \code{\link{rfitness}}}. 
-      \item{A two column data frame.}{The second column is fitness, and
+    \itemize{
+
+      \item A matrix (or data frame) with g + 1 columns. Each of the
+      first g columns contains a 1 or a 0 indicating that the gene of
+      that column is mutated or not. Column g+ 1 contains the fitness
+      values. This is, for instance, the output you will get from
+      \code{\link{rfitness}}.
+
+      \item A two column data frame. The second column is fitness, and
       the first column are genotypes, given as a character vector. For
       instance, a row "A, B" would mean the genotype with both A and B
-      mutated.}
-      \item{The output from a call to
-    \code{\link{evalAllGenotypes}}}{Make sure you use \code{order =
-    FALSE} in that call.}.
-      \item{The output from a call to
-    \code{\link{evalAllGenotypesMut}}}{Make sure you use \code{order = FALSE}.}.
-      \item{The output from a call to \code{\link{allFitnessEffects}}.}{}}
+      mutated.
+      
+      \item The output from a call to
+      \code{\link{evalAllGenotypes}}. Make sure you use \code{order =
+	FALSE} in that call.
+      
+      \item The output from a call to
+      \code{\link{evalAllGenotypesMut}}. Make sure you use \code{order =
+	FALSE}.
+      
+      \item The output from a call to \code{\link{allFitnessEffects}}.
+      
+    }
+    
     The first two are the same as the format for the \code{genotFitness}
-    component in \code{\link{allFitnessEffects}}.
-  }
+    component in \code{\link{allFitnessEffects}}.  }
   
   \item{show_labels}{If TRUE, show the genotype labels.}
 
@@ -93,33 +102,6 @@ plotFitnessLandscape(x, show_labels = TRUE,
 }
 
 
-\note{
-
-  In addition to cosmetic differences, an important difference between
-  this plot and those of MAGELLAN is \bold{how sinks/peaks of more than
-  one genotype are dealt with}. This plot will correctly show as sinks
-  or peaks sets of one or more genotypes that are of identical fitness
-  (and separated by a Haming distance of one). So a sink or a peak might
-  actually be made of more than one genotype. MAGELLAN, as far as I can
-  tell, cannot do this: peaks and sinks are always made of a single
-  isolated genotype.
-
-  Does this matter? In most realistic cases where any two genotypes are
-  always different it does not. In some cases, though, it might
-  matter. Are multi-genotype sinks/peaks really sinks/peaks? Arguably
-  yes: suppose genotypes "AB" and "ABC" both have fitness 0, which is
-  minimal among the fitness in the set of genotypes, and genotypes "A"
-  and "ABCD" have fitness 0.1. To go from A to ABCD, if you want to
-  travel through AB, you have to go through the valley of AB and ABC;
-  once in ABC you can climb up to ABCD; and once in AB you can move to
-  ABC since it has identical fitness to AB. Mutatis mutandis for
-  multi-genotype peaks.
-
-  Note that ignoring the possibility of peaks/sinks made of more than
-  one genotype actually makes code much simpler.
-  
-}
-
 \author{
 Ramon Diaz-Uriarte
 }
@@ -144,6 +126,30 @@ Ramon Diaz-Uriarte
   \code{\link{allFitnessEffects}} that specifies for, say, the fitness
   of a total of 5000 genotypes you'll have to wait a while for the plot
   to finish.
+
+
+  In addition to cosmetic differences, an important difference between
+  this plot and those of MAGELLAN is \bold{how sinks/peaks of more than
+  one genotype are dealt with}. This plot will correctly show as sinks
+  or peaks sets of one or more genotypes that are of identical fitness
+  (and separated by a Haming distance of one). So a sink or a peak might
+  actually be made of more than one genotype. MAGELLAN, as far as I can
+  tell, cannot do this: peaks and sinks are always made of a single
+  isolated genotype.
+
+  Does this matter? In most realistic cases where any two genotypes are
+  always different it does not. In some cases, though, it might
+  matter. Are multi-genotype sinks/peaks really sinks/peaks? Arguably
+  yes: suppose genotypes "AB" and "ABC" both have fitness 0, which is
+  minimal among the fitness in the set of genotypes, and genotypes "A"
+  and "ABCD" have fitness 0.1. To go from A to ABCD, if you want to
+  travel through AB, you have to go through the valley of AB and ABC;
+  once in ABC you can climb up to ABCD; and once in AB you can move to
+  ABC since it has identical fitness to AB. Mutatis mutandis for
+  multi-genotype peaks.
+
+  Note that ignoring the possibility of peaks/sinks made of more than
+  one genotype actually makes code much simpler.
 
  
 
