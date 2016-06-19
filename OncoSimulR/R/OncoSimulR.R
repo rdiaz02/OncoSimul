@@ -263,8 +263,10 @@ samplePop <- function(x, timeSample = "last",
     gN <- geneNames
     
     if(!is.null(popSizeSample) && (length(popSizeSample) > 1) &&
-       (length(popSizeSample) != length(x)))
-        warning("length popSizeSample != number of subjects")
+       (length(popSizeSample) != length(x))) {
+        message("length popSizeSample != number of subjects")
+        popSizeSample <- rep(popSizeSample, length.out = length(x))
+        }
     ## A hack to prevent Map from crashing with a NULL
     if(is.null(popSizeSample)) popSizeSample <- -99
     if(inherits(x, "oncosimulpop")) {
