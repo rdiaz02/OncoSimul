@@ -122,12 +122,6 @@ Ramon Diaz-Uriarte
   epistasis stats for the landscape, and several visual manipulation
   options).
 
-  Use common sense: for instance, if you pass a
-  \code{\link{allFitnessEffects}} that specifies for, say, the fitness
-  of a total of 5000 genotypes you'll have to wait a while for the plot
-  to finish.
-
-
   In addition to cosmetic differences, an important difference between
   this plot and those of MAGELLAN is \bold{how sinks/peaks of more than
   one genotype are dealt with}. This plot will correctly show as sinks
@@ -137,19 +131,29 @@ Ramon Diaz-Uriarte
   tell, cannot do this: peaks and sinks are always made of a single
   isolated genotype.
 
-  Does this matter? In most realistic cases where any two genotypes are
-  always different it does not. In some cases, though, it might
-  matter. Are multi-genotype sinks/peaks really sinks/peaks? Arguably
-  yes: suppose genotypes "AB" and "ABC" both have fitness 0, which is
-  minimal among the fitness in the set of genotypes, and genotypes "A"
-  and "ABCD" have fitness 0.1. To go from A to ABCD, if you want to
-  travel through AB, you have to go through the valley of AB and ABC;
-  once in ABC you can climb up to ABCD; and once in AB you can move to
-  ABC since it has identical fitness to AB. Mutatis mutandis for
-  multi-genotype peaks.
+  Does this matter? In most realistic cases where not two genotypes can
+  have exactly the same fittnes it does not. In some cases, though, it
+  might matter. Are multi-genotype sinks/peaks really sinks/peaks?
+  Arguably yes: suppose genotypes "AB" and "ABC" both have fitness 0,
+  which is minimal among the fitness in the set of genotypes, and
+  genotypes "A" and "ABCD" have fitness 0.1. To go from "A" to "ABCD",
+  if you want to travel through "AB", you have to go through the valley
+  of "AB" and "ABC"; once in "ABC" you can climb up to "ABCD"; and once
+  in "AB" you can move to "ABC" since it has identical fitness to
+  "AB". Mutatis mutandis for multi-genotype peaks. Ignoring the
+  possibility of peaks/sinks made of more than one genotype actually
+  makes code much simpler.
 
-  Note that ignoring the possibility of peaks/sinks made of more than
-  one genotype actually makes code much simpler.
+
+  Sometimes not showing the any links that involve a decrease in fitness
+  can help see non-accessible pathways (in strong selection, no multiple
+  mutations, etc); do this by passing, for instance, an NA for the
+  second element of \code{col}.
+
+  Finally, use common sense: for instance, if you pass a
+  \code{\link{allFitnessEffects}} that specifies for, say, the fitness
+  of a total of 5000 genotypes you'll have to wait a while for the plot
+  to finish.
 
  
 

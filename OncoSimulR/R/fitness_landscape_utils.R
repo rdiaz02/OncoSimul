@@ -16,6 +16,8 @@
 ## plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
 ##     plot.genotype_fitness_matrix <- plotFitnessLandscape 
 
+## FIXME: show only accessible paths? 
+
 plotFitnessLandscape <- function(x, show_labels = TRUE,
                                  col = c("green4", "red", "yellow"),
                                  lty = c(1, 2, 3), use_ggrepel = FALSE,
@@ -24,12 +26,7 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
 
     ## FIXME future:
     
-    ## - Later add this as a plot.genotype_fitness_matrix and
-    ## plot.allFitnessEffects. and plot.fitnessEffects will need to make
-    ## sure allFitnessEffects returns a specific class (the other two
-    ## already do). So we would jump to the right place below.
-
-    
+   
 
     ## - Allow passing order effects. Change "allGenotypes_to_matrix"
     ##   below? Probably not, as we cannot put order effects as a
