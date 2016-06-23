@@ -14,7 +14,7 @@ test_that("mutationPropGrowth OK  with Exp, sample", {
                                                      oi,
                                                      onlyCancer = FALSE,
                                                      model = "Exp",
-                                                     sampleEvery = 0.1,
+                                                     sampleEvery = 0.05,
                                                      mutationPropGrowth = TRUE),
                              "Successfully", fixed = TRUE)
 })

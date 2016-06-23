@@ -19,14 +19,17 @@
 #define _NEW_RESTRICT_H__
 
 #include "debug_common.h"
+#include "common_classes.h"
 // #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include <Rcpp.h>
 #include <limits>
 #include <random>
 
+
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
-enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
-    beerenwinkel, mcfarland0,  bozic2};
+// enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
+//     beerenwinkel, mcfarland0,  bozic2};
+// enum class TypeModel {exp, bozic1, mcfarlandlog};
 
 struct Poset_struct {
   Dependency typeDep;
@@ -93,6 +96,28 @@ struct fitnessEffectsAll {
   
 };
 
+inline fitnessEffectsAll nullFitnessEffects() {
+  // Make it explicit
+  fitnessEffectsAll f;
+  f.gMOneToOne = true;
+  f.genomeSize = 0;
+  f.allOrderG.resize(0);
+  f.allPosetG.resize(0);
+  f.Poset.resize(0);
+  f.Epistasis.resize(0);
+  f.orderE.resize(0);
+  f.Gene_Module_tabl.resize(0);
+  f.allGenes.resize(0);
+  f.drv.resize(0);
+  f.genesNoInt.shift = -99L;
+  f.genesNoInt.NumID.resize(0);
+  f.genesNoInt.names.resize(0);
+  f.genesNoInt.s.resize(0);
+  return f;
+}
+
+
+
 struct fitness_as_genes {
   // fitnessEffectsAll in terms of genes.  Useful for output
   // conversions. There could be genes that are both in orderG and
@@ -121,6 +146,7 @@ struct Genotype {
   std::vector<int> epistRtEff; //always sorted
   std::vector<int> rest; // always sorted
 };
+
 
 
 inline Genotype wtGenotype() {
@@ -162,14 +188,13 @@ Dependency stringToDep(const std::string& dep);
 
 std::string depToString(const Dependency dep);
 
-
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
-		     int& numMutablePosParent,
+		     int& numMutablePosParent, 
 		     std::vector<int>& newMutations,
-		     std::mt19937& ran_gen
 		     //randutils::mt19937_rng& ran_gen
-		     );
+		     std::mt19937& ran_gen,
+		     std::vector<double> mu);
 
 Genotype createNewGenotype(const Genotype& parent,
 			   const std::vector<int>& mutations,
@@ -195,6 +220,26 @@ std::vector<int> getGenotypeDrivers(const Genotype& ge, const std::vector<int>& 
 double prodFitness(const std::vector<double>& s);
 
 double prodDeathFitness(const std::vector<double>& s);
+
+double mutationFromScratch(const std::vector<double>& mu,
+			   const spParamsP& spP,
+			   const Genotype& g,
+			   const fitnessEffectsAll& fe,
+			   const int mutationPropGrowth,
+			   const std::vector<int> full2mutator,
+			   const fitnessEffectsAll& muEF);
+
+// double mutationFromParent(const std::vector<double>& mu,
+// 			  const spParamsP& newP,
+// 			  const spParamsP& parentP,
+// 			  const std::vector<int>& newMutations,
+// 			  // const std::vector<int>& nonmutated,
+// 			  const int mutationPropGrowth,
+// 			  const Genotype& fullge,
+// 			  const std::vector<int> full2mutator,
+// 			  const fitnessEffectsAll& muEF);
+
+double prodMuts(const std::vector<double>& s);
 
 #endif
 

@@ -1,19 +1,44 @@
 \name{evalAllGenotypes}
+
 \alias{evalAllGenotypes}
+\alias{evalAllGenotypesMut}
+\alias{evalAllGenotypesFitAndMut}
 \alias{evalGenotype}
+\alias{evalGenotypeMut}
+\alias{evalGenotypeFitAndMut}
+
 \title{
-Evaluate fitness of one or all possible genotypes.
+Evaluate fitness/mutator effects of one or all possible genotypes.
 }
+
 \description{
-  Given a fitnessEffects description, obtain the fitness of a single or
+  Given a fitnessEffects/mutatorEffects description, obtain the
+  fitness/mutator effects of a single or
   all genotypes.
 }
+
+
 \usage{
-evalAllGenotypes(fitnessEffects, order = TRUE, max = 256, addwt = FALSE,
-model = "")
 
 evalGenotype(genotype, fitnessEffects, verbose = FALSE, echo = FALSE,
 model = "")
+
+evalGenotypeMut(genotype, mutatorEffects, verbose = FALSE, echo = FALSE)
+
+evalAllGenotypes(fitnessEffects, order = TRUE, max = 256, addwt = FALSE,
+model = "")
+
+evalAllGenotypesMut(mutatorEffects, max = 256, addwt = FALSE)
+
+
+evalGenotypeFitAndMut(genotype, fitnessEffects,
+                      mutatorEffects, verbose = FALSE, echo = FALSE,
+                      model = "")
+
+evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
+                          order = TRUE, max = 256, addwt = FALSE,
+                          model = "")
+
 
 }
 \arguments{
@@ -30,7 +55,14 @@ model = "")
   }
 
 
-  \item{fitnessEffects}{A \code{fitnessEffects} object, as produced by \code{\link{allFitnessEffects}}.}
+  \item{fitnessEffects}{A \code{fitnessEffects} object, as produced by
+    \code{\link{allFitnessEffects}}.}
+
+  \item{mutatorEffects}{A \code{mutatorEffects} object, as produced by
+    \code{\link{allMutatorEffects}}.}
+
+
+  
   \item{order}{
     (For \code{evalAllGenotypes}). Does order matter? If it does, then generate not only all possible
     combinations of the genes, but all possible permutations for each combination.
@@ -74,7 +106,20 @@ happened before or after either of ``x'' or ``y''), but ``z'' is a gene
 for which order does not matter. In all cases, a "WT" denotes the
 wild-type (or, actually, the genotype without any mutations).
 
+
+
+
+If you use both \code{fitnessEffects} and \code{mutatorEffects} in a
+call,  all the genes specified in
+  \code{mutatorEffects} MUST be included in the
+  \code{fitnessEffects} object. If you want to have genes that have
+  no direct effect on fitness, but that affect mutation rate, you MUST
+  specify them in the call to \code{fitnessEffects}, for instance as
+  \code{noIntGenes} with an effect of 0.  
+
+
 }
+
 \author{
 Ramon Diaz-Uriarte
 }
@@ -90,6 +135,18 @@ Ramon Diaz-Uriarte
   Modules are, of course, taken into account if present (i.e., fitness
   is specified in terms of modules, but the genotype is specified in
   terms of genes).
+
+
+  About the naming. This is the convention used: "All" means we will go
+over all possible genotypes. A function that ends as "Genotypes" returns
+only fitness effects (for backwards compatibility and because mutator
+effects are not always used). A function that ends as "Genotype(s)Mut"
+returns only the mutator effects. A function that ends as "FitAndMut"
+will return both fitness and mutator effects.
+
+Functions that return ONLY fitness or ONLY mutator effects are kept as
+separate functions because they free you from specifyin mutator/fitness
+effects if you only want to play with one of them.
 }
 
 
@@ -170,6 +227,65 @@ evalGenotype("a1 > b2 > e1 > f2", fp4m, verbose = TRUE)
 ##   fitnessEffects geneModule component:
 
 evalGenotype(c(1L, 3L, 7L, 9L), fp4m, verbose = TRUE)
+
+
+
+## Epistasis for fitness and simple mutator effects
+
+fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                          "b : c" = 0.5),
+                            noIntGenes = c("e" = 0.1))
+
+fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                       "c" = 5))
+
+evalAllGenotypesFitAndMut(fe, fm, order = "FALSE")
+
+
+## Simple fitness effects (noIntGenes) and modules
+## for mutators
+
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+fm2 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+
+## Show only all the fitness effects
+evalAllGenotypes(fe2, order = FALSE)
+
+## Show only all mutator effects
+evalAllGenotypesMut(fm2)
+
+## Show all fitness and mutator
+evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
+
+## This is probably not what you want
+try(evalAllGenotypesMut(fe2))
+## ... nor this
+try(evalAllGenotypes(fm2))
+
+## Show the fitness effect of a specific genotype
+evalGenotype("a1, c2", fe2, verbose = TRUE)
+
+## Show the mutator effect of a specific genotype
+evalGenotypeMut("a1, c2", fm2, verbose = TRUE)
+
+## Fitness and mutator of a specific genotype
+evalGenotypeFitAndMut("a1, c2", fe2, fm2, verbose = TRUE)
+
+## This is probably not what you want
+try(evalGenotype("a1, c2", fm2, verbose = TRUE))
+
+## Not what you want either
+try(evalGenotypeMut("a1, c2", fe2, verbose = TRUE))
+
 
 }
 

@@ -1,4 +1,3 @@
-## This takes ~ 22 seconds. Most of them in the very first test.
 cat(paste("\n Starting oncoSimulSample-limits tests", date(), "\n"))
 
 ## RNGkind("Mersenne-Twister")

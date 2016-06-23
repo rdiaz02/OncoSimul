@@ -638,6 +638,18 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
 })
 
 
+test_that("initMutant crashes is >= number of genes", {
+    o1 <- allFitnessEffects(
+        noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+    expect_error(oncoSimulIndiv(o1, initMutant = "b, a, c"),
+                 "For initMutant you passed as many, or more genes",
+                 fixed = TRUE)
+    expect_error(oncoSimulIndiv(o1, initMutant = "b, a, c, d"),
+                 "For driver or initMutant you have passed genes not in the fitness table",
+                 fixed = TRUE)
+})
+
+
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
 
 

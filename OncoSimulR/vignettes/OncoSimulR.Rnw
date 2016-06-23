@@ -23,6 +23,9 @@ options(width = 68)
 %\definecolor{light-gray}{gray}{0.72}
 \newcommand{\cyan}[1]{{\textcolor {cyan} {#1}}}
 \newcommand{\blu}[1]{{\textcolor {blue} {#1}}}
+%% FIXME: remove the red thing later
+\newcommand{\red}[1]{{\textcolor {red} {#1}}}
+
 \newcommand{\Burl}[1]{\blu{\url{#1}}}
 \usepackage{gitinfo}
 
@@ -34,6 +37,9 @@ options(width = 68)
 
 \usepackage[latin1]{inputenc}
 
+\usepackage{nameref}
+%%\newcommand{\qref}[1]{\textit{``\ref{#1}''}}
+\newcommand*{\qref}[1]{\hyperref[{#1}]{\textit{``\nameref*{#1}'' (section \ref*{#1})}}}
 
 
 %Uncomment for BioC
@@ -60,6 +66,7 @@ BiocStyle::latex()
 
 %% FIXME: the homozigos, etc.
 
+%%FIXME : examples of gene-specific mutation rates?
 
 \bioctitle[\textit{OncoSimulR: genetic simulation with arbitrary
   epistasis}]{OncoSimulR: forward genetic simulation in asexual
@@ -142,9 +149,11 @@ distribution you might want) are also possible.
 
 The models so far implemented are all continuous time models, which are
 simulated using the BNB algorithm of Mather et al.\ \cite{Mather2012}. The
-core of the code is implemented in C++, providing for fast execution.
-Finally, to help with simulation studies, code to simulate random graphs
-of the kind often seen in CBN, OTs, etc, is also available.
+core of the code is implemented in C++, providing for fast execution.  To
+help with simulation studies, code to simulate random graphs of the kind
+often seen in CBN, OTs, etc, is also available. And OncoSimulR also allows
+for the generation of random fitness landscapes and the representation of
+fitness landscapes.
 
 \subsection{Key features of OncoSimulR}\label{key}
 
@@ -167,6 +176,8 @@ is a summary of some of the key features:
     \item Order effects.
     \end{itemize}
   \item You can add passenger mutations.
+  \item You can add mutator/antimutator effects.
+    \item Fitness and mutation rates can be gene-specific.
     \item More generally, you can add arbitrary numbers of non-interacting
       genes with arbitrary fitness effects.
   
@@ -195,6 +206,13 @@ is a summary of some of the key features:
       
     \item You can obtain the true sequence of events and the phylogenetic
       relationships between clones.
+    
+    \item You can generate random fitness landscapes (under the House of
+      Cards, Rough Mount Fuji, or additive models, or combinations of the
+      former) and use those landscapes as input to the simulation
+      functions.
+      
+    \item You can plot fitness landscapes.
       
 \end{itemize}
 
@@ -210,10 +228,12 @@ CBNs or OTs (or XORs or semimonotone graphs) to specify restrictions,
 there is no allowance for passengers, and a single type of model (a
 discrete time Galton-Watson process) is implemented. The current
 functionality of OncoSimulR goes well beyond the the previous version
-(and, thus, also the TPT of \cite{Reiter2013a}) allowing you to specify
-all types of fitness effects in other general forward genetic simulators
-such as FFPopSim \cite{Zanini2012}, and some that, to our knowledge (e.g.,
-order effects) are not available from any genetics simulator.
+(and, thus, also the TPT of \cite{Reiter2013a}). We now allow you to
+specify all types of fitness effects in other general forward genetic
+simulators such as FFPopSim \cite{Zanini2012}, and some that, to our
+knowledge (e.g., order effects) are not available from any genetics
+simulator. In addition, the ``lego approach'' to flexibly combine
+different fitness specifications is also unique.
 
 
 
@@ -256,7 +276,7 @@ Before anything else, let us load the package. We also explicitly load
 need that for your usual interactive work). And I set the default color
 for vertices in igraph.
 
-<<results="hide">>=
+<<results="hide",message=FALSE, echo=TRUE, include=TRUE>>=
 library(OncoSimulR)
 library(graph)
 library(igraph)
@@ -295,7 +315,8 @@ sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
                          geneToModule = c(
                              "A" = "a1, a2",
                              "B" = "b",
-                             "C" = "c"))
+                             "C" = "c"),
+                         drvNames = c("a1", "a2", "b", "c"))
 evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 
 ## 2. Simulate the data. Here we use the "McFL" model and set explicitly
@@ -377,13 +398,14 @@ pancr <- allFitnessEffects(
                    rep("PXDN", 3), rep("TGFBR2", 2)),
                s = 0.1,
                sh = -0.9,
-               typeDep = "MN"))
+               typeDep = "MN"),
+    drvNames = c("KRAS", "SMAD4", "CDNK2A", "TP53", "MLL3", "TGFBR2", "PXDN"))
 ## How does it look like?
 plot(pancr)
 @ 
 <<fig.width=6.5, fig.height=10>>=
 ## 2. Simulate from it. 
-set.seed(1) ## Fix the seed, so we can repeat it
+set.seed(4) ## Fix the seed, so we can repeat it
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      mu = 1e-6,
                      sampleEvery = 0.02,
@@ -397,11 +419,11 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
 ##    to show only parts of the data. We also thin them.
 par(mfrow = c(2, 1))
 par(cex = 0.7)
-plot(ep2, show = "genotypes", xlim = c(2000, 4000), 
+plot(ep2, show = "genotypes", xlim = c(1000, 8000), 
      ylim = c(0, 2400),
      thinData = TRUE, thinData.keep = 0.5)
 plot(ep2, show = "drivers", addtot = TRUE,
-     thinData = TRUE, thinData.keep = 0.5)
+     thinData = TRUE, thinData.keep = 0.2)
 @ 
 
 
@@ -422,6 +444,7 @@ BioConductor, or you grab the sources from github
 version 2. %% If you see a version in the package that says ``1.99.x'', where
 %% ``x'' is any number, you are too.
 
+\textbf{The functionality of version 1 will soon be removed.}
 
 
 \section{Specifying fitness effects}\label{specfit}
@@ -469,20 +492,150 @@ will introduce them right after \ref{posetslong}, and continue using them
 thereafter.
 
 
-\subsubsection{How to specify fitness effects effects}\label{howfit}
-
 A guiding design principle of OncoSimulR is to try to make the
 specification of those effects as simple as possible but also as flexible
-as possible. 
+as possible. Thus, there are two main ways of specifying fitness effects:
 
-Conceptually, the simplest way is to specify the mapping of all genotypes
-to fitness explicitly. This can be done with OncoSimulR (e.g., see
-sections \ref{e2}, \ref{e3} and \ref{theminus} or the example in
-\ref{weis1b}), but this only makes sense for subsets of the genes or for
-very small genotypes, as you probably do not want to be explicit about the
-mapping of $2^k$ genotypes to fitness when $k$ is larger than, say, four
-or five, and definitely not when $k$ is 10.
+\begin{itemize}
+\item Combining different types of effects in a single specification. For
+  instance, you can combine epistasis with order effects with no
+  interaction genes with modules. What you would do here is specify the
+  effects that different mutations (or their combinations) have on fitness
+  (the fitness effects) and then have OncoSimulR take care of combining
+  them as if each of these were lego pieces. We will refer to this as the
+  \textbf{lego system of fitness effects}.
+  
+  
+\item Explicitly passing to OncoSimulR a mapping of genotypes to
+  fitness. Here you specify the fitness of each genotype. We will refer to
+  this as the \textbf{explicit mapping of genotypes to fitness}.
+\end{itemize}
 
+
+Both approaches have advantages and disadvantages. Here I emphasize some
+relevant differences.
+\begin{itemize}
+\item With the lego system you can specify huge genomes with an enormous
+  variety of interactions, since the possible genotypes are not
+  constructed in advance. You would not be able to do this with the
+  explicit mapping of genotypes to fitness if you wanted to, say,
+  construct that mapping for a modest genotype of 500 genes (you'd have
+  more genotypes than particles in the Universe).
+  
+\item For many models/data you often intuitively start with the fitness of
+  the genotypes, not the fitness consequences of the different
+  mutations. In these cases, you'd need to do the math to specify the
+  terms you want if you used the lego system.
+  
+\item Sometimes you already have a moderate size genotype $\rightarrow$
+  fitness mapping and you certainly do not want to do the math by 
+  hand: here the lego system would be painful to use.
+  
+\item But sometimes we do think in terms of ``the effects on fitness of
+  such and such mutations are'' and that immediately calls for the lego
+  system, where you focus on the effects, and let OncoSimulR take care of
+  doing the math of combining.
+  
+\item If you want to use order effects, you must use the lego system (at
+  least for now).
+    
+\item If you want to specify modules, you must use the lego system (the
+  explicit mapping of genotypes is, by its very nature, ill-suited for
+  this).
+  
+\item The lego system might help you see what your model really means: in
+  many cases, you can obtain fairly succinct specification of complex
+  fitness models with just a few terms. Similarly, depending on what your
+  emphasis is, you can often specify the same fitness landscape in several
+  different ways.
+  
+\end{itemize}
+
+
+Regardless of the route, you need to get that information into
+  OncoSimulR's functions. The main function we will use is
+  \Rfunction{allFitnessEffects}: this is the function in charge of reading
+  the fitness specifications. We also need to discuss how, what, and where
+  you have to pass to \Rfunction{allFitnessEffects}.
+ 
+
+\subsubsection{Explicit mapping of genotypes to fitness}\label{explicitmap}
+
+Conceptually, the simplest way to specify fitness is to specify the
+mapping of all genotypes to fitness explicitly. An example will make this
+clear. Let's suppose you have simple two-gene scenario, so a total of four
+genotypes, and you have a data frame with genotypes and fitness, where
+genoytpes are specified as character vectors, with mutated genes separated
+by commas:
+
+<<>>=
+m4 <- data.frame(G = c("WT", "A", "B", "A, B"), F = c(1, 2, 3, 4))
+@ 
+
+Now, let's give that to the \Rfunction{allFitnessEffects} function:
+
+<<>>=
+fem4 <- allFitnessEffects(genotFitness = m4)
+@ 
+(The message is just telling you what the program guess you wanted.)
+
+
+That's it. You can plot that object
+<<out.width="6cm", out.height = "6cm">>=
+plot(fem4)
+@ 
+or see what OncoSimulR thinks the fitnesses are, with the
+\Rfunction{evalAllGenotypes} function that we will use repeatedly below
+(of course, here we should see the same fitnesses we entered):
+
+<<>>=
+evalAllGenotypes(fem4)
+@ 
+
+
+
+To specify the mapping you can also use a matrix (or data frame) with
+$g + 1$ columns; each of the first $g$ columns contains a 1 or a 0
+indicating that the gene of that column is mutated or not. Column $g+ 1$
+contains the fitness values. And you do not even need to specify all the
+genotypes (we will assume that the missing genotypes have fitness 1):
+
+<<out.width="6cm", out.height = "6cm">>=
+m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
+fem6 <- allFitnessEffects(genotFitness = m6)
+evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
+plot(fem6)
+@ 
+
+
+This way of giving a fitness specification to OncoSimulR might be ideal if
+you directly generate random mappings of genotypes to fitness, as we will
+do in section \qref{gener-fit-land}.
+
+
+We will see an example of this way of passing fitness again in
+\ref{bauer}, where will compare it with the lego system.
+
+% Please see the documentation of \Rfunction{allFitnessEffects} for further
+% details and examples.
+
+
+
+
+
+% This can be done with OncoSimulR (e.g., see sections \ref{e2}, \ref{e3}
+% and \ref{theminus} or the example in \ref{weis1b}), but this only makes
+% sense for subsets of the genes or for very small genotypes, as you
+% probably do not want to be explicit about the mapping of $2^k$ genotypes
+% to fitness when $k$ is larger than, say, four or five, and definitely not
+% when $k$ is 10.
+
+
+\subsubsection{How to specify fitness effects effects with the lego system}\label{howfit}
+
+% A guiding design principle of OncoSimulR is to try to make the
+% specification of those effects as simple as possible but also as flexible
+% as possible. 
 
 
 An alternative general approach followed in many genetic simulators is to
@@ -496,12 +649,34 @@ of the ``A, B'' genotype is that of the wildtype (1, by default), plus
 (times) the effects of B, plus (times) the effects of ``A:B''.
 
 
-As we will see in the examples (e.g., see sections \ref{e2}, \ref{e3},
-\ref{exlong}) OncoSimulR makes it simple to be explicit about the mapping
-of specific genotypes, while also using the ``how this specific effects
-modifies previous effects'' logic, leading to a flexible
-specification. This also means that in many cases the same fitness
-effects can be specified in several different ways.
+We will see below that with the ``lego system'' it is possible to do
+something very similar to the explicit mapping of section
+\ref{explicitmap}.  But this will sometimes require a more cumbersome
+notation (and sometimes also will require your doing some math). We will see
+examples in sections \ref{e2}, \ref{e3} and \ref{theminus} or the example
+in \ref{weis1b}. But then, if we can be explicit about (at least some of)
+the mappings $genotype \rightarrow fitness$, how are these procedures
+different? When you use the ``lego system'' you can combine both a partial
+explicit mapping of genotypes to fitness with arbitrary fitness effects of
+other genes/modules. In other words, with the ``lego system'' OncoSimulR
+makes it simple to be explicit about the mapping of specific genotypes,
+while also using the ``how this specific effects modifies previous
+effects'' logic, leading to a flexible specification. This also means that
+in many cases the same fitness effects can be specified in several
+different ways.
+
+Most of the rest of this section is devoted to explaining how to combine
+those pieces. Before that, however, we need to discuss the fitness model
+we use.
+
+
+
+% As we will see in the examples (e.g., see sections \ref{e2}, \ref{e3},
+% \ref{exlong}) OncoSimulR makes it simple to be explicit about the mapping
+% of specific genotypes, while also using the ``how this specific effects
+% modifies previous effects'' logic, leading to a flexible
+% specification. This also means that in many cases the same fitness
+% effects can be specified in several different ways.
 
 
 \subsection{Numeric values of fitness effects}\label{numfit}
@@ -525,7 +700,7 @@ rate then becomes $\prod (1 - s_i)$.
 In the original McFarland model \cite{McFarland2013}, the effects of
 drivers contribute to the numerator of the birth rate, and those of the
 (deleterious) passengers to the denominator as:
-$\frac{(1 + s)^D}{(1 - s_p)^p}$, where $D$ and $P$ are, respectively, the
+$\frac{(1 + s)^D}{(1 - s_p)^P}$, where $D$ and $P$ are, respectively, the
 total number of drivers and passengers in a genotype, and here the fitness
 effects of all drivers is the same ($s$) and that of all passengers the
 same too ($s_p$). However, we can map from this ratio to the usual product
@@ -558,10 +733,11 @@ immediately without any chance for mutation\footnote{This is a shortcut
   sense) and the problem of multiplying an even number of negative
   numbers. I think only the second would make sense as an alternative.}.
 
-Models based on Bozic, however, have a birth rate of 1\footnote{In the C++
-  code there is a different model, not directly callable from R for now,
-  called ``bozic2'' that is slightly different. These comments apply to
-  the model that is right now callable from R} and mutations affect the
+Models based on Bozic, however, have a birth rate of 1% \footnote{In the C++
+  % code there is a different model, not directly callable from R for now,
+  % called ``bozic2'' that is slightly different. These comments apply to
+  % the model that is right now callable from R}
+and mutations affect the
 death rate. In this case, a death rate larger than birth rate, per se,
 does not signal immediate extinction and, moreover, even for death rates
 that are a few times larger than birth rates, the clone could mutate
@@ -2203,6 +2379,279 @@ these are nothing but special cases of synthetic mortality (\ref{sl}),
 synthetic viability (\ref{sv}) and epistasis (\ref{epi}).
 
 
+\subsection{Gene-specific mutation rates}\label{per-gene-mutation}
+
+You can specify gene-specific mutation rates. Instead of passing a scalar
+value for \texttt{mu}, you pass a named vector. (This does not work with
+the old v.\ 1 format, though; yet another reason to stop using that
+format). This is a simple example (many more are available in the tests,
+see file \texttt{./tests/testthat/test.per-gene-mutation-rates.R}).
+
+<<>>=
+
+muvar2 <- c("U" = 1e-6, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3, "D" = 1e-4)
+ni1 <- rep(0, 5)
+names(ni1) <- names(muvar2) ## We use the same names, of course
+fe1 <- allFitnessEffects(noIntGenes = ni1)
+bb <- oncoSimulIndiv(fe1, 
+                     mu = muvar2, onlyCancer = FALSE,
+                     initSize = 1e5,
+                     finalTime = 25,
+                     seed =NULL)
+
+@ 
+
+\subsection{Mutator genes}\label{mutator}
+
+You can specify mutator/antimutator genes (e.g., \cite{gerrish_complete_2007,
+  tomlinson_mutation_1996}): these are genes that, when mutated, lead to
+an increase/decrease in the mutation rate all over the genome (similar to what happens with, say, mutations in mismatch-repair genes or
+microsatellite instability in cancer).
+
+The specification is very similar to that for fitness effects, except we
+do not (at least for now) the use of DAGs for poset-like structures nor
+allow for order effects (we have seen no reference in the literature to
+suggest any of these would be relevant). You can, however, specify
+epistasis and use modules. Note that the mutator genes must be a subset of
+the genes in the fitness effects; if you want to have mutator genes that
+have no direct fitness effects, give them a fitness effect of 0.
+
+
+This first is a very simple example with simple fitness effects and
+modules for mutators. We will specify the fitness and mutator effects and
+evaluate the fitness and mutator effects:
+<<>>=
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+fm2 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+
+## Show the fitness effect of a specific genotype
+evalGenotype("a1, c2", fe2, verbose = TRUE)
+
+## Show the mutator effect of a specific genotype
+evalGenotypeMut("a1, c2", fm2, verbose = TRUE)
+
+## Fitness and mutator of a specific genotype
+evalGenotypeFitAndMut("a1, c2", fe2, fm2, verbose = TRUE)
+@ 
+
+You can also use the \texttt{evalAll} functions. We do not show the output
+here to avoid cluttering the vignette:
+
+<<eval=FALSE>>=
+## Show only all the fitness effects
+evalAllGenotypes(fe2, order = FALSE)
+
+## Show only all mutator effects
+evalAllGenotypesMut(fm2)
+
+## Show all fitness and mutator
+evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
+@ 
+
+
+Building upon the above, the next is an example where we have a bunch of
+no interaction genes that affect fitness, and a small set of genes that
+affect the mutation rate (but have no fitness effects).
+
+
+<<>>=
+
+set.seed(1) ## for reproducibility
+## 17 genes, 7 with no direct fitness effects
+ni <- c(rep(0, 7), runif(10, min = -0.01, max = 0.1))
+names(ni) <- c("a1", "a2", "b1", "b2", "b3", "c1", "c2",
+               paste0("g", 1:10))
+
+fe3 <- allFitnessEffects(noIntGenes = ni)
+
+fm3 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3,
+                                       "A:C" = 70),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+@ 
+
+Let us check what the effects are of a few genotypes:
+
+<<>>=
+## These only affect mutation, not fitness
+evalGenotypeFitAndMut("a1, a2", fe3, fm3, verbose = TRUE)
+evalGenotypeFitAndMut("a1, b3", fe3, fm3, verbose = TRUE)
+
+## These only affect fitness: the mutator multiplier is 1
+evalGenotypeFitAndMut("g1", fe3, fm3, verbose = TRUE)                      
+evalGenotypeFitAndMut("g3, g9", fe3, fm3, verbose = TRUE)
+
+## These affect both
+evalGenotypeFitAndMut("g3, g9, a2, b3", fe3, fm3, verbose = TRUE)
+@ 
+
+
+Finally, we will do a simulation with those data
+<<>>=
+
+set.seed(1) ## so that it is easy to reproduce
+mue1 <- oncoSimulIndiv(fe3, muEF = fm3, 
+                       mu = 1e-6,
+                       initSize = 1e5,
+                       model = "McFL",
+                       detectionSize = 5e6,
+                       finalTime = 500,
+                       onlyCancer = FALSE)
+@ 
+
+<<eval=FALSE>>=
+## We do not show this in the vignette to avoid cluttering it
+## with output
+mue1
+@ 
+
+
+Of course, it is up to you to keep things reasonable: mutator effects are
+multiplicative, so if you specify, say, 20 genes (without modules), or 
+20 modules, each with a mutator effect of 50, the overall mutation rate
+can be increased by a factor of $50^{20}$ and that is unlikely to be what
+you really want.
+
+You can play with the following case (an extension of the example above),
+where a clone with a mutator phenotype and some fitness enhancing
+mutations starts giving rise to many other clones, some with additional
+mutator effects, and thus leading to the number of clones blowing up (as
+some also accumulate additional fitness-enhancing mutations). Things start
+getting out of hand shortly after time 250. The code below takes a
+few minutes and is commented, but you can run it to get an idea of the
+increase in the number of clones and their relationships (the usage of
+\Rfunction{plotClonePhylog} is explained in section \ref{phylog}).
+
+<<eval=FALSE>>=
+
+set.seed(1) ## for reproducibility
+## 17 genes, 7 with no direct fitness effects
+ni <- c(rep(0, 7), runif(10, min = -0.01, max = 0.1))
+names(ni) <- c("a1", "a2", "b1", "b2", "b3", "c1", "c2",
+               paste0("g", 1:10))
+
+## Next is for nicer figure labeling.
+## consider drivers those with s >0
+gp <- which(ni > 0) 
+
+fe3 <- allFitnessEffects(noIntGenes = ni,
+                         drvNames = names(ni)[gp])
+
+
+set.seed(12)
+mue1 <- oncoSimulIndiv(fe3, muEF = fm3, 
+                       mu = 1e-6,
+                       initSize = 1e5,
+                       model = "McFL",
+                       detectionSize = 5e6,
+                       finalTime = 270,
+                       keepPhylog = TRUE,
+                       onlyCancer = FALSE)
+mue1
+## If you decrease N even further it gets even more cluttered
+op <- par(ask = TRUE)
+plotClonePhylog(mue1, N = 10, timeEvents = TRUE) 
+plot(mue1, plotDrivers = TRUE, addtot = TRUE,
+     plotDiversity = TRUE)
+## The stacked plot is slow; be patient
+## Most clones have tiny population sizes, and their lines
+## are piled on top of each other
+plot(mue1, addtot = TRUE,
+     plotDiversity = TRUE, type = "stacked")
+par(op)
+@ 
+
+
+\section{Plotting fitness landscapes}
+\label{plot-fit-land}
+
+
+The \Rfunction{evalAllGenotypes} and related functions allow you to obtain
+tables of the genotype to fitness mappings. It might be more convenient to
+actually plot that, allowing us to quickly identify local minima and
+maxima and get an idea of how the fitness landscape looks.
+
+In \Rfunction{plotFitnessLandscape} I have blatantly and shamelessly
+copied most of the looks of the plots of MAGELLAN
+(\url{http://wwwabi.snv.jussieu.fr/public/Magellan/},
+\cite{brouillet_magellan:_2015}), a nice web-based tool for fitness
+landscape plotting and analysis.
+
+As an example, let us show the previous example of Weissman et al. we saw
+in \ref{weissmanex}:
+
+<<>>=
+
+d1 <- -0.05 ## single mutant fitness 0.95
+d2 <- -0.08 ## double mutant fitness 0.92
+d3 <- 0.2   ## triple mutant fitness 1.2
+s2 <- ((1 + d2)/(1 + d1)^2) - 1
+s3 <- ( (1 + d3)/((1 + d1)^3 * (1 + s2)^3) ) - 1
+
+wb <- allFitnessEffects(
+    epistasis = c(
+        "A" = d1,
+        "B" = d1,
+        "C" = d1,
+        "A:B" = s2,
+        "A:C" = s2,
+        "B:C" = s2,
+        "A:B:C" = s3))
+@ 
+
+\clearpage
+<<>>=
+plotFitnessLandscape(wb, use_ggrepel = TRUE) ## ggrepel to avoid overlap 
+                                             ## of labels
+
+@ 
+
+\clearpage
+For some types of objects, directly invoking \Rfunction{plot} will give
+you the fitness plot
+
+<<>>=
+(ewb <- evalAllGenotypes(wb, order = FALSE))
+plot(ewb, use_ggrepel = TRUE) 
+
+@ 
+
+\clearpage
+This is another example we saw before (\ref{pancreas}), that will give a
+very busy plot:
+
+<<>>=
+
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), 
+                   "SMAD4", "CDNK2A", 
+                   "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                   "TP53", "MLL3",
+                   rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.1,
+               sh = -0.9,
+               typeDep = "MN"))
+plot(evalAllGenotypes(pancr, order = FALSE), use_ggrepel = TRUE)
+
+@ 
+
+
+%% FIXME use better values, here as I am not being faitfhfull to Bauer's
+%% values and figure.
+\clearpage
 \section{Specifying fitness effects: some examples from the literature}\label{litex}
 \subsection{Bauer et al}\label{bauer}
 
@@ -2212,53 +2661,141 @@ leads to a change in the cell's fitness by $s_P$. For cells with the
 primary driver mutation, the fitness advantage obtained with each
 secondary driver mutation is $s_{DP}$.''
 
-The proliferation probability is given as $(1 + s_p)^k$ when there are $k$
-secondary drivers mutated and no primary diver. If the primary driver is
-mutated, then the expression is $\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$.
-They set apoptosis as $1 - proliferation$.  So, ignoring constants such as
-$1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a table
-as (for a largest $k$ of 5 in this example, but can make it arbitrarily
-large):
+The proliferation probability is given as (ignoring constants such as $1/2$):
+
+\begin{itemize}
+\item $\frac{1}{2}(1 + s_p)^k$ when there are $k$ secondary drivers mutated and no primary diver;
+\item $\frac{1}{2}\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$ when the primary driver is mutated;
+\end{itemize}
+
+apoptosis is one minus the proliferation rate.
+
+
+We cannot find a simple mapping from their expressions to our fitness
+parameterization, but we can get fairly close by using a DAG; in this one,
+note the unusual feature of having on of the ``s'' terms (that for the
+driver dependency on root) be negative. Using the parameters given in the
+legend of their Figure 3 for $s_p, S_D^+, S_D^-, S_{DP}$ and obtaining
+that negative value for the dependency of the driver on root we can do:
+
 
 <<>>=
 
-K <- 5
-sd <- 0.1
-sdp <- 0.15
-sp <- 0.05
+K <- 4
+sp <- 1e-5
+sdp <- 0.015
+sdplus <- 0.05
+sdminus <- 0.1
+cnt <- (1 + sdplus)/(1 + sdminus)
+prod_cnt <- cnt - 1
 bauer <- data.frame(parent = c("Root", rep("p", K)),
                     child = c("p", paste0("s", 1:K)),
-                    s = c(sd, rep(sdp, K)),
+                    s = c(prod_cnt, rep(sdp, K)),
                     sh = c(0, rep(sp, K)),
                     typeDep = "MN")
 fbauer <- allFitnessEffects(bauer)
+(b1 <- evalAllGenotypes(fbauer, order = FALSE, addwt = TRUE))
 
 @ 
 
 Note that what we specify as ``typeDep'' is irrelevant (MN, SMN, or XMPN
 make no difference).
 
-
-The fitness effects figure looks like this:
+This is the DAG:
 <<fig.height=3>>=
 plot(fbauer)
 @ 
 
+
+And if you compare the tabular output of \Rfunction{evalAllGenotypes} you can
+see that the values of fitness reproduces the fitness landscape that they
+show in their Figure 1. We can also use our plot for fitness landscapes:
+
 <<>>=
-(b1 <- evalAllGenotypes(fbauer, order = FALSE))[1:10, ]
+plot(b1, use_ggrepel = TRUE)
 @ 
 
-Order makes no difference
+
+
+\clearpage
+An alternative approach to specify the fitness, if the number of genotypes
+is reasonably small, is to directly evaluate fitness as given by their
+expressions. Then, use the \texttt{genotFitness} argument to \Rfunction{allFitnessEffects}:
 
 <<>>=
-(b2 <- evalAllGenotypes(fbauer, order = TRUE, max = 2000))[1:15, ]
+
+m1 <- expand.grid(p = c(1, 0), s1 = c(1, 0), s2 = c(1, 0),
+                  s3 = c(1, 0), s4 = c(1, 0))
+
+fitness_bauer <- function(p, s1, s2, s3, s4, 
+                          sp = 1e-5, sdp = 0.015, sdplus = 0.05,
+                          sdminus = 0.1) {
+    if(!p) {
+        b <- 0.5 * ( (1 + sp)^(sum(c(s1, s2, s3, s4))))
+    } else {
+        b <- 0.5 * 
+            (((1 + sdplus)/(1 + sdminus)  * (1 + sdp)^(sum(c(s1, s2, s3, s4)))))
+    }
+    fitness <- b - (1 - b)
+    our_fitness <- 1 + fitness ## prevent negative fitness and
+    ## make wt fitness = 1
+    return(our_fitness)
+}
+
+m1$Fitness <- 
+    apply(m1, 1, function(x) do.call(fitness_bauer, as.list(x)))
+
+bauer2 <- allFitnessEffects(genotFitness = m1)
 @ 
 
-And the number of levels is the right one: 11
+Now, show the fitness of all genotypes:
 <<>>=
-length(table(b1$Fitness))
-length(table(b2$Fitness))
+evalAllGenotypes(bauer2, order = FALSE, addwt = TRUE)
 @ 
+
+
+
+% If the primary driver is
+% mutated, then the expression is $\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$.
+% They set apoptosis as $1 - proliferation$.  So, ignoring constants such as
+% $1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a table
+% as (for a largest $k$ of 5 in this example, but can make it arbitrarily
+% large):
+
+% <<>>=
+
+% K <- 5
+% sd <- 0.1
+% sdp <- 0.15
+% sp <- 0.05
+% bauer <- data.frame(parent = c("Root", rep("p", K)),
+%                     child = c("p", paste0("s", 1:K)),
+%                     s = c(sd, rep(sdp, K)),
+%                     sh = c(0, rep(sp, K)),
+%                     typeDep = "MN")
+% fbauer <- allFitnessEffects(bauer)
+
+
+% @ 
+
+
+
+
+% <<>>=
+% (b1 <- evalAllGenotypes(fbauer, order = FALSE))[1:10, ]
+% @ 
+
+% Order makes no difference
+
+% <<>>=
+% (b2 <- evalAllGenotypes(fbauer, order = TRUE, max = 2000))[1:15, ]
+% @ 
+
+% And the number of levels is the right one: 11
+% <<>>=
+% length(table(b1$Fitness))
+% length(table(b2$Fitness))
+% @ 
 
 
 %% \subsubsection{Bauer et al.\ specified only via epistatic interactions}
@@ -2266,9 +2803,10 @@ length(table(b2$Fitness))
 
 %% \subsubsection{Adding modules to Bauer et al.}
 
-Can we use modules in this module? Sure, as in any other.
+Can we use modules in this example, if we use the ``lego system''? Sure,
+as in any other case.
 
-
+\clearpage
 
 \subsection{Misra et al., 2014}\label{misra}
 
@@ -2429,7 +2967,7 @@ We could also use a tree and modify the ``sab'' for the epistasis, as
 before (\ref{misra1a}).
 
 
-
+\clearpage
 \subsection{Ochs and Desai, 2015}\label{ochsdesai}
 
 In \cite{Ochs2015} the authors present a model shown graphically as (the
@@ -2486,7 +3024,7 @@ evalAllGenotypes(od, order = FALSE, addwt = TRUE)
 @ 
 
 
-\subsection{Weissman et al., 2009}
+\subsection{Weissman et al., 2009}\label{weissmanex}
 In their figure 1a, Weisman et al. \cite{Weissman2009} present this model
 (actual numeric values are set arbitrarily)
 
@@ -2720,7 +3258,7 @@ bauer <- data.frame(parent = c("Root", rep("p", K)),
                     s = c(sd, rep(sdp, K)),
                     sh = c(0, rep(sp, K)),
                     typeDep = "MN")
-fbauer <- allFitnessEffects(bauer)
+fbauer <- allFitnessEffects(bauer, drvNames = "p")
 set.seed(1)
 ## Use fairly large mutation rate
 b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000) 
@@ -2763,7 +3301,7 @@ s <- 0.1
 sp <- 1e-3 
 spp <- -sp/(1 + sp)
 mcf1 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
-                          drv = seq.int(nd))
+                          drvNames = seq.int(nd))
 mcf1s <-  oncoSimulIndiv(mcf1,
                          model = "McFL", 
                          mu = 1e-7,
@@ -2811,7 +3349,7 @@ s <- 0.1
 sp <- 1e-4 ## as we have many more passengers
 spp <- -sp/(1 + sp)
 mcfL <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
-                          drv = seq.int(nd))
+                          drvNames = seq.int(nd))
 mcfLs <-  oncoSimulIndiv(mcfL,
                          model = "McFL", 
                          mu = 1e-7,
@@ -3204,7 +3742,7 @@ lead to trouble when using Bozic's model:
 
 %% ## set.seed(987)
 <<>>=
-i1 <- allFitnessEffects(noIntGenes = c(1))
+i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Bozic")
 i1_b <- oncoSimulIndiv(i1, model = "Bozic")
@@ -3387,6 +3925,38 @@ independent calls (e.g., from different R processes) to
 \Rfunction{oncoSimulSample}, instead of relying in \Rfunction{mclapply},
 since this is likely to lead to better usage of multiple cores/CPUs if you
 are examining a large number of different scenarios.
+
+\subsection{Dealing with errors in
+  \Rfunction{oncoSimulPop}}\label{errorosp}
+
+Suppose you did something like
+
+<<>>=
+pancrError <- oncoSimulPop(10, pancr,
+                           initSize = 1e-5,
+                           detectionSize = 1e7,
+                           keepEvery = 10,
+                           mc.cores = 2)
+@ 
+
+The warning you are seeing tells you there was an error in the functions
+called by \Rfunction{mclapply}. If you check the help for
+\Rfunction{mclpapply} you'll see that it returns a try-error object, so we
+can inspect it. For instance, we can do:
+
+<<>>=
+pancrError[[1]]
+@ 
+
+But that output is hard to read. This is better:
+
+<<>>=
+pancrError[[1]][1]
+@ 
+ 
+And from here you can clearly see the error that was returned by
+\Rfunction{oncoSimulIndiv}: \texttt{initSize < 1} (which is indeed true:
+we pass \texttt{initSize = 1e-5}).
 
 
 \subsection{Dealing with errors in
@@ -3866,7 +4436,7 @@ You bet. In v.1 you can only give the initial mutant as one with a single
 mutated gene. In version 2, however, you can specify the genotype for the
 initial mutant with the same flexibility as in
 \Rfunction{evalGenotype}. Here we show a couple of examples (we use the
-representation of the phylogeny ---discussed in section \ref{phylog}--- of
+representation of the parent-child relationships ---discussed in section \ref{phylog}--- of
 the clones so that you can see which clones appear, and from which).
 
 %% o3init <- allFitnessEffects(orderEffects = c(
@@ -3954,13 +4524,17 @@ ossI$popSummary[, "OccurringDrivers", drop = FALSE]
 @ 
 
 
-\section{Showing the true phylogenetic relationships of clones}\label{phylog}
+\section{Showing the relationships of clones}\label{phylog}
 
 If you run simulations with the \texttt{keepPhylog = TRUE} argument, the
 simulations keep track of when every clone is generated, and that will
-allow us to see the true phylogenetic relationships of clones. (This is
+allow us to see the parent-child relationships between clones. (This is
 disabled by default: the code runs a little bit slower and the result is
 larger.)
+
+In an abuse of terminology, we will use functions with the ``phylog''
+term, but note these are not proper phylogenies. (Though you could
+construct proper phylogenies from the information kept).
 
 
 Let us re-run a previous example:
@@ -3984,7 +4558,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
 tmp
 @ 
 
-We can plot the phylogenetic relationships\footnote{There are several
+We can plot the parent-child relationships\footnote{There are several
   packages in R devoted to phylogenetic inference and related issues. For
   instance, \CRANpkg{ape}. I have not used that infrastructure because of
   our very specific needs and circumstances; for instance, internal nodes
@@ -4013,7 +4587,7 @@ clone appeared:
 plotClonePhylog(tmp, N = 1, keepEvents = TRUE)
 @ 
 
-And we can plot the phylogeny so the vertical axis is proportional to time
+And we can show the plot so that the vertical axis is proportional to time
 (though you might see overlap of nodes if a child node appeared shortly
 after the parent):
 
@@ -4108,9 +4682,9 @@ key clones.
 
 
 It is of course quite possible that, especially if we consider few genes,
-our phylogeny will be a network, not a tree, as the same child node can
-have multiple parents. You can play with this example, modified from one
-we saw before (section \ref{mn1}):
+the parent-child relationships will form a network, not a tree, as the
+same child node can have multiple parents. You can play with this example,
+modified from one we saw before (section \ref{mn1}):
 
 <<eval=FALSE>>=
 op <- par(ask = TRUE)
@@ -4126,10 +4700,10 @@ par(op)
 @ 
 
 
-\subsection{Phylogenies from multiple runs}\label{phylogmult}
+\subsection{Parent-child relationships from multiple runs}\label{phylogmult}
 
-If you use \Rfunction{oncoSimulPop} you can store and plot the phylogenies
-of the different runs:
+If you use \Rfunction{oncoSimulPop} you can store and plot the
+``phylogenies'' of the different runs:
 
 <<>>=
 
@@ -4160,6 +4734,62 @@ par(op)
 
 This is so far disabled in function \Rfunction{oncoSimulSample}, since
 that function is optimized for other uses. This might change in the future.
+
+
+
+\section{Generating fitness landscapes}
+\label{gener-fit-land}
+
+
+It is possible to generate mappings of genotype to fitness using the
+function \Rfunction{rfitness} that allows you to use from a pure House of
+Cards model to a purely additive model. I have followed
+\cite{szendro_quantitative_2013, franke_evolutionary_2011} and model
+fitness as
+
+\begin{equation}
+  \label{eq:1}
+  f_i = -c d(i, reference) + x_i
+\end{equation}
+
+where $d(i, j)$ is the Hamming distance between genotypes $i$ and $j$ (the
+number of positions that differ), $c$ is the decrease in fitness of a
+genotype per each unit increase in Hamming distance from the reference
+genotype, and $x_i$ is a random variable (in this
+case, a normal deviate of mean 0 and standard deviation $sd$).  You can
+change the reference genotype to any of the genotypes: for the
+deterministic part, you make the fittest genotype be the one with all
+positions mutated by setting \texttt{reference = ``max''}, or use the
+wildtype by using a string of 0s, or randomly select a genotype as a
+reference by using \texttt{reference = ``random''}.  And by playing with $c$
+and $sd$ you can flexibly modify the relative weight of the purely House
+of Cards vs.\ additive component. The expression used above is also very
+similar to the one on \cite{greene_changing_2014} if you use
+\Rfunction{rfitness} with the argument \texttt{reference = ``max''}.
+
+
+What can you do with these genotype to fitness mappings? You could plot
+them, you could use them as input for \Rfunction{oncoSimulIndiv} and
+related functions, or you could export them and plot them externally
+(e.g., in MAGELLAN: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/},
+\cite{brouillet_magellan:_2015}).
+
+
+<<>>=
+## A small example
+rfitness(3)
+
+## A 5-gene example, where the reference genotype is the one 
+## the one with all positions mutated, similar to Greene and Crona.
+## We will plot the landscape and use it for simulations
+## We downplay the random component with a sd = 0.5
+
+r1 <- rfitness(5, reference = rep(1, 5), sd = 0.6)
+plot(r1)
+oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
+@ 
+
+
 
 
 \section{Using v.1 posets and simulations}\label{v1}

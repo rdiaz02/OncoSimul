@@ -205,6 +205,3 @@ plot.stacked2 <- function(
         axis(2)
     }
 }
-
-
-

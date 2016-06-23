@@ -5,17 +5,21 @@
 
 #include <R_ext/Rdynload.h>
 
-SEXP OncoSimulR_nr_BNB_Algo5(SEXP rFESEXP, SEXP muSEXP, SEXP deathSEXP, SEXP initSizeSEXP, SEXP sampleEverySEXP, SEXP detectionSizeSEXP, SEXP finalTimeSEXP, SEXP initSpSEXP, SEXP initItSEXP, SEXP seedSEXP, SEXP verbositySEXP, SEXP speciesFSSEXP, SEXP ratioForceSEXP, SEXP typeFitness_SEXP, SEXP maxramSEXP, SEXP mutationPropGrowthSEXP, SEXP initMutant_SEXP, SEXP maxWallTimeSEXP, SEXP keepEverySEXP, SEXP alphaSEXP, SEXP KSEXP, SEXP detectionDriversSEXP, SEXP onlyCancerSEXP, SEXP errorHitWallTimeSEXP, SEXP maxNumTriesSEXP, SEXP errorHitMaxTriesSEXP, SEXP minDetectDrvCloneSzSEXP, SEXP extraTimeSEXP, SEXP keepPhylogSEXP);
-SEXP OncoSimulR_BNB_Algo5(SEXP restrictTableSEXP, SEXP numDriversSEXP, SEXP numGenesSEXP, SEXP typeCBN_SEXP, SEXP birthRateSEXP, SEXP sSEXP, SEXP deathSEXP, SEXP muSEXP, SEXP initSizeSEXP, SEXP sampleEverySEXP, SEXP detectionSizeSEXP, SEXP finalTimeSEXP, SEXP initSpSEXP, SEXP initItSEXP, SEXP seedSEXP, SEXP verbositySEXP, SEXP speciesFSSEXP, SEXP ratioForceSEXP, SEXP typeFitness_SEXP, SEXP maxramSEXP, SEXP mutationPropGrowthSEXP, SEXP initMutantSEXP, SEXP maxWallTimeSEXP, SEXP keepEverySEXP, SEXP alphaSEXP, SEXP shSEXP, SEXP KSEXP, SEXP detectionDriversSEXP, SEXP onlyCancerSEXP, SEXP errorHitWallTimeSEXP, SEXP maxNumTriesSEXP, SEXP errorHitMaxTriesSEXP, SEXP minDetectDrvCloneSzSEXP, SEXP extraTimeSEXP);
-// SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP);
-SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP);
+SEXP OncoSimulR_nr_BNB_Algo5(SEXP rFESEXP, SEXP muSEXP, SEXP deathSEXP, SEXP initSizeSEXP, SEXP sampleEverySEXP, SEXP detectionSizeSEXP, SEXP finalTimeSEXP, SEXP initSpSEXP, SEXP initItSEXP, SEXP seedSEXP, SEXP verbositySEXP, SEXP speciesFSSEXP, SEXP ratioForceSEXP, SEXP typeFitness_SEXP, SEXP maxramSEXP, SEXP mutationPropGrowthSEXP, SEXP initMutant_SEXP, SEXP maxWallTimeSEXP, SEXP keepEverySEXP,  SEXP KSEXP, SEXP detectionDriversSEXP, SEXP onlyCancerSEXP, SEXP errorHitWallTimeSEXP, SEXP maxNumTriesSEXP, SEXP errorHitMaxTriesSEXP, SEXP minDetectDrvCloneSzSEXP, SEXP extraTimeSEXP, SEXP keepPhylogSEXP, SEXP MMUEFSEXP, SEXP full2mutator_SEXP);
+SEXP OncoSimulR_BNB_Algo5(SEXP restrictTableSEXP, SEXP numDriversSEXP, SEXP numGenesSEXP, SEXP typeCBN_SEXP,  SEXP sSEXP, SEXP deathSEXP, SEXP muSEXP, SEXP initSizeSEXP, SEXP sampleEverySEXP, SEXP detectionSizeSEXP, SEXP finalTimeSEXP, SEXP initSpSEXP, SEXP initItSEXP, SEXP seedSEXP, SEXP verbositySEXP, SEXP speciesFSSEXP, SEXP ratioForceSEXP, SEXP typeFitness_SEXP, SEXP maxramSEXP, SEXP mutationPropGrowthSEXP, SEXP initMutantSEXP, SEXP maxWallTimeSEXP, SEXP keepEverySEXP,  SEXP shSEXP, SEXP KSEXP, SEXP detectionDriversSEXP, SEXP onlyCancerSEXP, SEXP errorHitWallTimeSEXP, SEXP maxNumTriesSEXP, SEXP errorHitMaxTriesSEXP, SEXP minDetectDrvCloneSzSEXP, SEXP extraTimeSEXP);
+SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP);
+SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP, SEXP calledBy_SEXP);
+
+SEXP OncoSimulR_evalRGenotypeAndMut(SEXP rGSEXP, SEXP rFESEXP, SEXP muEFSEXP, SEXP full2mutator_SEXP, SEXP verboseSEXP, SEXP prodNegSEXP);
+
 
 R_CallMethodDef callMethods[]  = {
-  {"OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 29},
-  {"OncoSimulR_BNB_Algo5", (DL_FUNC) &OncoSimulR_BNB_Algo5, 34},
-  //  {"OncoSimulR_readFitnessEffects", (DL_FUNC) &OncoSimulR_readFitnessEffects, 2},
-  {"OncoSimulR_evalRGenotype", (DL_FUNC) &OncoSimulR_evalRGenotype, 4},
-  {NULL, NULL, 0}
+  {"OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 30},
+  {"OncoSimulR_BNB_Algo5", (DL_FUNC) &OncoSimulR_BNB_Algo5, 32},
+  {"OncoSimulR_readFitnessEffects", (DL_FUNC) &OncoSimulR_readFitnessEffects, 2},
+  {"OncoSimulR_evalRGenotype", (DL_FUNC) &OncoSimulR_evalRGenotype, 5},
+  {"OncoSimulR_evalRGenotypeAndMut", (DL_FUNC) &OncoSimulR_evalRGenotypeAndMut, 6},  
+ {NULL, NULL, 0}
 };
 
 void R_init_OncoSimulR(DllInfo *info) {

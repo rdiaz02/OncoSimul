@@ -17,7 +17,7 @@
 
 \usage{
 samplePop(x, timeSample = "last", typeSample = "whole",
-          thresholdWhole = 0.5, geneNames = NULL)
+          thresholdWhole = 0.5, geneNames = NULL, popSizeSample = NULL)
 }
 
 \arguments{
@@ -35,7 +35,10 @@ samplePop(x, timeSample = "last", typeSample = "whole",
     does not guarantee that different individuals will be sampled at the
     same time unit, only that all will be sampled in the last time unit
     of their simulation.
-  }
+
+    You can, alternatively, specify the population size at which you
+    want the sample to be taken. See argument \code{popSizeSample} .
+  } 
   
   \item{typeSample}{
     "singleCell" (or "single") for single cell sampling, where the
@@ -50,12 +53,18 @@ samplePop(x, timeSample = "last", typeSample = "whole",
     least thresholdWhole proportion of the cells in that individual.
   }
 
-  \item{geneNames}{
-    
-    An optional vector of gene names so as to label the column names of
-    the output.
-  }  
-  
+  \item{geneNames}{An optional vector of gene names so as to label the
+    column names of the output.}
+
+  \item{popSizeSample}{An optional vector of total population sizes at
+    which you want the samples to be taken. If you pass this vector,
+    \code{timeSample} has no effect. The samples will be taken at the
+    first time at which the population size gets as large as (or larger
+    than) the size specified in \code{popSizeSample}.
+
+    This allows you to specify arbitrary sampling schemes with respect
+    to total population size.  }
+
 }
 
 \details{
@@ -128,11 +137,21 @@ p705 <- examplePosets[["p705"]]
 p1 <- oncoSimulPop(4, p705, mc.cores = 2)
 samplePop(p1)
 
+## Sample at fixed sizes. Notice the requested size
+## for the last population is larger than the any population size
+## so we get NAs
+
+samplePop(p1, popSizeSample = c(1e7, 1e6, 4e5, 1e13))
+
 
 ## Now single cell sampling
 
 r1 <- oncoSimulIndiv(p705)
 samplePop(r1, typeSample = "single")
+
+
+
+
 }
 
 \keyword{manip}

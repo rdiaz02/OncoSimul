@@ -333,4 +333,59 @@ test_that("exercising sampling code, single sampled period", {
     }
 })
 
+
+
+test_that("exercising sampling code, customSize", {
+
+    cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                                child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                      s = 0.1,
+                                sh = -0.9,
+                      typeDep = "MN")
+    
+    cbn1 <- allFitnessEffects(cs)
+
+    
+    o1 <- oncoSimulIndiv(cbn1, detectionSize = 1e4,
+                         onlyCancer = TRUE,
+                         max.num.tries = 5000,
+                         sampleEvery = 0.03, keepEvery = 1)
+    o4 <- oncoSimulPop(4,
+                       cbn1, 
+                       detectionSize = 1e4,
+                       onlyCancer = TRUE,
+                       mc.cores = 2,
+                       max.num.tries = 5000,
+                       sampleEvery = 0.03, keepEvery = 1)
+
+    expect_message(samplePop(o1, popSizeSample = 2100),
+                   "Subjects by Genes matrix of 1 subjects and 6 genes")
+
+    expect_warning(samplePop(o1, popSizeSample = 21000),
+                   "Pop size never", fixed = TRUE)
+
+    expect_message(samplePop(o4, popSizeSample = c(6100)),
+                   "Subjects by Genes matrix of 4 subjects and 6 genes")
+
+    expect_message(samplePop(o4, popSizeSample = c(6100, 6000, 8999, 8030)),
+                   "Subjects by Genes matrix of 4 subjects and 6 genes")
+
+    expect_message(samplePop(o4, popSizeSample = c(6100, 6000)),
+                   "Subjects by Genes matrix of 4 subjects and 6 genes")
+    ## this was fixed to not give warnings
+    ## expect_warning(samplePop(o4, popSizeSample = c(6100, 6000)),
+    ##                "length popSizeSample != number of subjects")
+
+    expect_warning(samplePop(o4, popSizeSample = 21000),
+                   "Pop size never >= requested size", fixed = TRUE)
+    
+    expect_message(samplePop(o4, typeSample = "single",
+                             popSizeSample = c(6100, 0, 5000, 9000)),
+                   "Subjects by Genes matrix of 4 subjects and 6 genes")
+   
+})
+
+
+
+
 cat(paste("\n Ending samplePop tests", date(), "\n"))

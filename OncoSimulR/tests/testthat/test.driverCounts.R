@@ -66,5 +66,4 @@ test_that("Runs without crashes", {
 date()
 
 
-
 cat(paste("\n Ending driverCounts at", date(), "\n"))

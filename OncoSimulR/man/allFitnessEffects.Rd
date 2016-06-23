@@ -1,23 +1,38 @@
 \name{allFitnessEffects}
 \alias{allFitnessEffects}
-\title{Create fitness effects specification from restrictions,
-  epistasis, and order effects.
-}
+\alias{allMutatorEffects}
+
+\title{Create fitness and mutation effects specification from
+  restrictions, epistasis, and order effects.  }
+
 \description{
   Given one or more of a set of poset restrictions, epistatic
   interactions, order effects, and genes without interactions, as well
   as, optionally, a mapping of genes to modules, return the complete
   fitness specification.
 
-  The output of this function is not intended for user consumption, but
-  as a way of preparing data to be sent to the C++ code.  }
+  For mutator effects, given one or more of a set of epistatic
+  interactions and genes without interactions, as well as, optionally, a
+  mapping of genes to modules, return the complete specification of how
+  mutations affect the mutation rate.
+  
+  The output of these functions is not intended for user consumption,
+  but as a way of preparing data to be sent to the C++ code.  }
 
 
 \usage{
 
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
-  noIntGenes = NULL, geneToModule = NULL, drvNames = NULL, keepInput =
-  TRUE) }
+  noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
+  genotFitness = NULL,  keepInput = TRUE)
+
+allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
+                   geneToModule = NULL,
+                  keepInput =  TRUE)
+}
+
+
+
 
 \arguments{
   \item{rT}{A restriction table that is an extended version of a poset 
@@ -49,7 +64,6 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
 	  relationship to be satisfied. Specify it as "XOR" or "xmpn" or
 	  "XMPN".}
       }
-
       In addition, for the nodes that depend only on the root node, you
       can use "--" or "-" if you want (though using any of the other
       three would have the same effects if a node that connects to root
@@ -58,7 +72,7 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   }
   \item{epistasis}{
     A named numeric vector. The names identify the relationship, and the
-    numeric value is the fitness effect. For the names, each of the
+    numeric value is the fitness (or mutator) effect. For the names, each of the
     genes or modules involved is separated by a ":". A negative sign
     denotes the absence of that term.
   }
@@ -69,7 +83,8 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   mutation Z.
 }
 \item{noIntGenes}{
-  A numeric vector (optionally named) with the fitness coefficients of genes
+  A numeric vector (optionally named) with the fitness coefficients (or
+      mutator multiplier factor) of genes
   (only genes, not modules) that show no interactions. These genes
   cannot be part of modules. But you can specify modules that have
   no epistatic interactions. See examples and vignette.
@@ -97,8 +112,34 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   \code{\link{oncoSimulIndiv}}); b) for summarization purposes (e.g.,
   how many drivers are mutated); c) in figures. But you need not
   specifiy anything if you do not want to, and you can pass an empty
-  vector (as \code{character(0)}). The default is to assume that all
-  genes that are not in the \code{noIntGenes} are drivers.}
+  vector (as \code{character(0)}). The default has changed with respect
+  to v.2.1.3 and previous: it used to be to assume that all
+  genes that were not in the \code{noIntGenes} were drivers. The fault
+  now is to assume nothing: if you want \code{drvNames} you have
+  to specify them.
+
+}
+
+\item{genotFitness}{A matrix or data frame that contains explicitly the
+  mapping of genotypes to fitness. For now, we only allow epistasis-like
+  relations between genes (so you cannot code order effects this way).
+
+  Genotypes can be specified in two ways:
+  \itemize{
+    
+    \item As a matrix (or data frame) with g + 1 columns. Each of the first g columns contains a 1 or a 0 indicating that the
+    gene of that column is mutated or not. Column g+ 1 contains the
+    fitness values. This is, for instance, the output you will get from
+    \code{\link{rfitness}}.
+    
+    \item As a two column data frame. The second column is fitness, and
+    the first column are genotypes, given as a character vector. For
+    instance, a row "A, B" would mean the genotype with both A and B mutated.
+  }
+  In all cases, fitness must be \code{>= 0}. If any possible genotype is
+  missing, its fitness is assumed to be 1.
+}
+
 
 \item{keepInput}{
   If TRUE, whether to keep the original input. This is only useful for
@@ -107,17 +148,50 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   internal representation. But if you want, you can set it to FALSE and
   the object will be a little bit smaller.}
 }
+
 \details{
-  This function is used for extremely flexible specification of fitness
-  effects, including posets, XOR relationships, synthetic mortality and
+  \code{allFitnessEffects} is used for extremely flexible specification of fitness
+  and mutator effects, including posets, XOR relationships, synthetic mortality and
   synthetic viability, arbitrary forms of epistatis, arbitrary forms of
   order effects, etc. Please, see the vignette for detailed and
   commented examples.
+
+  \code{allMutatorEffects} provide the same flexibility, but without
+  order and posets (this might be included in the future, but I have
+  seen no empirical or theoretical argument for their existence or
+  relevance as of now, so I do not add them to minimize unneeded complexity).
+
+  If you use both for simulations in the same call to, say,
+  \code{\link{oncoSimulIndiv}}, all the genes specified in
+  \code{allMutatorEffects} MUST be included in the
+  \code{allFitnessEffects} object. If you want to have genes that have
+  no direct effect on fitness, but that affect mutation rate, you MUST
+  specify them in the call to \code{allFitnessEffects}, for instance as
+  \code{noIntGenes} with an effect of 0.
+
+
+  If you use \code{genotFitness} then you cannot pass modules,
+  noIntgenes, epistasis, or rT. This makes sense, because using
+  \code{genotFitness} is saying
+  "this is the mapping of genotypes to fitness. Period", so we should
+  not allow further modifications from other terms.
+
+  If you use \code{genotFitness} you need to be careful when you use
+  Bozic's model (as you get a death rate of 0).
+
+
+  If you use \code{genotFitness} note that we force the WT (wildtype) to
+  always be 1 so fitnesses are rescaled. 
+
+
 }
 
+
 \value{
-  An object of class "fitnessEffects". This is just a list, but it is not
-  intended for human consumption.  The components are:
+  
+  An object of class "fitnessEffects" or "mutatorEffects". This is just
+  a list, but it is not intended for human consumption.  The components
+  are:
 
   \item{long.rt}{The restriction table in "long format", so as to be
     easy to parse by the C++ code.}
@@ -178,11 +252,20 @@ allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   now, using those characters as names is caught (and result in
   stopping) if passed as names for noIntGenes.  }
 
+
+
+
 \author{ Ramon Diaz-Uriarte
 }
 
 \seealso{
-  \code{\link{evalGenotype}}, \code{\link{oncoSimulIndiv}}, \code{\link{plot.fitnessEffects}}
+  
+  \code{\link{evalGenotype}}, \code{\link{oncoSimulIndiv}},
+  \code{\link{plot.fitnessEffects}},
+  \code{\link{evalGenotypeFitAndMut}},
+  \code{\link{rfitness}},
+  \code{\link{plotFitnessLandscape}}
+
 }
 \examples{
 ## A simple poset or CBN-like example
@@ -239,6 +322,85 @@ fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                            "B" = "b1"))
 
 evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
+
+
+## Epistasis for fitness and simple mutator effects
+
+fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                          "b : c" = 0.5),
+                            noIntGenes = c("e" = 0.1))
+
+fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                       "c" = 5))
+
+evalAllGenotypesFitAndMut(fe, fm, order = FALSE)
+
+
+## Simple fitness effects (noIntGenes) and modules
+## for mutators
+
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+fm2 <- allMutatorEffects(epistasis = c("A" = 5,
+                                       "B" = 10,
+                                       "C" = 3),
+                         geneToModule = c("A" = "a1, a2",
+                                          "B" = "b1, b2, b3",
+                                          "C" = "c1, c2"))
+
+evalAllGenotypesFitAndMut(fe2, fm2, order = FALSE)
+
+
+
+## Passing fitness directly, a complete fitness specification
+## with a two column data frame with genotypes as character vectors
+
+(m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4)))
+fem4 <- allFitnessEffects(genotFitness = m4)
+
+## Verify it interprets what it should: m4 is the same as the evaluation
+## of the fitness effects (note row reordering)
+evalAllGenotypes(fem4, addwt = TRUE, order = FALSE)
+
+
+## Passing fitness directly, a complete fitness specification
+## that uses a three column matrix
+
+m5 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
+fem5 <- allFitnessEffects(genotFitness = m5)
+
+## Verify it interprets what it should: m5 is the same as the evaluation
+## of the fitness effects 
+evalAllGenotypes(fem5, addwt = TRUE, order = FALSE)
+
+
+## Passing fitness directly, an incomplete fitness specification
+## that uses a three column matrix
+
+m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
+fem6 <- allFitnessEffects(genotFitness = m6)
+evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
+
+
+
+## Plotting a fitness landscape
+
+fe2 <- allFitnessEffects(noIntGenes =
+                         c(a1 = 0.1, a2 = 0.2,
+                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
+                           c1 = 0.3, c2 = -0.2))
+
+plot(evalAllGenotypes(fe2, order = FALSE))
+
+## same as
+plotFitnessLandscape(evalAllGenotypes(fe2, order = FALSE))
+
+## same as
+plotFitnessLandscape(fe2)
+
 
 ## Reinitialize the seed
 set.seed(NULL)

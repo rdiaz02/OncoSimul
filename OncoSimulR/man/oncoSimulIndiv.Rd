@@ -19,7 +19,8 @@
   al., 2012.
 }
 \usage{
- oncoSimulIndiv(fp, model = "Exp", numPassengers = 0, mu = 1e-6,
+ oncoSimulIndiv(fp, model = "Exp", 
+                numPassengers = 0, mu = 1e-6, muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -40,6 +41,7 @@
                 seed = NULL)
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
+                muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
@@ -66,6 +68,7 @@ oncoSimulSample(Nindiv,
                 model = "Exp",
                 numPassengers = 0,
                 mu = 1e-6,
+                muEF = NULL,
                 detectionSize = round(runif(Nindiv, 1e5, 1e8)),
 
                 detectionDrivers = {
@@ -102,6 +105,7 @@ oncoSimulSample(Nindiv,
                 thresholdWhole = 0.5,
                 initMutant = NULL,
                 verbosity  = 1,
+                showProgress = TRUE,
                 seed = "auto")
 
 
@@ -148,9 +152,38 @@ oncoSimulSample(Nindiv,
 }
 
 \item{mu}{
-  Mutation rate. See also \code{mutationPropGrowth}.
+  Mutation rate. Can be a single value or a named vector. If a single
+  value, all genes will have the same mutation rate. If a named vector,
+  the entries in the vector specify the gene-specific mutation rate. If
+  you pass a vector, it must be named, and it must have entries for all
+  the genes in the fitness specification. Passing a vector is only
+  available when using fitnessEffects objects for fitness specification.
 
-} \item{detectionSize}{ What is the minimal number of cells for cancer
+  See also \code{mutationPropGrowth}.
+
+}
+
+\item{muEF}{
+
+  Mutator effects. A mutatorEffects object as obtained from
+  \code{\link{allMutatorEffects}}. This specifies how mutations in
+  certain genes change the mutation rate over all the genome. Therefore,
+  this allows you to specify mutator phenotypes: models where mutation
+  of one (or more) gene(s) leads to an increase in the mutation
+  rate. This is only available for version 2 (and above) specifications.
+  
+  
+  All the genes specified in \code{muEF} MUST be included in
+  \code{fp}. If you want to have genes that have no direct effect on
+  fitness, but that affect mutation rate, you MUST specify them in
+  \code{fp}, for instance as \code{noIntGenes} with an effect of 0.
+  
+  If you use mutator effects you must also use fitnessEffects in
+  \code{fp}.
+
+}
+
+\item{detectionSize}{ What is the minimal number of cells for cancer
 to be detected.  For \code{oncoSimulSample} this can be a vector.
 
 } 
@@ -405,6 +438,9 @@ number of drivers (and, thus, the default is set to 9e6).
 
 \item{mc.cores}{Number of cores to use when simulating more than one
   individual (i.e., when calling oncoSimulPop).}
+
+\item{showProgress}{If TRUE, provide information, during exection,
+of the individual done, and the number of attempts and time used.}
 
 \item{seed}{The seed for the C++ PRNG. You can pass a value. If you set
   it to NULL, then a seed will be generated in R and passed to C++. If
@@ -801,8 +837,19 @@ pancrSPop
 pancrSamp <- oncoSimulSample(2, pancr)
 pancrSamp
 
+
+
+## Using gene-specific mutation rates
+muv <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
+ni <- rep(0.01, 5)
+names(ni) <- names(muv)
+femuv <- allFitnessEffects(noIntGenes = ni)
+oncoSimulIndiv(femuv, mu = muv)
+                      
+
 ## Reinitialize the RNG
 set.seed(NULL)                      
+
 }
 \keyword{misc}
 \keyword{iteration}

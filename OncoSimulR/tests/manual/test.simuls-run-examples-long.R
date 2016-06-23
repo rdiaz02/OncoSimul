@@ -18,10 +18,10 @@ for(i in 1:length(examplesFitnessEffects)) {
               names(examplesFitnessEffects)[i], "\n"))
     if (names(examplesFitnessEffects)[16] == "e2") {
         detectionDrv <- 2
-        sE <- 0.05
+        sE <- 0.01
     } else {
         detectionDrv <- 4
-        sE <- .2
+        sE <- .05
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Bozic", 
@@ -40,10 +40,10 @@ for(i in 1:length(examplesFitnessEffects)) {
               names(examplesFitnessEffects)[i], "\n"))
     if (names(examplesFitnessEffects)[16] == "e2") {
         detectionDrv <- 2
-        sE <- 0.05
+        sE <- 0.01
     } else {
         detectionDrv <- 4
-        sE <- .2
+        sE <- .05
     }
     tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                            model = "Exp", 
@@ -80,9 +80,9 @@ for(i in 1:length(examplesFitnessEffects)) {
         cat(paste("\n Doing i = ", i , " name = ",
               names(examplesFitnessEffects)[i], "\n"))
     if (names(examplesFitnessEffects)[16] == "e2") {
-        sE <- 0.05
+        sE <- 0.01
     } else {
-        sE <- .1
+        sE <- .05
     }
     tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
                             onlyCancer = FALSE,
@@ -97,10 +97,10 @@ for(i in 1:length(examplesFitnessEffects)) {
               names(examplesFitnessEffects)[i], "\n"))
     if (names(examplesFitnessEffects)[16] == "e2") {
         detectionDrv <- 2
-        sE <- 0.05
+        sE <- 0.01
     } else {
         detectionDrv <- 4
-        sE <- .2
+        sE <- .05
     }
     tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
                          onlyCancer = FALSE,
