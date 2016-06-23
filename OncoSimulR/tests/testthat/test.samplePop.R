@@ -372,11 +372,12 @@ test_that("exercising sampling code, customSize", {
 
     expect_message(samplePop(o4, popSizeSample = c(6100, 6000)),
                    "Subjects by Genes matrix of 4 subjects and 6 genes")
+    ## this was fixed to not give warnings
+    ## expect_warning(samplePop(o4, popSizeSample = c(6100, 6000)),
+    ##                "length popSizeSample != number of subjects")
 
-    expect_warning(samplePop(o4, popSizeSample = c(6100, 6000)),
-                   "length popSizeSample != number of subjects")
-
-    expect_warning(samplePop(o4, popSizeSample = 21000))
+    expect_warning(samplePop(o4, popSizeSample = 21000),
+                   "Pop size never >= requested size", fixed = TRUE)
     
     expect_message(samplePop(o4, typeSample = "single",
                              popSizeSample = c(6100, 0, 5000, 9000)),
