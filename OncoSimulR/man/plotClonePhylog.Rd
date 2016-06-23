@@ -1,13 +1,19 @@
 \name{plotClonePhylog}
 \alias{plotClonePhylog}
 \title{
-  Plot a phylogeny of the clones.
+  Plot a parent-child relationship of the clones.
 }
+
 \description{
-  Plot a phylogeny of the clones, controlling which clones are displayed,
-  and whether to shown number of times of appearance, and time of first
-  appearance of a clone.
+
+  Plot a parent-child relationship of the clones, controlling which
+  clones are displayed, and whether to shown number of times of
+  appearance, and time of first appearance of a clone. 
+
+
 }
+
+
 \usage{
 plotClonePhylog(x, N = 1, t ="last", timeEvents = FALSE,
                  keepEvents = FALSE, fixOverlap = TRUE,
@@ -53,7 +59,17 @@ plotClonePhylog(x, N = 1, t ="last", timeEvents = FALSE,
   
 }
 
-\note{ If you want to obtain the adjacency matrix, this is trivial: just
+\note{
+
+  These are not, technically, proper phylogenetic trees and we use
+  "phylogeny" here in an abuse of terminology. The plots we use, where
+  we show parent child relationships are arguably more helpful in this
+  context. But you could draw proper phylogenies with the information
+  provided.
+
+  
+  
+  If you want to obtain the adjacency matrix, this is trivial: just
   set \code{returnGraph = TRUE} and use \code{\link{get.adjacency}}. See
   an example below.  
 }
