@@ -46,7 +46,7 @@ from_genotype_fitness <- function(x) {
         if(emarker) {
             x <- x[, c(1, 2)]
             if(!all(colnames(x) == c("Genotype", "Fitness"))) {
-                warning("Column names of object not Genotype and Fitness.",
+                message("Column names of object not Genotype and Fitness.",
                         " Renaming them assuming that is what you wanted")
                 colnames(x) <- c("Genotype", "Fitness")
             }
@@ -75,7 +75,7 @@ genot_fitness_to_epistasis <- function(x) {
     
     nr <- nrow(x)
     if(nr < (2^(ncol(x) - 1)))
-        warning("Number of genotypes less than 2^L.",
+        message("Number of genotypes less than 2^L.",
                 " Missing genotype will be set to 1")
     ## This is specific if only epistasis, not order
     if(nr > (2^(ncol(x) - 1)))
