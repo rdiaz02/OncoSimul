@@ -11,29 +11,6 @@ Changes in version 2.3.3 (2016-06-23):
 	- Mutator phenotype and gene-specific mutation rates.
 	- Bug fixed: to_update set at 2 when mutating to pre-existing;
 	- Lots and lots of new tests.
-	- Collapsed all changes from 2.2.0 to here
-
-	Changes in version 2.3.90002004 (2016-06-17):
-		- rfitness
-		- plot of fitness landscapes
-		- specify fitness by giving genotype-> fitness mapping
-
-        Changes in version 2.3.90002003 (2016-06-06):
-		- tests showing same gene in epist./DAG/order
-		- clarified internal C++ unique/sorted in genotypes
-		- checks initMutant correct and bug initMutant mutable pos
-
-        Changes in version 2.3.90002002 (2016-06-01):
-		- samplePop: sample at arbitrary sizes.
-
-        Changes in version 2.3.90002001 (2016-05-07):
-		- plot.oncosimulpop using auto for color.
-
-
-        Changes in version 2.1.90002000 (2016-04-21):
-	 	 - Mutator phenotype.
-		 - Bug fixed: to_update set at 2 when mutating to pre-existing;
-		 - Lots and lots of new tests.
 
 Changes in version 2.2.0 (for BioC 3.3):
 	- Plots of genotypes.

@@ -18,7 +18,7 @@ simulating random DAGs of the type found in Oncogenetic Tress, Conjunctive
 Bayesian Networks, and other tumor progression models, and for plotting
 and sampling from single or multiple realizations of the simulations,
 including whole-tumor and single-cell sampling, as well as functions for
-plotting the true phylogenetic relationships of the clones.
+plotting the parent-child relationships of the clones.
 
 
 The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
@@ -69,8 +69,17 @@ library(OncoSimulR)
 
 
 
-(You can of course clone this repo, and install from there. But sometimes
-the latest additions in this repo could be broken.)
+You can directly install from github:
+
+```r
+install.packages("devtools") ## if you don't have it already
+library(devtools)
+install_github("rdiaz02/OncoSimul/OncoSimulR")
+
+``` 
+
+But sometimes the latest additions in this repo could be broken. And you
+can of course clone this repo, and install from there.
 
 
 Documentation
