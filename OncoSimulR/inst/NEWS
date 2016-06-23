@@ -1,11 +1,14 @@
+Changes in version 2.3.4 (2016-06-24):
+	- Failing some tests in Win 32-bits
+	
 Changes in version 2.3.3 (2016-06-23):
 	- Vignette improvements and typo fixes.
 	- rfitness
-	- plot of fitness landscapes
-	- specify fitness by giving genotype-> fitness mapping
-	- tests showing same gene in epist./DAG/order
-	- clarified internal C++ unique/sorted in genotypes
-	- checks initMutant correct and bug initMutant mutable pos
+	- Plot of fitness landscapes
+	- Specify fitness by giving genotype-> fitness mapping
+	- Tests showing same gene in epist./DAG/order
+	- Clarified internal C++ unique/sorted in genotypes
+	- Checks initMutant correct and bug initMutant mutable pos
 	- samplePop: sample at arbitrary sizes.
 	- plot.oncosimulpop using auto for color.
 	- Mutator phenotype and gene-specific mutation rates.
