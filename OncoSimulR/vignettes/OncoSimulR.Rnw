@@ -612,6 +612,10 @@ This way of giving a fitness specification to OncoSimulR might be ideal if
 you directly generate random mappings of genotypes to fitness, as we will
 do in section \qref{gener-fit-land}.
 
+
+We will see an example of this way of passing fitness again in
+\ref{bauer}, where will compare it with the lego system.
+
 % Please see the documentation of \Rfunction{allFitnessEffects} for further
 % details and examples.
 
@@ -2653,53 +2657,138 @@ leads to a change in the cell's fitness by $s_P$. For cells with the
 primary driver mutation, the fitness advantage obtained with each
 secondary driver mutation is $s_{DP}$.''
 
-The proliferation probability is given as $(1 + s_p)^k$ when there are $k$
-secondary drivers mutated and no primary diver. If the primary driver is
-mutated, then the expression is $\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$.
-They set apoptosis as $1 - proliferation$.  So, ignoring constants such as
-$1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a table
-as (for a largest $k$ of 5 in this example, but can make it arbitrarily
-large):
+The proliferation probability is given as (ignoring constants such as $1/2$):
+
+\begin{itemize}
+\item $\frac{1}{2}(1 + s_p)^k$ when there are $k$ secondary drivers mutated and no primary diver;
+\item $\frac{1}{2}\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$ when the primary driver is mutated;
+\end{itemize}
+
+apoptosis is one minus the proliferation rate.
+
+
+We cannot find a simple mapping from their expressions to our fitness
+parameterization, but we can get fairly close by using a DAG; in this one,
+note the unusual feature of having on of the ``s'' terms (that for the
+driver dependency on root) be negative. Using the parameters given in the
+legend of their Figure 3 for $s_p, S_D^+, S_D^-, S_{DP}$ and obtaining
+that negative value for the dependency of the driver on root we can do:
+
 
 <<>>=
 
-K <- 5
-sd <- 0.1
-sdp <- 0.15
-sp <- 0.05
+K <- 4
+sp <- 1e-5
+sdp <- 0.015
+sdplus <- 0.05
+sdminus <- 0.1
+cnt <- (1 + sdplus)/(1 + sdminus)
+prod_cnt <- cnt - 1
 bauer <- data.frame(parent = c("Root", rep("p", K)),
                     child = c("p", paste0("s", 1:K)),
-                    s = c(sd, rep(sdp, K)),
+                    s = c(prod_cnt, rep(sdp, K)),
                     sh = c(0, rep(sp, K)),
                     typeDep = "MN")
 fbauer <- allFitnessEffects(bauer)
+(b1 <- evalAllGenotypes(fbauer, order = FALSE, addwt = TRUE))
 
 @ 
 
 Note that what we specify as ``typeDep'' is irrelevant (MN, SMN, or XMPN
 make no difference).
 
-
-The fitness effects figure looks like this:
+This is the DAG:
 <<fig.height=3>>=
 plot(fbauer)
 @ 
 
+
+And if you compare the tabular output of \Rfunction{evalAllGenotypes} you can
+see that the values of fitness reproduces the fitness landscape that they
+show in their Figure 1. We can also use our plot for fitness landscapes:
+
 <<>>=
-(b1 <- evalAllGenotypes(fbauer, order = FALSE))[1:10, ]
+plot(b1, use_ggrepel = TRUE)
 @ 
 
-Order makes no difference
+
+
+
+An alternative approach to specify the fitness, if the number of genotypes
+is reasonably small, is to directly evaluate fitness as given by their
+expressions. Then, use the \texttt{genotFitness} argument to \Rfunction{allFitnessEffects}:
 
 <<>>=
-(b2 <- evalAllGenotypes(fbauer, order = TRUE, max = 2000))[1:15, ]
+
+m1 <- expand.grid(p = c(1, 0), s1 = c(1, 0), s2 = c(1, 0),
+                  s3 = c(1, 0), s4 = c(1, 0))
+
+fitness_bauer <- function(p, s1, s2, s3, s4, 
+                          sp = 1e-5, sdp = 0.015, sdplus = 0.05,
+                          sdminus = 0.1) {
+    if(!p) {
+        b <- 0.5 * ( (1 + sp)^(sum(c(s1, s2, s3, s4))))
+    } else {
+        b <- 0.5 * 
+            (((1 + sdplus)/(1 + sdminus)  * (1 + sdp)^(sum(c(s1, s2, s3, s4)))))
+    }
+    fitness <- b - (1 - b)
+    our_fitness <- 1 + fitness ## prevent negative fitness and
+    ## make wt fitness = 1
+    return(our_fitness)
+}
+
+m1$Fitness <- 
+    apply(m1, 1, function(x) do.call(fitness_bauer, as.list(x)))
+
+bauer2 <- allFitnessEffects(genotFitness = m1)
+
+evalAllGenotypes(bauer2, order = FALSE, addwt = TRUE)
 @ 
 
-And the number of levels is the right one: 11
-<<>>=
-length(table(b1$Fitness))
-length(table(b2$Fitness))
-@ 
+
+
+% If the primary driver is
+% mutated, then the expression is $\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$.
+% They set apoptosis as $1 - proliferation$.  So, ignoring constants such as
+% $1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a table
+% as (for a largest $k$ of 5 in this example, but can make it arbitrarily
+% large):
+
+% <<>>=
+
+% K <- 5
+% sd <- 0.1
+% sdp <- 0.15
+% sp <- 0.05
+% bauer <- data.frame(parent = c("Root", rep("p", K)),
+%                     child = c("p", paste0("s", 1:K)),
+%                     s = c(sd, rep(sdp, K)),
+%                     sh = c(0, rep(sp, K)),
+%                     typeDep = "MN")
+% fbauer <- allFitnessEffects(bauer)
+
+
+% @ 
+
+
+
+
+% <<>>=
+% (b1 <- evalAllGenotypes(fbauer, order = FALSE))[1:10, ]
+% @ 
+
+% Order makes no difference
+
+% <<>>=
+% (b2 <- evalAllGenotypes(fbauer, order = TRUE, max = 2000))[1:15, ]
+% @ 
+
+% And the number of levels is the right one: 11
+% <<>>=
+% length(table(b1$Fitness))
+% length(table(b2$Fitness))
+% @ 
 
 
 %% \subsubsection{Bauer et al.\ specified only via epistatic interactions}
@@ -2707,7 +2796,8 @@ length(table(b2$Fitness))
 
 %% \subsubsection{Adding modules to Bauer et al.}
 
-Can we use modules in this module? Sure, as in any other.
+Can we use modules in this example, if we use the ``lego system''? Sure,
+as in any other case.
 
 
 
