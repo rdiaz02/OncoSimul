@@ -159,9 +159,9 @@ test_that("eval fitness and mut OK", {
                      c(1.1, 1))
     expect_identical(evalGenotypeFitAndMut("b, e", fe, fm),
                      c(1.1, 1))
-    expect_identical(evalGenotypeFitAndMut("a, b, e", fe, fm),
+    expect_equal(evalGenotypeFitAndMut("a, b, e", fe, fm),
                      c(1.3 * 1.1, 10))
-    expect_identical(evalGenotypeFitAndMut("a, b, c, e", fe, fm),
+    expect_equal(evalGenotypeFitAndMut("a, b, c, e", fe, fm),
                      c(1.3 * 1.5 * 1.1, 10 * 5))
 })
 
@@ -325,37 +325,37 @@ test_that("evaluating genotype and mutator", {
     fm <- allMutatorEffects(noIntGenes = c("a" = 10,
                                            "c" = 5))
     ou <- evalAllGenotypesFitAndMut(fe, fm, order = FALSE)
-    expect_true(all(dplyr::filter(ou, Genotype == "a")[, c(2, 3)] ==
-                    c(1, 10)))
-    expect_true(all(dplyr::filter(ou, Genotype == "b")[, c(2, 3)] ==
-                    c(1, 1)))
-    expect_true(all(dplyr::filter(ou, Genotype == "c")[, c(2, 3)] ==
-                    c(1, 5)))
-    expect_true(all(dplyr::filter(ou, Genotype == "e")[, c(2, 3)] ==
-                    c(1.1, 1)))
-    expect_true(all(dplyr::filter(ou, Genotype == "a, b, c")[, c(2, 3)] ==
-                    c(1.3 * 1.5, 10 * 5)))
-    expect_true(all(dplyr::filter(ou, Genotype == "b, c, e")[, c(2, 3)] ==
-                    c(1.5 * 1.1, 5)))
-    expect_true(all(dplyr::filter(ou, Genotype == "a, b, c, e")[, c(2, 3)] ==
-                    c(1.3 * 1.5 * 1.1, 10 * 5)))
+    expect_equivalent(dplyr::filter(ou, Genotype == "a")[, c(2, 3)],
+                    c(1, 10))
+    expect_equivalent(dplyr::filter(ou, Genotype == "b")[, c(2, 3)],
+                    c(1, 1))
+    expect_equivalent(dplyr::filter(ou, Genotype == "c")[, c(2, 3)],
+                    c(1, 5))
+    expect_equivalent(dplyr::filter(ou, Genotype == "e")[, c(2, 3)],
+                    c(1.1, 1))
+    expect_equivalent(dplyr::filter(ou, Genotype == "a, b, c")[, c(2, 3)],
+                    c(1.3 * 1.5, 10 * 5))
+    expect_equivalent(dplyr::filter(ou, Genotype == "b, c, e")[, c(2, 3)],
+                    c(1.5 * 1.1, 5))
+    expect_equivalent(dplyr::filter(ou, Genotype == "a, b, c, e")[, c(2, 3)],
+                    c(1.3 * 1.5 * 1.1, 10 * 5))
     oo <- evalAllGenotypesFitAndMut(fe, fm)
-    expect_true(all(dplyr::filter(oo, Genotype == "a")[, c(2, 3)] ==
-                    c(1, 10)))
-    expect_true(all(dplyr::filter(oo, Genotype == "b")[, c(2, 3)] ==
-                    c(1, 1)))
-    expect_true(all(dplyr::filter(oo, Genotype == "c")[, c(2, 3)] ==
-                    c(1, 5)))
-    expect_true(all(dplyr::filter(oo, Genotype == "e")[, c(2, 3)] ==
-                    c(1.1, 1)))
-    expect_true(all(dplyr::filter(oo, Genotype == "a > b > c")[, c(2, 3)] ==
-                    c(1.3 * 1.5, 10 * 5)))
-    expect_true(all(dplyr::filter(oo, Genotype == "b > c > e")[, c(2, 3)] ==
-                    c(1.5 * 1.1, 5)))
-    expect_true(all(dplyr::filter(oo, Genotype == "e > b > c")[, c(2, 3)] ==
-                    c(1.5 * 1.1, 5)))
-    expect_true(all(dplyr::filter(oo, Genotype == "a > b > c > e")[, c(2, 3)] ==
-                    c(1.3 * 1.5 * 1.1, 10 * 5)))
+    expect_equivalent(dplyr::filter(oo, Genotype == "a")[, c(2, 3)],
+                    c(1, 10))
+    expect_equivalent(dplyr::filter(oo, Genotype == "b")[, c(2, 3)],
+                    c(1, 1))
+    expect_equivalent(dplyr::filter(oo, Genotype == "c")[, c(2, 3)],
+                    c(1, 5))
+    expect_equivalent(dplyr::filter(oo, Genotype == "e")[, c(2, 3)],
+                    c(1.1, 1))
+    expect_equivalent(dplyr::filter(oo, Genotype == "a > b > c")[, c(2, 3)],
+                    c(1.3 * 1.5, 10 * 5))
+    expect_equivalent(dplyr::filter(oo, Genotype == "b > c > e")[, c(2, 3)],
+                    c(1.5 * 1.1, 5))
+    expect_equivalent(dplyr::filter(oo, Genotype == "e > b > c")[, c(2, 3)],
+                    c(1.5 * 1.1, 5))
+    expect_equivalent(dplyr::filter(oo, Genotype == "a > b > c > e")[, c(2, 3)],
+                    c(1.3 * 1.5 * 1.1, 10 * 5))
 })
 
 
@@ -386,11 +386,11 @@ test_that("Mutator, several modules differences, fitness eval", {
                                     addwt = TRUE)
     e2 <- evalAllGenotypesFitAndMut(f1, mut2, order = FALSE,
                                     addwt = TRUE)
-    expect_true(all(e1$Fitness == rep(1, 64)))
-    expect_true(all(e1$MutatorFactor == c(1, rep(5, 63))))
-    expect_true(all(e2$Fitness == rep(1, 64)))
-    expect_true(
-        all(e2$MutatorFactor ==
+    expect_identical(e1$Fitness, rep(1, 64))
+    expect_identical(e1$MutatorFactor, c(1, rep(5, 63)))
+    expect_identical(e2$Fitness, rep(1, 64))
+    expect_identical(
+        e2$MutatorFactor,
                     c(1, rep(5, 7),
                       rep(25, 8), 5,
                       rep(25, 4), 5,
@@ -399,7 +399,7 @@ test_that("Mutator, several modules differences, fitness eval", {
                       rep(125, 4), rep(25, 6),
                       rep(125, 4), 25,
                       rep(125, 8), 25,
-                      rep(125, 7)))
+                      rep(125, 7))
     )
 })
 date()
