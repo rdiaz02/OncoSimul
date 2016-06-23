@@ -276,7 +276,7 @@ Before anything else, let us load the package. We also explicitly load
 need that for your usual interactive work). And I set the default color
 for vertices in igraph.
 
-<<results="hide",message=FALSE, echo=TRUE, include=FALSE>>=
+<<results="hide",message=FALSE, echo=TRUE, include=TRUE>>=
 library(OncoSimulR)
 library(graph)
 library(igraph)
@@ -581,7 +581,7 @@ fem4 <- allFitnessEffects(genotFitness = m4)
 
 
 That's it. You can plot that object
-<<out.width="3cm", out.height = "3cm">>=
+<<out.width="6cm", out.height = "6cm">>=
 plot(fem4)
 @ 
 or see what OncoSimulR thinks the fitnesses are, with the
@@ -600,7 +600,7 @@ indicating that the gene of that column is mutated or not. Column $g+ 1$
 contains the fitness values. And you do not even need to specify all the
 genotypes (we will assume that the missing genotypes have fitness 1):
 
-<<out.width="3cm", out.height = "3cm">>=
+<<out.width="6cm", out.height = "6cm">>=
 m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
 fem6 <- allFitnessEffects(genotFitness = m6)
 evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
@@ -2405,9 +2405,8 @@ bb <- oncoSimulIndiv(fe1,
 
 You can specify mutator/antimutator genes (e.g., \cite{gerrish_complete_2007,
   tomlinson_mutation_1996}): these are genes that, when mutated, lead to
-an increase/decrease in the mutation rate all over the genome (not unlike
-what happens with, say, mutations in mismatch-repair genes or
-microsatellite instability in cancer.
+an increase/decrease in the mutation rate all over the genome (similar to what happens with, say, mutations in mismatch-repair genes or
+microsatellite instability in cancer).
 
 The specification is very similar to that for fitness effects, except we
 do not (at least for now) the use of DAGs for poset-like structures nor
@@ -2610,11 +2609,16 @@ wb <- allFitnessEffects(
         "A:C" = s2,
         "B:C" = s2,
         "A:B:C" = s3))
+@ 
+
+\clearpage
+<<>>=
 plotFitnessLandscape(wb, use_ggrepel = TRUE) ## ggrepel to avoid overlap 
                                              ## of labels
 
 @ 
 
+\clearpage
 For some types of objects, directly invoking \Rfunction{plot} will give
 you the fitness plot
 
@@ -2624,7 +2628,7 @@ plot(ewb, use_ggrepel = TRUE)
 
 @ 
 
-
+\clearpage
 This is another example we saw before (\ref{pancreas}), that will give a
 very busy plot:
 
@@ -2713,7 +2717,7 @@ plot(b1, use_ggrepel = TRUE)
 
 
 
-
+\clearpage
 An alternative approach to specify the fitness, if the number of genotypes
 is reasonably small, is to directly evaluate fitness as given by their
 expressions. Then, use the \texttt{genotFitness} argument to \Rfunction{allFitnessEffects}:
@@ -2742,7 +2746,10 @@ m1$Fitness <-
     apply(m1, 1, function(x) do.call(fitness_bauer, as.list(x)))
 
 bauer2 <- allFitnessEffects(genotFitness = m1)
+@ 
 
+Now, show the fitness of all genotypes:
+<<>>=
 evalAllGenotypes(bauer2, order = FALSE, addwt = TRUE)
 @ 
 
@@ -2799,7 +2806,7 @@ evalAllGenotypes(bauer2, order = FALSE, addwt = TRUE)
 Can we use modules in this example, if we use the ``lego system''? Sure,
 as in any other case.
 
-
+\clearpage
 
 \subsection{Misra et al., 2014}\label{misra}
 
@@ -2960,7 +2967,7 @@ We could also use a tree and modify the ``sab'' for the epistasis, as
 before (\ref{misra1a}).
 
 
-
+\clearpage
 \subsection{Ochs and Desai, 2015}\label{ochsdesai}
 
 In \cite{Ochs2015} the authors present a model shown graphically as (the
@@ -3262,17 +3269,17 @@ We will now use a variety of plots
 <<baux1,fig.width=6.5, fig.height=10>>=
 par(mfrow = c(3, 1))
 ## First, drivers
-plot(b1, type = "line", addtot = TRUE, thinData = TRUE)
-plot(b1, type = "stacked", thinData = TRUE)
-plot(b1, type = "stream", thinData = TRUE)
+plot(b1, type = "line", addtot = TRUE)
+plot(b1, type = "stacked")
+plot(b1, type = "stream")
 @ 
 
 <<baux2,fig.width=6.5, fig.height=10>>=
 par(mfrow = c(3, 1))
 ## Next, genotypes
-plot(b1, show = "genotypes", type = "line", thinData = TRUE)
-plot(b1, show = "genotypes", type = "stacked", thinData = TRUE)
-plot(b1, show = "genotypes", type = "stream", thinData = TRUE)
+plot(b1, show = "genotypes", type = "line")
+plot(b1, show = "genotypes", type = "stacked")
+plot(b1, show = "genotypes", type = "stream")
 @ 
 
 In this case, probably the stream plots are most helpful. Note, however,
@@ -4429,7 +4436,7 @@ You bet. In v.1 you can only give the initial mutant as one with a single
 mutated gene. In version 2, however, you can specify the genotype for the
 initial mutant with the same flexibility as in
 \Rfunction{evalGenotype}. Here we show a couple of examples (we use the
-representation of the phylogeny ---discussed in section \ref{phylog}--- of
+representation of the parent-child relationships ---discussed in section \ref{phylog}--- of
 the clones so that you can see which clones appear, and from which).
 
 %% o3init <- allFitnessEffects(orderEffects = c(
