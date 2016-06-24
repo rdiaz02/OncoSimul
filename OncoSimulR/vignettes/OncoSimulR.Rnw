@@ -2586,8 +2586,9 @@ maxima and get an idea of how the fitness landscape looks.
 In \Rfunction{plotFitnessLandscape} I have blatantly and shamelessly
 copied most of the looks of the plots of MAGELLAN
 (\url{http://wwwabi.snv.jussieu.fr/public/Magellan/},
-\cite{brouillet_magellan:_2015}), a nice web-based tool for fitness
-landscape plotting and analysis.
+\cite{brouillet_magellan:_2015}), a very nice web-based tool for fitness
+landscape plotting and analysis (MAGELLAN provide some other extra
+functionality and epistasis statistics not provided here).
 
 As an example, let us show the previous example of Weissman et al. we saw
 in \ref{weissmanex}:
@@ -2612,17 +2613,16 @@ wb <- allFitnessEffects(
 @ 
 
 \clearpage
-<<>>=
+<<fig.width=6.5, fig.height=6>>=
 plotFitnessLandscape(wb, use_ggrepel = TRUE) ## ggrepel to avoid overlap 
                                              ## of labels
-
 @ 
 
 \clearpage
 For some types of objects, directly invoking \Rfunction{plot} will give
 you the fitness plot
 
-<<>>=
+<<fig.width=6.5, fig.height=6>>=
 (ewb <- evalAllGenotypes(wb, order = FALSE))
 plot(ewb, use_ggrepel = TRUE) 
 
@@ -2711,7 +2711,7 @@ And if you compare the tabular output of \Rfunction{evalAllGenotypes} you can
 see that the values of fitness reproduces the fitness landscape that they
 show in their Figure 1. We can also use our plot for fitness landscapes:
 
-<<>>=
+<<fig.width=6, fig.height=6>>=
 plot(b1, use_ggrepel = TRUE)
 @ 
 

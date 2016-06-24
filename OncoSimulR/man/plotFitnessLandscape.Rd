@@ -109,7 +109,7 @@ Ramon Diaz-Uriarte
 \references{
   MAGELLAN web site: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}
 
-  Brouillet, S. et al. (2015). MAGELLAN: a tool to explore small fitness landscapes. \emph{bioRxiv\/}, \bold{31583}. \url{http://doi.org/10.1101/031583}
+  Brouillet, S. et al. (2015). MAGELLAN: a tool to explore small fitness landscapes. \emph{bioRxiv}, \bold{31583}. \url{http://doi.org/10.1101/031583}
 
 }
 
@@ -118,18 +118,17 @@ Ramon Diaz-Uriarte
 
   I have copied most of the ideas (and colors, and labels) of this plot
   from MAGELLAN (\url{http://wwwabi.snv.jussieu.fr/public/Magellan/})
-  but MAGELLAN has other functionality that is not provided here (e.g.,
+  but MAGELLAN has other functionality that is not provided here such as
   epistasis stats for the landscape, and several visual manipulation
-  options).
+  options.
 
-  In addition to cosmetic differences, an important difference between
-  this plot and those of MAGELLAN is \bold{how sinks/peaks of more than
-  one genotype are dealt with}. This plot will correctly show as sinks
-  or peaks sets of one or more genotypes that are of identical fitness
-  (and separated by a Haming distance of one). So a sink or a peak might
-  actually be made of more than one genotype. MAGELLAN, as far as I can
-  tell, cannot do this: peaks and sinks are always made of a single
-  isolated genotype.
+  In addition to the above differences, another difference between this
+  plot and those of MAGELLAN is \bold{how sinks/peaks of more than one
+  genotype are dealt with}. This plot will show as sinks or peaks sets
+  of one or more genotypes that are of identical fitness (and separated
+  by a Haming distance of one). So a sink or a peak might actually be
+  made of more than one genotype. In MAGELLAN, as far as I can tell,
+  peaks and sinks are always made of a single isolated genotype.
 
   Does this matter? In most realistic cases where not two genotypes can
   have exactly the same fittnes it does not. In some cases, though, it
