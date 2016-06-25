@@ -25,11 +25,6 @@ script:
 
 after_success:
   - Rscript -e 'library(covr);covr::codecov("OncoSimulR")'
-#  - Rscript -e 'devtools::install_github("jimhester/covr");library(covr);covr::codecov("OncoSimulR")'
-
-# after_success:
-#  - install_github jimhester/covr;
-#  - Rscript -e 'library(covr);covr::codecov("OncoSimulR")'
 
 
 

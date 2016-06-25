@@ -389,9 +389,9 @@ evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
 ## Plotting a fitness landscape
 
 fe2 <- allFitnessEffects(noIntGenes =
-                         c(a1 = 0.1, a2 = 0.2,
-                           b1 = 0.01, b2 = 0.3, b3 = 0.2,
-                           c1 = 0.3, c2 = -0.2))
+                         c(a1 = 0.1, 
+                           b1 = 0.01,
+                           c1 = 0.3))
 
 plot(evalAllGenotypes(fe2, order = FALSE))
 
