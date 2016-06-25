@@ -615,10 +615,89 @@ expect_identical(samplePop(s1, timeSample = "last", typeSample = "whole",
 })
 
 
+
+
+
+
+
+
+
+test_that("exercising oncoSimulIndiv, new format, extra time", {
+    pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                                                     "TP53", "TP53", "MLL3"),
+                                          child = c("KRAS","SMAD4", "CDNK2A", 
+                                                    "TP53", "MLL3",
+                                                    rep("PXDN", 3), rep("TGFBR2", 2)),
+                                          s = 0.05,
+                                          sh = -0.3,
+                                          typeDep = "MN"))
+    expect_silent(
+        pSs <- oncoSimulIndiv(pancr,
+                              sampleEvery = 0.03,
+                              detectionSize = 1e3,
+                              finalTime = 6,
+                              extraTime = 5,
+                              onlyCancer = FALSE))
+    expect_output(print(pSs), "Individual OncoSimul trajectory",
+                  fixed = TRUE)
+})
+
+
+
+test_that("exercising oncoSimulIndiv, hit max ram", {
+    
+    p1 <- allFitnessEffects(noIntGenes = rep(.1, 10))
+    expect_output(pSs <- oncoSimulIndiv(p1,
+                                        initSize = 1e4,
+                                        sampleEvery = 3,
+                                        detectionSize = 1e5,
+                                        finalTime = 1000,
+                                        extraTime = 5,
+                                        onlyCancer = FALSE,
+                                        max.memory = .01),
+                  "Return outNS object > maxram",
+                  fixed = TRUE)
+})
+
+
+
+test_that("exercising oncoSimulIndiv, verbosity", {
+
+    ii <- rep(.1, 20)
+    names(ii) <- letters[1:20]
+    p1 <- allFitnessEffects(noIntGenes = ii)
+    expect_output(pSs <- oncoSimulIndiv(p1,
+                                        initMutant = "a",
+                                        model = "McFL",
+                                        initSize = 1e2,
+                                        sampleEvery = 1,
+                                        detectionSize = 1e10,
+                                        finalTime = 2000,
+                                        extraTime = 5,
+                                        verbosity = 6,
+                                        onlyCancer = FALSE),
+                  "Looping through", fixed = TRUE)
+
+    ## This is too much: can take a minute.
+    ## ii <- rep(.01, 1000)
+    ## names(ii) <- paste0("n", 1:1000)
+    ## p1 <- allFitnessEffects(noIntGenes = ii)
+    ## expect_output(pSs <- oncoSimulIndiv(p1,
+    ##                                     initMutant = "n1",
+    ##                                     model = "Exp",
+    ##                                     initSize = 1e6,
+    ##                                     sampleEvery = 2,
+    ##                                     detectionSize = 1e7,
+    ##                                     finalTime = 50,
+    ##                                     extraTime = 5,
+    ##                                     verbosity = 2,
+    ##                                     onlyCancer = FALSE),
+    ##               "Looping through", fixed = TRUE)
+    
+})
+
+
 cat(paste("\n Ending oncoSimulIndiv-miscell tests", date(), "\n"))
-
-
-
 
 
 

@@ -317,10 +317,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     throw std::range_error("totPopSize is NaN");
   }
   
-  if(totPopSize > (4.0 * 1e15)) {
-    if(verbosity > 0)
-      Rcpp::Rcout << "\nWARNING: popSize > 4e15. Likely loss of precission\n";
-  }
+
 }
 
 // FIXME: I might want to return the actual drivers in each period
@@ -430,57 +427,57 @@ std::string driversToNameString(const std::vector<int>& presentDrivers,
   return strDrivers;
 }
 
-
-std::string genotypeToIntString(const std::vector<int>& genotypeV,
-				   const fitness_as_genes& fg) {
+// No longer used.
+// std::string genotypeToIntString(const std::vector<int>& genotypeV,
+// 				   const fitness_as_genes& fg) {
   
-  // The genotype vectors are returned as a string of ints.
+//   // The genotype vectors are returned as a string of ints.
   
-  std::string strGenotype;
+//   std::string strGenotype;
 
-  std::vector<int> order_int;
-  std::vector<int> rest_int;
+//   std::vector<int> order_int;
+//   std::vector<int> rest_int;
 
-  for(auto const &g : genotypeV) {
-    if( binary_search(fg.orderG.begin(), fg.orderG.end(), g)) {
-      order_int.push_back(g);
-    } else {
-      rest_int.push_back(g);
-    }
-  }
+//   for(auto const &g : genotypeV) {
+//     if( binary_search(fg.orderG.begin(), fg.orderG.end(), g)) {
+//       order_int.push_back(g);
+//     } else {
+//       rest_int.push_back(g);
+//     }
+//   }
 
-  std::string order_sep = "_";
-  std::string order_part;
-  std::string rest;
-  std::string comma = "";
+//   std::string order_sep = "_";
+//   std::string order_part;
+//   std::string rest;
+//   std::string comma = "";
 
   
-  for(auto const &g : order_int) {
-#ifdef _WIN32  
-     order_part += (comma + SSTR(g));
-#endif
-#ifndef _WIN32
-    order_part += (comma + std::to_string(g));
-#endif
-    comma = ", ";
-  }
-  comma = "";
-  for(auto const &g : rest_int) {
-#ifdef _WIN32  
-     rest += (comma + SSTR(g));
-#endif
-#ifndef _WIN32
-    rest += (comma + std::to_string(g));
-#endif
-    comma = ", ";
-  }
-  if(fg.orderG.size()) {
-    strGenotype = order_part + order_sep + rest;
-  } else {
-    strGenotype = rest;
-  }
-  return strGenotype;
-}
+//   for(auto const &g : order_int) {
+// #ifdef _WIN32  
+//      order_part += (comma + SSTR(g));
+// #endif
+// #ifndef _WIN32
+//     order_part += (comma + std::to_string(g));
+// #endif
+//     comma = ", ";
+//   }
+//   comma = "";
+//   for(auto const &g : rest_int) {
+// #ifdef _WIN32  
+//      rest += (comma + SSTR(g));
+// #endif
+// #ifndef _WIN32
+//     rest += (comma + std::to_string(g));
+// #endif
+//     comma = ", ";
+//   }
+//   if(fg.orderG.size()) {
+//     strGenotype = order_part + order_sep + rest;
+//   } else {
+//     strGenotype = rest;
+//   }
+//   return strGenotype;
+// }
 
 
 std::string genotypeToNameString(const std::vector<int>& genotypeV,
@@ -777,7 +774,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   //int type_resize = 0;
 
   int iterL = 1000;
-  int speciesL = 1000; 
+  int speciesL = 100; 
   //int timeL = 1000;
 
   int iterInterrupt = 50000; //how large should we make this?
@@ -894,6 +891,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       Genotypes[0].epistRtEff.size() + Genotypes[0].rest.size();
     int numGenesGenotype = fitnessEffects.allGenes.size();
     popParams[0].numMutablePos = numGenesGenotype - numGenesInitMut;
+    // Next two are unreachable since caught in R.
+    // But just in case, since it would lead to seg fault.
     if(popParams[0].numMutablePos < 0)
       throw std::invalid_argument("initMutant's genotype has more genes than are possible.");
     if(popParams[0].numMutablePos == 0)
@@ -955,6 +954,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       tmpParam.birth =  -99;
       tmpParam.death = death;
     } else {
+      // caught in R, so unreachable here
       throw std::invalid_argument("this ain't a valid typeModel");
     } 
     // if( (typeModel != TypeModel::beerenwinkel) && (typeModel != TypeModel::mcfarland0) 
