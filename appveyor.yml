@@ -77,9 +77,10 @@ before_build:
    - cd %TEST_DIR%
    - bash -c "echo '^travis-tool\.sh\.cmd$' >> .Rbuildignore"
    
-
+## failing because gtable not available, as seen in logs. Make explicit
 build_script:
   - travis-tool.sh install_bioc_deps
+  - travis-tool.sh install_r gtable
 
 test_script:
   - travis-tool.sh run_tests
