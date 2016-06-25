@@ -4,18 +4,6 @@
 
 
 
-
-#### Software status
-
-
-|             | Bioconductor (multiple platforms)   | Travis CI  (Linux)  | Appveyor (Windows)  |
-| ------------- | ------------------- | ------------- | ---------------- |
-| R CMD check   | <a href="http://bioconductor.org/checkResults/release/bioc-LATEST/OncoSimulR/"><img border="0" src="http://bioconductor.org/shields/build/release/bioc/OncoSimulR.svg" alt="Build status"></a> (release)</br><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/"><img border="0" src="http://bioconductor.org/shields/build/devel/bioc/OncoSimulR.svg" alt="Build status"></a> (devel) | <a href="https://travis-ci.org/rdiaz02/OncoSimul"><img src="https://travis-ci.org/rdiaz02/OncoSimulR.svg?branch=master" alt="Build status"></a> | <a href="https://ci.appveyor.com/project/rdiaz02/OncoSimul"><img src="https://ci.appveyor.com/api/projects/status/github/rdiaz02/OncoSimul?branch=master&svg=true" alt="Build status"></a> |
-| Test coverage |                     | <a href="https://codecov.io/github/rdiaz02/OncoSimul?branch=master"><img src="https://codecov.io/github/rdiaz02/OncoSimul/coverage.svg?branch=master" alt="Coverage Status"/></a>   |                  |
-
-<!-- Based on https://raw.githubusercontent.com/Bioconductor-mirror/illuminaio/master/README.md -->
------
-
 OncoSimul
 =========
 
@@ -92,7 +80,7 @@ install_github("rdiaz02/OncoSimul/OncoSimulR")
 
 ``` 
 
-But sometimes the latest additions in this repo could be broken. And you
+But sometimes the latest additions in this repo could be broken (see [Software status](#software-status)). And you
 can of course clone this repo, and install from there.
 
 
@@ -153,3 +141,16 @@ part of the
 and is under the LaTeX Project Public License 1.3, which is
 [incompatible with the GPL](http://directory.fsf.org/wiki/License:LPPLv1.3a). Note
 this file is not part of the OncoSimulR BioConductor package.
+
+
+
+Software status
+===============
+
+|             | Bioconductor (multiple platforms)   | Travis CI  (Linux)  | Appveyor (Windows)  |
+| ------------- | ------------------- | ------------- | ---------------- |
+| R CMD check   | <a href="http://bioconductor.org/checkResults/release/bioc-LATEST/OncoSimulR/"><img border="0" src="http://bioconductor.org/shields/build/release/bioc/OncoSimulR.svg" alt="Build status"></a> (release)</br><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/"><img border="0" src="http://bioconductor.org/shields/build/devel/bioc/OncoSimulR.svg" alt="Build status"></a> (devel) | <a href="https://travis-ci.org/rdiaz02/OncoSimul"><img src="https://travis-ci.org/rdiaz02/OncoSimulR.svg?branch=master" alt="Build status"></a> | <a href="https://ci.appveyor.com/project/rdiaz02/OncoSimul"><img src="https://ci.appveyor.com/api/projects/status/github/rdiaz02/OncoSimul?branch=master&svg=true" alt="Build status"></a> |
+| Test coverage |                     | <a href="https://codecov.io/github/rdiaz02/OncoSimul?branch=master"><img src="https://codecov.io/github/rdiaz02/OncoSimul/coverage.svg?branch=master" alt="Coverage Status"/></a>   |                  |
+
+<!-- Based on https://raw.githubusercontent.com/Bioconductor-mirror/illuminaio/master/README.md -->
+
