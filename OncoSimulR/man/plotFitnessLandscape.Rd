@@ -122,6 +122,11 @@ Ramon Diaz-Uriarte
   epistasis stats for the landscape, and several visual manipulation
   options.
 
+  One feature of this function that is not available in MAGELLAN is
+  showing genotype labels (i.e., annotated by gene names), which can be
+  helpful if the different genotypes mean something to you.
+
+  
   In addition to the above differences, another difference between this
   plot and those of MAGELLAN is \bold{how sinks/peaks of more than one
   genotype are dealt with}. This plot will show as sinks or peaks sets
@@ -143,7 +148,7 @@ Ramon Diaz-Uriarte
   possibility of peaks/sinks made of more than one genotype actually
   makes code much simpler.
 
-
+  
   Sometimes not showing the any links that involve a decrease in fitness
   can help see non-accessible pathways (in strong selection, no multiple
   mutations, etc); do this by passing, for instance, an NA for the
