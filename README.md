@@ -131,7 +131,9 @@ also referenced from the main article [Ease of Use without Loss of Power]
 renamed it to randutils.h to conform to R's requirements (and changed the
 `auto exit_func = hash(&_Exit);` line to keep R from complaining about the
 Exit function). I had to disable usage of randutils for now, since I could
-not get it to compile with gcc-4.6 (the default so far for R under Windows).
+not get it to compile with gcc-4.6 (since version 3.3 of R, 
+the official Rtools for Windows now support C++-11, so I might change 
+this in the near future).
 
 
 
