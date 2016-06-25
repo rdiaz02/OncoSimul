@@ -219,7 +219,7 @@ test_that("eval mut genotypes, echo", {
                                            "c" = 5))
     expect_output(evalGenotypeMut("a, c", fm, echo = TRUE),
                   "Mutation rate product", fixed = TRUE)
-}
+})
 
 
 test_that("evaluating genotype and mutator, Bozic", {

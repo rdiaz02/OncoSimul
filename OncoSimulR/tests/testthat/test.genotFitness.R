@@ -52,9 +52,8 @@ test_that("The WT is added if absent", {
     m7 <- cbind(c(1, 1, 0), c(1, 0, 0), c(2, 3, 5))
     fem7 <- allFitnessEffects(genotFitness = m7)
     ag <- evalAllGenotypes(fem7, order = FALSE)
-
     ## internal call
-    expect_equivalent(OncoSimulR:::allGenotypes_to_matrix(ag)[, 2],
+    expect_equivalent(OncoSimulR:::allGenotypes_to_matrix(ag)[, 3],
                       c(1, 3/5, 1, 2/5))
     ## the user visible, which is via plotFitnessLandscape -> to_Fitness_Matrix
     plot(ag)
