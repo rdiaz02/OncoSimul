@@ -1,0 +1,11 @@
+comment: false
+## comment:
+##  layout: header, changes, diff
+coverage:
+  fixes:
+  - R/::OncoSimulR/R
+  - src/::OncoSimulR/src
+##  ignore:
+##  - R/::OncoSimulR/R
+##  - src/::OncoSimulR/src
+##  status: {}
