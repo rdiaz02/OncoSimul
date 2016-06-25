@@ -3,7 +3,7 @@
 library(covr)
 library(shiny)
 library(DT)
-## library(OncoSimulR)
+library(OncoSimulR)
 ## library(help = OncoSimulR)
 
 setwd("../OncoSimulR")
@@ -12,8 +12,11 @@ setwd("../OncoSimulR")
 ## What matters most is tests after all. And
 ## running all and not combining (or one of them) screws up
 ## navigating to the code
-cov4 <- package_coverage(type = "tests", combine_types = TRUE, quiet = FALSE)
+cov4 <- package_coverage(type = "tests", quiet = FALSE)
+cov3 <- package_coverage(type = "all", combine_types = FALSE, quiet = FALSE)
+cov2 <- package_coverage(type = "all", combine_types = TRUE, quiet = FALSE)
+
 ## cov4 <- package_coverage()
-save(file = "../miscell-files/coverage-results.RData", cov4)
+save(file = "../miscell-files/coverage-results.RData", cov4, cov3)
 ## zero_coverage(cov4) 
 shine(cov4)
