@@ -94,8 +94,8 @@ usage). From BioConductor you can obtain the
 better place to start, though, is the long vignette, with commented
 examples (and created from the `OncoSimulR/vignettes/OncoSimulR.Rnw` file
 that includes both text and code). Here is
-[the vignette as PDF](http://www.bioconductor.org/packages/3.2/bioc/vignettes/OncoSimulR/inst/doc/OncoSimulR.pdf),
-from the BioConductor site.
+[the vignette as PDF](http://www.bioconductor.org/packages/devel/bioc/vignettes/OncoSimulR/inst/doc/OncoSimulR.pdf),
+from the BioConductor site (the development branch).
 
 
 You can view the vignette from R itself doing
