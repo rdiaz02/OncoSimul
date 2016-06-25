@@ -34,6 +34,8 @@ rm ./OncoSimulR/vignettes/.Rhistory
 rm ./OncoSimulR/src/*.so
 rm ./OncoSimulR/src/*~
 rm ./OncoSimulR/src/*.o
+rm ./OncoSimulR/src/*.gcda
+rm ./OncoSimulR/src/*.gcno
 rm ./OncoSimulR/src/OncoSimulR.so
 rm ./OncoSimulR/src/OncoSimul.o
 rm ./OncoSimulR/src/OncoSimulR_init.o
