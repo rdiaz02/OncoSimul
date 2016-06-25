@@ -17,6 +17,73 @@
 
 ## Functions that allow passing a matrix or data frame of mappings
 ## genotype -> fitness so this is taken as input in fitnessEffects.
+## and some related functions
+
+
+
+to_Magellan <- function(x, file,
+                        max_num_genotypes = 2000) {
+    if(is.null(file)) {
+        file <- tempfile()
+        cat("\n Using file ", file, "\n")
+    }
+    gfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)$gfm
+    write(rep(2, ncol(gfm) - 1), file = file, ncolumns = ncol(gfm) - 1)
+    write.table(gfm, file = file, append = TRUE,
+                row.names = FALSE, col.names = FALSE, sep = " ")
+}
+
+to_Fitness_Matrix <- function(x, max_num_genotypes) {
+    ## A general converter. Ready to be used by plotFitnessLandscape and
+    ## Magellan exporter.
+    
+    if( (inherits(x, "genotype_fitness_matrix")) ||
+        ( (is.matrix(x) || is.data.frame(x)) && (ncol(x) > 2) ) ) {
+        ## Why this? We go back and forth twice. We need both things. We
+        ## could construct the afe below by appropriately pasting the
+        ## columns names
+        afe <- evalAllGenotypes(allFitnessEffects(
+            epistasis = from_genotype_fitness(x)),
+            order = FALSE, addwt = TRUE, max = max_num_genotypes)
+        ## Might not be needed with the proper gfm object (so gmf <- x)
+        ## but is needed if arbitrary matrices.
+        gfm <- allGenotypes_to_matrix(afe) 
+    } else if(inherits(x, "fitnessEffects")) {
+        if(!is.null(x$orderEffects) )
+            stop("We cannot yet deal with order effects")
+        afe <- evalAllGenotypes(x,
+                                order = FALSE,
+                                addwt = TRUE, max = max_num_genotypes)
+        gfm <- allGenotypes_to_matrix(afe)
+    } else if( (inherits(x, "evalAllGenotypes")) ||
+               (inherits(x, "evalAllGenotypesMut"))) {
+        if(any(grepl(">", x[, 1], fixed = TRUE)))
+            stop("We cannot deal with order effects yet.")
+        x <- x[, c(1, 2)]
+        if(x[1, "Genotype"] != "WT") {
+            ## Yes, because we expect this present below
+            x <- rbind(data.frame(Genotype = "WT",
+                                  Fitness = 1,
+                                  stringsAsFactors = FALSE),
+                       x)
+        }
+        afe <- x
+        ## in case we pass an evalAllgenotypesfitandmut
+        gfm <- allGenotypes_to_matrix(afe)
+    } else if(is.data.frame(x)) {
+        ## Assume a two-column data frame of genotypes as character
+        ## vectors and fitness
+        if(colnames(x)[2] != "Fitness")
+            stop("We cannot guess what you are passing here") 
+        afe <- evalAllGenotypes(allFitnessEffects(genotFitness = x),
+                                order = FALSE, addwt = TRUE,
+                                max = max_num_genotypes)
+        gfm <- allGenotypes_to_matrix(afe)
+    } else {
+        stop("We cannot guess what you are passing here") 
+    }
+    return(list(gfm = gfm, afe = afe))
+}   
 
 
 from_genotype_fitness <- function(x) {
@@ -157,20 +224,37 @@ allGenotypes_to_matrix <- function(x) {
 }
 
 
+
+magellan_stats <- function(x, max_num_genotypes = 2000,
+                           verbose = FALSE,
+                           fl_statistics = "fl_statistics") {
+    ## if(!is.null(x) && is.null(file))
+    ##     stop("one of object or file name")
+    ## if(is.null(file))
+    fn <- tempfile()
+    fnret <- tempfile()
+    if(verbose)
+        cat("\n Using input file", fn, " and output file ", fnret, "\n")
+    to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
+    call_M <- system(paste(fl_statistics, fn, "-s", "-o", fnret))
+    return(read.table(fnret, skip = 1, header = TRUE)[-1])
+}
+
+
 ##
 
-## Example of Bozic issues
-m1 <- cbind(c(0, 1), c(1, 0), c(2, 3))
+## ## Example of Bozic issues
+## m1 <- cbind(c(0, 1), c(1, 0), c(2, 3))
 
-m2 <- cbind(c(1, 1), c(1, 0), c(2, 3))
+## m2 <- cbind(c(1, 1), c(1, 0), c(2, 3))
 
-m3 <- data.frame(G = c("A, B", "A"), F = c(1, 2))
+## m3 <- data.frame(G = c("A, B", "A"), F = c(1, 2))
 
-m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4))
+## m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4))
 
-m5 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 0))
+## m5 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 0))
 
-m6 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2.5, 2, 0))
+## m6 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2.5, 2, 0))
 
 
 

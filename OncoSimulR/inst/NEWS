@@ -1,18 +1,21 @@
+Changes in version 2.3.5 (2016-06-25):
+	- to_Magellan.
+
 Changes in version 2.3.4 (2016-06-24):
 	- Failing some tests in Win 32-bits
 	
 Changes in version 2.3.3 (2016-06-23):
 	- Vignette improvements and typo fixes.
-	- rfitness
-	- Plot of fitness landscapes
-	- Specify fitness by giving genotype-> fitness mapping
-	- Tests showing same gene in epist./DAG/order
-	- Clarified internal C++ unique/sorted in genotypes
-	- Checks initMutant correct and bug initMutant mutable pos
+	- rfitness: generate fitness landscapes.
+	- Plot of fitness landscapes.
+	- Specify fitness by giving genotype-> fitness mapping.
+	- Tests showing same gene in epist./DAG/order.
+	- Clarified internal C++ unique/sorted in genotypes.
+	- Checks initMutant correct and bug initMutant mutable pos.
 	- samplePop: sample at arbitrary sizes.
 	- plot.oncosimulpop using auto for color.
 	- Mutator phenotype and gene-specific mutation rates.
-	- Bug fixed: to_update set at 2 when mutating to pre-existing;
+	- Bug fixed: to_update set at 2 when mutating to pre-existing.
 	- Lots and lots of new tests.
 
 Changes in version 2.2.0 (for BioC 3.3):

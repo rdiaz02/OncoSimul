@@ -2614,9 +2614,10 @@ wb <- allFitnessEffects(
 
 \clearpage
 <<fig.width=6.5, fig.height=6>>=
-plotFitnessLandscape(wb, use_ggrepel = TRUE) ## ggrepel to avoid overlap 
-                                             ## of labels
+plotFitnessLandscape(wb, use_ggrepel = TRUE) 
 @ 
+
+We have set \texttt{use_ggrepel = TRUE} to avoid overlap of labels.
 
 \clearpage
 For some types of objects, directly invoking \Rfunction{plot} will give

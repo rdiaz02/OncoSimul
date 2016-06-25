@@ -54,53 +54,54 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     ## get the string representation, etc. And this is for use
     ## with OncoSimul.
 
-    ## FIXME: passing fitness as a 2 column data frame
-    
-    if( (inherits(x, "genotype_fitness_matrix")) ||
-        ( (is.matrix(x) || is.data.frame(x)) && (ncol(x) > 2) ) ) {
-        ## Why this? We go back and forth twice. We need both things. We
-        ## could construct the afe below by appropriately pasting the
-        ## columns names
-        afe <- evalAllGenotypes(allFitnessEffects(
-            epistasis = from_genotype_fitness(x)),
-            order = FALSE, addwt = TRUE, max = max_num_genotypes)
-        ## Might not be needed with the proper gfm object (so gmf <- x)
-        ## but is needed if arbitrary matrices.
-        gfm <- allGenotypes_to_matrix(afe) 
-    } else if(inherits(x, "fitnessEffects")) {
-        if(!is.null(x$orderEffects) )
-            stop("We cannot yet deal with order effects")
-        afe <- evalAllGenotypes(x,
-                                order = FALSE,
-                                addwt = TRUE, max = max_num_genotypes)
-        gfm <- allGenotypes_to_matrix(afe)
-    } else if( (inherits(x, "evalAllGenotypes")) ||
-               (inherits(x, "evalAllGenotypesMut"))) {
-        if(any(grepl(">", x[, 1], fixed = TRUE)))
-            stop("We cannot deal with order effects yet.")
-        x <- x[, c(1, 2)]
-        if(x[1, "Genotype"] != "WT") {
-            ## Yes, because we expect this present below
-            x <- rbind(data.frame(Genotype = "WT",
-                                  Fitness = 1,
-                                  stringsAsFactors = FALSE),
-                       x)
-        }
-        afe <- x
-        ## in case we pass an evalAllgenotypesfitandmut
-        gfm <- allGenotypes_to_matrix(afe)
-    } else if(is.data.frame(x)) {
-        ## Assume a two-column data frame of genotypes as character
-        ## vectors and fitness
-        if(colnames(x)[2] != "Fitness")
-            stop("We cannot guess what you are passing here") 
-        afe <- evalAllGenotypes(allFitnessEffects(genotFitness = x),
-                                order = FALSE, addwt = TRUE,
-                                max = max_num_genotypes)
-        gfm <- allGenotypes_to_matrix(afe)
-    } else {
-       stop("We cannot guess what you are passing here") 
-    }
+
+    tfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)
+
+    ## if( (inherits(x, "genotype_fitness_matrix")) ||
+    ##     ( (is.matrix(x) || is.data.frame(x)) && (ncol(x) > 2) ) ) {
+    ##     ## Why this? We go back and forth twice. We need both things. We
+    ##     ## could construct the afe below by appropriately pasting the
+    ##     ## columns names
+    ##     afe <- evalAllGenotypes(allFitnessEffects(
+    ##         epistasis = from_genotype_fitness(x)),
+    ##         order = FALSE, addwt = TRUE, max = max_num_genotypes)
+    ##     ## Might not be needed with the proper gfm object (so gmf <- x)
+    ##     ## but is needed if arbitrary matrices.
+    ##     gfm <- allGenotypes_to_matrix(afe) 
+    ## } else if(inherits(x, "fitnessEffects")) {
+    ##     if(!is.null(x$orderEffects) )
+    ##         stop("We cannot yet deal with order effects")
+    ##     afe <- evalAllGenotypes(x,
+    ##                             order = FALSE,
+    ##                             addwt = TRUE, max = max_num_genotypes)
+    ##     gfm <- allGenotypes_to_matrix(afe)
+    ## } else if( (inherits(x, "evalAllGenotypes")) ||
+    ##            (inherits(x, "evalAllGenotypesMut"))) {
+    ##     if(any(grepl(">", x[, 1], fixed = TRUE)))
+    ##         stop("We cannot deal with order effects yet.")
+    ##     x <- x[, c(1, 2)]
+    ##     if(x[1, "Genotype"] != "WT") {
+    ##         ## Yes, because we expect this present below
+    ##         x <- rbind(data.frame(Genotype = "WT",
+    ##                               Fitness = 1,
+    ##                               stringsAsFactors = FALSE),
+    ##                    x)
+    ##     }
+    ##     afe <- x
+    ##     ## in case we pass an evalAllgenotypesfitandmut
+    ##     gfm <- allGenotypes_to_matrix(afe)
+    ## } else if(is.data.frame(x)) {
+    ##     ## Assume a two-column data frame of genotypes as character
+    ##     ## vectors and fitness
+    ##     if(colnames(x)[2] != "Fitness")
+    ##         stop("We cannot guess what you are passing here") 
+    ##     afe <- evalAllGenotypes(allFitnessEffects(genotFitness = x),
+    ##                             order = FALSE, addwt = TRUE,
+    ##                             max = max_num_genotypes)
+    ##     gfm <- allGenotypes_to_matrix(afe)
+    ## } else {
+    ##    stop("We cannot guess what you are passing here") 
+    ## }
    
 
     
@@ -155,8 +156,8 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     ##     }
     ## }
 
-    mutated <- rowSums(gfm[, -ncol(gfm)])
-    gaj <- genot_to_adj_mat(gfm)
+    mutated <- rowSums(tfm$gfm[, -ncol(tfm$gfm)])
+    gaj <- genot_to_adj_mat(tfm$gfm)
     vv <- which(!is.na(gaj), arr.ind = TRUE)
     
     ## plot(x = mutated, y = e1$Fitness, ylab = "Fitness",
@@ -172,13 +173,13 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                 
                 
     dd <- data.frame(muts = mutated,
-                     fitness = afe$Fitness,
-                     label = afe$Genotype)
+                     fitness = tfm$afe$Fitness,
+                     label = tfm$afe$Genotype)
     cl <- gaj[vv]
     sg <- data.frame(x_from = mutated[vv[, 1]],
-                     y_from = afe$Fitness[vv[, 1]],
+                     y_from = tfm$afe$Fitness[vv[, 1]],
                      x_to = mutated[vv[, 2]],
-                     y_to = afe$Fitness[vv[, 2]],
+                     y_to = tfm$afe$Fitness[vv[, 2]],
                      Change = factor(ifelse(cl == 0, "Neutral",
                                      ifelse(cl > 0, "Gain", "Loss"))))
     ## From http://stackoverflow.com/a/17257422
