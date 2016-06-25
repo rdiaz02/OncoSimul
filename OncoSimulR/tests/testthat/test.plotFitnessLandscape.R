@@ -1,6 +1,10 @@
 test_that("Exercise plotting", {
     r1 <- rfitness(4)
     expect_silent(plot(r1))
+    expect_silent(plot(r1, log = TRUE))
+    expect_silent(plot(r1, log = TRUE, use_ggrepel = TRUE))
+    expect_silent(plot(r1, log = TRUE, show_labels = FALSE))
+    
     
     ## Specify fitness in a matrix, and plot it
     m5 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
@@ -12,12 +16,24 @@ test_that("Exercise plotting", {
                             noIntGenes = c("e" = 0.1))
     
     expect_silent(plot(evalAllGenotypes(fe, order = FALSE)))
-    
+
     ## same as
     expect_silent(plotFitnessLandscape(evalAllGenotypes(fe, order = FALSE)))
-    
+    ## more ggrepel
+    expect_silent(plot(evalAllGenotypes(fe, order = FALSE), use_ggrepel = TRUE))
 })
 
+
+test_that("to_FitnessMatrix stops as it should", {
+    x1 <- data.frame(a = 1:2, b = 1:2)
+    expect_error(OncoSimulR:::to_Fitness_Matrix(x1),
+                 "We cannot guess what you are passing",
+                 fixed = TRUE)
+    x2 <- list(a = 12, b = 13)
+    expect_error(OncoSimulR:::to_Fitness_Matrix(x2),
+                 "We cannot guess what you are passing",
+                 fixed = TRUE)
+})
 
 
 test_that("internal peak valley functions", {

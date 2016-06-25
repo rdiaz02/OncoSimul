@@ -387,5 +387,22 @@ test_that("exercising sampling code, customSize", {
 
 
 
+test_that("exercising sampling code, customSize", {
+    cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                                child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                      s = 0.1,
+                                sh = -0.9,
+                      typeDep = "MN")
+    cbn1 <- allFitnessEffects(cs, drvNames = c("a", "b", "c", "d", "e", "g"))
+    o1 <- oncoSimulIndiv(cbn1, detectionSize = 1e8,
+                         onlyCancer = TRUE,
+                         detectionDrivers = 1,
+                         max.num.tries = 5000,
+                         sampleEvery = 0.03,
+                         keepEvery = 1000000)
+    expect_message(samplePop(o1, timeSample = "unif"),
+                   "Only one sampled time period with mutants", fixed = TRUE)
+})
+
 
 cat(paste("\n Ending samplePop tests", date(), "\n"))

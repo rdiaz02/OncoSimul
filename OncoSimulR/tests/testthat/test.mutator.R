@@ -210,6 +210,35 @@ test_that("eval mut genotypes", {
 
 
 
+test_that("eval mut genotypes, echo", {
+    fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                          "b : c" = 0.5),
+                            noIntGenes = c("e" = 0.1),
+                            drvNames = c(letters[1:3]))
+    fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                           "c" = 5))
+    expect_output(evalGenotypeMut("a, c", fm, echo = TRUE),
+                  "Mutation rate product", fixed = TRUE)
+}
+
+
+test_that("evaluating genotype and mutator, Bozic", {
+    fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+                                          "b : c" = 0.5),
+                            drvNames = letters[1:3])
+    fm <- allMutatorEffects(noIntGenes = c("a" = 10,
+                                           "c" = 5))
+    ou <- evalAllGenotypesFitAndMut(fe, fm, order = FALSE,
+                                    model = "Bozic")
+    expect_equivalent(ou[, 2],
+                      c(1, 1, 1, 1 - .3, 1, 1 -.5, (1 -.3) * (1 - .5))
+                      )
+    expect_equivalent(ou[, 3],
+                      c(10, 1, 5, 10, 10 * 5, 5, 10 * 5)
+                      )
+})
+
+
 test_that("mut and fitness both needed when needed", {
     fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
