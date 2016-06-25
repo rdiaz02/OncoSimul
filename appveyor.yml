@@ -79,12 +79,13 @@ before_build:
    
 ## Failing because gtable and scales not available, as seen in logs. 
 ## These are ggplot2 imports, so should work and did work. Oh well. 
-## Make explicit
+## Make explicit. But I shouldn't need any line after install_bioc_deps
 build_script:
   - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_r gtable
   - travis-tool.sh install_r scales
   - travis-tool.sh install_r chron
+  - travis-tool.sh install_bioc BiocGenerics BiocStyle 
 
 test_script:
   - travis-tool.sh run_tests
