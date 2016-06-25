@@ -14,6 +14,7 @@
 | Test coverage |                     | <a href="https://codecov.io/github/rdiaz02/OncoSimul?branch=master"><img src="https://codecov.io/github/rdiaz02/OncoSimul/coverage.svg?branch=master" alt="Coverage Status"/></a>   |                  |
 
 <!-- Based on https://raw.githubusercontent.com/Bioconductor-mirror/illuminaio/master/README.md -->
+-----
 
 OncoSimul
 =========
