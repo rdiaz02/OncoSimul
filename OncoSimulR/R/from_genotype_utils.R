@@ -224,10 +224,14 @@ allGenotypes_to_matrix <- function(x) {
 }
 
 
-
-magellan_stats <- function(x, max_num_genotypes = 2000,
+## Magellan_stats and Magellan_draw cannot be tested
+## routinely, as they depend on external software
+Magellan_stats <- function(x, max_num_genotypes = 2000,
                            verbose = FALSE,
-                           fl_statistics = "fl_statistics") {
+                           use_log = TRUE,
+                           short = TRUE,
+                           fl_statistics = "fl_statistics") { # nocov start
+    ## I always use 
     ## if(!is.null(x) && is.null(file))
     ##     stop("one of object or file name")
     ## if(is.null(file))
@@ -235,30 +239,77 @@ magellan_stats <- function(x, max_num_genotypes = 2000,
     fnret <- tempfile()
     if(verbose)
         cat("\n Using input file", fn, " and output file ", fnret, "\n")
+    
+    if(use_log) {
+        logarg <- "-l"
+    } else {
+        logarg <- NULL
+    }
+    if(short) {
+        shortarg <- "-s"
+    } else {
+        shortarg <- NULL
+    }
+    
     to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
-    call_M <- system(paste(fl_statistics, fn, "-s", "-o", fnret))
-    return(read.table(fnret, skip = 1, header = TRUE)[-1])
-}
+    call_M <- system2(fl_statistics, args = paste(fn, shortarg, logarg, "-o", fnret))
+    if(short) {
+        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
+        ## Make names more explicit, but check we have what we think we have
+        stopifnot(length(tmp) == 23)
+        stopifnot(identical(names(tmp),
+                            c("ngeno", "npeaks", "nsinks", "gamma", "gamma.", "r.s",
+                              "nchains", "nsteps", "nori", "depth", "magn", "sign",
+                              "rsign", "w.1.", "w.2.", "w.3..", "mode_w", "s.1.",
+                              "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
+        names(tmp) <- c("n_genotypes", "n_peaks", "n_sinks", "gamma", "gamma_star",
+                        "r/s","n_chains", "n_steps", "n_origins", "max_depth",
+                        "epist_magn", "epist_sign", "epist_rsign",
+                        "walsh_coef_1", "walsh_coef_2", "walsh_coef_3", "mode_walsh",
+                        "synerg_coef_1", "synerg_coef_2", "synerg_coef_3", "mode_synerg",
+                        "std_dev_pairs", "var_outdegree")
+    } else {
+        tmp <- readLines(fnret)
+    }
+    return(tmp)
+} # nocov end
+
+Magellan_draw <- function(x, max_num_genotypes = 2000,
+                          verbose = FALSE,
+                          args = "-f",
+                          fl_draw = "fl_draw",
+                          svg_open = "xdg-open",
+                          file_name = NULL) { # nocov start
+    ## It always works by appending the name so file_name is without the .svg
+    if(is.null(file_name)) {
+        fn <- tempfile()
+    } else {
+        fn <- file_name
+    }
+    fn_out <- paste0(fn, ".svg")
+    if(verbose)
+        cat("\n Using input file", fn, " and output file ", fn_out, "\n")
+       
+    to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
+    call_M <- system2(fl_draw, args = paste(fn, args), wait = FALSE)
+    call_view <- system2(svg_open, args = fn_out, wait = FALSE,
+                         stdout = ifelse(verbose, "", FALSE),
+                         stderr = ifelse(verbose, "", FALSE))
+    
+    invisible() 
+} # nocov end
 
 
-##
 
-## ## Example of Bozic issues
+## ## Example of Bozic issues in conversions of fitnes
 ## m1 <- cbind(c(0, 1), c(1, 0), c(2, 3))
-
 ## m2 <- cbind(c(1, 1), c(1, 0), c(2, 3))
-
 ## m3 <- data.frame(G = c("A, B", "A"), F = c(1, 2))
-
 ## m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4))
-
 ## m5 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 0))
-
 ## m6 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2.5, 2, 0))
-
-
 
 ## And no, it makes no sense to use any of this for mutator: in mutator I
 ## directly have the multiplication factor of each gene. Which is likely
-## what people want anyway. Add it later if needed. by using a ratio
+## what people want anyway. Add it later if needed by using a ratio
 ## instead of a "-"
