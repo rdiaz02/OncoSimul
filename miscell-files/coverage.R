@@ -13,6 +13,7 @@ setwd("../OncoSimulR")
 ## running all and not combining (or one of them) screws up
 ## navigating to the code
 cov4 <- package_coverage(type = "tests", quiet = FALSE)
+
 cov3 <- package_coverage(type = "all", combine_types = FALSE, quiet = FALSE)
 cov2 <- package_coverage(type = "all", combine_types = TRUE, quiet = FALSE)
 

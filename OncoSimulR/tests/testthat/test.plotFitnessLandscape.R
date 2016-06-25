@@ -26,13 +26,41 @@ test_that("Exercise plotting", {
 
 test_that("to_FitnessMatrix stops as it should", {
     x1 <- data.frame(a = 1:2, b = 1:2)
-    expect_error(OncoSimulR:::to_Fitness_Matrix(x1),
+    expect_error(OncoSimulR:::to_Fitness_Matrix(x1, 2000),
                  "We cannot guess what you are passing",
                  fixed = TRUE)
     x2 <- list(a = 12, b = 13)
-    expect_error(OncoSimulR:::to_Fitness_Matrix(x2),
+    expect_error(OncoSimulR:::to_Fitness_Matrix(x2, 2000),
                  "We cannot guess what you are passing",
                  fixed = TRUE)
+})
+
+
+
+test_that("to_FitnessMatrix can deal with df", {
+    m4 <- data.frame(G = c("A, B", "A", "WT", "B"),
+                     Fitness = c(3, 2, 1, 4))
+    expect_message(OncoSimulR:::to_Fitness_Matrix(m4, 2000),
+                   "Column names of object", fixed = TRUE)
+    m5 <- data.frame(G = c("A, B", "B"),
+                     Fitness = c(3, 2))
+    expect_message(OncoSimulR:::to_Fitness_Matrix(m5, 2000),
+                   "Column names of object", fixed = TRUE)
+    x1 <- data.frame(a = c("A, B"), Fitness = 2)
+    expect_message(OncoSimulR:::to_Fitness_Matrix(x1, 2000),
+                   "Column names of object", fixed = TRUE)
+    x2 <- data.frame(a = c("A, B", "B"), Fitness = c(2, 3))
+    expect_message(OncoSimulR:::to_Fitness_Matrix(x2, 2000),
+                   "Column names of object", fixed = TRUE)
+    x3 <- data.frame(a = c("A, B", "C"), Fitness = c(2, 3))
+    expect_message(OncoSimulR:::to_Fitness_Matrix(x3, 2000),
+                   "Column names of object", fixed = TRUE)
+    ## Now, the user code
+    expect_message(plotFitnessLandscape(x1))
+    expect_message(plotFitnessLandscape(x2))
+    expect_message(plotFitnessLandscape(x3))
+    expect_message(plotFitnessLandscape(m5))
+    expect_message(plotFitnessLandscape(m4))
 })
 
 
