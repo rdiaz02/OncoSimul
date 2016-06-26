@@ -645,7 +645,6 @@ test_that("exercising oncoSimulIndiv, new format, extra time", {
 
 
 test_that("exercising oncoSimulIndiv, hit max ram", {
-    
     p1 <- allFitnessEffects(noIntGenes = rep(.1, 10))
     expect_output(pSs <- oncoSimulIndiv(p1,
                                         initSize = 1e4,
@@ -662,7 +661,6 @@ test_that("exercising oncoSimulIndiv, hit max ram", {
 
 
 test_that("exercising oncoSimulIndiv, verbosity", {
-
     ii <- rep(.1, 20)
     names(ii) <- letters[1:20]
     p1 <- allFitnessEffects(noIntGenes = ii)
@@ -677,7 +675,6 @@ test_that("exercising oncoSimulIndiv, verbosity", {
                                         verbosity = 6,
                                         onlyCancer = FALSE),
                   "Looping through", fixed = TRUE)
-
     ## This is too much: can take a minute.
     ## ii <- rep(.01, 1000)
     ## names(ii) <- paste0("n", 1:1000)
@@ -693,7 +690,6 @@ test_that("exercising oncoSimulIndiv, verbosity", {
     ##                                     verbosity = 2,
     ##                                     onlyCancer = FALSE),
     ##               "Looping through", fixed = TRUE)
-    
 })
 
 
