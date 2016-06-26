@@ -5,7 +5,7 @@ language: r
 r: 
  - bioc-devel
  - devel
- - patched
+## - patched  ## not needed paranoia: this is what I use locally. And it does not find the r-patched file
  
 
 warnings_are_errors: true
