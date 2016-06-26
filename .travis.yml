@@ -2,7 +2,11 @@
 # https://github.com/travis-ci/travis-ci/issues/5775
 
 language: r
-r: bioc-devel
+r: 
+ - bioc-devel
+ - devel
+ - patched
+ 
 
 warnings_are_errors: true
 
