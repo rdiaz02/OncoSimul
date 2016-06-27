@@ -216,7 +216,7 @@ date()
 
 date()
 test_that("Observed vs expected, case II", {
-    max.tries <- 5
+    max.tries <- 6
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         cat("\n Observed vs expected, case II\n")
