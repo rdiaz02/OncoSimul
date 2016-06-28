@@ -1,4 +1,4 @@
-test_that("Exercise plotting", {
+test_that("Exercise plotting and dealing with different matrix input", {
     r1 <- rfitness(4)
     expect_silent(plot(r1))
     expect_silent(plot(r1, log = TRUE))
@@ -9,6 +9,19 @@ test_that("Exercise plotting", {
     ## Specify fitness in a matrix, and plot it
     m5 <- cbind(A = c(0, 1, 0, 1), B = c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
     expect_silent(plotFitnessLandscape(m5))
+
+    m6 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
+    expect_message(plotFitnessLandscape(m6),
+                   "Setting/resetting gene names because", fixed = TRUE)
+
+    m7 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
+    expect_message(plotFitnessLandscape(m7),
+                   "Setting/resetting gene names because", fixed = TRUE)
+
+    m8 <- cbind(A = c(0, 1, 0, 1), c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
+    expect_message(plotFitnessLandscape(m8),
+                   "Setting/resetting gene names because", fixed = TRUE)
+
     
     ## Specify fitness with allFitnessEffects, and plot it
     fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
@@ -33,17 +46,18 @@ test_that("to_FitnessMatrix stops as it should", {
     expect_error(OncoSimulR:::to_Fitness_Matrix(x2, 2000),
                  "We cannot guess what you are passing",
                  fixed = TRUE)
-    g <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1))
-    s1 <- c(1, 1.4, 1.2, 1.5)
-    expect_error(OncoSimulR:::to_Fitness_Matrix(cbind(g, s1), 2000),
-                 "Matrix x must have column names",
-                 fixed = TRUE)
-    expect_error(plotFitnessLandscape(cbind(g, s1)),
-                 "Matrix x must have column names",
-                 fixed = TRUE)
-    expect_error(plotFitnessLandscape(cbind(g, c(1, 2))),
-                 "Matrix x must have column names",
-                 fixed = TRUE)
+    ## This is done above
+    ## g <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1))
+    ## s1 <- c(1, 1.4, 1.2, 1.5)
+    ## expect_error(OncoSimulR:::to_Fitness_Matrix(cbind(g, s1), 2000),
+    ##              "Matrix x must have column names",
+    ##              fixed = TRUE)
+    ## expect_message(plotFitnessLandscape(cbind(g, s1)),
+    ##              "Matrix x must have column names",
+    ##              fixed = TRUE)
+    ## expect_message(plotFitnessLandscape(cbind(g, A = c(1, 2))),
+    ##              "Matrix x must have column names",
+    ##              fixed = TRUE)
 })
 
 

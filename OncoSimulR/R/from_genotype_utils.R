@@ -42,8 +42,8 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         ## Why this? We go back and forth twice. We need both things. We
         ## could construct the afe below by appropriately pasting the
         ## columns names
-        if( (is.null(colnames(x))) || any(grepl("^$", colnames(x))))
-           stop("Matrix x must have column names")
+        ## if( (is.null(colnames(x))) || any(grepl("^$", colnames(x))))
+        ##    stop("Matrix x must have column names")
         afe <- evalAllGenotypes(allFitnessEffects(
             epistasis = from_genotype_fitness(x)),
             order = FALSE, addwt = TRUE, max = max_num_genotypes)
@@ -164,7 +164,10 @@ genot_fitness_to_epistasis <- function(x) {
         f <- f/fwt
     }
     
-    if(is.null(colnames(x))) {
+    if(is.null(colnames(x)) || any(grepl("^$", colnames(x))) ) {
+        message("Setting/resetting gene names because one or more are missing.",
+                " If this is not what you want, pass a matrix",
+                " with all columns named.")
         if(ncol(x) <= 26)
             colnames(x) <- LETTERS[1:ncol(x)]
         else
