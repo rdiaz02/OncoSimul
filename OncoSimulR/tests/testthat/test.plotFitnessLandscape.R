@@ -35,10 +35,13 @@ test_that("to_FitnessMatrix stops as it should", {
                  fixed = TRUE)
     g <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1))
     s1 <- c(1, 1.4, 1.2, 1.5)
-    expect_error(OncoSimulR:::to_Fitness_Matrix(cbind(g, s1)),
+    expect_error(OncoSimulR:::to_Fitness_Matrix(cbind(g, s1), 2000),
                  "Matrix x must have column names",
                  fixed = TRUE)
     expect_error(plotFitnessLandscape(cbind(g, s1)),
+                 "Matrix x must have column names",
+                 fixed = TRUE)
+    expect_error(plotFitnessLandscape(cbind(g, c(1, 2))),
                  "Matrix x must have column names",
                  fixed = TRUE)
 })
