@@ -180,7 +180,7 @@ plot(r1)
 
 ## Specify fitness in a matrix, and plot it
 
-m5 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
+m5 <- cbind(A = c(0, 1, 0, 1), B = c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
 plotFitnessLandscape(m5)
 
 
