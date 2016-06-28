@@ -42,7 +42,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         ## Why this? We go back and forth twice. We need both things. We
         ## could construct the afe below by appropriately pasting the
         ## columns names
-        if(is.null(colnames(x))
+        if(is.null(colnames(x)))
            stop("Matrix x must have column names")
         afe <- evalAllGenotypes(allFitnessEffects(
             epistasis = from_genotype_fitness(x)),

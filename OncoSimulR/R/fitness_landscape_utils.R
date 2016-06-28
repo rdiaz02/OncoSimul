@@ -25,8 +25,6 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                                  ...) {
 
     ## FIXME future:
-    
-   
 
     ## - Allow passing order effects. Change "allGenotypes_to_matrix"
     ##   below? Probably not, as we cannot put order effects as a
@@ -181,7 +179,8 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                      x_to = mutated[vv[, 2]],
                      y_to = tfm$afe$Fitness[vv[, 2]],
                      Change = factor(ifelse(cl == 0, "Neutral",
-                                     ifelse(cl > 0, "Gain", "Loss"))))
+                                     ifelse(cl > 0, "Gain", "Loss")),
+                                     levels = c("Gain", "Loss", "Neutral")))
     ## From http://stackoverflow.com/a/17257422
     number_ticks <- function(n) {function(limits) pretty(limits, n)}
     
@@ -194,7 +193,11 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                            xend = x_to, yend = y_to,
                            colour = Change,
                            lty = Change)) + scale_color_manual("Change",
-                                                               values = col)
+                                                               values = col,
+                                                               drop = FALSE) +
+        scale_linetype_manual("Change", values = lty, drop = FALSE) +
+        scale_x_continuous(breaks = seq(0, max(mutated), 1))
+    
     if(log) {
         p <- p + scale_y_log10(breaks = number_ticks(5))
     } else {
