@@ -115,7 +115,7 @@ test_that("This should not crash", {
     fe1 <- allFitnessEffects(noIntGenes = ni1)
     no <- 1e5
     reps <- 10
-    bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE,
+    bb <- oncoSimulIndiv(fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                          initSize = no,
                          finalTime = 1,
                          seed = NULL
@@ -126,7 +126,7 @@ test_that("This should not crash", {
     expect_output(print(oncoSimulPop(4,
                                      fe1,
                                      mu = muvar2,
-                                     onlyCancer = FALSE,
+                                     onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                                      initSize = 1000,
                                      finalTime = 1,
                                      seed = NULL, mc.cores = 2)),
@@ -135,7 +135,7 @@ test_that("This should not crash", {
     expect_output(print(oncoSimulPop(4,
                                      fe,
                                      mu = moo,
-                                     onlyCancer = FALSE,
+                                     onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                                      initSize = 1000,
                                      finalTime = 1,
                                      seed = NULL, mc.cores = 2)),
@@ -461,25 +461,25 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                         mutationPropGrowth = TRUE,
                         initSize = no, model = "McFL",
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     mnpg <- oncoSimulPop(pops, fe, muEF = fm1,
                          finalTime = ft,
                          mutationPropGrowth = FALSE,
                          initSize = no, model = "McFL",
                          initMutant = "thisistheagene",
-                         onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     pg <- oncoSimulPop(pops, fe, 
                        finalTime = ft,
                        mutationPropGrowth = TRUE,
                        initSize = no, model = "McFL",
                        initMutant = "thisistheagene",
-                       onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     npg <- oncoSimulPop(pops, fe, 
                         finalTime = ft,
                         mutationPropGrowth = FALSE,
                         initSize = no, model = "McFL",
                         initMutant = "thisistheagene",
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     ##   ## I once saw a weird thing
     ## expect_true(var(summary(mpg)$NumClones) > 1e-4)
     ## expect_true(var(summary(mnpg)$NumClones) > 1e-4)
@@ -565,7 +565,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                            mutationPropGrowth = FALSE,
                            initSize = no,
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1, no, pops)
     snom("oreoisasabgene", m1.pg1.b)
@@ -625,7 +625,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
                            initSize = no,
                            model = "McFL",
                            initMutant ="oreoisasabgene",
-                           onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     expect_true(sm("oreoisasabgene", m1.pg1.b) == totalind(m1.pg1.b))
     enom("oreoisasabgene", pg1, no, pops)
     snom("oreoisasabgene", m1.pg1.b)
@@ -687,7 +687,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     pop100 <- oncoSimulPop(pops,
                         fe,
                         mu = muvector,
@@ -697,7 +697,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     ## number of total mutations
     T1 <- (smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
@@ -748,7 +748,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     pop100 <- oncoSimulPop(pops,
                         fe,
                         mu = muvector,
@@ -758,7 +758,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = names(mutator10),
-                        onlyCancer = FALSE, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
     ## number of total mutations
     expect_true(smAnomPi(pop10, names(mutator10)) < smAnomPi(pop100, names(mutator100)))
     ## number of clones
@@ -815,7 +815,7 @@ test_that(" MCFL Init with different mutators", {
                            model = "McFL",
                            initMutant = "hereisoneagene",
                            sampleEvery = 0.01, keepEvery = 5, seed = NULL,
-                           onlyCancer = FALSE, mc.cores = 2)
+                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2)
     m1.pg1.b <- oncoSimulPop(pops,
                              fe,
                              mu = pg1,
@@ -826,7 +826,7 @@ test_that(" MCFL Init with different mutators", {
                              model = "McFL",                             
                              initMutant = "oreoisasabgene",
                              sampleEvery = 0.01, keepEvery = 5, seed = NULL,
-                             onlyCancer = FALSE, mc.cores = 2)
+                             onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2)
     m1.pg1.c <- oncoSimulPop(pops,
                            fe,
                            mu = pg1,
@@ -837,7 +837,7 @@ test_that(" MCFL Init with different mutators", {
                            model = "McFL",                           
                            initMutant = "nnhsisthecgene",
                            sampleEvery = 0.01, keepEvery = 5, seed = NULL,
-                           onlyCancer = FALSE, mc.cores = 2)
+                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2)
     T1  <- (wilcox.test(NClones(m1.pg1.a),  NClones(m1.pg1.b), alternative = "greater")$p.value < p.value.threshold)
     T2  <- (wilcox.test(NClones(m1.pg1.b),  NClones(m1.pg1.c), alternative = "greater")$p.value < p.value.threshold)
     T3  <- (t.test(mutsPerClone(m1.pg1.a), mutsPerClone(m1.pg1.b), alternative = "greater")$p.value < p.value.threshold)
@@ -908,7 +908,7 @@ test_that("Mutator, several modules differences", {
                        f1,
                        mu = mu,
                        muEF = mut1,
-                       onlyCancer = FALSE,
+                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                        initSize = no,
                        finalTime = ft,
                        seed = NULL, mc.cores = 2
@@ -918,7 +918,7 @@ test_that("Mutator, several modules differences", {
                        f1,
                        mu = mu,
                        muEF = mut2,
-                       onlyCancer = FALSE,
+                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                        initSize = no,
                        finalTime = ft,
                        seed = NULL, mc.cores = 2
@@ -973,7 +973,7 @@ test_that("Mutator and mutPropGrowth, mcfl", {
                           mu = mu,
                           muEF = mut1,
                           mutationPropGrowth = TRUE,
-                          onlyCancer = FALSE,
+                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                           initSize = no,
                           finalTime = ft,
                           detectionSize = ds,
@@ -987,7 +987,7 @@ test_that("Mutator and mutPropGrowth, mcfl", {
                           mu = mu,
                           muEF = mut1,
                           mutationPropGrowth = FALSE,
-                          onlyCancer = FALSE,
+                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                           initSize = no,
                           finalTime = ft,
                           detectionSize = ds,
@@ -1001,7 +1001,7 @@ test_that("Mutator and mutPropGrowth, mcfl", {
                           mu = mu,
                           muEF = mut50,
                           mutationPropGrowth = TRUE,
-                          onlyCancer = FALSE,
+                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                           initSize = no,
                           finalTime = ft,
                           detectionSize = ds,
@@ -1015,7 +1015,7 @@ test_that("Mutator and mutPropGrowth, mcfl", {
                           mu = mu,
                           muEF = mut50,
                           mutationPropGrowth = FALSE,
-                          onlyCancer = FALSE,
+                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                           initSize = no,
                           finalTime = ft,
                           detectionSize = ds,

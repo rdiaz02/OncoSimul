@@ -31,7 +31,7 @@ for(i in 1:length(examplesFitnessEffects)) {
                            sampleEvery = sE,
                            max.num.tries = 100,
                            initSize = 2000,
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
     expect_true(inherits(tmp, "oncosimul2"))
 }
 
@@ -53,7 +53,7 @@ for(i in 1:length(examplesFitnessEffects)) {
                            sampleEvery = sE,
                            max.num.tries = 100,
                            initSize = 2000,
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
     expect_true(inherits(tmp, "oncosimul2"))
 }
 
@@ -68,7 +68,7 @@ for(i in 1:length(examplesFitnessEffects)) {
                            max.num.tries = 10,
                            initSize = 2000,
                            finalTime = 15000,
-                           onlyCancer = FALSE)
+                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
     expect_true(inherits(tmp, "oncosimul2"))
 }
 
@@ -85,7 +85,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- .05
     }
     tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
-                            onlyCancer = FALSE,
+                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                             sampleEvery = sE)
     expect_true(inherits(tmp, "list"))
 }
@@ -103,7 +103,7 @@ for(i in 1:length(examplesFitnessEffects)) {
         sE <- .05
     }
     tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
-                         onlyCancer = FALSE,
+                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
                          detectionDrivers = detectionDrv,
                          sampleEvery = sE,
                          mc.cores = 2)
