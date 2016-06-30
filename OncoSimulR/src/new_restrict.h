@@ -241,5 +241,13 @@ double mutationFromScratch(const std::vector<double>& mu,
 
 double prodMuts(const std::vector<double>& s);
 
+
+double set_cPDetect(const double n2, const double p2,
+		    const double PDBaseline);
+
+bool detectedSizeP(const double n, const double cPDetect,
+		   const double PDBaseline, std::mt19937& ran_gen);
+
+
 #endif
 

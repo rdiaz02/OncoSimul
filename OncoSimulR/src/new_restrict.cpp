@@ -61,6 +61,48 @@ double prodMuts(const std::vector<double>& s) {
 		    std::multiplies<double>());
 }
 
+double set_cPDetect(const double n2, const double p2,
+		    const double PDBaseline) {
+  return (-log(1.0 - p2)/(n2 - PDBaseline));
+}
+
+// Next two are identical, except for scaling the k. Use the simplest.
+double probDetectSize(const double n, const double cPDetect,
+		      const double PDBaseline) {
+  if(n <= PDBaseline) {
+    return 0;
+  } else {
+    return (1 - exp( -cPDetect * (n - PDBaseline)));
+  }
+}
+
+// double prob_exit_ratio(const double n, const double k, const double baseline) {
+//   if(n <= baseline) {
+//     return 0;
+//   } else {
+//     return (1 - exp( -c * ( (n - baseline)/baseline)));
+//   }
+// }
+
+
+bool detectedSizeP(const double n, const double cPDetect,
+			const double PDBaseline, std::mt19937& ran_gen) {
+  if(cPDetect < 1) {
+    return true;
+  } else {
+    std::uniform_real_distribution<double> runif(0.0, 1.0);
+    double prob = probDetectSize(n, cPDetect, PDBaseline);
+    if(runif(ran_gen) <= prob) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+
+
+
 
 bool operator==(const Genotype& lhs, const Genotype& rhs) {
   return (lhs.orderEff == rhs.orderEff) &&
