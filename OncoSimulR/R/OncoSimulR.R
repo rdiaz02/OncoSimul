@@ -40,6 +40,14 @@ oncoSimulSample <- function(Nindiv,
                                 sample(nd, Nindiv,
                                        replace = TRUE)
                             },
+                            PDBaseline = initSize * 1.1,
+                           ## p2 is coming from solving that
+                           ## at n2, after 10 unit times we want it
+                           ## to have a prob. of not being detected of 1e-7
+                           ## so (1 - p2)^(10/sampleEvery) = 1e-7
+                           p2 = 1 - (1e-7)^(sampleEvery/10),
+                           n2 = initSize * 2,
+                           cPDetect = NULL,
                             sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                 0.025),
                             initSize = 500,
@@ -188,7 +196,11 @@ oncoSimulSample <- function(Nindiv,
                                seed = seed,
                                initMutant = initMutant,
                                keepPhylog = keepPhylog,
-                               mutationPropGrowth = mutationPropGrowth)
+                               mutationPropGrowth = mutationPropGrowth,
+                               PDBaseline = PDBaseline,
+                               p2 = p2,
+                               n2 = n2,
+                               cPDetect = cPDetect)
         
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
@@ -313,6 +325,14 @@ oncoSimulPop <- function(Nindiv,
                          muEF = NULL,
                          detectionSize = 1e8,
                          detectionDrivers = 4,
+                         PDBaseline = initSize * 1.1,
+                         ## p2 is coming from solving that
+                         ## at n2, after 10 unit times we want it
+                         ## to have a prob. of not being detected of 1e-7
+                         ## so (1 - p2)^(10/sampleEvery) = 1e-7
+                         p2 = 1 - (1e-7)^(sampleEvery/10),
+                         n2 = initSize * 2,
+                         cPDetect = NULL,
                          sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                              0.025),
                          initSize = 500,
@@ -376,7 +396,11 @@ oncoSimulPop <- function(Nindiv,
                         verbosity = verbosity,
                         seed = seed, keepPhylog = keepPhylog,
                         initMutant = initMutant,
-                        mutationPropGrowth = mutationPropGrowth
+                        mutationPropGrowth = mutationPropGrowth,
+                        PDBaseline = PDBaseline,
+                        p2 = p2,
+                        n2 = n2,
+                        cPDetect = cPDetect,
                     ),
                     mc.cores = mc.cores
                     )
@@ -395,6 +419,14 @@ oncoSimulIndiv <- function(fp,
                            muEF = NULL,
                            detectionSize = 1e8,
                            detectionDrivers = 4,
+                           PDBaseline = initSize * 1.1,
+                           ## p2 is coming from solving that
+                           ## at n2, after 10 unit times we want it
+                           ## to have a prob. of not being detected of 1e-7
+                           ## so (1 - p2)^(10/sampleEvery) = 1e-7
+                           p2 = 1 - (1e-7)^(sampleEvery/10),
+                           n2 = initSize * 2,
+                           cPDetect = NULL,
                            sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                0.025),
                            initSize = 500,
@@ -483,7 +515,10 @@ oncoSimulIndiv <- function(fp,
     if( (typeFitness == "exp") && (death != 1) )
         warning("Using fitness exp with death != 1")
 
-    
+    ## No user-visible magic numbers
+    if(is.null(keepEvery))
+        keepEvery <- -9
+
     if(!inherits(fp, "fitnessEffects")) {
         if(any(unlist(lapply(list(fp, 
                                   numPassengers,
@@ -600,7 +635,11 @@ oncoSimulIndiv <- function(fp,
                                         errorHitWallTime = errorHitWallTime,
                                         errorHitMaxTries = errorHitMaxTries,
                                         keepPhylog = keepPhylog,
-                                        MMUEF = muEF),
+                                        MMUEF = muEF,
+                                        cPDetect = cPDetect,
+                                        n2 = n2,
+                                        p2 = p2,
+                                        PDBaseline = PDBaseline),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }
@@ -1618,6 +1657,7 @@ oncoSimul.internal <- function(poset, ## restrict.table,
     ## transpose the table
     rtC <- convertRestrictTable(restrict.table)
 
+    
     return(c(
         BNB_Algo5(restrictTable = rtC,
         numDrivers = numDrivers,

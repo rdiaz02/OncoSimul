@@ -1431,6 +1431,10 @@ nr_oncoSimul.internal <- function(rFE,
                                   minDetectDrvCloneSz,
                                   extraTime,
                                   keepPhylog,
+                                  n2,
+                                  p2,
+                                  PDBaseline,
+                                  cPDetect,
                                   MMUEF = NULL ## avoid partial matching, and set default
                                   ) {
     if(!inherits(rFE, "fitnessEffects"))
@@ -1557,6 +1561,20 @@ nr_oncoSimul.internal <- function(rFE,
         full2mutator_ <- vector(mode = "numeric", length = 0)
         ## muEF <- emptyFitnessEffects()
     }
+
+    if( !is.null(cPDetect) && (sum(!is.null(p2), !is.null(n2)) >= 1 ))
+        stop("Specify only cPDetect xor both of p2 and n2")
+    if( (is.null(p2) + is.null(n2)) == 1 )
+        stop("If you pass one of n2 or p2, you must also pass the other. ",
+             "Otherwise, we would not know what to do.")
+    stopifnot(PDBaseline >= 0)
+    stopifnot(n2 > PDBaseline)
+    stopifnot(p2 < 1)
+    stopifnot(p2 > 0)
+    if( is.null(cPDetect) ) cPDetect <- -9
+    if( is.null(p2)) p2 <- 9
+    if( is.null(n2)) n2 <- -9
+
     ## call <- match.call()
     return(c(
         nr_BNB_Algo5(rFE = rFE,
@@ -1589,7 +1607,11 @@ nr_oncoSimul.internal <- function(rFE,
                  extraTime = extraTime,
                  keepPhylog = keepPhylog,
                  MMUEF = MMUEF,
-                 full2mutator_ = full2mutator_),
+                 full2mutator_ = full2mutator_,
+                 n2 = n2),
+                 ## p2 = p2,
+                 ## PDBaseline = PDBaseline,
+                 ## cPDetect = cPDetect),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
@@ -1748,3 +1770,15 @@ matchGeneIDs <- function(x, refFE) {
 ## t1 <- data.frame(v1 = c("a,b", "a,c", "b"), v2 = c("b", "c", "b"), v3 = 1:3, stringsAsFactors = FALSE)
 ## t2 <- data.frame(v2 = c("b", "c"), v4 = c(11, 12), stringsAsFactors = FALSE)
 ## full_join(t1, t2, by = "v2")
+
+
+## FIXME
+
+## new exit code
+## check:
+## baseline < n2
+## p2 < 1
+
+## baseline defaults to init size + .1
+## use c < -9, n2 < -9, p2 < -9 for no values
+## and check one of c or p2 and n2 are valid if using exit

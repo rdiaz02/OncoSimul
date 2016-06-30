@@ -1623,7 +1623,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double extraTime,
 			bool keepPhylog,
 			Rcpp::List MMUEF,
-			Rcpp::IntegerVector full2mutator_) {
+			Rcpp::IntegerVector full2mutator_,
+			double n2) {
+  // double n2) {
   // double cPDetect){
   // double n2,
   // double p2,
@@ -1663,10 +1665,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   }
   std::mt19937 ran_gen(rseed);
 
-  double n2 = 1500; double p2 = .8; double PDBaseline = 1000.0;
+  double p2 = .8; double PDBaseline = 1000.0;
   double cPDetect = 0.3;
-  if( (n2 > 0) && (p2 > 0) )
-    double cPDetect = set_cPDetect(n2, p2, PDBaseline);
+  
+  // if( (n2 > 0) && (p2 > 0) )
+  //   cPDetect = set_cPDetect(n2, p2, PDBaseline);
   
   if( (K < 1 ) && ( typeModel ==   TypeModel::mcfarlandlog) )
     throw std::range_error("K < 1.");
