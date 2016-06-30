@@ -1,5 +1,8 @@
+Changes in version 2.3.7 (2016-06-29):
+	- End simulations stochastically as a function of size.
+
 Changes in version 2.3.6 (2016-06-25):
-	- improved test coverage
+	- Improved test coverage
 	
 Changes in version 2.3.5 (2016-06-25):
 	- to_Magellan.
