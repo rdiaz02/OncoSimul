@@ -4721,6 +4721,7 @@ oi <- allFitnessEffects(orderEffects =
                                 "D" = "d1, d2") )
 oiI1 <- oncoSimulIndiv(oi, model = "Exp")
 oiP1 <- oncoSimulPop(4, oi,
+                     n2 = NULL, p2 = NULL, cPDetect = NULL,
                      keepEvery = 10,
                      mc.cores = 2,
                      keepPhylog = TRUE)
