@@ -26,14 +26,42 @@ test_that("some runs", {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
+
     s1 <- oncoSimulIndiv(oi,
                          model = "McFL",
                          initSize = 1000,
+                         detectionSize = 1800,
+                         n2 = NULL, p2 = NULL, cPDetect = NULL,
                          keepEvery = 5,
                          onlyCancer = TRUE,
-                         detectionSize = 1.1e3,
                          detectionDrivers = 99)
+    s1
 
+    s2 <- oncoSimulIndiv(oi,
+                         model = "McFL",
+                         initSize = 1000,
+                         detectionSize = 4800,
+                         keepEvery = 5,
+                         verbosity = 1,
+                         p2 = .1,
+                         checkSizePEvery = 10,
+                         PDBaseline = 1100,
+                         onlyCancer = TRUE,
+                         detectionDrivers = 99)
+    s2
+
+
+    s3 <- oncoSimulIndiv(oi,
+                         model = "McFL",
+                         initSize = 1000,
+                         detectionSize = 2200,
+                         keepEvery = 5,
+                         verbosity = 1,
+                         cPDetect = 1e-7, n2 = NULL, p2 = NULL,
+                         PDBaseline = 1100,
+                         onlyCancer = TRUE,
+                         detectionDrivers = 99)
+    s3
     
 
     expect_output(print(oncoSimulIndiv(oi, initSize = 1,

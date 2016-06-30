@@ -49,7 +49,8 @@ oncoSimulSample <- function(Nindiv,
                            n2 = initSize * 2,
                            cPDetect = NULL,
                             sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
-                                0.025),
+                                                 0.025),
+                           checkSizePEvery = 10,
                             initSize = 500,
                             s = 0.1,
                             sh = -1,
@@ -200,7 +201,8 @@ oncoSimulSample <- function(Nindiv,
                                PDBaseline = PDBaseline,
                                p2 = p2,
                                n2 = n2,
-                               cPDetect = cPDetect)
+                               cPDetect = cPDetect,
+                               checkSizePEvery = checkSizePEvery)
         
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
@@ -334,7 +336,8 @@ oncoSimulPop <- function(Nindiv,
                          n2 = initSize * 2,
                          cPDetect = NULL,
                          sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
-                             0.025),
+                                              0.025),
+                         checkSizePEvery = 10,
                          initSize = 500,
                          s = 0.1,
                          sh = -1,
@@ -401,7 +404,7 @@ oncoSimulPop <- function(Nindiv,
                         p2 = p2,
                         n2 = n2,
                         cPDetect = cPDetect,
-                    ),
+                        checkSizePEvery = checkSizePEvery),
                     mc.cores = mc.cores
                     )
     class(pop) <- "oncosimulpop"
@@ -428,7 +431,8 @@ oncoSimulIndiv <- function(fp,
                            n2 = initSize * 2,
                            cPDetect = NULL,
                            sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
-                               0.025),
+                                                0.025),
+                           checkSizePEvery = 10,
                            initSize = 500,
                            s = 0.1,
                            sh = -1,
@@ -639,7 +643,8 @@ oncoSimulIndiv <- function(fp,
                                         cPDetect = cPDetect,
                                         n2 = n2,
                                         p2 = p2,
-                                        PDBaseline = PDBaseline),
+                                        PDBaseline = PDBaseline,
+                                        checkSizePEvery = checkSizePEvery),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }

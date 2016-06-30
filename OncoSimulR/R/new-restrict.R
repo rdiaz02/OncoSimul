@@ -1435,6 +1435,7 @@ nr_oncoSimul.internal <- function(rFE,
                                   p2,
                                   PDBaseline,
                                   cPDetect,
+                                  checkSizePEvery,
                                   MMUEF = NULL ## avoid partial matching, and set default
                                   ) {
     if(!inherits(rFE, "fitnessEffects"))
@@ -1611,7 +1612,8 @@ nr_oncoSimul.internal <- function(rFE,
                  n2 = n2,
                  p2 = p2,
                  PDBaseline = PDBaseline,
-                 cPDetect_i= cPDetect),
+                 cPDetect_i= cPDetect,
+                 checkSizePEvery = checkSizePEvery),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))

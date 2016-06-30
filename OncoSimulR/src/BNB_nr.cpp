@@ -196,35 +196,37 @@ inline void driverCounts(int& maxNumDrivers,
 
 
 void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
-					    double& totPopSize, 
-					    double& lastStoredSample,
-					    std::vector<Genotype>& genot_out,
-					    //std::vector<unsigned long long>& sp_id_out,
-					    std::vector<double>& popSizes_out,
-					    std::vector<int>& index_out,
-					    std::vector<double>& time_out,
-					    std::vector<double>& sampleTotPopSize,
-					    std::vector<double>& sampleLargestPopSize,
-					    std::vector<int>& sampleMaxNDr,
-					    std::vector<int>& sampleNDrLargestPop,
-					    bool& simulsDone,
-					    bool& reachDetection,
-					    int& lastMaxDr,
-					    double& done_at,
-					    const std::vector<Genotype>& Genotypes,
-					    const std::vector<spParamsP>& popParams, 
-					    const double& currentTime,
-					    const double& keepEvery,
-					    const double& detectionSize,
-					    const double& finalTime,
-					    // const double& endTimeEvery,
-					    const int& detectionDrivers,
-					    const int& verbosity,
-					    const double& minDetectDrvCloneSz,
-					    const double& extraTime,
+					double& totPopSize, 
+					double& lastStoredSample,
+					std::vector<Genotype>& genot_out,
+					//std::vector<unsigned long long>& sp_id_out,
+					std::vector<double>& popSizes_out,
+					std::vector<int>& index_out,
+					std::vector<double>& time_out,
+					std::vector<double>& sampleTotPopSize,
+					std::vector<double>& sampleLargestPopSize,
+					std::vector<int>& sampleMaxNDr,
+					std::vector<int>& sampleNDrLargestPop,
+					bool& simulsDone,
+					bool& reachDetection,
+					int& lastMaxDr,
+					double& done_at,
+					const std::vector<Genotype>& Genotypes,
+					const std::vector<spParamsP>& popParams, 
+					const double& currentTime,
+					const double& keepEvery,
+					const double& detectionSize,
+					const double& finalTime,
+					// const double& endTimeEvery,
+					const int& detectionDrivers,
+					const int& verbosity,
+					const double& minDetectDrvCloneSz,
+					const double& extraTime,
 					const vector<int>& drv,
 					const double& cPDetect,
 					const double& PDBaseline,
+					const double& checkSizePEvery,
+					double& nextCheckSizeP,
 					std::mt19937& ran_gen,
 					const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
@@ -236,6 +238,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   // static int lastMaxDr = 0; // preserves value across calls to Algo5 from R.
   // so can not use it.
   bool storeThis = false;
+  bool checkSizePNow = false;
   totPopSize = 0.0;
   
   // this could all be part of popSize_over_m_dr, with a better name
@@ -269,13 +272,22 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   // 	    (popSizeOverDDr >= minDetectDrvCloneSz)
 
   // Now add the prob. of exiting.
+
+  // Doing this is cheaper than drawing unnecessary runifs.
+  if(currentTime >= nextCheckSizeP) {
+    checkSizePNow = true;
+    nextCheckSizeP = currentTime + checkSizePEvery;
+  } else {
+    checkSizePNow = false;
+  }
   
   if(extraTime > 0) {
     if(done_at <  0) {
       if( (totPopSize >= detectionSize) ||
 	  ( (lastMaxDr >= detectionDrivers) &&
 	    (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
-	  detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen)) {
+	  ( checkSizePNow &&
+	    detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen))) {
 	done_at = currentTime + extraTime;
       }
     } else if (currentTime >= done_at) {
@@ -285,7 +297,8 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   } else if( (totPopSize >= detectionSize) ||
 	     ( (lastMaxDr >= detectionDrivers) &&
 	       (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
-	  detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
+	     ( checkSizePNow &&
+	       detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen)) ) {
     simulsDone = true;
     reachDetection = true; 
   }
@@ -670,21 +683,21 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const double& K,
 			// const double& alpha,
 			// const double& genTime,
-		     const TypeModel typeModel,
-		     const int& mutationPropGrowth,
+			const TypeModel typeModel,
+			const int& mutationPropGrowth,
 			const std::vector<double>& mu,
 			// const double& mu,
-		     const double& death,
-		     const double& keepEvery,
-		     const double& sampleEvery,		     
+			const double& death,
+			const double& keepEvery,
+			const double& sampleEvery,		     
 			const std::vector<int>& initMutant,
-		     const time_t& start_time,
-		     const double& maxWallTime,
-		     const double& finalTime,
-		     const double& detectionSize,
-		     const int& detectionDrivers,
-		     const double& minDetectDrvCloneSz,
-		     const double& extraTime,
+			const time_t& start_time,
+			const double& maxWallTime,
+			const double& finalTime,
+			const double& detectionSize,
+			const int& detectionDrivers,
+			const double& minDetectDrvCloneSz,
+			const double& extraTime,
 			const int& verbosity,
 			double& totPopSize,
 			double& e1,
@@ -715,11 +728,10 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const fitnessEffectsAll& muEF,
 			const std::vector<int>& full2mutator,
 			const double& cPDetect,
-			const double& PDBaseline) {
-		     //bool& anyForceRerunIssues
-  //  if(numRuns > 0) {
-
- 
+			const double& PDBaseline,
+			const double& checkSizePEvery) {
+  
+  double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
 
   double mymindummy = 1.0e-11; //1e-10
@@ -1519,30 +1531,32 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       numSpecies = popParams.size();
       
       nr_totPopSize_and_fill_out_crude_P(outNS_i, totPopSize, 
-				      lastStoredSample,
-				      genot_out, 
-				      //sp_id_out,
-				      popSizes_out, index_out,
-				      time_out, 
-				      sampleTotPopSize,sampleLargestPopSize,
-				      sampleMaxNDr, sampleNDrLargestPop,
-				      simulsDone,
-				      reachDetection,
-				      lastMaxDr,
-				      done_at,
-				      Genotypes, popParams, 
-				      currentTime,
-				      keepEvery,
-				      detectionSize,
-				      finalTime,
-				      //endTimeEvery,
-				      detectionDrivers,
-				      verbosity,
+					 lastStoredSample,
+					 genot_out, 
+					 //sp_id_out,
+					 popSizes_out, index_out,
+					 time_out, 
+					 sampleTotPopSize,sampleLargestPopSize,
+					 sampleMaxNDr, sampleNDrLargestPop,
+					 simulsDone,
+					 reachDetection,
+					 lastMaxDr,
+					 done_at,
+					 Genotypes, popParams, 
+					 currentTime,
+					 keepEvery,
+					 detectionSize,
+					 finalTime,
+					 //endTimeEvery,
+					 detectionDrivers,
+					 verbosity,
 					 minDetectDrvCloneSz,
 					 extraTime,
 					 fitnessEffects.drv,
 					 cPDetect,
 					 PDBaseline,
+					 checkSizePEvery,
+					 nextCheckSizeP,
 					 ran_gen); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
@@ -1627,7 +1641,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double n2,
 			double p2,
 			double PDBaseline,
-			double cPDetect_i) {
+			double cPDetect_i,
+			double checkSizePEvery) {
   // double cPDetect){
   // double n2,
   // double p2,
@@ -1668,8 +1683,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   std::mt19937 ran_gen(rseed);
 
   double cPDetect = cPDetect_i;
-  if( (n2 > 0) && (p2 > 0) )
+  if( (n2 > 0) && (p2 > 0) ) {
     cPDetect = set_cPDetect(n2, p2, PDBaseline);
+    if(verbosity >= 1)
+      Rcpp::Rcout << "  cPDetect set at " << cPDetect;
+  }
   
   if( (K < 1 ) && ( typeModel ==   TypeModel::mcfarlandlog) )
     throw std::range_error("K < 1.");
@@ -1846,7 +1864,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  muEF,
 		  full2mutator,
 		  cPDetect,
-		  PDBaseline);
+		  PDBaseline,
+		  checkSizePEvery);
       ++numRuns;
       forceRerun = false;
     } catch (rerunExcept &e) {
