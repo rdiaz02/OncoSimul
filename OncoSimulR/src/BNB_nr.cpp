@@ -222,8 +222,11 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					    const int& verbosity,
 					    const double& minDetectDrvCloneSz,
 					    const double& extraTime,
-					       const vector<int>& drv,
-					    const double& fatalPopSize = 1e15) {
+					const vector<int>& drv,
+					const double& cPDetect,
+					const double& PDBaseline,
+					std::mt19937& ran_gen,
+					const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
   
@@ -259,11 +262,20 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     simulsDone = true;
   }
 
+  // FIXME
+  // this is the usual exit condition
+  // (totPopSize >= detectionSize) ||
+  // 	  ( (lastMaxDr >= detectionDrivers) &&
+  // 	    (popSizeOverDDr >= minDetectDrvCloneSz)
+
+  // Now add the prob. of exiting.
+  
   if(extraTime > 0) {
     if(done_at <  0) {
       if( (totPopSize >= detectionSize) ||
 	  ( (lastMaxDr >= detectionDrivers) &&
-	    (popSizeOverDDr >= minDetectDrvCloneSz) ) ) {
+	    (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
+	  detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen)) {
 	done_at = currentTime + extraTime;
       }
     } else if (currentTime >= done_at) {
@@ -272,7 +284,8 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
       }
   } else if( (totPopSize >= detectionSize) ||
 	     ( (lastMaxDr >= detectionDrivers) &&
-	       (popSizeOverDDr >= minDetectDrvCloneSz) ) ) {
+	       (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
+	  detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
     simulsDone = true;
     reachDetection = true; 
   }
@@ -700,7 +713,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			PhylogName& phylog,
 			bool keepPhylog,
 			const fitnessEffectsAll& muEF,
-			const std::vector<int>& full2mutator) {
+			const std::vector<int>& full2mutator,
+			const double& cPDetect,
+			const double& PDBaseline) {
 		     //bool& anyForceRerunIssues
   //  if(numRuns > 0) {
 
@@ -1018,10 +1033,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   }
 
 
-  // // FIXME debug
-  //     Rcpp::Rcout << " popSize[0]  at 2 ";
-  //     print_spP(popParams[0]);
-  //     // end debug
   
 
   
@@ -1038,12 +1049,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
-  // // FIXME debug
-  //     Rcpp::Rcout << " popSize[0]  at 3 ";
-  //     print_spP(popParams[0]);
-  //     // end debug
   
-
   // X1: end of mess of initialization block
 
   popParams[0].pv = mapTimes.insert(std::make_pair(-999, 0));
@@ -1077,11 +1083,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 #endif
 
 
-  // // FIXME debug
-  //     Rcpp::Rcout << " popSize[0]  at 4 ";
-  //     print_spP(popParams[0]);
-  //     // end debug
-  
+
 
   
   while(!simulsDone) {
@@ -1124,11 +1126,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 #endif
 
     if(iter == 1) { // handle special case of first iter
-      // // FIXME debug
-      // Rcpp::Rcout << " popSize[0] ";
-      // print_spP(popParams[0]);
-      // // end debug
-      tmpdouble1 = ti_nextTime_tmax_2_st(popParams[0],
+    tmpdouble1 = ti_nextTime_tmax_2_st(popParams[0],
 					 currentTime,
 					 tSample, 
 					 ti_dbl_min, ti_e3);
@@ -1542,7 +1540,10 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 				      verbosity,
 					 minDetectDrvCloneSz,
 					 extraTime,
-					 fitnessEffects.drv); //keepEvery is for thinning
+					 fitnessEffects.drv,
+					 cPDetect,
+					 PDBaseline,
+					 ran_gen); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -1622,7 +1623,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double extraTime,
 			bool keepPhylog,
 			Rcpp::List MMUEF,
-			Rcpp::IntegerVector full2mutator_) {  
+			Rcpp::IntegerVector full2mutator_) {
+  // double cPDetect){
+  // double n2,
+  // double p2,
+  // double PDBaseline) {
+
+  
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
@@ -1656,7 +1663,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   }
   std::mt19937 ran_gen(rseed);
 
-  
+  double n2 = 1500; double p2 = .8; double PDBaseline = 1000.0;
+  double cPDetect = 0.3;
+  if( (n2 > 0) && (p2 > 0) )
+    double cPDetect = set_cPDetect(n2, p2, PDBaseline);
   
   if( (K < 1 ) && ( typeModel ==   TypeModel::mcfarlandlog) )
     throw std::range_error("K < 1.");
@@ -1831,7 +1841,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  phylog,
 		  keepPhylog,
 		  muEF,
-		  full2mutator);
+		  full2mutator,
+		  cPDetect,
+		  PDBaseline);
       ++numRuns;
       forceRerun = false;
     } catch (rerunExcept &e) {
