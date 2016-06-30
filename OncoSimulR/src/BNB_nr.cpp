@@ -1687,7 +1687,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   if( (n2 > 0) && (p2 > 0) ) {
     cPDetect = set_cPDetect(n2, p2, PDBaseline);
     if(verbosity >= 1)
-      Rcpp::Rcout << "  cPDetect set at " << cPDetect;
+      Rcpp::Rcout << "  cPDetect set at " << cPDetect << "\n";
   }
   
   if( (K < 1 ) && ( typeModel ==   TypeModel::mcfarlandlog) )
