@@ -1430,7 +1430,10 @@ plotClonePhylog <- function(x, N = 1, t = "last",
     if(!inherits(x, "oncosimul2"))
         stop("Phylogenetic information is only stored with v >=2")
     if(nrow(x$other$PhylogDF) == 0)
-        stop("It seems you run the simulation with keepPhylog= FALSE")
+        stop("It seems you run the simulation with keepPhylog= FALSE. ",
+             "This error can also appear if your simulation exited ",
+             "very fast, before any clones beyond the initial were ",
+             "generated.")
     pc <- phylogClone(x, N, t, keepEvents)
     l0 <- igraph::layout.reingold.tilford(pc$g)
     if(!timeEvents) {

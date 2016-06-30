@@ -4486,6 +4486,9 @@ plotClonePhylog(oneI, N = 0)
 
 
 ## 
+## Note we also disable the stopping stochastically
+## as a function of size to allow the pop to grow
+## large and generate may different clones.
 ospI <- oncoSimulPop(4, 
                     o3init, model = "Exp",
                     mu = 5e-5, finalTime = 500,
@@ -4494,6 +4497,7 @@ ospI <- oncoSimulPop(4,
                     initSize = 10,
                     keepPhylog = TRUE,
                     initMutant = c("d > m > z"),
+                    n2 = NULL, p2 = NULL, cPDetect = NULL,
                     mc.cores = 2
                     )
 
@@ -4512,6 +4516,7 @@ ossI <- oncoSimulSample(4,
                         onlyCancer = TRUE,
                         initSize = 10,
                         initMutant = c("z > d"),
+                        n2 = NULL, p2 = NULL, cPDetect = NULL,
                         thresholdWhole = 1 ## check presence of initMutant
                     )
 
