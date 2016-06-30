@@ -41,16 +41,12 @@ oncoSimulSample <- function(Nindiv,
                                        replace = TRUE)
                             },
                             PDBaseline = initSize * 1.1,
-                           ## p2 is coming from solving that
-                           ## at n2, after 10 unit times we want it
-                           ## to have a prob. of not being detected of 1e-7
-                           ## so (1 - p2)^(10/sampleEvery) = 1e-7
-                           p2 = 1 - (1e-7)^(sampleEvery/10),
-                           n2 = initSize * 2,
-                           cPDetect = NULL,
+                            p2 = .1,
+                            n2 = initSize * 2,
+                            cPDetect = NULL,
                             sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                                  0.025),
-                           checkSizePEvery = 10,
+                            checkSizePEvery = 20,
                             initSize = 500,
                             s = 0.1,
                             sh = -1,
@@ -332,12 +328,12 @@ oncoSimulPop <- function(Nindiv,
                          ## at n2, after 10 unit times we want it
                          ## to have a prob. of not being detected of 1e-7
                          ## so (1 - p2)^(10/sampleEvery) = 1e-7
-                         p2 = 1 - (1e-7)^(sampleEvery/10),
+                         p2 = .1,
                          n2 = initSize * 2,
                          cPDetect = NULL,
                          sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                               0.025),
-                         checkSizePEvery = 10,
+                         checkSizePEvery = 20,
                          initSize = 500,
                          s = 0.1,
                          sh = -1,
@@ -427,12 +423,12 @@ oncoSimulIndiv <- function(fp,
                            ## at n2, after 10 unit times we want it
                            ## to have a prob. of not being detected of 1e-7
                            ## so (1 - p2)^(10/sampleEvery) = 1e-7
-                           p2 = 1 - (1e-7)^(sampleEvery/10),
+                           p2 = .1,
                            n2 = initSize * 2,
                            cPDetect = NULL,
                            sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                                 0.025),
-                           checkSizePEvery = 10,
+                           checkSizePEvery = 20,
                            initSize = 500,
                            s = 0.1,
                            sh = -1,

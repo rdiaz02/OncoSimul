@@ -24,11 +24,12 @@
                 numPassengers = 0, mu = 1e-6, muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 PDBaseline = initSize * 1.1,
-                p2 = 1 - (1e-7)^(sampleEvery/10),
+                p2 = .1,
                 n2 = initSize * 2,
                 cPDetect = NULL,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
+                checkSizePEvery = 20,
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
@@ -49,11 +50,12 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 PDBaseline = initSize * 1.1,
-                p2 = 1 - (1e-7)^(sampleEvery/10),
+                p2 = .1,
                 n2 = initSize * 2,
                 cPDetect = NULL,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
+                checkSizePEvery = 20,
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
@@ -96,11 +98,12 @@ oncoSimulSample(Nindiv,
                                        replace = TRUE)
                             },
                 PDBaseline = initSize * 1.1,
-                p2 = 1 - (1e-7)^(sampleEvery/10),
+                p2 = .1,
                 n2 = initSize * 2,
                 cPDetect = NULL,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                     0.025),
+                checkSizePEvery = 20,
                 initSize = 500,
                 s = 0.1,
                 sh = -1,
@@ -233,7 +236,8 @@ number of drivers (and, thus, the default is set to 9e6).
   you specify it, you should not specify either of \code{p2} or
   \code{n2}. See \sQuote{Details}.  }
 
-
+\item{checkSizePEvery}{ For the mechanism where probability of detection
+  depends on size, time between successive checks. See \sQuote{Details}.  }
 
 \item{sampleEvery}{
   
@@ -557,11 +561,11 @@ of the individual done, and the number of attempts and time used.}
   always detected (and, thus, simulation ended) when certain conditions
   are met (\code{detectionSize},
   \code{detectionDrivers}). Alternatively, it can be stochastic process
-  where probability of detection depends on size. At each sampling
-  period, we assess population size, and detect cancer or not
-  probabilistically (comparing the probability of detection for that
-  size with a random uniform number). Probability of detection changes
-  with size according to the function
+  where probability of detection depends on size. Every
+  \code{checkSizePEvery} time units we assess population size, and
+  detect cancer or not probabilistically (comparing the probability of
+  detection for that size with a random uniform number). Probability of
+  detection changes with size according to the function
   
   \deqn{ 1 - e^( -cPDetect (populationsize - PDBaseline))}.
 
@@ -569,11 +573,12 @@ of the individual done, and the number of attempts and time used.}
   and \code{p2} to NULL). However, it is probably more intuitive to
   specify the pair \code{n2}, \code{p2}, such that the probability of
   detection is \eqn{p2} for population size \eqn{n2} and from that pair
-  we solve for the value of \code{cPDetect}. The default value for
-  \code{p2} is such that the probability of not having being detected
-  after 10 units of time is 1e-7. Change to suit your needs.
-  If all of \code{cPDetect}, \code{n2} and \code{p2} are set to NULL,
-  this mechanism of exiting is not used.
+  we solve for the value of \code{cPDetect}. If all of \code{cPDetect},
+  \code{n2} and \code{p2} are set to NULL, this mechanism of exiting is
+  not used. \code{checkSizePEvery} has, by default, a different (and
+  much larger) value than \code{sampleEvery} both to allow to examine
+  the effects of sampling, and to avoid many costly random number
+  generations. 
   
 
 }

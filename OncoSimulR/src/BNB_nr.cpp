@@ -274,7 +274,8 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   // Now add the prob. of exiting.
 
   // Doing this is cheaper than drawing unnecessary runifs.
-  if(currentTime >= nextCheckSizeP) {
+  // Equality, below, leads to suprises with floating point arith.
+  if(currentTime > nextCheckSizeP) {
     checkSizePNow = true;
     nextCheckSizeP = currentTime + checkSizePEvery;
   } else {

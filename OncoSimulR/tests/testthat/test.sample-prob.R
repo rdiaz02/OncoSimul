@@ -37,19 +37,74 @@ test_that("some runs", {
                          detectionDrivers = 99)
     s1
 
+    set.seed(2)
+    
     s2 <- oncoSimulIndiv(oi,
                          model = "McFL",
                          initSize = 1000,
                          detectionSize = 4800,
-                         keepEvery = 5,
-                         verbosity = 1,
+                         keepEvery = -9,
                          p2 = .1,
                          checkSizePEvery = 10,
+                         finalTime = 100000,
+                         verbosity = 1,
                          PDBaseline = 1100,
                          onlyCancer = TRUE,
                          detectionDrivers = 99)
     s2
 
+    s4 <- oncoSimulPop(50,
+                       oi,
+                       model = "McFL",
+                       initSize = 1000,
+                       detectionSize = 4800,
+                       keepEvery = -9,
+                       p2 = .05,
+                       finalTime = 100000,
+                       checkSizePEvery = 50,
+                       verbosity = 1,
+                       PDBaseline = 1100,
+                       onlyCancer = TRUE,
+                       detectionDrivers = 99)
+    s4
+
+    s6 <- oncoSimulPop(50,
+                       oi,
+                       model = "McFL",
+                       initSize = 20,
+                       detectionSize = 4800,
+                       keepEvery = -9,
+                       p2 = .05,
+                       finalTime = 100000,
+                       checkSizePEvery = 10,
+                       verbosity = 1,
+                       onlyCancer = TRUE,
+                       detectionDrivers = 99)
+    s6
+
+
+    gi2 <- rep(0, 10)
+    names(gi2) <- letters[1:10]
+    oi2 <- allFitnessEffects(noIntGenes = gi2)
+
+    ## nicely exponential, as expected
+    s5 <- oncoSimulPop(200,
+                       oi2,
+                       model = "McFL",
+                       initSize = 1000,
+                       detectionSize = 4800,
+                       finalTime = 100000, ## crucial this is increased
+                       keepEvery = -9,
+                       p2 = .1,
+                       checkSizePEvery = 2,
+                       verbosity = 0,
+                       PDBaseline = 1000,
+                       onlyCancer = TRUE,
+                       detectionDrivers = 99)
+    s5
+
+
+    
 
     s3 <- oncoSimulIndiv(oi,
                          model = "McFL",
