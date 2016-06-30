@@ -321,8 +321,9 @@ evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 
 ## 2. Simulate the data. Here we use the "McFL" model and set explicitly
 ##    parameters for mutation rate, final and initial sizes, etc.
+
 RNGkind("Mersenne-Twister")
-set.seed(983)
+set.seed(9)
 ep1 <- oncoSimulIndiv(sv2, model = "McFL",
                      mu = 5e-6,
                      sampleEvery = 0.02,
@@ -330,6 +331,7 @@ ep1 <- oncoSimulIndiv(sv2, model = "McFL",
                      initSize = 2000,
                      finalTime = 3000,
                      onlyCancer = FALSE)
+
 @ 
 
 %% <<fig.width=6.5, fig.height=10>>=
@@ -374,9 +376,10 @@ plot(ep1, show = "drivers", xlim = c(0, 1500),
      thinData = TRUE, thinData.keep = 0.5)
 ## Increase ylim and legend.ncols to avoid overlap of 
 ## legend with rest of figure
-plot(ep1, show = "genotypes", ylim = c(0, 4500), legend.ncols = 4,
+plot(ep1, show = "genotypes", ylim = c(0, 3200), legend.ncols = 4,
      xlim = c(0, 1500),
      thinData = TRUE, thinData.keep = 0.5)
+
 @ 
 
 
@@ -405,25 +408,29 @@ plot(pancr)
 @ 
 <<fig.width=6.5, fig.height=10>>=
 ## 2. Simulate from it. 
-set.seed(4) ## Fix the seed, so we can repeat it
+
+set.seed(6) ## Fix the seed, so we can repeat it
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      mu = 1e-6,
                      sampleEvery = 0.02,
                      keepEvery = 1,
-                     initSize = 1000,
+                     initSize = 2000,
                      finalTime = 10000,
                      onlyCancer = FALSE)
 @ 
 <<iep2x2,fig.width=6.5, fig.height=9>>=
 ## 3. What genotypes and drivers we get? And play with limits
 ##    to show only parts of the data. We also thin them.
+
 par(mfrow = c(2, 1))
 par(cex = 0.7)
-plot(ep2, show = "genotypes", xlim = c(1000, 8000), 
-     ylim = c(0, 2400),
+plot(ep2, show = "genotypes", xlim = c(400, 1800), 
+     ylim = c(0, 3500),
      thinData = TRUE, thinData.keep = 0.5)
 plot(ep2, show = "drivers", addtot = TRUE,
+     xlim = c(400, 1800),
      thinData = TRUE, thinData.keep = 0.2)
+
 @ 
 
 
@@ -3295,7 +3302,7 @@ in section \ref{phylog} could be of help).
 
 <<fig.width=6>>=
 
-set.seed(456)
+set.seed(678)
 nd <- 70  
 np <- 5000 
 s <- 0.1  
@@ -3309,11 +3316,12 @@ mcf1s <-  oncoSimulIndiv(mcf1,
                          detectionSize = 1e8, 
                          detectionDrivers = 100,
                          sampleEvery = 0.02,
-                         keepEvery = 2,
+                         keepEvery = 8,
                          initSize = 2000,
-                         finalTime = 1000,
+                         finalTime = 4000,
                          onlyCancer = FALSE)
 summary(mcf1s)
+
 @ 
 
 <<mcf1sx1,fig.width=6.5, fig.height=10>>=
@@ -3321,11 +3329,9 @@ par(mfrow  = c(2, 1))
 ## I use thinData to make figures smaller and faster
 plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "", 
      thinData = TRUE, thinData.keep = 0.5)
-## I also use here xlim, to focus only on a part of the
-## data (and make it plot faster)
 plot(mcf1s, show = "drivers", type = "stacked",
-     thinData = TRUE, thinData.keep = 0.5,
-     xlim = c(600, 1000), legend.ncols = 2)
+     thinData = TRUE, thinData.keep = 0.3,
+     legend.ncols = 2)
 @ 
 
 
