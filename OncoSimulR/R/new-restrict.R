@@ -1608,10 +1608,10 @@ nr_oncoSimul.internal <- function(rFE,
                  keepPhylog = keepPhylog,
                  MMUEF = MMUEF,
                  full2mutator_ = full2mutator_,
-                 n2 = n2),
-                 ## p2 = p2,
-                 ## PDBaseline = PDBaseline,
-                 ## cPDetect = cPDetect),
+                 n2 = n2,
+                 p2 = p2,
+                 PDBaseline = PDBaseline,
+                 cPDetect_i= cPDetect),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
