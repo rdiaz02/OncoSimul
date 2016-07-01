@@ -258,6 +258,7 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          initMutant = "a1",
                          max.num.tries = 300,
                          detectionDrivers = 2,
+                         n2 = NULL, p2 = NULL, cPDetect = NULL,
                          onlyCancer = FALSE)
         if(nrow(e1$pops.by.time) >= 11) {
             break
