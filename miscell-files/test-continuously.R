@@ -41,10 +41,10 @@ while(TRUE) {
     cat(paste("\n  done testInstalledPackage, tests", date(), "\n"))
 
     cat("\n                          And this is the fourth random uniform number ", runif(1), "\n")
-    cat(paste("\n starting testInstalledPackage, vignette", date()))
-    testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
-                         types = c("vignette"))
-    cat(paste("\n  done testInstalledPackage, vignette", date(), "\n"))
+    ## cat(paste("\n starting testInstalledPackage, vignette", date()))
+    ## testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
+    ##                      types = c("vignettes"))
+    ## cat(paste("\n  done testInstalledPackage, vignette", date(), "\n"))
 
     ## .Random.seed <- the.seed  ## note the seed does not advance here at all. Did above.
     ## checkVignettes("OncoSimulR", workdir = "src") ## yes, tmp or cur does not do it
