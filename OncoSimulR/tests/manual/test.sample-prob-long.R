@@ -40,7 +40,7 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            detectionDrivers = 99)
         ta <- unlist(lapply(sa, function(x) x$FinalTime))
         tb <- unlist(lapply(sb, function(x) x$FinalTime))         
-        T1 <- (wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
+        T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -79,7 +79,7 @@ test_that("Increasing p2 decreases time, Exp" , {
                            detectionDrivers = 99)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
-        T1 <- (wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
+        T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -119,7 +119,7 @@ test_that("Increasing n2 increases time, Exp" , {
                            detectionDrivers = 99)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
-        T1 <- (wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
+        T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
     cat(paste("\n done tries", tries, "\n"))
@@ -160,7 +160,7 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
                            detectionDrivers = 99)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
-        T1 <- (wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
+        T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
     cat(paste("\n done tries", tries, "\n"))
