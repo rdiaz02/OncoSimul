@@ -40,13 +40,9 @@ oncoSimulSample <- function(Nindiv,
                                 sample(nd, Nindiv,
                                        replace = TRUE)
                             },
-                            PDBaseline = initSize * 1.1,
-                            p2 = .1,
-                            n2 = initSize * 2,
-                            cPDetect = NULL,
+                            detectionProb = NA,
                             sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                                  0.025),
-                            checkSizePEvery = 20,
                             initSize = 500,
                             s = 0.1,
                             sh = -1,
@@ -194,12 +190,7 @@ oncoSimulSample <- function(Nindiv,
                                initMutant = initMutant,
                                keepPhylog = keepPhylog,
                                mutationPropGrowth = mutationPropGrowth,
-                               PDBaseline = PDBaseline,
-                               p2 = p2,
-                               n2 = n2,
-                               cPDetect = cPDetect,
-                               checkSizePEvery = checkSizePEvery)
-        
+                               detectionProb = detectionProb)        
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
         }
@@ -323,17 +314,9 @@ oncoSimulPop <- function(Nindiv,
                          muEF = NULL,
                          detectionSize = 1e8,
                          detectionDrivers = 4,
-                         PDBaseline = initSize * 1.1,
-                         ## p2 is coming from solving that
-                         ## at n2, after 10 unit times we want it
-                         ## to have a prob. of not being detected of 1e-7
-                         ## so (1 - p2)^(10/sampleEvery) = 1e-7
-                         p2 = .1,
-                         n2 = initSize * 2,
-                         cPDetect = NULL,
+                         detectionProb = NA,
                          sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                               0.025),
-                         checkSizePEvery = 20,
                          initSize = 500,
                          s = 0.1,
                          sh = -1,
@@ -396,11 +379,7 @@ oncoSimulPop <- function(Nindiv,
                         seed = seed, keepPhylog = keepPhylog,
                         initMutant = initMutant,
                         mutationPropGrowth = mutationPropGrowth,
-                        PDBaseline = PDBaseline,
-                        p2 = p2,
-                        n2 = n2,
-                        cPDetect = cPDetect,
-                        checkSizePEvery = checkSizePEvery),
+                        detectionProb = detectionProb),
                     mc.cores = mc.cores
                     )
     class(pop) <- "oncosimulpop"
@@ -418,17 +397,9 @@ oncoSimulIndiv <- function(fp,
                            muEF = NULL,
                            detectionSize = 1e8,
                            detectionDrivers = 4,
-                           PDBaseline = initSize * 1.1,
-                           ## p2 is coming from solving that
-                           ## at n2, after 10 unit times we want it
-                           ## to have a prob. of not being detected of 1e-7
-                           ## so (1 - p2)^(10/sampleEvery) = 1e-7
-                           p2 = .1,
-                           n2 = initSize * 2,
-                           cPDetect = NULL,
+                           detectionProb = NA,
                            sampleEvery = ifelse(model %in% c("Bozic", "Exp"), 1,
                                                 0.025),
-                           checkSizePEvery = 20,
                            initSize = 500,
                            s = 0.1,
                            sh = -1,
@@ -636,11 +607,7 @@ oncoSimulIndiv <- function(fp,
                                         errorHitMaxTries = errorHitMaxTries,
                                         keepPhylog = keepPhylog,
                                         MMUEF = muEF,
-                                        cPDetect = cPDetect,
-                                        n2 = n2,
-                                        p2 = p2,
-                                        PDBaseline = PDBaseline,
-                                        checkSizePEvery = checkSizePEvery),
+                                        detectionProb = detectionProb),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }

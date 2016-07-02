@@ -67,7 +67,7 @@ test_that("Same freqs, chisq, when s=0", {
     reps <- 200
     bb <- oncoSimulPop(reps,
                        fe1, mu = muvar2,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 0.001, max.wall.time = 900,
                        seed = NULL, mc.cores = 2
@@ -102,7 +102,7 @@ test_that("Same freqs, chisq, when s", {
     no <- 1e7
     reps <- 200
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 0.001,max.wall.time = 900,
                        seed = NULL, mc.cores = 2
@@ -136,7 +136,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0",{
     no <- 5e7
     reps <- 800
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = .00001, max.wall.time = 900,
                        seed =NULL, mc.cores = 2
@@ -173,7 +173,7 @@ test_that("Different freqs as they should be ordered, when s and t > 1", {
     no <- 5e5
     reps <- 100
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 2, max.wall.time = 900,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -209,7 +209,7 @@ test_that("Different freqs as they should be ordered, when s and t> 1, again", {
     no <- 1e5
     reps <- 100
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 4, max.wall.time = 900,
                        mutationPropGrowth = FALSE, ## cleaner, tough no real effect
@@ -266,7 +266,7 @@ test_that("Complex fitness specification, s diffs, tiny finalTime, systematic mu
     reps <- 300
     bb <- oncoSimulPop(reps,
                        fea, mu = muvar,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 0.0001, max.wall.time = 900,
                        seed = NULL, mc.cores = 2
@@ -333,7 +333,7 @@ test_that("Complex fitness specification, tiny s diffs", {
     reps <- 100
     bb <- oncoSimulPop(reps,
                        fea, mu = muvar,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = .0001,
                        seed = NULL, mc.cores = 2
@@ -406,7 +406,7 @@ test_that("Init mutant  with tiny mutation always present", {
     reps <- 20
     bb <- oncoSimulPop(reps,
                        fea, mu = muvar,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        sampleEvery = 0.03,
                        keepEvery = 2,
@@ -455,7 +455,7 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
     no <- 1e6
     reps <- 100
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 5,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -472,7 +472,7 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
     
     cat("\n s13b: a runif is", runif(1), "\n")
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = .001,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -514,7 +514,7 @@ test_that("Different freqs as they should be ordered and chisq, when s=0, and in
     no <- 1e7
     reps <- 200
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = .001,
                        seed =NULL,
@@ -563,7 +563,7 @@ test_that("Different freqs as they are expected with chisq, when s=0 and initMut
     no <- 1e7
     reps <- 100
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        seed =NULL,
@@ -607,7 +607,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
     no <- 1e7
     reps <- 200
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 0.002,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -637,7 +637,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
     
     cat("\n mcs20b: a runif is", runif(1), "\n")
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 0.002,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -674,7 +674,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, 
     
     cat("\n mcs20c: a runif is", runif(1), "\n")
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 0.002,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -726,7 +726,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
     b1 <- oncoSimulPop(reps,
                        fe1,
                        mu = m1,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -739,7 +739,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
     b2 <- oncoSimulPop(reps,
                        fe1,
                        mu = m2,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -788,7 +788,7 @@ test_that("McFL: Expect freqs, num clones, muts per clone for different per-gene
     b1 <- oncoSimulPop(reps,
                        fe1,
                        mu = m1,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -802,7 +802,7 @@ test_that("McFL: Expect freqs, num clones, muts per clone for different per-gene
     b2 <- oncoSimulPop(reps,
                        fe1,
                        mu = m2,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -861,7 +861,7 @@ test_that(" And mutPropGrowth, 3",{
     b1 <- oncoSimulPop(reps,
                        fe1, mu = muvar2,
                        mutationPropGrowth = FALSE,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        detectionSize = 1e8,
@@ -874,7 +874,7 @@ test_that(" And mutPropGrowth, 3",{
     b2 <- oncoSimulPop(reps,
                        fe1, mu = muvar2,
                        mutationPropGrowth = TRUE,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        detectionSize = 1e8,
@@ -962,7 +962,7 @@ test_that("McFL: More mutpropgrowth, in modules of s", {
                           detectionSize = 2.5e4,
                           detectionDrivers = 9999,
                           initSize = no,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           model = "McFL", max.wall.time = 900,
                           seed = NULL, mc.cores = 2)
     
@@ -977,7 +977,7 @@ test_that("McFL: More mutpropgrowth, in modules of s", {
                          detectionSize = 2.5e4,
                          detectionDrivers = 9999,
                          initSize = no,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          model = "McFL",  max.wall.time = 900,
                          seed = NULL, mc.cores = 2)
     summary(s3.g)[, c(1, 2, 3, 8, 9)]
@@ -1039,7 +1039,7 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
     b1 <- oncoSimulSample(reps,
                           fe1,
                           mu = m1,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           initSize = no,
                           finalTime = ft,
                           mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -1068,7 +1068,7 @@ test_that("oncoSimulSample: expected vs. observed for different per-gene-mut",{
     b2 <- oncoSimulSample(reps,
                        fe1,
                        mu = m2,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -1133,7 +1133,7 @@ test_that("oncoSimulSample comparing different per-gene-mut",{
     b1 <- oncoSimulSample(reps,
                           fe1,
                           mu = m1,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           initSize = no,
                           finalTime = ft,
                           mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -1146,7 +1146,7 @@ test_that("oncoSimulSample comparing different per-gene-mut",{
     b2 <- oncoSimulSample(reps,
                        fe1,
                        mu = m2,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = FALSE, ## cleaner, though no real effect
@@ -1217,7 +1217,7 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
                           initSize = no,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           sampleEvery = 0.01,
                           detectionSize = 6e4,
                           detectionDrivers = 99, max.wall.time = 900,
@@ -1232,7 +1232,7 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
                          initSize = no,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          sampleEvery = 0.01,
                           detectionSize = 6e4,
                           detectionDrivers = 99, max.wall.time = 900,
@@ -1284,7 +1284,7 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
     no <- 1e6
     reps <- 600
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = 5,
                        mutationPropGrowth = TRUE,
@@ -1301,7 +1301,7 @@ test_that("Different freqs as they should be ordered and chisq, when s  and a ti
     
     cat("\n mpg s13b: a runif is", runif(1), "\n")
     bb <- oncoSimulPop(reps,
-                       fe1, mu = muvar2, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       fe1, mu = muvar2, onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = .001,
                        mutationPropGrowth = TRUE,
@@ -1354,7 +1354,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
     b1 <- oncoSimulPop(reps,
                        fe1,
                        mu = m1,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = TRUE, 
@@ -1367,7 +1367,7 @@ test_that("Num clones, muts per clone for different per-gene-mut",{
     b2 <- oncoSimulPop(reps,
                        fe1,
                        mu = m2,
-                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                       onlyCancer = FALSE, detectionProb = NA,
                        initSize = no,
                        finalTime = ft,
                        mutationPropGrowth = TRUE, 

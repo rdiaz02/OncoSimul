@@ -23,7 +23,7 @@ test_that("Runs without crashes", {
                                          detectionSize = 5e6,
                                          finalTime = 5,
                                          keepEvery = 1,
-                                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                         onlyCancer = FALSE, detectionProb = NA,
                                          mc.cores = 2,
                                          sampleEvery = 0.03
                                          ))
@@ -47,7 +47,7 @@ test_that("Runs without crashes", {
                                              detectionSize = 5e6,
                                              finalTime = 5,
                                              keepEvery = 1,
-                                             onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                             onlyCancer = FALSE, detectionProb = NA,
                                              mc.cores = 2,
                                              sampleEvery = 0.03
                                              ))

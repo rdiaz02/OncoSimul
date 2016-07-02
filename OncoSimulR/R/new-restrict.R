@@ -1431,11 +1431,7 @@ nr_oncoSimul.internal <- function(rFE,
                                   minDetectDrvCloneSz,
                                   extraTime,
                                   keepPhylog,
-                                  n2,
-                                  p2,
-                                  PDBaseline,
-                                  cPDetect,
-                                  checkSizePEvery,
+                                  detectionProb,
                                   MMUEF = NULL ## avoid partial matching, and set default
                                   ) {
     if(!inherits(rFE, "fitnessEffects"))
@@ -1563,57 +1559,57 @@ nr_oncoSimul.internal <- function(rFE,
         ## muEF <- emptyFitnessEffects()
     }
 
-    if( !is.null(cPDetect) && (sum(!is.null(p2), !is.null(n2)) >= 1 ))
-        stop("Specify only cPDetect xor both of p2 and n2")
-    if( (is.null(p2) + is.null(n2)) == 1 )
-        stop("If you pass one of n2 or p2, you must also pass the other. ",
-             "Otherwise, we would not know what to do.")
-    stopifnot(PDBaseline >= 0)
-    stopifnot(n2 > PDBaseline)
-    stopifnot(p2 < 1)
-    stopifnot(p2 > 0)
-    if( is.null(cPDetect) ) cPDetect <- -9
-    if( is.null(p2)) p2 <- 9
-    if( is.null(n2)) n2 <- -9
+    dpr <- detectionProbCheckParse(detectionProb, initSize)
+    ## if( !is.null(cPDetect) && (sum(!is.null(p2), !is.null(n2)) >= 1 ))
+    ##     stop("Specify only cPDetect xor both of p2 and n2")
+    ## if( (is.null(p2) + is.null(n2)) == 1 )
+    ##     stop("If you pass one of n2 or p2, you must also pass the other. ",
+    ##          "Otherwise, we would not know what to do.")
+    ## stopifnot(PDBaseline >= 0)
+    ## stopifnot(n2 > PDBaseline)
+    ## stopifnot(p2 < 1)
+    ## stopifnot(p2 > 0)
+    ## if( is.null(cPDetect) ) cPDetect <- -9
+    ## if( is.null(p2)) p2 <- 9
+    ## if( is.null(n2)) n2 <- -9
 
     ## call <- match.call()
     return(c(
         nr_BNB_Algo5(rFE = rFE,
                      mu = mu,
-                 death = death,
-                 initSize = initSize,
-                 sampleEvery = sampleEvery,
-                 detectionSize = detectionSize,
-                 finalTime = finalTime,
-                 initSp = initSize_species,
-                 initIt = initSize_iter,
-                 seed = seed,
-                 verbosity = verbosity,
-                 speciesFS = speciesFS,
-                 ratioForce = ratioForce,
-                 typeFitness_ = typeFitness,
-                 maxram = max.memory,
-                 mutationPropGrowth = as.integer(mutationPropGrowth),
-                 initMutant_ = initMutant, 
-                 maxWallTime = max.wall.time,
-                 keepEvery = keepEvery,
-                 ## alpha = alpha,
-                 K = K,
-                 detectionDrivers = detectionDrivers,
-                 onlyCancer = onlyCancer,
-                 errorHitWallTime = errorHitWallTime,
-                 maxNumTries = max.num.tries,
-                 errorHitMaxTries = errorHitMaxTries,
-                 minDetectDrvCloneSz = minDetectDrvCloneSz,
-                 extraTime = extraTime,
-                 keepPhylog = keepPhylog,
-                 MMUEF = MMUEF,
-                 full2mutator_ = full2mutator_,
-                 n2 = n2,
-                 p2 = p2,
-                 PDBaseline = PDBaseline,
-                 cPDetect_i= cPDetect,
-                 checkSizePEvery = checkSizePEvery),
+                     death = death,
+                     initSize = initSize,
+                     sampleEvery = sampleEvery,
+                     detectionSize = detectionSize,
+                     finalTime = finalTime,
+                     initSp = initSize_species,
+                     initIt = initSize_iter,
+                     seed = seed,
+                     verbosity = verbosity,
+                     speciesFS = speciesFS,
+                     ratioForce = ratioForce,
+                     typeFitness_ = typeFitness,
+                     maxram = max.memory,
+                     mutationPropGrowth = as.integer(mutationPropGrowth),
+                     initMutant_ = initMutant, 
+                     maxWallTime = max.wall.time,
+                     keepEvery = keepEvery,
+                     K = K,
+                     detectionDrivers = detectionDrivers,
+                     onlyCancer = onlyCancer,
+                     errorHitWallTime = errorHitWallTime,
+                     maxNumTries = max.num.tries,
+                     errorHitMaxTries = errorHitMaxTries,
+                     minDetectDrvCloneSz = minDetectDrvCloneSz,
+                     extraTime = extraTime,
+                     keepPhylog = keepPhylog,
+                     MMUEF = MMUEF,
+                     full2mutator_ = full2mutator_,
+                     n2 = dpr["n2"],
+                     p2 = dpr["p2"],
+                     PDBaseline = dpr["PDBaseline"],
+                     cPDetect_i= dpr["cPDetect"],
+                     checkSizePEvery = dpr["checkSizePEvery"]),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
@@ -1743,7 +1739,56 @@ matchGeneIDs <- function(x, refFE) {
     ## But does not work well with replace. So use the NULL trick
     Reduced <- NULL
     dplyr::full_join(n2, n1, by = "Gene") %>%
-         mutate(Reduced = replace(Reduced, is.na(Reduced), -9))
+        mutate(Reduced = replace(Reduced, is.na(Reduced), -9))
+}
+
+    
+detectionProbCheckParse <- function(x, initSize) {
+    if((length(x) == 1) && (is.na(x))) {
+        y <- vector()
+        y["cPDetect"] <- -9
+        y["p2"] <- 9
+        y["n2"] <- -9
+        y["PDBaseline"] <- -9
+        y["checkSizePEvery"] <- 9e50
+        return(y)
+    } else if((length(x) == 1) && (x == "default")) {
+        ## Populate with defaults
+        y <- vector()
+        y["p2"] <- 0.1
+        y["n2"] <- 2 * initSize 
+        y["PDBaseline"] <- 1.1 * initSize
+        y["checkSizePEvery"] <- 20
+        x <- y
+    }
+
+    ## This ain't conditional. If not returned, always check
+    if( !is.na(x["cPDetect"]) && (sum(!is.na(x["p2"]), !is.na(x["n2"])) >= 1 ))
+        stop("Specify only cPDetect xor both of p2 and n2")
+    if( (is.na(x["p2"]) + is.na(x["n2"])) == 1 )
+        stop("If you pass one of n2 or p2, you must also pass the other. ",
+             "Otherwise, we would not know what to do.")
+    
+    if(is.na(x["PDBaseline"])) x["PDBaseline"] <- 1.1 * initSize
+    if(is.na(x["checkSizePEvery"])) x["checkSizePEvery"] <- 20
+    
+    if(x["checkSizePEvery"] <= 0)
+        stop("checkSizePEvery <= 0")
+    if(x["PDBaseline"] < 0)
+        stop("PDBaseline < 0")
+    
+    if(!is.na(x["n2"])) {
+        if(x["n2"] <= x["PDBaseline"])
+            stop("n2 <= PDBaseline")
+        if(x["p2"] >= 1) stop("p2 >= 1")
+        if(x["p2"] <= 0) stop("p2 <= 0")
+        x["cPDetect"] <- -9
+    } else { ## only if x["cPDetect"] is not NA
+        if(is.na(x["cPDetect"])) stop("eh? you found a bug")## paranoia
+        x["n2"] <- -9
+        x["p2"] <- -9
+    }
+    return(x)
 }
 
 
@@ -1772,6 +1817,7 @@ matchGeneIDs <- function(x, refFE) {
 ## t1 <- data.frame(v1 = c("a,b", "a,c", "b"), v2 = c("b", "c", "b"), v3 = 1:3, stringsAsFactors = FALSE)
 ## t2 <- data.frame(v2 = c("b", "c"), v4 = c(11, 12), stringsAsFactors = FALSE)
 ## full_join(t1, t2, by = "v2")
+
 
 
 ## FIXME

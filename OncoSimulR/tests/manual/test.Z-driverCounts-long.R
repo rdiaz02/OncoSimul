@@ -28,7 +28,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -44,7 +44,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 1)
 
@@ -60,7 +60,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 0)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -76,7 +76,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 0)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -92,7 +92,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -108,7 +108,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 0)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -124,7 +124,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 1)
 
@@ -140,7 +140,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -156,7 +156,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 1)
 
@@ -172,7 +172,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 0)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -188,7 +188,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -204,7 +204,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -220,7 +220,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 0)
     expect_true(mue11$MaxDriversLast == 0)
 
@@ -236,7 +236,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 5, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 1)
 
@@ -253,7 +253,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 1e8,
                             finalTime = 120, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 2)
     expect_true(mue11$MaxDriversLast == 2)
     mue11
@@ -270,7 +270,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 130, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 2)
     expect_true(mue11$MaxDriversLast == 1)
     mue11
@@ -287,7 +287,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 90, 
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 1)
     mue11
@@ -307,7 +307,7 @@ test_that("driverCounts: we get the right results", {
                             model = "McFL",
                             detectionSize = 5e6,
                             finalTime = 2,
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                            onlyCancer = FALSE, detectionProb = NA)
     expect_true(mue11$MaxNumDrivers == 1)
     expect_true(mue11$MaxDriversLast == 1)
     

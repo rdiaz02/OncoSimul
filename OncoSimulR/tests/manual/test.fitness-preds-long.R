@@ -46,7 +46,7 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
                       keepEvery = ft,
                       initMutant = initMutant,
                       mutationPropGrowth = FALSE,
-                      onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                      onlyCancer = FALSE, detectionProb = NA,
                       mc.cores = 2)
     if(verbose) {
         print(E)

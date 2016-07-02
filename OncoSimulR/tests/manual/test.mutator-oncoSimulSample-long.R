@@ -87,7 +87,7 @@ test_that("per-gene-mut rates and mutator", {
         m1.mutator0 <- oncoSimulSample(reps,
                                        fe1,
                                        mu = m1,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -99,7 +99,7 @@ test_that("per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m1,
                                        muEF = mutator1,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -111,7 +111,7 @@ test_that("per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m1,
                                        muEF = mutator2,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -123,7 +123,7 @@ test_that("per-gene-mut rates and mutator", {
         m2.mutator0 <- oncoSimulSample(reps,
                                        fe1,
                                        mu = m2,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -135,7 +135,7 @@ test_that("per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m2,
                                        muEF = mutator1,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -147,7 +147,7 @@ test_that("per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m2,
                                        muEF = mutator2,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -233,7 +233,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
         m1.mutator0 <- oncoSimulSample(reps,
                                        fe1,
                                        mu = m1,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -245,7 +245,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m1,
                                        muEF = mutator1,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -257,7 +257,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m1,
                                        muEF = mutator2,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -269,7 +269,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
         m2.mutator0 <- oncoSimulSample(reps,
                                        fe1,
                                        mu = m2,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -281,7 +281,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m2,
                                        muEF = mutator1,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -293,7 +293,7 @@ test_that("McFL: per-gene-mut rates and mutator", {
                                        fe1,
                                        mu = m2,
                                        muEF = mutator2,
-                                       onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                       onlyCancer = FALSE, detectionProb = NA,
                                        initSize = no,
                                        finalTime = ft,
                                        detectionSize = 1e9,
@@ -401,7 +401,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
         summary(m1.pg1.b$popSummary[, "NumClones"])
         ## Recall that init-mutant tests check always present of initMutant
@@ -428,7 +428,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## m1.pg2.b$popSummary[, c(1:3, 8:9)]
         summary(m1.pg2.b$popSummary[, "NumClones"])
         ## Recall that init-mutant tests check always present of initMutant
@@ -513,7 +513,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
         summary(m1.pg1.b$popSummary[, "NumClones"])
         ## Recall that init-mutant tests check always present of initMutant
@@ -541,7 +541,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## m1.pg2.b$popSummary[, c(1:3, 8:9)]
         summary(m1.pg2.b$popSummary[, "NumClones"])
         ## Recall that init-mutant tests check always present of initMutant
@@ -602,7 +602,7 @@ test_that("Mutator, several modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut1,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -615,7 +615,7 @@ test_that("Mutator, several modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut2,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -680,7 +680,7 @@ test_that("Mutator, several modules differences, McFL", {
                               f1,
                               mu = mu,
                               muEF = mut1,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -693,7 +693,7 @@ test_that("Mutator, several modules differences, McFL", {
                               f1,
                               mu = mu,
                               muEF = mut2,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -753,7 +753,7 @@ test_that("Mutator modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut1,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -766,7 +766,7 @@ test_that("Mutator modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut2,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -779,7 +779,7 @@ test_that("Mutator modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut3,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -834,7 +834,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                initSize = 1e6,
                                detectionSize = 1e8,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         fm8 <- allMutatorEffects(noIntGenes = c("a" = 1,
                                                 "b" = 1,
                                                 "c" = 1,
@@ -845,7 +845,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                initSize = 1e6,
                                detectionSize = 1e8,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-3,
                                                 "b" = 1e-3,
                                                 "c" = 1e-3,
@@ -856,7 +856,7 @@ test_that("Relative ordering of number of clones with mutator effects", {
                                initSize = 1e6,
                                detectionSize = 1e8,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         T1 <- (wilcox.test(nc1$popSummary[, "NumClones"], nc2$popSummary[, "NumClones"],
                                 alternative = "greater")$p.value < p.value.threshold)
         T2 <- (wilcox.test(nc2$popSummary[, "NumClones"], nc3$popSummary[, "NumClones"],
@@ -918,7 +918,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## If numclones is much larger than 2, that signals trouble as you are
         ## smoothing differences between frequencies with oncoSimulSample,
         ## whole pop
@@ -992,7 +992,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         m1.pg1.b$popSummary[, c(1:3, 8:9)]
         ## If numclones is much larger than 2, that signals trouble as you are
         ## smoothing differences between frequencies with oncoSimulSample,
@@ -1069,7 +1069,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         summary(m1.pg1.b$popSummary[, "NumClones"])
         ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
         expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
@@ -1115,7 +1115,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                                initSize = 1e5, model = "McFL",
                                detectionSize = 1.11e5,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         fm8 <- allMutatorEffects(noIntGenes = c("a" = 2,
                                                 "b" = 2,
                                                 "c" = 2,
@@ -1127,7 +1127,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                                initSize = 1e5, model = "McFL",
                                detectionSize = 1.11e5,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         fm7 <- allMutatorEffects(noIntGenes = c("a" = 1e-3,
                                                 "b" = 1e-3,
                                                 "c" = 1e-3,
@@ -1139,7 +1139,7 @@ test_that("MCFL Relative ordering of number of clones with mutator effects", {
                                initSize = 1e5, model = "McFL",
                                detectionSize = 1.11e5,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         expect_true(wilcox.test(nc1$popSummary[, "NumClones"], nc2$popSummary[, "NumClones"],
                                 alternative = "greater")$p.value < p.value.threshold)
         expect_true(wilcox.test(nc2$popSummary[, "NumClones"], nc3$popSummary[, "NumClones"],
@@ -1182,7 +1182,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)                       
+                               onlyCancer = FALSE, detectionProb = NA)                       
         ncb <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
@@ -1190,7 +1190,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)                       
+                               onlyCancer = FALSE, detectionProb = NA)                       
         ncc <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
@@ -1198,7 +1198,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)                       
+                               onlyCancer = FALSE, detectionProb = NA)                       
         ncd <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
@@ -1206,7 +1206,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)                       
+                               onlyCancer = FALSE, detectionProb = NA)                       
         ## These are the real tests
         T1 <- ( wilcox.test(nca$popSummary[, "NumClones"],
                                  ncb$popSummary[, "NumClones"],
@@ -1278,7 +1278,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates, ct mut", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         summary(m1.pg1.b$popSummary[, "NumClones"])
         ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
         expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
@@ -1341,7 +1341,7 @@ test_that("McFL, Expect freq genotypes, mutator and var mut rates", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         summary(m1.pg1.b$popSummary[, "NumClones"])
         ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
         expect_true(smSampl("oreoisasabgene", m1.pg1.b) == pops)
@@ -1408,7 +1408,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## If numclones is much larger than 2, that signals trouble as you are
         ## smoothing differences between frequencies with oncoSimulSample,
         ## whole pop
@@ -1482,7 +1482,7 @@ test_that("Expect freq genotypes, mutator and var mut rates", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## If numclones is much larger than 2, that signals trouble as you are
         ## smoothing differences between frequencies with oncoSimulSample,
         ## whole pop
@@ -1528,25 +1528,25 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
                         initSize = 1e4,
                         initMutant = "a", detectionSize = 1e9,
                         sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL")
+                        onlyCancer = FALSE, detectionProb = NA, model = "McFL")
     ncb <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "b", detectionSize = 1e9,
                         sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL")
+                        onlyCancer = FALSE, detectionProb = NA, model = "McFL")
     ncc <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "c", detectionSize = 1e9,
                         sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL")
+                        onlyCancer = FALSE, detectionProb = NA, model = "McFL")
     ncd <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                         mutationPropGrowth = FALSE,
                         initSize = 1e4,
                         initMutant = "d",detectionSize = 1e9,
                         sampleEvery = 0.01, thresholdWhole = 1e-20,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL")
+                        onlyCancer = FALSE, detectionProb = NA, model = "McFL")
     ## These are the real tests
     T1 <- ( wilcox.test(nca$popSummary[, "NumClones"],
                              ncb$popSummary[, "NumClones"],
@@ -1595,7 +1595,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         ncb <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
@@ -1603,7 +1603,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         ncc <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
@@ -1611,7 +1611,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         ncd <- oncoSimulSample(pops, fe, muEF = fm6, finalTime =50,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
@@ -1619,7 +1619,7 @@ test_that("Relative ordering of number of clones with init mutant of mutator eff
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
-                               onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                               onlyCancer = FALSE, detectionProb = NA)
         T1 <- ( wilcox.test(nca$popSummary[, "NumClones"],
                                  ncb$popSummary[, "NumClones"],
                                  alternative = "less")$p.value < p.value.threshold)
@@ -1684,7 +1684,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
                                  sampleEvery = 0.01, thresholdWhole = 1e-20,
                                  detectionSize = 1e9,
                                  detectionDrivers = 9999,
-                                 seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                 seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         pop100 <- oncoSimulSample(pops,
                                   fe,
                                   mu = muvector,
@@ -1696,7 +1696,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, larger t", {
                                   sampleEvery = 0.01, thresholdWhole = 1e-20,
                                   detectionSize = 1e9,
                                   detectionDrivers = 9999,
-                                  seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                  seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         ## number of clones
         T1 <- (wilcox.test(NClonesOSS(pop10), NClonesOSS(pop100),
                                 alternative = "less")$p.value < p.value.threshold)
@@ -1748,7 +1748,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                                  sampleEvery = 0.01, thresholdWhole = 1e-20,
                                  detectionSize = 1e9,
                                  detectionDrivers = 9999,
-                                 seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                 seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         pop100 <- oncoSimulSample(pops,
                                   fe,
                                   mu = muvector,
@@ -1761,7 +1761,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, larger
                                   sampleEvery = 0.01, thresholdWhole = 1e-20,
                                   detectionSize = 1e9,
                                   detectionDrivers = 9999,
-                                  seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                  seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         T1 <- (wilcox.test(NClonesOSS(pop10), NClonesOSS(pop100),
                                 alternative = "less")$p.value < p.value.threshold)
         T2 <- (t.test(rowSums(pop10$popSample), rowSums(pop100$popSample),
@@ -1804,7 +1804,7 @@ test_that("McFL: Mutator modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut1,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -1818,7 +1818,7 @@ test_that("McFL: Mutator modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut2,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -1832,7 +1832,7 @@ test_that("McFL: Mutator modules differences", {
                               f1,
                               mu = mu,
                               muEF = mut3,
-                              onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                              onlyCancer = FALSE, detectionProb = NA,
                               initSize = no,
                               finalTime = ft,
                               sampleEvery = 0.01, thresholdWhole = 1e-20,
@@ -1921,7 +1921,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## m1.pg1.b$popSummary[, c(1:3, 8:9)]
         ## summary(m1.pg1.b$popSummary[, "NumClones"])
         ## Recall that init-mutant tests check always present of initMutant
@@ -1948,7 +1948,7 @@ test_that("Mutator increases by given factor with per-gene-mut rates: major axis
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
-                                    onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL)
+                                    onlyCancer = FALSE, detectionProb = NA, seed = NULL)
         ## m1.pg2.b$popSummary[, c(1:3, 8:9)]
         ## summary(m1.pg2.b$popSummary[, "NumClones"])
         ## Recall that init-mutant tests check always present of initMutant
@@ -2019,7 +2019,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
                                  sampleEvery = 0.01, thresholdWhole = 1e-20,
                                  detectionSize = 1e9,
                                  detectionDrivers = 9999,
-                                 seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                 seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         pop100 <- oncoSimulSample(pops,
                                   fe,
                                   mu = muvector,
@@ -2031,7 +2031,7 @@ test_that("Same mu vector, different mutator; diffs in number muts, tiny t", {
                                   sampleEvery = 0.01, thresholdWhole = 1e-20,
                                   detectionSize = 1e9,
                                   detectionDrivers = 9999,
-                                  seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                  seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         ## number of total mutations do not make sense with oncoSimulSample,
         ## since we cannot estimate them. we approximate wit sum of
         ## mutations. but that is too thick grain.  number of clones is much cleaner
@@ -2087,7 +2087,7 @@ test_that(" Init with different mutators", {
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,  
-                                    seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                    seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         m1.pg1.b <- oncoSimulSample(pops,
                                     fe,
                                     mu = pg1,
@@ -2099,7 +2099,7 @@ test_that(" Init with different mutators", {
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,
-                                    seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                    seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         m1.pg1.c <- oncoSimulSample(pops,
                                     fe,
                                     mu = pg1,
@@ -2111,7 +2111,7 @@ test_that(" Init with different mutators", {
                                     detectionSize = 1e9,
                                     detectionDrivers = 9999,
                                     sampleEvery = 0.01, thresholdWhole = 1e-20,  
-                                    seed = NULL, onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                    seed = NULL, onlyCancer = FALSE, detectionProb = NA)
         T1 <- (wilcox.test(NClonesOSS(m1.pg1.b), NClonesOSS(m1.pg1.a),
                                 alternative = "less")$p.value < p.value.threshold)
         T2 <- (wilcox.test(NClonesOSS(m1.pg1.c), NClonesOSS(m1.pg1.b),

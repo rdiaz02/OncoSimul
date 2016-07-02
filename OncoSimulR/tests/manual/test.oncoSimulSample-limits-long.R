@@ -12,7 +12,7 @@ test_that("oncoSimulSample success with large num tries", {
                           max.num.tries = 5000 * nindiv,
                           sampleEvery = 0.03, ## this to avoid large N all
                                              ## of a sudden
-                          onlyCancer = TRUE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                          onlyCancer = TRUE, detectionProb = NA)
     expect_true(p1$probCancer < 1)
     expect_true(p1$attemptsUsed > nindiv)
     expect_true(nrow(p1$popSummary) == nindiv)

@@ -459,7 +459,7 @@ test_that("initMutant with oncoSimulPop, McFL", {
                         keepPhylog = TRUE,
                         sampleEvery = 0.03,
                         keepEvery = 1,
-                        n2 = NULL, p2 = NULL, cPDetect = NULL,
+                        detectionProb = NA,
                         initSize = 500,
                         initMutant = c("d > m > y"),
                         mc.cores = 2

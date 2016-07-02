@@ -43,7 +43,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
         cat("\n mcf1a: a runif is", runif(1), "\n")
-        nca <- oncoSimulPop(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                             mutationPropGrowth = TRUE,
                             initSize = no,
                             sampleEvery = 0.03, detectionSize = 8e4,
@@ -51,7 +51,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
                             initMutant = "a", model = "McFL",
                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
         cat("\n mcf1c: a runif is", runif(1), "\n")
-        nca2 <- oncoSimulPop(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                              mutationPropGrowth = FALSE,
                              initSize = no,
                              sampleEvery = 0.03, detectionSize = 8e4,
@@ -109,7 +109,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
         cat("\n mcf1a: a runif is", runif(1), "\n")
-        nca <- oncoSimulPop(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                             mutationPropGrowth = TRUE,
                             initSize = no,
                             sampleEvery = 0.03, detectionSize = ds,
@@ -117,7 +117,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
                             initMutant = "a", model = "McFL",
                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
         cat("\n mcf1c: a runif is", runif(1), "\n")
-        nca2 <- oncoSimulPop(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                              mutationPropGrowth = FALSE,
                              initSize = no,
                              sampleEvery = 0.03, detectionSize = ds,
@@ -171,7 +171,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
         cat("\n oss1a: a runif is", runif(1), "\n")
-        nca <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu,
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.02,
@@ -181,7 +181,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                detectionDrivers = 99,
                                thresholdWhole = x)
         cat("\n oss1c: a runif is", runif(1), "\n")
-        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu,
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.02,
@@ -248,7 +248,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
         cat("\n oss1a: a runif is", runif(1), "\n")
-        nca <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu,
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.02,
@@ -258,7 +258,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                detectionDrivers = 99,
                                thresholdWhole = x)
         cat("\n oss1c: a runif is", runif(1), "\n")
-        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu,
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.02,
@@ -323,7 +323,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
         cat("\n ossmcf1a: a runif is", runif(1), "\n")
-        nca <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu, model = "McFL",
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.01,
@@ -333,7 +333,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                                detectionDrivers = 99,
                                thresholdWhole = x)
         cat("\n ossmcf1c: a runif is", runif(1), "\n")
-        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu, model = "McFL",
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.01,
@@ -398,7 +398,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
         cat("\n ossmcf1a: a runif is", runif(1), "\n")
-        nca <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu, model = "McFL",
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.01,
@@ -408,7 +408,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
                                detectionDrivers = 99,
                                thresholdWhole = x)
         cat("\n ossmcf1c: a runif is", runif(1), "\n")
-        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, n2 = NULL, p2 = NULL, cPDetect = NULL,
+        nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu, model = "McFL",
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.01,
@@ -465,7 +465,7 @@ test_that("We crash as we should", {
     ## with testthat 0.11.0.9000 we should be able
     ## to use use_catch to catch the C++ exception directly
     o1 <- oncoSimulIndiv(feo,
-               mu = 1e-7, n2 = NULL, p2 = NULL, cPDetect = NULL,
+               mu = 1e-7, detectionProb = NA,
                initSize = 1e4,
                K = 1e4,
                model = "Exp",

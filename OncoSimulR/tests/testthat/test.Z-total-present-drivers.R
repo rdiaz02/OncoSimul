@@ -30,7 +30,7 @@ test_that("Count TotalPresentDrivers", {
                             initSize = no,
                             sampleEvery = 0.03,
                             keepEvery = 1,
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                            onlyCancer = FALSE, detectionProb = NA,
                             seed = NULL)
     s3.ng
     ## so this should be zero
@@ -50,7 +50,7 @@ test_that("Count TotalPresentDrivers", {
                             initSize = no,
                             sampleEvery = 0.03,
                             keepEvery = 1,
-                            onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                            onlyCancer = FALSE, detectionProb = NA,
                             ## verbosity = 4,
                             seed = NULL)
     ## this should be zero
@@ -67,7 +67,7 @@ test_that("Count TotalPresentDrivers", {
                            initSize = no,
                            sampleEvery = 0.03,
                            keepEvery = 1,
-                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                           onlyCancer = FALSE, detectionProb = NA,
                            ## verbosity = 4,
                            seed = NULL)
     s3.l
@@ -81,7 +81,7 @@ test_that("Count TotalPresentDrivers", {
                            initSize = no,
                            sampleEvery = 0.03,
                            keepEvery = 1,
-                           onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                           onlyCancer = FALSE, detectionProb = NA,
                            ## verbosity = 4,
                            seed = NULL)
     s3.l

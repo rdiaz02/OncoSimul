@@ -112,7 +112,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
     ##                               ## running into numerical issues: 3
     ##                               ## orders of magnitude differences.
     m1.pg1.b <- oncoSimulSample(pops,
-                           fe,  n2 = NULL, p2 = NULL, cPDetect = NULL,
+                           fe,  detectionProb = NA,
                            mu = pg1,
                            muEF = m1,
                            finalTime = ft,
@@ -141,7 +141,7 @@ test_that("McFL: Mutator increases by given factor with per-gene-mut rates: majo
     pg2 <- seq(from = 1e-7, to = 1e-4, length.out = lni + 3)
     names(pg2) <- names(pg1)
     m1.pg2.b <- oncoSimulSample(pops,
-                           fe,  n2 = NULL, p2 = NULL, cPDetect = NULL,
+                           fe,  detectionProb = NA,
                            mu = pg2,
                            finalTime = ft,
                            mutationPropGrowth = FALSE,
@@ -210,25 +210,25 @@ test_that("MCFL Relative ordering of number of clones with init mutant of mutato
                                                 "b" = 1,
                                                 "c" = 10,
                                                 "d" = 50))
-        nca <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm6, finalTime =250,
+        nca <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm6, finalTime =250,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
                                initMutant = "a", detectionSize = 10200,
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                onlyCancer = FALSE, model = "McFL")
-        ncb <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm6, finalTime =250,
+        ncb <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm6, finalTime =250,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
                                initMutant = "b", detectionSize = 10200,
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                onlyCancer = FALSE, model = "McFL")
-        ncc <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm6, finalTime =250,
+        ncc <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm6, finalTime =250,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
                                initMutant = "c",detectionSize = 10200,
                                sampleEvery = 0.01, thresholdWhole = 1e-20,
                                onlyCancer = FALSE, model = "McFL")
-        ncd <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm6, finalTime =250,
+        ncd <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm6, finalTime =250,
                                mutationPropGrowth = FALSE,
                                initSize = 1e4,
                                initMutant = "d",detectionSize = 10200,
@@ -280,7 +280,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
         ni <- ni[order(names(ni))]
         fe <- allFitnessEffects(noIntGenes = ni)
         fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
-        mpg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm1,
+        mpg <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm1,
                                finalTime = ft,
                                mutationPropGrowth = TRUE,
                                initSize = no,
@@ -289,7 +289,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
                                onlyCancer = FALSE)
-        mnpg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm1,
+        mnpg <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm1,
                                 finalTime = ft,
                                 mutationPropGrowth = FALSE,
                                 initSize = no,
@@ -298,7 +298,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
                                 detectionSize = 1e9,
                                 detectionDrivers = 9999, seed = NULL,
                                 onlyCancer = FALSE)
-        pg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, 
+        pg <- oncoSimulSample(pops, fe,  detectionProb = NA, 
                               finalTime = ft,
                               mutationPropGrowth = TRUE,
                               initSize = no,
@@ -307,7 +307,7 @@ test_that("Relative ordering of number of clones with mut prop growth and init a
                               detectionSize = 1e9,
                               detectionDrivers = 9999, seed = NULL,
                               onlyCancer = FALSE)
-        npg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, 
+        npg <- oncoSimulSample(pops, fe,  detectionProb = NA, 
                                finalTime = ft,
                                mutationPropGrowth = FALSE,
                                initSize = no,
@@ -365,7 +365,7 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
         ni <- ni[order(names(ni))]
         fe <- allFitnessEffects(noIntGenes = ni)
         fm1 <- allMutatorEffects(noIntGenes = c("thisistheagene" = 5))
-        mpg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm1,
+        mpg <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm1,
                                finalTime = ft,
                                mutationPropGrowth = TRUE,
                                initSize = no, model = "McFL",
@@ -374,7 +374,7 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                                detectionSize = 1e9,
                                detectionDrivers = 9999, seed = NULL,
                                onlyCancer = FALSE)
-        mnpg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, muEF = fm1,
+        mnpg <- oncoSimulSample(pops, fe,  detectionProb = NA, muEF = fm1,
                                 finalTime = ft,
                                 mutationPropGrowth = FALSE,
                                 initSize = no, model = "McFL",
@@ -383,7 +383,7 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                                 detectionSize = 1e9,
                                 detectionDrivers = 9999, seed = NULL,
                                 onlyCancer = FALSE)
-        pg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, 
+        pg <- oncoSimulSample(pops, fe,  detectionProb = NA, 
                               finalTime = ft,
                               mutationPropGrowth = TRUE,
                               initSize = no, model = "McFL",
@@ -392,7 +392,7 @@ test_that("McFL: Relative ordering of number of clones with mut prop growth and 
                               detectionSize = 1e9,
                               detectionDrivers = 9999, seed = NULL,
                               onlyCancer = FALSE)
-        npg <- oncoSimulSample(pops, fe,  n2 = NULL, p2 = NULL, cPDetect = NULL, 
+        npg <- oncoSimulSample(pops, fe,  detectionProb = NA, 
                                finalTime = ft,
                                mutationPropGrowth = FALSE,
                                initSize = no, model = "McFL",
@@ -476,7 +476,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
         m10 <- allMutatorEffects(noIntGenes = mutator10)
         m100 <- allMutatorEffects(noIntGenes = mutator100)
         pop10 <- oncoSimulSample(pops,
-                                 fe,  n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                 fe,  detectionProb = NA,
                                  mu = muvector,
                                  muEF = m10,
                                  model = "McFL",
@@ -489,7 +489,7 @@ test_that("McFL: Same mu vector, different mutator; diffs in number muts, tiny t
                                  detectionDrivers = 9999,
                                  seed = NULL, onlyCancer = FALSE)
         pop100 <- oncoSimulSample(pops,
-                                  fe,  n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                  fe,  detectionProb = NA,
                                   mu = muvector,
                                   muEF = m100,
                                   model = "McFL",                        
@@ -544,7 +544,7 @@ test_that(" MCFL Init with different mutators", {
         mutator1["nnhsisthecgene"] <- 0.01
         m1 <- allMutatorEffects(noIntGenes = mutator1)
         m1.pg1.a <- oncoSimulSample(pops,
-                                    fe,  n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                    fe,  detectionProb = NA,
                                     mu = pg1,
                                     muEF = m1,
                                     finalTime = ft,
@@ -557,7 +557,7 @@ test_that(" MCFL Init with different mutators", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20, 
                                     seed = NULL, onlyCancer = FALSE)
         m1.pg1.b <- oncoSimulSample(pops,
-                                    fe,  n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                    fe,  detectionProb = NA,
                                     mu = pg1,
                                     muEF = m1,
                                     finalTime = ft,
@@ -570,7 +570,7 @@ test_that(" MCFL Init with different mutators", {
                                     sampleEvery = 0.01, thresholdWhole = 1e-20, 
                                     seed = NULL, onlyCancer = FALSE)
         m1.pg1.c <- oncoSimulSample(pops,
-                                    fe,  n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                    fe,  detectionProb = NA,
                                     mu = pg1,
                                     muEF = m1,
                                     finalTime = ft,

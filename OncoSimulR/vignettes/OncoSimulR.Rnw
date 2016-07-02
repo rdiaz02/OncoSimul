@@ -323,16 +323,26 @@ evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 ##    parameters for mutation rate, final and initial sizes, etc.
 
 RNGkind("Mersenne-Twister")
-set.seed(9)
+set.seed(983)
 ep1 <- oncoSimulIndiv(sv2, model = "McFL",
-                     mu = 5e-6,
-                     sampleEvery = 0.02,
-                     keepEvery = 0.5,
-                     initSize = 2000,
-                     finalTime = 3000,
-                     onlyCancer = FALSE)
-
+mu = 5e-6,
+sampleEvery = 0.02,
+keepEvery = 0.5,
+initSize = 2000,
+finalTime = 3000,
+onlyCancer = FALSE)
 @ 
+
+
+
+% set.seed(9)
+% ep1 <- oncoSimulIndiv(sv2, model = "McFL",
+%                      mu = 5e-6,
+%                      sampleEvery = 0.02,
+%                      keepEvery = 0.5,
+%                      initSize = 2000,
+%                      finalTime = 3000,
+%                      onlyCancer = FALSE)
 
 %% <<fig.width=6.5, fig.height=10>>=
 %%  ## 1. Fitness effects: here we specify a 
@@ -376,7 +386,7 @@ plot(ep1, show = "drivers", xlim = c(0, 1500),
      thinData = TRUE, thinData.keep = 0.5)
 ## Increase ylim and legend.ncols to avoid overlap of 
 ## legend with rest of figure
-plot(ep1, show = "genotypes", ylim = c(0, 3200), legend.ncols = 4,
+plot(ep1, show = "genotypes", ylim = c(0, 4500), legend.ncols = 4,
      xlim = c(0, 1500),
      thinData = TRUE, thinData.keep = 0.5)
 
@@ -409,23 +419,32 @@ plot(pancr)
 <<fig.width=6.5, fig.height=10>>=
 ## 2. Simulate from it. 
 
-set.seed(6) ## Fix the seed, so we can repeat it
+set.seed(4) ## Fix the seed, so we can repeat it
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      mu = 1e-6,
                      sampleEvery = 0.02,
                      keepEvery = 1,
-                     initSize = 2000,
+                     initSize = 1000,
                      finalTime = 10000,
                      onlyCancer = FALSE)
 @ 
+
+% set.seed(6) ## Fix the seed, so we can repeat it
+% ep2 <- oncoSimulIndiv(pancr, model = "McFL",
+%                      mu = 1e-6,
+%                      sampleEvery = 0.02,
+%                      keepEvery = 1,
+%                      initSize = 2000,
+%                      finalTime = 10000,
+%                      onlyCancer = FALSE)
 <<iep2x2,fig.width=6.5, fig.height=9>>=
 ## 3. What genotypes and drivers we get? And play with limits
 ##    to show only parts of the data. We also thin them.
 
 par(mfrow = c(2, 1))
 par(cex = 0.7)
-plot(ep2, show = "genotypes", xlim = c(400, 1800), 
-     ylim = c(0, 3500),
+plot(ep2, show = "genotypes", xlim = c(1000, 8000), 
+     ylim = c(0, 2400),
      thinData = TRUE, thinData.keep = 0.5)
 plot(ep2, show = "drivers", addtot = TRUE,
      xlim = c(400, 1800),
@@ -3269,7 +3288,9 @@ bauer <- data.frame(parent = c("Root", rep("p", K)),
 fbauer <- allFitnessEffects(bauer, drvNames = "p")
 set.seed(1)
 ## Use fairly large mutation rate
-b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000) 
+b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000,
+                     detectionProb = "default")
+
 @ 
 
 
@@ -3313,8 +3334,9 @@ mcf1 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
 mcf1s <-  oncoSimulIndiv(mcf1,
                          model = "McFL", 
                          mu = 1e-7,
-                         detectionSize = 1e8, 
-                         detectionDrivers = 100,
+                         detectionProb = "default",
+                         detectionSize = 1e20, 
+                         detectionDrivers = 9999,
                          sampleEvery = 0.02,
                          keepEvery = 8,
                          initSize = 2000,
@@ -3323,7 +3345,8 @@ mcf1s <-  oncoSimulIndiv(mcf1,
 summary(mcf1s)
 
 @ 
-
+%%
+%% set.seed(456)
 <<mcf1sx1,fig.width=6.5, fig.height=10>>=
 par(mfrow  = c(2, 1))
 ## I use thinData to make figures smaller and faster
@@ -3437,20 +3460,21 @@ names(examplesFitnessEffects)
 \subsection{Simulation with a conjunction example}\label{s-cbn1}
 
 We will simulate using the simple CBN-like restrictions of
-section \ref{cbn1} with two different models:
+section \ref{cbn1} with two different models. Note also that we combine 
 
 <<>>=
 data(examplesFitnessEffects)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE)[1:10, ]
 sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
-                       model = "McFL", 
-                       mu = 5e-7,
-                       detectionSize = 1e8, 
-                       detectionDrivers = 2,
-                       sampleEvery = 0.025,
-                       keepEvery = 5,
-                       initSize = 2000,
-                       onlyCancer = TRUE)
+                      model = "McFL", 
+                      mu = 5e-7,
+                      detectionSize = 1e8, 
+                      detectionDrivers = 2,
+                      detectionProb = "default",
+                      sampleEvery = 0.025,
+                      keepEvery = 5,
+                      initSize = 2000,
+                      onlyCancer = TRUE)
 summary(sm)
 @ 
 
@@ -3476,6 +3500,7 @@ evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE,
 sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
                        model = "Bozic", 
                        mu = 5e-6,
+                      detectionProb = "default",
                        detectionSize = 1e8, 
                        detectionDrivers = 4,
                        sampleEvery = 2,
@@ -4503,7 +4528,6 @@ ospI <- oncoSimulPop(4,
                     initSize = 10,
                     keepPhylog = TRUE,
                     initMutant = c("d > m > z"),
-                    n2 = NULL, p2 = NULL, cPDetect = NULL,
                     mc.cores = 2
                     )
 
@@ -4522,7 +4546,6 @@ ossI <- oncoSimulSample(4,
                         onlyCancer = TRUE,
                         initSize = 10,
                         initMutant = c("z > d"),
-                        n2 = NULL, p2 = NULL, cPDetect = NULL,
                         thresholdWhole = 1 ## check presence of initMutant
                     )
 
@@ -4727,7 +4750,6 @@ oi <- allFitnessEffects(orderEffects =
                                 "D" = "d1, d2") )
 oiI1 <- oncoSimulIndiv(oi, model = "Exp")
 oiP1 <- oncoSimulPop(4, oi,
-                     n2 = NULL, p2 = NULL, cPDetect = NULL,
                      keepEvery = 10,
                      mc.cores = 2,
                      keepPhylog = TRUE)

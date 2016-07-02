@@ -81,14 +81,14 @@ TTT <- NULL
                         mutationPropGrowth = TRUE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", keepEvery = 1,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     cat("\n mpg1c: a runif is", runif(1), "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mu = mu, detectionSize =  3e4,
                         mutationPropGrowth = FALSE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", keepEvery = 1,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     summary(nca)[1:20, c(1, 2, 3, 8, 9)]
     summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
     ## I once saw a weird thing
@@ -139,14 +139,14 @@ TTT <- NULL
                         mutationPropGrowth = TRUE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", keepEvery = 1,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     cat("\n mpg1c: a runif is", runif(1), "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mu = mu, detectionSize =  3e9,
                         mutationPropGrowth = FALSE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", keepEvery = 1,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     summary(nca)[1:20, c(1, 2, 3, 8, 9)]
     summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
     ## I once saw a weird thing
@@ -212,14 +212,14 @@ TTT <- NULL
                         mutationPropGrowth = TRUE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", keepEvery = 1,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     cat("\n mpg1NDc: a runif is", runif(1), "\n")
     nca2 <- oncoSimulPop(pops, fe, finalTime = ft,
                          mu = mu,
                         mutationPropGrowth = FALSE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", keepEvery = 1,
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     summary(nca)[1:20, c(1, 2, 3, 8, 9)]
     summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
     p.fail <- 1e-3
@@ -279,7 +279,7 @@ TTT <- NULL
                         mutationPropGrowth = TRUE,
                         initSize = no,
                         initMutant = "a", model = "McFL",
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     
     
     cat("\n mcfND1c: a runif is", runif(1), "\n")
@@ -287,7 +287,7 @@ TTT <- NULL
                         mutationPropGrowth = FALSE,
                         initSize = no,
                         initMutant = "a", model = "McFL",
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
     ## summary(nca)[1:20, c(1, 2, 3, 8, 9)]
     ## summary(nca2)[1:20, c(1, 2, 3, 8, 9)]
     ## summary(summary(nca)$NumClones)
@@ -335,7 +335,7 @@ TTT <- NULL
                         mutationPropGrowth = TRUE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", 
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL,
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL,
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
@@ -347,7 +347,7 @@ TTT <- NULL
                         mutationPropGrowth = FALSE,
                         initSize = no, sampleEvery = 0.1,
                         initMutant = "a", 
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL,
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL,
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
@@ -408,7 +408,7 @@ TTT <- NULL
                         mutationPropGrowth = TRUE,
                         initSize = no, sampleEvery = 0.01,
                         initMutant = "a", 
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL,
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL,
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
@@ -420,7 +420,7 @@ TTT <- NULL
                         mutationPropGrowth = FALSE,
                         initSize = no, sampleEvery = 0.01,
                         initMutant = "a", 
-                        onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL,
+                        onlyCancer = FALSE, detectionProb = NA, seed = NULL,
                         detectionSize = 1e9,
                         detectionDrivers = 99,
                         thresholdWhole = x)
@@ -511,7 +511,7 @@ test_that("oncoSimulSample Without initmutant and modules", {
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
                           initSize = no,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           sampleEvery = 0.01,
                           detectionSize = 3e9,
                           detectionDrivers = 99,
@@ -524,7 +524,7 @@ test_that("oncoSimulSample Without initmutant and modules", {
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
                          initSize = no,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          sampleEvery = 0.01,
                           detectionSize = 3e9,
                           detectionDrivers = 99,
@@ -591,7 +591,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL", {
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
                           initSize = no,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           sampleEvery = 0.01,
                           detectionSize = 5e9,
                           detectionDrivers = 99,
@@ -605,7 +605,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL", {
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
                          initSize = no,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          sampleEvery = 0.01,
                           detectionSize = 5e9,
                           detectionDrivers = 99,
@@ -677,7 +677,7 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
                           initSize = no,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           sampleEvery = 0.01,
                           detectionSize = 6e4,
                           detectionDrivers = 99,
@@ -690,7 +690,7 @@ test_that("oncoSimulSample Without initmutant and modules, fixed size", {
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
                          initSize = no,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          sampleEvery = 0.01,
                           detectionSize = 6e4,
                           detectionDrivers = 99,
@@ -759,7 +759,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
                           initSize = no,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           sampleEvery = 0.01,
                           detectionSize = 5e4,
                           detectionDrivers = 99,
@@ -773,7 +773,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
                          initSize = no,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          sampleEvery = 0.01,
                           detectionSize = 5e4,
                           detectionDrivers = 99,
@@ -851,7 +851,7 @@ ds <- 1e9
                           mutationPropGrowth = FALSE, sampleEvery = 0.01,
                           finalTime =ft, detectionSize = ds,
                           initSize = no, detectionDrivers = 99999,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           seed = NULL, mc.cores = 2)
     cat("\n s3b: a runif is", runif(1), "\n")
     s3.g <- oncoSimulPop(pops,
@@ -860,7 +860,7 @@ ds <- 1e9
                          mutationPropGrowth = TRUE, sampleEvery = 0.01,
                          finalTime =ft, detectionSize = ds,
                          initSize = no,, detectionDrivers = 99999,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          seed = NULL, mc.cores = 2)
     summary(s3.g)[, c(1, 2, 3, 8, 9)]
     summary(s3.ng)[, c(1, 2, 3, 8, 9)]
@@ -912,7 +912,7 @@ test_that("Without initmutant, 2", {
                           mutationPropGrowth = FALSE, sampleEvery = 0.01,
                           finalTime =ft, detectionSize = ds,
                           initSize = no, detectionDrivers = 99999,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           seed = NULL, mc.cores = 2)
         cat("\n s2b: a runif is", runif(1), "\n")
         s2.g <- oncoSimulPop(pops,
@@ -921,7 +921,7 @@ test_that("Without initmutant, 2", {
                          mutationPropGrowth = TRUE, sampleEvery = 0.01,
                          finalTime =ft, detectionSize = ds,
                          initSize = no, detectionDrivers = 99999,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          seed = NULL, mc.cores = 2)
         if(! (inherits(s2.ng, "oncosimulpop") &&
               inherits(s2.g, "oncosimulpop"))) {
@@ -980,7 +980,7 @@ test_that("McFL: Without initmutant", {
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
                           initSize = no, keepEvery = 5,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL",
+                          onlyCancer = FALSE, detectionProb = NA, model = "McFL",
                           seed = NULL, mc.cores = 2)
     gc(); 
     cat("\n mcfls2b: a runif is", runif(1), "\n")
@@ -990,7 +990,7 @@ test_that("McFL: Without initmutant", {
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
                          initSize = no, keepEvery = 5, 
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL",
+                         onlyCancer = FALSE, detectionProb = NA, model = "McFL",
                          seed = NULL, mc.cores = 2)
     summary(s2.g)[, c(1, 2, 3, 8, 9)]
     summary(s2.ng)[, c(1, 2, 3, 8, 9)]
@@ -1056,7 +1056,7 @@ test_that("detectionSize. Without initmutant", {
                           keepEvery = 1,
                           finalTime =ft,
                           initSize = no,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           seed = NULL, mc.cores = 2)
     
     
@@ -1071,7 +1071,7 @@ test_that("detectionSize. Without initmutant", {
                           keepEvery = 1,
                          finalTime =ft,
                          initSize = no,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          seed = NULL, mc.cores = 2)
     ## summary(s3.g)[, c(1, 2, 3, 8, 9)]
     ## summary(s3.ng)[, c(1, 2, 3, 8, 9)]
@@ -1130,7 +1130,7 @@ test_that("detectionSize. Without initmutant, 2", {
                           mutationPropGrowth = FALSE,
                           finalTime =ft,
                           initSize = no, keepEvery = 1,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                          onlyCancer = FALSE, detectionProb = NA,
                           seed = NULL, mc.cores = 2)
     gc(); 
     
@@ -1144,7 +1144,7 @@ test_that("detectionSize. Without initmutant, 2", {
                          mutationPropGrowth = TRUE,
                          finalTime =ft,
                          initSize = no, keepEvery = 1,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                         onlyCancer = FALSE, detectionProb = NA,
                          seed = NULL, mc.cores = 2)
     ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
     ## summary(s2.ng)[, c(1, 2, 3, 8, 9)]
@@ -1203,7 +1203,7 @@ TTT <- NULL
                           detectionSize = 1e4,
                           sampleEvery = 0.01,
                           initSize = no, keepEvery = 5,
-                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL",
+                          onlyCancer = FALSE, detectionProb = NA, model = "McFL",
                           seed = NULL, mc.cores = 2)
     gc(); 
     
@@ -1217,7 +1217,7 @@ TTT <- NULL
                           detectionSize = 1e4,
                           sampleEvery = 0.01,
                          initSize = no, keepEvery = 5, 
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, model = "McFL",
+                         onlyCancer = FALSE, detectionProb = NA, model = "McFL",
                          seed = NULL, mc.cores = 2)
     ## summary(s2.g)[, c(1, 2, 3, 8, 9)]
     ## summary(s2.ng)[, c(1, 2, 3, 8, 9)]
@@ -1291,25 +1291,25 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, sampleEvery = 0.01,
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     cat("\n omp1b: a runif is", runif(1), "\n")
 ##     ncb <- oncoSimulPop(pops, fe, finalTime = ft, detectionSize = ds,
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no,sampleEvery = 0.01,
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     cat("\n omp1c: a runif is", runif(1), "\n")
 ##     nca2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionSize = ds,
 ##                         mutationPropGrowth = FALSE,
 ##                         initSize = no,sampleEvery = 0.01,
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     cat("\n omp1d: a runif is", runif(1), "\n")
 ##     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionSize = ds,
 ##                         mutationPropGrowth = FALSE,
 ##                         initSize = no,sampleEvery = 0.01,
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##          summary(nca)[, c(1, 2, 3, 8, 9)]
 ##          summary(ncb)[, c(1, 2, 3, 8, 9)]
 ##          summary(nca2)[, c(1, 2, 3, 8, 9)]
@@ -1356,25 +1356,25 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                              mutationPropGrowth = TRUE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     cat("\n omp2b: a runif is", runif(1), "\n")
 ##     ncb <- oncoSimulPop(pops, fe, finalTime = ft, detectionSize = ds,
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     cat("\n omp2c: a runif is", runif(1), "\n")
 ##     nca2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionSize = ds,
 ##                         mutationPropGrowth = FALSE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     cat("\n omp2d: a runif is", runif(1), "\n")
 ##     ncb2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionSize = ds,
 ##                         mutationPropGrowth = FALSE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##          summary(nca)[, c(1, 2, 3, 8, 9)]
 ##          summary(ncb)[, c(1, 2, 3, 8, 9)]
 ##          summary(nca2)[, c(1, 2, 3, 8, 9)]
@@ -1432,7 +1432,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no,
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1441,7 +1441,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no,
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1450,7 +1450,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no,
 ##                          initMutant = "a",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     
 ##     
 ##     cat("\n mpc1d: a runif is", runif(1), "\n")
@@ -1458,7 +1458,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no,
 ##                          initMutant = "b",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     expect_true(var(summary(nca)$NumClones) > 1e-4)
 ##     expect_true(var(summary(ncb)$NumClones) > 1e-4)
@@ -1513,7 +1513,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mu = mu,
 ##                         initSize = no, keepEvery = 1,
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1523,7 +1523,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mu = mu,
 ##                         initSize = no, keepEvery = 1,
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1533,7 +1533,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mu = mu,
 ##                          initSize = no, keepEvery = 1,
 ##                          initMutant = "a",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1543,7 +1543,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mu = mu,                     
 ##                          initSize = no, keepEvery = 1,
 ##                          initMutant = "b",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     expect_true(var(summary(nca)$NumClones) > 1e-4)
 ##     expect_true(var(summary(ncb)$NumClones) > 1e-4)
@@ -1586,7 +1586,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "a", keepEvery = 1,
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1595,7 +1595,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "b", keepEvery = 1,
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1604,7 +1604,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, model = "McFL",
 ##                          initMutant = "a", keepEvery = 1,
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1613,7 +1613,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, model = "McFL",
 ##                          initMutant = "b", keepEvery = 1,
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     expect_true(var(summary(nca)$NumClones) > 1e-4)
 ##     expect_true(var(summary(ncb)$NumClones) > 1e-4)
@@ -1658,7 +1658,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "a", keepEvery = 1,
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1667,7 +1667,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "b", keepEvery = 1,
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1676,7 +1676,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, model = "McFL",
 ##                          initMutant = "a", keepEvery = 1,
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -1685,7 +1685,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, model = "McFL",
 ##                          initMutant = "b", keepEvery = 1,
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     ## summary(nca)[, c(1, 2, 3, 8, 9)]
 ##     ## summary(nca2)[, c(1, 2, 3, 8, 9)]
@@ -1756,7 +1756,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mu = mu, keepEvery = 1,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "a1", 
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     
 ##     gc()
 ##     
@@ -1766,7 +1766,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mu = mu, keepEvery = 1,
 ##                         initSize = no, model = "McFL",
 ##                         initMutant = "b1",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     ## OK, but it also happens below just because init a1 eventually grows
 ##     ## faster, so larger pop, so more mutants, etc
 ##     ## We could try just counting the number of mutation events, but we would
@@ -1784,7 +1784,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mu = mu, keepEvery = 1,
 ##                          initSize = no, model = "McFL",
 ##                          initMutant = "a1",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc(); 
 ##     
 ##     cat("\n mpcmcf3d: a runif is", runif(1), "\n")
@@ -1793,7 +1793,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mu = mu, keepEvery = 1,                    
 ##                          initSize = no, model = "McFL",
 ##                          initMutant = "b1",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     expect_true(var(summary(nca)$NumClones) > 1e-4)
 ##     expect_true(var(summary(ncb)$NumClones) > 1e-4)
 ##     expect_true(var(summary(nca2)$NumClones) > 1e-4)
@@ -1840,7 +1840,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, 
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,  sampleEvery = 0.01,
+##                         onlyCancer = FALSE, detectionProb = NA,  sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -1852,7 +1852,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, 
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, sampleEvery = 0.01,
+##                         onlyCancer = FALSE, detectionProb = NA, sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -1864,7 +1864,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, 
 ##                          initMutant = "a",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, sampleEvery = 0.01,
+##                          onlyCancer = FALSE, detectionProb = NA, sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -1876,7 +1876,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, 
 ##                          initMutant = "b",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, sampleEvery = 0.01,
+##                          onlyCancer = FALSE, detectionProb = NA, sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -1947,7 +1947,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, 
 ##                         initMutant = "a", model = "McFL",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,  sampleEvery = 0.01,
+##                         onlyCancer = FALSE, detectionProb = NA,  sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -1959,7 +1959,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, 
 ##                         initMutant = "b", model = "McFL",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, sampleEvery = 0.01,
+##                         onlyCancer = FALSE, detectionProb = NA, sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -1971,7 +1971,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, 
 ##                          initMutant = "a", model = "McFL",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, sampleEvery = 0.01,
+##                          onlyCancer = FALSE, detectionProb = NA, sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -1983,7 +1983,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, 
 ##                          initMutant = "b", model = "McFL",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, sampleEvery = 0.01,
+##                          onlyCancer = FALSE, detectionProb = NA, sampleEvery = 0.01,
 ##                           detectionSize = 1e9,
 ##                           detectionDrivers = 99,
 ##                           seed =NULL, max.wall.time = 3000,
@@ -2069,7 +2069,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, keepEvery = 1,
 ##                         initMutant = "a",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -2078,7 +2078,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                         mutationPropGrowth = TRUE,
 ##                         initSize = no, keepEvery = 1,
 ##                         initMutant = "b",
-##                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                         onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -2087,7 +2087,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, keepEvery = 1,
 ##                          initMutant = "a",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     
 ##     
@@ -2096,7 +2096,7 @@ cat(paste("\n Ending mutPropGrwoth-long at", date(), "\n"))
 ##                          mutationPropGrowth = FALSE,
 ##                          initSize = no, keepEvery = 1,
 ##                          initMutant = "b",
-##                          onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL, seed = NULL, mc.cores = 2)
+##                          onlyCancer = FALSE, detectionProb = NA, seed = NULL, mc.cores = 2)
 ##     gc()
 ##     ## summary(nca)[, c(1, 2, 3, 8, 9)]
 ##     ## summary(nca2)[, c(1, 2, 3, 8, 9)]

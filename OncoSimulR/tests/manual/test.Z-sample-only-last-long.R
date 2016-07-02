@@ -4,24 +4,24 @@
 data(examplePosets)
 RNGkind("Mersenne-Twister") 
                          
-bozic <- function(poset) oncoSimulIndiv(poset, n2 = NULL, p2 = NULL, cPDetect = NULL)
-bozic9 <- function(poset) oncoSimulIndiv(poset, keepEvery = -9, n2 = NULL, p2 = NULL, cPDetect = NULL)
+bozic <- function(poset) oncoSimulIndiv(poset, detectionProb = NA)
+bozic9 <- function(poset) oncoSimulIndiv(poset, keepEvery = -9, detectionProb = NA)
     
-Exp <- function(poset) oncoSimulIndiv(poset, model = "Exp", n2 = NULL, p2 = NULL, cPDetect = NULL)
-Exp9 <- function(poset) oncoSimulIndiv(poset, model = "Exp", keepEvery = -9, n2 = NULL, p2 = NULL, cPDetect = NULL)
+Exp <- function(poset) oncoSimulIndiv(poset, model = "Exp", detectionProb = NA)
+Exp9 <- function(poset) oncoSimulIndiv(poset, model = "Exp", keepEvery = -9, detectionProb = NA)
 
 mc <- function(poset) oncoSimulIndiv(poset, model = "McFL",
                                      mu = 5e-7,
                                      initSize = 4000,
                                      sampleEvery = 0.025,
                                      finalTime = 15000,
-                                     keepEvery = 5, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                     keepEvery = 5, detectionProb = NA)
 mc9 <- function(poset) oncoSimulIndiv(poset, model = "McFL",
                                      mu = 5e-7,
                                      initSize = 4000,
                                      sampleEvery = 0.025,
                                      finalTime = 15000,
-                                      keepEvery = -9, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                                      keepEvery = -9, detectionProb = NA)
 
 
 ## A list, where each element is a list

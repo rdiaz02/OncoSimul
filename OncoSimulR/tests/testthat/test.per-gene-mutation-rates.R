@@ -236,7 +236,7 @@ test_that("McFL: Only no-int, and sorting", {
                                  model = "McFL",
                                  sampleEvery = 0.03,
                                  keepEvery = 5,
-                                 seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                 seed = NULL, detectionProb = NA,
                                  finalTime = 20)),
                   "Individual OncoSimul trajectory", 
                   fixed = TRUE)
@@ -349,7 +349,7 @@ test_that("McFL: Same freqs, chisq, when s", {
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = 0.001,
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -381,7 +381,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0",
                            model = "McFL",
                            initSize = no,
                            finalTime = 0.0001,
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2                       
+                           seed = NULL, detectionProb = NA, mc.cores = 2                       
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -419,7 +419,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
                            initSize = no,
                            finalTime = 4,
                            mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -453,7 +453,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
                            initSize = no,
                            finalTime = 10,
                            mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -507,7 +507,7 @@ test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systema
                            onlyCancer = FALSE,
                            initSize = no,
                            finalTime = 0.0001,
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2,
+                           seed = NULL, detectionProb = NA, mc.cores = 2,
                            model = "McFL"
                            )
         (expectedC <- no*reps*muvar)
@@ -567,7 +567,7 @@ test_that("McFL:Complex fitness specification, tiny s diffs", {
                            initSize = no,
                            finalTime = .0001,
                            model = "McFL",
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -602,7 +602,7 @@ test_that("get.gene.counts exercising for NA case", {
     ou1 <- oncoSimulIndiv(fe1, mu = muvar2,
                           initSize = 20,
                           onlyCancer = FALSE,
-                          seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                          seed = NULL, detectionProb = NA)
     expect_output(str(OncoSimulR:::get.gene.counts(ou1)),
                   "$ counts",
                   fixed = TRUE)
@@ -705,7 +705,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                            model = "McFL",
                            finalTime = 50,
                            mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -722,7 +722,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                            model = "McFL",
                            finalTime = .001,
                            mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -1091,7 +1091,7 @@ test_that("More mutpropgrowth, in modules of s", {
                               detectionDrivers = 9999,
                               initSize = no,
                               onlyCancer = FALSE,
-                              seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2)
+                              seed = NULL, detectionProb = NA, mc.cores = 2)
         cat("\n mpgs3b: a runif is", runif(1), "\n")
         s3.g <- oncoSimulPop(pops,
                              f3,
@@ -1103,7 +1103,7 @@ test_that("More mutpropgrowth, in modules of s", {
                              detectionDrivers = 9999,
                              initSize = no,
                              onlyCancer = FALSE,
-                             seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2)
+                             seed = NULL, detectionProb = NA, mc.cores = 2)
         summary(s3.g)[, c(1, 2, 3, 8, 9)]
         summary(s3.ng)[, c(1, 2, 3, 8, 9)]
         summary(summary(s3.ng)[, 2])
@@ -1293,7 +1293,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                            model = "McFL",
                            finalTime = 50,
                            mutationPropGrowth = TRUE,
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))
@@ -1310,7 +1310,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s  an
                            model = "McFL",
                            finalTime = .001,
                            mutationPropGrowth = TRUE,
-                           seed = NULL, n2 = NULL, p2 = NULL, cPDetect = NULL, mc.cores = 2
+                           seed = NULL, detectionProb = NA, mc.cores = 2
                            )
         (expectedC <- no*reps*muvar2)
         colSums(OncoSimulR:::geneCounts(bb))

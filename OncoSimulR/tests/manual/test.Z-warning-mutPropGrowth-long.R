@@ -18,7 +18,7 @@ test_that("mutationPropGrowth warning with Bozic, sample", {
                                            oi,
                                            sampleEvery = 0.03,
                                            onlyCancer = FALSE,
-                                           n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                           detectionProb = NA,
                                            model = "Bozic",
                                            mutationPropGrowth = TRUE,
                                            seed = NULL),

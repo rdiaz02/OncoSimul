@@ -12,7 +12,7 @@ test_that("mutationPropGrowth OK  with Exp, sample", {
                drvNames = c("d1", "d2", "f1", "f2", "f3"))
               expect_message(oiI1 <- oncoSimulSample(4,
                                                      oi,
-                                                     onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                                     onlyCancer = FALSE, detectionProb = NA,
                                                      model = "Exp",
                                                      sampleEvery = 0.05,
                                                      mutationPropGrowth = TRUE),
@@ -36,7 +36,7 @@ test_that("mutationPropGrowth OK  with McFL, sample", {
                                                      detectionSize = 1e8, 
                                                      detectionDrivers = 2,
                                                      sampleEvery = 0.025,
-                                                     onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                                     onlyCancer = FALSE, detectionProb = NA,
                                                      mutationPropGrowth = TRUE),
                              "Successfully", fixed = TRUE)
 })

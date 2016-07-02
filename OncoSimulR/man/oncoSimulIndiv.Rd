@@ -220,24 +220,57 @@ noIntGenes component) the simulations should not stop based on the
 number of drivers (and, thus, the default is set to 9e6).
 }
 
-\item{PDBaseline}{For the mechanism where probability of detection
-  depends on size, the baseline. See \sQuote{Details}.
+\item{detectionProb}{ Vector of arguments for the mechanism where
+  probability of detection depends on size. If \code{NA}, this mechanism
+  is not used. If \sQuote{default}, the vector will be populated with
+  default values.  Otherwise, a named vector with some of the following
+  named elements (see \sQuote{Details}):
+%%   \itemize{
+
+%%     \item{PDBaseline}{Baseline size subtracted to total population size
+%%     to compute the probability of detection. If not given explicitly,
+%%     the default is \code{1.1*initSize}.
+%%     }
+
+%%     \item{p2}{The probability of detection at population size
+%%     \code{n2}. If you specificy \code{p2} you must also specify
+%%     \code{n2} and you must not specify \code{cPDetect}. The fault is 0.1.}
+
+%%     \item{n2}{The population size at which probability of detection is
+%%       \code{p2}. The default is \code{1.1*initSize}.}
+
+%%     \item{cPDetect}{The change in probability of detection with size. If
+%%       you specify it, you should not specify either of \code{p2} or
+%%       \code{n2}. See \sQuote{Details}.  }
+
+%%     \item{checkSizePEvery}{Time between successive checks for the
+%%     probability of exiting as a function of population size. If not
+%%     given explicitly, the default is 20. See \sQuote{Details}.}
+
+%% }
+
+
 }
 
-\item{p2}{For the mechanism where probability of detection
-  depends on size, the probability of detection at size \code{n2}. See \sQuote{Details}.}
 
-\item{n2}{For the mechanism where probability of detection depends on
-  size, the size at which probability of detection is \code{p2}. See
-  \sQuote{Details}. }
+%% \item{PDBaseline}{For the mechanism where probability of detection
+%%   depends on size, the baseline. See \sQuote{Details}.
+%% }
 
-\item{cPDetect}{ For the mechanism where probability of detection
-  depends on size, the change in probability of detection with size. If
-  you specify it, you should not specify either of \code{p2} or
-  \code{n2}. See \sQuote{Details}.  }
+%% \item{p2}{For the mechanism where probability of detection
+%%   depends on size, the probability of detection at size \code{n2}. See \sQuote{Details}.}
 
-\item{checkSizePEvery}{ For the mechanism where probability of detection
-  depends on size, time between successive checks. See \sQuote{Details}.  }
+%% \item{n2}{For the mechanism where probability of detection depends on
+%%   size, the size at which probability of detection is \code{p2}. See
+%%   \sQuote{Details}. }
+
+%% \item{cPDetect}{ For the mechanism where probability of detection
+%%   depends on size, the change in probability of detection with size. If
+%%   you specify it, you should not specify either of \code{p2} or
+%%   \code{n2}. See \sQuote{Details}.  }
+
+%% \item{checkSizePEvery}{ For the mechanism where probability of detection
+%%   depends on size, time between successive checks. See \sQuote{Details}.  }
 
 \item{sampleEvery}{
   
@@ -561,24 +594,25 @@ of the individual done, and the number of attempts and time used.}
   always detected (and, thus, simulation ended) when certain conditions
   are met (\code{detectionSize},
   \code{detectionDrivers}). Alternatively, it can be stochastic process
-  where probability of detection depends on size. Every
-  \code{checkSizePEvery} time units we assess population size, and
-  detect cancer or not probabilistically (comparing the probability of
-  detection for that size with a random uniform number). Probability of
-  detection changes with size according to the function
+  where probability of detection depends on size. Every so often (see
+  below) we assess population size, and detect cancer or not
+  probabilistically (comparing the probability of detection for that
+  size with a random uniform number). Probability of detection changes
+  with size according to the function
   
   \deqn{ 1 - e^( -cPDetect (populationsize - PDBaseline))}.
 
   You can pass \code{cPDetect} manually (you will need to set \code{n2}
-  and \code{p2} to NULL). However, it is probably more intuitive to
-  specify the pair \code{n2}, \code{p2}, such that the probability of
-  detection is \eqn{p2} for population size \eqn{n2} and from that pair
-  we solve for the value of \code{cPDetect}. If all of \code{cPDetect},
-  \code{n2} and \code{p2} are set to NULL, this mechanism of exiting is
-  not used. \code{checkSizePEvery} has, by default, a different (and
-  much larger) value than \code{sampleEvery} both to allow to examine
-  the effects of sampling, and to avoid many costly random number
-  generations. 
+  and \code{p2} to NULL). However, it might be more intuitive to specify
+  the pair \code{n2}, \code{p2}, such that the probability of detection
+  is \eqn{p2} for population size \eqn{n2} (and from that pair we solve
+  for the value of \code{cPDetect}). How often do we check? That is
+  controlled by \code{checkSizePEvery}: we assess probability of exiting
+  at every sampling time that is (the closest possible) multiple of
+  \code{checkSizePEvery}.  \code{checkSizePEvery} has, by default, a
+  different (and much larger) value than \code{sampleEvery} both to
+  allow to examine the effects of sampling, and to avoid many costly
+  random number generations.
   
 
 }

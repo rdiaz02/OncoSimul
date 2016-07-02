@@ -12,7 +12,7 @@ test_that("exercising plotClonePhylog", {
                                      keepEvery = 5,
                                      initSize = 2000,
                                      finalTime = 3000,
-                                     onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                                     onlyCancer = FALSE, detectionProb = NA,
                                      keepPhylog = TRUE)
               ## Show only those with N > 10 at end
               plotClonePhylog(tmp, N = 10)
@@ -79,7 +79,7 @@ test_that("stacked, stream, genotypes and some colors", {
                              keepEvery = 5,
                              initSize = 2000,
                              finalTime = 3000,
-                             onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL,
+                             onlyCancer = FALSE, detectionProb = NA,
                              keepPhylog = TRUE)
       
       if(nrow(tmp$pops.by.time) >= 5) {
@@ -193,7 +193,7 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
                          keepEvery = 1,
                          initSize = 2000,
                          finalTime = 3000,
-                         onlyCancer = FALSE, n2 = NULL, p2 = NULL, cPDetect = NULL)
+                         onlyCancer = FALSE, detectionProb = NA)
     if(e1$FinalTime >= 90) {
             break
         } else {
