@@ -54,8 +54,12 @@ while(TRUE) {
     ## if you want to tex the file, use knit2pdf and change output name to
     ## have tex extension, etc.
 
-    ## This if using the source
-    checkVignettes(dir = "../OncoSimulR", workdir = "src") ## yes, tmp or cur does not do it
+    ## This if using the source But either I do not understand or this
+    ## does not work, as using workdir = "tmp" fails. And what will happen
+    ## with multiple parallel jobs?
+    ## checkVignettes(dir = "../OncoSimulR", workdir = "src") ## yes, tmp or
+    ##                                                        ## cur does not
+    ##                                                        ## do it
 
     
     ## devtools, checks vignette and also catches other errors. ALWAYS
