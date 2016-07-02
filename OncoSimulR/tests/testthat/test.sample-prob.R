@@ -41,7 +41,7 @@ test_that("Increasing p2 decreases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 20
+    n <- 25
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -49,7 +49,7 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = .2, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 13, cPDetect = NULL),
+                           detectionProb = c(p2 = .1, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NULL),
                            finalTime = 100000,
                            onlyCancer = TRUE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -58,12 +58,13 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = .8, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 13, cPDetect = NULL),
+                           detectionProb = c(p2 = .9, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NULL),
                            finalTime = 100000,
                            onlyCancer = TRUE,
                            detectionDrivers = 99, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
-        (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
+        (tb <- unlist(lapply(sb, function(x) x$FinalTime)))
+        print(suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value))
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
@@ -77,7 +78,7 @@ test_that("Increasing n2 increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 20
+    n <- 30
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -85,7 +86,7 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = .1, n2 = 5000, PDBaseline = 1500, cPDetect = NULL),
+                           detectionProb = c(p2 = .1, n2 = 4000,  checkSizePEvery = 15, PDBaseline = 1900, cPDetect = NULL),
                            finalTime = 100000,
                            onlyCancer = TRUE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -94,12 +95,13 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = .1, n2 = 2001, PDBaseline = 1500, cPDetect = NULL),
+                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 15,  PDBaseline = 1900, cPDetect = NULL),
                            finalTime = 100000,
                            onlyCancer = TRUE,
                            detectionDrivers = 99, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
-        (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
+        (tb <- unlist(lapply(sb, function(x) x$FinalTime)))
+        print(suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value))
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }

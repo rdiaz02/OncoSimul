@@ -259,15 +259,14 @@ Using this package will often involve the following steps:
       results, for example. In addition, decreasing the death rate will
       more easily lead to numerical problems as shown in section
       \ref{ex-0-death}}.
-  \item Specify the other parameters of the simulation (when to stop,
-    mutation rate, etc).
+  \item Specify other parameters of the simulation. In particular, decide
+    when to stop the simulation, mutation rates, etc.
   \end{itemize}
   Of course, at least for initial playing around, you can use the defaults.
   
-\item Sample from the simulated data: section \ref{sample}, and do
-  something with those simulated data (e.g., fit an OT model to
-  them). What you do with the data, however, is outside the scope of this
-  package.   
+\item Sample from the simulated data and do something with those simulated
+  data (e.g., fit an OT model to them). What you do with the data,
+  however, is outside the scope of this package.
 \end{enumerate}
 
 
@@ -300,7 +299,7 @@ Following the above we will run two examples. First a model with a few
 genes and \textbf{epistasis}:
 
 <<fig.width=6.5, fig.height=10>>=
-## 1. Fitness effects: here we specify a 
+## 1. Fitness effects: here we specify an 
 ##    epistatic model with modules.
 sa <- 0.1
 sb <- -0.2
@@ -320,17 +319,18 @@ sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
 evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 
 ## 2. Simulate the data. Here we use the "McFL" model and set explicitly
-##    parameters for mutation rate, final and initial sizes, etc.
+##    parameters for mutation rate, initial size and size of the population
+##    that will end the simulations, etc
 
 RNGkind("Mersenne-Twister")
 set.seed(983)
 ep1 <- oncoSimulIndiv(sv2, model = "McFL",
-mu = 5e-6,
-sampleEvery = 0.02,
-keepEvery = 0.5,
-initSize = 2000,
-finalTime = 3000,
-onlyCancer = FALSE)
+                      mu = 5e-6,
+                      sampleEvery = 0.02,
+                      keepEvery = 0.5,
+                      initSize = 2000,
+                      finalTime = 3000,
+                      onlyCancer = FALSE)
 @ 
 
 
@@ -3271,6 +3271,7 @@ plot(rv2, expandModules = TRUE,   autofit = TRUE)
 \section{Running and plotting the simulations}\label{simul}
 
 
+
 \subsection{Bauer's example again}\label{bauer2}
 We will use the model of Bauer et al., \cite{Bauer2014} that we saw in
 section \ref{bauer}.
@@ -3892,7 +3893,7 @@ pancrSamp
 
 @ 
 
-
+%% FIXME: or oncoSimulPop with keepEvery = NULL. of mclapply of oncoSimulIndiv
 
 \subsection{Differences between \Rfunction{samplePop} and
   \Rfunction{oncoSimulSample}}\label{diffsample}
@@ -3958,38 +3959,42 @@ independent calls (e.g., from different R processes) to
 since this is likely to lead to better usage of multiple cores/CPUs if you
 are examining a large number of different scenarios.
 
-\subsection{Dealing with errors in
-  \Rfunction{oncoSimulPop}}\label{errorosp}
+% \subsection{Dealing with errors in
+%   \Rfunction{oncoSimulPop}}\label{errorosp}
 
-Suppose you did something like
+% Suppose you did something like
 
-<<>>=
-pancrError <- oncoSimulPop(10, pancr,
-                           initSize = 1e-5,
-                           detectionSize = 1e7,
-                           keepEvery = 10,
-                           mc.cores = 2)
-@ 
+% <<>>=
+% pancrError <- oncoSimulPop(10, pancr,
+%                            initSize = 1e-5,
+%                            detectionSize = 1e7,
+%                            keepEvery = 10,
+%                            mc.cores = 2)
+% @ 
 
-The warning you are seeing tells you there was an error in the functions
-called by \Rfunction{mclapply}. If you check the help for
-\Rfunction{mclpapply} you'll see that it returns a try-error object, so we
-can inspect it. For instance, we can do:
+% The warning you are seeing tells you there was an error in the functions
+% called by \Rfunction{mclapply}. If you check the help for
+% \Rfunction{mclpapply} you'll see that it returns a try-error object, so we
+% can inspect it. For instance, we can do:
 
-<<>>=
-pancrError[[1]]
-@ 
+% <<>>=
+% pancrError[[1]]
+% @ 
 
-But that output is hard to read. This is better:
+% But that output is hard to read. This is better:
 
-<<>>=
-pancrError[[1]][1]
-@ 
+% <<>>=
+% pancrError[[1]][1]
+% @ 
  
-And from here you can clearly see the error that was returned by
-\Rfunction{oncoSimulIndiv}: \texttt{initSize < 1} (which is indeed true:
-we pass \texttt{initSize = 1e-5}).
+% And from here you can clearly see the error that was returned by
+% \Rfunction{oncoSimulIndiv}: \texttt{initSize < 1} (which is indeed true:
+% we pass \texttt{initSize = 1e-5}).
 
+
+
+
+%% FIXME: use cases of each.
 
 \subsection{Dealing with errors in
   \Rfunction{oncoSimulPop}}\label{errorosp}
