@@ -3,7 +3,9 @@
 library(testthat)
 library(OncoSimulR)
 library(tools)
-library(devtools)
+## library(devtools)
+library(knitr)
+
 ## recall to install with --install-tests
 
 if (Sys.info()["nodename"] == "Gallotia") {
@@ -43,15 +45,29 @@ while(TRUE) {
 
     cat("\n                          And this is the fourth random uniform number ", runif(1), "\n")
 
-    ## Now, use devtools, since it is the only way to check vignette
+    ## Vignette via knitr.
+    nf <- tempfile()
+    cat(paste("\n     knit output to ", nf, "\n"))
+    
+    knit("../OncoSimulR/vignettes/OncoSimulR.Rnw", output = nf)
 
-    devtools::check(pkg = "../OncoSimulR", document = FALSE)
+    ## if you want to tex the file, use knit2pdf and change output name to
+    ## have tex extension, etc.
+
+    ## This if using the source
+    checkVignettes(dir = "../OncoSimulR", workdir = "src") ## yes, tmp or cur does not do it
+
+    
+    ## devtools, checks vignette and also catches other errors. ALWAYS
+    ## commit changes before as devtools can change files!!!  But the
+    ## changing of files is way too dangerous for a check.
+    ## devtools::check(pkg = "../OncoSimulR", document = FALSE)
+
     ## cat(paste("\n starting testInstalledPackage, vignette", date()))
-    ## testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
-    ##                      types = c("vignettes"))
-    ## cat(paste("\n  done testInstalledPackage, vignette", date(), "\n"))
-
-    ## .Random.seed <- the.seed  ## note the seed does not advance here at all. Did above.
+    ## This does not work. 
+    ## testInstalledPackage(pkg = "OncoSimulR", outDir = nnn, types =
+    ## c("vignettes")) cat(paste("\n done testInstalledPackage, vignette",
+    ## date(), "\n"))
     ## checkVignettes("OncoSimulR", workdir = "src") ## yes, tmp or cur does not do it
     cat("\n                              And this is the FINAL random uniform number ", runif(1), "\n")
     ## set.seed(NULL) ## Not needed as files clean up after themselves
