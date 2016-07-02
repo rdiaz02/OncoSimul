@@ -23,13 +23,9 @@
  oncoSimulIndiv(fp, model = "Exp", 
                 numPassengers = 0, mu = 1e-6, muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
-                PDBaseline = initSize * 1.1,
-                p2 = .1,
-                n2 = initSize * 2,
-                cPDetect = NULL,
+                detectionProb = NA,                  
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
-                checkSizePEvery = 20,
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
@@ -49,13 +45,9 @@
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
-                PDBaseline = initSize * 1.1,
-                p2 = .1,
-                n2 = initSize * 2,
-                cPDetect = NULL,
+                detectionProb = NA,                  
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
-                checkSizePEvery = 20,
                 initSize = 500, s = 0.1, sh = -1,
                 K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
@@ -97,13 +89,9 @@ oncoSimulSample(Nindiv,
                                 sample(nd, Nindiv,
                                        replace = TRUE)
                             },
-                PDBaseline = initSize * 1.1,
-                p2 = .1,
-                n2 = initSize * 2,
-                cPDetect = NULL,
+                detectionProb = NA,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                     0.025),
-                checkSizePEvery = 20,
                 initSize = 500,
                 s = 0.1,
                 sh = -1,
@@ -225,29 +213,29 @@ number of drivers (and, thus, the default is set to 9e6).
   is not used. If \sQuote{default}, the vector will be populated with
   default values.  Otherwise, a named vector with some of the following
   named elements (see \sQuote{Details}):
-%%   \itemize{
+  \itemize{
 
-%%     \item{PDBaseline}{Baseline size subtracted to total population size
-%%     to compute the probability of detection. If not given explicitly,
-%%     the default is \code{1.1*initSize}.
-%%     }
+    \item{PDBaseline}{Baseline size subtracted to total population size
+    to compute the probability of detection. If not given explicitly,
+    the default is \code{1.1*initSize}.
+    }
 
-%%     \item{p2}{The probability of detection at population size
-%%     \code{n2}. If you specificy \code{p2} you must also specify
-%%     \code{n2} and you must not specify \code{cPDetect}. The fault is 0.1.}
+    \item{p2}{The probability of detection at population size
+    \code{n2}. If you specificy \code{p2} you must also specify
+    \code{n2} and you must not specify \code{cPDetect}. The fault is 0.1.}
 
-%%     \item{n2}{The population size at which probability of detection is
-%%       \code{p2}. The default is \code{1.1*initSize}.}
+    \item{n2}{The population size at which probability of detection is
+      \code{p2}. The default is \code{1.1*initSize}.}
 
-%%     \item{cPDetect}{The change in probability of detection with size. If
-%%       you specify it, you should not specify either of \code{p2} or
-%%       \code{n2}. See \sQuote{Details}.  }
+    \item{cPDetect}{The change in probability of detection with size. If
+      you specify it, you should not specify either of \code{p2} or
+      \code{n2}. See \sQuote{Details}.  }
 
-%%     \item{checkSizePEvery}{Time between successive checks for the
-%%     probability of exiting as a function of population size. If not
-%%     given explicitly, the default is 20. See \sQuote{Details}.}
+    \item{checkSizePEvery}{Time between successive checks for the
+    probability of exiting as a function of population size. If not
+    given explicitly, the default is 20. See \sQuote{Details}.}
 
-%% }
+}
 
 
 }

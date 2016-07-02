@@ -399,7 +399,6 @@ test_that("exercising sampling code, customSize", {
                          detectionDrivers = 1,
                          max.num.tries = 5000,
                          sampleEvery = 0.03,
-                         p2 = NULL, n2 = NULL, cPDetect = NULL,
                          keepEvery = 1000000)
     expect_message(samplePop(o1, timeSample = "unif"),
                    "Only one sampled time period with mutants", fixed = TRUE)
