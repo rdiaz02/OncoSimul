@@ -3,6 +3,7 @@
 library(testthat)
 library(OncoSimulR)
 library(tools)
+library(devtools)
 ## recall to install with --install-tests
 
 if (Sys.info()["nodename"] == "Gallotia") {
@@ -41,6 +42,10 @@ while(TRUE) {
     cat(paste("\n  done testInstalledPackage, tests", date(), "\n"))
 
     cat("\n                          And this is the fourth random uniform number ", runif(1), "\n")
+
+    ## Now, use devtools, since it is the only way to check vignette
+
+    devtools::check(pkg = "../OncoSimulR", document = FALSE)
     ## cat(paste("\n starting testInstalledPackage, vignette", date()))
     ## testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
     ##                      types = c("vignettes"))
