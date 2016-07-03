@@ -490,6 +490,13 @@ oncoSimulIndiv <- function(fp,
     if(is.null(keepEvery))
         keepEvery <- -9
 
+    if(is.na(detectionDrivers)) {
+        detectionDrivers <- (2^31) - 1
+    }
+    if(is.na(detectionSize)) {
+        detectionSize <- Inf
+    }
+    
     if(!inherits(fp, "fitnessEffects")) {
         if(any(unlist(lapply(list(fp, 
                                   numPassengers,
