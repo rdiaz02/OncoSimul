@@ -365,15 +365,19 @@ number of drivers (and, thus, the default is set to 9e6).
   Return only simulations that reach cancer?
 
   If set to TRUE, only simulations that satisfy the
-  \code{detectionDrivers} or the \code{detectionSize} requirements will
+  \code{detectionDrivers} or the \code{detectionSize} requirements or
+  that are "detected" because of the \code{detectionProb} mechanism will
   be returned: the simulation will be repeated, within the limits set by
   \code{max.num.tries} and \code{max.wall.time} (and, for
   \code{oncoSimulSample} also \code{max.num.tries.total} and
   \code{max.wall.time.total}), until one which meets the
-  \code{detectionDrivers} or \code{detectionSize} is
-  obtained. Otherwise, the simulation is returned regardless of final
-  population size or number of drivers in any clone and this includes
-  simulations where the population goes extinct.
+  \code{detectionDrivers} or \code{detectionSize} or one which is
+  detected stochastically under \code{detectionProb} is
+  obtained.
+
+  If \code{onlyCancer = FALSE} the simulation is returned regardless of
+  final population size or number of drivers in any clone and this
+  includes simulations where the population goes extinct.
 
 }
 
