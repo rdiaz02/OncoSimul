@@ -3267,8 +3267,225 @@ plot(rv2, expandModules = TRUE,   autofit = TRUE)
 %%       scale_char = 8)
 
 
+
+
 \clearpage
-\section{Running and plotting the simulations}\label{simul}
+\section{Running and plotting the simulations: starting, ending, and
+  examples}\label{simul}
+
+\subsection{Starting and ending}
+\label{sec:starting-ending}
+
+
+After you have decided the specifics of the fitness effects and the model,
+you need to decide:
+
+\begin{itemize}
+\item Where will you start your simulation from. This involves deciding
+  the initial population size (argument \texttt{initSize}) and, possibly,
+  the genotype of the initial population; the later is covered in section
+  \qref{initmutant}.
+
+\item When will you stop it: how long to run it, and whether or not to
+  require simulations to reach cancer (under some definition of what it
+  means to reach cancer). This is covered in section \qref{endsimul}.
+\end{itemize}
+
+
+\subsection{Can I start the simulation from a specific mutant?}\label{initmut}
+
+You bet. In v.1 you can only give the initial mutant as one with a single
+mutated gene. In version 2, however, you can specify the genotype for the
+initial mutant with the same flexibility as in
+\Rfunction{evalGenotype}. Here we show a couple of examples (we use the
+representation of the parent-child relationships ---discussed in section
+\ref{phylog}--- of the clones so that you can see which clones appear, and
+from which).
+
+%% o3init <- allFitnessEffects(orderEffects = c(
+%%                             "M > D > F" = 0.99,
+%%                             "D > M > F" = 0.2,
+%%                             "D > M"     = 0.1,
+%%                             "M > D"     = 0.9),
+%%                         noIntGenes = c("u" = 0.01, 
+%%                                        "v" = 0.01,
+%%                                        "w" = 0.001,
+%%                                        "x" = 0.0001,
+%%                                        "y" = -0.0001,
+%%                                        "z" = -0.001),
+%%                         geneToModule =
+%%                             c("Root" = "Root",
+%%                               "M" = "m",
+%%                               "F" = "f",
+%%                               "D" = "d") )
+<<fig.height=6>>=
+
+o3init <- allFitnessEffects(orderEffects = c(
+                            "M > D > F" = 0.99,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.1,
+                            "M > D"     = 0.9),
+                        noIntGenes = c("u" = 0.01, 
+                                       "v" = 0.01,
+                                       "w" = 0.001,
+                                       "x" = 0.0001,
+                                       "y" = -0.0001,
+                                       "z" = -0.001),
+                        geneToModule =
+                            c("M" = "m",
+                              "F" = "f",
+                              "D" = "d") )
+
+oneI <- oncoSimulIndiv(o3init, model = "McFL",
+                       mu = 5e-5, finalTime = 500,
+                       detectionDrivers = 3,
+                       onlyCancer = FALSE,
+                       initSize = 1000,
+                       keepPhylog = TRUE,
+                       initMutant = c("m > u > d")
+                       )
+plotClonePhylog(oneI, N = 0)
+
+
+## 
+## Note we also disable the stopping stochastically
+## as a function of size to allow the pop to grow
+## large and generate may different clones.
+ospI <- oncoSimulPop(4, 
+                    o3init, model = "Exp",
+                    mu = 5e-5, finalTime = 500,
+                    detectionDrivers = 3,
+                    onlyCancer = TRUE,
+                    initSize = 10,
+                    keepPhylog = TRUE,
+                    initMutant = c("d > m > z"),
+                    mc.cores = 2
+                    )
+
+op <- par(mar = rep(0, 4), mfrow = c(2, 2))
+plotClonePhylog(ospI[[1]])
+plotClonePhylog(ospI[[2]])
+plotClonePhylog(ospI[[3]])
+plotClonePhylog(ospI[[4]])
+par(op)
+
+
+ossI <- oncoSimulSample(4, 
+                        o3init, model = "Exp",
+                        mu = 5e-5, finalTime = 500,
+                        detectionDrivers = 2,
+                        onlyCancer = TRUE,
+                        initSize = 10,
+                        initMutant = c("z > d"),
+                        thresholdWhole = 1 ## check presence of initMutant
+                    )
+
+## No phylogeny is kept with oncoSimulSample, but look at the 
+## OcurringDrivers and the sample
+
+ossI$popSample
+ossI$popSummary[, "OccurringDrivers", drop = FALSE]
+
+
+@ 
+
+\subsection{Ending the simulations}
+\label{endsimul}
+
+OncoSimulR provides very flexible ways to decide how long simulations
+should run.
+
+The simplest procedure is to run the simulation for a fixed number of time
+periods (as specified by argument \texttt{finalTime}) or until the
+population goes extinct, whichever happens first. This might be what you
+want to do when you examine general population genetics scenarios without
+focusing on possible sampling issues. To do this, set \texttt{finalTime}
+to the value you want and set \texttt{onlyCancer = FALSE}; in addition,
+set \texttt{detectionProb} to ``NA'' and \texttt{detectionDrivers} and
+\texttt{detectionSize} to ``NA'' or to impossibly large
+numbers\footnote{Setting \texttt{detectionDrivers} and
+  \texttt{detectionSize} to ``NA'' is in fact equivalent to setting them
+  to the largest possible numbers: $2^32 -1$ and $\infty$,
+  respectively.}. This scenario is the \texttt{onlyCancer = FALSE} because
+you simply collect the simulation output, regardless of what happened with
+the population (it became extinct, it did not reach a large size, it did
+not accumulate drivers, etc).
+
+
+The rest of scenarios are obtained under \texttt{onlyCancer = TRUE}. Here
+a simulation will be repeated until the first one of the ``reach cancer''
+conditions is met\footnote{Of course, the ``reach cancer'' idea and the
+  \texttt{onlyCancer} argument are generic names; this could have been
+  labeled ``reach cardiovascular disease'' or ``reach whatever interests
+  me''.}. These conditions are:
+
+\begin{itemize}
+
+\item total population size, given by \texttt{detectionSize};
+
+\item number of drivers in any one genotype or clone, given by
+  \texttt{detectionDrivers}; note that this allows you to stop the
+  simulation as soon as a \textbf{specific genotype} is found, by using
+  exactly and only the genes that make that genotype as the drivers;
+
+\item a stochastic detection mechanism, where ``detecting cancer'' is a
+  function of total population size, with arguments as given in
+  \texttt{detectionProb}; this is explained below: \qref{detectprob}.
+
+\end{itemize}
+
+
+As an example, focusing on the first two mechanisms, suppose you give
+\texttt{detectionSize = 1e4} and \texttt{detectionDrivers = 3} (and you
+have \texttt{detectionProb = NA}). A simulation will exit as soon as it
+reaches a total population size of $1e4$ or any clone has four drivers,
+whichever comes first.
+
+
+What if we reach \texttt{finalTime} before any of the conditions has been
+fulfilled?  The simulation will be repeated again, within limits. These
+limits are:
+
+\begin{itemize}
+\item \texttt{max.wall.time}: the total wall time we allow an individual
+  simulation to run;
+\item \texttt{max.num.tries}: the maximum number of times we allow a
+  simulation to be repeated to reach cancer;
+\item \texttt{max.wall.time.total} and \texttt{max.num.tries.total},
+  similar to the above but over a set of simulations in function
+  \Rfunction{oncoSimulSample}.
+\end{itemize}
+
+
+Incidentally, we keep track of the number of attempts used (the component
+\texttt{other$attemptsUsed$}) before we reach cancer, so you can estimate
+(as from a negative binomial sampling) the probability of reaching your
+desired end point under different scenarios.
+
+
+
+\subsubsection{Stochastic detection mechanism: \texttt{detectionProb}}
+\label{detectprob}
+
+The third mechanism for stopping the simulation assumes that the
+probability of detection (or the probability that a sample is taken)
+increases with the total population size. This is biologically a
+reasonable assumption: the larger the tumor, the more likely it is it will
+be detected.
+
+For simplicity, and to make sure the probability is bounded between 0 and
+1, we use the function
+
+\begin{equation}
+  \label{eq:2}
+  P(N) = 1 - e^( -cPDetect (N - PDBaseline)), N > PDBaseline \\
+  P(N) = 0, N \leq PDBaseline
+\end{equation}
+
+where $P(N)$ is the probability that a tumor of total population size $N$
+will be detected, $cPDetect$ is the coefficient for the change in
+probability with population size, and $PDBaseline$
+
 
 
 
@@ -4466,102 +4683,6 @@ thus in the output you can have two columns with both genes mutated.
 %% else if you want so the names of the nodes will reflect those potentially
 %% more meaningful names.
 
-
-\subsection{Can I start the simulation from a specific mutant?}\label{initmut}
-
-You bet. In v.1 you can only give the initial mutant as one with a single
-mutated gene. In version 2, however, you can specify the genotype for the
-initial mutant with the same flexibility as in
-\Rfunction{evalGenotype}. Here we show a couple of examples (we use the
-representation of the parent-child relationships ---discussed in section \ref{phylog}--- of
-the clones so that you can see which clones appear, and from which).
-
-%% o3init <- allFitnessEffects(orderEffects = c(
-%%                             "M > D > F" = 0.99,
-%%                             "D > M > F" = 0.2,
-%%                             "D > M"     = 0.1,
-%%                             "M > D"     = 0.9),
-%%                         noIntGenes = c("u" = 0.01, 
-%%                                        "v" = 0.01,
-%%                                        "w" = 0.001,
-%%                                        "x" = 0.0001,
-%%                                        "y" = -0.0001,
-%%                                        "z" = -0.001),
-%%                         geneToModule =
-%%                             c("Root" = "Root",
-%%                               "M" = "m",
-%%                               "F" = "f",
-%%                               "D" = "d") )
-<<fig.height=6>>=
-
-o3init <- allFitnessEffects(orderEffects = c(
-                            "M > D > F" = 0.99,
-                            "D > M > F" = 0.2,
-                            "D > M"     = 0.1,
-                            "M > D"     = 0.9),
-                        noIntGenes = c("u" = 0.01, 
-                                       "v" = 0.01,
-                                       "w" = 0.001,
-                                       "x" = 0.0001,
-                                       "y" = -0.0001,
-                                       "z" = -0.001),
-                        geneToModule =
-                            c("M" = "m",
-                              "F" = "f",
-                              "D" = "d") )
-
-oneI <- oncoSimulIndiv(o3init, model = "McFL",
-                       mu = 5e-5, finalTime = 500,
-                       detectionDrivers = 3,
-                       onlyCancer = FALSE,
-                       initSize = 1000,
-                       keepPhylog = TRUE,
-                       initMutant = c("m > u > d")
-                       )
-plotClonePhylog(oneI, N = 0)
-
-
-## 
-## Note we also disable the stopping stochastically
-## as a function of size to allow the pop to grow
-## large and generate may different clones.
-ospI <- oncoSimulPop(4, 
-                    o3init, model = "Exp",
-                    mu = 5e-5, finalTime = 500,
-                    detectionDrivers = 3,
-                    onlyCancer = TRUE,
-                    initSize = 10,
-                    keepPhylog = TRUE,
-                    initMutant = c("d > m > z"),
-                    mc.cores = 2
-                    )
-
-op <- par(mar = rep(0, 4), mfrow = c(2, 2))
-plotClonePhylog(ospI[[1]])
-plotClonePhylog(ospI[[2]])
-plotClonePhylog(ospI[[3]])
-plotClonePhylog(ospI[[4]])
-par(op)
-
-
-ossI <- oncoSimulSample(4, 
-                        o3init, model = "Exp",
-                        mu = 5e-5, finalTime = 500,
-                        detectionDrivers = 2,
-                        onlyCancer = TRUE,
-                        initSize = 10,
-                        initMutant = c("z > d"),
-                        thresholdWhole = 1 ## check presence of initMutant
-                    )
-
-## No phylogeny is kept with oncoSimulSample, but look at the 
-## OcurringDrivers and the sample
-
-ossI$popSample
-ossI$popSummary[, "OccurringDrivers", drop = FALSE]
-
-
-@ 
 
 
 \section{Showing the relationships of clones}\label{phylog}
