@@ -1,4 +1,5 @@
 comment: false
+round: nearest
 ## comment:
 ##  layout: header, changes, diff
 coverage:
