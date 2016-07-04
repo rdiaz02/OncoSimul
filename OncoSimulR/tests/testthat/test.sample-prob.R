@@ -15,18 +15,18 @@ test_that("Increasing cPDetect decreases time" , {
                            initSize = 2000,
                            keepEvery = NA,
                            detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100, checkSizePEvery = 20, cPDetect = 1e-4),
-                           finalTime = NA,
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
                            detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100, checkSizePEvery = 20, cPDetect = 1e-2),
-                           finalTime = NA,
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         ta <- unlist(lapply(sa, function(x) x$FinalTime))
         tb <- unlist(lapply(sb, function(x) x$FinalTime))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -49,19 +49,19 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .9, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .9, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))
         print(suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value))
@@ -86,19 +86,19 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 4000,  checkSizePEvery = 15, PDBaseline = 1900, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 4000,  checkSizePEvery = 15, PDBaseline = 1900, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 15,  PDBaseline = 1900, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 15,  PDBaseline = 1900, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))
         print(suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value))
@@ -116,7 +116,7 @@ test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 20
+    n <- 30
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -124,19 +124,19 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -163,19 +163,19 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NULL, n2 = NULL, checkSizePEvery = 50, PDBaseline = 500, cPDetect = 1e-5),
-                           finalTime = NA,
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50, PDBaseline = 500, cPDetect = 1e-5),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NULL, n2 = NULL, checkSizePEvery = 50, PDBaseline = 500, cPDetect = .01),
-                           finalTime = NA,
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50, PDBaseline = 500, cPDetect = .01),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         ta <- unlist(lapply(sa, function(x) x$FinalTime))
         tb <- unlist(lapply(sb, function(x) x$FinalTime))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -198,19 +198,19 @@ test_that("Increasing p2 decreases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .8, n2 = 8500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .8, n2 = 8500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -234,19 +234,19 @@ test_that("Increasing n2 increases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 9000, PDBaseline = 2100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 9000, PDBaseline = 2100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 2101, PDBaseline = 2100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 2101, PDBaseline = 2100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -263,7 +263,7 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 20
+    n <- 30
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -271,19 +271,19 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -314,19 +314,19 @@ test_that("Increasing cPDetect decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NULL, n2 = NULL, checkSizePEvery = 10, PDBaseline = 1100,  cPDetect = 1e-4),
-                           finalTime = NA,
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 10, PDBaseline = 1100,  cPDetect = 1e-4),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NULL, n2 = NULL,checkSizePEvery = 10, PDBaseline = 1100, cPDetect = 1e-2),
-                           finalTime = NA,
+                           detectionProb = c(p2 = NA, n2 = NA,checkSizePEvery = 10, PDBaseline = 1100, cPDetect = 1e-2),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         ta <- unlist(lapply(sa, function(x) x$FinalTime))
         tb <- unlist(lapply(sb, function(x) x$FinalTime))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -349,19 +349,19 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 3500,checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 3500,checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .6, n2 = 3500,checkSizePEvery = 10,PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .6, n2 = 3500,checkSizePEvery = 10,PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -385,19 +385,19 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 5000, checkSizePEvery = 5,PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 5000, checkSizePEvery = 5,PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 5,PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 5,PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -422,19 +422,19 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NULL),
-                           finalTime = NA,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
-                           detectionDrivers = 99, mc.cores = 2)
+                           detectionDrivers = NA, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))         
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
@@ -447,6 +447,160 @@ test_that("Increasing checkSizePEvery increases time" , {
 
 
 
+
+
+test_that("Exercise the default option and other substitutions/defaults" , {
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_output(print(oncoSimulIndiv(
+                               oi,
+                               model = "Exp",
+                               initSize = 2000,
+                               keepEvery = NA,
+                               detectionProb = "default",
+                               finalTime = NA, detectionSize = NA,
+                               onlyCancer = TRUE,
+                               detectionDrivers = NA)),
+                  "Individual OncoSimul trajectory",
+                  fixed = TRUE)
+    expect_output(print(oncoSimulIndiv(
+                               oi,
+                               model = "Exp",
+                               initSize = 2000,
+                               keepEvery = NA,
+                               detectionProb = c(cPDetect = 0.001),
+                               finalTime = NA, detectionSize = NA,
+                               onlyCancer = TRUE,
+                               detectionDrivers = NA)),
+                  "Individual OncoSimul trajectory",
+                  fixed = TRUE)
+    expect_output(print(oncoSimulIndiv(
+                               oi,
+                               model = "Exp",
+                               initSize = 2000,
+                               keepEvery = NA,
+                               detectionProb = c(p2 = .9, n2 = 3000),
+                               finalTime = NA, detectionSize = NA,
+                               onlyCancer = TRUE,
+                               detectionDrivers = NA)),
+                  "Individual OncoSimul trajectory",
+                  fixed = TRUE)
+})
+
+
+test_that("Fails as expected" , {
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    expect_error(oncoSimulIndiv(p701,
+                                detectionProb = "default"),
+                 "detectionProb cannot be used in v.1 objects",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(cPDete = 0.1, n2 = 3000, p2 = 0.9),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "Names of some components of detectionProb are not recognized",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(cPDetect = 0.1, n2 = 3000, p2 = 0.9),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "Specify only cPDetect",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(cPDetect = 0.1, n2 = 3000),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "Specify only cPDetect",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(n2 = 3000),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "If you pass one of n2 or p2, you must also",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(n2 = 3000, p2 = 1.1),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "p2 >= 1",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(n2 = 3000, p2 = -.3),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "p2 <= 0",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(n2 = 3000, p2 = .3, PDBaseline = 5000),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "n2 <= PDBaseline",
+                 fixed = TRUE)
+    gi <- rep(0.1, 10)
+    names(gi) <- letters[1:10]
+    oi <- allFitnessEffects(noIntGenes = gi)
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(n2 = 3000, p2 = .3, PDBaseline = -3),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "PDBaseline < 0",
+                 fixed = TRUE)
+})
 
 
 
@@ -462,14 +616,14 @@ test_that("Increasing checkSizePEvery increases time" , {
     ##                    model = "McFL",
     ##                    initSize = 1000,
     ##                    detectionSize = 4800,
-    ##                    finalTime = NA, ## crucial this is increased
+    ##                    finalTime = NA, detectionSize = NA,
     ##                    keepEvery = -9,
     ##                    p2 = .1,
     ##                    checkSizePEvery = 2,
     ##                    verbosity = 0,
     ##                    PDBaseline = 1000,
     ##                    onlyCancer = TRUE,
-    ##                    detectionDrivers = 99)
+    ##                    detectionDrivers = NA)
     ## s5
     ## hist(unlist(lapply(s5, function(x) x$FinalTime)))
 

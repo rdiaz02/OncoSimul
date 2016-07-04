@@ -228,7 +228,8 @@ test_that("exercising oncoSimulSample, old format", {
                                                     sampleEvery = 0.03,
                                                     detectionSize = 1e3,
                                                     finalTime = 3,
-                                                    onlyCancer = FALSE),
+                                                    onlyCancer = FALSE,
+                                                    showProgress = TRUE),
                              "Successfully sampled 2 individuals")
               expect_message(ofs <- oncoSimulSample(2, p701,
                                                     sampleEvery = 0.03,
@@ -263,7 +264,8 @@ test_that("exercising oncoSimulSample, new format", {
                                          detectionSize = 1e3,
                                          finalTime = 3,
                                          onlyCancer = FALSE,
-                                         typeSample = "single"),
+                                         typeSample = "single",
+                                         showProgress = TRUE),
                   "Successfully sampled 2 individuals")
               expect_equal(dim(pS$popSample), c(2, 7))
               expect_equal(dim(pSs$popSample), c(2, 7))

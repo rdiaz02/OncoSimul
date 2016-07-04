@@ -1761,6 +1761,12 @@ detectionProbCheckParse <- function(x, initSize) {
         x <- y
     }
 
+    if(length(x) >= 1) {
+        if( !all(names(x) %in% c("cPDetect", "p2", "n2", "PDBaseline", "checkSizePEvery")))
+            stop("Names of some components of detectionProb are not recognized.",
+                 " Check for possible typos.")
+    }
+    
     ## This ain't conditional. If not returned, always check
     if( !is.na(x["cPDetect"]) && (sum(!is.na(x["p2"]), !is.na(x["n2"])) >= 1 ))
         stop("Specify only cPDetect xor both of p2 and n2")
