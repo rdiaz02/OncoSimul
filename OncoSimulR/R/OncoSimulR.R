@@ -493,16 +493,11 @@ oncoSimulIndiv <- function(fp,
         warning("Using fitness exp with death != 1")
 
 
-    if(is.na(detectionDrivers)) {
-        detectionDrivers <- (2^31) - 1
-    }
-    if(is.na(detectionSize)) {
-        detectionSize <- Inf
-    }
-    if(is.na(finalTime)) {
-        finalTime <- Inf
-    }
-
+    if(is.na(detectionDrivers)) detectionDrivers <- (2^31) - 1
+    if(is.na(detectionSize)) detectionSize <- Inf
+    if(is.na(finalTime)) finalTime <- Inf
+    
+    
     if(!inherits(fp, "fitnessEffects")) {
         if(any(unlist(lapply(list(fp, 
                                   numPassengers,
@@ -526,6 +521,7 @@ oncoSimulIndiv <- function(fp,
         if(verbosity >= 2)
             cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
 
+        if(!is.na(detectionProb)) stop("detectionProb cannot be used in v.1 objects")
         ## if(message.v1)
         ##     message("You are using the old poset format. Consider using the new one.")
    
