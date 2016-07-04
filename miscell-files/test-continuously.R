@@ -29,6 +29,7 @@ while(TRUE) {
     test_package("OncoSimulR") ## testthat, but if interactive, asks for plots,
     ## and you need to load the library first
     cat(paste("\n  done test_package", date(), "\n"))
+    gc(); gc(); gc(); gc()
     
     cat("\n         And this is the second random uniform number ", runif(1), "\n")
 
@@ -36,13 +37,13 @@ while(TRUE) {
     testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
                          types = c("examples"))
     cat(paste("\n  done testInstalledPackage, examples", date(), "\n"))
-
+    gc(); gc(); gc(); gc()
     cat("\n                    And this is the third random uniform number ", runif(1), "\n")
     cat(paste("\n starting testInstalledPackage, tests", date()))
     testInstalledPackage(pkg = "OncoSimulR", outDir = nnn,
                          types = c("tests"))
     cat(paste("\n  done testInstalledPackage, tests", date(), "\n"))
-
+    gc(); gc(); gc(); gc()
     cat("\n                          And this is the fourth random uniform number ", runif(1), "\n")
 
     ## Vignette via knitr.
@@ -50,7 +51,7 @@ while(TRUE) {
     cat(paste("\n     knit output to ", nf, "\n"))
     
     knit("../OncoSimulR/vignettes/OncoSimulR.Rnw", output = nf)
-
+    gc(); gc(); gc(); gc()
     ## if you want to tex the file, use knit2pdf and change output name to
     ## have tex extension, etc.
 
