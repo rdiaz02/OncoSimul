@@ -10,6 +10,7 @@ opts_knit$set(concordance = TRUE)
 options(width = 68)
 ##opts_knit$set(stop_on_error = 2L)
 @ 
+
 \usepackage{amsmath}
 %% \usepackage[authoryear,round,sort]{natbib}
 \usepackage{threeparttable}
@@ -107,7 +108,6 @@ BiocStyle::latex()
 %% @
 
 \tableofcontents
-
 
 \section{Introduction}\label{intro}
 
@@ -3395,56 +3395,43 @@ ossI$popSummary[, "OccurringDrivers", drop = FALSE]
 OncoSimulR provides very flexible ways to decide how long simulations
 should run.
 
-The simplest procedure is to run the simulation for a fixed number of time
-periods (as specified by argument \texttt{finalTime}) or until the
-population goes extinct, whichever happens first. This might be what you
-want to do when you examine general population genetics scenarios without
-focusing on possible sampling issues. To do this, set \texttt{finalTime}
-to the value you want and set \texttt{onlyCancer = FALSE}; in addition,
-set \texttt{detectionProb} to ``NA'' and \texttt{detectionDrivers} and
-\texttt{detectionSize} to ``NA'' or to impossibly large
-numbers\footnote{Setting \texttt{detectionDrivers} and
-  \texttt{detectionSize} to ``NA'' is in fact equivalent to setting them
-  to the largest possible numbers: $2^32 -1$ and $\infty$,
-  respectively.}. This scenario is the \texttt{onlyCancer = FALSE} because
-you simply collect the simulation output, regardless of what happened with
-the population (it became extinct, it did not reach a large size, it did
-not accumulate drivers, etc).
+
+\begin{description}
+\item[\texttt{onlyCancer = TRUE}] A simulation will be repeated until the
+  first one of the ``reach cancer'' conditions is met before the
+  simulation reaches \texttt{finalTime}\footnote{Of
+  course, the ``reach cancer'' idea and the \texttt{onlyCancer} argument
+  are generic names; this could have been labeled ``reach cardiovascular
+  disease'' or ``reach whatever interests me''.}. These conditions are:
+  \begin{itemize}
+  \item Total population size becomes larger than \texttt{detectionSize}.
+  \item The number of drivers in any one genotype or clone becomes equal
+    to or larger than \texttt{detectionDrivers}; note that this allows you
+    to stop the simulation as soon as a \textbf{specific genotype} is
+    found, by using exactly and only the genes that make that genotype as
+    the drivers.
+  \item The tumor is detected according to a stochastic detection
+    mechanism, where the probability of ``detecting the tumor'' increases
+    with; this is explained below (\qref{detectprob}) and is controlled by
+    argument \texttt{detectionProb}.
+  \end{itemize}
+  
+\item[\texttt{onlyCancer = FALSE}] A simulation will run only once, and
+  will exit as soon as any of the above conditions are met or as soon as
+  total population size becomes zero or we reach \texttt{finalTime}.  
+\end{description}
 
 
-The rest of scenarios are obtained under \texttt{onlyCancer = TRUE}. Here
-a simulation will be repeated until the first one of the ``reach cancer''
-conditions is met\footnote{Of course, the ``reach cancer'' idea and the
-  \texttt{onlyCancer} argument are generic names; this could have been
-  labeled ``reach cardiovascular disease'' or ``reach whatever interests
-  me''.}. These conditions are:
+As an example of \texttt{onlyCancer = TRUE}, focusing on the first two
+mechanisms, suppose you give \texttt{detectionSize = 1e4} and
+\texttt{detectionDrivers = 3} (and you have \texttt{detectionProb =
+  NA}). A simulation will exit as soon as it reaches a total population
+size of $1e4$ or any clone has four drivers, whichever comes first.
 
-\begin{itemize}
-
-\item total population size, given by \texttt{detectionSize};
-
-\item number of drivers in any one genotype or clone, given by
-  \texttt{detectionDrivers}; note that this allows you to stop the
-  simulation as soon as a \textbf{specific genotype} is found, by using
-  exactly and only the genes that make that genotype as the drivers;
-
-\item a stochastic detection mechanism, where ``detecting cancer'' is a
-  function of total population size, with arguments as given in
-  \texttt{detectionProb}; this is explained below: \qref{detectprob}.
-
-\end{itemize}
-
-
-As an example, focusing on the first two mechanisms, suppose you give
-\texttt{detectionSize = 1e4} and \texttt{detectionDrivers = 3} (and you
-have \texttt{detectionProb = NA}). A simulation will exit as soon as it
-reaches a total population size of $1e4$ or any clone has four drivers,
-whichever comes first.
-
-
-What if we reach \texttt{finalTime} before any of the conditions has been
-fulfilled?  The simulation will be repeated again, within limits. These
-limits are:
+In the \texttt{onlyCancer = TRUE} case, what happens if we reach
+\texttt{finalTime} (or the population size becomes zero) before any of the
+conditions has been fulfilled?  The simulation will be repeated again,
+within the following limits:
 
 \begin{itemize}
 \item \texttt{max.wall.time}: the total wall time we allow an individual
@@ -3463,30 +3450,171 @@ Incidentally, we keep track of the number of attempts used (the component
 desired end point under different scenarios.
 
 
+The \texttt{onlyCancer = FALSE} case might be what you want to do when you
+examine general population genetics scenarios without focusing on possible
+sampling issues. To do this, set \texttt{finalTime} to the value you want
+and set \texttt{onlyCancer = FALSE}; in addition, set
+\texttt{detectionProb} to ``NA'' and \texttt{detectionDrivers} and
+\texttt{detectionSize} to ``NA'' or to impossibly large
+numbers\footnote{Setting \texttt{detectionDrivers} and
+  \texttt{detectionSize} to ``NA'' is in fact equivalent to setting them
+  to the largest possible numbers: $2^32 -1$ and $\infty$,
+  respectively.}. In this scenario you simply collect the simulation
+output at the end of the run, regardless of what happened with the
+population (it became extinct, it did not reach a large size, it did not
+accumulate drivers, etc).
+
+% The simplest procedure is to run the simulation for a fixed number of time
+% periods (as specified by argument \texttt{finalTime}) or until the
+% population goes extinct, whichever happens first. This might be what you
+% want to do when you examine general population genetics scenarios without
+% focusing on possible sampling issues. To do this, set \texttt{finalTime}
+% to the value you want and set \texttt{onlyCancer = FALSE}; in addition,
+% set \texttt{detectionProb} to ``NA'' and \texttt{detectionDrivers} and
+% \texttt{detectionSize} to ``NA'' or to impossibly large
+% numbers\footnote{Setting \texttt{detectionDrivers} and
+%   \texttt{detectionSize} to ``NA'' is in fact equivalent to setting them
+%   to the largest possible numbers: $2^32 -1$ and $\infty$,
+%   respectively.}. This scenario is the \texttt{onlyCancer = FALSE} because
+% you simply collect the simulation output, regardless of what happened with
+% the population (it became extinct, it did not reach a large size, it did
+% not accumulate drivers, etc).
+
+
+% If we set \texttt{onlyCancer = TRUE}. Here a simulation will be repeated
+% until the first one of the ``reach cancer'' conditions is met\footnote{Of
+%   course, the ``reach cancer'' idea and the \texttt{onlyCancer} argument
+%   are generic names; this could have been labeled ``reach cardiovascular
+%   disease'' or ``reach whatever interests me''.}. These conditions are:
+
+% \begin{itemize}
+
+% \item total population size, given by \texttt{detectionSize};
+
+% \item number of drivers in any one genotype or clone, given by
+%   \texttt{detectionDrivers}; note that this allows you to stop the
+%   simulation as soon as a \textbf{specific genotype} is found, by using
+%   exactly and only the genes that make that genotype as the drivers;
+
+% \item a stochastic detection mechanism, where ``detecting cancer'' is a
+%   function of total population size, with arguments as given in
+%   \texttt{detectionProb}; this is explained below: \qref{detectprob}.
+
+% \end{itemize}
+
+
+
+% The simplest procedure is to run the simulation for a fixed number of time
+% periods (as specified by argument \texttt{finalTime}) or until the
+% population goes extinct, whichever happens first. This might be what you
+% want to do when you examine general population genetics scenarios without
+% focusing on possible sampling issues. To do this, set \texttt{finalTime}
+% to the value you want and set \texttt{onlyCancer = FALSE}; in addition,
+% set \texttt{detectionProb} to ``NA'' and \texttt{detectionDrivers} and
+% \texttt{detectionSize} to ``NA'' or to impossibly large
+% numbers\footnote{Setting \texttt{detectionDrivers} and
+%   \texttt{detectionSize} to ``NA'' is in fact equivalent to setting them
+%   to the largest possible numbers: $2^32 -1$ and $\infty$,
+%   respectively.}. This scenario is the \texttt{onlyCancer = FALSE} because
+% you simply collect the simulation output, regardless of what happened with
+% the population (it became extinct, it did not reach a large size, it did
+% not accumulate drivers, etc).
+
+
 
 \subsubsection{Stochastic detection mechanism: \texttt{detectionProb}}
 \label{detectprob}
 
-The third mechanism for stopping the simulation assumes that the
-probability of detection (or the probability that a sample is taken)
-increases with the total population size. This is biologically a
-reasonable assumption: the larger the tumor, the more likely it is it will
-be detected.
+This is the process that is controlled by the argument
+\texttt{detectionProb}. Here the probability of tumor detection increases
+with the total population size. This is biologically a reasonable
+assumption: the larger the tumor, the more likely it is it will be
+detected.
 
-For simplicity, and to make sure the probability is bounded between 0 and
-1, we use the function
+% The third mechanism for stopping the simulation assumes that the
+% probability of tumor detection increases with the total population
+% size. This is biologically a reasonable assumption: the larger the tumor,
+% the more likely it is it will be detected. 
+
+At regularly spaced times during the simulation, we compute the
+probability of detection as a function of size and determine (by comparing
+against a random uniform number) if the simulation should finish. For
+simplicity, and to make sure the probability is bounded between 0 and 1,
+we use the function
+
+% \begin{equation}
+%   \label{eq:2}
+%   P(N) = 1 - e^{-cPDetect (N - PDBaseline)}, N > PDBaseline \\
+%   P(N) = 0, N \leq PDBaseline
+% \end{equation}
+
 
 \begin{equation}
   \label{eq:2}
-  P(N) = 1 - e^( -cPDetect (N - PDBaseline)), N > PDBaseline \\
-  P(N) = 0, N \leq PDBaseline
+  P(N) = 
+  \begin{cases}
+  1 - e^{ -cPDetect (N - PDBaseline)} & \text{if} N > PDBaseline \\
+  0 & \text{if} N \leq PDBaseline
+  \end{cases}
 \end{equation}
 
-where $P(N)$ is the probability that a tumor of total population size $N$
-will be detected, $cPDetect$ is the coefficient for the change in
-probability with population size, and $PDBaseline$
+where $P(N)$ is the probability that a tumor with a population size $N$
+will be detected, and $cPDetect$ controls the increase in $P(N)$ with
+population size; with $PDBaseline$ we both control the minimal population
+size at which this mechanism stats operating (because we will rarely want
+detection unless there is some meaningful increase of population size over
+\texttt{initSize}) and we model the increase in $P(N)$ as a function of
+differences with respect to $PDBaseline$.
 
 
+The $P(N)$ refers to the probability of detection at each one of the
+occasions when we assess the probability of exiting. When, or how often,
+do we do that? When we assess probability of exiting is controlled by
+\texttt{checkSizePEvery}, which will often be much larger than
+\texttt{sampleEvery}\footnote{We assess probability of exiting at every
+  sampling time, as given by \texttt{sampleEvery}, that is the smallest
+  possible sampling time that is separated from the previous time of
+  assessment by at least \texttt{checkSizePEvery}. For example, suppose
+  \texttt{sampleEvery = 2} and \texttt{checkSizePEvery = 3}: we will
+  assess exiting at times $4, 8, 12, 16, \ldots$. If \texttt{sampleEvery =
+    3} and \texttt{checkSizePEvery = 3}: we will assess exiting at times
+  $6, 12, 18, \ldots$.} Biologically, a way to think of
+\texttt{checkSizePEvery} is ``time between doctor appointments''.
+
+
+Finally, you can specify $cPDetect$ directly (you will need to set
+\texttt{n2} and \texttt{p2} to NA). However, it might be more intuitive to
+specify the pair \texttt{n2}, \texttt{p2}, such that $P(n2) = p2$ (and
+from that pair we solve for the value of \texttt{cPDetect}).
+
+
+You can get a feeling for the effects of these arguments by playing with
+the following code, that we do not execute here for the sake of speed:
+
+
+<<eval=FALSE>>=
+gi2 <- rep(0, 5)
+names(gi2) <- letters[1:5]
+oi2 <- allFitnessEffects(noIntGenes = gi2)
+s5 <- oncoSimulPop(200,
+                   oi2,
+                   model = "McFL",
+                   initSize = 1000,
+                   detectionProb = c(p2 = 0.1, 
+                                     n2 = 2000, 
+                                     PDBaseline = 1000,
+                                     checkSizePEvery = 2), 
+                   detectionSize = NA,
+                   finalTime = NA, 
+                   keepEvery = NA,
+                   onlyCancer = TRUE,
+                   detectionDrivers = NA)
+s5
+hist(unlist(lapply(s5, function(x) x$FinalTime)))
+@ 
+
+As you decrease \texttt{checkSizePEvery} the distribution of ``FinalTime''
+will resemble more and more and exponential distribution.
 
 
 \subsection{Bauer's example again}\label{bauer2}

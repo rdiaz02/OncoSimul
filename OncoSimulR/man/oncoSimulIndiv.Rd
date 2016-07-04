@@ -590,22 +590,24 @@ of the individual done, and the number of attempts and time used.}
   below) we assess population size, and detect cancer or not
   probabilistically (comparing the probability of detection for that
   size with a random uniform number). Probability of detection changes
-  with size according to the function
+  with population size according to the function
   
-  \deqn{ 1 - e^( -cPDetect (populationsize - PDBaseline))}.
+  \deqn{ 1 - e^{-cPDetect (populationsize - PDBaseline)}}.
 
   You can pass \code{cPDetect} manually (you will need to set \code{n2}
-  and \code{p2} to NULL). However, it might be more intuitive to specify
+  and \code{p2} to NA). However, it might be more intuitive to specify
   the pair \code{n2}, \code{p2}, such that the probability of detection
   is \eqn{p2} for population size \eqn{n2} (and from that pair we solve
   for the value of \code{cPDetect}). How often do we check? That is
-  controlled by \code{checkSizePEvery}: we assess probability of exiting
-  at every sampling time that is (the closest possible) multiple of
-  \code{checkSizePEvery}.  \code{checkSizePEvery} has, by default, a
-  different (and much larger) value than \code{sampleEvery} both to
-  allow to examine the effects of sampling, and to avoid many costly
-  random number generations.
-  
+  controlled by \code{checkSizePEvery}, the (minimal) time between
+  successive checks (from among the sampling times given by
+  \code{sampleEvery}; vignette for details).  \code{checkSizePEvery}
+  has, by default, a different (and much larger) value than
+  \code{sampleEvery} both to allow to examine the effects of sampling,
+  and to avoid many costly random number generations.
+
+  %% : we assess probability of exiting at every sampling time that (the
+  %% closest possible to) a multiple of \code{checkSizePEvery}.
 
 }
 \value{
