@@ -474,6 +474,12 @@ oncoSimulIndiv <- function(fp,
     ## We do not test for equality to 0. That might be a weird but
     ## legitimate case?
 
+    ## No user-visible magic numbers
+    ## if(is.null(keepEvery))
+    ##     keepEvery <- -9
+    if(is.na(keepEvery)) keepEvery <- -9
+
+    
     if( (keepEvery > 0) & (keepEvery < sampleEvery)) {
         keepEvery <- sampleEvery
         warning("setting keepEvery <- sampleEvery")
@@ -486,9 +492,6 @@ oncoSimulIndiv <- function(fp,
     if( (typeFitness == "exp") && (death != 1) )
         warning("Using fitness exp with death != 1")
 
-    ## No user-visible magic numbers
-    if(is.null(keepEvery))
-        keepEvery <- -9
 
     if(is.na(detectionDrivers)) {
         detectionDrivers <- (2^31) - 1
@@ -496,7 +499,10 @@ oncoSimulIndiv <- function(fp,
     if(is.na(detectionSize)) {
         detectionSize <- Inf
     }
-    
+    if(is.na(finalTime)) {
+        finalTime <- Inf
+    }
+
     if(!inherits(fp, "fitnessEffects")) {
         if(any(unlist(lapply(list(fp, 
                                   numPassengers,
