@@ -64,7 +64,7 @@ oncoSimulSample <- function(Nindiv,
                             thresholdWhole = 0.5,
                             initMutant = NULL,
                             verbosity  = 1,
-                            showProgress = TRUE,
+                            showProgress = FALSE,
                             seed = "auto"){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
