@@ -4343,9 +4343,9 @@ have done instead (note the argument \texttt{keepEvery = NA})
 
 <<>>=
 pancrPopNH <- oncoSimulPop(4, pancr,
-                         detectionSize = 1e7,
-                         keepEvery = NA,
-                         mc.cores = 2)
+                           detectionSize = 1e7,
+                           keepEvery = NA,
+                           mc.cores = 2)
 
 summary(pancrPopNH)
 samplePop(pancrPopNH)
