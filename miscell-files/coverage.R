@@ -2,15 +2,6 @@
 
 library(covr)
 
-## Make sure C++-11 code also covered.
-## See https://github.com/jimhester/covr/issues/198#issuecomment-228568000
-options(covr.flags = c(CPPFLAGS = "-O0 -g --coverage -fno-inline -fno-elide-constructors",
-                       CXX1XFLAGS = "-O0 -g --coverage -fno-inline -fno-elide-constructors",
-                       CXXFLAGS = "-O0 -g --coverage -fno-inline -fno-elide-constructors",
-                       CFLAGS = "-O0 -g --coverage -fno-inline -fno-elide-constructors",
-                       LDFLAGS = "--coverage -fno-elide-constructors"))
-
-
 library(shiny)
 library(DT)
 library(OncoSimulR)
