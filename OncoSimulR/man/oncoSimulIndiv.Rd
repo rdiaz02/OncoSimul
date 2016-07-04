@@ -244,6 +244,7 @@ simulations.
 
 }
 
+This option can not be used with v.1 objects.
 
 }
 
@@ -625,6 +626,9 @@ of the individual done, and the number of attempts and time used.}
   \code{checkSizePEvery} has, by default, a different (and much larger)
   value than \code{sampleEvery} both to allow to examine the effects of
   sampling, and to avoid many costly random number generations.
+
+  Please note that \code{detectionProb} is NOT available with version 1
+  objects.
 
   %% : we assess probability of exiting at every sampling time that (the
   %% closest possible to) a multiple of \code{checkSizePEvery}.
