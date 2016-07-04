@@ -109,7 +109,7 @@ oncoSimulSample(Nindiv,
                 thresholdWhole = 0.5,
                 initMutant = NULL,
                 verbosity  = 1,
-                showProgress = TRUE,
+                showProgress = FALSE,
                 seed = "auto")
 
 
@@ -190,6 +190,9 @@ oncoSimulSample(Nindiv,
 \item{detectionSize}{ What is the minimal number of cells for cancer
 to be detected.  For \code{oncoSimulSample} this can be a vector.
 
+If set to NA, \code{detectionSize} plays no role in stopping the
+simulations.
+
 } 
 
 \item{detectionDrivers}{ The minimal number of drivers (not modules,
@@ -206,6 +209,10 @@ a fitnessEffects object without a \code{drvNames}, either because you
 specified it explicitly or because all of the genes are in the
 noIntGenes component) the simulations should not stop based on the
 number of drivers (and, thus, the default is set to 9e6).
+
+If set to NA, \code{detectionDrivers} plays no role in stopping the
+simulations.
+
 }
 
 \item{detectionProb}{ Vector of arguments for the mechanism where
@@ -298,18 +305,28 @@ number of drivers (and, thus, the default is set to 9e6).
   Initial population equilibrium size in the McFarland models.
 
 }
+
 \item{keepEvery}{
+
   Time interval between successive whole population samples that are
-  actually stored. This must be larger or equal to sampleEvery. If keepEvery is
-  not a multiple integer of sampleEvery, the keepEvery in use will be the
-  smallest multiple integer of keepEvery larger than the specified
-  keepEvery.
+actually stored. This must be larger or equal to \code{sampleEvery}. If
+keepEvery is not a multiple integer of sampleEvery, the interval between
+successive samples that are stored will be the smallest multiple integer
+of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
+
+  %% keepEvery in use will be the
+  %% smallest multiple integer of sampleEvery larger than the specified
+  %% keepEvery.
 
   If you want nice plots, set \code{sampleEvery} and \code{keepEvery} to
   small values (say, 1 or 0.5). Otherwise, you can use a
   \code{sampleEvery} of 1 but a \code{keepEvery} of 15, so that the
   return objects are not huge.
 
+
+  Setting \code{keepEvery = NA} means we only keep the very last
+  sample. This is useful if you only care about the final state of the
+  simulation, not its complete history.
 }
 
 %% \item{endTimeEvery}{
@@ -358,7 +375,8 @@ number of drivers (and, thus, the default is set to 9e6).
 }
 
 \item{finalTime}{
-  What is the maximum number of time units that the simulation can run.
+  What is the maximum number of time units that the simulation can
+  run. Set to NA to disable this limit.
 
 }
 \item{onlyCancer}{
@@ -601,10 +619,12 @@ of the individual done, and the number of attempts and time used.}
   for the value of \code{cPDetect}). How often do we check? That is
   controlled by \code{checkSizePEvery}, the (minimal) time between
   successive checks (from among the sampling times given by
-  \code{sampleEvery}; vignette for details).  \code{checkSizePEvery}
-  has, by default, a different (and much larger) value than
-  \code{sampleEvery} both to allow to examine the effects of sampling,
-  and to avoid many costly random number generations.
+  \code{sampleEvery}: the interval between successive assessments will
+  be the smallest multiple integer of \code{sampleEvery} that is
+  larger than \code{checkSizePEvery} ---see vignette for details).
+  \code{checkSizePEvery} has, by default, a different (and much larger)
+  value than \code{sampleEvery} both to allow to examine the effects of
+  sampling, and to avoid many costly random number generations.
 
   %% : we assess probability of exiting at every sampling time that (the
   %% closest possible to) a multiple of \code{checkSizePEvery}.
