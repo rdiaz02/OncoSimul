@@ -275,6 +275,10 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 
   // Doing this is cheaper than drawing unnecessary runifs.
   // Equality, below, leads to suprises with floating point arith.
+
+  // Operates the same as we do with keepEvery, but here we
+  // compute the jump in each accepted sample. And here we use >, not
+  // >=
   if(currentTime > nextCheckSizeP) {
     checkSizePNow = true;
     nextCheckSizeP = currentTime + checkSizePEvery;
