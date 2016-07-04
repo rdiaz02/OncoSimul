@@ -278,6 +278,8 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   if(currentTime > nextCheckSizeP) {
     checkSizePNow = true;
     nextCheckSizeP = currentTime + checkSizePEvery;
+    // Nope; minimal jump can be smaller than checkSizePEvery
+    // nextCheckSizeP += checkSizePEvery;
   } else {
     checkSizePNow = false;
   }
