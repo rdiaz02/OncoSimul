@@ -535,6 +535,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 stop("The name of some noIntGenes contain a ',' or a '>' or a ':'")
             if(any(ng %in% geneModule[, "Gene"] ))
                 stop("A gene in noIntGenes also present in the other terms")
+            if(any(duplicated(ng)))
+                stop("Duplicated gene names in geneNoInt")
         } else {
             ng <- gnum
         }

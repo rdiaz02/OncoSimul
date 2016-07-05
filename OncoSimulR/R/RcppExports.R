@@ -9,10 +9,6 @@ BNB_Algo5 <- function(restrictTable, numDrivers, numGenes, typeCBN_, s, death, m
     .Call('OncoSimulR_BNB_Algo5', PACKAGE = 'OncoSimulR', restrictTable, numDrivers, numGenes, typeCBN_, s, death, mu, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant, maxWallTime, keepEvery, sh, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime)
 }
 
-readFitnessEffects <- function(rFE, echo) {
-    invisible(.Call('OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
-}
-
 evalRGenotype <- function(rG, rFE, verbose, prodNeg, calledBy_) {
     .Call('OncoSimulR_evalRGenotype', PACKAGE = 'OncoSimulR', rG, rFE, verbose, prodNeg, calledBy_)
 }
@@ -21,3 +17,6 @@ evalRGenotypeAndMut <- function(rG, rFE, muEF, full2mutator_, verbose, prodNeg) 
     .Call('OncoSimulR_evalRGenotypeAndMut', PACKAGE = 'OncoSimulR', rG, rFE, muEF, full2mutator_, verbose, prodNeg)
 }
 
+## readFitnessEffects <- function(rFE, echo) {
+##     invisible(.Call('OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
+## }

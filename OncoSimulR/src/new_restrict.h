@@ -186,7 +186,7 @@ TypeModel stringToModel(const std::string& dep);
 
 Dependency stringToDep(const std::string& dep);
 
-std::string depToString(const Dependency dep);
+// std::string depToString(const Dependency dep);
 
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
