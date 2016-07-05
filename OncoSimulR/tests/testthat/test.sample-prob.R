@@ -486,7 +486,6 @@ test_that("Exercise the default option and other substitutions/defaults" , {
         detectionDrivers = NA)),
         "Individual OncoSimul trajectory",
         fixed = TRUE)
-    
     expect_output(print(oncoSimulIndiv(
         oi,
         model = "Exp",
@@ -496,6 +495,18 @@ test_that("Exercise the default option and other substitutions/defaults" , {
         detectionProb = c(p2 = .9, n2 = 3000),
         finalTime = NA, detectionSize = NA,
         onlyCancer = TRUE,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(p2 = .9, n2 = 3000),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        verbosity = 1,
         detectionDrivers = NA)),
         "Individual OncoSimul trajectory",
         fixed = TRUE)

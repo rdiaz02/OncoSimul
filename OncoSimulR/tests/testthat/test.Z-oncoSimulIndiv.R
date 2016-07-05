@@ -62,6 +62,47 @@ test_that("using old poset format, hitting wall time", {
     expect_true(pet$HittedWallTime)
 })
 
+
+test_that("using old poset format, verbose exercise iteration", {
+    RNGkind("Mersenne-Twister")
+    set.seed(1)
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    ## st <- capture.output(
+        p1 <- oncoSimulIndiv(p701, sh = 0,
+                             initSize = 1e4,
+                             detectionSize = 1e7,
+                             model = "Exp",
+                             finalTime = 1994,
+                             extraTime = 3.17,
+                             onlyCancer = FALSE,
+                             verbosity = 2,
+                             seed = NULL)
+    ## )
+    expect_output(print(p1), "Individual OncoSimul", fixed = TRUE)
+})
+
+
+
+test_that("using old poset format, exercising minDetectDrv", {
+    RNGkind("Mersenne-Twister")
+    set.seed(1)
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    p1 <- oncoSimulIndiv(p701, sh = 0,
+                         initSize = 1e2,
+                         detectionSize = 5e8,
+                         model = "McFL",
+                         finalTime = 1e6,
+                         extraTime = 233.17,
+                         minDetectDrvCloneSz = 148,
+                         detectionDrivers = 0,
+                         onlyCancer = TRUE,
+                         seed = NULL)
+    expect_true(max(p1$pops.by.time[, -1]) >= 148)
+    expect_silent(p1)
+})
+
 test_that("exercise no positions left for mutation, updating in null mut, new format", {
     RNGkind("Mersenne-Twister")
     set.seed(2)
