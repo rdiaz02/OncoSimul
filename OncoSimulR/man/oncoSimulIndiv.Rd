@@ -243,6 +243,9 @@ simulations.
     given explicitly, the default is 20. See \sQuote{Details}.}
 
 }
+If you only provide some of the elements (except for the pair \code{p2},
+\code{n2}, where you must provide both if you provide any), the rest
+will be filled with default values.
 
 This option can not be used with v.1 objects.
 

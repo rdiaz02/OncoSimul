@@ -1748,21 +1748,27 @@ matchGeneIDs <- function(x, refFE) {
 
     
 detectionProbCheckParse <- function(x, initSize) {
+    default_p2 <- 0.1
+    default_n2 <- 2 * initSize
+    default_PDBaseline <- 1.1 * initSize
+    default_checkSizePEvery <- 20
+    ## No default cPDetect. That is done from p2 and n2 in C++.
+    
     if((length(x) == 1) && (is.na(x))) {
         y <- vector()
         y["cPDetect"] <- -9
         y["p2"] <- 9
         y["n2"] <- -9
         y["PDBaseline"] <- -9
-        y["checkSizePEvery"] <- 9e50
+        y["checkSizePEvery"] <- Inf
         return(y)
     } else if((length(x) == 1) && (x == "default")) {
         ## Populate with defaults
         y <- vector()
-        y["p2"] <- 0.1
-        y["n2"] <- 2 * initSize 
-        y["PDBaseline"] <- 1.1 * initSize
-        y["checkSizePEvery"] <- 20
+        y["p2"] <- default_p2
+        y["n2"] <- default_n2
+        y["PDBaseline"] <- default_PDBaseline
+        y["checkSizePEvery"] <- default_checkSizePEvery
         x <- y
     }
 
@@ -1771,16 +1777,36 @@ detectionProbCheckParse <- function(x, initSize) {
             stop("Names of some components of detectionProb are not recognized.",
                  " Check for possible typos.")
     }
-    
-    ## This ain't conditional. If not returned, always check
+   
+    ## This ain't conditional. If not given, always check
     if( !is.na(x["cPDetect"]) && (sum(!is.na(x["p2"]), !is.na(x["n2"])) >= 1 ))
         stop("Specify only cPDetect xor both of p2 and n2")
     if( (is.na(x["p2"]) + is.na(x["n2"])) == 1 )
         stop("If you pass one of n2 or p2, you must also pass the other. ",
              "Otherwise, we would not know what to do.")
-    
-    if(is.na(x["PDBaseline"])) x["PDBaseline"] <- 1.1 * initSize
-    if(is.na(x["checkSizePEvery"])) x["checkSizePEvery"] <- 20
+
+    if(is.na(x["PDBaseline"])) {
+        x["PDBaseline"] <- default_PDBaseline
+        cat("\n  PDBaseline set to default value of ", default_PDBaseline, "\n")
+        }
+    if(is.na(x["checkSizePEvery"])) {
+        x["checkSizePEvery"] <- default_checkSizePEvery
+        cat("\n  checkSizePEvery set to default value of ",
+            default_checkSizePEvery, "\n")
+        }
+
+    ## If we get here, we checked consistency of whether cPDetect or p2/n2.
+    ## Fill up with defaults the missing values
+
+    if(is.na(x["cPDetect"])) {
+        if(is.na(x["p2"])) {
+            if(!is.na(x["n2"])) stop("Eh? no p2 but n2? Bug")
+            x["n2"] <- default_n2
+            x["p2"] <- default_p2
+            cat("\n  n2, p2 set to default values of ",
+                default_n2, ", ", default_p2, "\n")
+        }
+    }
     
     if(x["checkSizePEvery"] <= 0)
         stop("checkSizePEvery <= 0")
@@ -1797,6 +1823,7 @@ detectionProbCheckParse <- function(x, initSize) {
         if(is.na(x["cPDetect"])) stop("eh? you found a bug")## paranoia
         x["n2"] <- -9
         x["p2"] <- -9
+        cat("\n Using user-specified cPDetect as n2, p2 not given.\n")
     }
     return(x)
 }

@@ -510,6 +510,84 @@ test_that("Exercise the default option and other substitutions/defaults" , {
         detectionDrivers = NA)),
         "Individual OncoSimul trajectory",
         fixed = TRUE)
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(PDBaseline = 2002),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        verbosity = 1,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(checkSizePEvery = 31),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        verbosity = 1,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+    
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(PDBaseline = 2002, checkSizePEvery = 17),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        verbosity = 1,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(n2 = 4000, p2 = 0.85, checkSizePEvery = 17),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        verbosity = 1,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(cPDetect = 0.001, checkSizePEvery = 17),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        verbosity = 1,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(cPDetect = 0.001, PDBaseline = 2030),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        verbosity = 1,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+
+
 })
 
 
