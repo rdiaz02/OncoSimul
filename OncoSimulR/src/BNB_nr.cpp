@@ -1295,7 +1295,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       }      
       // Check also for numSpecies, and force sampling if needed
       // This is very different from the other algos, as we do not yet 
-      // now total number of different species
+      // know total number of different species
+      // This is a protection against things going wild. Should
+      // not happen in regular usage.
       if(! (numSpecies % speciesFS )) {
       	forceSample = true;
 	speciesFS *= 2;
@@ -1449,7 +1451,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    DP2(sp);
 	    DP2(popParams[sp].timeLastUpdate);
 	    print_spP(popParams[sp]);
-	    throw std::out_of_range("currentTime - timeLastUpdate out of range");
+	    throw std::out_of_range("currentTime - timeLastUpdate out of range. Serious bug!");
 	  }
 #endif
 	  // if(verbosity >= 2) {

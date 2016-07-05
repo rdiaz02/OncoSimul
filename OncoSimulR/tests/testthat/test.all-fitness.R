@@ -1158,5 +1158,35 @@ test_that("Some same genes in epistasis and order effects", {
 })
 
 
+test_that("noIntGenes errors", {
+    expect_error(
+        pancrr <- allFitnessEffects(
+        data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                              "TP53", "TP53", "MLL3"),
+                   child = c("KRAS","SMAD4", "CDNK2A", 
+                             "TP53", "MLL3",
+                             rep("PXDN", 3), rep("TGFBR2", 2)),
+                   s = .2,
+                   sh = .3,
+                   typeDep = "MN"),
+        noIntGenes = c("TP53" = 0.1)),
+        "A gene in noIntGenes also present in the other terms",
+        fixed = TRUE)
+    expect_error(
+        nr <- allFitnessEffects(
+            noIntGenes = c("A" = 0.1, "B" = 0.2, "A" = 0.05)),
+        "Duplicated gene names in geneNoInt",
+        fixed = TRUE)
+})
+
+
+test_that("not all genes named", {
+    gg <- rep(0.01, 3)
+    names(gg) <- letters[1:2]
+    expect_error(allFitnessEffects(noIntGenes = gg),
+                 "In noIntGenes some genes have names, some don't.",
+                 fixed = TRUE)
+})
+
 cat(paste("\n Ending all-fitness at", date()))
 

@@ -537,6 +537,9 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 stop("A gene in noIntGenes also present in the other terms")
             if(any(duplicated(ng)))
                 stop("Duplicated gene names in geneNoInt")
+            if(any(is.na(ng)))
+                stop("In noIntGenes some genes have names, some don't.",
+                     " Name all of them, or name none of them.")
         } else {
             ng <- gnum
         }

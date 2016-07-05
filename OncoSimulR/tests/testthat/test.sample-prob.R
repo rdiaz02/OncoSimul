@@ -454,38 +454,51 @@ test_that("Exercise the default option and other substitutions/defaults" , {
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
     expect_output(print(oncoSimulIndiv(
-                               oi,
-                               model = "Exp",
-                               initSize = 2000,
-                               keepEvery = NA,
-                               detectionProb = "default",
-                               finalTime = NA, detectionSize = NA,
-                               onlyCancer = TRUE,
-                               detectionDrivers = NA)),
-                  "Individual OncoSimul trajectory",
-                  fixed = TRUE)
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = "default",
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
     expect_output(print(oncoSimulIndiv(
-                               oi,
-                               model = "Exp",
-                               initSize = 2000,
-                               keepEvery = NA,
-                               detectionProb = c(cPDetect = 0.001),
-                               finalTime = NA, detectionSize = NA,
-                               onlyCancer = TRUE,
-                               detectionDrivers = NA)),
-                  "Individual OncoSimul trajectory",
-                  fixed = TRUE)
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(cPDetect = 0.001),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
     expect_output(print(oncoSimulIndiv(
-                               oi,
-                               model = "Exp",
-                               initSize = 2000,
-                               keepEvery = NA,
-                               detectionProb = c(p2 = .9, n2 = 3000),
-                               finalTime = NA, detectionSize = NA,
-                               onlyCancer = TRUE,
-                               detectionDrivers = NA)),
-                  "Individual OncoSimul trajectory",
-                  fixed = TRUE)
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        detectionProb = c(p2 = .9, n2 = 3000),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
+    
+    expect_output(print(oncoSimulIndiv(
+        oi,
+        model = "Exp",
+        initSize = 2000,
+        keepEvery = NA,
+        extraTime = 2,
+        detectionProb = c(p2 = .9, n2 = 3000),
+        finalTime = NA, detectionSize = NA,
+        onlyCancer = TRUE,
+        detectionDrivers = NA)),
+        "Individual OncoSimul trajectory",
+        fixed = TRUE)
 })
 
 

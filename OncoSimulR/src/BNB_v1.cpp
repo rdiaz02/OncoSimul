@@ -1340,7 +1340,9 @@ static void innerBNB(const int& numGenes,
       }      
       // Check also for numSpecies, and force sampling if needed
       // This is very different from the other algos, as we do not yet 
-      // now total number of different species
+      // know total number of different species.
+      // This is a protection against things going wild. Should
+      // not happen in regular usage.
       if(! (numSpecies % speciesFS )) {
       	forceSample = true;
 	speciesFS *= 2;
@@ -1455,7 +1457,7 @@ static void innerBNB(const int& numGenes,
 	    DP2(sp);
 	    DP2(popParams[sp].timeLastUpdate);
 	    print_spP(popParams[sp]);
-	    throw std::out_of_range("currentTime - timeLastUpdate out of range");
+	    throw std::out_of_range("currentTime - timeLastUpdate out of range. Serious bug");
 	  }
 #endif
 	
@@ -1739,7 +1741,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
   	>= pow(2, 64)) )
     throw std::range_error("The size of unsigned long long is too short.");
   if(numGenes > 64)  
-    throw std::range_error("This version only accepts up to 64 genes.");
+    throw std::range_error("This version only accepts up to 64 genes. Caught in R");
 
   bool runAgain = true;
   bool reachDetection = false;
