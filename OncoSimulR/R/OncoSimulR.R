@@ -430,7 +430,7 @@ oncoSimulIndiv <- function(fp,
              is.na(detectionDrivers),
              is.na(finalTime))))
         stop("At least one stopping condition should be given.",
-             " At least one of detectionProb, detectionSize, detectionDrivers,"
+             " At least one of detectionProb, detectionSize, detectionDrivers,",
              " finalTime. Otherwise, we'll run forever.")
     ## legacies from poor name choices
     typeFitness <- switch(model,
