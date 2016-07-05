@@ -25,6 +25,10 @@
 #include <limits>
 #include <random>
 
+// Yes, even if covr suggests epistasis, Poset_struct and
+// Gene_Module_struct are not used they are used a lot.
+// There are many vectors of these structs. This is just a problem
+// of coverage testing of structs. Google for it.
 
 enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
 // enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
