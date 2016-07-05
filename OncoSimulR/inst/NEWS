@@ -1,11 +1,7 @@
-Changes in version 2.3.9 (2016-07-05):
+Changes in version 2.3.7 (2016-07-05):
 	- Unused C++ code reorganiz.
 	- Added tests
-
-Changes in version 2.3.8 (2016-07-04):
 	- Vignette and documentation improvements.
-
-Changes in version 2.3.7 (2016-07-03):
 	- End simulations stochastically as a function of size.
 
 Changes in version 2.3.6 (2016-06-25):
