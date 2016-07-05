@@ -980,68 +980,71 @@ static void innerBNB(const int& numGenes,
     // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
-  if(initMutant >= 0) {
-    popParams[0].numMutablePos = numGenes - 1;
-    Genotypes[0].set(initMutant);
-    // if(typeFitness == "beerenwinkel") {
-    //   popParams[0].death = 1.0; //note same is in McFarland.
-    //   // But makes sense here; adjustment in beerenwinkel is via fitness
-      
-    //   // initialize to prevent birth/mutation warning with Beerenwinkel
-    //   // when no mutator. O.w., the defaults
-    //   if(!mutationPropGrowth)
-    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-    //   popParams[0].absfitness = 1.0 + s;
-    //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
-    // 			currentTime, alpha, initSize, 
-    // 			mutationPropGrowth, mu);
-    // } else if(typeFitness == "mcfarland0") {
-    //   // death equal to birth of a non-mutant.
-    //   popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
-    //   if(!mutationPropGrowth)
-    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-    //   popParams[0].absfitness = 1.0 + s;
-    //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
-    // 			    totPopSize,
-    // 			    mutationPropGrowth, mu);
-    // } else if(typeFitness == "mcfarland") {
-    //   popParams[0].death = totPopSize/K;
-    //   popParams[0].birth = 1.0 + s;
-    // } else if(typeFitness == "mcfarlandlog") {
-    if(typeFitness == "mcfarlandlog") {      
-      popParams[0].death = log1p(totPopSize/K);
-      popParams[0].birth = 1.0 + s;
-    } else if(typeFitness == "bozic1") {
-      tmpParam.birth =  1.0;
-      tmpParam.death = -99.9;
-    // } else if (typeFitness == "bozic2") {
-    //   tmpParam.birth =  -99;
-    //   tmpParam.death = -99;
-    } else if (typeFitness == "exp") {
-      tmpParam.birth =  -99;
-      tmpParam.death = death;
-    } // else { // linear or log
-    //   tmpParam.birth =  -99;
-    //   tmpParam.death = death;
-    // } 
-    // if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
-    // 	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
-    //   fitness(popParams[0], tmpParam, initMutant, restrictTable,
-    // 	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
-    // 	      typeFitness, genTime, adjust_fitness_B, sh,
-    // 	      adjust_fitness_MF);
 
-    if( typeFitness != "mcfarlandlog") // wouldn't matter
-      fitness(popParams[0], tmpParam, initMutant, restrictTable,
-	      typeCBN, Genotypes[0], // birthRate,
-	      s, numDrivers, 
-	      typeFitness, // genTime, adjust_fitness_B,
-	      sh);
-    // adjust_fitness_MF);
-    // we pass as the parent the tmpParam; it better initialize
-    // everything right, or that will blow. Reset to init
-    init_tmpP(tmpParam);
-  } else {
+  if(initMutant >= 0)
+    throw std::invalid_argument("initMutant no longer allowed. But in R code.");
+  // if(initMutant >= 0) {
+  //   popParams[0].numMutablePos = numGenes - 1;
+  //   Genotypes[0].set(initMutant);
+  //   // if(typeFitness == "beerenwinkel") {
+  //   //   popParams[0].death = 1.0; //note same is in McFarland.
+  //   //   // But makes sense here; adjustment in beerenwinkel is via fitness
+      
+  //   //   // initialize to prevent birth/mutation warning with Beerenwinkel
+  //   //   // when no mutator. O.w., the defaults
+  //   //   if(!mutationPropGrowth)
+  //   // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+  //   //   popParams[0].absfitness = 1.0 + s;
+  //   //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
+  //   // 			currentTime, alpha, initSize, 
+  //   // 			mutationPropGrowth, mu);
+  //   // } else if(typeFitness == "mcfarland0") {
+  //   //   // death equal to birth of a non-mutant.
+  //   //   popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
+  //   //   if(!mutationPropGrowth)
+  //   // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
+  //   //   popParams[0].absfitness = 1.0 + s;
+  //   //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K, 
+  //   // 			    totPopSize,
+  //   // 			    mutationPropGrowth, mu);
+  //   // } else if(typeFitness == "mcfarland") {
+  //   //   popParams[0].death = totPopSize/K;
+  //   //   popParams[0].birth = 1.0 + s;
+  //   // } else if(typeFitness == "mcfarlandlog") {
+  //   if(typeFitness == "mcfarlandlog") {      
+  //     popParams[0].death = log1p(totPopSize/K);
+  //     popParams[0].birth = 1.0 + s;
+  //   } else if(typeFitness == "bozic1") {
+  //     tmpParam.birth =  1.0;
+  //     tmpParam.death = -99.9;
+  //   // } else if (typeFitness == "bozic2") {
+  //   //   tmpParam.birth =  -99;
+  //   //   tmpParam.death = -99;
+  //   } else if (typeFitness == "exp") {
+  //     tmpParam.birth =  -99;
+  //     tmpParam.death = death;
+  //   } // else { // linear or log
+  //   //   tmpParam.birth =  -99;
+  //   //   tmpParam.death = death;
+  //   // } 
+  //   // if( (typeFitness != "beerenwinkel") && (typeFitness != "mcfarland0") 
+  //   // 	&& (typeFitness != "mcfarland") && (typeFitness != "mcfarlandlog")) // wouldn't matter
+  //   //   fitness(popParams[0], tmpParam, initMutant, restrictTable,
+  //   // 	      typeCBN, Genotypes[0], birthRate, s, numDrivers, 
+  //   // 	      typeFitness, genTime, adjust_fitness_B, sh,
+  //   // 	      adjust_fitness_MF);
+
+  //   if( typeFitness != "mcfarlandlog") // wouldn't matter
+  //     fitness(popParams[0], tmpParam, initMutant, restrictTable,
+  // 	      typeCBN, Genotypes[0], // birthRate,
+  // 	      s, numDrivers, 
+  // 	      typeFitness, // genTime, adjust_fitness_B,
+  // 	      sh);
+  //   // adjust_fitness_MF);
+  //   // we pass as the parent the tmpParam; it better initialize
+  //   // everything right, or that will blow. Reset to init
+  //   init_tmpP(tmpParam);
+  // } else {
     popParams[0].numMutablePos = numGenes;
     // if(typeFitness == "beerenwinkel") {
     //   popParams[0].death = 1.0;
@@ -1083,7 +1086,7 @@ static void innerBNB(const int& numGenes,
     //   popParams[0].birth = birthRate;
     //   popParams[0].death = death;
     // }
-  }
+    //  }
 
 
   // // FIXME debug

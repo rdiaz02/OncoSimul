@@ -419,12 +419,18 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 %% \item{seed}{The seed to use for the C++ random number generator. If not
 %%   passed explicitly (the default) then chosen from R.}
 
-\item{initMutant}{For v.2, a string with the mutations of the initial
+\item{initMutant}{For v.2: a string with the mutations of the initial
   mutant, if any. This is the same format as for
-  \code{\link{evalGenotype}}. For v.1, the single mutation of the
-  initial clone for the simulations. The default (if you pass nothing)
-  is to start the simulation from the wildtype genotype with nothing
-  mutated.}
+  \code{\link{evalGenotype}}. The default (if you pass nothing) is to
+  start the simulation from the wildtype genotype with nothing mutated.
+  For v.1 we no longer accept initMutant: it will be ignored. }
+
+%% \item{initMutant}{For v.2, a string with the mutations of the initial
+%%   mutant, if any. This is the same format as for
+%%   \code{\link{evalGenotype}}. For v.1, the single mutation of the
+%%   initial clone for the simulations. The default (if you pass nothing)
+%%   is to start the simulation from the wildtype genotype with nothing
+%%   mutated.}
 
 
 \item{max.num.tries}{Only applies when \code{onlyCancer = TRUE}. What is

@@ -510,8 +510,10 @@ oncoSimulIndiv <- function(fp,
         }
         if(!is.null(muEF))
             stop("Mutator effects cannot be especified with the old poset format")
-        if(length(initMutant) > 1)
-            stop("With the old poset, initMutant can only take a single value.")
+        if( length(initMutant) > 0)  
+            warning("With the old poset format you can no longer use initMutant.",
+                    " The initMutant you passed will be ignored.")
+            ## stop("With the old poset, initMutant can only take a single value.")
         ## Seeding C++ is now much better in new version
         if(is.null(seed) || (seed == "auto")) {## passing a null creates a random seed
             ## name is a legacy. This is really the seed for the C++ generator.
