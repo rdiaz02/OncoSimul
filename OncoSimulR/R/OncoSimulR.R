@@ -425,6 +425,13 @@ oncoSimulIndiv <- function(fp,
                            seed = NULL
                            ) {
     call <- match.call()
+    if(all(c(is.na(detectionProb),
+             is.na(detectionSize),
+             is.na(detectionDrivers),
+             is.na(finalTime))))
+        stop("At least one stopping condition should be given.",
+             " At least one of detectionProb, detectionSize, detectionDrivers,"
+             " finalTime. Otherwise, we'll run forever.")
     ## legacies from poor name choices
     typeFitness <- switch(model,
                           "Bozic" = "bozic1",

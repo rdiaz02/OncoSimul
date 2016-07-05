@@ -702,6 +702,32 @@ test_that("Fails as expected" , {
                                 detectionDrivers = NA),
                  "PDBaseline < 0",
                  fixed = TRUE)
+
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = NA,
+                                finalTime = NA,
+                                detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "At least one stopping condition should be given",
+                 fixed = TRUE)
+
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = NA,
+                                finalTime = NA,
+                                detectionSize = NA,
+                                onlyCancer = FALSE,
+                                detectionDrivers = NA),
+                 "At least one stopping condition should be given",
+                 fixed = TRUE)
+
+    
 })
 
 
