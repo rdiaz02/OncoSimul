@@ -1563,7 +1563,7 @@ nr_oncoSimul.internal <- function(rFE,
         ## muEF <- emptyFitnessEffects()
     }
 
-    dpr <- detectionProbCheckParse(detectionProb, initSize)
+    dpr <- detectionProbCheckParse(detectionProb, initSize, verbosity)
     ## if( !is.null(cPDetect) && (sum(!is.null(p2), !is.null(n2)) >= 1 ))
     ##     stop("Specify only cPDetect xor both of p2 and n2")
     ## if( (is.null(p2) + is.null(n2)) == 1 )
@@ -1747,10 +1747,10 @@ matchGeneIDs <- function(x, refFE) {
 }
 
     
-detectionProbCheckParse <- function(x, initSize) {
+detectionProbCheckParse <- function(x, initSize, verbosity) {
     default_p2 <- 0.1
     default_n2 <- 2 * initSize
-    default_PDBaseline <- 1.1 * initSize
+    default_PDBaseline <- 1.2 * initSize
     default_checkSizePEvery <- 20
     ## No default cPDetect. That is done from p2 and n2 in C++.
     
@@ -1787,12 +1787,14 @@ detectionProbCheckParse <- function(x, initSize) {
 
     if(is.na(x["PDBaseline"])) {
         x["PDBaseline"] <- default_PDBaseline
-        cat("\n  PDBaseline set to default value of ", default_PDBaseline, "\n")
+        if(verbosity > -1)
+            message("\n  PDBaseline set to default value of ", default_PDBaseline, "\n")
         }
     if(is.na(x["checkSizePEvery"])) {
         x["checkSizePEvery"] <- default_checkSizePEvery
-        cat("\n  checkSizePEvery set to default value of ",
-            default_checkSizePEvery, "\n")
+        if(verbosity > -1)
+            message("\n  checkSizePEvery set to default value of ",
+                default_checkSizePEvery, "\n")
         }
 
     ## If we get here, we checked consistency of whether cPDetect or p2/n2.
@@ -1803,8 +1805,9 @@ detectionProbCheckParse <- function(x, initSize) {
             if(!is.na(x["n2"])) stop("Eh? no p2 but n2? Bug")
             x["n2"] <- default_n2
             x["p2"] <- default_p2
-            cat("\n  n2, p2 set to default values of ",
-                default_n2, ", ", default_p2, "\n")
+            if(verbosity > -1)
+                message("\n  n2, p2 set to default values of ",
+                    default_n2, ", ", default_p2, "\n")
         }
     }
     
@@ -1823,7 +1826,8 @@ detectionProbCheckParse <- function(x, initSize) {
         if(is.na(x["cPDetect"])) stop("eh? you found a bug")## paranoia
         x["n2"] <- -9
         x["p2"] <- -9
-        cat("\n Using user-specified cPDetect as n2, p2 not given.\n")
+        if(verbosity > -1)
+            message("\n Using user-specified cPDetect as n2, p2 not given.\n")
     }
     return(x)
 }

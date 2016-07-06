@@ -1,3 +1,6 @@
+Changes in version 2.3.8 (sometime):
+	- PDBasline default is now 1.2.
+	
 Changes in version 2.3.7 (2016-07-05):
 	- Unused C++ code reorganiz.
 	- Added tests

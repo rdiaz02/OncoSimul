@@ -224,7 +224,7 @@ simulations.
 
     \item{PDBaseline}{Baseline size subtracted to total population size
     to compute the probability of detection. If not given explicitly,
-    the default is \code{1.1*initSize}.
+    the default is \code{1.2 * initSize}.
     }
 
     \item{p2}{The probability of detection at population size
