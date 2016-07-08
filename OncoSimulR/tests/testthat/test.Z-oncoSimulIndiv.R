@@ -1,4 +1,7 @@
-
+## Some tests below might only work on Linux because of compiler
+## differences, because the rng is done in C++, etc.
+## Note that the difference is in whether a certain code
+## is exercised. The runs should work in all platforms, though.
 
 test_that("exercise no positions left for mutation, updating in null mut, old format", {
     ## Do not do the capture output from oncoSimulPop,
@@ -17,9 +20,11 @@ test_that("exercise no positions left for mutation, updating in null mut, old fo
                               extraTime = 3.17,
                               onlyCancer = FALSE,
                               seed = NULL)
-        })
-    expect_true(any(grepl("mutation = 0", st)))
-    expect_true(any(grepl("updating in null mutation", st)))
+    })
+    if(Sys.info()["sysname"] == "Linux") {
+        expect_true(any(grepl("mutation = 0", st)))
+        expect_true(any(grepl("updating in null mutation", st)))
+    }
     expect_output(print(pp1),
                    "Individual OncoSimul trajectory", fixed = TRUE)
 })
@@ -40,7 +45,9 @@ test_that("exercise mu > 1, old format", {
                           finalTime = 2000,
                           onlyCancer = FALSE,
                           seed = NULL))
+    
     expect_true(any(grepl("mutation > 1", st)))
+    
     expect_output(print(pp1),
                   "Individual OncoSimul trajectory", fixed = TRUE)
 })
@@ -122,8 +129,10 @@ test_that("exercise no positions left for mutation, updating in null mut, new fo
                           verbosity = 1))
     expect_output(print(pp1),
                   "Individual OncoSimul", fixed = TRUE)
-    expect_true(any(grepl("mutation = 0", st)))
-    expect_true(any(grepl("updating in null mutation", st)))
+    if(Sys.info()["sysname"] == "Linux") {
+        expect_true(any(grepl("mutation = 0", st)))
+        expect_true(any(grepl("updating in null mutation", st)))
+    }
 })
 
 
