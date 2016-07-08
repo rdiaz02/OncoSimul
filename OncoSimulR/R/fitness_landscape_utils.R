@@ -22,6 +22,7 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                                  col = c("green4", "red", "yellow"),
                                  lty = c(1, 2, 3), use_ggrepel = FALSE,
                                  log = FALSE, max_num_genotypes = 2000,
+                                 only_accessible = FALSE, accessible_th = 0,
                                  ...) {
 
     ## FIXME future:
@@ -54,9 +55,14 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
 
     tfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)
 
-
     mutated <- rowSums(tfm$gfm[, -ncol(tfm$gfm)])
     gaj <- genot_to_adj_mat(tfm$gfm)
+    if(only_accessible) {
+        gaj <- filter_accessible(gaj, accessible_th)
+        remaining <- as.numeric(colnames(gaj))
+        mutated <- mutated[remaining]
+        tfm$afe <- tfm$afe[remaining, , drop = FALSE]
+    }
     vv <- which(!is.na(gaj), arr.ind = TRUE)
     
     ## plot(x = mutated, y = e1$Fitness, ylab = "Fitness",
@@ -170,6 +176,26 @@ plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
 ######################################################################
 ######################################################################
 
+
+
+
+filter_accessible <- function(x, accessible_th) {
+    ## Return an adjacency matrix with only accessible paths. x is the gaj
+    ## matrix created in the plots. The difference between genotypes
+    ## separated by a hamming distance of 1
+    colnames(x) <- rownames(x) <- 1:ncol(x)
+    while(TRUE) {
+        ## remove first column
+        ## We use fact that all(na.omit(x) < u) is true if all are NA
+        ## so unreachable rows are removed and thus destination columns
+        wrm <- which(apply(x[, -1, drop = FALSE], 2,
+                           function(y) {all(na.omit(y) < accessible_th)})) + 1
+        if(length(wrm) == 0) break;
+        x <- x[-wrm, -wrm, drop = FALSE]
+    }
+    x[x < 0] <- NA
+    return(x)
+}
 
 
 generate_matrix_genotypes <- function(g) {
