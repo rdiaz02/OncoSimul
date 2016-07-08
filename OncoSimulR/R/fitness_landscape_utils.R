@@ -22,7 +22,8 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                                  col = c("green4", "red", "yellow"),
                                  lty = c(1, 2, 3), use_ggrepel = FALSE,
                                  log = FALSE, max_num_genotypes = 2000,
-                                 only_accessible = FALSE, accessible_th = 0,
+                                 only_accessible = FALSE,
+                                 accessible_th = 0,
                                  ...) {
 
     ## FIXME future:
@@ -38,7 +39,6 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     ## adjacency matrix of genotype i go at row i and column i.  Follow back
     ## all entries in row i, and their previous, and forward all column i.
 
-
     ## gfm: genotype fitness matrix
     ## afe: all fitness effects
 
@@ -53,12 +53,13 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     ## get the string representation, etc. And this is for use
     ## with OncoSimul.
 
+  
     tfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)
 
     mutated <- rowSums(tfm$gfm[, -ncol(tfm$gfm)])
     gaj <- genot_to_adj_mat(tfm$gfm)
     if(only_accessible) {
-        gaj <- filter_accessible(gaj, accessible_th)
+        gaj <- filter_inaccessible(gaj, accessible_th)
         remaining <- as.numeric(colnames(gaj))
         mutated <- mutated[remaining]
         tfm$afe <- tfm$afe[remaining, , drop = FALSE]
@@ -177,9 +178,27 @@ plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
 ######################################################################
 
 
+## wrap_filter_inaccessible <- function(x, max_num_genotypes, accessible_th) {
+##     ## wrap it, for my consumption
+##     tfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)
+##     mutated <- rowSums(tfm$gfm[, -ncol(tfm$gfm)])
+##     gaj <- genot_to_adj_mat(tfm$gfm)
+##     gaj <- filter_inaccessible(gaj, accessible_th)
+##     remaining <- as.numeric(colnames(gaj))
+##     mutated <- mutated[remaining]
+##     tfm$afe <- tfm$afe[remaining, , drop = FALSE]
+##     return(list(remaining = remaining,
+##                 mutated = mutated,
+##                 tfm = tfm))
+## }
 
+count_accessible_g <- function(gfm, accessible_th) {
+    gaj <- genot_to_adj_mat(gfm)
+    gaj <- filter_inaccessible(gaj, accessible_th)
+    return(ncol(gaj) - 1)
+}
 
-filter_accessible <- function(x, accessible_th) {
+filter_inaccessible <- function(x, accessible_th) {
     ## Return an adjacency matrix with only accessible paths. x is the gaj
     ## matrix created in the plots. The difference between genotypes
     ## separated by a hamming distance of 1
@@ -187,7 +206,7 @@ filter_accessible <- function(x, accessible_th) {
     while(TRUE) {
         ## remove first column
         ## We use fact that all(na.omit(x) < u) is true if all are NA
-        ## so unreachable rows are removed and thus destination columns
+        ## so inaccessible rows are removed and thus destination columns
         wrm <- which(apply(x[, -1, drop = FALSE], 2,
                            function(y) {all(na.omit(y) < accessible_th)})) + 1
         if(length(wrm) == 0) break;
