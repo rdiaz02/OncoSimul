@@ -1,12 +1,6 @@
-comment: false
-round: nearest
-## comment:
-##  layout: header, changes, diff
 coverage:
+  round: nearest
   fixes:
-  - R/::OncoSimulR/R
-  - src/::OncoSimulR/src
-##  ignore:
-##  - R/::OncoSimulR/R
-##  - src/::OncoSimulR/src
-##  status: {}
+    - "R/::OncoSimulR/R/"
+    - "src/::OncoSimulR/src/"
+comment: false
