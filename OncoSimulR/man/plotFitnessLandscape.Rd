@@ -16,28 +16,40 @@
 
 \usage{
 plotFitnessLandscape(x, show_labels = TRUE,
-                                   col = c("green4", "red", "yellow"),
-                                   lty = c(1, 2, 3),
-                                   use_ggrepel = FALSE,
-                                   log = FALSE, max_num_genotypes = 2000, ...)
+                     col = c("green4", "red", "yellow"),
+                     lty = c(1, 2, 3),
+                     use_ggrepel = FALSE,
+                     log = FALSE, max_num_genotypes = 2000,
+                     only_accessible = FALSE,
+                     accessible_th = 0,
+                     ...)
 
 \method{plot}{genotype_fitness_matrix}(x, show_labels = TRUE,
                                    col = c("green4", "red", "yellow"),
                                    lty = c(1, 2, 3),
                                    use_ggrepel = FALSE,
-                                   log = FALSE, max_num_genotypes = 2000, ...)
+                                   log = FALSE, max_num_genotypes = 2000,
+                                   only_accessible = FALSE,
+                                   accessible_th = 0,
+                                   ...)
 
 \method{plot}{evalAllGenotypes}(x, show_labels = TRUE,
                                    col = c("green4", "red", "yellow"),
                                    lty = c(1, 2, 3),
                                    use_ggrepel = FALSE,
-                                   log = FALSE, max_num_genotypes = 2000, ...)
+                                   log = FALSE, max_num_genotypes = 2000,
+                                   only_accessible = FALSE,
+                                   accessible_th = 0,
+                                   ...)
 
 \method{plot}{evalAllGenotypesMut}(x, show_labels = TRUE,
                                    col = c("green4", "red", "yellow"),
                                    lty = c(1, 2, 3),
                                    use_ggrepel = FALSE,
-                                   log = FALSE, max_num_genotypes = 2000, ...)
+                                   log = FALSE, max_num_genotypes = 2000,
+                                   only_accessible = FALSE,
+                                   accessible_th = 0,
+                                   ...)
 }
 
 \arguments{
@@ -88,6 +100,18 @@ plotFitnessLandscape(x, show_labels = TRUE,
   \item{max_num_genotypes}{Maximum allowed number of genotypes. For some
   types of input, we make a call to \code{\link{evalAllGenotypes}}, and
   use this as the maximum.}
+
+\item{only_accessible}{If TRUE, show only accessible paths. A path is
+  considered accesible if, at each mutational step (i.e., with the
+  addition of each mutation) fitness increases by at least
+  \code{accessible_th}. If you set \code{only_accessible = TRUE}, the
+  number of genotypes displayed can be much smaller than the number of
+  existing genotypes if many of those genotypes are not accessible via
+  any path.}
+
+\item{accessible_th}{The threshold for the minimal change in fitness at
+  each mutation step (i.e., between successive genotypes) to be used if
+  \code{only_accessible = TRUE}.}
 
   \item{\dots}{
       Other arguments passed to \code{plot}. Not used for now.

@@ -1,3 +1,6 @@
+Changes in version 2.3.9 (2017-07-0):
+	- Accessible genotypes in rfitness and plotFitnessLandscape
+
 Changes in version 2.3.8 (2017-07-08):
 	- PDBasline default is now 1.2.
 	

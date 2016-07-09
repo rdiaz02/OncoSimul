@@ -4317,10 +4317,22 @@ samplePop(pancrPop)
 
 Now a simple multiple call to \texttt{oncoSimulIndiv} wrapped inside
 \Rfunction{mclapply}; this is basically the same we just did above. We set
-the class of the object to allow direct usage of \Rfunction{samplePop}.
+the class of the object to allow direct usage of
+\Rfunction{samplePop}. (Note: in Windows \texttt{mc.cores > 1} is not
+supported, so for the vignette to run in Windows, Linux, and Mac we
+explicitly set it here in the call to \Rfunction{mclapply}. For regular
+usage, you will not need to do this; just use whatever is appropriate for
+your operating system and number of cores. As well, we do not need any of
+this with \Rfunction{oncoSimulPop} because the code inside
+\Rfunction{oncoSimulPop} already takes care of setting \texttt{mc.cores}
+to 1 in Windows).
 
 <<>>=
 library(parallel)
+if(.Platform$OS.type == "windows")
+    mc.cores <- 1
+else
+    mc.cores <- 2
 p2 <- mclapply(1:4, function(x) oncoSimulIndiv(pancr,
                                                detectionSize = 1e7,
                                                keepEvery = 10),

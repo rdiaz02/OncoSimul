@@ -4,16 +4,15 @@
 
 \title{Generate random fitness.}
 
-\description{
-  Generate random fitness under a House of Cards, Rough Mount Fuji, or
-  additive model.
-}
+\description{ Generate random fitness landscapes under a House of Cards,
+  Rough Mount Fuji, or additive model.  }
 
 
 \usage{
 
 rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
-         wt_is_1 = TRUE, log = FALSE)
+         wt_is_1 = TRUE, log = FALSE, min_accessible_genotypes = 0,
+         accessible_th = 0)
 }
 
 
@@ -48,7 +47,34 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
 
 
 \item{log}{If TRUE, log-transform fitness.}
+
+\item{min_accessible_genotypes}{If larger than 0, the minimum number of
+  accessible genotypes in the fitness landscape. A genotype is
+  considered accessible if you can reach if from the wildtype by going
+  through at least one path where all changes in fitness are larger or
+  equal to \code{accessible_th}. The changes in fitness are considered
+  at each mutational step, i.e., at each addition of one mutation we
+  compute the difference between the genotype with \code{k + 1}
+  mutations minus the ancestor genotype with \code{k} mutations. Thus, a
+  genotype is considered accessible if there is at least one path where
+  fitness increases at each mutational step by at least
+  \code{accessible_th}.
+
+  If the condition is not satisfied, we continue generating random
+  fitness landscapes with the specified parameters until the condition
+  is satisfied.
 }
+
+\item{accessible_th}{The threshold for the minimal change in fitness at
+  each mutation step (i.e., between successive genotypes) that allows a
+  genotype to be regarded as accessible. This only applies if
+  \code{min_accessible_genotypes} is larger than 0.  So if you want to
+  allow small decreases in fitness in successive steps, use a small
+  negative value for \code{accessible_th}.  }
+
+} 
+
+
 \details{
 
   The model used here follows the Rough Mount Fuji model in Szendro et

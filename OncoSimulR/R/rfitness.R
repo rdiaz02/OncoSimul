@@ -23,12 +23,14 @@ rfitness <- function(g, c= 0.5,
         f_r <- rnorm(nrow(m), mean = 0, sd = sd)
         if(inherits(reference, "character") && length(reference) == 1) {
             if(reference == "random") {
-                reference <- m[sample(nrow(m), 1), ]
+                referenceI <- m[sample(nrow(m), 1), ]
             } else if(reference == "max") {
-                reference <- rep(1, g)
+                referenceI <- rep(1, g)
+            } 
+        } else {
+            referenceI <- reference
             }
-        }
-        d_reference <- apply(m, 1, function(x) sum(abs(x - reference)))
+        d_reference <- apply(m, 1, function(x) sum(abs(x - referenceI)))
         f_det <- -c * d_reference
         ## f_det <- rowSums(m) * slope/nrow(m) ## this is Greene and Krona
         fi <- f_r + f_det
@@ -57,8 +59,12 @@ rfitness <- function(g, c= 0.5,
         }
         m <- cbind(m, Fitness = fi)
         if(min_accessible_genotypes > 0) {
-            if(count_accessible_g(m, accessible_th) > min_accessible_genotypes)
+            if(count_accessible_g(m, accessible_th) >= min_accessible_genotypes) {
                 done <- TRUE
+            } else {
+                ## Cannot start again with a fitness column
+                m <- m[, -ncol(m), drop = FALSE]
+            }
         } else {
             done <- TRUE
         }
