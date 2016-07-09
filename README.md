@@ -15,12 +15,14 @@ genes, including epistasis, order restrictions in mutation accumulation,
 and order effects.  Mutation rates can differ between genes, and we can
 include mutator/antimutator genes (to model mutator
 phenotypes). Simulations so far use continuous-time models and can include
-driver and passenger genes and modules.  Also included are functions for
+driver and passenger genes and modules. Also included are functions for:
 simulating random DAGs of the type found in Oncogenetic Tress, Conjunctive
-Bayesian Networks, and other tumor progression models, and for plotting
-and sampling from single or multiple realizations of the simulations,
-including whole-tumor and single-cell sampling, as well as functions for
-plotting the parent-child relationships of the clones.
+Bayesian Networks, and other tumor progression models; plotting and
+sampling from single or multiple realizations of the simulations,
+including single-cell sampling; plotting the parent-child relationships of
+the clones; generating random fitness landscapes (Rough Mount Fuji, House
+of Cards, and additive models) and plotting them.
+
 
 
 The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package

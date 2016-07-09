@@ -17,12 +17,13 @@ Description: Functions for forward population genetic simulation in
     rates can differ between genes, and we can include mutator/antimutator
     genes (to model mutator phenotypes). Simulations
     use continuous-time models and can include driver and passenger genes
-    and modules.  Also included are functions for simulating random DAGs
+    and modules.  Also included are functions for: simulating random DAGs
     of the type found in Oncogenetic Tress, Conjunctive Bayesian Networks,
-    and other tumor progression models, and for plotting and sampling from
+    and other tumor progression models; plotting and sampling from
     single or multiple realizations of the simulations, including
-    single-cell sampling, as well as functions for plotting the parent-child
-    relationships of the clones.
+    single-cell sampling; plotting the parent-child relationships of the
+    clones; generating random fitness landscapes (Rough Mount Fuji, House
+    of Cards, and additive models) and plotting them.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
