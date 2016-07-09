@@ -4329,10 +4329,13 @@ to 1 in Windows).
 
 <<>>=
 library(parallel)
-if(.Platform$OS.type == "windows")
+
+if(.Platform$OS.type == "windows") {
     mc.cores <- 1
-else
+} else {
     mc.cores <- 2
+}
+
 p2 <- mclapply(1:4, function(x) oncoSimulIndiv(pancr,
                                                detectionSize = 1e7,
                                                keepEvery = 10),
