@@ -93,6 +93,7 @@ test_script:
 on_failure:
   - 7z a failure.zip *.Rcheck\*
   - appveyor PushArtifact failure.zip
+  - ps: Get-EventLog AppVeyor -newest 10 | Format-List
 
 on_success:
   - 7z a success.zip *.Rcheck\*
