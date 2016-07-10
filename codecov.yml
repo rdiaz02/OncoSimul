@@ -3,5 +3,5 @@ coverage:
   fixes:
     - "R/::OncoSimulR/R/"
     - "src/::OncoSimulR/src/"
-    - "OncoSimulR/OncoSimulR/src/::OncoSimulR/src/"
+    - "OncoSimulR/src/::src/"
 comment: false
