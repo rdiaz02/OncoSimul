@@ -1,6 +1,6 @@
 coverage:
   round: nearest
   fixes:
-    - "src/::OncoSimulR/src"
+    - "src/::OncoSimulR/src/"
     - "R/::OncoSimulR/R/"
 comment: false
