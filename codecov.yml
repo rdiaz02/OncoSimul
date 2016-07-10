@@ -2,5 +2,5 @@ coverage:
   round: nearest
   fixes:
     - "R/::OncoSimulR/R/"
-    - "OncoSimulR/src/::src/"
+    - "OncoSimulR/OncoSimulR/src::OncoSimulR/src"
 comment: false
