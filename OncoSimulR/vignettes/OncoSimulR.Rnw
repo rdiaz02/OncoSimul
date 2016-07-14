@@ -4339,7 +4339,7 @@ if(.Platform$OS.type == "windows") {
 p2 <- mclapply(1:4, function(x) oncoSimulIndiv(pancr,
                                                detectionSize = 1e7,
                                                keepEvery = 10),
-                                               mc.cores = 2)
+                                               mc.cores = mc.cores)
 class(p2) <- "oncosimulpop"
 samplePop(p2)
 @ 

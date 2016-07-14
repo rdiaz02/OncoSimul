@@ -1,4 +1,7 @@
-Changes in version 2.3.9 (2017-07-0):
+Changes in version 2.3.9 (2017-07-14):
+	- The windows check failure with mc.cores.
+	
+Changes in version 2.3.9 (2017-07-09):
 	- Accessible genotypes in rfitness and plotFitnessLandscape
 
 Changes in version 2.3.8 (2017-07-08):
