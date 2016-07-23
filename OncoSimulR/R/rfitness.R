@@ -59,8 +59,12 @@ rfitness <- function(g, c= 0.5,
         }
         m <- cbind(m, Fitness = fi)
         if(min_accessible_genotypes > 0) {
-            if(count_accessible_g(m, accessible_th) >= min_accessible_genotypes) {
+            num_accessible_genotypes <- count_accessible_g(m, accessible_th)
+            if(num_accessible_genotypes >= min_accessible_genotypes) {
                 done <- TRUE
+                attributes(m) <- c(attributes(m),
+                                   accessible_genotypes = num_accessible_genotypes,
+                                   accessible_th = accessible_th)
             } else {
                 ## Cannot start again with a fitness column
                 m <- m[, -ncol(m), drop = FALSE]

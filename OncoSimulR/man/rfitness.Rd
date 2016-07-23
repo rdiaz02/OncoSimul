@@ -101,7 +101,12 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   column denotes gene mutated/not-mutated. (For ease of use in other
   functions, this matrix has class  "genotype_fitness_matrix".) 
 
+  If you have specified \code{min_accessible_genotypes > 0}, the return
+  object has added attributes \code{accessible_genotypes} and
+  \code{accessible_th} that show the number of accessible
+  genotypes under the specified  threshold.
 }
+  
 \references{
 
   Szendro I.~G. et al. (2013). Quantitative analyses of empirical
