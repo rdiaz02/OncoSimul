@@ -23,7 +23,7 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   \item{g}{Number of genes.}
 
   \item{c}{The decrease in fitness of a genotype per each unit increase
-    in Hamming distance from the reference genotype (\code{reference}).}
+    in Hamming distance from the reference genotype (see \code{reference}).}
 
   \item{sd}{The standard deviation of the random component (a normal
   distribution of mean 0 and standard deviation \code{sd}).}
@@ -34,7 +34,7 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   distance from this reference. If "random" a genotype will be randomly
   chosen as the reference. If "max" the genotype with all positions
   mutated will be chosen as the reference. If you pass a vector (e.g.,
-  \code{fittest = c(1, 0, 1, 0)}) that will be the reference genotype.}
+  \code{reference = c(1, 0, 1, 0)}) that will be the reference genotype.}
 
 \item{scale}{Either NULL (nothing is done) or a two-element vector. If a
   two-element vector, fitness is re-scaled between \code{scale[1]} (the
