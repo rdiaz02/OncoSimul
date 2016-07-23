@@ -1,5 +1,10 @@
 ## Recall we can just use R CMD check
 
+## FIXME I do not want to keep track of all the output files but cannot
+## simply write to /dev/null. Check https://github.com/xrgtn/nullfs or
+## write in /tmp and remove. Have /tmp mounted in tmpfs, in RAM. Myabe
+## this is the simplest.
+
 library(testthat)
 library(OncoSimulR)
 library(tools)
