@@ -10,7 +10,10 @@
 
 \description{ Show a plot of a fitness landscape. The plot is modeled
   after (actually, mostly a blatant copy of) that of MAGELLAN,
-  \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}. 
+  \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}.
+
+  Note: this is not a plot of the fitnessEffects object; for that, see
+  \code{\link{plot.fitnessEffects}}.
 
 }
 
@@ -183,7 +186,7 @@ Ramon Diaz-Uriarte
   of a total of 5000 genotypes you'll have to wait a while for the plot
   to finish.
 
- 
+  
 
 }
 
@@ -191,7 +194,8 @@ Ramon Diaz-Uriarte
   \code{\link{allFitnessEffects}},
   \code{\link{evalAllGenotypes}},
   \code{\link{allFitnessEffects}},
-  \code{\link{rfitness}}
+  \code{\link{rfitness}},
+  \code{\link{plot.fitnessEffects}}
 }
 \examples{
 

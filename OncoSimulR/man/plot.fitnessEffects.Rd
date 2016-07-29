@@ -6,7 +6,8 @@
 }
 \description{
   Plot the restriction table/graph of restrictions, the epistasis, and
-  the order effects in a fitnessEffects object.
+  the order effects in a fitnessEffects object. This is not a plot of
+  the fitness landscape; for that, see \code{\link{plotFitnessLandscape}}.
 }
 \usage{
 \method{plot}{fitnessEffects}(x, type = "graphNEL", layout = NULL,
@@ -81,7 +82,9 @@ Genes without interactions are not shown.
 }
 
 \seealso{
-  \code{\link{allFitnessEffects}}
+  \code{\link{allFitnessEffects}},
+  \code{\link{plotFitnessLandscape}}
+  
 }
 \examples{
 

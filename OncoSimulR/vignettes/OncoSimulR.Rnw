@@ -413,7 +413,7 @@ pancr <- allFitnessEffects(
                sh = -0.9,
                typeDep = "MN"),
     drvNames = c("KRAS", "SMAD4", "CDNK2A", "TP53", "MLL3", "TGFBR2", "PXDN"))
-## How does it look like?
+## How does the fitnessEffects object look like?
 plot(pancr)
 @ 
 <<fig.width=6.5, fig.height=10>>=
@@ -606,11 +606,14 @@ fem4 <- allFitnessEffects(genotFitness = m4)
 (The message is just telling you what the program guess you wanted.)
 
 
-That's it. You can plot that object
+That's it. You can plot that fitnessEffects object
 <<out.width="6cm", out.height = "6cm">>=
 plot(fem4)
-@ 
-or see what OncoSimulR thinks the fitnesses are, with the
+@ In this case, that plot is not very interesting (compare with the
+\texttt{plot(pancr)} we saw in \qref{quickexample} or the plots in
+\qref{posetslong}).  
+
+You can also check what OncoSimulR thinks the fitnesses are, with the
 \Rfunction{evalAllGenotypes} function that we will use repeatedly below
 (of course, here we should see the same fitnesses we entered):
 
@@ -618,6 +621,12 @@ or see what OncoSimulR thinks the fitnesses are, with the
 evalAllGenotypes(fem4)
 @ 
 
+
+And you can plot the fitness landscape:
+
+<<>>=
+plotFitnessLandscape(evalAllGenotypes(fem4, order = FALSE))
+@ 
 
 
 To specify the mapping you can also use a matrix (or data frame) with
@@ -631,6 +640,7 @@ m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
 fem6 <- allFitnessEffects(genotFitness = m6)
 evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
 plot(fem6)
+plotFitnessLandscape(evalAllGenotypes(fem6, order = FALSE))
 @ 
 
 
