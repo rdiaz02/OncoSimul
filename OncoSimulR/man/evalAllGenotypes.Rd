@@ -25,7 +25,7 @@ model = "")
 
 evalGenotypeMut(genotype, mutatorEffects, verbose = FALSE, echo = FALSE)
 
-evalAllGenotypes(fitnessEffects, order = TRUE, max = 256, addwt = FALSE,
+evalAllGenotypes(fitnessEffects, order = FALSE, max = 256, addwt = FALSE,
 model = "")
 
 evalAllGenotypesMut(mutatorEffects, max = 256, addwt = FALSE)
@@ -36,7 +36,7 @@ evalGenotypeFitAndMut(genotype, fitnessEffects,
                       model = "")
 
 evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
-                          order = TRUE, max = 256, addwt = FALSE,
+                          order = FALSE, max = 256, addwt = FALSE,
                           model = "")
 
 
@@ -64,8 +64,11 @@ evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
 
   
   \item{order}{
-    (For \code{evalAllGenotypes}). Does order matter? If it does, then generate not only all possible
-    combinations of the genes, but all possible permutations for each combination.
+
+    (For \code{evalAllGenotypes}). If TRUE, then order matters. If order
+    matters, then generate not only all possible combinations of the genes, but
+    all possible permutations for each combination.
+    
 }
 \item{max}{
   (For \code{evalAllGenotypes}). By default, no output is shown if the
@@ -186,7 +189,7 @@ ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
 
-evalAllGenotypes(ofe2, max = 325)[1:15, ]
+evalAllGenotypes(ofe2, order = TRUE, max = 325)[1:15, ]
 
 ## Next two are identical
 evalGenotype("d1 > d2 > f3", ofe2, verbose = TRUE)

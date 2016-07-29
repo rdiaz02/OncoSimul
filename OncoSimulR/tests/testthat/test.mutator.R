@@ -255,7 +255,10 @@ test_that("mut and fitness both needed when needed", {
     expect_error(evalGenotypeFitAndMut("a, b", mutatorEffects = fm),
                  'argument "fitnessEffects" is missing',
                  fixed = TRUE)
-    expect_error(evalAllGenotypesFitAndMut(fe),
+    expect_error(evalAllGenotypesFitAndMut(fe, order = TRUE),
+                 'argument "mutatorEffects" is missing',
+                 fixed = TRUE)
+    expect_error(evalAllGenotypesFitAndMut(fe, order = FALSE),
                  'argument "mutatorEffects" is missing',
                  fixed = TRUE)
     expect_error(evalAllGenotypesFitAndMut(fm),
@@ -332,6 +335,9 @@ test_that("We cannot pass mutator/fitness objects to the wrong functions", {
     expect_error(evalAllGenotypesMut(fe2),
                  "You are trying to get the mutator effects of a fitness specification.",
                  fixed = TRUE)
+    expect_error(evalAllGenotypesMut(fe2),
+                 "You are trying to get the mutator effects of a fitness specification.",
+                 fixed = TRUE)
     expect_error(evalAllGenotypes(fm2),
                  "You are trying to get the fitness of a mutator specification.",
                  fixed = TRUE)
@@ -368,7 +374,7 @@ test_that("evaluating genotype and mutator", {
                     c(1.5 * 1.1, 5))
     expect_equivalent(dplyr::filter(ou, Genotype == "a, b, c, e")[, c(2, 3)],
                     c(1.3 * 1.5 * 1.1, 10 * 5))
-    oo <- evalAllGenotypesFitAndMut(fe, fm)
+    oo <- evalAllGenotypesFitAndMut(fe, fm, order = TRUE)
     expect_equivalent(dplyr::filter(oo, Genotype == "a")[, c(2, 3)],
                     c(1, 10))
     expect_equivalent(dplyr::filter(oo, Genotype == "b")[, c(2, 3)],

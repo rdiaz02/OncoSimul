@@ -14,7 +14,7 @@ test_that("Root name in module table or not", {
                                            "B" = 0.5),
                              geneToModule = c("A" = "a1, a2",
                                               "B" = "b1")))
-    expect_identical(evalAllGenotypes(fee), evalAllGenotypes(fee2))
+    expect_identical(evalAllGenotypes(fee, order = TRUE), evalAllGenotypes(fee2, order = TRUE))
     expect_error(allFitnessEffects(epistasis = c("A" = 0.3,
                                                  "B" = 0.5),
                                    geneToModule = c(
@@ -161,9 +161,11 @@ test_that("Bauer example: identical values fitness classes, diff. order", {
 
 test_that("Order effects, entry of labels and separation", {
     o1 <- evalAllGenotypes(allFitnessEffects(
-        orderEffects = c("d>f" = 0.4, "f > d" = -0.3) ))
+        orderEffects = c("d>f" = 0.4, "f > d" = -0.3) ),
+        order = TRUE)
     o2 <- evalAllGenotypes(allFitnessEffects(
-        orderEffects = c("f > d" = -0.3, "d > f" = 0.4) ))
+        orderEffects = c("f > d" = -0.3, "d > f" = 0.4) ),
+        order = TRUE)
     o1s <- o1[order(o1$Genotype),   ]
     o2s <- o2[order(o2$Genotype),   ]
     expect_equal(o1s, o2s)
@@ -175,7 +177,7 @@ test_that("Order effects, modules 1", {
                                   c("Root" = "Root",
                                     "F" = "f1, f2",
                                     "D" = "d1, d2") )
-    ag <- evalAllGenotypes(ofe1)
+    ag <- evalAllGenotypes(ofe1, order = TRUE)
     expect_true(all.equal(ag[c(17, 39, 19, 29), "Fitness"], c(1.4, 0.7, 1.4, 0.7)))
     expect_true(all.equal(ag[c(43, 44), "Fitness"], c(1.4, 1.4)))
     expect_true(all(ag[41:52, "Fitness"] == 1.4))
@@ -188,7 +190,7 @@ test_that("Order effects, modules 2", {
                                   c("Root" = "Root",
                                     "F" = "f1, f2, f3",
                                     "D" = "d1, d2") )
-    ag2 <- evalAllGenotypes(ofe2, max = 326)
+    ag2 <- evalAllGenotypes(ofe2, max = 326, order = TRUE)
     oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
     expect_true(all(ag2[grep("^d.*f.*", ag2[, 1]), "Fitness"] == 1.4))
     expect_true(all(ag2[grep("^f.*d.*", ag2[, 1]), "Fitness"] == 0.7))
@@ -200,10 +202,10 @@ test_that("Order effects, modules 2", {
 test_that("Order effects, twisted module names", {
     o1 <- evalAllGenotypes(allFitnessEffects(
       orderEffects = c("F > D" = -0.3, "D > F" = 0.4),  
-        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")))
+        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")), order = TRUE)
     o2 <- evalAllGenotypes(allFitnessEffects(
       orderEffects = c("D>F" = 0.4, "F >D" = -0.3),  
-        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")))
+        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")), order = TRUE)
     o1s <- o1[order(o1$Genotype),   ]
     o2s <- o2[order(o2$Genotype),   ]
     expect_equal(o1s, o2s)
@@ -225,7 +227,7 @@ test_that("Order effects, three-gene-orders and modules 1", {
                                     "M" = "m",
                                     "F" = "f",
                                     "D" = "d") )
-    ag <- evalAllGenotypes(o3)
+    ag <- evalAllGenotypes(o3, order = TRUE)
     expect_true(all.equal(ag[, "Fitness"],
                         c(rep(1, 4),
                           1.1,
@@ -318,7 +320,7 @@ test_that("No interaction genes and order effects, 1", {
     foi1 <- allFitnessEffects(
         orderEffects = c("D>B" = -0.3, "B > D" = 0.3),
         noIntGenes = c("A" = 0.05, "C" = -.2, "E" = .1))
-    agoi1 <- evalAllGenotypes(foi1,  max = 325)
+    agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
     expect_true(all.equal(agoi1[rn[LETTERS[1:5]], "Fitness"], c(1.05, 1, 0.8, 1, 1.1)))
@@ -349,7 +351,7 @@ test_that("No interaction genes and order effects, 2", {
     foi1 <- allFitnessEffects(
         orderEffects = c("D>B" = -0.3, "B > D" = 0.3),
         noIntGenes = c("M" = 0.05, "A" = -.2, "J" = .1))
-    agoi1 <- evalAllGenotypes(foi1,  max = 325)
+    agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
     expect_true(all.equal(agoi1[rn[c("B", "D", "M", "A", "J")], "Fitness"],
@@ -883,7 +885,7 @@ test_that("a silly epistasis example", {
     expect_silent(sv <- allFitnessEffects(
                      orderEffects = c("A > B" = 0.1),
                      epistasis = c("A" = 1)))
-    expect_output(print(evalAllGenotypes(sv)), "Genotype")
+    expect_output(print(evalAllGenotypes(sv, order = TRUE)), "Genotype")
 })
 
 test_that("can run without keeping input", {

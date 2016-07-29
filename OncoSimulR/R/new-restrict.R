@@ -1032,7 +1032,7 @@ evalGenotypeFitAndMut <- function(genotype,
 ## I am here: simplify this
 
 evalAllGenotypesORMut <- function(fmEffects,
-                                  order = TRUE, max = 256,
+                                  order = FALSE, max = 256,
                              addwt = FALSE,
                              model = "",
                              calledBy_ = "") {
@@ -1129,7 +1129,7 @@ evalAllGenotypesORMut <- function(fmEffects,
     return(df)
 }
 
-evalAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256,
+evalAllGenotypes <- function(fitnessEffects, order = FALSE, max = 256,
                              addwt = FALSE,
                              model = "") {
     evalAllGenotypesORMut(
@@ -1190,7 +1190,7 @@ generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
 }
 
 evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
-                                   order = TRUE, max = 256,
+                                   order = FALSE, max = 256,
                                    addwt = FALSE,
                                    model = "" ){
 ##                                   minimal = FALSE) {
