@@ -8,11 +8,11 @@ library(smatr)
 library(gtools)
 ## recall to install with --install-tests
 
-if (Sys.info()["nodename"] == "Gallotia") {
-    td <- "/home2/ramon/tmp"
-} else {
-    td <- "~/tmp"
-}
+## if (Sys.info()["nodename"] == "Gallotia") {
+##     td <- "/home2/ramon/tmp"
+## } else {
+##     td <- "~/tmp"
+## }
 
 
 i <- 0

@@ -13,12 +13,14 @@ library(knitr)
 
 ## recall to install with --install-tests
 
-if (Sys.info()["nodename"] == "Gallotia") {
-    td <- "/home2/ramon/tmp"
-} else {
-    td <- "~/tmp"
-}
+## if (Sys.info()["nodename"] == "Gallotia") {
+##     td <- "/home2/ramon/tmp"
+## } else {
+##     td <- "~/tmp"
+## }
 
+## If /tmp is tmpfs in RAM much faster. And we clean up. So use that.
+td <- "/tmp"
 
 i <- 0
 while(TRUE) {
@@ -56,6 +58,7 @@ while(TRUE) {
     cat(paste("\n     knit output to ", nf, "\n"))
     
     knit("../OncoSimulR/vignettes/OncoSimulR.Rnw", output = nf)
+    unlink(nf, recursive = TRUE)
     gc(); gc(); gc(); gc()
     ## if you want to tex the file, use knit2pdf and change output name to
     ## have tex extension, etc.
@@ -81,6 +84,9 @@ while(TRUE) {
     ## checkVignettes("OncoSimulR", workdir = "src") ## yes, tmp or cur does not do it
     cat("\n                              And this is the FINAL random uniform number ", runif(1), "\n")
     ## set.seed(NULL) ## Not needed as files clean up after themselves
+    ## rm the tmp
+    cat("\n  Cleaning up tmp files \n")
+    unlink(nnn, recursive = TRUE)
 }
 
 
