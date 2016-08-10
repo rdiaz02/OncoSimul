@@ -1,3 +1,6 @@
+Changes in version 2.3.12 (2017-08-10):
+	- Increase N in some tests.
+
 Changes in version 2.3.11 (2017-08-10):
 	- evalAllGenotypes: order = FALSE by default.
 	- Clarified difference plotFitnessEffects and plotFitnessLandscape.
