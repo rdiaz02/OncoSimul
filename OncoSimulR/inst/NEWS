@@ -1,5 +1,6 @@
-Changes in version 2.3.11 (2017-zz-zz):
+Changes in version 2.3.11 (2017-08-10):
 	- evalAllGenotypes: order = FALSE by default.
+	- Clarified difference plotFitnessEffects and plotFitnessLandscape.
 	
 Changes in version 2.3.10 (2017-07-14):
 	- The windows check failure with mc.cores.
