@@ -4,7 +4,9 @@ CMD check". They can be run by doing "test_dir()".
 They are kept separate because they are long running, many are overkills,
 and in a few it is possible some might fail even when there are no bugs
 (since we are comparing expected outcomes from a distribution, and we
-could end up in unlikely cases).
+could end up in unlikely cases). In fact, you should expect some tests to
+fail if you run them enough times (if they were to never fail, this could
+mean that the tests are not actually sensitive enough).
 
 Note that we will rarely want to use something like try_again (available
 from the github version of testthat) or repeated tries (e.g.,
