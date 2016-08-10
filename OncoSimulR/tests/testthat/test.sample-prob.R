@@ -6,7 +6,7 @@ test_that("Increasing cPDetect decreases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 35
+    n <- 55
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -42,7 +42,7 @@ test_that("Increasing p2 decreases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 35
+    n <- 55
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -79,7 +79,7 @@ test_that("Increasing n2 increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 50
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -117,7 +117,7 @@ test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 50
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -157,7 +157,7 @@ test_that("Increasing cPDetect decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 30
+    n <- 50
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -193,7 +193,7 @@ test_that("Increasing p2 decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 60
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -230,7 +230,7 @@ test_that("Increasing n2 increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 60
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -268,7 +268,7 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 60
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -312,7 +312,7 @@ test_that("Increasing cPDetect decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 25
+    n <- 65
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -348,7 +348,7 @@ test_that("Increasing p2 decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 80
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -385,7 +385,7 @@ test_that("Increasing n2 increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 80
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -423,7 +423,7 @@ test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 40
+    n <- 80
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
