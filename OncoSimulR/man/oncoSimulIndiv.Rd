@@ -323,9 +323,9 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   %% keepEvery.
 
   If you want nice plots, set \code{sampleEvery} and \code{keepEvery} to
-  small values (say, 1 or 0.5). Otherwise, you can use a
+  small values (say, 5 or 2). Otherwise, you can use a
   \code{sampleEvery} of 1 but a \code{keepEvery} of 15, so that the
-  return objects are not huge.
+  return objects are not huge and the code runs a lot faster.
 
 
   Setting \code{keepEvery = NA} means we only keep the very last

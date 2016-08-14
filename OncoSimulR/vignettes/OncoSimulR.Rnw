@@ -454,6 +454,107 @@ plot(ep2, show = "drivers", addtot = TRUE,
 
 
 
+\subsection{How long does it take? How fast is OncoSimulR? How much space
+  do the return objects take?}
+\label{timings}
+How long simulations take depend on several factors:
+
+\begin{itemize}
+\item Your hardware, of course.
+\item The evolutionary model: using the ``McFL'' model is often much
+  slower (this model includes density dependence and is more complex).
+\item The granularity of how often you keep data (\texttt{keepEvery}
+  argument). Note that the default, which is to keep as often as you
+  sample (so that we preserve all history) can lead to very slow execution
+  times.
+\item The mutation rate, because higher mutation rates lead to more
+  clones, and more clones mean we need to iterate over, well, more clones,
+  and keep larger data structures.
+
+\item The fitness specification (more complex fitness specifications tend
+  to be slightly slower).
+\item Whether or not you keep the complete clone history (this affects
+  mainly size of return object, not speed).
+\item The stopping conditions.
+\end{itemize}
+
+
+To give you an idea, we will use the above examples, with the
+\texttt{detectionProb} stopping mechanism (see \qref{detectprob}), two
+different growth models (exponential and McFarland) and doing 100
+simulations. The results I show are for a laptop with an 8-core Intel Xeon
+E3-1505M CPU, running Debian GNU/Linux.
+
+<<eval=FALSE>>=
+
+system.time(ep1_exp <- oncoSimulPop(100, sv2, 
+                                  detectionProb = "default", 
+                                  detectionSize = NA,
+                                  detectionDrivers = NA,
+                                  finalTime = NA,
+                                  keepEvery = 5,
+                                  model = "Exp", 
+                                  sampleEvery = 0.02, 
+                                  initSize = 500,
+                                  mc.cores = detectCores() ))
+
+system.time(ep1_mc <- oncoSimulPop(100, sv2, 
+                                  detectionProb = "default", 
+                                  detectionSize = NA,
+                                  detectionDrivers = NA,
+                                  finalTime = NA,
+                                  keepEvery = 5,                                  
+                                  model = "McFL", 
+                                  sampleEvery = 0.02, 
+                                  initSize = 2000,
+                                  mc.cores = detectCores() ))
+
+system.time(ep2_exp <- oncoSimulPop(100, pancr, 
+                                  detectionProb = "default", 
+                                  detectionSize = NA,
+                                  detectionDrivers = NA,
+                                  finalTime = NA,
+                                  keepEvery = 5,                                  
+                                  model = "Exp", 
+                                  sampleEvery = 0.02, 
+                                  initSize = 500,
+                                  mc.cores = detectCores() ))
+
+system.time(ep2_mc <- oncoSimulPop(100, pancr, 
+                                  detectionProb = "default", 
+                                  detectionSize = NA,
+                                  detectionDrivers = NA,
+                                  finalTime = NA,                                  
+                                  keepEvery = 5,                                  
+                                  model = "McFL", 
+                                  sampleEvery = 0.02, 
+                                  initSize = 2000,
+                                  mc.cores = detectCores() ))
+
+@ 
+
+
+The above yields the following:
+
+\begin{tabular}[h]{lll}
+  \hline
+  Simulation&Elapsed wall time (s) &Object size (MB)\\
+  \hline
+  ep1\_exp & 0.8 & 1.6 \\
+  ep1\_mc  & 6.6 & 16.8 \\
+  ep2\_exp & 1.1 & 1.6 \\
+  ep2\_mc  & 5.8 & 20.6 \\
+  \hline
+\end{tabular}
+
+
+There are large differences in speed between models and sizes of objects
+differ two: in these cases, the simulations using the ``McFL'' model run
+for much longer (2000 to 2000 time units, vs.\ 100 to 1500 of the ``Exp''
+models) and also had a larger number of clones returned (5 to 16 vs.\ 1 to
+3).
+
+
 \subsection{Versions}\label{versions}
 
 In this vignette and the documentation I often refer to version 1 (v.1)
