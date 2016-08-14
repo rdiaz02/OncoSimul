@@ -3382,6 +3382,8 @@ plot(rv2, expandModules = TRUE,   autofit = TRUE)
 
 
 
+
+
 \clearpage
 \section{Running and plotting the simulations: starting, ending, and
   examples}\label{simul}
@@ -3803,6 +3805,17 @@ plot(b1, show = "genotypes", type = "line")
 plot(b1, show = "genotypes", type = "stacked")
 plot(b1, show = "genotypes", type = "stream")
 @ 
+
+
+%% For poster
+% <<>>=
+
+% pdf(file = "b1-traj.pdf", width = 8, height = 8)
+% plot(b1, show = "genotypes", type = "stacked", 
+%      plotDiversity = TRUE)
+% dev.off()
+
+% @ 
 
 In this case, probably the stream plots are most helpful. Note, however,
 that (in contrast to some figures in the literature showing models of
@@ -5290,6 +5303,15 @@ to between 900 and 1000, to avoid too much clutter):
 plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
 @ 
 
+% %% For poster
+% <<>>=
+
+% pdf("phylog-clone1.pdf", width = 4, height = 4)
+% par(cex = 0.5); plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
+% dev.off()
+
+% @ 
+
 (By playing with \texttt{t}, it should be possible to obtain animations of
 the phylogeny. We will not pursue it here.)
 
@@ -5428,6 +5450,14 @@ plot(r1)
 oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 @ 
 
+% %% For poster
+% <<>>=
+
+% pdf(file = "fl1.pdf", height = 5, width = 4)
+% plot(r1)
+% dev.off()
+
+% @ 
 
 
 
