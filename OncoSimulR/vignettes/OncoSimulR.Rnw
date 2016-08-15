@@ -5450,14 +5450,14 @@ plot(r1)
 oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 @ 
 
-% %% For poster
-% <<>>=
+% % % %% For poster
+% % <<>>=
 
-% pdf(file = "fl1.pdf", height = 5, width = 4)
+% pdf(file = "fl1.pdf", height = 8, width = 5)
 % plot(r1)
 % dev.off()
 
-% @ 
+% % @ 
 
 
 

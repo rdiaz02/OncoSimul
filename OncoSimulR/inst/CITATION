@@ -1,13 +1,31 @@
-citHeader("If you use OncoSimulR, please cite OncoSimulR itself. Note that a former version of OncoSimulR has been used in a large comparative study of methods to infer restrictions, published in BMC Bioinformatics; you might want to cite that too, if appropriate.")
+citHeader("If you use OncoSimulR, please cite the OncoSimulR bioRxiv paper.",
+          " A former version of OncoSimulR has been used in a large",
+          " comparative study of methods to infer restrictions,",
+          " published in BMC Bioinformatics; you might want to cite that too,",
+          " if appropriate, such as when referring to using evolutionary simulations",
+          " to assess oncogenetic tree methods performance.")
 
-citEntry(entry="Manual",
+
+citEntry(entry="TechReport",
          author = "R Diaz-Uriarte",
-         title = "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis.",
-         year = "2015",
-         note = "R package version 2.0.0",
+         title = "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
+         journal = "bioRxiv",
+         year = "2016",
+         doi = "10.1101/069500",
+         url = "http://biorxiv.org/content/early/2016/08/14/069500",
          textVersion = paste("R Diaz-Uriarte.",
-             "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis. 2015. BioConductor package version 2.0.0 ")
-)
+                             "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
+                             " 2016. bioRxiv, http://dx.doi.org/10.1101/069500.")
+         )
+
+## citEntry(entry="Manual",
+##          author = "R Diaz-Uriarte",
+##          title = "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis.",
+##          year = "2015",
+##          note = "R package version 2.0.0",
+##          textVersion = paste("R Diaz-Uriarte.",
+##              "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis. 2015. BioConductor package version 2.0.0 ")
+## )
 
 
 ## citHeader("A former version of OncoSimulR has been used in this paper:")
