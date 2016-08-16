@@ -3807,12 +3807,15 @@ plot(b1, show = "genotypes", type = "stream")
 @ 
 
 
-%% For poster
+% %% For poster
 % <<>>=
 
 % pdf(file = "b1-traj.pdf", width = 8, height = 8)
+% par(cex = 1.55)
+% par(cex.axis= 0.9)
+% par(las = 1)
 % plot(b1, show = "genotypes", type = "stacked", 
-%      plotDiversity = TRUE)
+%      plotDiversity = TRUE, legend.ncols = 3)
 % dev.off()
 
 % @ 
@@ -5303,14 +5306,16 @@ to between 900 and 1000, to avoid too much clutter):
 plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
 @ 
 
-% %% For poster
+% % %% For poster
+
 % <<>>=
 
-% pdf("phylog-clone1.pdf", width = 4, height = 4)
-% par(cex = 0.5); plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
+% pdf("phylog-clone1.pdf", width = 4, height = 3.4)
+% par(cex = 0.4); plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
 % dev.off()
 
 % @ 
+
 
 (By playing with \texttt{t}, it should be possible to obtain animations of
 the phylogeny. We will not pursue it here.)
@@ -5450,14 +5455,15 @@ plot(r1)
 oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 @ 
 
-% % % %% For poster
-% % <<>>=
+% % % % %% For poster
 
-% pdf(file = "fl1.pdf", height = 8, width = 5)
-% plot(r1)
+% <<>>=
+
+% pdf(file = "fl1.pdf", height = 5.8, width = 5)
+% plot(r1, use_ggrepel = TRUE)
 % dev.off()
 
-% % @ 
+% @ 
 
 
 
@@ -5759,6 +5765,9 @@ This is the information about the version of R and packages used:
 sessionInfo()
 @ 
 
+\section{Funding}
+
+Supported by BFU2015-67302-R (MINECO/FEDER, EU).
 
 <<echo=FALSE, eval=TRUE>>=
 ## reinitialize the seed
