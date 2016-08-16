@@ -6,12 +6,13 @@ citHeader("If you use OncoSimulR, please cite the OncoSimulR bioRxiv paper.",
           " to assess oncogenetic tree methods performance.")
 
 
-citEntry(entry="TechReport",
+citEntry(entry="Article",
          author = "R Diaz-Uriarte",
          title = "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
          journal = "bioRxiv",
          year = "2016",
          doi = "10.1101/069500",
+         publisher = "Cold Spring Harbor Labs Journals",
          url = "http://biorxiv.org/content/early/2016/08/14/069500",
          textVersion = paste("R Diaz-Uriarte.",
                              "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
