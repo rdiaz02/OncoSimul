@@ -555,6 +555,20 @@ models) and also had a larger number of clones returned (5 to 16 vs.\ 1 to
 3).
 
 
+
+\subsection{Citing OncoSimulR and other documentation}
+\label{citing}
+
+In R, you can do
+<<>>=
+citation("OncoSimulR")
+@ 
+which will tell you how to cite the package.
+
+% You can also take a look at the poster (presented at ECCB 2016), \Burl{zz}
+% and included under docs.
+
+
 \subsection{Versions}\label{versions}
 
 In this vignette and the documentation I often refer to version 1 (v.1)
@@ -572,6 +586,8 @@ version 2. %% If you see a version in the package that says ``1.99.x'', where
 %% ``x'' is any number, you are too.
 
 \textbf{The functionality of version 1 will soon be removed.}
+
+
 
 
 \section{Specifying fitness effects}\label{specfit}
