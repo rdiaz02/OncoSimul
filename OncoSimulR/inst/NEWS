@@ -1,5 +1,7 @@
-Changes in version 2.3.13 (2017-08-15):
+Changes in version 2.3.13 (2017-08-19):
 	- bioRxiv citation.
+	- Using Rmd for vignette.
+	- Improvements in vignette.
 
 Changes in version 2.3.12 (2017-08-10):
 	- Increase N in some tests.
