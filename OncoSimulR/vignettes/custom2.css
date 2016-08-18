@@ -86,21 +86,34 @@ pre, img {
   display: block;
 }
 
+
+/* /\* This is really what I like best: no dashes *\/ */
+/*  And with pre code commented */
+/* pre { */
+/*     border: 0px none;  */
+/*     background-color: #F8F8F8; */
+/*     white-space: pre; */
+/*     overflow-x: auto; */
+/* } */
+
 pre {
-  border: 0px none;
-  background-color: #F8F8F8;
-  white-space: pre;
-  overflow-x: auto;
+    border-radius: 4px;  /* Use 4 for nicely rounded corners */
+    border: 1px #aaa dashed;
+    background-color: #F8F8F8;
+    white-space: pre;
+    overflow-x: auto; 
 }
 
-pre code {
-  border: 1px #aaa dashed;
-  background-color: white;
-  display: block;
-  padding: 1em;  
-  color: #111;
-  overflow-x: inherit;
-}
+/* This adds another box internally, blabla */
+
+/* pre code { */
+/*   border: 1px #aaa dashed; */
+/*   background-color: white; */
+/*   display: block; */
+/*   padding: 0em; /\*1*\/ */
+/*   color: #111; */
+/*   overflow-x: inherit; */
+/* } */
 
 /* markdown v1 */
 pre code[class] {
@@ -113,7 +126,7 @@ pre[class] code {
 }
 
 /* formatting of inline code */
-code { 
+code {
   background-color: transparent;
   color: #87b13f;
   font-size: 92%;
