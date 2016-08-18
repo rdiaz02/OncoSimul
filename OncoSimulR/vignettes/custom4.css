@@ -6,22 +6,22 @@ body, td {
    font-size: 13px;
 }
 
-body {
-  max-width: 800px; 
-  margin: auto;
-  padding: 1em 1em 1em;
-  line-height: 20px;
-  margin-left:210px;
-}
+/* This does weird things with float toc*/
+/* body { */
+/*   max-width: 800px;  */
+/*   margin: 0 auto; */
+/*   padding: 1em 1em 1em; */
+/*   line-height: 20px; */
+/* } */
 
-#TOC {
-position: fixed;
-left: 0;
-top: 0;
-width: 200px;
-height: 100%;
-overflow:auto;
-}
+/* #TOC { */
+/* position: fixed; */
+/* left: 0; */
+/* top: 0; */
+/* width: 200px; */
+/* height: 100%; */
+/* overflow:auto; */
+/* } */
 
 
 /* /\* Table of contents style *\/ */

@@ -20,7 +20,7 @@ r_github_packages:
 
 
 install:
-  - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR");devtools::install_github("jimhester/withr");devtools::install_github("jimhester/covr")'
+  - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown","bookdown"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR");devtools::install_github("jimhester/withr");devtools::install_github("jimhester/covr")'
  
 before_script:
    - R CMD build --keep-empty-dirs OncoSimulR
