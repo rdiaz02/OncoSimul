@@ -10,14 +10,7 @@ author: "
 		 
 		 <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>
 		 "
-##    <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>
-## date: "`r Sys.Date()`"
-date: "`r paste0(Sys.Date(),'. ', pkg_ver('OncoSimulR'), '. Revision: ', system('git rev-parse --short HEAD', intern = TRUE))`"
-
-## Bioc html_document no refs
-## Bioc html_document2 too wide margins and really ugly
-## Simplest is to use bookdown and add BioC CSS
-## Rmdformats is really neat, but no support for \@ref
+date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), '. Revision: ', system('git rev-parse --short HEAD', intern = TRUE))`"
 output: 
   bookdown::html_document2: 
     toc: yes
@@ -26,7 +19,6 @@ output:
 classoption: a4paper
 geometry: margin=3cm
 fontsize: 12pt
-## package: "`r paste0(pkg_ver('OncoSimulR'), '. Rev.: ', system('git rev-parse --short HEAD', intern = TRUE))`"
 bibliography: OncoSimulR.bib
 link-citations: true
 vignette: >
@@ -37,8 +29,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
   %\VignetteDepends{OncoSimulR}
-## PDF as: render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, includes = includes("before_body" = "my-header.tex")))
 ---
+
+<!-- ##    <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz> -->
+<!-- ## date: "`r Sys.Date()`" -->
+
+<!-- ## Bioc html_document no refs -->
+<!-- ## Bioc html_document2 too wide margins and really ugly -->
+<!-- ## Simplest is to use bookdown and add BioC CSS -->
+<!-- ## Rmdformats is really neat, but no support for \@ref -->
+<!-- ## PDF as: render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, includes = includes("before_body" = "my-header.tex"))) -->
+
 
 <!-- Fomr https://github.com/rstudio/bookdown/issues/153 -->
 <script type="text/x-mathjax-config">
@@ -53,6 +54,7 @@ MathJax.Hub.Config({
 ## blocks from one code chunk into a single block
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 options(width = 70)
+require(BiocStyle)
 ```
 
 <!-- bookdown::pdf_document2 seems to produce the tex even if failures -->
