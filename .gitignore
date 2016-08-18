@@ -17,6 +17,7 @@ nohup.out
 suppl-mat.out
 suppl-mat.pdf
 suppl-mat.toc
+OncoSimulR/vignettes/OncoSimulR_files/
 OncoSimulR.Rcheck/
 /OncoSimulR/vignettes/auto/
 /OncoSimulR/vignettes/figure/
@@ -92,3 +93,6 @@ OncoSimulR_2.1.991.tar.gz
 /OncoSimulR_2.3.10.tar.gz
 /OncoSimulR_2.3.13.tar.gz
 /OncoSimulR/vignettes/OncoSimulR.html
+/OncoSimulR/vignettes/OncoSimulR.tex
+/OncoSimulR/vignettes/OncoSimulR_files/figure-latex/b3b4x1ch1-1.pdf
+
