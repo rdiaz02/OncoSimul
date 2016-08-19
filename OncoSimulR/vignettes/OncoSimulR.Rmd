@@ -12,10 +12,11 @@ author: "
 		 "
 date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), '. Revision: ', system('git rev-parse --short HEAD', intern = TRUE))`"
 output: 
-  bookdown::html_document2: 
+  bookdown::html_document2:
+    css: custom4.css
     toc: yes
     toc_float: true
-    css: custom4.css
+
 classoption: a4paper
 geometry: margin=3cm
 fontsize: 12pt
@@ -31,6 +32,66 @@ vignette: >
   %\VignetteDepends{OncoSimulR}
 ---
 
+<!-- html_book seems to ignore the toc_float -->
+
+  <!-- bookdown::gitbook: -->
+  <!--   self_contained: false -->
+  <!--   split_by: rmd -->
+  <!--   css: custom4.css -->
+  <!--   github-repo: "rdiaz02/OncoSimul" -->
+  <!--   config: -->
+  <!--     toc: -->
+  <!--       collapse: subsection -->
+  <!--     download: null -->
+  <!--     sharing: null -->
+
+
+<!-- A great one? Well... Slow, and no subsubsection and strange scrolling-->
+<!-- render("OncoSimulR.Rmd", bookdown::gitbook(self_contained = FALSE, split_by = "none")) -->
+<!-- Slow rendering, and the clicking on TOC to get expanded entries does -->
+<!-- not work. -->
+<!-- And it creates a libs dir that takes 5 MB. -->
+<!-- What I like is the possibility to hide the TOC, change rendering -->
+<!-- (color, font size and type) and download.  -->
+
+<!-- This did not work well either.  -->
+  <!-- bookdown::gitbook: -->
+  <!--   toc-depth: 4  -->
+  <!--   self_contained: false -->
+  <!--   split_by: none -->
+  <!--   css: custom4.css -->
+  <!--   github-repo: "rdiaz02/OncoSimul" -->
+  <!--   config: -->
+  <!--     toc: -->
+  <!--       collapse: section -->
+  <!--       scroll_highlight: true -->
+  <!--       after: null -->
+  <!--       before: null -->
+  <!--       toc-depth: 4		 -->
+  <!--     toolbar: -->
+  <!--       position: fixed -->
+  <!--     edit: -->
+  <!--       link: null -->
+  <!--       text: null -->
+  <!--     download: null -->
+  <!--     search: no -->
+  <!--     fontsettings: -->
+  <!--       theme: white -->
+  <!--       family: sans -->
+  <!--       size: 2 -->
+  <!--     sharing: null -->
+
+<!-- download, only on my web site -->
+<!-- EPUB and MOBI and PDF -->
+<!-- url: "https\://" -->
+
+<!-- output:  -->
+<!--   bookdown::html_document2:  -->
+<!--     toc: yes -->
+<!--     toc_float: true -->
+<!--     css: custom4.css -->
+
+
 <!-- ##    <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz> -->
 <!-- ## date: "`r Sys.Date()`" -->
 
@@ -39,6 +100,9 @@ vignette: >
 <!-- ## Simplest is to use bookdown and add BioC CSS -->
 <!-- ## Rmdformats is really neat, but no support for \@ref -->
 <!-- ## PDF as: render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, includes = includes("before_body" = "my-header.tex"))) -->
+
+
+
 
 
 <!-- Fomr https://github.com/rstudio/bookdown/issues/153 -->
@@ -81,8 +145,6 @@ specified, for example, by Oncogenetic Trees
 [CBN: @Beerenwinkel2007; @Gerstung2009; @Gerstung2011], with the
 possibility of adding passenger mutations to the simulations and
 allowing for several types of sampling.
-
-
 
 
 Since then, OncoSimulR has been vastly extended to allow you to
