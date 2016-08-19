@@ -10,7 +10,8 @@
 
 ## Yes, works under eshell.
 
-cp OncoSimulR/vignettes/OncoSimulR.Rnw ./Subversion-in-BioC/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/custom4.css ./Subversion-in-BioC/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/OncoSimulR.Rmd ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.bib ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitsetinfo.sty ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitinfo.sty ./Subversion-in-BioC/OncoSimulR/vignettes/.
