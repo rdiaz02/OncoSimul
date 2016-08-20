@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## if second argument is "ghp", then push to github pages the html and pdf
+
 V_R=$1
 
 V_ADA=$(cat ./OncoSimulR/DESCRIPTION | grep Version | cut -d' ' -f2)
@@ -51,7 +53,7 @@ rmdir ./OncoSimulR/vignettes/figure
 rm ./OncoSimulR/vignettes/*.bbl
 rm ./OncoSimulR/vignettes/*.aux
 rm ./OncoSimulR/vignettes/*.toc
-rm ./OncoSimulR/vignettes/*.tex
+rm ./OncoSimulR/vignettes/OncoSimulR.tex
 rm ./OncoSimulR/vignettes/*.pdf
 rm ./OncoSimulR/vignettes/*.log
 rm ./OncoSimulR/vignettes/*.out
@@ -150,3 +152,17 @@ $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 ## will CHANGE files if it deems appropriate (e.g., RcppExports) without
 ## asking you. However, it can point out things that I miss with the
 ## BUILD and check. So do it in a tmp directory or git checkout changes.
+
+
+if [ "$2" = "ghp" ]; then
+    cd ./OncoSimulR/vignettes
+    Rscript -e 'library(rmarkdown); library(BiocStyle); render("OncoSimulR.Rmd")'
+    Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))'
+    cp OncoSimulR.pdf ../../../oncosimul-gh-pages/pdfs/.
+    cp OncoSimulR.html ../../../oncosimul-gh-pages/.
+    cd ../../../oncosimul-gh-pages
+
+    gv=$(git rev-parse --short HEAD)
+    echo "   ****   Now, Commit and push, if appropriate, including gh-pages. We are at " $gv
+fi
+    

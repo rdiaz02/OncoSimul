@@ -4,8 +4,8 @@
 
 
 
-OncoSimul
-=========
+# OncoSimul
+
 
 
 Code for forward population genetic simulation in asexual populations,
@@ -43,8 +43,8 @@ listed in the [Genetic Simulation Resources
 catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 
 
-Installation
-============
+# Installation
+
 
 To use the most recent code that I regard as stable you first need to [use
 a development version of Bioconductor](http://www.bioconductor.org/developers/how-to/useDevel/). Most
@@ -86,18 +86,25 @@ But sometimes the latest additions in this repo could be broken (see [Software s
 can of course clone this repo, and install from there.
 
 
-Documentation
-=============
+# Documentation
+
 
 As any R/BioConductor package, OncoSimulR comes with documentation for its
 user-visible functions and data sets (using the help is just standard R
-usage). From BioConductor you can obtain the
-[PDF reference manual](http://www.bioconductor.org/packages/3.2/bioc/manuals/OncoSimulR/man/OncoSimulR.pdf). A
-better place to start, though, is the long vignette, with commented
-examples (and created from the `OncoSimulR/vignettes/OncoSimulR.Rnw` file
-that includes both text and code). Here is
-[the vignette as PDF](http://www.bioconductor.org/packages/devel/bioc/vignettes/OncoSimulR/inst/doc/OncoSimulR.pdf),
-from the BioConductor site (the development branch).
+usage). From
+[OncoSimulR's BioConductor page](https://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html)
+you have access to the standard documentation both the manual and overview
+---the vignette. The best place to start is the vignette (created from the
+`OncoSimulR/vignettes/OncoSimulR.Rnw` file that includes both text and
+code).
+
+<!-- you can obtain the  -->
+<!-- [PDF reference manual](http://www.bioconductor.org/packages/3.2/bioc/manuals/OncoSimulR/man/OncoSimulR.pdf). A -->
+<!-- better place to start, though, is the long vignette, with commented -->
+<!-- examples (and created from the `OncoSimulR/vignettes/OncoSimulR.Rnw` file -->
+<!-- that includes both text and code). Here is -->
+<!-- [the vignette as PDF](http://www.bioconductor.org/packages/devel/bioc/vignettes/OncoSimulR/inst/doc/OncoSimulR.pdf), -->
+<!-- from the BioConductor site (the development branch). -->
 
 
 You can view the vignette from R itself doing
@@ -107,11 +114,22 @@ You can view the vignette from R itself doing
 browseVignettes("OncoSimulR")
 ```
 
-and this gives you access to the PDF, the Rnw file (LaTeX + R), and the R code.
+and this gives you access to the HTML, the Rmd file (markdown + R), and the R code.
+
+## Documentation: HTML and PDF for this repo's version
 
 
-Licenses and copyright
-======================
+From these two links you can also
+[browse the HTML vignette](https://rdiaz02.github.io/OncoSimul/OncoSimulR.html)
+and [get a PDF version](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf).
+
+These files correspond to the most recent, github version, of the package
+(i.e., they might include changes not yet available from the BioConudctor
+package).
+
+
+# Licenses and copyright
+
 
 The R/BioConductor OncoSimulR package is licensed under the GPLv3
 license. All of the code for the OncoSimulR BioConductor package, except
@@ -148,8 +166,8 @@ this file is not part of the OncoSimulR BioConductor package.
 
 
 
-Software status
-===============
+# Software status
+
 
 |             | Bioconductor (multiple platforms)   | Travis CI  (Linux)  | Appveyor (Windows)  |
 | ------------- | ------------------- | ------------- | ---------------- |

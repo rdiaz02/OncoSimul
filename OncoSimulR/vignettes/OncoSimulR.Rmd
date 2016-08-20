@@ -101,7 +101,7 @@ vignette: >
 <!-- ## Rmdformats is really neat, but no support for \@ref -->
 <!-- ## PDF as: 
 
-<!-- render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, includes = includes("in_header" = "my-header.tex")))  -->
+<!-- render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE)  -->
 
 <!-- -->
 
@@ -124,7 +124,7 @@ MathJax.Hub.Config({
 
 
 ```{r setup, include=FALSE}
-## use collapse for bookdowan, to collapse all the source and output
+## use collapse for bookdown, to collapse all the source and output
 ## blocks from one code chunk into a single block
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 options(width = 70)
@@ -679,6 +679,15 @@ poster, [http://dx.doi.org/10.7490/f1000research.1112860.1](http://dx.doi.org/10
 presented at ECCB 2016.
 
 
+### HTML and PDF versions of the vignette {#pdfvignette}
+
+A PDF version of this vignette is available from
+<https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf>.  And an
+HTML version from
+<https://rdiaz02.github.io/OncoSimul/OncoSimulR.html>. These files
+correspond to the most recent, github version, of the package (i.e.,
+they might include changes not yet available from the BioConudctor
+package).
 
 
 
