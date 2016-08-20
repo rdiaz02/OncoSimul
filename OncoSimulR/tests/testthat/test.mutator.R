@@ -872,7 +872,7 @@ test_that("Mutator, several modules differences", {
     max.tries <- 4 
     for(tries in 1:max.tries) {
     cat("\n mmdSM1: a runif is", runif(1), "\n")
-    reps <- 25
+    reps <- 60
     no <- 5e3
     ft <- 50 ## you need it large enough to get enough hits
     mu <- 1e-5
@@ -940,6 +940,10 @@ test_that("Mutator, several modules differences", {
     T1 <- ( wilcox.test(summary(b2)$NumClones,
                              summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
     T2 <- (t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
+    ## it very rarely fails; what are the p-values?
+    print(suppressWarnings(wilcox.test(summary(b2)$NumClones,
+                                       summary(b1)$NumClones, alternative = "greater")$p.value))
+    print(suppressWarnings(t.test(mutsPerClone(b2), mutsPerClone(b1), alternative = "greater")$p.value))
     if( T1 && T2 ) break;
     }
     cat(paste ("\n done tries ", tries, "\n"))
