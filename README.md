@@ -132,7 +132,7 @@ package).
 
 
 This
-[bioRxiv prepring](http://biorxiv.org/content/early/2016/08/14/069500)
+[bioRxiv preprint](http://biorxiv.org/content/early/2016/08/14/069500)
 gives a quick overview of OncoSimulR. You can also take a look at this
 [poster presented/to be presented at ECCB 2016](http://dx.doi.org/10.7490/f1000research.1112860.1).
 
