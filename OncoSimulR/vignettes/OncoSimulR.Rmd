@@ -99,7 +99,17 @@ vignette: >
 <!-- ## Bioc html_document2 too wide margins and really ugly -->
 <!-- ## Simplest is to use bookdown and add BioC CSS -->
 <!-- ## Rmdformats is really neat, but no support for \@ref -->
-<!-- ## PDF as: render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, includes = includes("before_body" = "my-header.tex"))) -->
+<!-- ## PDF as: 
+
+<!-- render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, includes = includes("in_header" = "my-header.tex")))  -->
+
+<!-- -->
+
+
+<!-- After the fix in BiocStyle 2.3.24 can use this too, which gives the  -->
+<!-- BiocStyle output, but it is not the same as the one for Rnw and -->
+<!-- breaks refs, etc. I do not really like it-->
+<!-- ## PDF as: render("OncoSimulR.Rmd", output_format = BiocStyle::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE)) -->
 
 
 
