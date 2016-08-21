@@ -3016,7 +3016,7 @@ to a change in the cell's fitness by $s_P$. For cells with the primary
 driver mutation, the fitness advantage obtained with each secondary driver
 mutation is $s_{DP}$."
 
-The proliferation probability is given as (ignoring constants such as $1/2$):
+The proliferation probability is given as:
 
 
 * $\frac{1}{2}(1 + s_p)^k$ when there are $k$ secondary drivers mutated and no primary diver;
@@ -3029,7 +3029,7 @@ apoptosis is one minus the proliferation rate.
 
 We cannot find a simple mapping from their expressions to our fitness
 parameterization, but we can get fairly close by using a DAG; in this one,
-note the unusual feature of having on of the "s" terms (that for the
+note the unusual feature of having one of the "s" terms (that for the
 driver dependency on root) be negative. Using the parameters given in the
 legend of their Figure 3 for $s_p, S_D^+, S_D^-, S_{DP}$ and obtaining
 that negative value for the dependency of the driver on root we can do:
@@ -3555,7 +3555,7 @@ Of course the "s" and "sh" are set arbitrarily here.
 
 
 
-## Raphael and Vandin'2 2014 modules {#raphael-ex}
+## Raphael and Vandin's 2014 modules {#raphael-ex}
 
 In @Raphael2014a, the authors show several progression models
 in terms of modules. We can code the extended poset for the colorectal
