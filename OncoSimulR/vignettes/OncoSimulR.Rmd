@@ -3071,17 +3071,17 @@ plot(b1, use_ggrepel = TRUE)
 ``` 
 
 
-### Specifying fitness directly
+### Specifying fitness of genotypes directly
 
 An alternative approach to specify the fitness, if the number of
 genotypes is reasonably small, is to directly evaluate fitness as
 given by their expressions. Then, use the `genotFitness` argument to
 *`allFitnessEffects`*. 
 
-We will create all possible genotypes and then a function that gives
-the fitness of each genotype according to their expression; we will
-call this function on the data frame of genotypes, and pass this
-data frame to *`allFitnessEffects`*.
+We will create all possible genotypes; then we will write a function
+that gives the fitness of each genotype according to their
+expression; finally, we will call this function on the data frame of
+genotypes, and pass this data frame to *`allFitnessEffects`*.
 
 
 ```{r}
