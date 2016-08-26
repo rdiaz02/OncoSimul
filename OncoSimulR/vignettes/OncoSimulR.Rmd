@@ -843,7 +843,7 @@ wanted.)
 
 
 That's it. You can plot that fitnessEffects object
-```{r, out.width="6cm", out.height = "6cm"}
+```{r}
 plot(fem4)
 ``` 
 
@@ -873,7 +873,7 @@ indicating that the gene of that column is mutated or not. Column $g+ 1$
 contains the fitness values. And you do not even need to specify all the
 genotypes (we will assume that the missing genotypes have fitness 1):
 
-```{r, out.width="6cm", out.height = "6cm"}
+```{r}
 m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
 fem6 <- allFitnessEffects(genotFitness = m6)
 evalAllGenotypes(fem6, addwt = TRUE)
