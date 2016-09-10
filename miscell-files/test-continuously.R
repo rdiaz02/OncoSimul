@@ -54,10 +54,10 @@ while(TRUE) {
     cat("\n                          And this is the fourth random uniform number ", runif(1), "\n")
 
     ## Vignette via knitr.
-    nf <- tempfile()
+    nf <- tempfile(tmpdir = nnn)
     cat(paste("\n     knit output to ", nf, "\n"))
     
-    knit("../OncoSimulR/vignettes/OncoSimulR.Rnw", output = nf)
+    knit("../OncoSimulR/vignettes/OncoSimulR.Rmd", output = nf)
     unlink(nf, recursive = TRUE)
     gc(); gc(); gc(); gc()
     ## if you want to tex the file, use knit2pdf and change output name to
