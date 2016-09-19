@@ -93,6 +93,7 @@ bool detectedSizeP(const double n, const double cPDetect,
   } else {
     std::uniform_real_distribution<double> runif(0.0, 1.0);
     double prob = probDetectSize(n, cPDetect, PDBaseline);
+    if(prob <= 0.0) return false;
     if(runif(ran_gen) <= prob) {
       return true;
     } else {
