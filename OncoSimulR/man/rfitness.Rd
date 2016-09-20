@@ -34,7 +34,13 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   distance from this reference. If "random" a genotype will be randomly
   chosen as the reference. If "max" the genotype with all positions
   mutated will be chosen as the reference. If you pass a vector (e.g.,
-  \code{reference = c(1, 0, 1, 0)}) that will be the reference genotype.}
+  \code{reference = c(1, 0, 1, 0)}) that will be the reference genotype.
+  If "random2" a genotype will be randomly chosen as the reference. In
+  contrast to "random", however, not all genotypes have the same
+  probability of being chosen; here, what is equal is the probability
+  that the reference genotype has 1, 2, ..., g, mutations (and, once a
+  number mutations is chosen, all genotypes with that number of
+  mutations have equal probability of being the reference). }
 
 \item{scale}{Either NULL (nothing is done) or a two-element vector. If a
   two-element vector, fitness is re-scaled between \code{scale[1]} (the

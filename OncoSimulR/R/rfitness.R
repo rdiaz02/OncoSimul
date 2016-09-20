@@ -26,7 +26,9 @@ rfitness <- function(g, c= 0.5,
                 referenceI <- m[sample(nrow(m), 1), ]
             } else if(reference == "max") {
                 referenceI <- rep(1, g)
-            } 
+            } else if(reference == "random2") {
+                referenceI <- create_eq_ref(g)
+            }
         } else {
             referenceI <- reference
             }
@@ -75,4 +77,15 @@ rfitness <- function(g, c= 0.5,
     }
     class(m) <- c(class(m), "genotype_fitness_matrix")
     return(m)
+}
+
+
+create_eq_ref <- function(g) {
+    ## "random" gives more prob. to genotypes with
+    ## number of mutated genes close to g/2.
+    ## This gives equal prob to having the reference
+    ## be of any of the possible number of mutated genes.
+    nm <- sample(g, 1)
+    ref <- c(rep(1, nm), rep(0, g - nm))
+    sample(ref)
 }
