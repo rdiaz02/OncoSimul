@@ -16,7 +16,7 @@ output:
     css: custom4.css
     toc: yes
     toc_float: true
-
+    fig_retina: null
 classoption: a4paper
 geometry: margin=3cm
 fontsize: 12pt
@@ -31,6 +31,7 @@ vignette: >
   %\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
   %\VignetteDepends{OncoSimulR}
 ---
+
 
 <!-- html_book seems to ignore the toc_float -->
 
@@ -183,6 +184,7 @@ role of a "union operation" over the set of genes in a module. In
 addition, arbitrary numbers of genes without interactions (and with
 fitness effects coming from any distribution you might want) are
 also possible.
+
 
 
 The models so far implemented are all continuous time models, which
@@ -352,7 +354,7 @@ packageVersion("OncoSimulR")
 Following the above we will run two examples. First a model with a few
 genes and **epistasis**:
 
-```{r, fig.width=6.5, fig.height=10}
+```{r tqex, fig.width=5, fig.height=8}
 ## 1. Fitness effects: here we specify an 
 ##    epistatic model with modules.
 sa <- 0.1
@@ -432,7 +434,7 @@ ep1 <- oncoSimulIndiv(sv2, model = "McFL",
 <!-- %% @  -->
 
 
-```{r iep1x1,fig.width=6.5, fig.height=9.5}
+```{r iep1x1,fig.width=5, fig.height=7}
 ## 3. We will not analyze those data any further. We will only plot
 ## them.  For the sake of a small plot, we thin the data.
 par(mfrow = c(2, 1))
@@ -473,7 +475,7 @@ pancr <- allFitnessEffects(
 ## Plot the DAG of the fitnessEffects object
 plot(pancr)
 ``` 
-```{r, fig.width=6.5, fig.height=10}
+```{r pancr2p, fig.width=5, fig.height=8}
 ## 2. Simulate from it. 
 
 set.seed(4) ## Fix the seed, so we can repeat it
@@ -495,7 +497,7 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
 <!-- %                      finalTime = 10000, -->
 <!-- %                      onlyCancer = FALSE)
 -->
-```{r iep2x2,fig.width=6.5, fig.height=9}
+```{r iep2x2,fig.width=5, fig.height=7}
 ## 3. What genotypes and drivers we get? And play with limits
 ##    to show only parts of the data. We also thin them.
 
@@ -503,7 +505,7 @@ par(mfrow = c(2, 1))
 par(cex = 0.7)
 plot(ep2, show = "genotypes", xlim = c(1000, 8000), 
      ylim = c(0, 2400),
-     thinData = TRUE, thinData.keep = 0.5)
+     thinData = TRUE, thinData.keep = 0.3)
 plot(ep2, show = "drivers", addtot = TRUE,
      xlim = c(400, 1800),
      thinData = TRUE, thinData.keep = 0.2)
@@ -4023,7 +4025,7 @@ b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000,
 
 We will now use a variety of plots
 
-```{r baux1,fig.width=6.5, fig.height=10}
+```{r baux1,fig.width=5, fig.height=8}
 par(mfrow = c(3, 1))
 ## First, drivers
 plot(b1, type = "line", addtot = TRUE)
@@ -4090,7 +4092,7 @@ summary(mcf1s)
 <!-- %% -->
 <!-- %% set.seed(456) -->
 
-```{r mcf1sx1,fig.width=6.5, fig.height=10}
+```{r mcf1sx1,fig.width=5, fig.height=8}
 par(mfrow  = c(2, 1))
 ## I use thinData to make figures smaller and faster
 plot(mcf1s, addtot = TRUE, lwdClone = 0.9, log = "", 
@@ -4137,7 +4139,7 @@ mcfLs <-  oncoSimulIndiv(mcfL,
 But you can access the pre-stored results and plot them (beware: this
 object has been trimmed by removing empty passenger rows in the Genotype matrix)
 
-```{r, mcflsx2,fig.width=6}
+```{r, mcflsx2,fig.width=5}
 data(mcfLs)
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "",
      plotDiversity = TRUE)
@@ -4165,7 +4167,7 @@ also slower than the line plot). I will thin the data for this plot so it
 is faster and smaller (but we miss some of the fine grain, of course):
 
 
-```{r mcflsx3}
+```{r mcflsx3, fig.width=5}
 plot(mcfLs, type = "stacked", thinData = TRUE, 
      thinData.keep = 0.5,
      plotDiversity = TRUE,
@@ -4254,34 +4256,34 @@ summary(sb)
 As usual, we will use several plots here.
 <!-- \clearpage -->
 
-```{r sbx1,fig.width=6.5, fig.height=3.3}
+```{r sbx1,fig.width=5.5, fig.height=3}
 ## Show drivers, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "line", addtot = TRUE,
      plotDiversity = TRUE)
 ``` 
-```{r sbx2,fig.width=6.5, fig.height=3.3}
+```{r sbx2,fig.width=5.5, fig.height=3}
 ## Drivers, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stacked", plotDiversity = TRUE)
 ``` 
-```{r sbx3,fig.width=6.5, fig.height=3.3}
+```{r sbx3,fig.width=5.5, fig.height=3}
 ## Drivers, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stream", plotDiversity = TRUE)
 ``` 
 <!-- \clearpage -->
-```{r sbx4,fig.width=6.5, fig.height=3.3}
+```{r sbx4,fig.width=5.5, fig.height=3}
 ## Genotypes, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "line", plotDiversity = TRUE)
 ``` 
-```{r sbx5,fig.width=6.5, fig.height=3.3}
+```{r sbx5,fig.width=5.5, fig.height=3}
 ## Genotypes, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stacked", plotDiversity = TRUE)
 ``` 
-```{r sbx6,fig.width=6.5, fig.height=3.3}
+```{r sbx6,fig.width=5.5, fig.height=3}
 ## Genotypes, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stream", plotDiversity = TRUE)
@@ -4335,7 +4337,7 @@ log-transformed y-axis, even if there are other clones/genotypes present.
 runs quickly.)
 
 
-```{r, fig.width=6}
+```{r, fig.width=5}
 
 set.seed(4321)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -4355,14 +4357,16 @@ We show a stacked and a line plot of the drivers:
 
 <!-- \clearpage -->
 
-```{r tmpmx1,fig.width=6.5, fig.height=4.1}
+```{r tmpmx1,fig.width=5, fig.height=3.8}
 par(las = 1, cex = 0.85)
-plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
-```{r tmpmx2,fig.width=6.5, fig.height=4.1}
+```{r tmpmx2,fig.width=5, fig.height=3.8}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE, 
-     ylim = c(0, 5500), legend.ncols = 4)
+     ylim = c(0, 5500), legend.ncols = 4,
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
 In this example (and at least under Linux, with both GCC and clang), we
@@ -4379,10 +4383,12 @@ evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE,
 
 A few figures could help:
 
-```{r tmpmx3,fig.width=6.5, fig.height=10}
+```{r tmpmx3,fig.width=5, fig.height=8}
 par(mfrow = c(2, 1))
-plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3)
-plot(tmp, show = "genotypes", type = "line", ylim = c(1, 6000))
+plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3,
+     thinData = TRUE, thinData.keep = 0.5)
+plot(tmp, show = "genotypes", type = "line", ylim = c(1, 6000),
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
 (When reading the figure legends, recall that genotype  $x > y\ \_\ z$ is
@@ -4420,20 +4426,22 @@ tmp
 <!-- \clearpage -->
 
 use a drivers plot:
-```{r tmpmdx5,fig.width=6.5, fig.height=4}
+```{r tmpmdx5,fig.width=5, fig.height=3}
 par(las = 1, cex = 0.85)
-plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
-```{r tmpmdx6,fig.width=6.5, fig.height=4}
+```{r tmpmdx6,fig.width=5, fig.height=3}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE,
-     legend.ncols = 4, ylim = c(0, 5200))
+     legend.ncols = 4, ylim = c(0, 5200),
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
 <!-- \clearpage -->
 
 Now show the genotypes explicitly:
-```{r tmpmdx7,fig.width=6.5, fig.height=5.3}
+```{r tmpmdx7,fig.width=5, fig.height=4.3}
 ## Improve telling appart the most abundant 
 ## genotypes by sorting colors
 ## differently via breakSortColors
@@ -5521,20 +5529,20 @@ mutated, just as before.
 Similar, but with vertical axis proportional to time:
 
 
-```{r}
+```{r, fig.width=4}
 par(cex = 0.7)
 plotClonePhylog(mcf1s, N = 1, timeEvents = TRUE)
 ``` 
 
 What about those that existed in the last 200 time units?
-```{r}
+```{r, fig.width=4}
 par(cex = 0.7)
 plotClonePhylog(mcf1s, N = 1, t = c(800, 1000))
 ``` 
 
 And try now to show also when the clones appeared (we restrict the time
 to between 900 and 1000, to avoid too much clutter):
-```{r}
+```{r,fig.width=4}
 par(cex = 0.7)
 plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
 ``` 
