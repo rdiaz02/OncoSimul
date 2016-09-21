@@ -1,5 +1,6 @@
-Changes in version 2.3.17 (2017-09-19):
+Changes in version 2.3.17 (2017-09-22):
 	- random2 for rfitness.
+	- Attempts to decrease vignette size.
 	
 Changes in version 2.3.16 (2017-09-19):
 	- Help was not accurate for some probSize args
