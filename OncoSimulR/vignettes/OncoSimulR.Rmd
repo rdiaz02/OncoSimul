@@ -512,7 +512,7 @@ plot(ep2, show = "drivers", addtot = TRUE,
 
 
 
-## How long does it take? How fast is OncoSimulR? How much space do thereturn objects take? {#timings}
+## How long does it take? How fast is OncoSimulR? How much space do the return objects take? {#timings}
 
 
 How long simulations take depend on several factors:
