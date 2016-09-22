@@ -10,6 +10,21 @@
 
 ## Yes, works under eshell.
 
+## I need to clean up first, because otherwise when I remove files in the
+## master git repo, they are not necessarily removed in the svn repo
+
+rm ./Subversion-in-BioC/OncoSimulR/vignettes/*
+rm ./Subversion-in-BioC/OncoSimulR/tests/*
+rm ./Subversion-in-BioC/OncoSimulR/tests/manual/*
+rm ./Subversion-in-BioC/OncoSimulR/tests/testthat/*
+rm ./Subversion-in-BioC/OncoSimulR/src/*
+rm ./Subversion-in-BioC/OncoSimulR/R/*
+rm ./Subversion-in-BioC/OncoSimulR/man/*
+rm ./Subversion-in-BioC/OncoSimulR/inst/*
+rm ./Subversion-in-BioC/OncoSimulR/data/*
+rm ./Subversion-in-BioC/OncoSimulR/inst/miscell/*
+
+
 cp OncoSimulR/vignettes/custom4.css ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.Rmd ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.bib ./Subversion-in-BioC/OncoSimulR/vignettes/.
@@ -24,10 +39,11 @@ cp OncoSimulR/src/Makevars* ./Subversion-in-BioC/OncoSimulR/src/.
 
 cp OncoSimulR/R/*.R ./Subversion-in-BioC/OncoSimulR/R/.
 
+cp OncoSimulR/tests/testthat.R ./Subversion-in-BioC/OncoSimulR/tests/.
 cp OncoSimulR/tests/testthat/*.R ./Subversion-in-BioC/OncoSimulR/tests/testthat/.
 cp OncoSimulR/tests/manual/*.R ./Subversion-in-BioC/OncoSimulR/tests/manual/.
 cp OncoSimulR/tests/manual/*.txt ./Subversion-in-BioC/OncoSimulR/tests/manual/.
-
+cp OncoSimulR/tests/*.txt ./Subversion-in-BioC/OncoSimulR/tests/.
 
 cp OncoSimulR/man/*.Rd ./Subversion-in-BioC/OncoSimulR/man/.
 
