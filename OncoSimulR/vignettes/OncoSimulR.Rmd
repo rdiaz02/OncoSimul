@@ -1743,7 +1743,7 @@ plot(fp4m, expandModules = TRUE)
 
 or
 
-```{r, fig.height=8}
+```{r, fig.height=6}
 plot(fp4m, "igraph", layout = layout.reingold.tilford, 
      expandModules = TRUE)
 
@@ -2579,24 +2579,24 @@ fea <- allFitnessEffects(rT = p4, epistasis = epist,
 
 How does it look?
 
-```{r, fig.height=6.5}
+```{r, fig.height=5.5}
 plot(fea)
 ``` 
 
 or
 
-```{r, fig.height=6.5}
+```{r, fig.height=5.5}
 plot(fea, "igraph")
 ``` 
 
 
 We can, if we want, expand the modules using a "graphNEL" graph
-```{r, fig.height=6.5}
+```{r, fig.height=5.5}
 plot(fea, expandModules = TRUE)
 ``` 
 
 or an "igraph" one
-```{r, fig.height=7.}
+```{r, fig.height=6.5}
 plot(fea, "igraph", expandModules = TRUE)
 ``` 
 
@@ -2960,7 +2960,7 @@ wb <- allFitnessEffects(
 
 <!-- \clearpage -->
 
-```{r, fig.width=6.5, fig.height=6}
+```{r, fig.width=6.5, fig.height=5}
 plotFitnessLandscape(wb, use_ggrepel = TRUE) 
 ``` 
 
@@ -2971,7 +2971,7 @@ We have set `use_ggrepel = TRUE` to avoid overlap of labels.
 For some types of objects, directly invoking *`plot`* will give
 you the fitness plot
 
-```{r, fig.width=6.5, fig.height=6}
+```{r, fig.width=6.5, fig.height=5}
 (ewb <- evalAllGenotypes(wb, order = FALSE))
 plot(ewb, use_ggrepel = TRUE) 
 
@@ -2981,7 +2981,8 @@ plot(ewb, use_ggrepel = TRUE)
 This is another example we saw before (\@ref(pancreas)), that will give a
 very busy plot:
 
-```{r wasthis111}
+```{r wasthis111, fig.width=9.5, fig.height=9.5}
+par(cex = 0.7)
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
                    "SMAD4", "CDNK2A", 
@@ -3003,11 +3004,11 @@ plot(evalAllGenotypes(pancr, order = FALSE), use_ggrepel = TRUE)
 
 ## Bauer et al., 2014 {#bauer}
 
-In the model of Bauer and collaborators [@Bauer2014, pp. 54] "For cells
-without the primary driver mutation, each secondary driver mutation leads
-to a change in the cell's fitness by $s_P$. For cells with the primary
-driver mutation, the fitness advantage obtained with each secondary driver
-mutation is $s_{DP}$."
+In the model of Bauer and collaborators [@Bauer2014, pp. 54] we have
+"For cells without the primary driver mutation, each secondary
+driver mutation leads to a change in the cell's fitness by
+$s_P$. For cells with the primary driver mutation, the fitness
+advantage obtained with each secondary driver mutation is $s_{DP}$."
 
 The proliferation probability is given as:
 
@@ -3649,7 +3650,7 @@ from which, and check that we are not making mistakes).
 <!-- %%                               "F" = "f", -->
 <!-- %%                               "D" = "d") ) -->
 
-```{r, fig.height=6}
+```{r prbau003, fig.height=6}
 
 o3init <- allFitnessEffects(orderEffects = c(
                             "M > D > F" = 0.99,
@@ -3676,14 +3677,14 @@ oneI <- oncoSimulIndiv(o3init, model = "McFL",
                        initMutant = c("m > u > d")
                        )
 plotClonePhylog(oneI, N = 0)
+```
 
 
-
+```{r prbau003bb, fig.height=6}
 ## Note we also disable the stopping stochastically as a function of size
 ## to allow the population to grow large and generate may different
 ## clones.
-
-ospI <- oncoSimulPop(4, 
+ospI <- oncoSimulPop(2, 
                     o3init, model = "Exp",
                     mu = 5e-5, finalTime = 500,
                     detectionDrivers = 3,
@@ -3693,16 +3694,12 @@ ospI <- oncoSimulPop(4,
                     initMutant = c("d > m > z"),
                     mc.cores = 2
                     )
-
-op <- par(mar = rep(0, 4), mfrow = c(2, 2))
+op <- par(mar = rep(0, 4), mfrow = c(1, 2))
 plotClonePhylog(ospI[[1]])
 plotClonePhylog(ospI[[2]])
-plotClonePhylog(ospI[[3]])
-plotClonePhylog(ospI[[4]])
 par(op)
 
-
-ossI <- oncoSimulSample(4, 
+ossI <- oncoSimulSample(2, 
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 500,
                         detectionDrivers = 2,
@@ -3715,7 +3712,6 @@ ossI <- oncoSimulSample(4,
 
 ## No phylogeny is kept with oncoSimulSample, but look at the 
 ## OcurringDrivers and the sample
-
 ossI$popSample
 ossI$popSummary[, "OccurringDrivers", drop = FALSE]
 ``` 
@@ -3948,7 +3944,7 @@ exit and, as we are using the McFarland model, population size will vary
 slightly around the initial population size.
 
 
-```{r, eval=FALSE}
+```{r prbaux002, eval=FALSE}
 gi2 <- rep(0, 5)
 names(gi2) <- letters[1:5]
 oi2 <- allFitnessEffects(noIntGenes = gi2)
@@ -3993,7 +3989,7 @@ in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
 We will use the model of @Bauer2014 that we saw in section \@ref(bauer).
 
 
-```{r}
+```{r prbaux001}
 K <- 5
 sd <- 0.1
 sdp <- 0.15
@@ -4133,6 +4129,7 @@ object has been trimmed by removing empty passenger rows in the Genotype matrix)
 ```{r, mcflsx2,fig.width=6}
 data(mcfLs)
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "",
+     thinData = TRUE, thinData.keep = 0.3,
      plotDiversity = TRUE)
 ``` 
 
@@ -4152,15 +4149,16 @@ Note that we see clonal competition between clones with the same number of
 drivers (and with different drivers, of course). We will return to this
 (section \@ref(clonalint)).
 
-A stacked plot might be better to show the extent of clonal competition
-(plotting takes some time ---a stream plot reveals similar patterns and is
-also slower than the line plot). I will thin the data for this plot so it
-is faster and smaller (but we miss some of the fine grain, of course):
+A stacked plot might be better to show the extent of clonal
+competition (plotting takes some time ---a stream plot reveals
+similar patterns and is also slower than the line plot). I will
+aggressively thin the data for this plot so it is faster and smaller
+(but we miss some of the fine grain, of course):
 
 
 ```{r mcflsx3}
 plot(mcfLs, type = "stacked", thinData = TRUE, 
-     thinData.keep = 0.5,
+     thinData.keep = 0.2,
      plotDiversity = TRUE,
      xlim = c(0, 1000))
 ``` 
@@ -4195,9 +4193,9 @@ names(examplesFitnessEffects)
 ## Simulation with a conjunction example {#s-cbn1}
 
 We will simulate using the simple CBN-like restrictions of
-section \@ref(cbn1) with two different models. Note also that we combine 
+section \@ref(cbn1) with two different models. 
 
-```{r}
+```{r smmcfls}
 data(examplesFitnessEffects)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE)[1:10, ]
 sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
@@ -4228,7 +4226,7 @@ summary(sm)
 <!-- %% @  -->
 
 
-```{r}
+```{r smbosb1}
 set.seed(1234)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
                  model = "Bozic")[1:10, ]
@@ -4350,12 +4348,14 @@ We show a stacked and a line plot of the drivers:
 
 ```{r tmpmx1,fig.width=6.5, fig.height=4.1}
 par(las = 1, cex = 0.85)
-plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
+     thinData = TRUE, thinData.keep = 0.2)
 ``` 
 ```{r tmpmx2,fig.width=6.5, fig.height=4.1}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE, 
-     ylim = c(0, 5500), legend.ncols = 4)
+     ylim = c(0, 5500), legend.ncols = 4,
+     thinData = TRUE, thinData.keep = 0.2)
 ``` 
 
 In this example (and at least under Linux, with both GCC and clang), we
@@ -4372,10 +4372,9 @@ evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE,
 
 A few figures could help:
 
-```{r tmpmx3,fig.width=6.5, fig.height=10}
-par(mfrow = c(2, 1))
-plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3)
-plot(tmp, show = "genotypes", type = "line", ylim = c(1, 6000))
+```{r tmpmx3,fig.width=6.5, fig.height=5.5}
+plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3,
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
 (When reading the figure legends, recall that genotype  $x > y\ \_\ z$ is
@@ -4415,12 +4414,14 @@ tmp
 use a drivers plot:
 ```{r tmpmdx5,fig.width=6.5, fig.height=4}
 par(las = 1, cex = 0.85)
-plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE)
+plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
 ```{r tmpmdx6,fig.width=6.5, fig.height=4}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE,
-     legend.ncols = 4, ylim = c(0, 5200))
+     legend.ncols = 4, ylim = c(0, 5200), xlim = c(0, 1500),
+     thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
 <!-- \clearpage -->
@@ -4435,7 +4436,8 @@ Now show the genotypes explicitly:
 par(las = 1, cex = 0.85)
 plot(tmp, show = "genotypes", breakSortColors = "distave",
      plotDiversity = TRUE, legend.ncols = 4,
-     ylim = c(0, 5300))
+     ylim = c(0, 5300), xlim = c(0, 1500),
+     thinData = TRUE, thinData.keep = 0.5)
 ```
 
 
