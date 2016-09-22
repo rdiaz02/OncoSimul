@@ -16,7 +16,7 @@ output:
     css: custom4.css
     toc: yes
     toc_float: true
-
+    fig_retina: null
 classoption: a4paper
 geometry: margin=3cm
 fontsize: 12pt
@@ -432,21 +432,19 @@ ep1 <- oncoSimulIndiv(sv2, model = "McFL",
 <!-- %% @  -->
 
 
-```{r iep1x1,fig.width=6.5, fig.height=9.5}
+```{r iep1x1,fig.width=6.5, fig.height=4.5}
 ## 3. We will not analyze those data any further. We will only plot
 ## them.  For the sake of a small plot, we thin the data.
-par(mfrow = c(2, 1))
 plot(ep1, show = "drivers", xlim = c(0, 1500),
      thinData = TRUE, thinData.keep = 0.5)
-## Increase ylim and legend.ncols to avoid overlap of 
-## legend with rest of figure
-plot(ep1, show = "genotypes", ylim = c(0, 4500), 
-     legend.ncols = 4,
-     xlim = c(0, 1500),
-     thinData = TRUE, thinData.keep = 0.5)
-
 ``` 
 
+<!-- ## Increase ylim and legend.ncols to avoid overlap of  -->
+<!-- ## legend with rest of figure -->
+<!-- plot(ep1, show = "genotypes", ylim = c(0, 4500),  -->
+<!--      legend.ncols = 4, -->
+<!--      xlim = c(0, 1500), -->
+<!--      thinData = TRUE, thinData.keep = 0.5) -->
 
 
 
@@ -455,7 +453,7 @@ As a second example, we will use a model where we specify
 pancreatic cancer poset in @Gerstung2011 (see more
 details in section \@ref(pancreas)):
 
-```{r}
+```{r, fig.width=5}
 ## 1. Fitness effects: 
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
@@ -473,7 +471,7 @@ pancr <- allFitnessEffects(
 ## Plot the DAG of the fitnessEffects object
 plot(pancr)
 ``` 
-```{r, fig.width=6.5, fig.height=10}
+```{r}
 ## 2. Simulate from it. 
 
 set.seed(4) ## Fix the seed, so we can repeat it
@@ -495,19 +493,14 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
 <!-- %                      finalTime = 10000, -->
 <!-- %                      onlyCancer = FALSE)
 -->
-```{r iep2x2,fig.width=6.5, fig.height=9}
+```{r iep2x2,fig.width=6.5, fig.height=5}
 ## 3. What genotypes and drivers we get? And play with limits
-##    to show only parts of the data. We also thin them.
-
-par(mfrow = c(2, 1))
+##    to show only parts of the data. We also aggressively thin
+##    the data.
 par(cex = 0.7)
 plot(ep2, show = "genotypes", xlim = c(1000, 8000), 
      ylim = c(0, 2400),
-     thinData = TRUE, thinData.keep = 0.5)
-plot(ep2, show = "drivers", addtot = TRUE,
-     xlim = c(400, 1800),
-     thinData = TRUE, thinData.keep = 0.2)
-
+     thinData = TRUE, thinData.keep = 0.03)
 ``` 
 
 
@@ -2988,7 +2981,7 @@ plot(ewb, use_ggrepel = TRUE)
 This is another example we saw before (\@ref(pancreas)), that will give a
 very busy plot:
 
-```{r}
+```{r wasthis111}
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
                    "SMAD4", "CDNK2A", 
@@ -5638,7 +5631,6 @@ that function is optimized for other uses. This might change in the future.
 
 
 # Generating random fitness landscapes {#gener-fit-land}
-
 
 It is possible to generate mappings of genotype to fitness using the
 function *`rfitness`* that allows you to use from a pure House of
