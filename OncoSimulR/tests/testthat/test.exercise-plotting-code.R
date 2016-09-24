@@ -98,6 +98,7 @@ test_that("exercising plotClonePhylog", {
               plotClonePhylog(tmp, N = 0, timeEvents = TRUE)
           })
 
+
 ## the next is slightly slow
 test_that("exercising the fitnessEffects plotting code", {
               data(examplesFitnessEffects)
@@ -486,6 +487,44 @@ test_that("exercise single clone and single driver", {
 ## Examples of why it is silly
 ## plot.stacked(1:2, log10(cbind(c(5, 1), c(5, 11))))
 ## plot.stacked(1:2, log10(cbind(c(6, 2), c(8, 14))))
+
+
+
+
+test_that("exercising phylogClone", {
+    ## Testing an internal function
+    data(examplesFitnessEffects)
+    for(i in 1:15){ 
+              tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                                     model = "McFL", 
+                                     mu = 5e-6,
+                                     detectionSize = 1e8, 
+                                     detectionDrivers = 3,
+                                     sampleEvery = 0.03, 
+                                     max.num.tries = 10,
+                                     keepEvery = 15,
+                                     initSize = 20,
+                                     finalTime = 1,
+                                     onlyCancer = FALSE,
+                                     keepPhylog = TRUE)
+              OncoSimulR:::phylogClone(tmp)
+    }
+    for(i in 1:15){ 
+        tmp <-  oncoSimulIndiv(examplesFitnessEffects[["cbn2"]],
+                               model = "McFL", 
+                               mu = 5e-6,
+                               detectionSize = 1e8, 
+                               detectionDrivers = 3,
+                               sampleEvery = 0.03, 
+                               max.num.tries = 10,
+                               keepEvery = 15,
+                               initSize = 20,
+                               finalTime = 1,
+                               onlyCancer = FALSE,
+                               keepPhylog = TRUE)
+        OncoSimulR:::phylogClone(tmp)
+    }
+})
 
 cat(paste("\n Ending exercise-plotting-code at", date()))
 
