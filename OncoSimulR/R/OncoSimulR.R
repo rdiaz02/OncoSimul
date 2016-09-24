@@ -1429,10 +1429,12 @@ plotClonePhylog <- function(x, N = 1, t = "last",
              "very fast, before any clones beyond the initial were ",
              "generated.")
     pc <- phylogClone(x, N, t, keepEvents)
-    if(is.na(pc)) {
-        warning("No clone phylogeny available. Exiting without plotting.")
-        return(NULL)
-    }
+    ## if(is.na(pc)) {
+    ##     ## This should not be reachable, as caught before
+    ##     ## where we check for nrow of PhylogDF   
+    ##     warning("No clone phylogeny available. Exiting without plotting.")
+    ##     return(NULL)
+    ## }
         
     l0 <- igraph::layout.reingold.tilford(pc$g)
     if(!timeEvents) {
