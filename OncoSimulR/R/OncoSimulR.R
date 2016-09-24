@@ -1383,8 +1383,17 @@ phylogClone <- function(x, N = 1, t = "last", keepEvents = TRUE) {
         stop("Phylogenetic information is only stored with v >= 2")
     z <- which_N_at_T(x, N, t)
     tG <- x$GenotypesLabels[z] ## only for GenotypesLabels we keep all
-                               ## sample size info at each period
+    ## sample size info at each period
+
+    if( (length(tG) == 1) && (tG == "")) {
+        warning("There never was a descendant of WT")
+    }
+    
     df <- x$other$PhylogDF
+    if(nrow(df) == 0) {
+        warning("PhylogDF has 0 rows: no descendants of initMutant ever appeared.")
+        return(NA)
+    }
     if(!keepEvents) { ## is this just a graphical thing? or not?
         df <- df[!duplicated(df[, c(1, 2)]), ]
     }
@@ -1420,6 +1429,11 @@ plotClonePhylog <- function(x, N = 1, t = "last",
              "very fast, before any clones beyond the initial were ",
              "generated.")
     pc <- phylogClone(x, N, t, keepEvents)
+    if(is.na(pc)) {
+        warning("No clone phylogeny available. Exiting without plotting.")
+        return(NULL)
+    }
+        
     l0 <- igraph::layout.reingold.tilford(pc$g)
     if(!timeEvents) {
         plot(pc$g, layout = l0)
