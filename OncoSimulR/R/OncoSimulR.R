@@ -1518,6 +1518,12 @@ get.the.time.for.sample <- function(tmp, timeSample, popSizeSample) {
 
 get.mut.vector <- function(x, timeSample, typeSample,
                            thresholdWhole, popSizeSample) {
+    if(is.null(x$TotalPopSize)) {
+        warning(paste("It looks like this simulation never completed.",
+                      " Maybe it reached maximum allowed limits.",
+                      " You will get NAs"))
+        return(rep(NA, length(x$geneNames)))
+    }
     the.time <- get.the.time.for.sample(x, timeSample, popSizeSample)
     if(the.time < 0) { 
         return(rep(NA, nrow(x$Genotypes)))

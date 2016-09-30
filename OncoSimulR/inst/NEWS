@@ -1,5 +1,6 @@
 Changes in version 2.3.18 (2017-zz-zz):
 	- clonePhylog et al: deal with never any descendant.
+	- samplePop can handle graciously failed simulations.
 	
 Changes in version 2.3.17 (2017-09-22):
 	- random2 for rfitness.
