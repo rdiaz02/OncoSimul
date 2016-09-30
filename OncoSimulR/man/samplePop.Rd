@@ -22,7 +22,8 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 
 \arguments{
   \item{x}{
-    An object of class \code{oncosimulpop}.
+    An object of class \code{oncosimulpop} or class \code{oncosimul2} (a
+  single simulation).
   }
   
   \item{timeSample}{
