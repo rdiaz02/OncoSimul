@@ -690,9 +690,28 @@ print.oncosimul <- function(x, ...) {
 }
 
 ## I want this to return things that are storable
+## summary.oncosimulpop <- function(object, ...) {
+##     as.data.frame(rbindlist(lapply(object, summary)))
+## }
+
 summary.oncosimulpop <- function(object, ...) {
-    as.data.frame(rbindlist(lapply(object, summary)))
+    tmp <- lapply(object, summary)
+    rm <- which(unlist(lapply(tmp, function(x) (length(x) == 1) && (is.na(x)))))
+    if(length(rm) > 0)
+        if(length(rm) < length(object)) {
+        warning("Some simulations seem to have failed and will be removed",
+                " from the summary. The failed runs are ",
+                paste(rm, collapse = ", "),
+                ".")
+        tmp <- tmp[-rm]
+        } else {
+            warning("All simulations failed.")
+            return(NA)
+        }
+    as.data.frame(rbindlist(tmp))
 }
+
+
 
 print.oncosimulpop <- function(x, ...) {
     cat("\nPopulation of OncoSimul trajectories of",

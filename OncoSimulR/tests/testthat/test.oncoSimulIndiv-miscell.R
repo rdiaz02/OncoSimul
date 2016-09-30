@@ -859,6 +859,24 @@ test_that("samplePop deals with failures in simuls", {
 
 
 
+test_that("summary.oncosimulepop deals with failures in simuls", {
+    
+    fe <- allFitnessEffects(noIntGenes = c(-0.1, -0.2, -0.3))
+    uup <- oncoSimulPop(4, fe, max.wall.time = 0.2, max.num.tries = 5)
+    expect_warning(uus <- summary(uup),
+                   "All simulations failed",
+                   fixed = TRUE)
+    ## And it works when only some fail
+    fe2 <- allFitnessEffects(noIntGenes = c(0.1, 0.2, 0.3))
+    uu2 <- oncoSimulPop(2, fe2)
+    uu <- oncoSimulPop(2, fe, max.wall.time = 0.2, max.num.tries = 5)
+    u3 <- c(uu, uu2)
+    class(u3) <- "oncosimulpop"
+    expect_warning(uu3ps <- summary(u3),
+                   "Some simulations seem to have failed",
+                   fixed = TRUE)
+})
+
 
 cat(paste("\n Ending oncoSimulIndiv-miscell tests", date(), "\n"))
 
