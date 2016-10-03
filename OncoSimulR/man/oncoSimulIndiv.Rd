@@ -40,6 +40,7 @@
                 errorHitMaxTries = TRUE,
                 verbosity = 0,
                 initMutant = NULL,
+                AND_DrvProbExit = FALSE,
                 seed = NULL)
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
@@ -61,6 +62,7 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 errorHitWallTime = TRUE,
                 errorHitMaxTries = TRUE,
                 initMutant = NULL,
+                AND_DrvProbExit = FALSE,
                 verbosity = 0,
                 mc.cores = detectCores(),
                 seed = "auto")
@@ -108,6 +110,7 @@ oncoSimulSample(Nindiv,
                 typeSample = "whole",
                 thresholdWhole = 0.5,
                 initMutant = NULL,
+                AND_DrvProbExit = FALSE,
                 verbosity  = 1,
                 showProgress = FALSE,
                 seed = "auto")
@@ -528,6 +531,10 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 
 \item{showProgress}{If TRUE, provide information, during exection,
 of the individual done, and the number of attempts and time used.}
+
+\item{AND_DrvProbExit}{If TRUE, cancer will be considered to be reached
+  if both the \code{detectionProb} mechanism and \code{detectionDrivers}
+  are satisfied. This is and AND, not an OR condition.}
 
 \item{seed}{The seed for the C++ PRNG. You can pass a value. If you set
   it to NULL, then a seed will be generated in R and passed to C++. If

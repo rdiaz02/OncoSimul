@@ -426,6 +426,7 @@ oncoSimulIndiv <- function(fp,
                            errorHitMaxTries = TRUE,
                            verbosity = 0,
                            initMutant = NULL,
+                           AND_DrvProbExit = FALSE,
                            seed = NULL
                            ) {
     call <- match.call()
@@ -436,6 +437,14 @@ oncoSimulIndiv <- function(fp,
         stop("At least one stopping condition should be given.",
              " At least one of detectionProb, detectionSize, detectionDrivers,",
              " finalTime. Otherwise, we'll run forever.")
+
+    if(AND_DrvProbExit && (is.na(detectionProb) || is.na(detectionDrivers)))
+        stop("AND_DrvProbExit is TRUE: both of detectionProb and detectionDrivers",
+             " must be non NA.")
+    if(AND_DrvProbExit && !is.na(detectionSize)) {
+        warning("With AND_DrvProbExit = TRUE, detectionSize is ignored.")
+        detectionSize <- NA
+    }
     ## legacies from poor name choices
     typeFitness <- switch(model,
                           "Bozic" = "bozic1",
