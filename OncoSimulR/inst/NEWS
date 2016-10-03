@@ -1,3 +1,7 @@
+Changes in version 2.3.17-custom (2017-zz-zz):
+	- for simuls in Landscapes-3:
+	  only detectedSizeP and lastMaxDr
+
 Changes in version 2.3.18 (2017-zz-zz):
 	- clonePhylog et al: deal with never any descendant.
 	- samplePop can handle failed simulations graciously.

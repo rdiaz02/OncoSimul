@@ -499,7 +499,8 @@ oncoSimulIndiv <- function(fp,
     if( (typeFitness == "exp") && (death != 1) )
         warning("Using fitness exp with death != 1")
 
-
+    if(!is.na(detectionDrivers) && (detectionDrivers >= 1e9))
+        stop("detectionDrivers > 1e9; this doesn't seem reasonable")
     if(is.na(detectionDrivers)) detectionDrivers <- (2^31) - 1
     if(is.na(detectionSize)) detectionSize <- Inf
     if(is.na(finalTime)) finalTime <- Inf

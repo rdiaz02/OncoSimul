@@ -228,6 +228,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					const double& checkSizePEvery,
 					double& nextCheckSizeP,
 					std::mt19937& ran_gen,
+					const bool& and_drv_prob_exit,
 					const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
@@ -287,28 +288,65 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   } else {
     checkSizePNow = false;
   }
-  
-  if(extraTime > 0) {
-    if(done_at <  0) {
-      if( (totPopSize >= detectionSize) ||
-	  ( (lastMaxDr >= detectionDrivers) &&
-	    (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
-	  ( checkSizePNow &&
-	    detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen))) {
-	done_at = currentTime + extraTime;
+
+  // //FIXME: move out of here later
+  // bool and_drv_prob_exit = ( (cpDetect >= 0) &&
+  // 			     (detectionDrivers < 1e9) &&
+  // 			     (detectionSize < std::numeric_limits<double>::infinity()));
+
+  if(and_drv_prob_exit) {
+    // The AND of detectionProb and drivers
+    if(extraTime > 0) {
+      if(done_at <  0) {
+	if( (lastMaxDr >= detectionDrivers) &&
+	    (popSizeOverDDr >= minDetectDrvCloneSz) &&
+	    checkSizePNow  &&
+	    detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
+	  done_at = currentTime + extraTime;
+	}
+      } else if (currentTime >= done_at) {
+  	simulsDone = true;
+  	reachDetection = true; 
       }
-    } else if (currentTime >= done_at) {
-	simulsDone = true;
-	reachDetection = true; 
+    } else if( (lastMaxDr >= detectionDrivers) &&
+	       (popSizeOverDDr >= minDetectDrvCloneSz) &&
+	       checkSizePNow  &&
+	       detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
+      simulsDone = true;
+      reachDetection = true; 
+    }
+  } else {
+    // The usual OR mechanism of each option
+    if(extraTime > 0) {
+      if(done_at <  0) {
+	if( (totPopSize >= detectionSize) ||
+	    ( (lastMaxDr >= detectionDrivers) &&
+	      (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
+	    ( checkSizePNow  &&
+	      detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen))) {
+	  done_at = currentTime + extraTime;
+	}
+      } else if (currentTime >= done_at) {
+  	simulsDone = true;
+  	reachDetection = true; 
       }
-  } else if( (totPopSize >= detectionSize) ||
-	     ( (lastMaxDr >= detectionDrivers) &&
-	       (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
-	     ( checkSizePNow &&
-	       detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen)) ) {
-    simulsDone = true;
-    reachDetection = true; 
+    } else if( (totPopSize >= detectionSize) ||
+	       ( (lastMaxDr >= detectionDrivers) &&
+		 (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
+	       ( checkSizePNow  &&
+		 detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen)) ) {
+      simulsDone = true;
+      reachDetection = true; 
+    }
   }
+
+  
+  // if( checkSizePNow && (lastMaxDr >= detectionDrivers) &&
+  // 	       detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) )  {
+  //   simulsDone = true;
+  //   reachDetection = true; 
+  // }
+  
   
   if(totPopSize >= fatalPopSize) {
     Rcpp::Rcout << "\n\totPopSize > " << fatalPopSize
@@ -736,7 +774,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const std::vector<int>& full2mutator,
 			const double& cPDetect,
 			const double& PDBaseline,
-			const double& checkSizePEvery) {
+			const double& checkSizePEvery,
+			const bool& and_drv_prob_exit) {
   
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -1566,7 +1605,8 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 					 PDBaseline,
 					 checkSizePEvery,
 					 nextCheckSizeP,
-					 ran_gen); //keepEvery is for thinning
+					 ran_gen,
+					 and_drv_prob_exit); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -1797,6 +1837,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   
   double currentTime = 0;
   int iter = 0;
+
+  bool and_drv_prob_exit = ( (cpDetect >= 0) &&
+			     (detectionDrivers < 1e9) &&
+			     (detectionSize < std::numeric_limits<double>::infinity()));
   while(runAgain) {
 
     if(numRuns >= maxNumTries) {
