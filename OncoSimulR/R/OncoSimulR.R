@@ -63,6 +63,7 @@ oncoSimulSample <- function(Nindiv,
                             typeSample = "whole",
                             thresholdWhole = 0.5,
                             initMutant = NULL,
+                            AND_DrvProbExit = FALSE,
                             verbosity  = 1,
                             showProgress = FALSE,
                             seed = "auto"){
@@ -190,7 +191,8 @@ oncoSimulSample <- function(Nindiv,
                                initMutant = initMutant,
                                keepPhylog = keepPhylog,
                                mutationPropGrowth = mutationPropGrowth,
-                               detectionProb = detectionProb)        
+                               detectionProb = detectionProb,
+                               AND_DrvProbExit = AND_DrvProbExit)        
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
         }
@@ -338,6 +340,7 @@ oncoSimulPop <- function(Nindiv,
                          errorHitWallTime = TRUE,
                          errorHitMaxTries = TRUE,
                          initMutant = NULL,
+                         AND_DrvProbExit = FALSE,
                          verbosity  = 0,
                          mc.cores = detectCores(),
                          seed = "auto") {
@@ -379,7 +382,8 @@ oncoSimulPop <- function(Nindiv,
                         seed = seed, keepPhylog = keepPhylog,
                         initMutant = initMutant,
                         mutationPropGrowth = mutationPropGrowth,
-                        detectionProb = detectionProb),
+                        detectionProb = detectionProb,
+                        AND_DrvProbExit = AND_DrvProbExit),
                     mc.cores = mc.cores
                     )
     class(pop) <- "oncosimulpop"
@@ -516,6 +520,10 @@ oncoSimulIndiv <- function(fp,
             stop(m)
            
         }
+        if(AND_DrvProbExit) {
+            stop("The AND_DrvProbExit = TRUE setting is invalid",
+                 " with the old poset format.")
+        }
         if(!is.null(muEF))
             stop("Mutator effects cannot be especified with the old poset format")
         if( length(initMutant) > 0)  
@@ -626,7 +634,8 @@ oncoSimulIndiv <- function(fp,
                                         errorHitMaxTries = errorHitMaxTries,
                                         keepPhylog = keepPhylog,
                                         MMUEF = muEF,
-                                        detectionProb = detectionProb),
+                                        detectionProb = detectionProb,
+                                        AND_DrvProbExit = AND_DrvProbExit),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }

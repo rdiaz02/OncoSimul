@@ -1,3 +1,4 @@
+
 ## Copyright 2013, 2014, 2015, 2016 Ramon Diaz-Uriarte
 
 ## This program is free software: you can redistribute it and/or modify
@@ -1436,6 +1437,7 @@ nr_oncoSimul.internal <- function(rFE,
                                   extraTime,
                                   keepPhylog,
                                   detectionProb,
+                                  AND_DrvProbExit,
                                   MMUEF = NULL ## avoid partial matching, and set default
                                   ) {
     if(!inherits(rFE, "fitnessEffects"))
@@ -1613,7 +1615,8 @@ nr_oncoSimul.internal <- function(rFE,
                      p2 = dpr["p2"],
                      PDBaseline = dpr["PDBaseline"],
                      cPDetect_i= dpr["cPDetect"],
-                     checkSizePEvery = dpr["checkSizePEvery"]),
+                     checkSizePEvery = dpr["checkSizePEvery"],
+                     AND_DrvProbExit = AND_DrvProbExit),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))

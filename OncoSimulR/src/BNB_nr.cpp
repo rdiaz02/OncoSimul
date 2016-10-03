@@ -228,7 +228,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					const double& checkSizePEvery,
 					double& nextCheckSizeP,
 					std::mt19937& ran_gen,
-					const bool& and_drv_prob_exit,
+					const bool& AND_DrvProbExit,
 					const double& fatalPopSize = 1e15) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
@@ -289,12 +289,8 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     checkSizePNow = false;
   }
 
-  // //FIXME: move out of here later
-  // bool and_drv_prob_exit = ( (cpDetect >= 0) &&
-  // 			     (detectionDrivers < 1e9) &&
-  // 			     (detectionSize < std::numeric_limits<double>::infinity()));
 
-  if(and_drv_prob_exit) {
+  if(AND_DrvProbExit) {
     // The AND of detectionProb and drivers
     if(extraTime > 0) {
       if(done_at <  0) {
@@ -775,7 +771,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const double& cPDetect,
 			const double& PDBaseline,
 			const double& checkSizePEvery,
-			const bool& and_drv_prob_exit) {
+			const bool& AND_DrvProbExit) {
   
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -1606,7 +1602,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 					 checkSizePEvery,
 					 nextCheckSizeP,
 					 ran_gen,
-					 and_drv_prob_exit); //keepEvery is for thinning
+					 AND_DrvProbExit); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -1689,7 +1685,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double p2,
 			double PDBaseline,
 			double cPDetect_i,
-			double checkSizePEvery) {
+			double checkSizePEvery,
+			bool AND_DrvProbExit) {
   // double cPDetect){
   // double n2,
   // double p2,
@@ -1838,9 +1835,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   double currentTime = 0;
   int iter = 0;
 
-  bool and_drv_prob_exit = ( (cpDetect >= 0) &&
-			     (detectionDrivers < 1e9) &&
-			     (detectionSize < std::numeric_limits<double>::infinity()));
+  // bool AND_DrvProbExit = ( (cpDetect >= 0) &&
+  // 			     (detectionDrivers < 1e9) &&
+  // 			     (detectionSize < std::numeric_limits<double>::infinity()));
   while(runAgain) {
 
     if(numRuns >= maxNumTries) {
@@ -1916,7 +1913,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  full2mutator,
 		  cPDetect,
 		  PDBaseline,
-		  checkSizePEvery);
+		  checkSizePEvery,
+		  AND_DrvProbExit);
       ++numRuns;
       forceRerun = false;
     } catch (rerunExcept &e) {
