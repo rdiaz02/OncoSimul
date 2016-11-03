@@ -83,8 +83,7 @@ Rcpp::IntegerVector accessibleGenotypes(Rcpp::IntegerMatrix y,
   // etc. This makes it easy to keep track of which are accessible.
   Rcpp::IntegerVector accessible = Rcpp::seq_len(ng);
 
-  // This is doable in two passes at most
-  // but one might not be enough
+  // This is doable in one pass
   // while (true) {
   //   indicator = 0;
     for(int k = 1; k < ng; ++k) {
