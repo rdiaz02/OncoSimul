@@ -124,6 +124,24 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+
+// evalRGenotypeAndMut
+Rcpp::IntegerVector accessibleGenotypes(Rcpp::IntegerMatrix y, Rcpp::NumericVector f, Rcpp::IntegerVector numMut, double th);
+RcppExport SEXP OncoSimulR_accessibleGenotypes(SEXP ySEXP, SEXP fSEXP, SEXP numMutSEXP, SEXP thSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+// Rcpp::RNGScope __rngScope;
+ Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type y(ySEXP);
+ Rcpp::traits::input_parameter< Rcpp::NumericVector >::type f(fSEXP);
+ Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type numMut(numMutSEXP);
+ Rcpp::traits::input_parameter< double >::type th(thSEXP);
+ __result = Rcpp::wrap(accessibleGenotypes(y, f, numMut, th));
+ return __result;
+ END_RCPP
+}
+
+
+
 // // readFitnessEffects
 // void readFitnessEffects(Rcpp::List rFE, bool echo);
 // RcppExport SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP) {

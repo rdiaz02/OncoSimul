@@ -3,6 +3,7 @@ Changes in version 2.3.18 (2017-zz-zz):
 	- samplePop can handle failed simulations graciously.
 	- summary.oncosimulpop can handle failed simulations graciously.
 	- AND of detectedSizeP and lastMaxDr.
+	- accessible genotypes now done in C++.
 	
 Changes in version 2.3.17 (2017-09-22):
 	- random2 for rfitness.

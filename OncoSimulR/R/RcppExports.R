@@ -17,6 +17,10 @@ evalRGenotypeAndMut <- function(rG, rFE, muEF, full2mutator_, verbose, prodNeg) 
     .Call('OncoSimulR_evalRGenotypeAndMut', PACKAGE = 'OncoSimulR', rG, rFE, muEF, full2mutator_, verbose, prodNeg)
 }
 
+accessibleGenotypes <- function(y, f, numMut, th) {
+    .Call('OncoSimulR_accessibleGenotypes', PACKAGE = 'OncoSimulR', y, f, numMut, th)
+}
+
 ## readFitnessEffects <- function(rFE, echo) {
 ##     invisible(.Call('OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
 ## }

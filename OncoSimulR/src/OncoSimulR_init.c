@@ -10,13 +10,15 @@ SEXP OncoSimulR_BNB_Algo5(SEXP restrictTableSEXP, SEXP numDriversSEXP, SEXP numG
 SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP verboseSEXP, SEXP prodNegSEXP, SEXP calledBy_SEXP);
 SEXP OncoSimulR_evalRGenotypeAndMut(SEXP rGSEXP, SEXP rFESEXP, SEXP muEFSEXP, SEXP full2mutator_SEXP, SEXP verboseSEXP, SEXP prodNegSEXP);
 // SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP);
+SEXP OncoSimulR_accessibleGenotypes(SEXP ySEXP, SEXP xSEXP, SEXP numMutSEXP, SEXP thSEXP);
 
 // The number is the number of arguments
 R_CallMethodDef callMethods[]  = {
   {"OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 36},
   {"OncoSimulR_BNB_Algo5", (DL_FUNC) &OncoSimulR_BNB_Algo5, 32},
   {"OncoSimulR_evalRGenotype", (DL_FUNC) &OncoSimulR_evalRGenotype, 5},
-  {"OncoSimulR_evalRGenotypeAndMut", (DL_FUNC) &OncoSimulR_evalRGenotypeAndMut, 6},  
+  {"OncoSimulR_evalRGenotypeAndMut", (DL_FUNC) &OncoSimulR_evalRGenotypeAndMut, 6},
+  {"OncoSimulR_accessibleGenotypes", (DL_FUNC) &OncoSimulR_accessibleGenotypes, 4},
   //  {"OncoSimulR_readFitnessEffects", (DL_FUNC) &OncoSimulR_readFitnessEffects, 2},
   {NULL, NULL, 0}
 };

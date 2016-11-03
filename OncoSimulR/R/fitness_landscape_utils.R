@@ -198,10 +198,16 @@ count_accessible_g <- function(gfm, accessible_th) {
     return(ncol(gaj) - 1)
 }
 
+
+## There is now C++ code to get just the locations/positions of the
+## accessible genotypes
 filter_inaccessible <- function(x, accessible_th) {
     ## Return an adjacency matrix with only accessible paths. x is the gaj
     ## matrix created in the plots. The difference between genotypes
     ## separated by a hamming distance of 1
+
+    ## FIXME: could do the x[, -1] before loop and not add the 1
+    ## inside while, and do that at end
     colnames(x) <- rownames(x) <- 1:ncol(x)
     while(TRUE) {
         ## remove first column
@@ -215,6 +221,132 @@ filter_inaccessible <- function(x, accessible_th) {
     x[x < 0] <- NA
     return(x)
 }
+
+f1 <- function() {}
+
+x <- 99
+
+## wrapper to the C++ code
+wrap_accessibleGenotypes <- function(x, th) {
+    ## x is the fitness matrix, not adjacency matrix
+    numMut <- rowSums(x[, -ncol(x)])
+    o_numMut <- order(numMut)
+    x <- x[o_numMut, ]
+    numMut <- numMut[o_numMut]
+    
+    y <- x[, -ncol(x)]
+    storage.mode(y) <- "integer"
+
+    acc <- accessibleGenotypes(y, x[, ncol(x)],
+                               as.integer(numMut),
+                               th)
+    return(acc[acc > 0])
+}
+
+## A transitional function
+faster_accessible_genotypes_R <- function(x, th) {
+   rs0 <- rowSums(x[, -ncol(x)])
+    x <- x[order(rs0), ]
+    rm(rs0)
+    
+    y <- x[, -ncol(x)]
+    f <- x[, ncol(x)]
+    rs <- rowSums(y)
+
+   ## If 0, not accessible
+   ## adm <- slam::simple_triplet_zero_matrix(nrow = length(rs), ncol = length(rs),
+   ##                                          mode = "integer")
+   
+   adm <- matrix(0, nrow = length(rs), ncol = length(rs))
+   storage.mode(adm) <- "integer"
+   
+   ## Most time is gone here
+    for(i in 1:length(rs)) { ## i is the current genotype
+        candidates <- which(rs == (rs[i] + 1))
+        for(j in candidates) {
+            if( (sum(abs(y[j, ] - y[i, ])) == 1) &&
+                ( (f[j] - f[i]) >= th ) ) {
+                ## actually, this is the largest time sink using slam
+                adm[i, j] <- 1L
+                }
+        }
+    }
+
+    colnames(adm) <- rownames(adm) <- 1:ncol(adm)
+    admtmp <- adm[, -1, drop = FALSE] ## we do not want the root column.
+    while(TRUE) {
+        ## We remove inaccessible cols (genotypes) and the corresponding
+        ## rows repeatedly until nothing left to remove; any column left
+        ## is therefore accessible throw at least one path.
+
+        ## inacc_col <- which(slam::colapply_simple_triplet_matrix(admtmp, FUN = sum) == 0L)
+        inacc_col <- which(colSums(admtmp) == 0L)
+        if(length(inacc_col) == 0) break;
+        inacc_row <- inacc_col + 1 ## recall root row is left
+        admtmp <- admtmp[-inacc_row, -inacc_col, drop = FALSE]
+    }
+    return(as.numeric(c(colnames(adm)[1], colnames(admtmp))))
+
+}
+
+
+## ## This uses slam, but that is actually slower because
+## ## of the assignment
+## faster_accessible_genots_slam <- function(x, th = 0) {
+
+##     ## Given a genotype matrix, return the genotypes that are accessible
+##     ## via creating a directed adjacency matrix between genotypes
+##     ## connected (i.e., those that differ by gaining one mutation). 0
+##     ## means not connected, 1 means connected.
+    
+##     ## There is a more general function in OncoSimulR that will give the
+##     ## fitness difference. But not doing the difference is faster than
+##     ## just setting a value, say 1, if all we want is to keep track of
+##     ## accessible ones. And by using only 0/1 we can store only an
+##     ## integer. And no na.omits, etc. Is too restricted? Yes. But for
+##     ## simulations and computing just accessible genotypes, probably a
+##     ## hell of a lot faster.
+
+##     ## Well, this is not incredibly fast either.
+    
+##     ## Make sure sorted, so ancestors always before descendants
+##     rs0 <- rowSums(x[, -ncol(x)])
+##     x <- x[order(rs0), ]
+##     rm(rs0)
+    
+##     y <- x[, -ncol(x)]
+##     f <- x[, ncol(x)]
+##     rs <- rowSums(y)
+
+##     ## If 0, not accessible
+##     adm <- slam::simple_triplet_zero_matrix(nrow = length(rs), ncol = length(rs),
+##                                       mode = "integer")
+##     for(i in 1:length(rs)) { ## i is the current genotype
+##         candidates <- which(rs == (rs[i] + 1))
+##         for(j in candidates) {
+##             ## sumdiff <- sum(abs(y[j, ] - y[i, ]))
+##             ## if(sumdiff == 1)
+##             if( (sum(abs(y[j, ] - y[i, ])) == 1) &&
+##                 ( (f[j] - f[i]) >= th ) )
+##                 adm[i, j] <- 1L
+##         }
+##     }
+
+##     colnames(adm) <- rownames(adm) <- 1:ncol(adm)
+##     admtmp <- adm[, -1, drop = FALSE] ## we do not want the root column.
+##     while(TRUE) {
+##         ## We remove inaccessible cols (genotypes) and the corresponding
+##         ## rows repeatedly until nothing left to remove; any column left
+##         ## is therefore accessible throw at least one path.
+
+##         ## inacc_col <- which(slam::colapply_simple_triplet_matrix(admtmp, FUN = sum) == 0L)
+##         inacc_col <- which(slam::col_sums(admtmp) == 0L)
+##         if(length(inacc_col) == 0) break;
+##         inacc_row <- inacc_col + 1 ## recall root row is left
+##         admtmp <- admtmp[-inacc_row, -inacc_col, drop = FALSE]
+##     }
+##     return(as.numeric(c(colnames(adm)[1], colnames(admtmp))))
+## }
 
 
 generate_matrix_genotypes <- function(g) {
@@ -257,6 +389,8 @@ genot_to_adj_mat <- function(x) {
     ## that differ by gaining one mutation) with value being the
     ## difference in fitness between destination and origin
 
+    ## FIXME: code is now in place to do all of this in C++
+    
     ## Make sure sorted, so ancestors always before descendants
     rs0 <- rowSums(x[, -ncol(x)])
     x <- x[order(rs0), ]

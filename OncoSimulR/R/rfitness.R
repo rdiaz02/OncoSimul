@@ -61,7 +61,9 @@ rfitness <- function(g, c= 0.5,
         }
         m <- cbind(m, Fitness = fi)
         if(min_accessible_genotypes > 0) {
-            num_accessible_genotypes <- count_accessible_g(m, accessible_th)
+            ## num_accessible_genotypes <- count_accessible_g(m, accessible_th)
+            ## Recall accessibleGenotypes includes the wt, if accessible.
+            num_accessible_genotypes <- length(wrap_accessibleGenotypes(m, accessible_th)) - 1
             if(num_accessible_genotypes >= min_accessible_genotypes) {
                 done <- TRUE
                 attributes(m) <- c(attributes(m),
@@ -89,3 +91,7 @@ create_eq_ref <- function(g) {
     ref <- c(rep(1, nm), rep(0, g - nm))
     sample(ref)
 }
+
+
+
+
