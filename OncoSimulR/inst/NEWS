@@ -2,6 +2,9 @@ Changes in version 2.5.1.0001 (2017-zz-zz):
 	- clonePhylog et al: deal with never any descendant.
 	- samplePop can handle failed simulations graciously.
 	- summary.oncosimulpop can handle failed simulations graciously.
+	- OcurringDrivers should not be a factor.
+	- samplePop always returns gene names.
+	- to_Magellan is much faster with rfitness objects.
 
 Changes in version 2.4.0 (for BioC 3.4):
 	- Mutator phenotype and gene-specific mutation rates.

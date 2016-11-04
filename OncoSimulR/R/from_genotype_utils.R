@@ -23,14 +23,22 @@
 
 to_Magellan <- function(x, file,
                         max_num_genotypes = 2000) {
+    ## This is stupid if we already have, as entry, an object from
+    ## rfitness!! to_Fitness_Matrix can be very slow.
     if(is.null(file)) {
         file <- tempfile()
         cat("\n Using file ", file, "\n")
     }
-    gfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)$gfm
-    write(rep(2, ncol(gfm) - 1), file = file, ncolumns = ncol(gfm) - 1)
-    write.table(gfm, file = file, append = TRUE,
-                row.names = FALSE, col.names = FALSE, sep = " ")
+    if(inherits(x, "genotype_fitness_matrix")) {
+        write(rep(2, ncol(x) - 1), file = file, ncolumns = ncol(x) - 1)
+        write.table(x, file = file, append = TRUE,
+                    row.names = FALSE, col.names = FALSE, sep = " ")
+    } else {
+        gfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)$gfm
+        write(rep(2, ncol(gfm) - 1), file = file, ncolumns = ncol(gfm) - 1)
+        write.table(gfm, file = file, append = TRUE,
+                    row.names = FALSE, col.names = FALSE, sep = " ")
+    }
 }
 
 to_Fitness_Matrix <- function(x, max_num_genotypes) {
