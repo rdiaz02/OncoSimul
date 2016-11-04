@@ -3,9 +3,10 @@
 
 language: r
 r: 
- - bioc-devel
-## - devel ## travis issues with /bin/bash: line 2: -shared: command not found and /bin/bash: I/home/travis/R-bin/lib/R/include: No such file or directory
-## - patched  ## not needed paranoia: this is what I use locally. And it does not find the r-patched file
+ - devel
+ - bioc-devel 
+ ## travis issues with /bin/bash: line 2: -shared: command not found and /bin/bash: I/home/travis/R-bin/lib/R/include: No such file or directory
+ ## - patched  ## not needed paranoia: this is what I use locally. And it does not find the r-patched file
  
 
 warnings_are_errors: true
