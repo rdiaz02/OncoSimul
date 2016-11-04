@@ -685,7 +685,7 @@ summary.oncosimul <- function(object, ...) {
         if( (tmp$minDMratio == -99)) tmp$minDMratio <- NA
         if( (tmp$minBMratio == -99)) tmp$minBMratio <- NA
         tmp$OccurringDrivers <- object$OccurringDrivers
-        return(as.data.frame(tmp))
+        return(as.data.frame(tmp, stringsAsFactors = FALSE))
     }
 }
 
