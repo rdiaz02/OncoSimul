@@ -21,7 +21,7 @@ r_github_packages:
 # Set CXX1X for R-devel, as R-devel does not detect CXX1X support for gcc 4.6.3,
 # this was causing hunspell installation to fail
 before_install:
-  - if [[ "$TRAVIS_R_VERSION_STRING" = 'devel' ]]; then mkdir ~/.R && echo 'CXX1X=g++ -std=c++0x -g -O2 -fPIC' > ~/.R/Makevars; fi
+  - if [[ "$TRAVIS_R_VERSION_STRING" = 'bioc-devel' ]]; then mkdir ~/.R && echo 'CXX1X=g++ -std=c++0x -g -O2 -fPIC' > ~/.R/Makevars; fi
 
 install:
   - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown","bookdown"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR");devtools::install_github("jimhester/withr");devtools::install_github("jimhester/covr")'
