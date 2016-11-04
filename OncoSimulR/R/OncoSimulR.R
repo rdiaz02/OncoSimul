@@ -293,7 +293,7 @@ samplePop <- function(x, timeSample = "last",
                             popSizeSample = popSizeSample)
         dim(z) <- c(1, length(z))
         if(is.null(gN) && (!is.null(x$geneNames)))
-            gN <- geneNames
+            gN <- x$geneNames
     }
     message("\n Subjects by Genes matrix of ",
         nrow(z), " subjects and ",
