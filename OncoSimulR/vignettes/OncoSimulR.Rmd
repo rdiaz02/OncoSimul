@@ -5027,6 +5027,31 @@ c$ and $c > d$ both  give you a genotype with "c" and "d" mutated, and
 thus in the output you can have two columns with both genes mutated.
 
 
+## Doesn't the BNB algorithm require small mutation rates for it to be advantageous? {#bnbmutation}
+
+As discussed in the original paper by @Mather2012 (see also their
+supplementary material), the BNB algorithm can achieve considerable
+speed advantages relative to other algorithms especially when
+mutation events are rare relative to birth and death events; the
+larger the mutation rate, the smaller the gains compared to other
+algorithms. As mentioned in their supplementary material (see p.5)
+"Note that the 'cost' of each step in BNB is somewhat higher than in
+SSA [SSA is the original Gillespie Stochastic Simulation Algorithm]
+since it requires generation of several random numbers as compared
+to only two uniform random numbers for SSA. However this cost
+increase is small compared with significant benefits of jumping over
+birth and death reactions for the case of rare mutations."
+
+Since the earlier versions, OncoSimulR has provided information to
+assess these issues. The output of function *`oncoSimulIndiv`*
+includes a list called *"other"* that itself includes two lists
+named *"minDMratio"* and *"minBMratio"*, the smallest ratio, over
+all simulations, of death rate to mutation rate or birth rate to
+mutation rate, respectively. As explained above, the BNB algorithm
+thrives when those are large.
+
+
+
 
 <!-- %% in an attempt to explain it, this just makes it too confusing. The -->
 <!-- %% above is enough. -->
