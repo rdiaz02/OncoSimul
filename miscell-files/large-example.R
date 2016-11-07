@@ -344,7 +344,7 @@ unix.time(M9 <-  oncoSimulIndiv(u9, model = "McFL",
 summary(M9)
 print(object.size(M9), units = "GB")
 
-
+## Takes about 400 seconds, 66 GB, 177000 clones
 
 
 

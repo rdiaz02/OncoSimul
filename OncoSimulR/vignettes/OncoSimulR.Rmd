@@ -508,7 +508,9 @@ plot(ep2, show = "genotypes", xlim = c(1000, 8000),
 ## How long does it take? How fast is OncoSimulR? How much space do the return objects take? {#timings}
 
 
-How long simulations take depend on several factors:
+How long simulations take depend on several factors. This section
+gives a quick view. Longer examples and more detailed comments are
+provided in section \@ref(moretimings).
 
 
 * Your hardware, of course.
@@ -5739,6 +5741,9 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- % dev.off() -->
 
 <!-- % @  -->
+
+
+# Further comments and examples about time, size, and simulation limits {#moretiming}
 
 # Using v.1 posets and simulations {#v1}
 
