@@ -226,7 +226,7 @@ u7 <- allFitnessEffects(noIntGenes = c(rep(0.1, nd), runif(np, -.2, 0)),
                         drvNames = seq.int(nd))
 unix.time(M5 <-  oncoSimulIndiv(u7, model = "McFL",
                                 mu = 1e-7,
-                                detectionSize = maxsize, 
+                                detectionSize = NA,
                                 detectionDrivers = 10,
                                 sampleEvery = .02,
                                 keepEvery = 1,
@@ -238,8 +238,14 @@ unix.time(M5 <-  oncoSimulIndiv(u7, model = "McFL",
 summary(M5)
 print(object.size(M5), units = "GB")
 ## This takes longer, about 20 seconds, gives an object of size over 4 GB
-## and we are up to over 50000 clones.
-
+## and we are up to about 50000 clones. Can we plot it? Sure, but it is a
+## very busy plot; let us make it slightly less busy:
+plotClonePhylog(M5, N = 100)
+## And note that by default we only plot those clones with the N satisfied
+## at the last time period (so we do not even try to plot the 50000
+## clones). But you could do 
+plotClonePhylog(M5, N = 10, t = c(20, 900))
+## and you'd get a much, much busier plot.
 
 ## Same as before, but multiply by another factor of 10 the initial
 ## population size.
@@ -249,19 +255,95 @@ u7 <- allFitnessEffects(noIntGenes = c(rep(0.1, nd), runif(np, -.2, 0)),
                         drvNames = seq.int(nd))
 unix.time(M6 <-  oncoSimulIndiv(u7, model = "McFL",
                                 mu = 1e-7,
-                                detectionSize = maxsize, 
+                                detectionSize = NA, 
                                 detectionDrivers = 10,
                                 sampleEvery = .02,
                                 keepEvery = 1,
                                 keepPhylog = TRUE,
                                 initSize = 2e5,
                                 finalTime = 4000,
-                                max.wall.time = 500,
+                                max.wall.time = 2000,
                                 onlyCancer = TRUE))
 summary(M6)
 print(object.size(M6), units = "GB")
-## This takes longer, about 20 seconds, gives an object of size over 4 GB
-## and we are up to over 50000 clones.
+## This takes much, much longer, about 15 minutes (not seconds), gives an
+## object of size over 20 GB and we get over 250000 clones in many runs.
+## This might not work with a laptop unless you have plenty of RAM.
+
+## What if we keep information every 10 time periods, instead of 1?
+
+nd <- 100
+np <- 20000
+u7 <- allFitnessEffects(noIntGenes = c(rep(0.1, nd), runif(np, -.2, 0)),
+                        drvNames = seq.int(nd))
+unix.time(M7 <-  oncoSimulIndiv(u7, model = "McFL",
+                                mu = 1e-7,
+                                detectionSize = NA, 
+                                detectionDrivers = 10,
+                                sampleEvery = .02,
+                                keepEvery = 10,
+                                keepPhylog = TRUE,
+                                initSize = 2e5,
+                                finalTime = 4000,
+                                max.wall.time = 2000,
+                                onlyCancer = TRUE))
+summary(M7)
+print(object.size(M7), units = "GB")
+
+## It takes about 15 minutes, the object is much smaller (6 GB) and we
+## only see about 80000 to 90000 clones since the resolution is much
+## coarser and many clones are likely to have arisen and gone extinct in
+## between those periods of 10 unit times.
+
+
+
+
+
+## Let us return to more reasonable population sizes in the McFarland
+## model but increase the number of passengers, and let's increase the
+## number of drivers for detection:
+nd <- 100
+np <- 50000
+u8 <- allFitnessEffects(noIntGenes = c(rep(0.1, nd), runif(np, -.2, 0)),
+                        drvNames = seq.int(nd))
+unix.time(M8 <-  oncoSimulIndiv(u8, model = "McFL",
+                                mu = 1e-7,
+                                detectionSize = NA,
+                                detectionDrivers = 15,
+                                sampleEvery = .02,
+                                keepEvery = 1,
+                                keepPhylog = TRUE,
+                                initSize = 2e3,
+                                finalTime = 4000,
+                                max.wall.time = 1200,
+                                onlyCancer = TRUE))
+summary(M8)
+print(object.size(M8), units = "GB")
+
+## That took about 50 seconds, created an object of about 18 GB with
+## generally over 80000 to 90000 different clones (of which, yes, we are
+## keeping the history also).
+
+
+
+nd <- 100
+np <- 100000
+u9 <- allFitnessEffects(noIntGenes = c(rep(0.1, nd), runif(np, -.2, 0)),
+                        drvNames = seq.int(nd))
+unix.time(M9 <-  oncoSimulIndiv(u9, model = "McFL",
+                                mu = 1e-7,
+                                detectionSize = NA,
+                                detectionDrivers = 15,
+                                sampleEvery = .02,
+                                keepEvery = 1,
+                                keepPhylog = TRUE,
+                                initSize = 2e3,
+                                finalTime = 4000,
+                                max.wall.time = 1200,
+                                onlyCancer = TRUE))
+summary(M9)
+print(object.size(M9), units = "GB")
+
 
 
 
