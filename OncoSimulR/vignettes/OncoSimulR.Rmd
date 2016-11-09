@@ -270,8 +270,11 @@ beyond the the previous version (and, thus, also the TPT of
 effects in other general forward genetic simulators such as FFPopSim
 [@Zanini2012], and some that, to our knowledge (e.g., order effects)
 are not available from any genetics simulator. In addition, the
-"lego approach" to flexibly combine different fitness specifications
-is also unique.
+"Lego system" to flexibly combine different fitness specifications
+is also unique; by "Lego system" I mean that we can combine
+different pieces and blocks, similarly to what we do with Lego
+bricks. (I find this an intuitive and very graphical analogy which I
+have copied from @Hothorn_2006; @Hothorn_2008).
 
 
 
