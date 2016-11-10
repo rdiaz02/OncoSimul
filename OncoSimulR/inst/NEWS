@@ -1,4 +1,4 @@
-Changes in version 2.3.18 (2017-zz-zz):
+Changes in version 2.5.1 (2017-zz-zz):
 	- clonePhylog et al: deal with never any descendant.
 	- samplePop can handle failed simulations graciously.
 	- summary.oncosimulpop can handle failed simulations graciously.
@@ -7,6 +7,19 @@ Changes in version 2.3.18 (2017-zz-zz):
 	- OcurringDrivers should not be a factor.
 	- samplePop always returns gene names.
 	- to_Magellan is much faster with rfitness objects.
+	- Several improvements in vignette (English and additional explanations).
+
+Changes in version 2.4.0 (for BioC 3.4):
+	- Mutator phenotype and gene-specific mutation rates.
+	- End simulations stochastically as a function of size.	
+	- Specify fitness by giving genotype-> fitness mapping.	
+	- Random fitness landscape generation.
+	- Plots of fitness landscapes.
+	- Vignette: using Rmd.
+	- Several improvements in help and vignette.
+	- Improved test coverage.
+	- samplePop: sample at arbitrary sizes.	
+	- evalAllGenotypes: order = FALSE by default.
 	
 Changes in version 2.3.17 (2017-09-22):
 	- random2 for rfitness.

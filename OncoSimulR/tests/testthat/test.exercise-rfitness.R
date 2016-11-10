@@ -20,3 +20,23 @@ test_that("Expect output", {
                                  min_accessible_genotypes = 6)), "Fitness",
                   fixed = TRUE)
 })
+
+
+test_that("Minimal tests of generate_matrix_genotypes", {
+    ## By induction, if it works for the few first, should work for all,
+    ## unless memory issues. And if we go beyond, say, 10 or 12, it can
+    ## take long in slow machines.
+    for(i in 1:13) {
+        tmp <- OncoSimulR:::generate_matrix_genotypes(i)
+        stopifnot(nrow(tmp) == (2^i))
+        stopifnot(ncol(tmp) == i)
+        cstmp <- colSums(tmp)
+        lucstmp <- unique(cstmp)
+        stopifnot(length(lucstmp) == 1)
+        stopifnot(lucstmp[1] == ((2^i)/2)) ## yes, 2^(i - 1) but do full
+        ## simple logic
+        rm(tmp)
+        rm(cstmp)
+        rm(lucstmp)
+    }
+})
