@@ -1438,7 +1438,9 @@ nr_oncoSimul.internal <- function(rFE,
                                   keepPhylog,
                                   detectionProb,
                                   AND_DrvProbExit,
-                                  MMUEF = NULL ## avoid partial matching, and set default
+                                  fixation = NULL, ## avoid partial matching
+                                  MMUEF = NULL, ## avoid partial matching, and set default
+                                 
                                   ) {
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
@@ -1580,6 +1582,23 @@ nr_oncoSimul.internal <- function(rFE,
     ## if( is.null(n2)) n2 <- -9
 
     ## call <- match.call()
+    
+    ## Processed the fixed list, if any
+    if(!is.null(fixation)) {
+        ng <- namedGenes
+        rownames(ng) <- namedGenes[, "Gene"]
+        ulf <- unlist(fixation)
+        ulfg <- ng[ulf, 1]
+        if(any(is.na(ulfg)))
+            stop(paste("The 'fixation' list contains genes that are not present",
+                       " in the fitness effects."))
+        ## Sorting here is crucial!!
+        fixation_comb_int <- lapply(fixation, function(x) sort(ng[x, 2]))
+    } else {
+        fixation_comb_int <- list()
+    }
+
+    
     return(c(
         nr_BNB_Algo5(rFE = rFE,
                      mu_ = mu,
@@ -1616,7 +1635,8 @@ nr_oncoSimul.internal <- function(rFE,
                      PDBaseline = dpr["PDBaseline"],
                      cPDetect_i= dpr["cPDetect"],
                      checkSizePEvery = dpr["checkSizePEvery"],
-                     AND_DrvProbExit = AND_DrvProbExit),
+                     AND_DrvProbExit = AND_DrvProbExit,
+                     fixation_i = fixation_comb_int),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))

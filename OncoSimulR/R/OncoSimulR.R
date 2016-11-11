@@ -427,6 +427,7 @@ oncoSimulIndiv <- function(fp,
                            verbosity = 0,
                            initMutant = NULL,
                            AND_DrvProbExit = FALSE,
+                           fixation = NULL,
                            seed = NULL
                            ) {
     call <- match.call()
@@ -611,6 +612,14 @@ oncoSimulIndiv <- function(fp,
             seed <- 0.0
             if(verbosity >= 2)
                 cat("\n A (high quality) random seed will be generated in C++\n")
+        }
+        if(!is.null(fixation)) {
+            if(!inherits(fixation, "list"))
+                stop("fixation must be a list.")
+            if(!(all(unlist(lapply(fixation, is.vector)))))
+                stop("fixation must be a list of vectors.")
+            if(AND_DrvProbExit)
+                stop("It makes no sense to pass AND_DrvProbExit and a fixation list.")
         }
         op <- try(nr_oncoSimul.internal(rFE = fp, 
                                         birth = birth,

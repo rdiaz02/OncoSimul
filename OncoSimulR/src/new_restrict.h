@@ -254,6 +254,6 @@ double set_cPDetect(const double n2, const double p2,
 bool detectedSizeP(const double n, const double cPDetect,
 		   const double PDBaseline, std::mt19937& ran_gen);
 
-
+std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist);
 #endif
 
