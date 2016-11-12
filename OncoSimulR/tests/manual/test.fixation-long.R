@@ -99,7 +99,7 @@ test_that("Check output is correct", {
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("iv")))
     ## very slow
     cat("\n\n ************** fixation 5:  ***********\n")    
-    op <- oncoSimulPop(20, od, model = "McFL",
+    op <- oncoSimulPop(200, od, model = "McFL",
                        mu = 1e-3, 
                        onlyCancer = TRUE, finalTime = 1000, detectionSize = NA, detectionProb = NA,
                        initSize = 50,
@@ -161,13 +161,15 @@ test_that("Check output is correct", {
                         keepEvery = NA,
                         fixation = c("i,v"),
                         mc.cores = 2
-                        )
+                       )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
     expect_true(list_g_matches_fixed(sg[, "Genotype"], c("i,v")))
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+
+    
     cat("\n\n ************** fixation 9:  ***********\n")    
     op <- oncoSimulPop(2000, od, model = "McFL",
                        mu = 1e-3, 
@@ -184,6 +186,8 @@ test_that("Check output is correct", {
     expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
 
+
+    
     u <- 0.2; i <- -0.02; vi <- 1.6; ui <- uv <- -Inf
     od <- allFitnessEffects(
         epistasis = c("u" = u,  "u:i" = ui,
@@ -202,8 +206,9 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v", "i", "u")))
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+
 
     u <- 0.2; i <- -0.02; vi <- 1.6; 
     od <- allFitnessEffects(
@@ -226,6 +231,10 @@ test_that("Check output is correct", {
     sg <- sampledGenotypes(sp)
     expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+
+
+
+    
 })
 cat("\n Ending long fixation  at", date(), "\n") 
 
