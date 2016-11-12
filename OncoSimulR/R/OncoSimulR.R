@@ -435,21 +435,25 @@ oncoSimulIndiv <- function(fp,
                            seed = NULL
                            ) {
     call <- match.call()
-    if(all(c(is.na(detectionProb),
-             is.na(detectionSize),
-             is.na(detectionDrivers),
-             is.na(finalTime))))
+    if(all(c(is_null_na(detectionProb),
+             is_null_na(detectionSize),
+             is_null_na(detectionDrivers),
+             is_null_na(finalTime))))
         stop("At least one stopping condition should be given.",
              " At least one of detectionProb, detectionSize, detectionDrivers,",
              " finalTime. Otherwise, we'll run forever.")
 
-    if(AND_DrvProbExit && (is.na(detectionProb) || is.na(detectionDrivers)))
+    if(AND_DrvProbExit && (is_null_na(detectionProb) || is_null_na(detectionDrivers)))
         stop("AND_DrvProbExit is TRUE: both of detectionProb and detectionDrivers",
              " must be non NA.")
-    if(AND_DrvProbExit && !is.na(detectionSize)) {
+    if(AND_DrvProbExit && !is_null_na(detectionSize)) {
         warning("With AND_DrvProbExit = TRUE, detectionSize is ignored.")
         detectionSize <- NA
     }
+    if(inherits(fp, "fitnessEffects")) {
+        s <- sh <- NULL ## force it soon!
+    }
+
     ## legacies from poor name choices
     typeFitness <- switch(model,
                           "Bozic" = "bozic1",
@@ -503,7 +507,7 @@ oncoSimulIndiv <- function(fp,
     ## No user-visible magic numbers
     ## if(is.null(keepEvery))
     ##     keepEvery <- -9
-    if(is.na(keepEvery)) keepEvery <- -9
+    if(is_null_na(keepEvery)) keepEvery <- -9
 
     
     if( (keepEvery > 0) & (keepEvery < sampleEvery)) {
@@ -518,11 +522,11 @@ oncoSimulIndiv <- function(fp,
     if( (typeFitness == "exp") && (death != 1) )
         warning("Using fitness exp with death != 1")
 
-    if(!is.na(detectionDrivers) && (detectionDrivers >= 1e9))
+    if(!is_null_na(detectionDrivers) && (detectionDrivers >= 1e9))
         stop("detectionDrivers > 1e9; this doesn't seem reasonable")
-    if(is.na(detectionDrivers)) detectionDrivers <- (2^31) - 1
-    if(is.na(detectionSize)) detectionSize <- Inf
-    if(is.na(finalTime)) finalTime <- Inf
+    if(is_null_na(detectionDrivers)) detectionDrivers <- (2^31) - 1
+    if(is_null_na(detectionSize)) detectionSize <- Inf
+    if(is_null_na(finalTime)) finalTime <- Inf
     
     
     if(!inherits(fp, "fitnessEffects")) {
@@ -556,7 +560,7 @@ oncoSimulIndiv <- function(fp,
         if(verbosity >= 2)
             cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
 
-        if(!is.na(detectionProb)) stop("detectionProb cannot be used in v.1 objects")
+        if(!is_null_na(detectionProb)) stop("detectionProb cannot be used in v.1 objects")
         ## if(message.v1)
         ##     message("You are using the old poset format. Consider using the new one.")
    
@@ -602,6 +606,7 @@ oncoSimulIndiv <- function(fp,
                   silent = !verbosity)
         objClass <- "oncosimul"
     } else {
+        s <- sh <- NULL ## force it.
         if(numPassengers != 0)
             warning(paste("Specifying numPassengers has no effect",
                           " when using fitnessEffects objects. ",

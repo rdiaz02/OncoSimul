@@ -162,7 +162,7 @@ list.of.deps <- function(x) {
             stop("child not unique")
     }
     typeDep <- lookupTypeDep[unique(x$typeDep)]
-    if(any(is.na(typeDep)))
+    if(any(is_null_na(typeDep)))
         stop("typeDep value incorrect. Check spelling.")
     return(list(
         child = unique(x$child),
@@ -1780,8 +1780,8 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
     default_PDBaseline <- 1.2 * initSize
     default_checkSizePEvery <- 20
     ## No default cPDetect. That is done from p2 and n2 in C++.
-    
-    if((length(x) == 1) && (is.na(x))) {
+    if(is_null_na(x)) {
+    ## if((length(x) == 1) && (is.na(x))) {
         y <- vector()
         y["cPDetect"] <- -9
         y["p2"] <- 9
@@ -1806,18 +1806,18 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
     }
    
     ## This ain't conditional. If not given, always check
-    if( !is.na(x["cPDetect"]) && (sum(!is.na(x["p2"]), !is.na(x["n2"])) >= 1 ))
+    if( !is_null_na(x["cPDetect"]) && (sum(!is_null_na(x["p2"]), !is_null_na(x["n2"])) >= 1 ))
         stop("Specify only cPDetect xor both of p2 and n2")
-    if( (is.na(x["p2"]) + is.na(x["n2"])) == 1 )
+    if( (is_null_na(x["p2"]) + is_null_na(x["n2"])) == 1 )
         stop("If you pass one of n2 or p2, you must also pass the other. ",
              "Otherwise, we would not know what to do.")
 
-    if(is.na(x["PDBaseline"])) {
+    if(is_null_na(x["PDBaseline"])) {
         x["PDBaseline"] <- default_PDBaseline
         if(verbosity > -1)
             message("\n  PDBaseline set to default value of ", default_PDBaseline, "\n")
         }
-    if(is.na(x["checkSizePEvery"])) {
+    if(is_null_na(x["checkSizePEvery"])) {
         x["checkSizePEvery"] <- default_checkSizePEvery
         if(verbosity > -1)
             message("\n  checkSizePEvery set to default value of ",
@@ -1827,9 +1827,9 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
     ## If we get here, we checked consistency of whether cPDetect or p2/n2.
     ## Fill up with defaults the missing values
 
-    if(is.na(x["cPDetect"])) {
-        if(is.na(x["p2"])) {
-            if(!is.na(x["n2"])) stop("Eh? no p2 but n2? Bug")
+    if(is_null_na(x["cPDetect"])) {
+        if(is_null_na(x["p2"])) {
+            if(!is_null_na(x["n2"])) stop("Eh? no p2 but n2? Bug")
             x["n2"] <- default_n2
             x["p2"] <- default_p2
             if(verbosity > -1)
@@ -1843,20 +1843,37 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
     if(x["PDBaseline"] < 0)
         stop("PDBaseline < 0")
     
-    if(!is.na(x["n2"])) {
+    if(!is_null_na(x["n2"])) {
         if(x["n2"] <= x["PDBaseline"])
             stop("n2 <= PDBaseline")
         if(x["p2"] >= 1) stop("p2 >= 1")
         if(x["p2"] <= 0) stop("p2 <= 0")
         x["cPDetect"] <- -9
     } else { ## only if x["cPDetect"] is not NA
-        if(is.na(x["cPDetect"])) stop("eh? you found a bug")## paranoia
+        if(is_null_na(x["cPDetect"])) stop("eh? you found a bug")## paranoia
         x["n2"] <- -9
         x["p2"] <- -9
         if(verbosity > -1)
             message("\n Using user-specified cPDetect as n2, p2 not given.\n")
     }
     return(x)
+}
+
+sampledGenotypes <- function(x, genes = NULL) {
+    ## From a popSample object, or a matrix for that matter,
+    ## show the sampled genotypes and their frequencies
+    if(!is.null(genes)) {
+        cols <- which(colnames(x) %in% genes )
+        x <- x[, cols]
+    }
+    nn <- colnames(x)
+    df <- data.frame(table(
+        apply(x, 1, function(z) paste(nn[as.logical(z)], collapse = ", ") )
+    ))
+    gn <- as.character(df[, 1])
+    gn[gn == ""] <- "WT"
+    df <- data.frame(Genotype = gn, Freq = df[, 2], stringsAsFactors = FALSE)
+    return(df)
 }
 
 
