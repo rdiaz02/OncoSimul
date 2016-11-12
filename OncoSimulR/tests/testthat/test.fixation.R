@@ -13,21 +13,21 @@ test_that("Minimal run", {
     ## these should all run
     oncoSimulIndiv(od, muEF = odm, model = "McFL",
                    mu = 1e-4, 
-                   onlyCancer = TRUE,
+                   onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = c("u", "v")
                    )
     oncoSimulIndiv(od, muEF = odm, model = "McFL",
                    mu = 1e-4, 
-                   onlyCancer = TRUE,
+                   onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = list("u", "v")
                    )
     oncoSimulPop(2, od, muEF = odm, model = "McFL",
                  mu = 1e-4, 
-                 onlyCancer = TRUE,
+                 onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                  initSize = initS, 
                  keepEvery = NA,
                  fixation = c("u", "v"),
@@ -35,7 +35,7 @@ test_that("Minimal run", {
                  )
     oncoSimulPop(2, od, muEF = odm, model = "McFL",
                  mu = 1e-4, 
-                 onlyCancer = TRUE,
+                 onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                  initSize = initS, 
                  keepEvery = NA,
                  fixation = list("u", "v"),
@@ -43,7 +43,7 @@ test_that("Minimal run", {
                  )
     oncoSimulSample(2, od, muEF = odm, model = "McFL",
                     mu = 1e-4, 
-                    onlyCancer = TRUE,
+                    onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                     initSize = 100, 
                     fixation = c("u", "v")
                     )
@@ -56,7 +56,7 @@ test_that("Minimal run", {
     odm <- allMutatorEffects(noIntGenes = c("i" = 50, "m" = 5))
     oncoSimulIndiv(od, muEF = odm, model = "McFL",
                    mu = 1e-4, 
-                   onlyCancer = TRUE,
+                   onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = c("u", "v", "m")
@@ -78,7 +78,7 @@ test_that("Catch errors", {
     ## these should all fail
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                    mu = 1e-4, 
-                   onlyCancer = TRUE,
+                   onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = c("u", "u > v")
@@ -86,7 +86,7 @@ test_that("Catch errors", {
                  "Order effects not allowed", fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                    mu = 1e-4, 
-                   onlyCancer = TRUE,
+                   onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = c("u", "n")
@@ -95,7 +95,7 @@ test_that("Catch errors", {
                    fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                    mu = 1e-4, 
-                   onlyCancer = TRUE,
+                   onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = matrix(1:5, ncol = 5),
@@ -103,7 +103,7 @@ test_that("Catch errors", {
                  "'fixation' must be a list or a vector", fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                    mu = 1e-4, 
-                   onlyCancer = TRUE,
+                   onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = 98
@@ -112,7 +112,7 @@ test_that("Catch errors", {
                  fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                                 mu = 1e-4, 
-                                onlyCancer = TRUE,
+                                onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = list("u", c("u", "v"))
@@ -121,7 +121,7 @@ test_that("Catch errors", {
                  fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                                 mu = 1e-4, 
-                                onlyCancer = TRUE,
+                                onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = list("u", list("u", "v"))
@@ -130,7 +130,7 @@ test_that("Catch errors", {
                  fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                                 mu = 1e-4, 
-                                onlyCancer = TRUE,
+                                onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                                 initSize = initS,
                                 detectionSize = NA,
                                 keepEvery = NA,
@@ -145,7 +145,7 @@ test_that("Catch errors", {
     p701 <- examplePosets[["p701"]]
     expect_error(oncoSimulIndiv(p701, model = "McFL",
                                 mu = 1e-4, 
-                                onlyCancer = TRUE,
+                                onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                    initSize = initS, 
                    keepEvery = NA,
                    fixation = c("u", "v")
@@ -253,7 +253,7 @@ test_that("Check output is correct", {
     initS <- 2000
     op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
                         mu = 1e-4, 
-                        onlyCancer = TRUE,
+                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                         initSize = initS, 
                         keepEvery = NA,
                         fixation = c("u", "v"),
@@ -267,7 +267,7 @@ test_that("Check output is correct", {
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
                         mu = 1e-4, 
-                        onlyCancer = TRUE,
+                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                         initSize = initS, 
                         keepEvery = NA,
                         fixation = c("u", "i"),
@@ -292,7 +292,7 @@ test_that("Check output is correct", {
     initS <- 2000
     op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
                         mu = 1e-3, 
-                        onlyCancer = TRUE,
+                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u"),
@@ -318,7 +318,7 @@ test_that("Check output is correct", {
     initS <- 200
     op <- oncoSimulPop(8, od, muEF = odm, model = "McFL",
                        mu = 1e-3, 
-                       onlyCancer = TRUE,
+                       onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                        initSize = initS,
                        keepEvery = NA,
                        max.num.tries = 5000,
@@ -334,7 +334,7 @@ test_that("Check output is correct", {
     ## ## very slow; in long tests
     ## op <- oncoSimulPop(20, od, model = "McFL",
     ##                    mu = 1e-3, 
-    ##                    onlyCancer = TRUE,
+    ##                    onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
     ##                    initSize = initS,
     ##                    keepEvery = NA,
     ##                    fixation = c("v"),
@@ -358,7 +358,7 @@ test_that("Check output is correct", {
     initS <- 2000
     op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
                         mu = 1e-3, 
-                        onlyCancer = TRUE,
+                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u, v"),
@@ -372,7 +372,7 @@ test_that("Check output is correct", {
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     op <- oncoSimulPop(100, od, model = "McFL",
                         mu = 1e-3, 
-                        onlyCancer = TRUE,
+                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u,v"),
@@ -386,7 +386,7 @@ test_that("Check output is correct", {
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     op <- oncoSimulPop(100, od, model = "McFL",
                         mu = 1e-3, 
-                        onlyCancer = TRUE,
+                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("i,v"),
@@ -400,7 +400,7 @@ test_that("Check output is correct", {
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     op <- oncoSimulPop(100, od, model = "McFL",
                        mu = 1e-3, 
-                       onlyCancer = TRUE,
+                       onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
                        initSize = initS,
                        keepEvery = NA,
                        fixation = c("u, i, v"),
