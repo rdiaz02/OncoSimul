@@ -1893,8 +1893,8 @@ list_g_matches_fixed <- function(x, y) {
 
     if(is.list(y)) y <- unlist(y)
     
-    y.nice <- lapply(y, OncoSimulR:::nice.vector.eo, sep = ",")
-    x.nice <- lapply(x, OncoSimulR:::nice.vector.eo, sep = ",")
+    y.nice <- lapply(y, nice.vector.eo, sep = ",")
+    x.nice <- lapply(x, nice.vector.eo, sep = ",")
 
     fu <- function(u, y.nice)
         any(unlist(lapply(y.nice, function(z) all(z %in% u))))
