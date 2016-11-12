@@ -192,11 +192,12 @@ plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
 ##                 tfm = tfm))
 ## }
 
-count_accessible_g <- function(gfm, accessible_th) {
-    gaj <- genot_to_adj_mat(gfm)
-    gaj <- filter_inaccessible(gaj, accessible_th)
-    return(ncol(gaj) - 1)
-}
+## No longer being used. Used to be in rfitness
+## count_accessible_g <- function(gfm, accessible_th) {
+##     gaj <- genot_to_adj_mat(gfm)
+##     gaj <- filter_inaccessible(gaj, accessible_th)
+##     return(ncol(gaj) - 1)
+## }
 
 
 ## There is now C++ code to get just the locations/positions of the
