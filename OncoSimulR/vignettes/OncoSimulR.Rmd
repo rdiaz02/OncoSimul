@@ -3390,6 +3390,26 @@ evalAllGenotypes(od, order = FALSE, addwt = TRUE)
 ``` 
 
 
+We could alternatively have specified fitness either directly
+specifying the fitness of each genotype or specifying epistatic
+effects. Let us use the second approach:
+
+```{r}
+
+u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
+od2 <- allFitnessEffects(
+    epistasis = c("u" = u,  "u:i" = ui,
+                  "u:v" = uv, "i" = i,
+                  "v:-i" = -Inf, "v:i" = vi))
+evalAllGenotypes(od, addwt = TRUE)
+
+```
+
+We will return to this model when we explain the usage of `fixation`
+for stopping the simulations (see \@{fixation}).
+
+
+
 ## Weissman et al., 2009 {#weissmanex}
 In their figure 1a, @Weissman2009 present this model
 (actual numeric values are set arbitrarily)
@@ -3410,6 +3430,8 @@ segments(c(1, 2), c(1, 0.95),
 ## text(1, 1, "wt", pos = 4)
 ## text(1.2, 1.2, "A", pos = 2)
 ## text(1.4, 1.2, "B", pos = 2)
+
+
 ```
 
 where the ``1" and ``2" refer to the total number of mutations in two
@@ -3747,14 +3769,20 @@ multiple simulations in \@ref(sample).
     mechanism, where the probability of "detecting the tumor" increases
     with population size; this is explained below (\@ref(detectprob)) and
     is controlled by argument `detectionProb`.
+	+ A gene or gene combination among those listed in `fixation`
+    becomes fixed in the population (i.e., has a frequency is 1)
+    (see details in (\@ref(fixation)). 
   
   
     As we exit as soon as any of the exiting conditions is reached,
-    if you only care about one condition, set the other to `NA`.
+    if you only care about one condition, set the other to `NA` (see
+    also section \@ref(and_drvprob)).
+	
 
 * **`onlyCancer = FALSE`**. A simulation will run only once, and
   will exit as soon as any of the above conditions are met or as soon as
   the total population size becomes zero or we reach `finalTime`.
+
 
 
 
@@ -3862,7 +3890,7 @@ not reach a large size, it did not accumulate drivers, etc).
 
 
 
-### Stochastic detection mechanism: "detectionProb"  {#detectprob}
+## Stochastic detection mechanism: "detectionProb"  {#detectprob}
 
 This is the process that is controlled by the argument
 `detectionProb`. Here the probability of tumor detection increases
@@ -3985,6 +4013,104 @@ in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
 <!-- % basically works as a stopping point for the simulations and, in contrast -->
 <!-- % to the other mechanisms for exiting a simulation, has rarely any special -->
 <!-- % meaning.  -->
+
+
+## Stochastic detection mechanism and minimum number of drivers {#and_drvprob}
+
+We said above that we exit as soon as any of the conditions is
+reached (i.e., we use an OR operation over the exit
+conditions). There is a special exception to this porcedure: if you
+set `AND_DrvProbExit = TRUE`, both the number of drivers and the
+`detectionProb` mechanism condition must fulfilled. This means that
+the `detectionProb` mechanism not assessed unless the
+`detectionDrivers` condition is. Using `AND_DrvProbExit = TRUE`
+allows to run simulations and ensure that all of the returned
+simulations will have at least some cells with the number of drivers
+as specified by `detectionDrivers`. Note, though, that this does not
+guarantee that when you sample the population, all those drivers
+will be detected (as this depends on the actual proportion of cells
+with the drivers and the settings of `samplePop`).
+
+
+## Fixation of genes/gene combinations with Ochs and Desai example {#fixation}
+
+In some cases we might be interested in running simulations until a
+particular set of genes, or gene combinations, reaches
+fixation. This exit condition might be more relevant than some of
+the above in many non-cancer-related evolutionary genetics
+scenarios.
+
+Simulations will stop as soon as any of the genes or gene
+combinations in the vector (or list) `fixation` reaches a frequency
+of 1.  These gene combinations might have non-zero intersection
+(i.e., they might share genes), and those genes need not be
+drivers. If we want simulations to only stop when fixation of those
+genes/gene combinations is reached, we will set all other stopping
+conditions to `NA`. It is, of course, up to you to ensure that those
+stopping conditions are reasonable (that they can be reached);
+otherwise, simulations will eventually abort (e.g., when
+`max.wall.time` or `max.num.tries` are reached). Since we are asking
+for fixation, the `Exp` or `Bozic` models will often not be
+appropriate here; instead, models with competition and limited
+population size such as `McFL` are more appropriate. 
+
+
+We return here to the example from section \@(ochsdesai). 
+
+```{r}
+u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
+od2 <- allFitnessEffects(
+    epistasis = c("u" = u,  "u:i" = ui,
+                  "u:v" = uv, "i" = i,
+                  "v:-i" = -Inf, "v:i" = vi)))
+```
+
+Ochs and Desai explain that "Each simulated population was evolved
+until either the uphill genotype or valley-crossing genotype fixed."
+(see @Ochs2015, p.2, section "Simulations"). We will do the same
+here.  We specify that we want to end the simulation when either the
+"u" or the "v, i" genotypes have reached fixation, by passing those
+genotype combinations as the `fixation` argument (in this example
+using `fixation = c("u", "v")` would have been equivalent, since the
+"v" genotype has fitness of 0).
+
+
+We want to be explicit that fixation will be the one and only
+condition for ending the simulations, and thus we set arguments
+`detectionDrivers`, `finalTime`, `detectionSize` and `detectionProb`
+explicitly to `NA`. (We set the number of repetitions only to 50 for
+the sake of speed when creating the vignette).
+
+
+```{r simul-ochs}
+initS <- 20
+od100 <- oncoSimulPop(50, od2,
+                      fixation = c("u", "v, i"),
+                      model = "McFL",
+                      mu = 1e-4,
+                      detectionDrivers = NA,
+                      finalTime = NA,
+                      detectionSize = NA,
+                      detectionProb = NA,
+                      onlyCancer = TRUE,
+                      initSize = initS, 
+                      mc.cores = 2) 
+```
+
+What is the frequency of each genotype among the simulations? (or,
+what is the frequency of fixation of each genotype?)
+
+```{r ochs-freq-genots}
+sampledGenotypes(samplePop(od100))                      
+```
+
+Note the very large variability in reaching fixation (we show here
+the summary from only 20 simulations)
+```{r sum-simul-ochs}
+head(summary(od100)[, c(1:3, 8:9)], n = 20)
+```
+
+
 
 
 ## Bauer's example again {#bauer2} 
