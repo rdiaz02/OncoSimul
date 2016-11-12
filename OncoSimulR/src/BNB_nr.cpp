@@ -264,24 +264,29 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   // Since we convert each genotype to a sorted allGenesinGenotype, iterate
   // over that first. Add that pop size if the combination is present in genotype.
   bool fixated = false;
-  if( fixation_l.size() ) {
-    std::vector<double> popSize_fixation(fixation_l.size());
-    for(size_t i = 0; i < popParams.size(); ++i) {
-      vector<int> thisg = allGenesinGenotype(Genotypes[i]);
-      for(size_t fc = 0; fc != popSize_fixation.size(); ++fc) {
-	// Yes, fixation_l is sorted in R.
-	if(std::includes(thisg.begin(), thisg.end(),
-			 fixation_l[fc].begin(), fixation_l[fc].end()) ) {
-	  popSize_fixation[fc] += popParams[i].popSize;
+  if(totPopSize > 0) { // Avoid silly things
+    if( fixation_l.size() ) {
+      std::vector<double> popSize_fixation(fixation_l.size());
+      for(size_t i = 0; i < popParams.size(); ++i) {
+	std::vector<int> thisg = allGenesinGenotype(Genotypes[i]);
+	for(size_t fc = 0; fc != popSize_fixation.size(); ++fc) {
+	  // Yes, fixation_l is sorted in R.
+	  if(std::includes(thisg.begin(), thisg.end(),
+			   fixation_l[fc].begin(), fixation_l[fc].end()) ) {
+	    popSize_fixation[fc] += popParams[i].popSize;
+	  }
 	}
       }
-    }
-    // Any fixated?
-    if(*std::max_element(popSize_fixation.begin(), popSize_fixation.end()) == totPopSize) {
-      fixated = true;
+      // Any fixated? But avoid trivial of totPopSize of 0!
+      // Now check of > 0 is redundant as we check totPopSize > 0
+      double max_popSize_fixation =
+	*std::max_element(popSize_fixation.begin(), popSize_fixation.end());
+      if( (max_popSize_fixation > 0 ) &&
+	  (max_popSize_fixation == totPopSize)) {
+	fixated = true;
+      }
     }
   }
-  
     
   if (keepEvery < 0) {
     storeThis = false;

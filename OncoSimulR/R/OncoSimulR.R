@@ -64,6 +64,7 @@ oncoSimulSample <- function(Nindiv,
                             thresholdWhole = 0.5,
                             initMutant = NULL,
                             AND_DrvProbExit = FALSE,
+                            fixation = NULL,
                             verbosity  = 1,
                             showProgress = FALSE,
                             seed = "auto"){
@@ -192,7 +193,8 @@ oncoSimulSample <- function(Nindiv,
                                keepPhylog = keepPhylog,
                                mutationPropGrowth = mutationPropGrowth,
                                detectionProb = detectionProb,
-                               AND_DrvProbExit = AND_DrvProbExit)        
+                               AND_DrvProbExit = AND_DrvProbExit,
+                               fixation = fixation)        
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
         }
@@ -341,6 +343,7 @@ oncoSimulPop <- function(Nindiv,
                          errorHitMaxTries = TRUE,
                          initMutant = NULL,
                          AND_DrvProbExit = FALSE,
+                         fixation = NULL,
                          verbosity  = 0,
                          mc.cores = detectCores(),
                          seed = "auto") {
@@ -383,7 +386,8 @@ oncoSimulPop <- function(Nindiv,
                         initMutant = initMutant,
                         mutationPropGrowth = mutationPropGrowth,
                         detectionProb = detectionProb,
-                        AND_DrvProbExit = AND_DrvProbExit),
+                        AND_DrvProbExit = AND_DrvProbExit,
+                        fixation = fixation),
                     mc.cores = mc.cores
                     )
     class(pop) <- "oncosimulpop"
@@ -535,11 +539,13 @@ oncoSimulIndiv <- function(fp,
                  " with the old poset format.")
         }
         if(!is.null(muEF))
-            stop("Mutator effects cannot be especified with the old poset format")
+            stop("Mutator effects cannot be specified with the old poset format.")
         if( length(initMutant) > 0)  
             warning("With the old poset format you can no longer use initMutant.",
                     " The initMutant you passed will be ignored.")
-            ## stop("With the old poset, initMutant can only take a single value.")
+        ## stop("With the old poset, initMutant can only take a single value.")
+        if(!is_null_na(fixation))
+            stop("'fixation' cannot be specified with the old poset format.")
         ## Seeding C++ is now much better in new version
         if(is.null(seed) || (seed == "auto")) {## passing a null creates a random seed
             ## name is a legacy. This is really the seed for the C++ generator.
@@ -614,10 +620,16 @@ oncoSimulIndiv <- function(fp,
                 cat("\n A (high quality) random seed will be generated in C++\n")
         }
         if(!is.null(fixation)) {
-            if(!inherits(fixation, "list"))
-                stop("fixation must be a list.")
+            if( (!is.list(fixation)) && (!is.vector(fixation))  )
+                stop("'fixation' must be a list or a vector.")
             if(!(all(unlist(lapply(fixation, is.vector)))))
-                stop("fixation must be a list of vectors.")
+                stop("Each element of 'fixation' must be a single element character vector.")
+
+            if(!(all(unlist(lapply(fixation, class)) == "character")))
+                stop("Each element of 'fixation' must be a single element character vector.")
+            
+            if(!(unique(unlist(lapply(fixation, length))) == 1))
+                stop("Each element of 'fixation' must be a single element character vector.")
             if(AND_DrvProbExit)
                 stop("It makes no sense to pass AND_DrvProbExit and a fixation list.")
         }
@@ -653,7 +665,8 @@ oncoSimulIndiv <- function(fp,
                                         keepPhylog = keepPhylog,
                                         MMUEF = muEF,
                                         detectionProb = detectionProb,
-                                        AND_DrvProbExit = AND_DrvProbExit),
+                                        AND_DrvProbExit = AND_DrvProbExit,
+                                        fixation = fixation),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     }
@@ -1888,6 +1901,23 @@ plotShannon <- function(z) {
     box()
     axis(2)
 }
+
+
+
+is_null_na <- function(x) {
+    ## For arguments, if user passes "undefined" or "not set"
+    ## See also http://stackoverflow.com/a/19655909
+    if(is.function(x)) return(FALSE)
+    if( is.null(x) ||
+        ( (length(x) == 1) && (is.na(x)) ) ||
+        ( (length(x) == 1) && (x == "") ) ## careful here
+       )  {
+        return(TRUE)
+    } else {
+        return(FALSE)
+    }
+}
+
 
 ## simpsonI <- function(x) {
 ##     sx <- sum(x)

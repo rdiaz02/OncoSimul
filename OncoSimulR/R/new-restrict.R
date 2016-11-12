@@ -1438,9 +1438,8 @@ nr_oncoSimul.internal <- function(rFE,
                                   keepPhylog,
                                   detectionProb,
                                   AND_DrvProbExit,
-                                  fixation = NULL, ## avoid partial matching
                                   MMUEF = NULL, ## avoid partial matching, and set default
-                                 
+                                  fixation = NULL ## avoid partial matching
                                   ) {
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
@@ -1583,19 +1582,24 @@ nr_oncoSimul.internal <- function(rFE,
 
     ## call <- match.call()
     
-    ## Processed the fixed list, if any
-    if(!is.null(fixation)) {
+    ## Process the fixed list, if any
+    if(!is_null_na(fixation)) {
         ng <- namedGenes
         rownames(ng) <- namedGenes[, "Gene"]
-        ulf <- unlist(fixation)
+        ## Usual genotype specification and might allow ordered vectors
+        ## in the future
+        fixation_b <- lapply(fixation, nice.vector.eo, sep = ",")
+        ulf <- unlist(fixation_b)
+        if(any(ulf == ">"))
+            stop("Order effects not allowed (yet?) in fixation.")
         ulfg <- ng[ulf, 1]
         if(any(is.na(ulfg)))
             stop(paste("The 'fixation' list contains genes that are not present",
                        " in the fitness effects."))
         ## Sorting here is crucial!!
-        fixation_comb_int <- lapply(fixation, function(x) sort(ng[x, 2]))
+        fixation_list <- lapply(fixation_b, function(x) sort(ng[x, 2]))
     } else {
-        fixation_comb_int <- list()
+        fixation_list <- list()
     }
 
     
@@ -1636,7 +1640,7 @@ nr_oncoSimul.internal <- function(rFE,
                      cPDetect_i= dpr["cPDetect"],
                      checkSizePEvery = dpr["checkSizePEvery"],
                      AND_DrvProbExit = AND_DrvProbExit,
-                     fixation_i = fixation_comb_int),
+                     fixation_list = fixation_list),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE)))
     ))
