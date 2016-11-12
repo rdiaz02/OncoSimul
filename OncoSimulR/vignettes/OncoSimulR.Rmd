@@ -4032,6 +4032,7 @@ will be detected (as this depends on the actual proportion of cells
 with the drivers and the settings of `samplePop`).
 
 
+
 ## Fixation of genes/gene combinations with Ochs and Desai example {#fixation}
 
 In some cases we might be interested in running simulations until a
@@ -4047,12 +4048,13 @@ of 1.  These gene combinations might have non-zero intersection
 drivers. If we want simulations to only stop when fixation of those
 genes/gene combinations is reached, we will set all other stopping
 conditions to `NA`. It is, of course, up to you to ensure that those
-stopping conditions are reasonable (that they can be reached);
-otherwise, simulations will eventually abort (e.g., when
-`max.wall.time` or `max.num.tries` are reached). Since we are asking
-for fixation, the `Exp` or `Bozic` models will often not be
-appropriate here; instead, models with competition and limited
-population size such as `McFL` are more appropriate. 
+stopping conditions are reasonable (that they can be reached) and to
+use, or not, `finalTime`; otherwise, simulations will eventually
+abort (e.g., when `max.wall.time` or `max.num.tries` are
+reached). Since we are asking for fixation, the `Exp` or `Bozic`
+models will often not be appropriate here; instead, models with
+competition and limited population size such as `McFL` are more
+appropriate.
 
 
 We return here to the example from section \@(ochsdesai). 
@@ -4062,7 +4064,7 @@ u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
 od2 <- allFitnessEffects(
     epistasis = c("u" = u,  "u:i" = ui,
                   "u:v" = uv, "i" = i,
-                  "v:-i" = -Inf, "v:i" = vi)))
+                  "v:-i" = -Inf, "v:i" = vi))
 ```
 
 Ochs and Desai explain that "Each simulated population was evolved
