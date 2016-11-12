@@ -114,7 +114,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   specifiy anything if you do not want to, and you can pass an empty
   vector (as \code{character(0)}). The default has changed with respect
   to v.2.1.3 and previous: it used to be to assume that all
-  genes that were not in the \code{noIntGenes} were drivers. The fault
+  genes that were not in the \code{noIntGenes} were drivers. The default
   now is to assume nothing: if you want \code{drvNames} you have
   to specify them.
 
