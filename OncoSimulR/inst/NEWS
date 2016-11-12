@@ -1,4 +1,4 @@
-Changes in version 2.5.1 (2017-zz-zz):
+Changes in version 2.5.1 (2016-11-12):
 	- AND of detectedSizeP and lastMaxDr.
 	- fixation as stopping mechanism.
 	- sampledGenotypes in user code.
