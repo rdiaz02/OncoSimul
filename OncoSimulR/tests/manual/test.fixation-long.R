@@ -1,6 +1,7 @@
-## I set cores to the number of cores.
 ## This is not to be run by default in BioC servers, only
 ## on our, or user's, machines
+## But using all cores might be bad, and also precludes my logic
+## of launching many at the same time.
 cat("\n Starting long fixation  at", date(), "\n") 
 test_that("Check output is correct", {
     initS <- 2000
@@ -19,7 +20,7 @@ test_that("Check output is correct", {
                         initSize = initS, 
                         keepEvery = NA,
                         fixation = c("u", "v"),
-                        mc.cores = parallel::detectCores()
+                        mc.cores = 2
                         )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -33,7 +34,7 @@ test_that("Check output is correct", {
                         initSize = initS, 
                         keepEvery = NA,
                         fixation = c("u", "i"),
-                        mc.cores = parallel::detectCores()
+                        mc.cores = 2
                         )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -58,7 +59,7 @@ test_that("Check output is correct", {
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u"),
-                        mc.cores = parallel::detectCores()
+                        mc.cores = 2
                         )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -84,7 +85,7 @@ test_that("Check output is correct", {
                        keepEvery = NA,
                        max.num.tries = 5000,
                        fixation = c("i"),
-                       mc.cores = parallel::detectCores()
+                       mc.cores = 2
                         )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -100,7 +101,7 @@ test_that("Check output is correct", {
                        keepEvery = NA,
                        fixation = c("v"),
                        max.num.tries = 5000,
-                       mc.cores = parallel::detectCores()
+                       mc.cores = 2
                        )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -123,7 +124,7 @@ test_that("Check output is correct", {
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u, v"),
-                        mc.cores = parallel::detectCores()
+                        mc.cores = 2
                         )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -137,7 +138,7 @@ test_that("Check output is correct", {
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u,v"),
-                        mc.cores = parallel::detectCores()
+                        mc.cores = 2
                         )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -151,7 +152,7 @@ test_that("Check output is correct", {
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("i,v"),
-                        mc.cores = parallel::detectCores()
+                        mc.cores = 2
                         )
     sp <- samplePop(op)
     rsop <- rowSums(sp)
@@ -165,7 +166,7 @@ test_that("Check output is correct", {
                        initSize = initS,
                        keepEvery = NA,
                        fixation = c("u, i, v"),
-                       mc.cores = parallel::detectCores()
+                       mc.cores = 2
                        )
     sp <- samplePop(op)
     rsop <- rowSums(sp)

@@ -1,4 +1,4 @@
-cat("\n Starting fixation  at", date(), "\n") 
+cat("\n Starting fixation  at", date(), "\n") ## about 4 seconds
 test_that("Minimal run", {
     initS <- 2000
     u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
@@ -33,7 +33,7 @@ test_that("Minimal run", {
                  fixation = c("u", "v"),
                  mc.cores = 2
                  )
-    oncoSimulPop(2, od, muEF = odm, model = "Exp",
+    oncoSimulPop(2, od, muEF = odm, model = "McFL",
                  mu = 1e-4, 
                  onlyCancer = TRUE,
                  initSize = initS, 
@@ -41,7 +41,7 @@ test_that("Minimal run", {
                  fixation = list("u", "v"),
                  mc.cores = 2
                  )
-    oncoSimulSample(2, od, muEF = odm, model = "Exp",
+    oncoSimulSample(2, od, muEF = odm, model = "McFL",
                     mu = 1e-4, 
                     onlyCancer = TRUE,
                     initSize = 100, 
