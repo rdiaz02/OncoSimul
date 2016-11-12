@@ -16,7 +16,7 @@ test_that("Check output is correct", {
     initS <- 2000
     op <- oncoSimulPop(2000, od, muEF = odm, model = "McFL",
                         mu = 1e-4, 
-                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
+                        onlyCancer = TRUE, finalTime = 5000, detectionSize = NA, detectionProb = NA,
                         initSize = initS, 
                         keepEvery = NA,
                         fixation = c("u", "v"),
@@ -55,7 +55,7 @@ test_that("Check output is correct", {
     initS <- 2000
     op <- oncoSimulPop(2000, od, muEF = odm, model = "McFL",
                         mu = 1e-3, 
-                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
+                        onlyCancer = TRUE, finalTime = 5000, detectionSize = NA, detectionProb = NA,
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u"),
@@ -80,7 +80,7 @@ test_that("Check output is correct", {
     initS <- 50
     op <- oncoSimulPop(200, od, muEF = odm, model = "McFL",
                        mu = 1e-3, 
-                       onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
+                       onlyCancer = TRUE, finalTime = 5000, detectionSize = NA, detectionProb = NA,
                        initSize = initS,
                        keepEvery = NA,
                        max.num.tries = 5000,
@@ -96,7 +96,7 @@ test_that("Check output is correct", {
     ## very slow
     op <- oncoSimulPop(200, od, model = "McFL",
                        mu = 1e-3, 
-                       onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
+                       onlyCancer = TRUE, finalTime = 5000, detectionSize = NA, detectionProb = NA,
                        initSize = initS,
                        keepEvery = NA,
                        fixation = c("v"),
@@ -120,7 +120,7 @@ test_that("Check output is correct", {
     initS <- 1000
     op <- oncoSimulPop(2000, od, muEF = odm, model = "McFL",
                         mu = 1e-3, 
-                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
+                        onlyCancer = TRUE, finalTime = 5000, detectionSize = NA, detectionProb = NA,
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u, v"),
@@ -134,7 +134,7 @@ test_that("Check output is correct", {
     expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     op <- oncoSimulPop(2000, od, model = "McFL",
                         mu = 1e-3, 
-                        onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
+                        onlyCancer = TRUE, finalTime = 5000, detectionSize = NA, detectionProb = NA,
                         initSize = initS,
                         keepEvery = NA,
                         fixation = c("u,v"),
