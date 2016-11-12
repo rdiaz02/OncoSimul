@@ -3410,6 +3410,7 @@ for stopping the simulations (see \@{fixation}).
 
 
 
+
 ## Weissman et al., 2009 {#weissmanex}
 In their figure 1a, @Weissman2009 present this model
 (actual numeric values are set arbitrarily)
