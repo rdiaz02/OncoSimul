@@ -1,3 +1,4 @@
+cat("\n Starting fixation  at", date(), "\n") 
 test_that("Minimal run", {
     initS <- 2000
     u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
@@ -61,7 +62,6 @@ test_that("Minimal run", {
                    fixation = c("u", "v", "m")
                    )
 })
-
 
 
 test_that("Catch errors", {
@@ -156,26 +156,6 @@ test_that("Catch errors", {
 
 
 
-list_g_matches_fixed <- function(x, y) {
-    ## Internal function, for testing
-    ## x and y are vectors
-    
-    ## All genotypes in x satisfy that they are supersets of at least one
-    ## in y?
-
-    ## That is true if, for every element in x, at least one y in that x.
-
-    if(is.list(y)) y <- unlist(y)
-    
-    y.nice <- lapply(y, OncoSimulR:::nice.vector.eo, sep = ",")
-    x.nice <- lapply(x, OncoSimulR:::nice.vector.eo, sep = ",")
-
-    fu <- function(u, y.nice)
-        any(unlist(lapply(y.nice, function(z) all(z %in% u))))
-
-    return(all(unlist(lapply(x.nice, fu, y.nice))))
-
-}
 
 
 
@@ -261,7 +241,6 @@ test_that("Internal checking function works", {
 
 
 test_that("Check output is correct", {
-    
     initS <- 2000
     u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
     od <- allFitnessEffects(
@@ -272,9 +251,7 @@ test_that("Check output is correct", {
     odm <- allMutatorEffects(noIntGenes = c("i" = 50))
     evalAllGenotypesFitAndMut(od, odm, addwt = TRUE)
     initS <- 2000
-
-    
-    op1 <- oncoSimulPop(200, od, muEF = odm, model = "McFL",
+    op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
                         mu = 1e-4, 
                         onlyCancer = TRUE,
                         initSize = initS, 
@@ -282,40 +259,178 @@ test_that("Check output is correct", {
                         fixation = c("u", "v"),
                         mc.cores = 2
                         )
-    sp1 <- samplePop(op1)
-    rsop1 <- rowSums(sp1)
-    stopifnot(all(rsop1 >= 1))
-    sg1 <- sampledGenotypes(sp1)
-    
-    
-
-
-    oncoSimulPop(2, od, muEF = odm, model = "Exp",
-                 mu = 1e-4, 
-                 onlyCancer = TRUE,
-                 initSize = initS, 
-                 keepEvery = NA,
-                 fixation = list("u", "v"),
-                 mc.cores = 2
-                 )
-    oncoSimulSample(2, od, muEF = odm, model = "Exp",
-                    mu = 1e-4, 
-                    onlyCancer = TRUE,
-                    initSize = 100, 
-                    fixation = c("u", "v")
-                    )
-    ## A gene without fitness effects
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u", "v")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
+                        mu = 1e-4, 
+                        onlyCancer = TRUE,
+                        initSize = initS, 
+                        keepEvery = NA,
+                        fixation = c("u", "i"),
+                        mc.cores = 2
+                        )
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u", "i")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("ui")))
+    ## this takes much longer, of course, so only 100
+    ## and increase mu and its fitness
+    u <- 0.8; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
     od <- allFitnessEffects(
         epistasis = c("u" = u,  "u:i" = ui,
                       "u:v" = uv, "i" = i,
-                      "v:-i" = -Inf, "v:i" = vi),
-        noIntGenes = c("m" = 0))
-    odm <- allMutatorEffects(noIntGenes = c("i" = 50, "m" = 5))
-    oncoSimulIndiv(od, muEF = odm, model = "McFL",
-                   mu = 1e-4, 
-                   onlyCancer = TRUE,
-                   initSize = initS, 
-                   keepEvery = NA,
-                   fixation = c("u", "v", "m")
-                   )
+                      "v:-i" = -Inf, "v:i" = vi))
+    ## drvNames = c("u", "v"))
+    odm <- allMutatorEffects(noIntGenes = c("i" = 50))
+    evalAllGenotypesFitAndMut(od, odm, addwt = TRUE)
+    initS <- 2000
+    op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
+                        mu = 1e-3, 
+                        onlyCancer = TRUE,
+                        initSize = initS,
+                        keepEvery = NA,
+                        fixation = c("u"),
+                        mc.cores = 2
+                        )
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    ## ## very slow; in long tests; just a minimal thing
+    ## ## this takes much longer, of course, 
+    ## ## and increase mu and its fitness
+    u <- 0.8; i <- 0; vi <- 2.6; ui <- uv <- -Inf
+    od <- allFitnessEffects(
+        epistasis = c("u" = u,  "u:i" = ui,
+                      "u:v" = uv, "i" = i,
+                      "v:-i" = -Inf, "v:i" = vi))
+    ## drvNames = c("u", "v"))
+    odm <- allMutatorEffects(noIntGenes = c("i" = 50))
+    evalAllGenotypesFitAndMut(od, odm, addwt = TRUE)
+    initS <- 200
+    op <- oncoSimulPop(8, od, muEF = odm, model = "McFL",
+                       mu = 1e-3, 
+                       onlyCancer = TRUE,
+                       initSize = initS,
+                       keepEvery = NA,
+                       max.num.tries = 5000,
+                       fixation = c("i"),
+                       mc.cores = 2
+                        )
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("i")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("iv")))
+    ## ## very slow; in long tests
+    ## op <- oncoSimulPop(20, od, model = "McFL",
+    ##                    mu = 1e-3, 
+    ##                    onlyCancer = TRUE,
+    ##                    initSize = initS,
+    ##                    keepEvery = NA,
+    ##                    fixation = c("v"),
+    ##                    max.num.tries = 5000,
+    ##                    mc.cores = 2
+    ##                    )
+    ## sp <- samplePop(op)
+    ## rsop <- rowSums(sp)
+    ## stopifnot(all(rsop >= 1))
+    ## sg <- sampledGenotypes(sp)
+    ## expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v")))
+    ## expect_false(list_g_matches_fixed(sg[, "Genotype"], c("iv")))
+    initS <- 2000
+    u <- 0.2; i <- 0; vi <- 0.6; ui <- uv <- 1.2
+    od <- allFitnessEffects(
+        epistasis = c("u" = u,  "u:i" = ui,
+                      "u:v" = uv, "i" = i,
+                      "v:-i" = -Inf, "v:i" = vi))
+    odm <- allMutatorEffects(noIntGenes = c("i" = 50))
+    evalAllGenotypesFitAndMut(od, odm, addwt = TRUE)
+    initS <- 2000
+    op <- oncoSimulPop(100, od, muEF = odm, model = "McFL",
+                        mu = 1e-3, 
+                        onlyCancer = TRUE,
+                        initSize = initS,
+                        keepEvery = NA,
+                        fixation = c("u, v"),
+                        mc.cores = 2
+                        )
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u,v")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    op <- oncoSimulPop(100, od, model = "McFL",
+                        mu = 1e-3, 
+                        onlyCancer = TRUE,
+                        initSize = initS,
+                        keepEvery = NA,
+                        fixation = c("u,v"),
+                        mc.cores = 2
+                        )
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u,v")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    op <- oncoSimulPop(100, od, model = "McFL",
+                        mu = 1e-3, 
+                        onlyCancer = TRUE,
+                        initSize = initS,
+                        keepEvery = NA,
+                        fixation = c("i,v"),
+                        mc.cores = 2
+                        )
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("i,v")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    op <- oncoSimulPop(100, od, model = "McFL",
+                       mu = 1e-3, 
+                       onlyCancer = TRUE,
+                       initSize = initS,
+                       keepEvery = NA,
+                       fixation = c("u, i, v"),
+                       mc.cores = 2
+                       )
+    sp <- samplePop(op)
+    rsop <- rowSums(sp)
+    stopifnot(all(rsop >= 1))
+    sg <- sampledGenotypes(sp)
+    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
+    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
 })
+
+
+
+## ## This need not ever finish successfully, as there is
+## ## no competition in the Exp model and we might need to
+## ## run maaaaany times to filter for that.
+## op5 <- oncoSimulPop(100, od, model = "Exp",
+##                     mu = 1e-3, 
+##                     onlyCancer = TRUE,
+##                     initSize = 50,
+##                     keepEvery = NA,
+##                     fixation = c("v"),
+##                     mc.cores = 2
+##                     )
+## sp5 <- samplePop(op5)
+## rsop5 <- rowSums(sp5)
+## stopifnot(all(rsop5 >= 1))
+## sg5 <- sampledGenotypes(sp5)
+## expect_true(list_g_matches_fixed(sg5[, "Genotype"], c("v")))
+
+cat("\n Ending fixation  at", date(), "\n")

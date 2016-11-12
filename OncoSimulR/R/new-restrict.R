@@ -1860,6 +1860,34 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
 }
 
 
+
+list_g_matches_fixed <- function(x, y) {
+    ## Internal function, for testing the fixation output.
+    ## x and y are vectors
+
+    ## x is the set of output genotypes, y the set of fixed
+    ## genotypes/subset of genotypes.
+
+    ## Yes, this function has tests too in test.fixation.R
+    
+    ## All genotypes in x satisfy that they are supersets of at least one
+    ## in y? That is true if, for every element in x, at least one y in
+    ## that x.
+
+    if(is.list(y)) y <- unlist(y)
+    
+    y.nice <- lapply(y, OncoSimulR:::nice.vector.eo, sep = ",")
+    x.nice <- lapply(x, OncoSimulR:::nice.vector.eo, sep = ",")
+
+    fu <- function(u, y.nice)
+        any(unlist(lapply(y.nice, function(z) all(z %in% u))))
+
+    return(all(unlist(lapply(x.nice, fu, y.nice))))
+
+}
+
+
+
 ## emptyFitnessEffects <- function() {
 ##     list(long.rt = list(),
 ##          long.epistasis = list(),
