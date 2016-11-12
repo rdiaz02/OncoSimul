@@ -1775,17 +1775,6 @@ oncoSimul.internal <- function(poset, ## restrict.table,
 
 }
 
-eFinalMf <- function(initSize, s, j) {
-    ## Expected final sizes for McF, when K is set to the default.
-    # j is number of drivers
-    ## as it says, with no passengers
-    ## Set B(d) = D(N)
-    K <- initSize/(exp(1) - 1)
-    return(K * (exp( (1 + s)^j) - 1))
-}
-
-
-
 OncoSimulWide2Long <- function(x) {
     ## Put data in long format, for ggplot et al
     
@@ -1924,6 +1913,42 @@ is_null_na <- function(x) {
         return(FALSE)
     }
 }
+
+
+## Not used anymore, but left here in case they become useful.
+## Expected numbers at equilibrium under McFarland's
+## eFinalMf <- function(initSize, s, j) {
+##     ## Expected final sizes for McF, when K is set to the default.
+##     # j is number of drivers
+##     ## as it says, with no passengers
+##     ## Set B(d) = D(N)
+##     K <- initSize/(exp(1) - 1)
+##     return(K * (exp( (1 + s)^j) - 1))
+## }
+
+## mcflE <- function(p, s, initSize) {
+##     K <- initSize/(exp(1) - 1)
+##     ## Expected number at equilibrium
+##     return( K * (exp((1 + s)^p) - 1))
+## }
+
+## mcflEv <- function(p, s, initSize) {
+##     ## expects vectors for p and s
+##     K <- initSize/(exp(1) - 1)
+    
+##     ## Expected number at equilibrium
+##     return( K * (exp(prod((1 + s)^p)) - 1))
+## }
+
+
+
+
+
+
+
+
+
+
 
 
 ## simpsonI <- function(x) {
