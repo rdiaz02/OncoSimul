@@ -84,7 +84,7 @@ build_script:
   - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_r gtable
   - travis-tool.sh install_r scales
-  - travis-tool.sh install_r chron dplyr DBI ggplot2 geforce ggraph gtools data.table knitr testthat car pbkrtest smatr ggrepel RColorBrewer igraph graph gtools rmarkdown bookdown
+  - travis-tool.sh install_r chron dplyr DBI ggplot2 geforce ggraph data.table knitr testthat car pbkrtest smatr ggrepel RColorBrewer igraph graph gtools rmarkdown bookdown
   - travis-tool.sh install_bioc BiocGenerics BiocStyle Rgraphviz
 
 test_script:
