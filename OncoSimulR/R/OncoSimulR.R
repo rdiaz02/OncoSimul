@@ -438,10 +438,13 @@ oncoSimulIndiv <- function(fp,
     if(all(c(is_null_na(detectionProb),
              is_null_na(detectionSize),
              is_null_na(detectionDrivers),
-             is_null_na(finalTime))))
+             is_null_na(finalTime),
+             is_null_na(fixation)
+             )))
         stop("At least one stopping condition should be given.",
              " At least one of detectionProb, detectionSize, detectionDrivers,",
-             " finalTime. Otherwise, we'll run forever.")
+             " finalTime. Otherwise, we'll run until aborted by max.wall.time,",
+             " max.num.tries, and the like.")
 
     if(AND_DrvProbExit && (is_null_na(detectionProb) || is_null_na(detectionDrivers)))
         stop("AND_DrvProbExit is TRUE: both of detectionProb and detectionDrivers",
