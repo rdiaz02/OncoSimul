@@ -295,22 +295,7 @@ This option can not be used with v.1 objects.
 
 }
 
-\item{s}{
-  Selection coefficient for drivers. 
-    Only relevant if using a poset as this is included in the
-  fitnessEffects object.
-}
-\item{sh}{
-  Selection coefficient for drivers with restrictions not satisfied. A
-  value of 0 means there are no penalties for a driver appearing in a
-  clone when its restrictions are not satisfied.
 
-  To specify "sh=Inf" (in Diaz-Uriarte, 2015) use sh = -1.
-
-  Only relevant if using a poset as this is included in the
-  fitnessEffects object.
-
-}
 \item{K}{
   Initial population equilibrium size in the McFarland models.
 
@@ -547,6 +532,23 @@ of the individual done, and the number of attempts and time used.}
   Using this option with \code{AND_DrvProbExit} is not allowed (as it
   does not make much sense). This option is not allowed either with the
   old v.1 specification.}
+
+\item{s}{
+  Selection coefficient for drivers. 
+    Only relevant if using a poset as this is included in the
+  fitnessEffects object. This will eventually be deprecated.
+}
+\item{sh}{
+  Selection coefficient for drivers with restrictions not satisfied. A
+  value of 0 means there are no penalties for a driver appearing in a
+  clone when its restrictions are not satisfied.
+
+  To specify "sh=Inf" (in Diaz-Uriarte, 2015) use sh = -1.
+
+  Only relevant if using a poset as this is included in the
+  fitnessEffects object. This will eventually be deprecated.
+
+}
 
 \item{seed}{The seed for the C++ PRNG. You can pass a value. If you set
   it to NULL, then a seed will be generated in R and passed to C++. If
