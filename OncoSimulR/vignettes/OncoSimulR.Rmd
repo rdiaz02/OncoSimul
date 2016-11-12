@@ -3777,7 +3777,7 @@ multiple simulations in \@ref(sample).
   
     As we exit as soon as any of the exiting conditions is reached,
     if you only care about one condition, set the other to `NA` (see
-    also section \@ref(and_drvprob)).
+    also section \@ref(anddrvprob)).
 	
 
 * **`onlyCancer = FALSE`**. A simulation will run only once, and
@@ -4016,7 +4016,7 @@ in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
 <!-- % meaning.  -->
 
 
-## Stochastic detection mechanism and minimum number of drivers {#and_drvprob}
+## Stochastic detection mechanism and minimum number of drivers {#anddrvprob}
 
 We said above that we exit as soon as any of the conditions is
 reached (i.e., we use an OR operation over the exit
