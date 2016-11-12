@@ -9,7 +9,8 @@ export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "evalAllGenotypesFitAndMut",
        "rfitness",
        "plotFitnessLandscape",
-       "to_Magellan"
+       "to_Magellan",
+       "sampledGenotypes"
        )
 
 S3method(plot, oncosimul)
