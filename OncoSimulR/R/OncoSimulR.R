@@ -619,16 +619,14 @@ oncoSimulIndiv <- function(fp,
             if(verbosity >= 2)
                 cat("\n A (high quality) random seed will be generated in C++\n")
         }
-        if(!is.null(fixation)) {
+        if(!is_null_na(fixation)) {
             if( (!is.list(fixation)) && (!is.vector(fixation))  )
                 stop("'fixation' must be a list or a vector.")
             if(!(all(unlist(lapply(fixation, is.vector)))))
                 stop("Each element of 'fixation' must be a single element character vector.")
-
             if(!(all(unlist(lapply(fixation, class)) == "character")))
                 stop("Each element of 'fixation' must be a single element character vector.")
-            
-            if(!(unique(unlist(lapply(fixation, length))) == 1))
+            if(!(all( unlist(lapply(fixation, length)) == 1)))
                 stop("Each element of 'fixation' must be a single element character vector.")
             if(AND_DrvProbExit)
                 stop("It makes no sense to pass AND_DrvProbExit and a fixation list.")
