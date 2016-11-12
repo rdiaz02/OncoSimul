@@ -405,4 +405,26 @@ test_that("exercising sampling code, customSize", {
 })
 
 
+test_that("Exercise sampledGenotypes, option for selecting genes", {
+    initS <- 200
+    u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
+    od <- allFitnessEffects(
+        epistasis = c("u" = u,  "u:i" = ui,
+                      "u:v" = uv, "i" = i,
+                      "v:-i" = -Inf, "v:i" = vi))
+    ## drvNames = c("u", "v"))
+    odm <- allMutatorEffects(noIntGenes = c("i" = 50))
+    evalAllGenotypesFitAndMut(od, odm, addwt = TRUE)
+    op <- oncoSimulPop(20, od, muEF = odm, model = "McFL",
+                        mu = 1e-4, 
+                        onlyCancer = TRUE, finalTime = 15000, detectionSize = NA, detectionProb = NA,
+                        initSize = initS, 
+                        keepEvery = NA,
+                        fixation = c("u", "v"),
+                        mc.cores = 2
+                        )
+    sp <- samplePop(op)
+    expect_output(print(sampledGenotypes(sp, genes = c("u", "i"))))
+})
+
 cat(paste("\n Ending samplePop tests", date(), "\n"))

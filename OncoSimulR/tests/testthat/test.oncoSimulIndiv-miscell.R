@@ -893,6 +893,16 @@ test_that("AND_DrvProbExit warnings and errors work" , {
                                      AND_DrvProbExit = TRUE),
                  "AND_DrvProbExit is TRUE: both of detectionProb",
                  fixed = TRUE)
+
+
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    expect_error(u <- oncoSimulIndiv(p701, detectionDrivers = 1,
+                                     detectionProb = "default",
+                                     detectionSize = NA,
+                                     AND_DrvProbExit = TRUE),
+                 "The AND_DrvProbExit = TRUE setting is invalid with the old poset",
+                 fixed = TRUE)
 }
 )
 
@@ -960,8 +970,24 @@ test_that("AND_DrvProbExit exercising and test it works" , {
     ##                     AND_DrvProbExit = TRUE,
     ##                     minDetectDrvCloneSz = 1200,
     ##                     detectionSize = NA)
-
-
+    m3 <- oncoSimulIndiv(fe, detectionDrivers = 1, model = "McFL",
+                         detectionProb = "default",
+                         extraTime = 3,
+                         AND_DrvProbExit = TRUE,
+                         minDetectDrvCloneSz = 100,
+                         detectionSize = NA)
+    expect_true(m3$TotalPresentDrivers >= 1)
+    m3p <- m3$pops.by.time[, -c(1, 2), drop = FALSE]
+    expect_true(sum(m3p[nrow(m3p), , drop = FALSE]) >= 100)
+    m3 <- oncoSimulIndiv(fe, detectionDrivers = 1, model = "McFL",
+                         detectionProb = "default",
+                         extraTime = 10,
+                         AND_DrvProbExit = TRUE,
+                         minDetectDrvCloneSz = 100,
+                         detectionSize = NA)
+    expect_true(m3$TotalPresentDrivers >= 1)
+    m3p <- m3$pops.by.time[, -c(1, 2), drop = FALSE]
+    expect_true(sum(m3p[nrow(m3p), , drop = FALSE]) >= 100)
 }
 )
 
