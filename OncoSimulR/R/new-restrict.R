@@ -1859,16 +1859,16 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
     return(x)
 }
 
-sampledGenotypes <- function(x, genes = NULL) {
+sampledGenotypes <- function(y, genes = NULL) {
     ## From a popSample object, or a matrix for that matter,
     ## show the sampled genotypes and their frequencies
     if(!is.null(genes)) {
-        cols <- which(colnames(x) %in% genes )
-        x <- x[, cols]
+        cols <- which(colnames(y) %in% genes )
+        y <- y[, cols]
     }
-    nn <- colnames(x)
+    nn <- colnames(y)
     df <- data.frame(table(
-        apply(x, 1, function(z) paste(nn[as.logical(z)], collapse = ", ") )
+        apply(y, 1, function(z) paste(nn[as.logical(z)], collapse = ", ") )
     ))
     gn <- as.character(df[, 1])
     gn[gn == ""] <- "WT"

@@ -1,6 +1,6 @@
 \name{samplePop}
 \alias{samplePop}
-
+\alias{sampledGenotypes}
 \title{
   Obtain a sample from a population of simulations.
   
@@ -13,18 +13,26 @@
   schemes include whole tumor and single cell sampling, and sampling at
   the end of the tumor progression or during the progression of the
   disease.
+
+  
+  \code{sampledGenotypes} shows the genotype frequencies from that
+  sample. Order effects are ignored.
+  
 }
 
 \usage{
 samplePop(x, timeSample = "last", typeSample = "whole",
           thresholdWhole = 0.5, geneNames = NULL, popSizeSample = NULL)
+
+sampledGenotypes(y, genes = NULL)
+
 }
 
 \arguments{
-  \item{x}{
-    An object of class \code{oncosimulpop} or class \code{oncosimul2} (a
-  single simulation).
-  }
+  \item{x}{An object of class \code{oncosimulpop} or class \code{oncosimul2} (a
+  single simulation).}
+
+  \item{y}{The output from a call to \code{samplePop}.}
   
   \item{timeSample}{
     "last" means to sample each individual in the very last time period
@@ -65,6 +73,17 @@ samplePop(x, timeSample = "last", typeSample = "whole",
 
     This allows you to specify arbitrary sampling schemes with respect
     to total population size.  }
+
+  \item{genes}{If non-NULL, use only the genes in \code{genes} to create
+  the table of genotypes. This can be useful if you only care about the
+  genotypes with respect to a subset of genes (say, X), and want to
+  collapse with respect to another subset of genes (say, Y), for
+  instance if Y is a large set of passenger genes. For example, suppose
+  the complete set of genes is 'a', 'b', 'c', 'd', and you specify
+  \code{genes = c('a', 'b')}; then, genotypes 'a, b, c' and genotypes
+  'a, b, d' will not be shown as different rows in the table of
+  frequencies. Likewise, genotypes 'a, c' and genotypes 'a, d' will not
+  be shown as different rows.}
 
 }
 
@@ -136,13 +155,16 @@ p705 <- examplePosets[["p705"]]
 ##  leave it at its default value).
 
 p1 <- oncoSimulPop(4, p705, mc.cores = 2)
-samplePop(p1)
+(sp1 <- samplePop(p1))
+sampledGenotypes(sp1)
+
 
 ## Sample at fixed sizes. Notice the requested size
 ## for the last population is larger than the any population size
 ## so we get NAs
 
-samplePop(p1, popSizeSample = c(1e7, 1e6, 4e5, 1e13))
+(sp2 <- samplePop(p1, popSizeSample = c(1e7, 1e6, 4e5, 1e13)))
+sampledGenotypes(sp2)
 
 
 ## Now single cell sampling
@@ -150,8 +172,7 @@ samplePop(p1, popSizeSample = c(1e7, 1e6, 4e5, 1e13))
 r1 <- oncoSimulIndiv(p705)
 samplePop(r1, typeSample = "single")
 
-
-
+sampledGenotypes(samplePop(r1, typeSample = "single"))
 
 }
 
