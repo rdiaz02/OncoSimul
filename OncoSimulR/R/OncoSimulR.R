@@ -485,7 +485,8 @@ oncoSimulIndiv <- function(fp,
         if(model %in% c("Bozic", "Exp") )
             minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog"))
-            minDetectDrvCloneSz <- eFinalMf(initSize, s, detectionDrivers)
+            minDetectDrvCloneSz <- initSize
+        ## minDetectDrvCloneSz <- eFinalMf(initSize, s, detectionDrivers)
         else
             stop("Unknown model")
     }
