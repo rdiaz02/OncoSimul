@@ -5875,7 +5875,8 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- % @  -->
 
 
-# Further comments and examples about time, size, and simulation limits {#moretiming}
+<!-- Uncomment when ready. O.w. confusing. -->
+<!-- # Additional comments and examples about time, size, and simulation limits {#moretiming} -->
 
 # Using v.1 posets and simulations {#v1}
 
