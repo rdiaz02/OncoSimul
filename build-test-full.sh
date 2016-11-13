@@ -155,16 +155,21 @@ $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 
 
 if [ "$2" = "ghp" ]; then
-    cd ./OncoSimulR/vignettes
-    Rscript -e 'library(rmarkdown); library(BiocStyle); render("OncoSimulR.Rmd")'
-    mv OncoSimulR.html ../../../oncosimul-gh-pages/.
-    Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))'
-    mv OncoSimulR.pdf ../../../oncosimul-gh-pages/pdfs/.
-    rm -r -f OncoSimulR_files
-    rm OncoSimulR.tex
-    rm OncoSimulR.synctex.gz
-    cd ../../../oncosimul-gh-pages
-    gv=$(git rev-parse --short HEAD)
-    echo "   ****   Now, Commit and push, if appropriate, including gh-pages. We are at " $gv
+    ./ghp.sh
+    # cd ./OncoSimulR/vignettes
+    # Rscript -e 'library(rmarkdown); library(BiocStyle); render("OncoSimulR.Rmd")'
+    # mv OncoSimulR.html ../../../oncosimul-gh-pages/.
+    # Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))'
+    # mv OncoSimulR.pdf ../../../oncosimul-gh-pages/pdfs/.
+    # rm -r -f OncoSimulR_files
+    # rm OncoSimulR.tex
+    # rm OncoSimulR.synctex.gz
+    # cd ../../../oncosimul-gh-pages
+    # gv=$(git rev-parse --short HEAD)
+    # echo "   ****   Now, Commit and push, if appropriate, including gh-pages. We are at " $gv
 fi
     
+
+
+
+
