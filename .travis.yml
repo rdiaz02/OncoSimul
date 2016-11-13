@@ -26,7 +26,7 @@ before_install:
 install:
   - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR")'
 
-# withr failing because of a broken dependency on "later"
+# withr failing because of a broken dependency on "later". FIXME: return to using github' jimhester for withr and covr later.
 # install:
 #   - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown","bookdown"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR");devtools::install_github("jimhester/withr");devtools::install_github("jimhester/covr")'
 
