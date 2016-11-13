@@ -82,10 +82,12 @@ before_build:
 ## Make explicit. But I shouldn't need any line after install_bioc_deps
 build_script:
   - travis-tool.sh install_bioc_deps
-  - travis-tool.sh install_r gtable
-  - travis-tool.sh install_r scales
-  - travis-tool.sh install_r chron dplyr DBI ggplot2 geforce ggraph data.table knitr testthat car pbkrtest smatr ggrepel RColorBrewer igraph graph gtools rmarkdown bookdown
-  - travis-tool.sh install_bioc BiocGenerics BiocStyle Rgraphviz
+
+## I might not need these anymore? (which I never should have needed anyway)
+## - travis-tool.sh install_r gtable
+## - travis-tool.sh install_r scales
+## - travis-tool.sh install_r chron dplyr DBI ggplot2 geforce ggraph data.table knitr testthat car pbkrtest smatr ggrepel RColorBrewer igraph graph gtools rmarkdown bookdown
+## - travis-tool.sh install_bioc BiocGenerics BiocStyle Rgraphviz
 
 test_script:
   - travis-tool.sh run_tests
