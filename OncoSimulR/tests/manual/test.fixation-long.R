@@ -31,8 +31,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u", "v")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("u", "v")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     cat("\n\n ************** fixation 2:  ***********\n")
     op <- oncoSimulPop(2000, od, muEF = odm, model = "McFL",
                         mu = 1e-4, 
@@ -46,8 +46,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u", "i")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("ui")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("u", "i")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("ui")))
     ## this takes much longer, of course, so only 100
     ## and increase mu and its fitness
     u <- 0.8; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
@@ -72,8 +72,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("u")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     ## this takes much longer, of course, 
     ## and increase mu and its fitness
     u <- 0.8; i <- -0.02; vi <- 2.6; ui <- uv <- -Inf
@@ -99,8 +99,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("i")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("iv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("i")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("iv")))
     ## very slow
     cat("\n\n ************** fixation 5:  ***********\n")    
     op <- oncoSimulPop(200, od, model = "McFL",
@@ -116,8 +116,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("iv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("v")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("iv")))
     initS <- 100
     u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- 1.2
     od <- allFitnessEffects(
@@ -140,8 +140,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u,v")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("u,v")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     cat("\n\n ************** fixation 7:  ***********\n")    
     op <- oncoSimulPop(1000, od, model = "McFL",
                         mu = 1e-3, 
@@ -155,8 +155,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("u,v")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("u,v")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
     cat("\n\n ************** fixation 8:  ***********\n")    
     op <- oncoSimulPop(200, od, model = "McFL",
                         mu = 1e-3, 
@@ -170,8 +170,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("i,v")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("i,v")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
 
     
     cat("\n\n ************** fixation 9:  ***********\n")    
@@ -187,8 +187,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
 
 
     
@@ -210,8 +210,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v", "i", "u")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("v", "i", "u")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
 
 
     u <- 0.2; i <- -0.02; vi <- 1.6; 
@@ -233,8 +233,8 @@ test_that("Check output is correct", {
     rsop <- rowSums(sp)
     stopifnot(all(rsop >= 1))
     sg <- sampledGenotypes(sp)
-    expect_true(list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
-    expect_false(list_g_matches_fixed(sg[, "Genotype"], c("uv")))
+    expect_true(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("v, i, u")))
+    expect_false(OncoSimulR:::list_g_matches_fixed(sg[, "Genotype"], c("uv")))
 
 
 
