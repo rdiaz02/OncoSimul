@@ -1,3 +1,7 @@
+Changes in version 2.5.2 (2016-11-20):
+	- Diversity of sampled genotypes.
+	- Genotyping error can be added in samplePop. 
+
 Changes in version 2.5.1 (2016-11-12):
 	- AND of detectedSizeP and lastMaxDr.
 	- fixation as stopping mechanism.
