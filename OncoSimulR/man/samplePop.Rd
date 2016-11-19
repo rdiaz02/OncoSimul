@@ -1,6 +1,7 @@
 \name{samplePop}
 \alias{samplePop}
 \alias{sampledGenotypes}
+\alias{print.sampledGenotypes}
 \title{
   Obtain a sample from a population of simulations.
   
@@ -16,7 +17,8 @@
 
   
   \code{sampledGenotypes} shows the genotype frequencies from that
-  sample. Order effects are ignored.
+  sample; Shannon's diversity ---entropy--- of the genotypes is also
+  returned.  Order effects are ignored.
   
 }
 
@@ -90,7 +92,9 @@ sampledGenotypes(y, genes = NULL)
   \code{genes = c('a', 'b')}; then, genotypes 'a, b, c' and genotypes
   'a, b, d' will not be shown as different rows in the table of
   frequencies. Likewise, genotypes 'a, c' and genotypes 'a, d' will not
-  be shown as different rows.}
+  be shown as different rows.  Of course, if what are actually different
+  genotypes are not regarded as different, this will affect the
+  calculation of the diversity.}
 
 }
 
@@ -134,6 +138,14 @@ sampledGenotypes(y, genes = NULL)
   0.4} you will obtain a genotype with A and B mutated.
   %% To make it more clear that genes/laterations are in
   %% columns, columns are named starting by "G."  (for "gene").
+
+
+  For \code{sampledGenotypes} a data frame with two columns: genotypes
+  and frequencies. This data frame has an additional attribute,
+  "ShannonI", where Shannon's index of diversity (entropy) is
+  stored. This is an object of class  "sampledGenotypes"
+  with an S3 print method.
+
 }
 
 \references{

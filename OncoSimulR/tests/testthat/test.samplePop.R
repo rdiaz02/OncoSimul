@@ -429,6 +429,9 @@ test_that("Exercise sampledGenotypes, option for selecting genes", {
                         )
     sp <- samplePop(op)
     expect_output(print(sampledGenotypes(sp, genes = c("u", "i"))))
+    expect_output(print(summary(sampledGenotypes(sp, genes = c("u", "i")))))
+    expect_output(print(sampledGenotypes(sp)))
+    expect_output(print(summary(sampledGenotypes(sp))))
 })
 
 

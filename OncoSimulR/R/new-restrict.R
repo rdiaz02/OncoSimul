@@ -1873,10 +1873,25 @@ sampledGenotypes <- function(y, genes = NULL) {
     gn <- as.character(df[, 1])
     gn[gn == ""] <- "WT"
     df <- data.frame(Genotype = gn, Freq = df[, 2], stringsAsFactors = FALSE)
+    attributes(df)$ShannonI <- shannonI(df$Freq)
+    class(df) <- c(class(df), "sampledGenotypes")
     return(df)
 }
 
+print.sampledGenotypes <- function(x, ...) {
+    print(x, ...)
+    cat("\n Shannon's diversity (entropy) of sampled genotypes: ")
+    cat(attributes(x)$ShannonI, "\n")
+}
 
+## summary.sampledGenotype <- function(x) {
+##     rx <- summary(x)
+##     attributes(rx)$ShannonI <- x$ShannonI
+##     return(rx)
+## }
+
+## #
+                                        # 
 
 list_g_matches_fixed <- function(x, y) {
     ## Internal function, for testing the fixation output.

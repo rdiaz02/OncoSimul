@@ -23,6 +23,9 @@ S3method(plot, fitnessEffects)
 S3method(plot, genotype_fitness_matrix)
 S3method(plot, evalAllGenotypes)
 S3method(plot, evalAllGenotypesMut)
+S3method(print, sampledGenotypes)
+## S3method(summary, sampledGenotype)
+
 
 import(ggplot2)
 importFrom("ggrepel", geom_text_repel, geom_label_repel)
