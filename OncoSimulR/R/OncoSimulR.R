@@ -258,12 +258,26 @@ oncoSimulSample <- function(Nindiv,
     }
 }
 
+add_noise <- function(x, properr) {
+    if(properr <= 0) {
+        return(x)
+    }
+    else {
+        if(properr > 1)
+            stop("Proportion with error cannot be > 1")
+        nn <- prod(dim(x))
+        flipped <- sample(nn, round(nn * properr))
+        x[flipped] <- as.integer(!x[flipped])
+        return(x)
+    }
+}
 
 samplePop <- function(x, timeSample = "last",
                       typeSample = "whole",
                       thresholdWhole = 0.5,
                       geneNames = NULL,
-                      popSizeSample = NULL) {
+                      popSizeSample = NULL,
+                      propError = 0) {
     ## timeSample <- match.arg(timeSample)
     gN <- geneNames
     
@@ -301,6 +315,9 @@ samplePop <- function(x, timeSample = "last",
         nrow(z), " subjects and ",
             ncol(z), " genes.\n")
 
+    if(propError > 0) {
+        z <- add_noise(z, propError)
+    }
     if(!is.null(gN)) {
         colnames(z) <- gN
     } else {

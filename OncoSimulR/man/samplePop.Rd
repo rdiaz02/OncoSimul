@@ -22,7 +22,8 @@
 
 \usage{
 samplePop(x, timeSample = "last", typeSample = "whole",
-          thresholdWhole = 0.5, geneNames = NULL, popSizeSample = NULL)
+          thresholdWhole = 0.5, geneNames = NULL, popSizeSample = NULL,
+          propError = 0)
 
 sampledGenotypes(y, genes = NULL)
 
@@ -74,6 +75,12 @@ sampledGenotypes(y, genes = NULL)
     This allows you to specify arbitrary sampling schemes with respect
     to total population size.  }
 
+  \item{propError}{The proportion of observations with error (for
+    instance, genotyping error). If larger than 0, this proportion of
+    entries in the sampled matrix will be flipped (i.e., 0s turned
+    to 1s and 1s turned to 0s).}
+
+  
   \item{genes}{If non-NULL, use only the genes in \code{genes} to create
   the table of genotypes. This can be useful if you only care about the
   genotypes with respect to a subset of genes (say, X), and want to

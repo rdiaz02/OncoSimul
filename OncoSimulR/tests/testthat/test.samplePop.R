@@ -405,6 +405,10 @@ test_that("exercising sampling code, customSize", {
 })
 
 
+
+
+
+
 test_that("Exercise sampledGenotypes, option for selecting genes", {
     initS <- 200
     u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
@@ -427,4 +431,55 @@ test_that("Exercise sampledGenotypes, option for selecting genes", {
     expect_output(print(sampledGenotypes(sp, genes = c("u", "i"))))
 })
 
+
+
+
+
+test_that("exercising sampling code, propError", {
+    cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                                child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                      s = 0.1,
+                                sh = -0.9,
+                      typeDep = "MN")
+    cbn1 <- allFitnessEffects(cs)
+    o4 <- oncoSimulPop(4,
+                       cbn1, 
+                       detectionSize = 1e4,
+                       onlyCancer = TRUE,
+                       mc.cores = 2,
+                       max.num.tries = 5000,
+                       sampleEvery = 0.03, keepEvery = 1)
+    expect_error(samplePop(o4, propError = 1.4),
+                 "Proportion with error cannot be > 1", fixed = TRUE)
+    expect_message(samplePop(o4, propError = 0),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+    expect_message(samplePop(o4, propError = 0.1),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+    expect_message(samplePop(o4, propError = 0.2),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+    expect_message(samplePop(o4, propError = 0.3),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+    expect_message(samplePop(o4, propError = 0.9),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+    expect_message(samplePop(o4, propError = 0.01),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+    expect_message(samplePop(o4, propError = 0.05),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+    expect_message(samplePop(o4, propError = 1),
+                   "Subjects by Genes matrix of 4 subjects",
+                   fixed = TRUE)
+})
+
 cat(paste("\n Ending samplePop tests", date(), "\n"))
+
+
+
+
+
