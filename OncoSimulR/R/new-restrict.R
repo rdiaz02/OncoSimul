@@ -1884,14 +1884,6 @@ print.sampledGenotypes <- function(x, ...) {
     cat(attributes(x)$ShannonI, "\n")
 }
 
-## summary.sampledGenotype <- function(x) {
-##     rx <- summary(x)
-##     attributes(rx)$ShannonI <- x$ShannonI
-##     return(rx)
-## }
-
-## #
-                                        # 
 
 list_g_matches_fixed <- function(x, y) {
     ## Internal function, for testing the fixation output.
