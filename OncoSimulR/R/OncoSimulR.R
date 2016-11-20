@@ -1475,7 +1475,8 @@ phylogClone <- function(x, N = 1, t = "last", keepEvents = TRUE) {
     
     df <- x$other$PhylogDF
     if(nrow(df) == 0) {
-        warning("PhylogDF has 0 rows: no descendants of initMutant ever appeared.")
+        warning("PhylogDF has 0 rows: no descendants of initMutant ever appeared. ",
+                "This also happens if you did not set 'keepPhylog = TRUE'.")
         return(NA)
     }
     if(!keepEvents) { ## is this just a graphical thing? or not?
