@@ -58,3 +58,9 @@ notifications:
 ## src/::OncoSimulR/src
 
 ##  so that codecov info is shown.
+
+
+
+## Remember that OS X could be used instead of Linux.
+## But it is instead of, not in addition to. See:
+## "Linux or OS X builds" in https://github.com/craigcitro/r-travis
