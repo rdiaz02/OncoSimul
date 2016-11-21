@@ -1874,12 +1874,12 @@ sampledGenotypes <- function(y, genes = NULL) {
     gn[gn == ""] <- "WT"
     df <- data.frame(Genotype = gn, Freq = df[, 2], stringsAsFactors = FALSE)
     attributes(df)$ShannonI <- shannonI(df$Freq)
-    class(df) <- c(class(df), "sampledGenotypes")
+    class(df) <- c("sampledGenotypes", class(df))
     return(df)
 }
 
 print.sampledGenotypes <- function(x, ...) {
-    print(x, ...)
+    print.data.frame(x, ...)
     cat("\n Shannon's diversity (entropy) of sampled genotypes: ")
     cat(attributes(x)$ShannonI, "\n")
 }

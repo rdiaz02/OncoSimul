@@ -1,4 +1,5 @@
 \name{POM}
+\alias{POM}
 \alias{LOD}
 \alias{diversityPOM}
 \alias{diversityLOD}
@@ -14,7 +15,7 @@
 
 \description{
   
-  Compute Lines of Deascent (LOD) and Path of the Maximum (POM) for a
+  Compute Lines of Descent (LOD) and Path of the Maximum (POM) for a
   single simulation or a set of simulations (from \code{oncoSimulPop}).
 
   \code{diversityPOM} and \code{diversityLOD} return the Shannon's
@@ -24,136 +25,91 @@
 }
 
 \usage{
-samplePop(x, timeSample = "last", typeSample = "whole",
-          thresholdWhole = 0.5, geneNames = NULL, popSizeSample = NULL,
-          propError = 0)
 
-sampledGenotypes(y, genes = NULL)
-
+POM(x, ...)
+LOD(x, ...)
+diversityPOM(lpom)
+diversityLOD(llod)
 }
 
-\arguments{
-  \item{x}{An object of class \code{oncosimulpop} or class \code{oncosimul2} (a
-  single simulation).}
+\arguments{ \item{x}{An object of class \code{oncosimulpop} (version >=
+  2, so simulations with the old poset specification will not work) or
+  class \code{oncosimul2} (a single simulation). For \code{LOD}
+  simulations must have been run with \code{keepPhylog = TRUE}.}
 
-  \item{y}{The output from a call to \code{samplePop}.}
-  
-  \item{timeSample}{
-    "last" means to sample each individual in the very last time period
-    of the simulation. "unif" (or "uniform") means sampling each
-    individual at a time choosen uniformly from all the times recorded
-    in the simulation between the time when the first driver appeared
-    and the final time period. "unif" means that it is almost sure that
-    different individuals will be sampled at different times. "last"
-    does not guarantee that different individuals will be sampled at the
-    same time unit, only that all will be sampled in the last time unit
-    of their simulation.
+\item{lpom}{A list of POMs, as returned from \code{POM} on an object of
+  class \code{oncosimulpop}.}
 
-    You can, alternatively, specify the population size at which you
-    want the sample to be taken. See argument \code{popSizeSample} .
-  } 
-  
-  \item{typeSample}{
-    "singleCell" (or "single") for single cell sampling, where the
-    probability of sampling a cell (a clone) is directly proportional to
-    its population size.  "wholeTumor" (or "whole") for whole tumor
-    sampling (i.e., this is similar to a biopsy being the entire tumor).
-  }
-  
-  \item{thresholdWhole}{
-    In whole tumor sampling, whether a gene is detected as mutated depends
-    on thresholdWhole: a gene is considered mutated if it is altered in at
-    least thresholdWhole proportion of the cells in that individual.
-  }
+\item{llod}{A list of LODs, as returned from \code{LOD} on an object of
+  class \code{oncosimulpop}.}
 
-  \item{geneNames}{An optional vector of gene names so as to label the
-    column names of the output.}
-
-  \item{popSizeSample}{An optional vector of total population sizes at
-    which you want the samples to be taken. If you pass this vector,
-    \code{timeSample} has no effect. The samples will be taken at the
-    first time at which the population size gets as large as (or larger
-    than) the size specified in \code{popSizeSample}.
-
-    This allows you to specify arbitrary sampling schemes with respect
-    to total population size.  }
-
-  \item{propError}{The proportion of observations with error (for
-    instance, genotyping error). If larger than 0, this proportion of
-    entries in the sampled matrix will be flipped (i.e., 0s turned
-    to 1s and 1s turned to 0s).}
-
-  
-  \item{genes}{If non-NULL, use only the genes in \code{genes} to create
-  the table of genotypes. This can be useful if you only care about the
-  genotypes with respect to a subset of genes (say, X), and want to
-  collapse with respect to another subset of genes (say, Y), for
-  instance if Y is a large set of passenger genes. For example, suppose
-  the complete set of genes is 'a', 'b', 'c', 'd', and you specify
-  \code{genes = c('a', 'b')}; then, genotypes 'a, b, c' and genotypes
-  'a, b, d' will not be shown as different rows in the table of
-  frequencies. Likewise, genotypes 'a, c' and genotypes 'a, d' will not
-  be shown as different rows.  Of course, if what are actually different
-  genotypes are not regarded as different, this will affect the
-  calculation of the diversity.}
-
+\item{...}{Other arguments passed to methods (ignored now).}
 }
 
 \details{
-  samplePop simply repeats the sampling process in each individual of
-  the oncosimulpop object.
 
-  Please see \code{\link{oncoSimulSample}} for a much more efficient way
-  of sampling when you are sure what you want to sample.
+  Lines of Descent (LOD) and Path of the Maximum (POM) were defined in
+  Szendro et al. (2014) and I follow those definitions here as closely
+  as possible, as applied to a process in continuous time with sampling
+  at user-specified periods.
 
-  Note that if you have set \code{onlyCancer = FALSE} in the call to
-  \code{\link{oncoSimulSample}}, you can end up trying to sample from
-  simulations where the population size is 0. In this case, you will get
-  a vector/matrix of NAs and a warning.
+  For POM, the results can depend strongly on how often we sample and
+  keep samples (i.e., the \code{sampleEvery} and \code{keepEvery}
+  arguments to \code{oncoSimulIndiv} and \code{oncoSimulPop}), since the
+  POM is computed from the values stored in the \code{pops.by.time}
+  matrix. This also explains why it is generally meaningless to use POM on
+  \code{oncoSimulSample} runs: these only keep the very last sample.
 
-  Similarly, when using \code{timeSample = "last"} you might end up with
-  a vector of 0 (not NAs) because you are sampling from a population
-  that contains no clones with mutated genes. This event (sampling from
-  a population that contains no clones with mutated genes), by
-  construction, cannot happen when \code{timeSample = "unif"} as
-  "uniform" sampling is taken here to mean sampling at a time choosen
-  uniformly from all the times recorded in the simulation between the
-  time when the first driver appeared and the final time
-  period. However, you might still get a vector of 0, with uniform
-  sampling, if you sample from a population that contains only a few
-  cells with any mutated genes, and most cells with no mutated genes.}
+
+  For LOD my implementation is not exactly identical to the definition
+  given in p. 572 of Szendro et al. (2014). First, in case this might be
+  useful, for each simulation I keep all the paths that
+  "(...) arrive at the most populated genotype at the final time" (first
+  paragraph in p. 572 of Szendro et al.), whereas they only keep one
+  (see second column of p. 572). However, I do provide a single LOD for
+  each run, too. This is the first path to arrive at the genotype that
+  eventually becomes the most populated genotype at the final time (and,
+  in this sense, agrees with the LOD of Szendro et al.). However, in
+  contrast to what is apparently done in Szendro
+  ("A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colinization of the final state is used to construct the step."),
+  I do not check that this genotype (which is the one that will become
+  the most populated at final time) does not become extinct before the
+  final colonization. So there could be other paths (all in
+  \code{all_paths}) that are actually the one(s) that are colonizers of
+  the most populated genotype (with no extinction before the final
+  colonization).
+  
+  
+}
 
 \value{
 
-  A matrix. Each row is a "sample genotype", where 0 denotes no alteration
-  and 1 alteration. When using v.2, columns are named with the gene
-  names.
+  For \code{POM} either a character vector (if \code{x} is a single
+  simulation) or a list of character vectors. Each character vector is
+  the ordered set of genotypes that contain the largest subpopulation at
+  the times of sampling.
 
-  We quote "sample genotype" because when not using single cell, a row
-  (a sample genotype) need not be, of course, any really existing
-  genotype in a population as we are genotyping a whole tumor. Suppose
-  there are really two genotypes present in the population, genotype A,
-  which has gene A mutated and genotype B, which has gene B
-  mutated. Genotype A has a frequency of 60\% (so B's frequency is
-  40\%). If you use whole tumor sampling with \code{thresholdWhole =
-  0.4} you will obtain a genotype with A and B mutated.
-  %% To make it more clear that genes/laterations are in
-  %% columns, columns are named starting by "G."  (for "gene").
-
-
-  For \code{sampledGenotypes} a data frame with two columns: genotypes
-  and frequencies. This data frame has an additional attribute,
-  "ShannonI", where Shannon's index of diversity (entropy) is
-  stored. This is an object of class  "sampledGenotypes"
-  with an S3 print method.
+  For \code{LOD}, if \code{x} is a single simulation, a two-element
+  list. The first, \code{all_paths}, contains all paths to the
+  maximum. The second, \code{lod_single}, contain the single LOD which
+  is closest in meaning to the original definition of Szendro et
+  al. (See "Details"). If \code{x} is a list (population)  of
+  simulations, then a list where each element is a two-element list, as
+  just explained. All the lists contain objects of class "igraph.vs" (an
+  igraph vertex sequence: see \code{\link[igraph]{vertex_attr}}).  
+ 
+  For \code{diversityLOD} and \code{diversityPOM} a single element
+  vector with the Shannon's diversity (entropy) of the \code{lod_single}
+  (for \code{diversityLOD}) or of the POMs (for \code{diversityPOM}).
 
 }
 
 \references{
-  Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
-  accumulation of mutations during tumor progression: effects of
-  passengers, evolutionary models, and sampling
-  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
+
+  Szendro, I. G., Franke, J., Visser, J. A. G. M. de, & Krug,
+  J. (2013). Predictability of evolution depends nonmonotonically on
+  population size. \emph{Proceedings of the National Academy of Sciences},
+  110(2), 571–576. \url{https://doi.org/10.1073/pnas.1213613110}
 
 }
 
@@ -162,41 +118,44 @@ sampledGenotypes(y, genes = NULL)
 }
 
 \seealso{
-  \code{\link{oncoSimulPop}}, \code{\link{oncoSimulSample}}
+  \code{\link{oncoSimulPop}}, \code{\link{oncoSimulIndiv}}
   
 }
 
 \examples{
-data(examplePosets)
-p705 <- examplePosets[["p705"]]
 
-## (I set mc.cores = 2 to comply with --as-cran checks, but you
-##  should either use a reasonable number for your hardware or
-##  leave it at its default value).
+######## Using a poset for pancreatic cancer from Gerstung et al.
+###      (s and sh are made up for the example; only the structure
+###       and names come from Gerstung et al.)
 
-p1 <- oncoSimulPop(4, p705, mc.cores = 2)
-(sp1 <- samplePop(p1))
-sampledGenotypes(sp1)
-
-
-## Sample at fixed sizes. Notice the requested size
-## for the last population is larger than the any population size
-## so we get NAs
-
-(sp2 <- samplePop(p1, popSizeSample = c(1e7, 1e6, 4e5, 1e13)))
-sampledGenotypes(sp2)
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                                          "TP53", "TP53", "MLL3"),
+                                      child = c("KRAS","SMAD4", "CDNK2A", 
+                                          "TP53", "MLL3",
+                                          rep("PXDN", 3), rep("TGFBR2", 2)),
+                                      s = 0.05,
+                                      sh = -0.3,
+                                      typeDep = "MN"))
 
 
-## Now single cell sampling
+pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE)
+pancr8 <- oncoSimulPop(8, pancr, model = "Exp", keepPhylog = TRUE)
 
-r1 <- oncoSimulIndiv(p705)
-samplePop(r1, typeSample = "single")
+POM(pancr1)
+LOD(pancr1)
 
-sampledGenotypes(samplePop(r1, typeSample = "single"))
+POM(pancr8)
+LOD(pancr8)
+
+diversityPOM(POM(pancr8))
+diversityLOD(LOD(pancr8))
+
+
 
 }
 
 \keyword{manip}
+\keyword{univar}
 
 
 

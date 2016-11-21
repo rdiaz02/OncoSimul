@@ -90,17 +90,20 @@ POM.internal <- function(x) {
 
 
 diversityLOD <- function(llod) {
-    if(!inherits(x, "oncosimul_lod_list"))
-        stop("This is not a list of LODs")
+    nn <- names(llod[[1]])
+    if( is_null_na(nn) ||
+        !(nn == c("all_paths", "lod_single")))
+        stop("Object must be a list of LODs")
     pathstr <- unlist(lapply(llod, function(x) paste(names(x$lod_single),
                                                      collapse = "_")))
-    
     shannonI(table(pathstr))
 }
 
 diversityPOM <- function(lpom) {
-    if(!inherits(x, "oncosimul_lod_list"))
-        stop("This is not a list of POMs")
+    if(!inherits(lpom, "list"))
+        stop("Object must be a list of POMs")
+    ## if(!inherits(x, "oncosimul_lod_list"))
+    ##     stop("This is not a list of POMs")
     pomstr <- unlist(lapply(lpom, function(x) paste(x, collapse = "_")))
     shannonI(table(pomstr))
 }
@@ -113,38 +116,43 @@ diversity_LOD <- diversityLOD
 ## LOD2.oncosimul2 <- LOD.internal
 
 POM <- function(x, ...) {
-    UseMethod("POM", x, ...)
+    UseMethod("POM", x)
 }
 
 LOD <- function(x, ...) {
-    UseMethod("LOD", x, ...)
+    UseMethod("LOD", x)
 }
 
+POM.oncosimul2 <- function(x) return(POM.internal(x))
+LOD.oncosimul2 <- function(x) return(LOD.internal(x))
 
-POM.oncosimul2 <- function(x, ...) {
-    out <- POM.internal(x)
-    class(out) <- c(class(out), "oncosimul_pom")
-    return(out)
-}
+POM.oncosimulpop <- function(x) return(lapply(x, POM.internal))
+LOD.oncosimulpop <- function(x) return(lapply(x, LOD.internal))
 
-LOD.oncosimul2 <- function(x, ...) {
-    out <- LOD.internal(x)
-    class(out) <- c(class(out), "oncosimul_lod")
-    return(out)
-}
+## POM.oncosimul2 <- function(x) {
+##     out <- POM.internal(x)
+##     class(out) <- c(class(out), "oncosimul_pom")
+##     return(out)
+## }
+
+## LOD.oncosimul2 <- function(x) {
+##     out <- LOD.internal(x)
+##     class(out) <- c(class(out), "oncosimul_lod")
+##     return(out)
+## }
 
 
-POM.oncosimulpop <- function(x, ...) {
-    out <- lapply(x, POM.internal)
-    class(out) <- c(class(out), "oncosimul_pom_list")
-    return(out)
-}
+## POM.oncosimulpop <- function(x) {
+##     out <- lapply(x, POM.internal)
+##     class(out) <- c(class(out), "oncosimul_pom_list")
+##     return(out)
+## }
 
-LOD.oncosimulpop <- function(x, ...) {
-    out <- lapply(x, LOD.internal)
-    class(out) <- c(class(out), "oncosimul_lod_list")
-    return(out)
-}
+## LOD.oncosimulpop <- function(x) {
+##     out <- lapply(x, LOD.internal)
+##     class(out) <- c(class(out), "oncosimul_lod_list")
+##     return(out)
+## }
 
 
 ## summary.oncosimul_lod_list <- function(x) {

@@ -5878,6 +5878,40 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- Uncomment when ready. O.w. confusing. -->
 <!-- # Additional comments and examples about time, size, and simulation limits {#moretiming} -->
 
+
+# Measures of evolutionary predictability and diversity
+
+Several measures of evolutionary predictability have been proposed
+in the literature (see, e.g.,@szendro_predictability_2013  and
+references therein). We provide three: Lines of Descent (LOD) and
+Paths to the Maximum (POM), as in @szendro_predictability_2013, and
+a simple measure of diversity of the actual genotypes sampled. We
+will use again the \@ref(pancreas) example:
+
+
+```{r lod_pom_ex}
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                                          "TP53", "TP53", "MLL3"),
+                                      child = c("KRAS","SMAD4", "CDNK2A", 
+                                          "TP53", "MLL3",
+                                          rep("PXDN", 3), rep("TGFBR2", 2)),
+                                      s = 0.05,
+                                      sh = -0.3,
+                                      typeDep = "MN"))
+
+pancr8 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE)
+
+POM(pancr8)
+LOD(pancr8)
+
+## No need for them to be the same or different
+diversityPOM(POM(pancr8))
+diversityLOD(LOD(pancr8))
+
+sampledGenotypes(samplePop(pancr8))
+
+```
+
 # Using v.1 posets and simulations {#v1}
 
 It is strongly recommended that you use the new (v.2) procedures for
