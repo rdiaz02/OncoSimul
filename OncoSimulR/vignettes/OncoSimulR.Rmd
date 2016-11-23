@@ -5879,14 +5879,50 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- # Additional comments and examples about time, size, and simulation limits {#moretiming} -->
 
 
-# Measures of evolutionary predictability and diversity
+# Measures of evolutionary predictability and genotype diversity
 
 Several measures of evolutionary predictability have been proposed
-in the literature (see, e.g.,@szendro_predictability_2013  and
-references therein). We provide three: Lines of Descent (LOD) and
-Paths to the Maximum (POM), as in @szendro_predictability_2013, and
-a simple measure of diversity of the actual genotypes sampled. We
-will use again the \@ref(pancreas) example:
+in the literature (see, e.g.,@szendro_predictability_2013 and
+references therein). We provide two, Lines of Descent (LOD) and
+Paths to the Maximum (POM), following @szendro_predictability_2013,
+and a simple measure of diversity of the actual genotypes sampled.
+
+In @szendro_predictability_2013 "(...) paths deﬁned as the time
+ordered sets of genotypes that at some time contain the largest
+subpopulation" are called "path of the maximum" (POM) (see their
+p. 572). In our case, POM are obtained from the `pops.by.time`
+return object (i.e., from the genotypes at each of the sampling
+times) and, thus, the POMs will be affected by how often we sample
+and keep samples (arguments `sampleEvery` and `keepEvery`), since we
+are running a continuous time process.
+
+
+@szendro_predictability_2013 also define Lines of descent (LODs)
+which "(...)  represent the lineages that arrive at the most
+populated genotype at the ﬁnal time". In that same page (572) they
+provide the details on how the LODs are obtained. My implementation
+is not exactly identical to their definition. My `lod_single` is the
+first path to arrive at the genotype that eventually becomes the
+most populated genotype at the final time (and, in this sense,
+agrees with the LOD of Szendro et al.). However, in contrast to what
+is apparently done in Szendro et al. ("A given genotype may undergo
+several episodes of colonization and extinction that are stored by
+the algorithm, and the last episode before the colinization of the
+final state is used to construct the step."), I do not check that
+this genotype (which is the one that will become the most populated
+at final time) does not become extinct before the final
+colonization. So there could be other paths (all in `all_paths`
+list) that are actually the one(s) that are colonizers of the most
+populated genotype (with no extinction before the final
+colonization). I addition, and in case this might be useful, for
+each simulation I keep all the paths that "(...) arrive at the most
+populated genotype at the final time" (first paragraph in p. 572 of
+Szendro et al.), whereas they only keep one (see second column of
+p. 572). 
+
+
+To briefly show some output, we will use again the \@ref(pancreas)
+example:
 
 
 ```{r lod_pom_ex}
@@ -5899,18 +5935,28 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
                                       sh = -0.3,
                                       typeDep = "MN"))
 
-pancr8 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE)
+pancr16 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE)
 
-POM(pancr8)
-LOD(pancr8)
+## This shows the POM of each of the 16 simulations
+POM(pancr16)
 
-## No need for them to be the same or different
-diversityPOM(POM(pancr8))
-diversityLOD(LOD(pancr8))
+## Note here that for each simulation there is a "all_paths" and a "lod_single",
+## as explained above
+LOD(pancr16)
 
-sampledGenotypes(samplePop(pancr8))
+## The diversity of LOD (lod_single)  and POM might or might not be identical
+diversityPOM(POM(pancr16))
+diversityLOD(LOD(pancr16))
+
+## Show the genotypes and their diversity (which might, or might not,
+## differ from the diversity of LOD and POM)
+sampledGenotypes(samplePop(pancr16))
 
 ```
+
+
+
+
 
 # Using v.1 posets and simulations {#v1}
 
