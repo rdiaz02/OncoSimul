@@ -249,7 +249,9 @@ is a summary of some of the key features:
       
 * You can plot fitness landscapes.
       
-
+* You can obtain some basic measures of evolutionary predictability
+  from the simulations.
+  
 
 
 Further details about the motivation for wanting to simulate data this way
@@ -287,6 +289,55 @@ have copied from @Hothorn_2006; @Hothorn_2008).
 <!-- I need to define a custom block. See -->
 <!-- https://bookdown.org/yihui/bookdown/custom-blocks.html. Later -->
 
+
+
+
+
+https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
+
+Explanation of terms in 
+https://popmodels.cancercontrol.cancer.gov/gsr/search/
+
+<!-- ------------------------------------------------------------------------- -->
+<!-- Attribute Category                        Attribute -->
+<!-- -------------------                   ----------------------------------- -->
+<!-- Target                                         -->
+
+<!-- &nbsp; Type of Simulated Data           Haploid DNA Sequence -->
+<!-- &nbsp; variations                       Biallelic Marker -->
+
+<!-- Simulation Method                       Forward-time -->
+<!-- -------------------                   ----------------------------------- -->
+
+
+
+
+
+|Attribute Category | Attribute|
+|-------------------|----------|
+|Target             |  |
+|&nbsp; Type of Simulated Data|           Haploid DNA Sequence|
+|&nbsp; variations            |           Biallelic Marker, Genotype or Sequencing Error|
+|Simulation Method            |           Forward-time, continuous time|
+|Input | Program specific (R data frames and matrices specifying genotypes' fitness, gene effects, and starting genotype) |
+|Output||
+|&nbsp; Data Type| Genotype or Sequence, Individual Relationship, Demographic, Mutation, Diversity Measures, Fitness|
+|&nbsp; Sample Type|	Random or Independent, Longitudinal, Other|
+|Evolutionary Features	||
+|&nbsp; Demographic||	
+|&nbsp; &nbsp; Population Size Changes|	Exponential, Logistic |
+|&nbsp; Life Cycle|	Overlapping Generation|
+|&nbsp; Fecundity|	Individually Determined (fitness), Influenced by Environment (population size)|
+|&nbsp;Natural Selection||	
+|&nbsp; &nbsp; Determinant|	Single-locus, Multi-locus, Fitness of Offspring,  Environmental Factors (population size)|
+|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects|
+|&nbsp; Mutation Models|	Two-allele Mutation Model|
+|&nbsp; Events Allowed|	Varying Genetic Features (change of individual mutation rates)|
+|Interface | Command-Line, Script-Based|
+|Development||
+|&nbsp; Platforms| Linux and Unix, Windows, Mac OS X|
+|&nbsp; Language| R, C++|
+|&nbsp; License| GNU GPL v3|
 
 
 ## Steps in using OncoSimulR
@@ -5887,7 +5938,7 @@ references therein). We provide two, Lines of Descent (LOD) and
 Paths to the Maximum (POM), following @szendro_predictability_2013,
 and a simple measure of diversity of the actual genotypes sampled.
 
-In @szendro_predictability_2013 "(...) paths deﬁned as the time
+In @szendro_predictability_2013 "(...) paths defined as the time
 ordered sets of genotypes that at some time contain the largest
 subpopulation" are called "path of the maximum" (POM) (see their
 p. 572). In our case, POM are obtained from the `pops.by.time`
@@ -5899,7 +5950,7 @@ are running a continuous time process.
 
 @szendro_predictability_2013 also define Lines of descent (LODs)
 which "(...)  represent the lineages that arrive at the most
-populated genotype at the ﬁnal time". In that same page (572) they
+populated genotype at the final time". In that same page (572) they
 provide the details on how the LODs are obtained. My implementation
 is not exactly identical to their definition. My `lod_single` is the
 first path to arrive at the genotype that eventually becomes the
