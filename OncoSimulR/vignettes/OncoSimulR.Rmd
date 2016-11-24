@@ -254,6 +254,50 @@ is a summary of some of the key features:
   
 
 
+
+
+The table below, modified from the table at the
+[Genetics Simulation Resources page](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed)
+provides a summary of the key details of OncoSimulR. (An explanation
+of the meaning of terms is available from 
+https://popmodels.cancercontrol.cancer.gov/gsr/search/ or from the 
+[Genetics Simulation Resources table itslef](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed),
+by moving the mouse over each term).
+
+
+
+
+|Attribute Category | Attribute|
+|-------------------|----------|
+|**Target**             |  |
+|&nbsp; Type of Simulated Data|           Haploid DNA Sequence|
+|&nbsp; variations            |           Biallelic Marker, Genotype or Sequencing Error|
+|**Simulation Method**            |           Forward-time|
+|&nbsp; Type of Dynamical Model | Continuous time|
+|&nbsp; Entities Tracked | Individuals |
+|**Input** | Program specific (R data frames and matrices specifying genotypes' fitness, gene effects, and starting genotype) |
+|**Output**||
+|&nbsp; Data Type| Genotype or Sequence, Individual Relationship (complete parent-child relationships between clones), Demographic (populations sizes of all clones at sampling times), Diversity Measures (LOD, POM, genotypes), Fitness|
+|&nbsp; Sample Type|	Random or Independent, Longitudinal, Other (proportional to population size)|
+|**Evolutionary Features**	||
+|&nbsp; Demographic||	
+|&nbsp; &nbsp; Population Size Changes|	Exponential, Logistic |
+|&nbsp; Life Cycle|	Overlapping Generation|
+|&nbsp; Fecundity|	Individually Determined (fitness), Influenced by Environment (population size)|
+|&nbsp;Natural Selection||	
+|&nbsp; &nbsp; Determinant|	Single-locus, Multi-locus, Fitness of Offspring,  Environmental Factors (population size)|
+|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects|
+|&nbsp; Mutation Models|	Two-allele Mutation Model|
+|&nbsp; Events Allowed|	Varying Genetic Features (change of individual mutation rates)|
+<!-- |**Interface** | Command-Line, Script-Based| -->
+<!-- |Development|| -->
+<!-- |&nbsp; Platforms| Linux and Unix, Windows, Mac OS X| -->
+<!-- |&nbsp; Language| R, C++| -->
+<!-- |&nbsp; License| GNU GPL v3| -->
+
+
+
+
 Further details about the motivation for wanting to simulate data this way
 in the context of tumor progression can be found in
 @Diaz-Uriarte2015, where additional comments about model parameters
@@ -290,54 +334,6 @@ have copied from @Hothorn_2006; @Hothorn_2008).
 <!-- https://bookdown.org/yihui/bookdown/custom-blocks.html. Later -->
 
 
-
-
-
-https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
-
-Explanation of terms in 
-https://popmodels.cancercontrol.cancer.gov/gsr/search/
-
-<!-- ------------------------------------------------------------------------- -->
-<!-- Attribute Category                        Attribute -->
-<!-- -------------------                   ----------------------------------- -->
-<!-- Target                                         -->
-
-<!-- &nbsp; Type of Simulated Data           Haploid DNA Sequence -->
-<!-- &nbsp; variations                       Biallelic Marker -->
-
-<!-- Simulation Method                       Forward-time -->
-<!-- -------------------                   ----------------------------------- -->
-
-
-
-
-
-|Attribute Category | Attribute|
-|-------------------|----------|
-|Target             |  |
-|&nbsp; Type of Simulated Data|           Haploid DNA Sequence|
-|&nbsp; variations            |           Biallelic Marker, Genotype or Sequencing Error|
-|Simulation Method            |           Forward-time, continuous time|
-|Input | Program specific (R data frames and matrices specifying genotypes' fitness, gene effects, and starting genotype) |
-|Output||
-|&nbsp; Data Type| Genotype or Sequence, Individual Relationship, Demographic, Mutation, Diversity Measures, Fitness|
-|&nbsp; Sample Type|	Random or Independent, Longitudinal, Other|
-|Evolutionary Features	||
-|&nbsp; Demographic||	
-|&nbsp; &nbsp; Population Size Changes|	Exponential, Logistic |
-|&nbsp; Life Cycle|	Overlapping Generation|
-|&nbsp; Fecundity|	Individually Determined (fitness), Influenced by Environment (population size)|
-|&nbsp;Natural Selection||	
-|&nbsp; &nbsp; Determinant|	Single-locus, Multi-locus, Fitness of Offspring,  Environmental Factors (population size)|
-|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects|
-|&nbsp; Mutation Models|	Two-allele Mutation Model|
-|&nbsp; Events Allowed|	Varying Genetic Features (change of individual mutation rates)|
-|Interface | Command-Line, Script-Based|
-|Development||
-|&nbsp; Platforms| Linux and Unix, Windows, Mac OS X|
-|&nbsp; Language| R, C++|
-|&nbsp; License| GNU GPL v3|
 
 
 ## Steps in using OncoSimulR
