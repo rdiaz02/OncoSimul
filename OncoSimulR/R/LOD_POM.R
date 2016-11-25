@@ -38,7 +38,7 @@ LOD.internal <- function(x) {
                 " Returning NA.")
         return(list(all_paths = NA, lod_single = NA))
     }
-    pc <- OncoSimulR:::phylogClone(x, keepEvents = FALSE)
+    pc <- phylogClone(x, keepEvents = FALSE)
     
     if((length(pc) == 1) && (is.na(pc))) {
         return(list(all_paths = NA,
@@ -115,11 +115,11 @@ diversity_LOD <- diversityLOD
 ## POM.oncosimul2 <- POM.internal
 ## LOD2.oncosimul2 <- LOD.internal
 
-POM <- function(x, ...) {
+POM <- function(x) {
     UseMethod("POM", x)
 }
 
-LOD <- function(x, ...) {
+LOD <- function(x) {
     UseMethod("LOD", x)
 }
 

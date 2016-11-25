@@ -26,8 +26,8 @@
 
 \usage{
 
-POM(x, ...)
-LOD(x, ...)
+POM(x)
+LOD(x)
 diversityPOM(lpom)
 diversityLOD(llod)
 }
@@ -71,7 +71,7 @@ diversityLOD(llod)
   eventually becomes the most populated genotype at the final time (and,
   in this sense, agrees with the LOD of Szendro et al.). However, in
   contrast to what is apparently done in Szendro
-  ("A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colinization of the final state is used to construct the step."),
+  ("A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colonization of the final state is used to construct the step."),
   I do not check that this genotype (which is the one that will become
   the most populated at final time) does not become extinct before the
   final colonization. So there could be other paths (all in
@@ -109,7 +109,7 @@ diversityLOD(llod)
   Szendro, I. G., Franke, J., Visser, J. A. G. M. de, & Krug,
   J. (2013). Predictability of evolution depends nonmonotonically on
   population size. \emph{Proceedings of the National Academy of Sciences},
-  110(2), 571–576. \url{https://doi.org/10.1073/pnas.1213613110}
+  110(2), 571-576. \url{https://doi.org/10.1073/pnas.1213613110}
 
 }
 
