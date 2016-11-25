@@ -20,6 +20,22 @@ cat(paste("\n Starting poset-transformations tests", date(), "\n"))
 
 ## RNGkind("Mersenne-Twister")
 
+test_that("expected errors in simOGraph", {
+    expect_error(simOGraph(5, geneNames = c("A", "E")),
+                 "length(geneNames) == n is not TRUE",
+                 fixed = TRUE)
+    expect_error(simOGraph(5, out = "coco"),
+                 "'arg' should be one of",
+                 fixed = TRUE)
+
+})
+
+test_that("simOGraph works", {
+    expect_true(inherits(simOGraph(6, out = "rT"), "data.frame"))
+    expect_true(inherits(simOGraph(3), "matrix"))
+    expect_true(inherits(simOGraph(3, geneNames = c("A", "UU", "FF")), "matrix"))
+    })
+
 test_that("posetToGraph stop in incorrect entry type", {
     expect_error(OncoSimulR:::posetToGraph(1:5, letters[1:5]),
                  "If poset is not a matrix, it must be a vector of length 1")
@@ -781,5 +797,8 @@ tmp <- replicate(numSimul, checkAdjMatOGraph(rangeNodes = 2:50,
 
 ## stopifnot(length(resT) == numTests)
 ## stopifnot(all(resT))
+
+
+
 
 cat(paste("\n Ending poset-transformations tests", date(), "\n"))

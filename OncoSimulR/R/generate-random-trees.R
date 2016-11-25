@@ -15,10 +15,22 @@
 
 
 
-simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
+simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
+                      conjunction = TRUE, nparents = 3,
                       multilevelParent = TRUE,
                       removeDirectIndirect = TRUE,
-                      rootName = "Root") {
+                      rootName = "Root",
+                      geneNames = LETTERS[seq.int(n)],
+                      out = c("adjmat", "rT"),
+                      s = 0.1,
+                      sh = -0.1,
+                      typeDep = "AND") {
+    out <- match.arg(out)
+    if(!is_null_na(geneNames)) {
+        stopifnot(length(geneNames) == n)
+    } else {
+        geneNames <- 1:n
+    }
     ## Returns an adjacency matrix
     if(h > n)
         stop("h > n")
@@ -65,13 +77,22 @@ simOGraph <- function(n, h = 4, conjunction = TRUE, nparents = 3,
         adjMat[1, 2:(n+1) ] <- 1L
     }
     
-    colnames(adjMat) <- rownames(adjMat) <- c(rootName, 1:n)
-    
+    colnames(adjMat) <- rownames(adjMat) <- c(rootName, geneNames)
+   
 
     ## Prune to remove indirect connections
     if(multilevelParent & removeDirectIndirect)
         adjMat <- removeIndirectConnections(adjMat)
-    return(adjMat)
+    if(out == "adjmat")
+        return(adjMat)
+    else {
+        df <- igraph::as_data_frame(igraph::graph.adjacency(adjMat))
+        colnames(df) <- c("parent", "child")
+        df$s <- s
+        df$sh <- sh
+        df$typeDep <- typeDep
+        return(df)
+    }
 }
 
 ## simOG <- simOGraph

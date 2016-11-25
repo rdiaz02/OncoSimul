@@ -7,8 +7,11 @@
   Simulate DAGs that represent restrictions in the accumulation of mutations.
 }
 \usage{
-simOGraph(n, h = 4, conjunction = TRUE, nparents = 3,
-multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root")
+simOGraph(n, h = ifelse(n >= 4, 4, n), conjunction = TRUE, nparents = 3,
+multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root",
+geneNames = LETTERS[seq.int(n)], out = c("adjmat", "rT"),
+s = 0.1, sh = -0.1, typeDep = "AND")
+
 }
 
 \arguments{
@@ -36,9 +39,22 @@ multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root")
 }
 \item{rootName}{
   The name you want to give the "Root" node.
+}
+
+\item{out}{Whether the ouptut should be an adjacency matrix  or a
+  "restriction table", as used in   \code{\link{allFitnessEffects}}.}
+
+\item{s}{If using as output a restriction, the default value for s. See
+\code{\link{allFitnessEffects}}.}
+
+\item{sh}{If using as output a restriction, the default value for
+sh. See \code{\link{allFitnessEffects}}}
+
+\item{typeDep}{If using as output a restriction, the default value for
+"typeDep". See \code{\link{allFitnessEffects}}}
 
 }
-}
+
 \details{
   This is a simple, heuristic procedure for generating graphs of
   restrictions that seem compatible with published trees in the
@@ -58,7 +74,9 @@ multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root")
 
 }
 \value{
-  An adjacency matrix for a directed graph.
+  An adjacency matrix for a directed graph or a data frame to be used as
+  input, as "restriction table" in  \code{\link{allFitnessEffects}}.
+
 }
 \author{Ramon Diaz-Uriarte}
 
