@@ -9,7 +9,7 @@
 \usage{
 simOGraph(n, h = ifelse(n >= 4, 4, n), conjunction = TRUE, nparents = 3,
 multilevelParent = TRUE, removeDirectIndirect = TRUE, rootName = "Root",
-geneNames = LETTERS[seq.int(n)], out = c("adjmat", "rT"),
+geneNames = seq.int(n), out = c("adjmat", "rT"),
 s = 0.1, sh = -0.1, typeDep = "AND")
 
 }
@@ -40,6 +40,11 @@ s = 0.1, sh = -0.1, typeDep = "AND")
 \item{rootName}{
   The name you want to give the "Root" node.
 }
+
+\item{geneNames}{
+  The names you want to give the the non-root nodes.
+}
+
 
 \item{out}{Whether the ouptut should be an adjacency matrix  or a
   "restriction table", as used in   \code{\link{allFitnessEffects}}.}
@@ -84,6 +89,8 @@ sh. See \code{\link{allFitnessEffects}}}
 (a1 <- simOGraph(10))
 library(graph) ## for simple plotting
 plot(as(a1, "graphNEL"))
+
+simOGraph(3, geneNames = LETTERS[1:3])
 }
 
 \keyword{ graphs }
