@@ -257,10 +257,10 @@ is a summary of some of the key features:
 
 
 The table below, modified from the table at the
-[Genetics Simulation Resources page](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed)
+[Genetics Simulation Resources (GSR) page](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed)
 provides a summary of the key details of OncoSimulR. (An explanation
-of the meaning of terms is available from 
-https://popmodels.cancercontrol.cancer.gov/gsr/search/ or from the 
+of the meaning of terms specific to the GSR table is available from
+https://popmodels.cancercontrol.cancer.gov/gsr/search/ or from the
 [Genetics Simulation Resources table itslef](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed),
 by moving the mouse over each term).
 
@@ -274,21 +274,23 @@ by moving the mouse over each term).
 |&nbsp; variations            |           Biallelic Marker, Genotype or Sequencing Error|
 |**Simulation Method**            |           Forward-time|
 |&nbsp; Type of Dynamical Model | Continuous time|
-|&nbsp; Entities Tracked | Individuals |
+|&nbsp; Entities Tracked | Individuals (genetic clones)|
 |**Input** | Program specific (R data frames and matrices specifying genotypes' fitness, gene effects, and starting genotype) |
 |**Output**||
 |&nbsp; Data Type| Genotype or Sequence, Individual Relationship (complete parent-child relationships between clones), Demographic (populations sizes of all clones at sampling times), Diversity Measures (LOD, POM, genotypes), Fitness|
 |&nbsp; Sample Type|	Random or Independent, Longitudinal, Other (proportional to population size)|
 |**Evolutionary Features**	||
+|&nbsp; Mating Scheme| Asexual Reproduction |
 |&nbsp; Demographic||	
 |&nbsp; &nbsp; Population Size Changes|	Exponential, Logistic |
-|&nbsp; Life Cycle|	Overlapping Generation|
+<!-- |&nbsp; Life Cycle|	Overlapping Generation| -->
 |&nbsp; Fecundity|	Individually Determined (fitness), Influenced by Environment (population size)|
 |&nbsp;Natural Selection||	
 |&nbsp; &nbsp; Determinant|	Single-locus, Multi-locus, Fitness of Offspring,  Environmental Factors (population size)|
 |&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects|
 |&nbsp; Mutation Models|	Two-allele Mutation Model|
 |&nbsp; Events Allowed|	Varying Genetic Features (change of individual mutation rates)|
+|&nbsp; Spatial Structure| No Spatial Structure (perfectly mixed, no migration)|
 <!-- |**Interface** | Command-Line, Script-Based| -->
 <!-- |Development|| -->
 <!-- |&nbsp; Platforms| Linux and Unix, Windows, Mac OS X| -->
@@ -298,10 +300,11 @@ by moving the mouse over each term).
 
 
 
-Further details about the motivation for wanting to simulate data this way
-in the context of tumor progression can be found in
-@Diaz-Uriarte2015, where additional comments about model parameters
-and caveats are discussed. 
+Further details about the original motivation for wanting to
+simulate data this way in the context of tumor progression can be
+found in @Diaz-Uriarte2015, where additional comments about model
+parameters and caveats are discussed.
+
 
 Are there similar programs? The Java program by @Reiter2013a offers
 somewhat similar functionality to the previous version of
@@ -334,7 +337,7 @@ have copied from @Hothorn_2006; @Hothorn_2008).
 <!-- https://bookdown.org/yihui/bookdown/custom-blocks.html. Later -->
 
 
-
+## Some questions you can address with the help of OncoSimulR {#whatfor}
 
 ## Steps in using OncoSimulR
 
@@ -5124,114 +5127,6 @@ are examining a large number of different scenarios.
 <!-- % we pass `initSize = 1e-5`). -->
 <!-- %% FIXME: use cases of each. -->
 
-# Runing simulations: odds and ends 
-
-## Dealing with errors in "oncoSimulPop" {#errorosp}
-
-When running OncoSimulR under Windows *`mclapply`* does not use
-multiple cores, and errors from *`oncoSimulPop`* are reported
-directly. For example:
-
-```{r}
-## This code will only be evaluated under Windows
-if(.Platform$OS.type == "windows")
-    try(pancrError <- oncoSimulPop(10, pancr,
-                               initSize = 1e-5,
-                               detectionSize = 1e7,
-                               keepEvery = 10,
-                               mc.cores = 2))
-``` 
-
-
-Under POSIX operating systems (e.g., GNU/Linux or Mac OSX)
-*`oncoSimulPop`* can ran parallelized by calling
-*`mclapply`*. Now, suppose you did something like
-
-```{r}
-## Do not run under Windows
-if(.Platform$OS.type != "windows")
-    pancrError <- oncoSimulPop(10, pancr,
-                               initSize = 1e-5,
-                               detectionSize = 1e7,
-                               keepEvery = 10,
-                               mc.cores = 2)
-``` 
-
-The warning you are seeing tells you there was an error in the functions
-called by *`mclapply`*. If you check the help for
-*`mclpapply`* you'll see that it returns a try-error object, so we
-can inspect it. For instance, we could do:
-
-```{r, eval=FALSE}
-pancrError[[1]]
-``` 
-
-But the output of this call might be easier to read:
-
-```{r, eval=FALSE}
-pancrError[[1]][1]
-``` 
- 
-And from here you could see the error that was returned by
-*`oncoSimulIndiv`*: `initSize < 1` (which is indeed true:
-we pass `initSize = 1e-5`).
-
-
-## What can you do with the simulations?
-
-This is up to you. Later (section \@ref(sample-1)) we show an example where
-we infer an oncogenetic tree from simulated data.
-
-
-<!-- %% As an example, we can try to infer an oncogenetic tree -->
-<!-- %% (and plot it) using the `r CRANpkg("Oncotree")` package @Oncotree after -->
-<!-- %% getting a quick look at the marginal frequencies of events: -->
-
-<!-- %% <<fig.width=4, fig.height=4>>= -->
-<!-- %% colSums(pancrSamp)/nrow(pancrSamp) -->
-
-<!-- %% require(Oncotree) -->
-<!-- %% otp <- oncotree.fit(pancrSamp) -->
-<!-- %% plot(otp) -->
-<!-- %% @  -->
-
-
-## Whole tumor sampling, genotypes, and allele counts: what  gives? {#wtsampl}
-
-You are obtaining genotypes, regardless of order.  When we use "whole
-tumor sampling", it is the frequency of the mutations in each gene that
-counts, not the order. So, for instance, "c, d" and "c, d" both
-contribute to the counts of "c" and "d". Similarly, when we use single
-cell sampling, we obtain a genotype defined in terms of mutations, but
-there might be multiple orders that give this genotype. For example, $d >
-c$ and $c > d$ both  give you a genotype with "c" and "d" mutated, and
-thus in the output you can have two columns with both genes mutated.
-
-
-## Doesn't the BNB algorithm require small mutation rates for it to be advantageous? {#bnbmutation}
-
-As discussed in the original paper by @Mather2012 (see also their
-supplementary material), the BNB algorithm can achieve considerable
-speed advantages relative to other algorithms especially when
-mutation events are rare relative to birth and death events; the
-larger the mutation rate, the smaller the gains compared to other
-algorithms. As mentioned in their supplementary material (see p.5)
-"Note that the 'cost' of each step in BNB is somewhat higher than in
-SSA [SSA is the original Gillespie Stochastic Simulation Algorithm]
-since it requires generation of several random numbers as compared
-to only two uniform random numbers for SSA. However this cost
-increase is small compared with significant benefits of jumping over
-birth and death reactions for the case of rare mutations."
-
-Since the earlier versions, OncoSimulR has provided information to
-assess these issues. The output of function *`oncoSimulIndiv`*
-includes a list called *"other"* that itself includes two lists
-named *"minDMratio"* and *"minBMratio"*, the smallest ratio, over
-all simulations, of death rate to mutation rate or birth rate to
-mutation rate, respectively. As explained above, the BNB algorithm
-thrives when those are large.
-
-
 
 
 <!-- %% in an attempt to explain it, this just makes it too confusing. The -->
@@ -6000,6 +5895,198 @@ diversityLOD(LOD(pancr16))
 sampledGenotypes(samplePop(pancr16))
 
 ```
+
+
+
+
+
+
+# FAQ, odds and ends 
+
+
+## Does OncoSimulR keep track of individuals or of clones? And how can you keep track of such large populations?
+
+OncoSimulR keeps track of clones, where a clone is a set of cells
+that are genetically identical (note that this means completely
+identical over the whole set of genes/markers you are using). We are
+interested in examining the effects of selection, mutation, keeping
+track of the parent-child relationships between clones, etc, and
+thus we must keep track of the complete set of clones. 
+
+We do not need to keep track of individual cells because, for all
+purposes, and since we do not consider spatial structure, two or
+more cells that are genetically identical are interchangeable. This
+means, for instance, that the computational cost of keeping a
+population of a single clone with 1 individual or with 10^9
+individuals is exactly the same: we just keep track of the genotype
+(or haplotype if you want) and the number of cells.
+
+
+What we have explained is an obvious "trick" that has been used for
+a long time.  For instance, John H. Gillespie in his classical 1993
+paper @Gillespie1993 writes in p. 972:
+
+
+
+> > Allelic genealogies are represented in the computer by a rooted
+> > tree, each node of which is a unique haplotype.  A haplotype node is
+> > a data structure with pointers to parent and sibling nodes and with
+> > values of the current abundance and selection coefficient of the
+> > haplotype.  Each node also records the generation at which the
+> > haplotype first appeared in the population with its mutant site
+> > (the origination time of the site) and, should the mutation become
+> > fixed-the node becomes the root node for all alleles in the
+> > population-the fixation time of the site.  When haplotypes without
+> > descendents are lost from the population, the allelic genealogy is
+> > pruned to free computer memory.  When the simulation is completed,
+> > the properties of the origination and fixation point processes may
+> > be studied by 'climbing' the tree and recording the origination and
+> > fixation times of sites."
+
+
+OncoSimulR does something very similar. Note that we never prune any
+clone that had a population size larger than zero at any sampling
+period (so they are reflected in the `pops.by.time` matrix in the
+output). Note also that if you ask OncoSimulR to keep track of the
+complete parent-child relationships, you might see in the genealogy
+clones that are not present in `pops.by.time`, if these are clones
+that never had a population size larger than 0 at any sampling
+time. To give an example, suppose that clone A, with a population
+size larger than 0 at time 1, gives rise at time 1.5 to clone B;
+clone B then gives rise to clone C at time 1.8. Finally, suppose
+that at time 2 only clone C is alive, and suppose we only sample at
+times 1 and 2. Now, at time 1 clones B and C did not yet exist, and
+clone B is never alive at times 1 or 2, but we cannot remove clone B
+from our genealogy if we want to reflect the complete story of
+C. Thus, `pops.by.time` will show only clones A and C (not B) but
+the complete genealogy will show clones A, B, C. Since function
+`plotClonePhylog` offers a lot of flexibility with respect to what
+clones to show depending on their population sizes at different
+times, you can prevent being shown B, but its existence is there
+should you need it.
+
+
+
+Keeping track of clones (not individuals) and erasing clones that
+have no descendants from the `pops.by.time` matrix (and other
+internal structures in the C++ code, such as the map of genotypes to
+next mutation time or the table of genotypes) therefore leads to
+important memory and time savings. However, as explained in section
+\@{moretiming}, as we have to keep track of clones, very large
+genomes can represent a problem if they lead to the creation and
+tracking of many different clones. (Here, programs that only try to
+keep track of numbers of drivers, not individual clones, can of
+course achieve further speed improvements).
+
+
+
+
+## Dealing with errors in "oncoSimulPop" {#errorosp}
+
+When running OncoSimulR under Windows *`mclapply`* does not use
+multiple cores, and errors from *`oncoSimulPop`* are reported
+directly. For example:
+
+```{r}
+## This code will only be evaluated under Windows
+if(.Platform$OS.type == "windows")
+    try(pancrError <- oncoSimulPop(10, pancr,
+                               initSize = 1e-5,
+                               detectionSize = 1e7,
+                               keepEvery = 10,
+                               mc.cores = 2))
+``` 
+
+
+Under POSIX operating systems (e.g., GNU/Linux or Mac OSX)
+*`oncoSimulPop`* can ran parallelized by calling
+*`mclapply`*. Now, suppose you did something like
+
+```{r}
+## Do not run under Windows
+if(.Platform$OS.type != "windows")
+    pancrError <- oncoSimulPop(10, pancr,
+                               initSize = 1e-5,
+                               detectionSize = 1e7,
+                               keepEvery = 10,
+                               mc.cores = 2)
+``` 
+
+The warning you are seeing tells you there was an error in the functions
+called by *`mclapply`*. If you check the help for
+*`mclpapply`* you'll see that it returns a try-error object, so we
+can inspect it. For instance, we could do:
+
+```{r, eval=FALSE}
+pancrError[[1]]
+``` 
+
+But the output of this call might be easier to read:
+
+```{r, eval=FALSE}
+pancrError[[1]][1]
+``` 
+ 
+And from here you could see the error that was returned by
+*`oncoSimulIndiv`*: `initSize < 1` (which is indeed true:
+we pass `initSize = 1e-5`).
+
+
+## What can you do with the simulations?
+
+This is up to you. In section \@ref(sample-1) we show an example
+where we infer an oncogenetic tree from simulated data and in
+section \@ref{whatfor} we go over a varied set of scientific
+questions where OncoSimulR could help
+
+
+<!-- %% As an example, we can try to infer an oncogenetic tree -->
+<!-- %% (and plot it) using the `r CRANpkg("Oncotree")` package @Oncotree after -->
+<!-- %% getting a quick look at the marginal frequencies of events: -->
+
+<!-- %% <<fig.width=4, fig.height=4>>= -->
+<!-- %% colSums(pancrSamp)/nrow(pancrSamp) -->
+
+<!-- %% require(Oncotree) -->
+<!-- %% otp <- oncotree.fit(pancrSamp) -->
+<!-- %% plot(otp) -->
+<!-- %% @  -->
+
+
+## Whole tumor sampling, genotypes, and allele counts: what  gives? {#wtsampl}
+
+You are obtaining genotypes, regardless of order.  When we use "whole
+tumor sampling", it is the frequency of the mutations in each gene that
+counts, not the order. So, for instance, "c, d" and "c, d" both
+contribute to the counts of "c" and "d". Similarly, when we use single
+cell sampling, we obtain a genotype defined in terms of mutations, but
+there might be multiple orders that give this genotype. For example, $d >
+c$ and $c > d$ both  give you a genotype with "c" and "d" mutated, and
+thus in the output you can have two columns with both genes mutated.
+
+
+## Doesn't the BNB algorithm require small mutation rates for it to be advantageous? {#bnbmutation}
+
+As discussed in the original paper by @Mather2012 (see also their
+supplementary material), the BNB algorithm can achieve considerable
+speed advantages relative to other algorithms especially when
+mutation events are rare relative to birth and death events; the
+larger the mutation rate, the smaller the gains compared to other
+algorithms. As mentioned in their supplementary material (see p.5)
+"Note that the 'cost' of each step in BNB is somewhat higher than in
+SSA [SSA is the original Gillespie Stochastic Simulation Algorithm]
+since it requires generation of several random numbers as compared
+to only two uniform random numbers for SSA. However this cost
+increase is small compared with significant benefits of jumping over
+birth and death reactions for the case of rare mutations."
+
+Since the earlier versions, OncoSimulR has provided information to
+assess these issues. The output of function *`oncoSimulIndiv`*
+includes a list called *"other"* that itself includes two lists
+named *"minDMratio"* and *"minBMratio"*, the smallest ratio, over
+all simulations, of death rate to mutation rate or birth rate to
+mutation rate, respectively. As explained above, the BNB algorithm
+thrives when those are large.
 
 
 
