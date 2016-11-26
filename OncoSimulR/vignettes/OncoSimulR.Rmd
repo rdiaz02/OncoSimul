@@ -422,8 +422,8 @@ knitr::include_graphics("figure1.png")
 
 ## Two quick examples {#quickexample}
 
-Following the above we will run two examples. First a model with a few
-genes and **epistasis**:
+Following the above we will run two very minimal examples. First a
+model with a few genes and **epistasis**:
 
 ```{r, fig.width=6.5, fig.height=10}
 ## 1. Fitness effects: here we specify an 
@@ -578,6 +578,63 @@ plot(ep2, show = "genotypes", xlim = c(1000, 8000),
 
 
 
+## Questions that can be addressed with OncoSimulR{#oq}
+
+The examples above focus on the mechanics. Here, we will list some
+general scientific questions in cancer genomics and evolutionary
+genetics where OncoSimulR could be of help. This section does not
+try to provide an answer to any of these questions (those would be
+full papers by themselves) but simply to illustrate where you can
+use OncoSimulR; the possible uses of OncoSimulR are only limited by
+your ingenuity. Finally, I will only use short snippets of working
+code as we are limited by time of execution; for real work you would
+want many more scenarios, many more simulations, etc.
+
+
+### Can we recover restrictions in the order of accumulation of mutations?
+
+This is a question that was addressed, for instance in
+@Diaz-Uriarte2015: do methods that try to infer restrictions in the
+order of accumulation of mutations (e.g., @Szabo2008, @Gerstung2009,
+@ramazzotti_capri_2015) work well under different evolutionary
+models and with different sampling schemes?
+
+A possible way to examine that question would involve:
+- generating random DAGs that encode restrictions;
+- simulating cancer evolution using those DAGs;
+- sampling the data and adding different levels of noise to the
+sampled data;
+- running the inferential method;
+- comparing the inferred DAG with the original, true, one.
+
+
+```{r ex-dag-inf}
+## 1. Simulate a DAG
+g1 <- simOGraph(4, out = "rT")
+
+## 2. Simulate two evolutionary trajectories
+s1 <- oncoSimulPop(2, allFitnessEffects(g1, drvNames = 1:4))
+
+## 3. Sample those data uniformly, and add noise
+d1 <- samplePop(s1, timeSample = "unif", propError = 0.1)
+
+## 4. You would now run the appropriate inferential method and compare
+## observed and true
+require(Oncotree)
+fit1 <- oncotree.fit(d1)
+## Compare fitted and original
+
+```
+
+
+
+
+
+
+
+
+
+
 ## How long does it take? How fast is OncoSimulR? How much space do the return objects take? {#timings}
 
 
@@ -723,12 +780,12 @@ ep2_mc                   5.8             20.6
 <!-- \end{tabular} -->
 
 
-There are large differences in speed between models and sizes of objects
-differ too: in these cases, the simulations using the "McFL" model run
-for much longer (2000 to 2000 time units, vs. 100 to 1500 of the "Exp"
-models) and also had a larger number of clones returned (5 to 16 vs. 1 to
-3).
-
+There are large differences in speed between models and sizes of
+objects differ too: in these cases, the simulations using the "McFL"
+model run for much longer (2000 to 2000 time units, vs. 100 to 1500
+of the "Exp" models) and also had a larger number of clones returned
+(5 to 16 vs. 1 to 3). As said above, for further details go to
+section \@ref(moretimings).
 
 
 ## Citing OncoSimulR and other documentation {#citing}
@@ -4801,13 +4858,14 @@ individuals/samples by genes or, equivalently, a vector of "genotypes"),
 and do something with them.  OncoSimulR offers several ways of doing this.
 
 The key function here is *`samplePop`*, either called explicitly
-after *`oncoSimulPop`* (or *`oncoSimulIndiv`*), or
-implicitly as part of a call to *`oncoSimulSample`*. With
-*`samplePop`* you can use **single cell** or **whole  tumor** sampling (for details see the help of
-*`samplePop`*). Depending on how the simulations were conducted,
-you might also sample at different times, or as a function of population
-sizes. A major difference between procedures has to do with whether or not
-you want to keep the complete history of the simulations.
+after *`oncoSimulPop`* (or *`oncoSimulIndiv`*), or implicitly as
+part of a call to *`oncoSimulSample`*. With *`samplePop`* you can
+use **single cell** or **whole tumor** sampling (for details see the
+help of *`samplePop`*). Depending on how the simulations were
+conducted, you might also sample at different times, or as a
+function of population sizes. A major difference between procedures
+has to do with whether or not you want to keep the complete history
+of the simulations.
 
 **You want to keep the complete history of simulations**. You will
 simulate using:
