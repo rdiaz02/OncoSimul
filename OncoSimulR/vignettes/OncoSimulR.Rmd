@@ -186,12 +186,14 @@ also possible.
 
 
 The models so far implemented are all continuous time models, which
-are simulated using the BNB algorithm of @Mather2012. The core of
-the code is implemented in C++, providing for fast execution.  To
-help with simulation studies, code to simulate random graphs of the
-kind often seen in CBN, OTs, etc, is also available. Finally,
-OncoSimulR also allows for the generation of random fitness
-landscapes and the representation of fitness landscapes.
+are simulated using the BNB algorithm of @Mather2012 (see sections
+\@ref(bnbmutation) and \@ref(bnbdensdep) for more detailed comments
+on the usage of this algorithm). The core of the code is implemented
+in C++, providing for fast execution.  To help with simulation
+studies, code to simulate random graphs of the kind often seen in
+CBN, OTs, etc, is also available. Finally, OncoSimulR also allows
+for the generation of random fitness landscapes and the
+representation of fitness landscapes.
 
 ## Key features of OncoSimulR {#key}
 
@@ -267,7 +269,6 @@ by moving the mouse over each term).
 
 
 
-
 |Attribute Category     | Attribute                                     |
 |-----------------------|-----------------------------------------------|
 |**Target**             |  |
@@ -291,6 +292,11 @@ by moving the mouse over each term).
 |&nbsp; Mutation Models|	Two-allele Mutation Model|
 |&nbsp; Events Allowed|	Varying Genetic Features (change of individual mutation rates)|
 |&nbsp; Spatial Structure| No Spatial Structure (perfectly mixed and no migration)|
+Table: (\#tab:osrfeatures) Key features of OncoSimulR. Based on the
+table from
+https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
+.
+
 <!-- Table: Key features of OncoSimulR (partially modified from the Genetics Simulation Resources table at https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed){#tablekeyfeatures} -->
 <!-- |**Interface** | Command-Line, Script-Based| -->
 <!-- |Development|| -->
@@ -447,7 +453,7 @@ RNGkind("Mersenne-Twister")
 set.seed(983)
 ep1 <- oncoSimulIndiv(sv2, model = "McFL",
                       mu = 5e-6,
-                      sampleEvery = 0.02,
+                      sampleEvery = 0.025,
                       keepEvery = 0.5,
                       initSize = 2000,
                       finalTime = 3000,
@@ -539,7 +545,7 @@ pancr <- allFitnessEffects(
 plot(pancr)
 ``` 
 ```{r}
-## 2. Simulate from it. 
+## 2. Simulate from it. We change several possible options. 
 
 set.seed(4) ## Fix the seed, so we can repeat it
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
@@ -4265,7 +4271,7 @@ mcf1s <-  oncoSimulIndiv(mcf1,
                          detectionProb = "default",
                          detectionSize = NA, 
                          detectionDrivers = NA,
-                         sampleEvery = 0.02,
+                         sampleEvery = 0.025,
                          keepEvery = 8,
                          initSize = 2000,
                          finalTime = 4000,
@@ -4590,6 +4596,10 @@ with two or three drivers:
 
 <!-- %%<<fig.width=6} -->
 
+
+<!-- Setting sampleEvery to 0.015, we get really nice figures too, smooth -->
+<!-- and nice colors between 500 and 1500 time units. -->
+
 ```{r}
 set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -4597,7 +4607,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        mu = 5e-5,
                        detectionSize = 1e8, 
                        detectionDrivers = 3,
-                       sampleEvery = 0.015,
+                       sampleEvery = 0.025,
                        max.num.tries = 10,
                        keepEvery = 5,
                        initSize = 2000,
@@ -4618,7 +4628,7 @@ plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
 ```{r tmpmdx6,fig.width=6.5, fig.height=4}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE,
-     legend.ncols = 4, ylim = c(0, 5200), xlim = c(0, 1500),
+     legend.ncols = 4, ylim = c(0, 5200), xlim = c(3400, 5000),
      thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
@@ -4634,7 +4644,7 @@ Now show the genotypes explicitly:
 par(las = 1, cex = 0.85)
 plot(tmp, show = "genotypes", breakSortColors = "distave",
      plotDiversity = TRUE, legend.ncols = 4,
-     ylim = c(0, 5300), xlim = c(0, 1500),
+     ylim = c(0, 5300), xlim = c(3400, 5000),
      thinData = TRUE, thinData.keep = 0.5)
 ```
 
@@ -5542,7 +5552,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        mu = 5e-5,
                        detectionSize = 1e8, 
                        detectionDrivers = 3,
-                       sampleEvery = 0.015,
+                       sampleEvery = 0.025,
                        max.num.tries = 10,
                        keepEvery = 5,
                        initSize = 2000,
@@ -5608,7 +5618,7 @@ mcf1s <-  oncoSimulIndiv(mcf1,
                          mu = 1e-7,
                          detectionSize = 1e8, 
                          detectionDrivers = 100,
-                         sampleEvery = 0.02,
+                         sampleEvery = 0.025,
                          keepEvery = 2,
                          initSize = 2000,
                          finalTime = 1000,
@@ -6094,13 +6104,66 @@ to only two uniform random numbers for SSA. However this cost
 increase is small compared with significant benefits of jumping over
 birth and death reactions for the case of rare mutations."
 
-Since the earlier versions, OncoSimulR has provided information to
+Since the earliest versions, OncoSimulR has provided information to
 assess these issues. The output of function *`oncoSimulIndiv`*
 includes a list called *"other"* that itself includes two lists
 named *"minDMratio"* and *"minBMratio"*, the smallest ratio, over
 all simulations, of death rate to mutation rate or birth rate to
 mutation rate, respectively. As explained above, the BNB algorithm
-thrives when those are large.
+thrives when those are large. Note, though, we say "it thrives":
+these ratios being large is not required for the BNB algorithm to be
+an exact simulation algorithm; these ratios being large make BNB
+comparatively much faster than other algorithms.
+
+
+
+## Can we use the BNB algorithm with state-dependent birth or death rates? {#bnbdensdep}
+
+As discussed in the original paper by @Mather2012 (see sections 2.6
+and 3.2 of the paper and section E of the supplementary material),
+the BNB algorithm can be used as an approximate stochastic
+simulation algorithm "(...) with non-constant birth, death, and
+mutation rates by evolving the system with a BNB step restricted to
+a short duration t." (p. 9 in supplementary material). The
+justification is that "(...) the propensities for reactions can be
+considered approximately constant during some short interval."
+(p. 1234). This is the reason why, when we use McFarland's model, we
+set a very short `sampleEvery`. In addition, the output of the
+simulation functions contains the simple summary statistic `errorMF`
+that can be used to assess the quality of the
+approximation[^errorMF].
+
+[^errorMF]: Briefly, we keep track of the largest difference between
+two successive death rates, because it is the death rates that are
+affected by density dependence and, thus, it is on the death rates
+where the approximation that they are constant over a short interval
+plays a role. We want this value to be as reasonably close as
+possible to the difference in death rates from adding or subtracting
+just only one individual to the population. Additionally, a simple
+procedure to use is to run the simulations with different values of
+`sampleEvery`, say the default value of 0.025 and values that are
+10, 20, and 50 times larger or smaller, and assess their effects on
+the output of the simulations and the `errorMF` statistic
+itself. You can check that using a `sampleEvery` much smaller than
+0.025 rarely makes any difference in `errorMF` or in the simulation
+output (though it increases computing time significantly). And, just
+for the fun of it, you can also check that using huge values for
+`sampleEvery` can lead to trouble and will be manifested too in the
+simulation output with large and unreasonable jumps in total
+population sizes and sudden extinctions.
+
+
+
+Note that, as the authors point out, approximations are common with
+stochastic simulation algorithms when there is density dependence,
+but the advantage of the BNB algorithm compared to, say, most
+tau-leap methods is that clones of different population sizes are
+treated uniformly. @Mather2012 further present results from
+simulations comparing the BNB algorithm with the original direct SSA
+method and the tau-leaps (see their Fig. 5), which shows that the
+approximation is very accurate as soon as the interval between
+samples becomes reasonably short. 
+
 
 
 
