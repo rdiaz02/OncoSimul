@@ -400,6 +400,19 @@ packageVersion("OncoSimulR")
 ``` 
 
 
+A quick overview of the main functions and their relationships is
+shown in the figure below, where we use italics for the type/class
+of R object and courier for the name of the functions.
+<!-- Note: figure1.png, and how to create it, explained in miscell-files -->
+<!-- in the repo -->
+
+<!-- ![Relationship between the main functions in OncoSimulR.](figure1.png) -->
+
+
+
+```{r frelats, eval=TRUE,echo=FALSE, fig.cap="Relationships between the main functions in OncoSimulR."}
+knitr::include_graphics("figure1.png")
+```
 
 ## Two quick examples {#quickexample}
 
