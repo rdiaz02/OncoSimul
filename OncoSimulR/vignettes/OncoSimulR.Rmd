@@ -297,6 +297,11 @@ table from
 https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
 .
 
+
+<!-- Why not "Carrying cappacity" instead of logistic? Both are very -->
+<!-- similar, but the GSR page says, for carrying capacity "This includes models with age or stage-specific carrying capacities" -->
+
+
 <!-- Table: Key features of OncoSimulR (partially modified from the Genetics Simulation Resources table at https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed){#tablekeyfeatures} -->
 <!-- |**Interface** | Command-Line, Script-Based| -->
 <!-- |Development|| -->
