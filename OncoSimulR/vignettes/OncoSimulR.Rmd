@@ -596,13 +596,14 @@ code as we are limited by time of execution; for real work you would
 want many more scenarios, many more simulations, etc.
 
 
-### Can we recover restrictions in the order of accumulation of mutations?
+### Recovering restrictions in the order of accumulation of mutations {#ex-order}
 
 This is a question that was addressed, for instance in
 @Diaz-Uriarte2015: do methods that try to infer restrictions in the
 order of accumulation of mutations (e.g., @Szabo2008, @Gerstung2009,
 @ramazzotti_capri_2015) work well under different evolutionary
-models and with different sampling schemes?
+models and with different sampling schemes? (This issue is also
+touched upon in section \@ref(sample-1)).
 
 A possible way to examine that question would involve:
 - generating random DAGs that encode restrictions;
@@ -627,14 +628,194 @@ d1 <- samplePop(s1, timeSample = "unif", propError = 0.1)
 ## observed and true
 require(Oncotree)
 fit1 <- oncotree.fit(d1)
-## Compare fitted and original
+
+## Now, compare fitted and original. This is well beyond the scope of this
+## document (and OncoSimulR itself).
 
 ```
 
 
+### Epistasis and predictability in rugged fitness lanscapes in asexual populations {#ex-ochs}
+
+These questions encompass a wide range of specific issues that have
+been in evolutionary genetics studies that include from detailed
+analysis of simple models with a few uphill paths and valleys as in
+@Weissman2009 or @Ochs2015, to questions that refer to larger, more
+complex fitness landscapes as in @szendro_predictability_2013 or
+@franke_evolutionary_2011.
+
+
+For the first case, we could specify the fitness landscape and run
+simulations until fixation (with argument `fixation` to
+`oncoSimulPop`) and would then examine the proportion of genotypes
+fixed under different scenarios. For instance, we can use the
+example from @Ochs2015 (we will a see this example also in section
+\@(ochsdesai), where we cover different ways of specifying
+fitness). I will set fitness to some specific, arbitrary values. And
+we can extend this example by adding mutator genes:
+
+
+```{r hiddenochs, echo=FALSE}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+```
+
+```{r exochs}
+## Specify fitness effects.
+## Set the intermediate genotype en route to ui as mildly deleterious
+## so there is a valley. As in Ochs and Desai, the ui and uv genotypes
+## can never appear
+u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
+od <- allFitnessEffects(
+    epistasis = c("u" = u,  "u:i" = ui,
+                  "u:v" = uv, "i" = i,
+                  "v:-i" = -Inf, "v:i" = vi))
+
+## For the sake of extending this, turn i into a mutator gene too
+odm <- allMutatorEffects(noIntGenes = c("i" = 50))
+
+## How do mutation and fitness look like for each genotype?
+evalAllGenotypesFitAndMut(od, odm, addwt = TRUE)
+
+## Ochs and Desai explicitly say "Each simulated population was evolved until
+## either the uphill genotype or valley-crossing genotype fixed." So we will
+## use "fixation".
+
+## Set a small initSize, as o.w. unlikely to pass the valley
+initS <- 10
+## The number of replicates is tiny, 10, for the sake of speed
+## of creation of the vignette
+od_sim <- oncoSimulPop(10, od, muEF = odm,
+                       fixation = c("u", "i, v"), initSize = initS,
+                       model = "McFL",
+                       mu = 1e-4, detectionDrivers = NA, finalTime = NA,
+                       detectionSize = NA, detectionProb = NA,
+                       onlyCancer = TRUE,
+                       seed = NULL) 
+## What is the frequency of each final genotype?
+sampledGenotypes(samplePop(od_sim))
+```
+
+```{r hidden-rng-exochs}
+set.seed(NULL)
+```
+
+
+For the second set of questions, we would run simulations under
+random fitness landscapes with varied ruggedness, and would then
+examine the evolutionary predictability of the trajectories with
+measures such as ``Lines of Descent'' and ``Path of the Maximum''
+@szendro_predictability_2013 and the diversity of the sampled
+genotypes under different sampling regimes.
 
 
 
+```{r hiddenrng0szen, echo=FALSE}
+set.seed(7)
+RNGkind("L'Ecuyer-CMRG")
+```
+
+```{r exszendro}
+
+## Repeat the following loop for different combinations of whatever
+## interests you, such as number of genes, or distribution of the
+## c and sd (which affect how rugged the landscape is), or reference genotype
+## or evolutionary model, or stopping criterion, sampling procedure, or ...
+
+## 1. Generate a random fitness landscape, from the Rough
+##    Mount Fuji model, with g genes, and c (additivity constant) and
+##    reference chosen randomly. Ask for a minimal number of accessible
+##    genotypes
+g <- 6
+c <- runif(1, 1/5, 5)
+rl <- rfitness(g, c = c, min_accessible_genotypes = g)
+
+## Plot it if you want
+plot(rl)
+
+## Obtain landscape measures from Magellan. Export to Magellan
+to_Magellan(rl, file = "rl1.txt")
+## (Getting the statistics requires you to install Magellan,
+## and that requires either calling the web app or
+## asking Magellan's authors for the software. This is of course
+## beyond the scope of the example and the package.
+
+## 3. Simulate evolution in that landscape many times (here just 5)
+simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),
+                        keepPhylog = TRUE, keepEvery = 1,
+                        initSize = 4000,
+                        seed = NULL,
+                        mc.cores = 2) ## for repeatability
+
+## 4. Obtain measures of evolutionary predictability
+diversityLOD(LOD(simulrl))
+diversityPOM(POM(simulrl))
+sampledGenotypes(samplePop(simulrl, typeSample = "whole"))
+```
+
+```{r hidden-rng-exszend}
+set.seed(NULL)
+```
+
+
+### Epistatic interactions between drivers and passengers in cancer initiation {#exbauer}
+
+@Bauer2014 have examined the effects of epistatic relationships
+between drivers and passengers in cancer initiation. We could use
+their model as a starting point, and examine how likely cancer is to
+develop under different variations on their model and different
+evolutionary scenarios (e.g., initial sample size, mutation rates,
+evolutionary model, etc).
+
+
+There are several ways to specify their model, as we discuss in
+section \@(bauer). We will use one based on DAGs here:
+
+
+```{r exusagebau}
+K <- 4
+sp <- 1e-5
+sdp <- 0.015
+sdplus <- 0.05
+sdminus <- 0.1
+
+cnt <- (1 + sdplus)/(1 + sdminus)
+prod_cnt <- cnt - 1
+bauer <- data.frame(parent = c("Root", rep("p", K)),
+                    child = c("p", paste0("s", 1:K)),
+                    s = c(prod_cnt, rep(sdp, K)),
+                    sh = c(0, rep(sp, K)),
+                    typeDep = "MN")
+fbauer <- allFitnessEffects(bauer)
+(b1 <- evalAllGenotypes(fbauer, order = FALSE, addwt = TRUE))
+
+## How does the fitness landscape look like?
+plot(b1)
+```
+
+Now, run simulations and examine how frequently the runs do not end
+up in extinction (for real, you would of course increase the number
+of total populations, the range of initial population sizes, model,
+mutation rate, etc):
+
+
+```{r hiddenbau, echo=FALSE}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+```
+
+```{r exusagebau2}
+totalpops <- 5
+sb1 <- oncoSimulPop(totalpops, fbauer, model = "Exp",
+                    initSize = 100,
+                    onlyCancer = FALSE,
+                    seed = NULL)
+## What proportion of the simulations do not end up extinct?
+sum(summary(sb1)[, "TotalPopSize"] > 0)/totalpops
+
+
+
+```
 
 
 
