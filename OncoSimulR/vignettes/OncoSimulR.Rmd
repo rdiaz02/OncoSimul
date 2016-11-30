@@ -6264,6 +6264,13 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- Trick in McFl is possibly just keeping track of the number of which -->
 <!-- is a lot simpler than of the full clones. -->
 
+<!-- Add also comments on where it is not reasonable to use OncoSimulR -->
+<!-- many genotypes ---we keep track of them--- -->
+<!-- only care about number of drivers or passengers --we keep track of -->
+<!-- genotypes -->
+<!-- need fixed population sizes (strict FisherWrifht or Moran) -->
+
+
 
 
 # Measures of evolutionary predictability and genotype diversity
