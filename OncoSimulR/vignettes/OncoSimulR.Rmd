@@ -349,9 +349,7 @@ have copied from @Hothorn_2006; @Hothorn_2008).
 <!-- https://bookdown.org/yihui/bookdown/custom-blocks.html. Later -->
 
 
-## Some questions you can address with the help of OncoSimulR {#whatfor}
-
-## Steps in using OncoSimulR
+## Steps in using OncoSimulR {#steps}
 
 
 Using this package will often involve the following steps:
@@ -582,18 +580,18 @@ plot(ep2, show = "genotypes", xlim = c(1000, 8000),
 ``` 
 
 
+## Questions that can be addressed with OncoSimulR {#whatfor}
 
-## Questions that can be addressed with OncoSimulR{#oq}
-
-The examples above focus on the mechanics. Here, we will list some
-general scientific questions in cancer genomics and evolutionary
-genetics where OncoSimulR could be of help. This section does not
-try to provide an answer to any of these questions (those would be
-full papers by themselves) but simply to illustrate where you can
-use OncoSimulR; the possible uses of OncoSimulR are only limited by
-your ingenuity. Finally, I will only use short snippets of working
-code as we are limited by time of execution; for real work you would
-want many more scenarios, many more simulations, etc.
+The examples in \@(quickexample) focus on the mechanics. Here, we
+will list some general scientific questions in cancer genomics and
+evolutionary genetics where OncoSimulR could be of help. This
+section does not try to provide an answer to any of these questions
+(those would be full papers by themselves) but simply to illustrate
+where you can use OncoSimulR; the possible uses of OncoSimulR are
+only limited by your ingenuity. Finally, I will only use short
+snippets of working code as we are limited by time of execution; for
+real work you would want many more scenarios, many more simulations,
+etc.
 
 
 ### Recovering restrictions in the order of accumulation of mutations {#ex-order}
@@ -633,6 +631,7 @@ fit1 <- oncotree.fit(d1)
 ## document (and OncoSimulR itself).
 
 ```
+
 
 
 ### Epistasis and predictability in rugged fitness lanscapes in asexual populations {#ex-ochs}
@@ -813,9 +812,100 @@ sb1 <- oncoSimulPop(totalpops, fbauer, model = "Exp",
 ## What proportion of the simulations do not end up extinct?
 sum(summary(sb1)[, "TotalPopSize"] > 0)/totalpops
 
+```
+```{r hidden-rng-exbau}
+set.seed(NULL)
+```
 
+
+### Effects of mutator and antimutator genes {#ex-mut-antimut}
+
+The effects of mutator and antimutator genes have been examined both
+in cancer genetics [@nowak_evolutionary_2006,
+@tomlinson_mutation_1996] and in evolutionary genetics, and are
+related to wider issues such as Muller's ratchet and the evolution
+of sex [@gerrish_complete_2007]. There are, thus, a large range of
+questions related to mutator and antimutator genes. 
+
+
+One question addressed in @tomlinson_mutation_1996, concerns under
+what circumstances mutator genes are likely to play a role in cancer
+progression. For instance, @tomlinson_mutation_1996 find that an
+increased mutation rate is more likely to matter if the number of
+required mutations in driver genes needed to reach cancer is large
+and if the mutator effect is large.
+
+
+We might want to ask, then, how long it takes before we reach
+cancer. This is stored in the component `FinalTime` of the
+output. We would specify different numbers and effects of mutator
+genes (argument `muEF`). We would also change the criteria for
+reaching cancer and in our case we can easily do that by specifying
+different numbers in `detectionDrivers`. Of course, we would also
+want to examine the effects of varying numbers of mutators, drivers,
+and possibly fitness consequences of mutators (below we assume
+mutators are neutral and we assume there are no additional genes
+with deleterious mutations, but this need not be so, of course; see
+also [@gerrish_complete_2007, @McFarland2014]).
+
+
+Let us run an example. For the sake of simplicity, we assume no
+epistatic interactions.
+
+```{r ex-tomlin1}
+sd <- 0.1 ## fitness effect of drivers
+sm <- 0 ## fitness effect of mutator
+nd <- 20 ## number of drivers
+nm <- 5  ## number of mutators
+mut <- 10 ## mutator effect
+
+fitnessGenesVector <- c(rep(sd, nd), rep(sm, nm))
+names(fitnessGenesVector) <- 1:(nd + nm)
+mutatorGenesVector <- rep(mut, nm)
+names(mutatorGenesVector) <- (nd + 1):(nd + nm)
+
+ft <- allFitnessEffects(noIntGenes = fitnessGenesVector,
+                        drvNames = 1:nd)
+mt <- allMutatorEffects(noIntGenes = mutatorGenesVector)
 
 ```
+
+
+Now, simulate using the fitness and mutator specification. We fix
+the number of drivers to cancer, and we stop when those numbers of
+drivers are reached. Since we only care about the time it takes to
+reach cancer, not the actual trajectories, we set `keepEvery = NA`:
+
+```{r hiddentom, echo=FALSE}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+```
+
+```{r ex-tomlin2}
+ddr <- 4
+st <- oncoSimulPop(4, ft, muEF = mt,
+                   detectionDrivers = ddr,
+                   finalTime = NA,
+                   detectionSize = NA,
+                   detectionProb = NA,
+                   onlyCancer = TRUE,
+                   keepEvery = NA, 
+                   mc.cores = 2, ## adapt to your hardware
+                   seed = NULL) ## for repeatibility
+## How long did it take?
+unlist(lapply(st, function(x) x$FinalTime))
+
+```
+```{r hidden-rng-tom}
+set.seed(NULL)
+```
+
+
+
+(Incidentally, notice that it is easy to get OncoSimulR to throw an
+exception if you do not think about the mutator effects you are
+using: see \@{tomlin-except}.)
+
 
 
 
@@ -6088,6 +6178,11 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- Uncomment when ready. O.w. confusing. -->
 <!-- # Additional comments and examples about time, size, and simulation limits {#moretiming} -->
 
+<!-- Place here the example from mcfl as slow because of the size of allFitnessEffects -->
+<!-- Trick in McFl is possibly just keeping track of the number of which -->
+<!-- is a lot simpler than of the full clones. -->
+
+
 
 # Measures of evolutionary predictability and genotype diversity
 
@@ -6409,6 +6504,66 @@ approximation is very accurate as soon as the interval between
 samples becomes reasonably short. 
 
 
+## Sometimes I get exceptions when running with mutator genes {#tomlin-except}
+
+Yes, sure, the following will cause an exception; this is similar to
+the example used in \@(ex-mut-antimut) but there is one crucial
+difference:
+
+```{r ex-tomlin1exc}
+sd <- 0.1 ## fitness effect of drivers
+sm <- 0 ## fitness effect of mutator
+nd <- 20 ## number of drivers
+nm <- 5  ## number of mutators
+mut <- 50 ## mutator effect  THIS IS THE DIFFERENCE
+
+fitnessGenesVector <- c(rep(sd, nd), rep(sm, nm))
+names(fitnessGenesVector) <- 1:(nd + nm)
+mutatorGenesVector <- rep(mut, nm)
+names(mutatorGenesVector) <- (nd + 1):(nd + nm)
+
+ft <- allFitnessEffects(noIntGenes = fitnessGenesVector,
+                        drvNames = 1:nd)
+mt <- allMutatorEffects(noIntGenes = mutatorGenesVector)
+
+```
+
+
+Now, simulate using the fitness and mutator specification. We fix
+the number of drivers to cancer, and we stop when those numbers of
+drivers are reached. Since we only care about the time it takes to
+reach cancer, not the actual trajectories, we set `keepEvery = NA`:
+
+
+```{r ex-tomlin2}
+ddr <- 4
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+st <- oncoSimulPop(4, ft, muEF = mt,
+                   detectionDrivers = ddr,
+                   finalTime = NA,
+                   detectionSize = NA,
+                   detectionProb = NA,
+                   onlyCancer = TRUE,
+                   keepEvery = NA, 
+                   mc.cores = 2, ## adapt to your hardware
+                   seed = NULL) ## for repeatibility
+set.seed(NULL) ## return things to their "usual state"
+
+```
+
+What happened? That you are using five mutator genes, each with an
+effect of multiplying by 50 the mutation rate. So the genotype with
+all those five genes mutated will have an increased mutation rate of
+$50^5 = 312500000$. If you set the mutation rate to the default of
+$1e-6$ you have a mutation rate of 312 which makes no sense (and
+leads to all sorts of numerical issues down the road and an early
+warning).
+
+
+Oh, but you want to accumulate mutator effects and have some, or the
+early ones, have a large effects and the rest progressively smaller
+effects? You can do that using epistatic effects for mutator effects.
 
 
 
