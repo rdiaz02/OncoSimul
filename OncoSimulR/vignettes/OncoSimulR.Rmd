@@ -1024,6 +1024,9 @@ different growth models (exponential and McFarland) and will obtain
 100 simulations. The results I show are for a laptop with an 8-core
 Intel Xeon E3-1505M CPU, running Debian GNU/Linux.
 
+
+<!-- zz: fixme!!! explain sv2  -->
+
 ```{r, eval=FALSE}
 
 system.time(
@@ -6257,22 +6260,6 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- % @  -->
 
 
-<!-- Uncomment when ready. O.w. confusing. -->
-<!-- # Additional comments and examples about time, size, and simulation limits {#moretiming} -->
-
-<!-- Place here the example from mcfl as slow because of the size of allFitnessEffects -->
-<!-- Trick in McFl is possibly just keeping track of the number of which -->
-<!-- is a lot simpler than of the full clones. -->
-
-<!-- Add also comments on where it is not reasonable to use OncoSimulR -->
-<!-- many genotypes ---we keep track of them--- -->
-<!-- only care about number of drivers or passengers --we keep track of -->
-<!-- genotypes -->
-<!-- need fixed population sizes (strict FisherWrifht or Moran) -->
-
-
-
-
 # Measures of evolutionary predictability and genotype diversity
 
 Several measures of evolutionary predictability have been proposed
@@ -6347,6 +6334,32 @@ diversityLOD(LOD(pancr16))
 sampledGenotypes(samplePop(pancr16))
 
 ```
+
+
+<!-- Uncomment when ready. O.w. confusing. -->
+<!-- # Additional comments and examples about time, size, and simulation limits {#moretiming} -->
+
+<!-- Place here the example from mcfl as slow because of the size of allFitnessEffects -->
+<!-- Trick in McFl is possibly just keeping track of the number of which -->
+<!-- is a lot simpler than of the full clones. -->
+
+<!-- Add also comments on where it is not reasonable to use OncoSimulR -->
+<!-- many genotypes ---we keep track of them--- -->
+<!-- only care about number of drivers or passengers --we keep track of -->
+<!-- genotypes -->
+<!-- need fixed population sizes (strict FisherWrifht or Moran) -->
+
+
+
+# Additional comments and examples about time, size, and simulation limits {#moretiming}
+
+<!-- poner en How long does it take -->
+
+
+## Population sizes $>10^{10}$ {#pop1010}
+
+(The following examples are commented out for the sake of execution
+speed and memory usage).
 
 
 
@@ -6424,7 +6437,7 @@ have no descendants from the `pops.by.time` matrix (and other
 internal structures in the C++ code, such as the map of genotypes to
 next mutation time or the table of genotypes) therefore leads to
 important memory and time savings. However, as explained in section
-\@{moretiming}, as we have to keep track of clones, very large
+\@{moretimings}, as we have to keep track of clones, very large
 genomes can represent a problem if they lead to the creation and
 tracking of many different clones. (Here, programs that only try to
 keep track of numbers of drivers, not individual clones, can of
