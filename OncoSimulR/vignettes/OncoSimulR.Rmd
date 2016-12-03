@@ -991,162 +991,6 @@ plot(ep2, show = "genotypes", xlim = c(1000, 8000),
 ``` 
 
 
-## How long does it take? How fast is OncoSimulR? How much space do the return objects take? {#timings}
-
-
-How long simulations take depend on several factors. This section
-gives a quick view. Longer examples and more detailed comments are
-provided in section \@ref(moretimings).
-
-
-* Your hardware, of course.
-* The evolutionary model: using the "McFL" model is often much
-  slower (this model includes density dependence and is more complex).
-* The granularity of how often you keep data (`keepEvery`
-  argument). Note that the default, which is to keep as often as you
-  sample (so that we preserve all history) can lead to very slow execution
-  times.
-* The mutation rate, because higher mutation rates lead to more
-  clones, and more clones mean we need to iterate over, well, more clones,
-  and keep larger data structures.
-
-* The fitness specification (more complex fitness specifications tend
-  to be slightly slower).
-* Whether or not you keep the complete clone history (this affects
-  mainly size of return object, not speed).
-* The stopping conditions.
-
-
-
-To give you an idea, we will use the above examples, with the
-`detectionProb` stopping mechanism (see \@ref(detectprob)), two
-different growth models (exponential and McFarland) and will obtain
-100 simulations. The results I show are for a laptop with an 8-core
-Intel Xeon E3-1505M CPU, running Debian GNU/Linux.
-
-
-<!-- zz: fixme!!! explain sv2  -->
-
-```{r, eval=FALSE}
-
-system.time(
-    ep1_exp <- oncoSimulPop(100, sv2, 
-                            detectionProb = "default", 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
-                            finalTime = NA,
-                            keepEvery = 5,
-                            model = "Exp", 
-                            sampleEvery = 0.02, 
-                            initSize = 500,
-                            mc.cores = detectCores()))
-
-system.time(
-    ep1_mc <- oncoSimulPop(100, sv2, 
-                           detectionProb = "default", 
-                           detectionSize = NA,
-                           detectionDrivers = NA,
-                           finalTime = NA,
-                           keepEvery = 5,                                  
-                           model = "McFL", 
-                           sampleEvery = 0.02, 
-                           initSize = 2000,
-                           mc.cores = detectCores()))
-
-system.time(
-    ep2_exp <- oncoSimulPop(100, pancr, 
-                            detectionProb = "default", 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
-                            finalTime = NA,
-                            keepEvery = 5, 
-                            model = "Exp", 
-                            sampleEvery = 0.02, 
-                            initSize = 500,
-                            mc.cores = detectCores()))
-
-system.time(
-    ep2_mc <- oncoSimulPop(100, pancr, 
-                           detectionProb = "default", 
-                           detectionSize = NA,
-                           detectionDrivers = NA,
-                           finalTime = NA,
-                           keepEvery = 5,
-                           model = "McFL", 
-                           sampleEvery = 0.02, 
-                           initSize = 2000,
-                           mc.cores = detectCores()))
-
-``` 
-
-And we look at the sizes of objects using:
-
-
-``` {r, eval=FALSE}
-print(object.size(ep1_exp), units = "MB")
-```
-
-<!-- ```{r, echo=FALSE, results='hide'} -->
-<!-- dftm1 <- data.frame(Simulation = c("ep1_exp", "ep1_mc", "ep2_exp","ep2_mc"),  -->
-<!--     ElapsedTime = c(0.8, 6.6, 1.1, 5.8), Size = c(1.6, 16.6, 1.6, 20.6)) -->
-
-<!-- ``` -->
-
-The above runs yield the following:
-
-<!-- ```{r, results='show', echo=FALSE} -->
-<!-- knitr::kable(dftm1, col.names = c("Simulation", "Elapsed Time (s)", "Object Size (MB)")) -->
-
-<!-- ``` -->
-
-
-
-<!-- |Simulation | Elapsed Time (s)| Object Size (MB)| -->
-<!-- |:----------|----------------:|----------------:| -->
-<!-- |ep1_exp    |              0.8|              1.6| -->
-<!-- |ep1_mc     |              6.6|             16.6| -->
-<!-- |ep2_exp    |              1.1|              1.6| -->
-<!-- |ep2_mc     |              5.8|             20.6| -->
-
-----------------------------------------------------------
-Simulation    Elapsed Time (s)         Object Size (MB)
-----------  ---------------------    ---------------------
-ep1_exp                  0.8              1.6
-
-ep1_mc                   6.6             16.6
-
-ep2_exp                  1.1              1.6
-
-ep2_mc                   5.8             20.6
-----------  ---------------------    ---------------------
-
-
-
-
-
-
-<!-- The above yields the following: -->
-
-<!-- \begin{tabular}[h]{lll} -->
-<!--   \hline -->
-<!--   Simulation&Elapsed wall time (s) &Object size (MB)\\ -->
-<!--   \hline -->
-<!--   ep1\_exp & 0.8 & 1.6 \\ -->
-<!--   ep1\_mc  & 6.6 & 16.8 \\ -->
-<!--   ep2\_exp & 1.1 & 1.6 \\ -->
-<!--   ep2\_mc  & 5.8 & 20.6 \\ -->
-<!--   \hline -->
-<!-- \end{tabular} -->
-
-
-There are large differences in speed between models and sizes of
-objects differ too: in these cases, the simulations using the "McFL"
-model run for much longer (2000 to 2000 time units, vs. 100 to 1500
-of the "Exp" models) and also had a larger number of clones returned
-(5 to 16 vs. 1 to 3). As said above, for further details go to
-section \@ref(moretimings).
-
-
 ## Citing OncoSimulR and other documentation {#citing}
 
 In R, you can do
@@ -1189,6 +1033,226 @@ version 2.
 
 
 **The functionality of version 1 will soon be removed.**
+
+
+
+
+
+# How long does it take? How fast is OncoSimulR? How much space do the return objects take? {#timings}
+
+(Many of the comments on this section need to use ideas discussed in
+other places of this document. If you read this section first, you
+might want to come back after reading the relevant parts. In
+addition, much of the code in this section is not executed during
+the building of the vignette, to keept vignette build time
+reasonable and prevent use huge amounts of RAM.)
+
+Time to complete the simulations and size of return objects depend
+on several, interacting factors. The usual rule of "experiment
+before launching a large number of simulations" applies, but here we
+will walk through several cases to get a feeling for the major
+factors that affect speed and size.
+
+
+<!-- How long simulations take and how depend on several factors. This section -->
+<!-- gives a quick view. Longer examples and more detailed comments are -->
+<!-- provided in section \@ref(moretimings). -->
+
+Speed will depend on:
+
+* Your hardware, of course.
+* The evolutionary model: using the "McFL" model is often slower
+  (this model includes density dependence and is more complex).
+* The granularity of how often you keep data (`keepEvery`
+  argument). Note that the default, which is to keep as often as you
+  sample (so that we preserve all history) can lead to very slow execution
+  times.
+* The mutation rate, because higher mutation rates lead to more
+  clones, and more clones mean we need to iterate over, well, more clones,
+  and keep larger data structures.
+* The fitness specification (more complex fitness specifications tend
+  to be slightly slower).
+* The stopping conditions.
+
+
+Size of return objects will depend on:
+
+* Any factor that affects the number of clones tracked/returned, in
+  particular: initial sizes and stopping conditions, mutation rate,
+  and how often you keep data (the `keepEvery` argument).
+* Whether or not you keep the complete clone history (this affects
+  mainly size of return object, not speed).
+
+
+
+
+To get a first idea, we will use the fitness specification from
+section \@ref(quickexample), with the `detectionProb` stopping
+mechanism (see \@ref(detectprob)), two different growth models
+(exponential and McFarland) and will obtain 100 simulations. This
+reprents a small number of simulations in a particular epistasis
+scenario we are interested in. The results I show are for a laptop
+with an 8-core Intel Xeon E3-1505M CPU, running Debian GNU/Linux.
+
+
+<!-- zz: fixme!!! explain sv2  -->
+
+```{r, eval=FALSE}
+
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), 
+                   "SMAD4", "CDNK2A", 
+                   "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                   "TP53", "MLL3",
+                   rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.1,
+               sh = -0.9,
+               typeDep = "MN"),
+    drvNames = c("KRAS", "SMAD4", "CDNK2A", "TP53", 
+	             "MLL3", "TGFBR2", "PXDN"))
+
+
+system.time(
+    ep1_exp <- oncoSimulPop(100, pancr, 
+                            detectionProb = "default", 
+                            detectionSize = NA,
+                            detectionDrivers = NA,
+                            finalTime = NA,
+                            keepEvery = 1,
+                            model = "Exp", 
+                            mc.cores = detectCores()))
+
+system.time(
+    ep1_mc <- oncoSimulPop(100, pancr, 
+                           detectionProb = "default", 
+                           detectionSize = NA,
+                           detectionDrivers = NA,
+                           finalTime = NA,
+                           keepEvery = 1,                                  
+                           model = "McFL", 
+                           mc.cores = detectCores()))
+
+system.time(
+    ep2_exp <- oncoSimulPop(100, pancr, 
+                            detectionProb = "default", 
+                            detectionSize = NA,
+                            detectionDrivers = NA,
+                            finalTime = NA,
+                            keepEvery = NA, 
+                            model = "Exp", 
+                            mc.cores = detectCores()))
+
+system.time(
+    ep2_mc <- oncoSimulPop(100, pancr, 
+                           detectionProb = "default", 
+                           detectionSize = NA,
+                           detectionDrivers = NA,
+                           finalTime = NA,
+                           keepEvery = NA,
+                           model = "McFL", 
+                           mc.cores = detectCores()))
+
+``` 
+
+And we look at the sizes of objects and obtain summaries of numbers
+of clones, iterations, and final times using:
+
+
+``` {r, eval=FALSE}
+print(object.size(ep1_exp), units = "MB")
+summary(unlist(lapply(ep1_exp, "[[", "NumClones")))
+summary(unlist(lapply(ep1_exp, "[[", "NumIter")))
+summary(unlist(lapply(ep1_exp, "[[", "FinalTime")))
+summary(unlist(lapply(ep1_exp, "[[", "TotalPopSize")))
+```
+
+
+
+<!-- ```{r, echo=FALSE, results='hide'} -->
+<!-- dftm1 <- data.frame(Simulation = c("ep1_exp", "ep1_mc", "ep2_exp","ep2_mc"),  -->
+<!--     ElapsedTime = c(0.8, 6.6, 1.1, 5.8), Size = c(1.6, 16.6, 1.6, 20.6)) -->
+
+<!-- ``` -->
+
+The above runs yield the following:
+
+<!-- ```{r, results='show', echo=FALSE} -->
+<!-- knitr::kable(dftm1, col.names = c("Simulation", "Elapsed Time (s)", "Object Size (MB)")) -->
+
+<!-- ``` -->
+
+
+
+<!-- |Simulation | Elapsed Time (s)| Object Size (MB)| -->
+<!-- |:----------|----------------:|----------------:| -->
+<!-- |ep1_exp    |              0.8|              1.6| -->
+<!-- |ep1_mc     |              6.6|             16.6| -->
+<!-- |ep2_exp    |              1.1|              1.6| -->
+<!-- |ep2_mc     |              5.8|             20.6| -->
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Simulation    Elapsed Time (s)         Object Size (MB)   Median Number Clones  Median Number Iteration   Median Final Time  Median Total Pop. Size 
+----------  ---------------------    --------------------  
+ep1_exp                  0.8              1.6
+
+ep1_mc                   6.6             16.6
+
+ep2_exp                  1.1              1.6
+
+ep2_mc                   5.8             20.6
+----------  ---------------------    ---------------------
+
+
+
+
+---------------------------------------------------------
+                                   ep1_exp   ep1_mc  
+------------------------------
+Elapsed Time (s)
+
+Object Size (MB)
+
+Median Number of Clones
+
+Median Number of Iterations
+
+Median Final Time
+
+Median Total Population Size
+
+
+
+Beware we are using same initSize, etc
+
+
+
+
+
+<!-- The above yields the following: -->
+
+<!-- \begin{tabular}[h]{lll} -->
+<!--   \hline -->
+<!--   Simulation&Elapsed wall time (s) &Object size (MB)\\ -->
+<!--   \hline -->
+<!--   ep1\_exp & 0.8 & 1.6 \\ -->
+<!--   ep1\_mc  & 6.6 & 16.8 \\ -->
+<!--   ep2\_exp & 1.1 & 1.6 \\ -->
+<!--   ep2\_mc  & 5.8 & 20.6 \\ -->
+<!--   \hline -->
+<!-- \end{tabular} -->
+
+
+There are large differences in speed between models and sizes of
+objects differ too: in these cases, the simulations using the "McFL"
+model run for much longer (2000 to 2000 time units, vs. 100 to 1500
+of the "Exp" models) and also had a larger number of clones returned
+(5 to 16 vs. 1 to 3). As said above, for further details go to
+section \@ref(moretimings).
+
+
+
+## Can I have population sizes larger than $10^{10}$ {#popgt1010}
 
 
 
