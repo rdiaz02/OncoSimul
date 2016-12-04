@@ -750,7 +750,8 @@ st <- oncoSimulPop(4, ft, muEF = mt,
                    keepEvery = NA, 
                    mc.cores = 2, ## adapt to your hardware
                    seed = NULL) ## for repeatibility
-## How long did it take?
+
+## How long did it take to reach cancer?
 unlist(lapply(st, function(x) x$FinalTime))
 
 ```
@@ -1040,18 +1041,15 @@ version 2.
 
 # How long does it take? How fast is OncoSimulR? How much space do the return objects take? {#timings}
 
-(Many of the comments on this section need to use ideas discussed in
-other places of this document. If you read this section first, you
-might want to come back after reading the relevant parts. In
-addition, much of the code in this section is not executed during
-the building of the vignette, to keept vignette build time
-reasonable and prevent use huge amounts of RAM.)
-
 Time to complete the simulations and size of return objects depend
 on several, interacting factors. The usual rule of "experiment
 before launching a large number of simulations" applies, but here we
 will walk through several cases to get a feeling for the major
-factors that affect speed and size.
+factors that affect speed and size. Many of the comments on this
+section need to use ideas discussed in other places of this
+document. If you read this section first, you might want to come
+back after reading the relevant parts.
+
 
 
 <!-- How long simulations take and how depend on several factors. This section -->
@@ -1092,13 +1090,16 @@ mechanism (see \@ref(detectprob)), two different growth models
 (exponential and McFarland) and will obtain 100 simulations. This
 reprents a small number of simulations in a particular epistasis
 scenario we are interested in. The results I show are for a laptop
-with an 8-core Intel Xeon E3-1505M CPU, running Debian GNU/Linux.
+with an 8-core Intel Xeon E3-1505M CPU, running Debian
+GNU/Linux. (Most of the code in this section is not executed during
+the building of the vignette, to keept vignette build time
+reasonable and prevent using huge amounts of RAM.)
+
 
 
 <!-- zz: fixme!!! explain sv2  -->
 
 ```{r, eval=FALSE}
-
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
                    "SMAD4", "CDNK2A", 
@@ -1121,7 +1122,7 @@ system.time(
                             finalTime = NA,
                             keepEvery = 1,
                             model = "Exp", 
-                            mc.cores = detectCores()))
+                            mc.cores = 1))/100
 
 system.time(
     ep1_mc <- oncoSimulPop(100, pancr, 
@@ -1131,7 +1132,7 @@ system.time(
                            finalTime = NA,
                            keepEvery = 1,                                  
                            model = "McFL", 
-                           mc.cores = detectCores()))
+                           mc.cores = 1))/100
 
 system.time(
     ep2_exp <- oncoSimulPop(100, pancr, 
@@ -1141,7 +1142,7 @@ system.time(
                             finalTime = NA,
                             keepEvery = NA, 
                             model = "Exp", 
-                            mc.cores = detectCores()))
+                            mc.cores = 1))/100
 
 system.time(
     ep2_mc <- oncoSimulPop(100, pancr, 
@@ -1151,7 +1152,7 @@ system.time(
                            finalTime = NA,
                            keepEvery = NA,
                            model = "McFL", 
-                           mc.cores = detectCores()))
+                           mc.cores = 1))/100
 
 ``` 
 
@@ -1160,7 +1161,7 @@ of clones, iterations, and final times using:
 
 
 ``` {r, eval=FALSE}
-print(object.size(ep1_exp), units = "MB")
+object.size(ep1_exp)/(100 * 1024^2) ## per simulation, in MB
 summary(unlist(lapply(ep1_exp, "[[", "NumClones")))
 summary(unlist(lapply(ep1_exp, "[[", "NumIter")))
 summary(unlist(lapply(ep1_exp, "[[", "FinalTime")))
@@ -1184,43 +1185,60 @@ The above runs yield the following:
 
 
 
-<!-- |Simulation | Elapsed Time (s)| Object Size (MB)| -->
-<!-- |:----------|----------------:|----------------:| -->
-<!-- |ep1_exp    |              0.8|              1.6| -->
-<!-- |ep1_mc     |              6.6|             16.6| -->
-<!-- |ep2_exp    |              1.1|              1.6| -->
-<!-- |ep2_mc     |              5.8|             20.6| -->
+<!-- <\!-- |Simulation | Elapsed Time (s)| Object Size (MB)| -\-> -->
+<!-- <\!-- |:----------|----------------:|----------------:| -\-> -->
+<!-- <\!-- |ep1_exp    |              0.8|              1.6| -\-> -->
+<!-- <\!-- |ep1_mc     |              6.6|             16.6| -\-> -->
+<!-- <\!-- |ep2_exp    |              1.1|              1.6| -\-> -->
+<!-- <\!-- |ep2_mc     |              5.8|             20.6| -\-> -->
 
-----------------------------------------------------------------------------------------------------------------------------------------------------
-Simulation    Elapsed Time (s)         Object Size (MB)   Median Number Clones  Median Number Iteration   Median Final Time  Median Total Pop. Size 
-----------  ---------------------    --------------------  
-ep1_exp                  0.8              1.6
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!-- Simulation    Elapsed Time (s)         Object Size (MB)   Median Number Clones  Median Number Iteration   Median Final Time  Median Total Pop. Size  -->
+<!-- ----------  ---------------------    --------------------   -->
+<!-- ep1_exp                  0.8              1.6 -->
 
-ep1_mc                   6.6             16.6
+<!-- ep1_mc                   6.6             16.6 -->
 
-ep2_exp                  1.1              1.6
+<!-- ep2_exp                  1.1              1.6 -->
 
-ep2_mc                   5.8             20.6
-----------  ---------------------    ---------------------
-
-
+<!-- ep2_mc                   5.8             20.6 -->
+<!-- ----------  ---------------------    --------------------- -->
 
 
----------------------------------------------------------
-                                   ep1_exp   ep1_mc  
-------------------------------
-Elapsed Time (s)
 
-Object Size (MB)
 
-Median Number of Clones
+-------------------------------------------------------------------------------------
+                                               ep1_exp   ep1_mc   ep2_exp    ep2_mc
+------------------------------------------    --------- -------- ---------  --------
+Elapsed Time, average per simulation (s)      0.0016    0.70      0.0015     0.68
 
-Median Number of Iterations
+Object Size, average per simulation (MB)      0.03      3.8       0.01       0.01
 
-Median Final Time
+Median Number of Clones                        2         13        1          1
 
-Median Total Population Size
+Median Number of Iterations                    243       868334    327        809534
 
+Median Final Time                              241       21706     325        20236
+
+Median Total Population Size                   1057      683       1161       701 
+-----------------------------------------     --------- -------- ---------  --------
+
+
+The above table shows that a naïve comparison (looking simply at
+execution time) might conclude that the McFL model is much, much
+slower than the Exp model. But they are behaving in very different
+ways: using the `detectionProb` stopping mechanism (see
+\@ref(detectprob)) will lead to stopping the simulations very
+quickly in the exponential model because as soon as a clone with
+fitness $>1$ appears it starts growing exponentially. We can see
+that the number of iterations and the final time are much smaller in
+the Exp than in the McFL model.
+
+In the comparisons below, and 
+
+
+The above table also shows that the `keepEvery` setting can make a
+large difference.
 
 
 Beware we are using same initSize, etc
@@ -1228,19 +1246,6 @@ Beware we are using same initSize, etc
 
 
 
-
-<!-- The above yields the following: -->
-
-<!-- \begin{tabular}[h]{lll} -->
-<!--   \hline -->
-<!--   Simulation&Elapsed wall time (s) &Object size (MB)\\ -->
-<!--   \hline -->
-<!--   ep1\_exp & 0.8 & 1.6 \\ -->
-<!--   ep1\_mc  & 6.6 & 16.8 \\ -->
-<!--   ep2\_exp & 1.1 & 1.6 \\ -->
-<!--   ep2\_mc  & 5.8 & 20.6 \\ -->
-<!--   \hline -->
-<!-- \end{tabular} -->
 
 
 There are large differences in speed between models and sizes of
