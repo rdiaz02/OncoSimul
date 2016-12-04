@@ -220,7 +220,7 @@ is a summary of some of the key features:
 * More generally, you can add arbitrary numbers of non-interacting
       genes with arbitrary fitness effects.
   
-* You can allow for deviations from the OT, CBN, semimonotone, and
+* you can allow for deviations from the OT, CBN, semimonotone, and
       XOR models, specifying a penalty for such deviations (the $s_h$
       parameter).
       
@@ -1070,7 +1070,9 @@ Speed will depend on:
   and keep larger data structures.
 * The fitness specification (more complex fitness specifications tend
   to be slightly slower).
-* The stopping conditions.
+* The stopping conditions (`detectionProb`, `detectionDrivers`,
+  `detectionSize` arguments) and whether or not simulations are run until
+  cancer is reached (`onlyCancer` argument).
 
 
 Size of return objects will depend on:
@@ -1084,22 +1086,34 @@ Size of return objects will depend on:
 
 
 
-To get a first idea, we will use the fitness specification from
-section \@ref(quickexample), with the `detectionProb` stopping
-mechanism (see \@ref(detectprob)), two different growth models
-(exponential and McFarland) and will obtain 100 simulations. This
-reprents a small number of simulations in a particular epistasis
-scenario we are interested in. The results I show are for a laptop
-with an 8-core Intel Xeon E3-1505M CPU, running Debian
-GNU/Linux. (Most of the code in this section is not executed during
-the building of the vignette, to keept vignette build time
-reasonable and prevent using huge amounts of RAM.)
+To get a first idea, we will use the fitness specification from section
+\@ref(quickexample), with the `detectionProb` stopping mechanism (see
+\@ref(detectprob)).  We will use the two main growth models (exponential
+and McFarland). Each model will be run with two settings of
+`keepEvery`. With `keepEvery =1` (runs `exp1` and `mc1`), population
+samples are stored at time intervals of 1 (even if most of the clones in
+those samples later become extinct). With `keepEvery = NA` (runs `exp2`
+and `mc2`) no intermediate population samples are stored, so clones that
+become extinct at any sampling period are pruned and only the existing
+clones at the end of the simulation are returned.
+
+
+Will obtain 100 simulations. This represents a small number of simulations
+in a particular epistasis scenario we are interested in. The results I
+show are for a laptop with an 8-core Intel Xeon E3-1505M CPU, running
+Debian GNU/Linux. (Most of the code in this section is not executed during
+the building of the vignette, to keept vignette build time reasonable and
+prevent using huge amounts of RAM. All of the code, ready to be sourced
+and run is available from zz).
+
+
 
 
 
 <!-- zz: fixme!!! explain sv2  -->
 
-```{r, eval=FALSE}
+```{r timing1, eval=FALSE}
+
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
                    "SMAD4", "CDNK2A", 
@@ -1113,59 +1127,67 @@ pancr <- allFitnessEffects(
     drvNames = c("KRAS", "SMAD4", "CDNK2A", "TP53", 
 	             "MLL3", "TGFBR2", "PXDN"))
 
+Nindiv <- 100 ## Increase to decrease sampling variation
 
-system.time(
-    ep1_exp <- oncoSimulPop(100, pancr, 
+## keepEvery = 1
+t_exp1 <- system.time(
+    exp1 <- oncoSimulPop(Nindiv, pancr, 
                             detectionProb = "default", 
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = 1,
                             model = "Exp", 
-                            mc.cores = 1))/100
+                            mc.cores = 1))["elapsed"]/Nindiv
 
-system.time(
-    ep1_mc <- oncoSimulPop(100, pancr, 
+
+t_mc1 <- system.time(
+    mc1 <- oncoSimulPop(Nindiv, pancr, 
                            detectionProb = "default", 
                            detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA,
                            keepEvery = 1,                                  
                            model = "McFL", 
-                           mc.cores = 1))/100
+                           mc.cores = 1))["elapsed"]/Nindiv
 
-system.time(
-    ep2_exp <- oncoSimulPop(100, pancr, 
+## keepEvery = NA
+t_exp2 <- system.time(
+    exp2 <- oncoSimulPop(Nindiv, pancr, 
                             detectionProb = "default", 
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = NA, 
                             model = "Exp", 
-                            mc.cores = 1))/100
+                            mc.cores = 1))["elapsed"]/Nindiv
 
-system.time(
-    ep2_mc <- oncoSimulPop(100, pancr, 
+
+t_mc2 <- system.time(
+    mc2 <- oncoSimulPop(Nindiv, pancr, 
                            detectionProb = "default", 
                            detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA,
                            keepEvery = NA,
                            model = "McFL", 
-                           mc.cores = 1))/100
+                           mc.cores = 1))["elapsed"]/Nindiv
+
 
 ``` 
 
-And we look at the sizes of objects and obtain summaries of numbers
-of clones, iterations, and final times using:
+And we obtain times, sizes of objects and summaries of numbers of clones,
+iterations, and final times doing:
 
 
 ``` {r, eval=FALSE}
-object.size(ep1_exp)/(100 * 1024^2) ## per simulation, in MB
-summary(unlist(lapply(ep1_exp, "[[", "NumClones")))
-summary(unlist(lapply(ep1_exp, "[[", "NumIter")))
-summary(unlist(lapply(ep1_exp, "[[", "FinalTime")))
-summary(unlist(lapply(ep1_exp, "[[", "TotalPopSize")))
+cat("\n\n\n t_exp1 = ", t_exp1, "\n")
+object.size(exp1)/(Nindiv * 1024^2)
+cat("\n\n")
+summary(unlist(lapply(exp1, "[[", "NumClones")))
+summary(unlist(lapply(exp1, "[[", "NumIter")))
+summary(unlist(lapply(exp1, "[[", "FinalTime")))
+summary(unlist(lapply(exp1, "[[", "TotalPopSize")))
 ```
 
 
@@ -1208,52 +1230,218 @@ The above runs yield the following:
 
 
 -------------------------------------------------------------------------------------
-                                               ep1_exp   ep1_mc   ep2_exp    ep2_mc
-------------------------------------------    --------- -------- ---------  --------
-Elapsed Time, average per simulation (s)      0.0016    0.70      0.0015     0.68
+                                                exp1      mc1      exp2       mc2	
+------------------------------------------     --------- -------- ---------  --------
+Elapsed Time, average per simulation (s)       0.002      0.70     0.0015     0.68	
+											                                         
+Object Size, average per simulation (MB)       0.03      4.0       0.01       0.01		
+											                                         
+Median Number of Clones                         2         13        1          1		
+											                                         
+Median Number of Iterations                     274       850000    253        830000
+											                                         
+Median Final Time                               273       21700     252        20236	
+											                                         
+Median Total Population Size                    1147      683       1057       692 	
+-----------------------------------------      --------- -------- ---------  --------
+Table: (\#tab:timing1) Benchmarks of Exp and McFL models using the default
+`detectionProb` with two settings of `keepEvery`.
 
-Object Size, average per simulation (MB)      0.03      3.8       0.01       0.01
 
-Median Number of Clones                        2         13        1          1
+The above table shows that a naïve comparison (looking simply at execution
+time) might conclude that the McFL model is much, much slower than the Exp
+model. But that is not the complete story: using the `detectionProb`
+stopping mechanism (see \@ref(detectprob)) will lead to stopping the
+simulations very quickly in the exponential model because as soon as a
+clone with fitness $>1$ appears it starts growing exponentially. In fact,
+we can see that the number of iterations and the final time are much
+smaller in the Exp than in the McFL model. This table also shows that the
+`keepEvery = NA` setting can make a difference especially for the McFL
+models, as seen by the median number of clones and the size of the
+object; we will return to this issue below as execution time and object
+size (which affects RAM usage) depend strongly on number of clones
+tracked.
 
-Median Number of Iterations                    243       868334    327        809534
+<!-- Models `exp2` and `mc2` do not store any intermediate population samples -->
+<!-- (`keepEvery = NA`) so clones that become extinct at any sampling period -->
+<!-- are pruned and only the existing clones at the end of the simulation are -->
+<!-- returned. In contrast, models `exp1` and `mc1` store population samples at -->
+<!-- time intervals of 1 (`keepEvery = 1`), even if many of those clones -->
+<!-- eventually become extinct. This makes a difference especially for the McFL -->
+<!-- models, as seen by the median number of clones and the size of the -->
+<!-- object. We will return to this issue below as execution time and object -->
+<!-- size (which affects RAM usage) depend strongly on number of clones tracked. -->
 
-Median Final Time                              241       21706     325        20236
 
-Median Total Population Size                   1057      683       1161       701 
+
+We can run the exponential model again modifying the arguments of the
+`detectionProb` mechanism; in two of the models below (`exp3` and `exp4`)
+no detection takes place unless populations are at least 100 times larger
+than the initial population size and probability of detection is 0.1 with
+a poulation size 1000 times larger than the initial one (`PDBaseline =
+5e4`, `n2 = 5e5`). In the other two models, no detection takes place
+unless populations are at least 1000 times larger than the initial
+population size and probability of detection is 0.1 with a poulation size
+100000 times larger than the initial one (`PDBaseline = 5e5`, `n2 = 5e7`).
+
+
+
+```{r timing2, eval = FALSE}
+t_exp3 <- system.time(
+    exp3 <- oncoSimulPop(Nindiv, pancr, 
+                            detectionProb = c(PDBaseline = 5e4,
+                                              p2 = 0.1, n2 = 5e5,
+                                              checkSizePEvery = 20), 
+                            detectionSize = NA,
+                            detectionDrivers = NA,
+                            finalTime = NA,
+                            keepEvery = 1, 
+                            model = "Exp", 
+                            mc.cores = 1))["elapsed"]/Nindiv
+
+t_exp4 <- system.time(
+    exp4 <- oncoSimulPop(Nindiv, pancr, 
+                            detectionProb = c(PDBaseline = 5e4,
+                                              p2 = 0.1, n2 = 5e5,
+                                              checkSizePEvery = 20), 
+                            detectionSize = NA,
+                            detectionDrivers = NA,
+                            finalTime = NA,
+                            keepEvery = NA, 
+                            model = "Exp", 
+                            mc.cores = 1))["elapsed"]/Nindiv
+
+
+
+t_exp5 <- system.time(
+    exp5 <- oncoSimulPop(Nindiv, pancr, 
+                            detectionProb = c(PDBaseline = 5e5,
+                                              p2 = 0.1, n2 = 5e7), 
+                            detectionSize = NA,
+                            detectionDrivers = NA,
+                            finalTime = NA,
+                            keepEvery = 1, 
+                            model = "Exp", 
+                            mc.cores = 1))["elapsed"]/Nindiv
+
+t_exp6 <- system.time(
+    exp6 <- oncoSimulPop(Nindiv, pancr, 
+                            detectionProb = c(PDBaseline = 5e5,
+                                              p2 = 0.1, n2 = 5e7), 
+                            detectionSize = NA,
+                            detectionDrivers = NA,
+                            finalTime = NA,
+                            keepEvery = NA, 
+                            model = "Exp", 
+                            mc.cores = 1))["elapsed"]/Nindiv
+
+```
+
+
+
+-------------------------------------------------------------------------------------
+                                               exp3      exp4     exp5       exp6    
+------------------------------------------    --------- -------- ---------  -------- 
+Elapsed Time, average per simulation (s)      0.010      0.009     0.85     0.85
+
+Object Size, average per simulation (MB)      0.41       0.01      0.90       0.02
+
+Median Number of Clones                        14        9        31.5       26.51
+
+Median Number of Iterations                    2780      2770     43900      58230
+
+Median Final Time                              1870      1870     2235       1586
+
+Median Total Population Size                   8.0e6     7.8e6     1.1e9      1.3e9 
 -----------------------------------------     --------- -------- ---------  --------
+Table: (\#tab:timing2) Benchmarks of Exp models modifying the default `detectionProb` with two settings of `keepEvery`.
 
 
-The above table shows that a naïve comparison (looking simply at
-execution time) might conclude that the McFL model is much, much
-slower than the Exp model. But they are behaving in very different
-ways: using the `detectionProb` stopping mechanism (see
-\@ref(detectprob)) will lead to stopping the simulations very
-quickly in the exponential model because as soon as a clone with
-fitness $>1$ appears it starts growing exponentially. We can see
-that the number of iterations and the final time are much smaller in
-the Exp than in the McFL model.
-
-In the comparisons below, and 
+As above, a `keepEvery = NA` leads to much smaller object sizes and
+slightly smaller numbers of clones and execution times. Changing the
+exiting conditions (by changing `detectionProb` arguments) leads to large
+increases in number of iterations (in this case by factors of about 15x to
+20x) and a corresponding increase in execution time.
 
 
-The above table also shows that the `keepEvery` setting can make a
-large difference.
+All the runs above used the default value `onlyCancer = TRUE`. This means
+that simulations will be repeated until the exiting conditions are reached
+(see details in section \@ref(endsimul)) and, therefore, any simulation
+that ends up in extinction will be repeated. This setting can thus have a
+large effect on the exponential models, because when the initial
+population size is not very large and we start from the wildtype, it is
+not infrequent for simulations to become extinct (when birth and death
+rates are equal and the population size is small, it is easy to reach
+extinction before a mutation in a gene that increases fitness occurs). But
+this is rarely the case in the McFarland model (unless we use really small
+initial population sizes) because of the dependency of death rate on total
+population size (see section \@ref(mcfl)).
 
 
-Beware we are using same initSize, etc
+The number of attempts until cancer was reached in the above models is
+shown in the following table:
+
+```{r tableattemptsvalue, eval = TRUE, echo = FALSE}
+## From running the code
+
+tableattemptsvalues <- c(exp1 = 2, mc1 = 1, exp2 = 2, mc2 = 1,
+                         exp3 = 5, exp4 = 5, exp5 = 5.5, exp6 = 5)
+tableattemptsvalues <- data.frame(Attempts_Until_Cancer = tableattemptsvalues)
+
+knitr::kable(tableattemptsvalues, booktabs = TRUE,
+             caption = "Number of attempts until cancer.", align = "c")
+
+```
+
+(The values can be obtained from any of the above runs doing, for
+instance, `median(unlist(lapply(exp1, function(x) x$other$attemptsUsed)))`
+).
+
+<!-- There are large differences in speed between models and sizes of -->
+<!-- objects differ too: in these cases, the simulations using the "McFL" -->
+<!-- model run for much longer (2000 to 2000 time units, vs. 100 to 1500 -->
+<!-- of the "Exp" models) and also had a larger number of clones returned -->
+<!-- (5 to 16 vs. 1 to 3). As said above, for further details go to -->
+<!-- section \@ref(moretimings). -->
 
 
+We can rerun all of the above models with argument `onlyCancer = FALSE`
+and the results are shown below (note that the differences between this
+table and table \@ref(tab:timing1) for the McFL models only reflecting
+sampling variation).
 
 
+---------------------------------------------------------------------------------------------------------------------------------
+                                              exp1      mc1      exp2       mc2	      exp3      exp4          exp5         exp6    
+------------------------------------------   --------- -------- ---------  --------  --------- ---------- -----------  ----------- 
+Elapsed Time, average per simulation (s)     0.001      0.64      0.001       0.64	  0.002     0.002      0.040         0.090
+											                                       
+Object Size, average per simulation (MB)     0.04       3.5        0.01       0.01	   0.17     0.01        0.16         0.01
+											                                       
+Median Number of Clones                       2         12        0          1		   2         0          2            0
+											                                       
+Median Number of Iterations                   374       796000    312        739000    791       759        499           692
+											                                       
+Median Final Time                             373       19940     312        18500	   7900      666        498           674
+											                                       
+Median Total Population Size                  0         689       0          691 	   0         0          0             0 
+
+Mean  Total Population  Size                  517       705       639        699       1.5e6    6.2e6       1.9e8       5.3e8
+-----------------------------------------    --------- -------- ---------  --------  --------- ---------- ----------   -----------
+Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:timing1) and
+\@ref(tab:timing2) when run with `onlyCancer = FALSE`.
 
 
-There are large differences in speed between models and sizes of
-objects differ too: in these cases, the simulations using the "McFL"
-model run for much longer (2000 to 2000 time units, vs. 100 to 1500
-of the "Exp" models) and also had a larger number of clones returned
-(5 to 16 vs. 1 to 3). As said above, for further details go to
-section \@ref(moretimings).
+Now most simulations under the exponential model end up in extinction, as
+seen by the median population size of 0 (but not all, as the mean
+population size is clearly away from zero). Consequently, simulations
+under the exponential model are now faster and produce much smaller
+objects. Of course, whether one should run simulations with `onlyCancer =
+TRUE` or `onlyCancer = FALSE` will depend on the question being asked (see
+\@ref(exbauer) for a question where we will naturally want to use
+`onlyCancer = FALSE`).
+
+
 
 
 
@@ -1545,6 +1733,15 @@ eq. 2.1 in p.9).  This reparameterization applies to v.2. In v.1 we
 use the same parameterization as in the original one in
 @McFarland2013.
 
+For death rate, we use the expression that @McFarland2013 (see their
+p. 2911) use "(...) for large cancers (grown to $10^6$ cells)": $D(N) =
+\log(1 + N)/K$ where $K$ is the initial equilibrium population size. As
+the authors explain, for large N/K the above expression "(...)
+recapitulates Gompertzian dynamics observed experimentally for large
+tumors".
+
+By default, OncoSimulR uses a value of $K=initSize/(e^{1} - 1)$ so that
+the starting population is at equilibrium. 
 
 
 ### No viability of clones and types of models {#noviab}
