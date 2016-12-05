@@ -547,7 +547,8 @@ oncoSimulIndiv <- function(fp,
     if(is_null_na(detectionDrivers)) detectionDrivers <- (2^31) - 1
     if(is_null_na(detectionSize)) detectionSize <- Inf
     if(is_null_na(finalTime)) finalTime <- Inf
-    
+
+    if(is_null_na(sampleEvery)) stop("sampleEvery cannot be NULL or NA")
     
     if(!inherits(fp, "fitnessEffects")) {
         if(any(unlist(lapply(list(fp, 

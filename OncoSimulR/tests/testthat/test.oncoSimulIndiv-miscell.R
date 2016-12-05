@@ -1,5 +1,18 @@
 cat(paste("\n Starting oncoSimulIndiv-miscell tests", date(), "\n"))
 
+test_that("sampleEvery must have a value", {
+     oi <- allFitnessEffects(orderEffects =
+                                c("F > D" = -0.3, "D > F" = 0.4),
+                            noIntGenes = rexp(5, 10),
+                            geneToModule =
+                                c("Root" = "Root",
+                                  "F" = "f1, f2, f3",
+                                  "D" = "d1, d2") )
+     expect_error(oncoSimulIndiv(pi, sampleEvery = NA),
+                  "sampleEvery cannot be NULL or NA",
+                  fixed = TRUE)
+})
+
 ## RNGkind("Mersenne-Twister")
 test_that("can start from 1 individual but error if McFL", {
     oi <- allFitnessEffects(orderEffects =
