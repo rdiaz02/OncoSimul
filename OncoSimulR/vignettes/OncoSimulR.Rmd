@@ -1084,7 +1084,7 @@ Size of return objects will depend on:
   mainly size of return object, not speed).
 
 
-
+## Exp and McFL with "detectionProb" and pancreas example {#bench1}
 
 To get a first idea, we will use the fitness specification from section
 \@ref(quickexample), with the `detectionProb` stopping mechanism (see
@@ -1097,14 +1097,20 @@ and `mc2`) no intermediate population samples are stored, so clones that
 become extinct at any sampling period are pruned and only the existing
 clones at the end of the simulation are returned.
 
+```{r loadbench1, echo = FALSE, eval = TRUE} 
+data(benchmark_1) 
+``` 
 
-Will obtain 100 simulations. This represents a small number of simulations
-in a particular epistasis scenario we are interested in. The results I
-show are for a laptop with an 8-core Intel Xeon E3-1505M CPU, running
-Debian GNU/Linux. (Most of the code in this section is not executed during
-the building of the vignette, to keept vignette build time reasonable and
-prevent using huge amounts of RAM. All of the code, ready to be sourced
-and run is available from zz).
+Will run `r unique(benchmark_1$Numindiv)` simulations. <!-- This -->
+<!-- represents a small number of simulations in a particular epistasis -->
+<!-- scenario we are interested in. --> The results I show are for a laptop
+with an 8-core Intel Xeon E3-1505M CPU, running Debian
+GNU/Linux. Most of the code in this section is not executed during
+the building of the vignette, to keept vignette build time
+reasonable and prevent using huge amounts of RAM. All of the code,
+ready to be sourced and run is available from the 'inst/miscell'
+directory (and the summary output from the benchmarks from the
+'data' directory).
 
 
 
@@ -1176,8 +1182,8 @@ t_mc2 <- system.time(
 
 ``` 
 
-And we obtain times, sizes of objects and summaries of numbers of clones,
-iterations, and final times doing:
+And we can obtain times, sizes of objects and summaries of numbers
+of clones, iterations, and final times doing:
 
 
 ``` {r, eval=FALSE}
@@ -1229,24 +1235,42 @@ The above runs yield the following:
 
 
 
--------------------------------------------------------------------------------------
-                                                exp1      mc1      exp2       mc2	
-------------------------------------------     --------- -------- ---------  --------
-Elapsed Time, average per simulation (s)       0.002      0.70     0.0015     0.68	
+<!-- ------------------------------------------------------------------------------------- -->
+<!--                                                 exp1      mc1      exp2       mc2	 -->
+<!-- ------------------------------------------     --------- -------- ---------  -------- -->
+<!-- Elapsed Time, average per simulation (s)       0.002      0.70     0.0015     0.68	 -->
 											                                         
-Object Size, average per simulation (MB)       0.03      4.0       0.01       0.01		
+<!-- Object Size, average per simulation (MB)       0.03      4.0       0.01       0.01		 -->
 											                                         
-Median Number of Clones                         2         13        1          1		
+<!-- Median Number of Clones                         2         13        1          1		 -->
 											                                         
-Median Number of Iterations                     274       850000    253        830000
+<!-- Median Number of Iterations                     274       850000    253        830000 -->
 											                                         
-Median Final Time                               273       21700     252        20236	
+<!-- Median Final Time                               273       21700     252        20236	 -->
 											                                         
-Median Total Population Size                    1147      683       1057       692 	
------------------------------------------      --------- -------- ---------  --------
-Table: (\#tab:timing1) Benchmarks of Exp and McFL models using the default
-`detectionProb` with two settings of `keepEvery`.
+<!-- Median Total Population Size                    1147      683       1057       692 	 -->
+<!-- -----------------------------------------      --------- -------- ---------  -------- -->
+<!-- Table: (\#tab:timing1) Benchmarks of Exp and McFL models using the default -->
+<!-- `detectionProb` with two settings of `keepEvery`. -->
 
+
+```{r bench1, eval=TRUE, echo = FALSE}
+data(benchmark_1)
+knitr::kable(benchmark_1[1:4, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median"
+				  ),
+    caption = "Benchmarks of Exp and McFL models using the default
+	`detectionProb` with two settings of `keepEvery`.", 
+	align = "c")
+```
 
 The above table shows that a naïve comparison (looking simply at execution
 time) might conclude that the McFL model is much, much slower than the Exp
@@ -1339,22 +1363,41 @@ t_exp6 <- system.time(
 
 
 
--------------------------------------------------------------------------------------
-                                               exp3      exp4     exp5       exp6    
-------------------------------------------    --------- -------- ---------  -------- 
-Elapsed Time, average per simulation (s)      0.010      0.009     0.85     0.85
+<!-- ------------------------------------------------------------------------------------- -->
+<!--                                                exp3      exp4     exp5       exp6     -->
+<!-- ------------------------------------------    --------- -------- ---------  --------  -->
+<!-- Elapsed Time, average per simulation (s)      0.010      0.009     0.85     0.85 -->
 
-Object Size, average per simulation (MB)      0.41       0.01      0.90       0.02
+<!-- Object Size, average per simulation (MB)      0.41       0.01      0.90       0.02 -->
 
-Median Number of Clones                        14        9        31.5       26.51
+<!-- Median Number of Clones                        14        9        31.5       26.51 -->
 
-Median Number of Iterations                    2780      2770     43900      58230
+<!-- Median Number of Iterations                    2780      2770     43900      58230 -->
 
-Median Final Time                              1870      1870     2235       1586
+<!-- Median Final Time                              1870      1870     2235       1586 -->
 
-Median Total Population Size                   8.0e6     7.8e6     1.1e9      1.3e9 
------------------------------------------     --------- -------- ---------  --------
-Table: (\#tab:timing2) Benchmarks of Exp models modifying the default `detectionProb` with two settings of `keepEvery`.
+<!-- Median Total Population Size                   8.0e6     7.8e6     1.1e9      1.3e9  -->
+<!-- -----------------------------------------     --------- -------- ---------  -------- -->
+<!-- Table: (\#tab:timing2) Benchmarks of Exp models modifying the default `detectionProb` with two settings of `keepEvery`. -->
+
+
+```{r bench1b, eval=TRUE, echo = FALSE}
+data(benchmark_1)
+knitr::kable(benchmark_1[5:8, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median"
+				  ),	
+    caption = "Benchmarks of Exp models modifying the default
+	`detectionProb` with two settings of `keepEvery`.", 
+	align = "c")
+```
 
 
 As above, a `keepEvery = NA` leads to much smaller object sizes and
@@ -1381,21 +1424,37 @@ population size (see section \@ref(mcfl)).
 The number of attempts until cancer was reached in the above models is
 shown in the following table:
 
-```{r tableattemptsvalue, eval = TRUE, echo = FALSE}
-## From running the code
+<!-- ```{r tableattemptsvalue, eval = TRUE, echo = FALSE} -->
+<!-- ## From running the code -->
 
-tableattemptsvalues <- c(exp1 = 2, mc1 = 1, exp2 = 2, mc2 = 1,
-                         exp3 = 5, exp4 = 5, exp5 = 5.5, exp6 = 5)
-tableattemptsvalues <- data.frame(Attempts_Until_Cancer = tableattemptsvalues)
+<!-- tableattemptsvalues <- c(exp1 = 2, mc1 = 1, exp2 = 2, mc2 = 1, -->
+<!--                          exp3 = 5, exp4 = 5, exp5 = 5.5, exp6 = 5) -->
+<!-- tableattemptsvalues <- data.frame(Attempts_Until_Cancer = tableattemptsvalues) -->
 
-knitr::kable(tableattemptsvalues, booktabs = TRUE,
-             caption = "Number of attempts until cancer.", align = "c")
+<!-- knitr::kable(tableattemptsvalues, booktabs = TRUE, -->
+<!--              caption = "Number of attempts until cancer.", align = "c") -->
 
+<!-- ``` -->
+
+```{r bench1c, eval=TRUE, echo = FALSE}
+data(benchmark_1)
+knitr::kable(benchmark_1[1:8, c("Attempts.Median"), drop = FALSE], 
+    booktabs = TRUE,
+	row.names = TRUE,
+	col.names = "Attempts until cancer",
+    caption = "Median Number of attempts until cancer.", 
+	align = "c")
+	
 ```
+
 
 (The values can be obtained from any of the above runs doing, for
 instance, `median(unlist(lapply(exp1, function(x) x$other$attemptsUsed)))`
 ).
+
+
+
+
 
 <!-- There are large differences in speed between models and sizes of -->
 <!-- objects differ too: in these cases, the simulations using the "McFL" -->
@@ -1407,29 +1466,51 @@ instance, `median(unlist(lapply(exp1, function(x) x$other$attemptsUsed)))`
 
 We can rerun all of the above models with argument `onlyCancer = FALSE`
 and the results are shown below (note that the differences between this
-table and table \@ref(tab:timing1) for the McFL models only reflecting
+table and table \@ref(tab:bench1) for the McFL models only reflecting
 sampling variation).
 
 
----------------------------------------------------------------------------------------------------------------------------------
-                                              exp1      mc1      exp2       mc2	      exp3      exp4          exp5         exp6    
-------------------------------------------   --------- -------- ---------  --------  --------- ---------- -----------  ----------- 
-Elapsed Time, average per simulation (s)     0.001      0.64      0.001       0.64	  0.002     0.002      0.040         0.090
+<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+<!--                                               exp1      mc1      exp2       mc2	      exp3      exp4          exp5         exp6     -->
+<!-- ------------------------------------------   --------- -------- ---------  --------  --------- ---------- -----------  -----------  -->
+<!-- Elapsed Time, average per simulation (s)     0.001      0.64      0.001       0.64	  0.002     0.002      0.040         0.090 -->
 											                                       
-Object Size, average per simulation (MB)     0.04       3.5        0.01       0.01	   0.17     0.01        0.16         0.01
+<!-- Object Size, average per simulation (MB)     0.04       3.5        0.01       0.01	   0.17     0.01        0.16         0.01 -->
 											                                       
-Median Number of Clones                       2         12        0          1		   2         0          2            0
+<!-- Median Number of Clones                       2         12        0          1		   2         0          2            0 -->
 											                                       
-Median Number of Iterations                   374       796000    312        739000    791       759        499           692
+<!-- Median Number of Iterations                   374       796000    312        739000    791       759        499           692 -->
 											                                       
-Median Final Time                             373       19940     312        18500	   7900      666        498           674
+<!-- Median Final Time                             373       19940     312        18500	   7900      666        498           674 -->
 											                                       
-Median Total Population Size                  0         689       0          691 	   0         0          0             0 
+<!-- Median Total Population Size                  0         689       0          691 	   0         0          0             0  -->
 
-Mean  Total Population  Size                  517       705       639        699       1.5e6    6.2e6       1.9e8       5.3e8
------------------------------------------    --------- -------- ---------  --------  --------- ---------- ----------   -----------
-Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:timing1) and
-\@ref(tab:timing2) when run with `onlyCancer = FALSE`.
+<!-- Mean  Total Population  Size                  517       705       639        699       1.5e6    6.2e6       1.9e8       5.3e8 -->
+<!-- -----------------------------------------    --------- -------- ---------  --------  --------- ---------- ----------   ----------- -->
+<!-- Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:timing1) and -->
+<!-- \@ref(tab:timing2) when run with `onlyCancer = FALSE`. -->
+
+
+Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and
+\@ref(tab:bench1b) when run with `onlyCancer = FALSE`
+```{r bench1d, eval=TRUE, echo = FALSE}
+data(benchmark_1)
+knitr::kable(benchmark_1[9:16, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean"
+				  ),
+##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
+##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
+	align = "c")
+```
 
 
 Now most simulations under the exponential model end up in extinction, as
@@ -1442,10 +1523,40 @@ TRUE` or `onlyCancer = FALSE` will depend on the question being asked (see
 `onlyCancer = FALSE`).
 
 
+To summarize this section, we have seen: 
+  - Both McFL and Exp can be run in short times over a range of
+      sizes for the `detectionProb` mechanism using a complex
+      fitness specification with a small number of genes.
+  - The `keepEvery` argument can have a large effect on time in the
+    McFL models and specially on object sizes. If only the end
+    result of the simulation is to be used, you should set
+    `keepEvery = NA`.
+
+	  
+## Number of genes and population size {#bench2}
+
+We have seen in \@ref(bench1) that, specially for the Exp model,
+benchmark results using `detectionProb` can be misleading. Here, we
+will fix initial and final population sizes. Moreover, to avoid the
+confounding factor of the `onlyCancer = TRUE` argument, we will set
+it to FALSE, so we measure directly the time of individual runs.
+
+
+Since we want to examine the effects of number of genes, our fitness
+specification will be a simple one as follows:
+
+```{r fitspecbench2, echo = TRUE, eval = FALSE}
+allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+
+```
+so that for a number of genes $ng$, half of the genes have a
+positive fitness effect and the other half a negative effect.
 
 
 
-## Can I have population sizes larger than $10^{10}$ {#popgt1010}
+
+
+## Can we use population sizes larger than $10^{10}$? {#popgt1010}
 
 
 
