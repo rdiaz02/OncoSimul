@@ -1100,6 +1100,9 @@ available from the 'data' directory as data set zz).  zz: specify which
 
 
 
+zz: explain keepPhylog does not add much time (some space), but a moot
+point if keepEvery = NA.
+
 ## Exp and McFL with "detectionProb" and pancreas example {#bench1}
 
 To get familiar with some of they factors that affect time and size,
@@ -1126,6 +1129,9 @@ with an 8-core Intel Xeon E3-1505M CPU, running Debian
 GNU/Linux. 
 
 
+
+zz: improve output: make the key settings clear: keepEvery and
+detectionProb settings.
 
 <!-- zz: fixme!!! explain sv2  -->
 
@@ -1558,11 +1564,20 @@ or CPU usage. We discuss several examples next, that illustrate some
 of the major issues to consider. Another example with 50,000 genes
 is shown in section \@ref(mcf50070).
 
+We have seen in \@ref(bench1) that for the Exp model, benchmark
+results using `detectionProb` require a lot of care and can be
+misleading. Here, we will fix initial and final population
+sizes. Moreover, to avoid the confounding factor of the `onlyCancer
+= TRUE` argument, we will set it to FALSE, so we measure directly
+the time of individual runs.
+
+
+
 zz: not the typical use cases see also section where I discuss all this.
 
 ### Exponential model with 10,000 and 50,000 genes {#exp50000}
 
-### Exponential, 10,000 genes, example 1  {#exp10000_1}
+#### Exponential, 10,000 genes, example 1  {#exp10000_1}
 
 We will start with 10000 genes and an exponential model, where we
 stop when the population grows over $1e6$ individuals:
@@ -1608,7 +1623,7 @@ clones for most simulations is already over 4000 and that the size
 of the return object is close to 1 GB. 
 
 
-### Exponential, 10,000 genes, example 2 {#exp10000_2}
+#### Exponential, 10,000 genes, example 2 {#exp10000_2}
 
 We can decrease the size of the return object if we use the
 `keepEvery = NA` argument, as explained in detail in \@ref(bench1).
@@ -1650,7 +1665,7 @@ print(object.size(e_10000b), units = "MB")
 
 ```
 
-### Exponential,  50,000 genes, example 1 {#exp50000_1}
+#### Exponential,  50,000 genes, example 1 {#exp50000_1}
 
 Let's use 50,000 genes. To keep object sizes reasonable we use
 `keepEvery = NA`. For now, we also set `mutationPropGrowth = FALSE`
@@ -1737,7 +1752,7 @@ The main effect is not on execution time but on object size (it has
 grown by 5 GB).
 
 
-### Exponential,  50,000 genes, example 2 {#exp50000_3}
+#### Exponential,  50,000 genes, example 2 {#exp50000_3}
 
 What about the `mutationPropGrowth` setting? Let us rerun with
 `keepEvery = NA` but with the default `mutationPropGrowth`:
@@ -2077,7 +2092,8 @@ tracking around 12000 clones even when we prune all clones without
 descendants.
 
 
-
+Examples above: no setting for finalTime, but a moot point (all well
+< 1000)
 
 Other factors: initial size
 
@@ -2098,6 +2114,30 @@ zz: pay attention to num iterations
 
 
 McF and Exp: often the case is that Exp uses a lot fewer iterations
+
+
+
+## Can we use population sizes larger than $10^{10}$? {#popgt1010}
+
+McFarland: easily pop sizes of 1e6 or 1e7. For Exp, 1e7 to
+1e9. Starting at 1e10 we run into trouble
+
+Yes but:
+anything that affects number of clones will huge times and object
+sizes blablab
+Longer genomes, larger mu even worse with larger pop sizes. But
+large pop sizes bring other issues of their own.
+
+I will use much smaller genomes to focus on the problems inherent to
+large pop. sizes:
+
+
+Focus on the "examples-large.R script
+
+So with and without keepEvery = NA (or 1)
+
+
+
 
 
 
@@ -2128,10 +2168,10 @@ zz: why detectionProb more sense for McFL
 
 
 
-## Can we use population sizes larger than $10^{10}$? {#popgt1010}
 
 
-## For what not well suited and why? {#whatnotfor}
+
+## For what not well suited and why and tradeoffs? {#whatnotfor}
 
 
 
