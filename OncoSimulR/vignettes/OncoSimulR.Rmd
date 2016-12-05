@@ -1084,18 +1084,36 @@ Size of return objects will depend on:
   mainly size of return object, not speed).
 
 
+In the sections that follow, we go over several cases to illustrate
+some of the main settings that affect execution time and size of
+returned objects. It should be understood, however, that many of the
+examples shown below do not represent typical use cases of
+OncoSimulR, but are used here to understand what, and how, affects
+time and size.
+
+Note that most of the code in this section is not executed during
+the building of the vignette, to keept vignette build time
+reasonable and prevent using huge amounts of RAM. All of the code,
+ready to be sourced and run is available from the 'inst/miscell'
+directory (and the summary output from some of the benchmarks is
+available from the 'data' directory as data set zz).  zz: specify which
+
+
+
 ## Exp and McFL with "detectionProb" and pancreas example {#bench1}
 
-To get a first idea, we will use the fitness specification from section
-\@ref(quickexample), with the `detectionProb` stopping mechanism (see
-\@ref(detectprob)).  We will use the two main growth models (exponential
-and McFarland). Each model will be run with two settings of
-`keepEvery`. With `keepEvery =1` (runs `exp1` and `mc1`), population
-samples are stored at time intervals of 1 (even if most of the clones in
-those samples later become extinct). With `keepEvery = NA` (runs `exp2`
-and `mc2`) no intermediate population samples are stored, so clones that
-become extinct at any sampling period are pruned and only the existing
-clones at the end of the simulation are returned.
+To get familiar with some of they factors that affect time and size,
+we will use the fitness specification from section
+\@ref(quickexample), with the `detectionProb` stopping mechanism
+(see \@ref(detectprob)).  We will use the two main growth models
+(exponential and McFarland). Each model will be run with two
+settings of `keepEvery`. With `keepEvery =1` (runs `exp1` and
+`mc1`), population samples are stored at time intervals of 1 (even
+if most of the clones in those samples later become extinct). With
+`keepEvery = NA` (runs `exp2` and `mc2`) no intermediate population
+samples are stored, so clones that become extinct at any sampling
+period are pruned and only the existing clones at the end of the
+simulation are returned.
 
 ```{r loadbench1, echo = FALSE, eval = TRUE} 
 data(benchmark_1) 
@@ -1105,14 +1123,7 @@ Will run `r unique(benchmark_1$Numindiv)` simulations. <!-- This -->
 <!-- represents a small number of simulations in a particular epistasis -->
 <!-- scenario we are interested in. --> The results I show are for a laptop
 with an 8-core Intel Xeon E3-1505M CPU, running Debian
-GNU/Linux. Most of the code in this section is not executed during
-the building of the vignette, to keept vignette build time
-reasonable and prevent using huge amounts of RAM. All of the code,
-ready to be sourced and run is available from the 'inst/miscell'
-directory (and the summary output from the benchmarks from the
-'data' directory).
-
-
+GNU/Linux. 
 
 
 
@@ -1272,19 +1283,20 @@ knitr::kable(benchmark_1[1:4, c("time_per_simul",
 	align = "c")
 ```
 
-The above table shows that a naïve comparison (looking simply at execution
-time) might conclude that the McFL model is much, much slower than the Exp
-model. But that is not the complete story: using the `detectionProb`
-stopping mechanism (see \@ref(detectprob)) will lead to stopping the
-simulations very quickly in the exponential model because as soon as a
-clone with fitness $>1$ appears it starts growing exponentially. In fact,
-we can see that the number of iterations and the final time are much
-smaller in the Exp than in the McFL model. This table also shows that the
-`keepEvery = NA` setting can make a difference especially for the McFL
-models, as seen by the median number of clones and the size of the
-object; we will return to this issue below as execution time and object
-size (which affects RAM usage) depend strongly on number of clones
-tracked.
+The above table shows that a naïve comparison (looking simply at
+execution time) might conclude that the McFL model is much, much
+slower than the Exp model. But that is not the complete story: using
+the `detectionProb` stopping mechanism (see \@ref(detectprob)) will
+lead to stopping the simulations very quickly in the exponential
+model because as soon as a clone with fitness $>1$ appears it starts
+growing exponentially. In fact, we can see that the number of
+iterations and the final time are much smaller in the Exp than in
+the McFL model. This table also shows that the `keepEvery = NA`
+setting, which was in effect in simulations "exp2" and "mc2", can
+make a difference especially for the McFL models, as seen by the
+median number of clones and the size of the object; we will return
+to this issue below as execution time and object size (which affects
+RAM usage) depend strongly on number of clones tracked.
 
 <!-- Models `exp2` and `mc2` do not store any intermediate population samples -->
 <!-- (`keepEvery = NA`) so clones that become extinct at any sampling period -->
@@ -1306,7 +1318,9 @@ a poulation size 1000 times larger than the initial one (`PDBaseline =
 5e4`, `n2 = 5e5`). In the other two models, no detection takes place
 unless populations are at least 1000 times larger than the initial
 population size and probability of detection is 0.1 with a poulation size
-100000 times larger than the initial one (`PDBaseline = 5e5`, `n2 = 5e7`).
+100000 times larger than the initial one (`PDBaseline = 5e5`, `n2 =
+5e7`). In runs `exp3` and `exp5` we set `keepEvery = 1` and in runs
+`exp4` and `exp6` we set `keepEvery = NA`.
 
 
 
@@ -1400,11 +1414,12 @@ knitr::kable(benchmark_1[5:8, c("time_per_simul",
 ```
 
 
-As above, a `keepEvery = NA` leads to much smaller object sizes and
-slightly smaller numbers of clones and execution times. Changing the
-exiting conditions (by changing `detectionProb` arguments) leads to large
-increases in number of iterations (in this case by factors of about 15x to
-20x) and a corresponding increase in execution time.
+As above, a `keepEvery = NA` (in `exp4` and `exp6`) leads to much
+smaller object sizes and slightly smaller numbers of clones and
+execution times. Changing the exiting conditions (by changing
+`detectionProb` arguments) leads to large increases in number of
+iterations (in this case by factors of about 15x to 20x) and a
+corresponding increase in execution time.
 
 
 All the runs above used the default value `onlyCancer = TRUE`. This means
@@ -1532,14 +1547,569 @@ To summarize this section, we have seen:
     result of the simulation is to be used, you should set
     `keepEvery = NA`.
 
-	  
+
+
+
+
+## Can we use a large number of genes? {#lnum}
+
+Yes. However, large numbers of genes can lead to unacceptable memory
+or CPU usage. We discuss several examples next, that illustrate some
+of the major issues to consider. Another example with 50,000 genes
+is shown in section \@ref(mcf50070).
+
+zz: not the typical use cases see also section where I discuss all this.
+
+### Exponential model with 10,000 and 50,000 genes {#exp50000}
+
+### Exponential, 10,000 genes, example 1  {#exp10000_1}
+
+We will start with 10000 genes and an exponential model, where we
+stop when the population grows over $1e6$ individuals:
+
+```{r exp10000, echo = TRUE, eval = FALSE}
+ng <- 10000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+t_e_10000 <- system.time(e_10000 <- oncoSimulPop(5,
+                                                 u,
+                                                 model = "Exp",
+                                                 mu = 1e-7,
+                                                 detectionSize = 1e6,
+                                                 detectionDrivers = NA,
+                                                 detectionProb = NA,
+                                                 keepPhylog = TRUE,
+                                                 onlyCancer = FALSE,
+                                                 mutationPropGrowth = TRUE,
+                                                 mc.cores = 1
+                                ))
+```
+
+
+```{r exp10000-out, echo = TRUE, eval = FALSE}
+t_e_10000
+##    user  system elapsed 
+##   4.368   0.196   4.566 
+  
+summary(e_10000)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      5017      1180528       415116       143    7547
+## 2      3726      1052061       603612       131    5746
+## 3      4532      1100721       259510       132    6674
+## 4      4150      1283115       829728        99    6646
+## 5      4430      1139185       545958       146    6748
+
+print(object.size(e_10000), units = "MB")
+## 863.9 Mb
+
+```
+
+Each simulation takes about 1 second but note that the number of
+clones for most simulations is already over 4000 and that the size
+of the return object is close to 1 GB. 
+
+
+### Exponential, 10,000 genes, example 2 {#exp10000_2}
+
+We can decrease the size of the return object if we use the
+`keepEvery = NA` argument, as explained in detail in \@ref(bench1).
+
+
+
+```{r exp10000b, eval = FALSE, echo = TRUE}
+t_e_10000b <- system.time(e_10000b <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "Exp",
+                                                   mu = 1e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = NA,
+                                                   mutationPropGrowth = TRUE,
+                                                   mc.cores = 1
+                                ))
+
+```
+
+```{r exp10000b-out, echo = TRUE, eval = FALSE}
+t_e_10000b
+##    user  system elapsed 
+##   5.484   0.100   5.585
+  
+summary(e_10000b)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      2465      1305094       727989        91    6447
+## 2      2362      1070225       400329       204    8345
+## 3      2530      1121164       436721       135    8697
+## 4      2593      1206293       664494       125    8149
+## 5      2655      1186994       327835       191    8572
+
+print(object.size(e_10000b), units = "MB")
+## 488.3 Mb
+
+```
+
+### Exponential,  50,000 genes, example 1 {#exp50000_1}
+
+Let's use 50,000 genes. To keep object sizes reasonable we use
+`keepEvery = NA`. For now, we also set `mutationPropGrowth = FALSE`
+so that the mutation rate does not become really large in clones
+with many mutations but, of course, whether or not this is a
+reasonable decision depends on the problem; see also below.
+
+```{r exp50000, echo = TRUE, eval = FALSE}
+ng <- 50000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+t_e_50000 <- system.time(e_50000 <- oncoSimulPop(5,
+                                                 u,
+                                                 model = "Exp",
+                                                 mu = 1e-7,
+                                                 detectionSize = 1e6,
+                                                 detectionDrivers = NA,
+                                                 detectionProb = NA,
+                                                 keepPhylog = TRUE,
+                                                 onlyCancer = FALSE,
+                                                 keepEvery = NA,
+                                                 mutationPropGrowth = FALSE,
+                                                 mc.cores = 1
+                                                 ))
+
+
+t_e_50000
+##    user  system elapsed
+##  44.192   1.684  45.891 
+
+summary(e_50000)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      7367      1009949       335455     75.00   18214
+## 2      8123      1302324       488469     63.65   17379
+## 3      8408      1127261       270690     72.57   21144
+## 4      8274      1138513       318152     80.59   20994
+## 5      7520      1073131       690814     70.00   18569
+
+print(object.size(e_50000), units = "MB")
+## 7598.6 Mb
+```
+
+Of course, simulations now take longer and the size of the return
+object is over 7 GB (we are keeping over 7000 clones, even if when
+we prune all those that went extinct). 
+
+### Exponential, example 4: 50,000 genes {#exp50000_2}
+
+What if we had not pruned? 
+
+```{r exp50000np, echo = TRUE, eval = FALSE}
+ng <- 50000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+t_e_50000np <- system.time(e_50000np <- oncoSimulPop(5,
+                                                 u,
+                                                 model = "Exp",
+                                                 mu = 1e-7,
+                                                 detectionSize = 1e6,
+                                                 detectionDrivers = NA,
+                                                 detectionProb = NA,
+                                                 keepPhylog = TRUE,
+                                                 onlyCancer = FALSE,
+                                                 keepEvery = NA,
+                                                 mutationPropGrowth = FALSE,
+                                                 mc.cores = 1
+                                                 ))
+
+t_e_50000np
+##   user  system elapsed
+## 42.316   2.764  45.079 
+
+summary(e_50000np)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1     13406      1027949       410074     71.97   19469
+## 2     12469      1071325       291852     66.00   17834
+## 3     11821      1089834       245720     90.00   16711
+## 4     14008      1165168       505607     77.61   19675
+## 5     14759      1074621       205954     87.68   20597
+
+print(object.size(e_50000np), units = "MB")
+## 12748.4 Mb
+
+```
+The main effect is not on execution time but on object size (it has
+grown by 5 GB).
+
+
+### Exponential,  50,000 genes, example 2 {#exp50000_3}
+
+What about the `mutationPropGrowth` setting? Let us rerun with
+`keepEvery = NA` but with the default `mutationPropGrowth`:
+
+```{r exp50000mpg, echo = TRUE, eval = FALSE}
+
+ng <- 50000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+
+t_e_50000c <- system.time(e_50000c <- oncoSimulPop(5,
+                                                 u,
+                                                 model = "Exp",
+                                                 mu = 1e-7,
+                                                 detectionSize = 1e6,
+                                                 detectionDrivers = NA,
+                                                 detectionProb = NA,
+                                                 keepPhylog = TRUE,
+                                                 onlyCancer = FALSE,
+                                                 keepEvery = NA,
+                                                 mutationPropGrowth = TRUE,
+                                                 mc.cores = 1
+                                                 ))
+
+t_e_50000c
+##    user  system elapsed 
+## 84.228   2.416  86.665
+
+summary(e_50000c)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1     11178      1241970       344479     84.74   27137
+## 2     12820      1307086       203544     91.94   33448
+## 3     10592      1126091       161057     83.81   26064
+## 4     11883      1351114       148986     65.68   25396
+## 5     10518      1101392       253523     99.79   26082
+
+print(object.size(e_50000c), units = "MB")
+## 10904.9 Mb
+
+```
+
+As expected (because the mutation rate per unit time is increasing
+in the fastest growing clones), we have many more clones, larger
+objects, and longer times of execution here: we almost double the
+time and the size of the object increases by almost 5 GB.
+
+
+What about larger population sizes or larger mutation rates? The
+number of clones starts growing fast, which means much slower
+execution times and much larger return objects (see also the examples
+below).
+
+
+
+
+### McFarland model with 50,000 genes; the effect of `keepEvery` {#mc50000}
+
+We show an example of McFarland's model with 50,000 genes in section
+\@ref(mcf50070). We will show a few more examples with those many
+genes but with a different fitness specification and playing around
+with several settings.
+
+
+
+#### McFarland, 50,000 genes, example 1 {#mc50000ex1}
+
+Let's start with  `mutationPropGrowth = FALSE` and `keepEvery = NA`:
+
+```{r mc50000_1, echo = TRUE, eval = FALSE}
+ng <- 50000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+
+t_mc_50000_nmpg <- system.time(mc_50000_nmpg <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 1e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = NA,
+                                                   mutationPropGrowth = FALSE,
+                                                   mc.cores = 1
+                                                   ))
+t_mc_50000_nmpg
+##   user  system elapsed 
+##  30.46    0.54   31.01 
+
+
+summary(mc_50000_nmpg)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      1902      1002528       582752     284.2   31137
+## 2      2159      1002679       404858     274.8   36905
+## 3      2247      1002722       185678     334.5   42429
+## 4      2038      1009606       493574     218.4   32519
+## 5      2222      1004661       162628     291.0   38470
+
+print(object.size(mc_50000_nmpg), units = "MB")
+## 2057.6 Mb
+
+```
+
+We are already dealing with 2000 clones.
+
+#### McFarland, 50,000 genes, example 2 {#mc50000ex2}
+
+Setting `keepEvery = 1` (i.e., keeping track of clones with an
+interval of 1):
+
+```{r mc50000_kp, echo = TRUE, eval = FALSE}
+t_mc_50000_nmpg_k <- system.time(mc_50000_nmpg_k <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 1e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = 1,
+                                                   mutationPropGrowth = FALSE,
+                                                   mc.cores = 1
+                                                   ))
+
+t_mc_50000_nmpg_k
+##    user  system elapsed 
+##  30.000   1.712  31.714 
+
+summary(mc_50000_nmpg_k)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      8779      1000223       136453     306.7   38102
+## 2      7442      1006563       428150     345.3   35139
+## 3      8710      1003509       224543     252.3   35659
+## 4      8554      1002537       103889     273.7   36783
+## 5      8233      1003171       263005     301.8   35236
+
+print(object.size(mc_50000_nmpg_k), units = "MB")
+## 8101.4 Mb
+```
+
+Computing time increases slightly but the major effect is seen on
+the size of the return object, that increases by a factor of about
+4x, up to 8 GB, corresponding to the increase in about 4x in the
+number of clones being tracked.
+
+
+#### McFarland, 50,000 genes, example 3 {#mc50000ex3}
+
+We will set `keepEvery = NA` again, but we will now increase
+detection size by a factor of 3:
+
+```{r mc50000_popx, echo = TRUE, eval = FALSE}
+ng <- 50000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+
+t_mc_50000_nmpg_3e6 <- system.time(mc_50000_nmpg_3e6 <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 1e-7,
+                                                   detectionSize = 3e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = NA,
+                                                   mutationPropGrowth = FALSE,
+                                                   mc.cores = 1
+                                                   ))
+t_mc_50000_nmpg_3e6
+##    user  system elapsed 
+##  77.240   1.064  78.308 
+
+summary(mc_50000_nmpg_3e6)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      5487      3019083       836793     304.5   65121
+## 2      4812      3011816       789146     286.3   53087
+## 3      4463      3016896      1970957     236.6   45918
+## 4      5045      3028142       956026     360.3   63464
+## 5      4791      3029720       916692     358.1   55012
+
+print(object.size(mc_50000_nmpg_3e6), units = "MB")
+## 4759.3 Mb
+												   
+```
+
+Compared with the first run (\@ref(mc50000ex1)) we have
+approximately doubled computing time, number of iterations, number
+of clones, and object size.
+
+
+#### McFarland, 50,000 genes, example 4 {#mc50000ex4}
+
+Let us use the same `detectionSize = 1e6` as in the first example,
+but with mutation rate increase by a factor of 5:
+
+```{r mc50000_mux, echo = TRUE, eval = FALSE}
+ng <- 50000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+
+t_mc_50000_nmpg_5mu <- system.time(mc_50000_nmpg_5mu <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 5e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = NA,
+                                                   mutationPropGrowth = FALSE,
+                                                   mc.cores = 1
+                                                   ))
+
+t_mc_50000_nmpg_5mu
+##    user  system elapsed 
+## 167.332   1.796 169.167 
+
+summary(mc_50000_nmpg_5mu)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      7963      1004415       408352     99.03   57548
+## 2      8905      1010751       120155    130.30   74738
+## 3      8194      1005465       274661     96.98   58546
+## 4      9053      1014049       119943    112.23   75379
+## 5      8982      1011817        95047     99.95   76757
+
+print(object.size(mc_50000_nmpg_5mu), units = "MB")
+## 8314.4 Mb
+``` 
+
+The number of clones we are tracking is about 4x the number of
+clones of the first example (\@ref(mc50000ex1)), and roughly similar
+to the number of clones of the second example (\@ref(mc50000ex2)),
+and size of return object is similar to that of the second example.
+But computing time has increased by a factor of about 5x and
+iterations have increased by a factor of about 2x. Iterations
+increase because mutation is more frequent; in addition, at each
+sampling period each iteration needs to do more work as it needs to
+loop over a larger number of clones and this larger number includes
+clones that are not shown here, because they are pruned as they
+leave no descendants.
+
+
+#### McFarland, 50,000 genes, example 5 {#mc50000ex5}
+
+Finally, let's run the above example but with `keepEvery = 1`:
+
+```{r mcf5muk, echo = TRUE, eval = FALSE}
+t_mc_50000_nmpg_5mu_k <- system.time(mc_50000_nmpg_5mu_k <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 5e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = 1,
+                                                   mutationPropGrowth = FALSE,
+                                                   mc.cores = 1
+                                                   ))
+												   
+t_mc_50000_nmpg_5mu_k
+##    user  system elapsed 
+## 174.404   5.068 179.481 
+
+summary(mc_50000_nmpg_5mu_k)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1     25294      1001597       102766     123.4   74524
+## 2     23766      1006679       223010     124.3   71808
+## 3     21755      1001379       203638     114.8   62609
+## 4     24889      1012103       161003     119.3   75031
+## 5     21844      1002927       255388     108.8   64556
+
+print(object.size(mc_50000_nmpg_5mu_k), units = "MB")
+## 22645.8 Mb
+ 
+```
+
+We have already seen these effects before in section
+\@ref(mc50000ex2): using `keepEvery = 1` leads to a slight increase
+in execution time. What is really affected is the size of the return
+object which increases by a factor of about 3x (and is now over
+20GB). That 3x corresponds, of course, to the increase in the number
+of clones being tracked. This, by the way, also allows us to
+understand the comment above, where we said that in these two cases
+(where we have increase mutation rate) at each iteration we need to
+do more work as at every update of the population the algorithm
+needs to loop over a much larger number of clones (even if many of
+those are eventually pruned).
+
+
+
+#### McFarland, 50,000 genes, example 6 {#mc50000ex6}
+
+Now let's use the default of `mutationPropGrowth = TRUE`:
+
+
+```{r mc50000_2, echo = TRUE, eval = FALSE}
+ng <- 50000
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+
+t_mc_50000 <- system.time(mc_50000 <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 1e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = NA,
+                                                   mutationPropGrowth = TRUE,
+                                                   mc.cores = 1
+                                                   ))
+
+t_mc_50000
+##    user  system elapsed 
+## 303.352   2.808 306.223 
+
+summary(mc_50000)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1     13928      1010815       219814     210.9   91255
+## 2     12243      1003267       214189     178.1   67673
+## 3     13880      1014131       124354     161.4   88322
+## 4     14104      1012941        75521     205.7   98583
+## 5     12428      1005594       232603     167.4   70359
+
+print(object.size(mc_50000), units = "MB")
+## 12816.6 Mb
+
+```
+
+Note the huge increase in computing time (related of course to the
+huge increase in number of iterations) and in the size of the return
+object: we have gone from having to track about 2000 clones to
+tracking around 12000 clones even when we prune all clones without
+descendants.
+
+
+
+
+Other factors: initial size
+
+
+Illustrates that OncoSimulR pays a price if we want to track
+history. Also we need to keep genotypes, not just numbers of drivers
+and passengers: this is needed for complex fitness models with complex
+epistasis and order effects.
+
+In general, more than 10000 clones a huge slowdown and increase in
+memory consumption.
+
+zz: why prunning rarely matters with exp but does with McFL. But it
+might matter with exp depending on fitness details.
+
+zz: pay attention to num iterations
+
+
+
+McF and Exp: often the case is that Exp uses a lot fewer iterations
+
+
+
+
 ## Number of genes and population size {#bench2}
 
-We have seen in \@ref(bench1) that, specially for the Exp model,
-benchmark results using `detectionProb` can be misleading. Here, we
-will fix initial and final population sizes. Moreover, to avoid the
-confounding factor of the `onlyCancer = TRUE` argument, we will set
-it to FALSE, so we measure directly the time of individual runs.
+We have seen in \@ref(bench1) that for the Exp model, benchmark
+results using `detectionProb` require a lot of care and can be
+misleading. Here, we will fix initial and final population
+sizes. Moreover, to avoid the confounding factor of the `onlyCancer
+= TRUE` argument, we will set it to FALSE, so we measure directly
+the time of individual runs.
 
 
 Since we want to examine the effects of number of genes, our fitness
@@ -1554,10 +2124,14 @@ positive fitness effect and the other half a negative effect.
 
 
 
+zz: why detectionProb more sense for McFL
+
 
 
 ## Can we use population sizes larger than $10^{10}$? {#popgt1010}
 
+
+## For what not well suited and why? {#whatnotfor}
 
 
 
@@ -5094,7 +5668,7 @@ genotypes) trying to represent the genotypes makes no sense.
 
 
 
-## McFarland model with 50000 passengers and 70 drivers: clonal competition {#mcf50070}
+## McFarland model with 50,000 passengers and 70 drivers: clonal competition {#mcf50070}
 
 The next is too slow (takes a couple of minutes in an i5 laptop) and too
 big to run in a vignette, because we keep track of over 4000 different
