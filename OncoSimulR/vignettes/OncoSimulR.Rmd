@@ -626,7 +626,7 @@ evolutionary model, etc).
 
 
 There are several ways to specify their model, as we discuss in
-section \@(bauer). We will use one based on DAGs here:
+section \ref@(bauer). We will use one based on DAGs here:
 
 
 ```{r exusagebau}
@@ -638,8 +638,8 @@ sdminus <- 0.1
 
 cnt <- (1 + sdplus)/(1 + sdminus)
 prod_cnt <- cnt - 1
-bauer <- data.frame(parent = c("Root", rep("p", K)),
-                    child = c("p", paste0("s", 1:K)),
+bauer <- data.frame(parent = c("Root", rep("D", K)),
+                    child = c("D", paste0("s", 1:K)),
                     s = c(prod_cnt, rep(sdp, K)),
                     sh = c(0, rep(sp, K)),
                     typeDep = "MN")
@@ -1275,14 +1275,17 @@ The above runs yield the following:
 data(benchmark_1)
 knitr::kable(benchmark_1[1:4, c("time_per_simul",
     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median")], 
+	"FinalTime.Median", "TotalPopSize.Median",
+	"TotalPopSize.Max.", "keepEvery")], 
     booktabs = TRUE,
 	col.names = c("Elapsed Time, average per simulation (s)",
 	              "Object Size, average per simulation (MB)",
 				  "Number of Clones, median",
 				  "Number of Iterations, median",
 				  "Final Time, median",
-				  "Total Population Size, median"
+				  "Total Population Size, median",
+				  "Total Population Size, max.",
+				  "keepEvery"
 				  ),
     caption = "Benchmarks of Exp and McFL models using the default
 	`detectionProb` with two settings of `keepEvery`.", 
@@ -1405,14 +1408,19 @@ t_exp6 <- system.time(
 data(benchmark_1)
 knitr::kable(benchmark_1[5:8, c("time_per_simul",
     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median")], 
+	"FinalTime.Median", "TotalPopSize.Median",
+	"TotalPopSize.Max.", "keepEvery",
+	"PDBaseline", "n2")], 
     booktabs = TRUE,
 	col.names = c("Elapsed Time, average per simulation (s)",
 	              "Object Size, average per simulation (MB)",
 				  "Number of Clones, median",
 				  "Number of Iterations, median",
 				  "Final Time, median",
-				  "Total Population Size, median"
+				  "Total Population Size, median",
+				  "Total Population Size, max.",				  
+				  "keepEvery",
+				  "PDBaseline", "n2"
 				  ),	
     caption = "Benchmarks of Exp models modifying the default
 	`detectionProb` with two settings of `keepEvery`.", 
@@ -1426,6 +1434,13 @@ execution times. Changing the exiting conditions (by changing
 `detectionProb` arguments) leads to large increases in number of
 iterations (in this case by factors of about 15x to 20x) and a
 corresponding increase in execution time.
+
+
+Incidentally, in some of the runs of `exp5` and `exp6` we get the
+(recoverable) exception message from the C++ code `Recoverable
+exception ti set to DBL_MIN. Rerunning.`, which is related to those
+simulations reaching total population sizes $>10^{10}$; we return to
+this below (section \@ref(popgtzx)).
 
 
 All the runs above used the default value `onlyCancer = TRUE`. This means
@@ -1518,7 +1533,10 @@ Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and
 data(benchmark_1)
 knitr::kable(benchmark_1[9:16, c("time_per_simul",
     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean")], 
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.",
+	"keepEvery",
+	"PDBaseline", "n2")], 
     booktabs = TRUE,
 	col.names = c("Elapsed Time, average per simulation (s)",
 	              "Object Size, average per simulation (MB)",
@@ -1526,7 +1544,10 @@ knitr::kable(benchmark_1[9:16, c("time_per_simul",
 				  "Number of Iterations, median",
 				  "Final Time, median",
 				  "Total Population Size, median",
-				  "Total Population Size, mean"
+				  "Total Population Size, mean",
+				  "Total Population Size, max.",
+				  "keepEvery",
+				  "PDBaseline", "n2"
 				  ),
 ##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
 ##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
@@ -1536,7 +1557,7 @@ knitr::kable(benchmark_1[9:16, c("time_per_simul",
 
 Now most simulations under the exponential model end up in extinction, as
 seen by the median population size of 0 (but not all, as the mean
-population size is clearly away from zero). Consequently, simulations
+and max. population size is clearly away from zero). Consequently, simulations
 under the exponential model are now faster and produce much smaller
 objects. Of course, whether one should run simulations with `onlyCancer =
 TRUE` or `onlyCancer = FALSE` will depend on the question being asked (see
@@ -1554,7 +1575,80 @@ To summarize this section, we have seen:
     `keepEvery = NA`.
 
 
+### Changing fitness: $s=0.1$ and $s=0.05$ {#bench1xf}
 
+In the above fitness specification the fitness effect of each gene
+(when its restrictions are satisfied) is $s = 0.1$ (see section
+\@ref(numfit) for details). Here we rerun all the above benchmark
+using $s= 0.05$; results are shown below:
+
+
+Table: (\#tab:timing3xf) Benchmarks of all models in Tables \@ref(tab:bench1),
+\@ref(tab:bench1b) and \@ref(tab:timing3) using $s=0.05$ (instead of
+$s=0.1$).
+```{r bench1dx, eval=TRUE, echo = FALSE}
+data(benchmark_1_0.05)
+knitr::kable(benchmark_1_0.05[, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.",
+	"keepEvery",
+	"PDBaseline", "n2", "onlyCancer")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max.",				  
+				  "keepEvery",
+				  "PDBaseline", "n2", "onlyCancer"
+				  ),
+##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
+##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
+	align = "c")
+```
+
+As expected, having a larger $s$ leads to faster processes in most
+cases, since we reach the exiting conditions sooner. That is not the
+case, however, in `exp5` and `exp6` (and `exp5_noc` and
+`exp6_noc`). 
+
+When running with $s=0.05$ the simulations exit at a later time (see
+column "Final Time") but they exit with smaller population sizes. We
+have here an interaction between sampling frequency, speed of growth
+of the population, mutation events and number of clones. In
+populations that grow much faster mutation events will happen more
+often (which will trigger further iterations of the algorithm); in
+addition, more new clones will be created, even if they only exist
+for short times (including times shorter than 1 period, so they
+would not be reflected at the sampling periods). These differences
+are proportionally larger the larger the rate of growth of the
+population. Thus, they are larger between, say, the `exp5` at
+$s=0.1$ and $s=0.05$ than between the `exp4` at the two different
+$s$: the `exp5` exit conditions can only be satisfied at much larger
+population sizes so at populations sizes when growth is much faster
+(recall we are dealing with exponential growth). Recall also that
+with the default settings in `detectionProb`, we assess the exiting
+condition every 20 time periods (argument `checkSizePEvery`); this
+means that for fast growing populations, the increase in population
+size between successive checks of the exit conditions will be much
+larger.
+
+
+Thus, what is happening in the `exp5` and `exp6` with $s=0.1$ is
+that close to the time the exit conditions could be satisfied, they
+are growing very fast, accumulating mutants, and incurring in
+additional iterations. They exit sooner in terms of time periods,
+but they do much more work before arriving there.
+
+
+The moral here is that in complex simulations like this, the effects
+of some parameters ($s$ in this case) might look counter-intuitive
+at first. Thus the need to "experiment before launching a large
+number of simulations". 
 
 
 ## Can we use a large number of genes? {#lnum}
@@ -2117,7 +2211,7 @@ McF and Exp: often the case is that Exp uses a lot fewer iterations
 
 
 
-## Can we use population sizes larger than $10^{10}$? {#popgt1010}
+## Can we use population sizes larger than $10^{10}$? {#popgtzx}
 
 McFarland: easily pop sizes of 1e6 or 1e7. For Exp, 1e7 to
 1e9. Starting at 1e10 we run into trouble
@@ -2137,7 +2231,9 @@ Focus on the "examples-large.R script
 So with and without keepEvery = NA (or 1)
 
 
-
+We have already seen examples where population sizes are larger than
+$10^{8}$, as in Tables \@ref(tab:bench1b), \@ref(tab:timing3),
+\@ref(tab:timing3xf). 
 
 
 
@@ -4519,8 +4615,8 @@ sdplus <- 0.05
 sdminus <- 0.1
 cnt <- (1 + sdplus)/(1 + sdminus)
 prod_cnt <- cnt - 1
-bauer <- data.frame(parent = c("Root", rep("p", K)),
-                    child = c("p", paste0("s", 1:K)),
+bauer <- data.frame(parent = c("Root", rep("D", K)),
+                    child = c("D", paste0("s", 1:K)),
                     s = c(prod_cnt, rep(sdp, K)),
                     sh = c(0, rep(sp, K)),
                     typeDep = "MN")
@@ -4528,6 +4624,10 @@ fbauer <- allFitnessEffects(bauer)
 (b1 <- evalAllGenotypes(fbauer, order = FALSE, addwt = TRUE))
 
 ``` 
+
+(We use "D" for "driver" or "primary driver", as is it is called in
+the original paper, and "s" for secondary drivers, somewhat similar
+to passengers).
 
 Note that what we specify as "typeDep" is irrelevant (MN, SMN, or XMPN
 make no difference).
@@ -4561,13 +4661,13 @@ genotypes, and pass this data frame to *`allFitnessEffects`*.
 
 
 ```{r}
-m1 <- expand.grid(p = c(1, 0), s1 = c(1, 0), s2 = c(1, 0),
+m1 <- expand.grid(D = c(1, 0), s1 = c(1, 0), s2 = c(1, 0),
                   s3 = c(1, 0), s4 = c(1, 0))
 
-fitness_bauer <- function(p, s1, s2, s3, s4, 
+fitness_bauer <- function(D, s1, s2, s3, s4, 
                           sp = 1e-5, sdp = 0.015, sdplus = 0.05,
                           sdminus = 0.1) {
-    if(!p) {
+    if(!D) {
         b <- 0.5 * ( (1 + sp)^(sum(c(s1, s2, s3, s4))))
     } else {
         b <- 0.5 * 
