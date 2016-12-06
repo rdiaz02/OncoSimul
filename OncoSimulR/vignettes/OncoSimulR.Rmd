@@ -769,6 +769,40 @@ using: see \@{tomlin-except}.)
 
 
 
+## Trade-offs and what is OncoSimulR not well suited for {#whatnotfor}
+
+OncoSimulR is designed for complex fitness specifications and
+selection scenarios and uses forward-time simulations; the types of
+questions where OncoSimulR can be of help are discussed in sections
+\@ref(generalwhatfor) and \@ref(whatfor) and time and space
+requirements of OncoSimulR are addressed in section
+\@ref(timings). You should be aware that **coalescent simulations**,
+sometimes also called backward-time simulations, are much more
+efficient for simulating neutral data as well as some special
+selection scenarios [@Yuan2012,@Carvajal-Rodriguez2010,@Hoban2011].
+In addition, since OncoSimulR allows you to specify fitness with
+arbitrary epistatic and order effects, you need to learn the syntax
+of how to specify those effects and you might be paying a
+performance penalty if your scenario does not require this
+complexity. For instance, in the models in @Beerenwinkel2007b or
+@Bozic2010, the fitness of a genotype depends only on the total
+number of drivers mutated, but not on which drivers are mutated (and
+thus, not on the epistatic interactions nor the order of
+accumulation of the drivers). This means that the syntax for
+specifying those fitness models could probably be a lot simpler
+(e.g., specify $s$ per driver). But it also means that the code
+could probably be much faster. First, because fitness evaluation is
+much simpler. Second, and possibly much more important, because what
+we need to keep track of leads to much simpler and economic
+structures: we do not need to keep track of clones as types of cells
+with different mutations, but only of clone types as defined by the
+number of mutated drivers, and keeping track of clones can be
+expensive ---see section \@ref(timings). So for those cases where
+you do not need the full flexibility of OncoSimulR, special purpose
+software might be simpler to use and faster to run. Of course, for
+some types of problems this special purpose software might not
+available, though.
+
 
 
 
@@ -1039,7 +1073,7 @@ version 2.
 
 
 
-# How long does it take? How fast is OncoSimulR? How much space do the return objects take? {#timings}
+# Time and speed requirements of OncoSimulR? {#timings}
 
 Time to complete the simulations and size of return objects depend
 on several, interacting factors. The usual rule of "experiment
@@ -2209,9 +2243,77 @@ zz: pay attention to num iterations
 
 McF and Exp: often the case is that Exp uses a lot fewer iterations
 
+### Are we keeping the complete history of the clones? {#histlargegenes}
+
+Yes we are if we run with `keepPhylog = TRUE`, regardless of the
+setting for `keepEvery`. 
+
+As explained in section \@ref(trackindivs) OncoSimulR prunes clones
+that never had a population size larger than zero at any sampling
+period (so they are not reflected in the `pops.by.time` matrix in
+the output); when set `keepEvery = NA` we are telling OncoSimulR to
+discard any sampling period except the very last one.
+
+`keepPhylog` operates differently: it records the exact time at
+which a clone appeared and the clone that gave rise to it. This
+information is kept regardless of whether or not those clones appear
+in the `pops.by.time` matrix. 
+
+It is true that the utility of keeping the complete history is
+limited if the `pops.by.time` matrix only contains the very last
+period. However, you can use `plotClonePhylog`
+and ask to be shown only clones that exist in the very last period.
+
+For instance, in run \@ref(exp50000_1) we could have looked at the
+information stored for the history of clones by doing:
+
+```{r filog_exp50000_1, echo = TRUE, eval = FALSE}
+head(e_50000[[1]]$other$PhylogDF)
+##   parent child   time
+## 1         3679 0.8402
+## 2         4754 1.1815
+## 3        20617 1.4543
+## 4        15482 2.3064
+## 5         4431 3.7130
+## 6        41915 4.0628
+
+tail(e_50000[[1]]$other$PhylogDF)
+##                          parent                            child time
+## 20672               3679, 20282               3679, 20282, 22359 75.0
+## 20673        3679, 17922, 22346        3679, 17922, 22346, 35811 75.0
+## 20674                2142, 3679                2142, 3679, 25838 75.0
+## 20675        3679, 17922, 19561        3679, 17922, 19561, 43777 75.0
+## 20676 3679, 15928, 19190, 20282 3679, 15928, 19190, 20282, 49686 75.0
+## 20677         2142, 3679, 16275         2142, 3679, 16275, 24201 75.0
+```
+
+where each row corresponds to one event of appearance of a new
+clone, the column labeled "parent" are the mutated genes in the
+parent, and the column labeled "child" are the mutated genes in the child.
 
 
-## Can we use population sizes larger than $10^{10}$? {#popgtzx}
+And we could plot the clones that have a population size of at least
+one in the last period doing:
+
+```{r noplotlconephylog, echo = TRUE, eval = FALSE}
+plotClonePhylog(e_50000[[1]]) ## plot not shown
+
+```
+
+What is the cost of tracking the history? In terms of time it is
+minor. In terms of space, and as shown in the example above, we can
+end up storing a data frame with tends of thousands of rows and
+three columns, two of them factors. In the example above the size of
+that data frame is approximately 2 MB for a single simulation. This
+can quickly build up if you routinely launch, say, 1000 simulations
+via `oncoSimulPop` and that is why the default is `keepPhylog =
+FALSE`.
+
+
+
+
+
+## Population sizes larger than $10^{10}$ {#popgtzx}
 
 McFarland: easily pop sizes of 1e6 or 1e7. For Exp, 1e7 to
 1e9. Starting at 1e10 we run into trouble
@@ -2234,6 +2336,10 @@ So with and without keepEvery = NA (or 1)
 We have already seen examples where population sizes are larger than
 $10^{8}$, as in Tables \@ref(tab:bench1b), \@ref(tab:timing3),
 \@ref(tab:timing3xf). 
+
+
+
+
 
 
 
@@ -2267,7 +2373,8 @@ zz: why detectionProb more sense for McFL
 
 
 
-## For what not well suited and why and tradeoffs? {#whatnotfor}
+
+
 
 
 
@@ -7460,7 +7567,7 @@ speed and memory usage).
 # FAQ, odds and ends 
 
 
-## Does OncoSimulR keep track of individuals or of clones? And how can you keep track of such large populations?
+## Does OncoSimulR keep track of individuals or of clones? And how can you keep track of such large populations? {#trackindivs}
 
 OncoSimulR keeps track of clones, where a clone is a set of cells
 that are genetically identical (note that this means completely
@@ -7519,7 +7626,7 @@ the complete genealogy will show clones A, B, C. Since function
 `plotClonePhylog` offers a lot of flexibility with respect to what
 clones to show depending on their population sizes at different
 times, you can prevent being shown B, but its existence is there
-should you need it.
+should you need it (see also \@ref(histlargenes)).
 
 
 
