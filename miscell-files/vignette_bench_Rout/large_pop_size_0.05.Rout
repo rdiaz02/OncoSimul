@@ -1,0 +1,3580 @@
+
+R Under development (unstable) (2016-11-03 r71622) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> rm(list = ls())
+> set.seed(NULL)
+> 
+> library(OncoSimulR)
+> 
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> 
+> 
+> system_summary <- function() {
++     return(list(versioninfo = version,
++                 memimfo = system("free", intern = TRUE),
++                 cpuinfo = system("cat /proc/cpuinfo | grep 'model name'", intern = TRUE),
++                 packageinfo = paste("OncoSimulR, ", packageVersion("OncoSimulR")),
++ ##                nodeinfo = Sys.info()$nodename,
++ ##                nodelinuxinfo = paste(Sys.info()$sysname, Sys.info()$release),
++                 dateinfo = date()))
++ }
+> 
+> stats_simuls <- function(sim) {
++     ## sim is an oncoSimulPop output
++     trf <- function(x) {
++         tt <- try(c(NumClones = x$NumClones,
++                     NumIter = x$NumIter,
++                     FinalTime = x$FinalTime,
++                     TotalPopSize = x$TotalPopSize,
++                     Attempts = x$other$attemptsUsed))
++         if(!inherits(tt, "try-error")) {
++             return(tt)
++         } else {
++             return(c(NumClones = NA,
++                     NumIter = NA,
++                     FinalTime = NA,
++                     TotalPopSize = NA,
++                     Attempts = NA))
++         }
++     }
++     tmp <- try(do.call("rbind", lapply(sim, trf)))
++     unlist(lapply(as.data.frame(tmp), summary))
++ }
+> 
+> all_sim_stats <- function(...) {
++     ## Returns a single data frame with all benchmark info
++     ## in ... pass the names of the objects
++     names <- as.character(as.list(match.call())[-c(1)])
++     m1 <- do.call("rbind", lapply(list(...), stats_simuls))
++     ## the function will break next if something failed in previous
++     rownames(m1) <- names
++     Numindiv <- unlist(lapply(list(...), length))
++     time <- unlist(lapply(paste0("t_", names), get))
++     size <- unlist(lapply(list(...), object.size))
++     df <- data.frame(m1, size, time, Numindiv)
++     df$time_per_simul <- df$time/df$Numindiv
++     df$size_mb_per_simul <- df$size/(df$Numindiv * 1024^2)
++     attributes(df)$system_summary <- system_summary()
++     return(df)
++ }
+> 
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> 
+> ## Note huge finalTime; o.w. most McFL bail out at finalTime, far away from detectionSize
+> 
+> ng <- 50 
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng)))
+> 
+> t_mc_50_1e8 <- system.time(mc_50_1e8 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e8,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1
++                                                      ))
+> t_mc_50_1e8
+   user  system elapsed 
+ 10.428   0.004  10.432 
+> try(summary(mc_50_1e8)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1        88    100058245     25402404  3350.325  147510
+2        72    100027495     68044671  3352.475  150210
+3        61    100007485     41862304  3516.700  154722
+4        72    100007933     65337183  3346.075  148007
+5        58    100008013     53985743  3681.125  161702
+> print(object.size(mc_50_1e8), units = "MB")
+2.4 Mb
+> 
+> 
+> t_mc_50_1e9 <- system.time(mc_50_1e9 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e9,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_mc_50_1e9
+   user  system elapsed 
+ 13.432   0.000  13.434 
+> try(summary(mc_50_1e9)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1        49   1000458926    740982509  3540.875  177036
+2        74   1001037012    706651923  3239.450  165525
+3        37   1000401383    746689743  3337.800  165003
+4        28   1000802062    431706493  3338.400  165426
+5        37   1001184146    458965139  3470.475  174247
+> print(object.size(mc_50_1e9), units = "MB")
+2.9 Mb
+> 
+> 
+> t_mc_50_1e10 <- system.time(mc_50_1e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600                                                     
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_50_1e10
+    user   system  elapsed 
+3003.984    0.396 3004.664 
+> try(summary(mc_50_1e10)[, c(1:3, 8, 9)])
+Error in summary(mc_50_1e10)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_50_1e10) : All simulations failed.
+> print(object.size(mc_50_1e10), units = "MB")
+0 Mb
+> 
+> 
+> t_mc_50_5e10 <- system.time(mc_50_5e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_50_5e10
+    user   system  elapsed 
+3004.412    0.140 3004.899 
+> try(summary(mc_50_5e10)[, c(1:3, 8, 9)])
+Error in summary(mc_50_5e10)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_50_5e10) : All simulations failed.
+> print(object.size(mc_50_5e10), units = "MB")
+0 Mb
+> 
+> 
+> t_mc_50_1e11 <- system.time(mc_50_1e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_50_1e11
+    user   system  elapsed 
+3004.392    0.344 3004.899 
+> try(summary(mc_50_1e11)[, c(1:3, 8, 9)])
+Error in summary(mc_50_1e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_50_1e11) : All simulations failed.
+> print(object.size(mc_50_1e11), units = "MB")
+0 Mb
+> 
+> t_mc_50_5e11 <- system.time(mc_50_5e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_50_5e11
+   user  system elapsed 
+3004.06    0.34 3004.90 
+> try(summary(mc_50_5e11)[, c(1:3, 8, 9)])
+Error in summary(mc_50_5e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_50_5e11) : All simulations failed.
+> print(object.size(mc_50_5e11), units = "MB")
+0 Mb
+> 
+> 
+> t_mc_50_1e12 <- system.time(mc_50_1e12 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e12,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_50_1e12
+    user   system  elapsed 
+3004.168    0.320 3004.897 
+> try(summary(mc_50_1e12)[, c(1:3, 8, 9)])
+Error in summary(mc_50_1e12)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_50_1e12) : All simulations failed.
+> print(object.size(mc_50_1e12), units = "MB")
+0 Mb
+> 
+> 
+> ###########################################################
+> 
+> 
+> 
+> ng <- 50 
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng)))
+> 
+> t_exp_50_1e8 <- system.time(exp_50_1e8 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e8,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600                                                     
++                                                      ))
+> t_exp_50_1e8
+   user  system elapsed 
+  0.748   0.000   0.750 
+> try(summary(exp_50_1e8)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1       293    103671273     64455809       319    9488
+2       208    106682357     70812836       301    9367
+3       163    105473720     90480936       349    9953
+4       267    104533530     46662327       316   10316
+5       214    100491722     42112269       308    8220
+> print(object.size(exp_50_1e8), units = "MB")
+0.6 Mb
+> 
+> 
+> t_exp_50_1e9 <- system.time(exp_50_1e9 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e9,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_exp_50_1e9
+   user  system elapsed 
+ 14.300   0.000  14.301 
+> try(summary(exp_50_1e9)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1       986   1051002309    477560142       361   85640
+2       558   1001404101    653814442       328   58107
+3       926   1033262076    526714607       371   86115
+4       253   1073309225    978221799       321   34903
+5       694   1083954683    535452863       462   68831
+> print(object.size(exp_50_1e9), units = "MB")
+1.7 Mb
+> 
+> 
+> t_exp_50_1e10 <- system.time(exp_50_1e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_exp_50_1e10
+   user  system elapsed 
+368.872   0.004 368.911 
+> try(summary(exp_50_1e10)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      2743  10476269314   4334870437       388  751715
+2      2279  10038306511   4508680342       423  592999
+3      2070  10249723866   4580579575       373  535335
+4      1522  10978658459   8462423207       373  512598
+5      1831  10096948933   8222512482       414  503169
+> print(object.size(exp_50_1e10), units = "MB")
+5 Mb
+> 
+> 
+> t_exp_50_5e10 <- system.time(exp_50_5e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_exp_50_5e10
+    user   system  elapsed 
+3004.328    0.004 3004.585 
+> try(summary(exp_50_5e10)[, c(1:3, 8, 9)])
+Error in summary(exp_50_5e10)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(exp_50_5e10) : All simulations failed.
+> print(object.size(exp_50_5e10), units = "MB")
+0 Mb
+> 
+> 
+> 
+> t_exp_50_1e11 <- system.time(exp_50_1e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_exp_50_1e11
+    user   system  elapsed 
+3004.460    0.236 3004.897 
+> try(summary(exp_50_1e11)[, c(1:3, 8, 9)])
+Error in summary(exp_50_1e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(exp_50_1e11) : All simulations failed.
+> print(object.size(exp_50_1e11), units = "MB")
+0 Mb
+> 
+> t_exp_50_5e11 <- system.time(exp_50_5e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = NA,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_exp_50_5e11
+    user   system  elapsed 
+3004.492    0.316 3004.896 
+> try(summary(exp_50_5e11)[, c(1:3, 8, 9)])
+Error in summary(exp_50_5e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(exp_50_5e11) : All simulations failed.
+> print(object.size(exp_50_5e11), units = "MB")
+0 Mb
+> 
+> 
+> ## bench_large_n_1_0.05 <- try(all_sim_stats(mc_50_1e8, mc_50_1e9, mc_50_1_10,
+> ##                                  mc_50_5e10, mc_50_1e11, mc_50_5e11, mc_50_1e12,
+> ##                                  exp_50_1e8, exp_50_1e9, exp_50_1_10,
+> ##                                  exp_50_5e10, exp_50_1e11, exp_50_5e11))
+>                                  
+>     
+> 
+> ## save(file = "bench_large_n_1_0.05.RData", bench_large_n_1_0.05)
+> ######################################################
+> 
+> 
+> 
+> ### keepEvery = 1
+> 
+> 
+> 
+> ng <- 50 
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng)))
+> 
+> t_mc_k_50_1e8 <- system.time(mc_k_50_1e8 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e8,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_mc_k_50_1e8
+   user  system elapsed 
+ 12.396   0.072  12.469 
+> try(summary(mc_k_50_1e8)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      1692    100049593     65703308  3445.850  153648
+2      1824    100037466     62817733  3546.875  156601
+3      1699    100023684     28866840  3186.350  142149
+4      1608    100000137     64283514  3201.475  142887
+5      1774    100024549     54769767  3306.775  146642
+> print(object.size(mc_k_50_1e8), units = "MB")
+225.2 Mb
+> 
+> 
+> t_mc_k_50_1e9 <- system.time(mc_k_50_1e9 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e9,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_mc_k_50_1e9
+   user  system elapsed 
+ 14.676   0.068  14.745 
+> try(summary(mc_k_50_1e9)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      1792   1001092207    294825347  3518.100  177629
+2      1704   1000145031    563451852  3092.550  158339
+3      1877   1001045135    397607320  3687.975  184460
+4      2117   1001106301    689853998  3748.550  187060
+5      1895   1000714361    244473476  3629.700  182634
+> print(object.size(mc_k_50_1e9), units = "MB")
+260.9 Mb
+> 
+> 
+> t_mc_k_50_1e10 <- system.time(mc_k_50_1e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_k_50_1e10
+    user   system  elapsed 
+3004.028    0.232 3004.456 
+> try(summary(mc_k_50_1e10)[, c(1:3, 8, 9)])
+Error in summary(mc_k_50_1e10)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_k_50_1e10) : All simulations failed.
+> print(object.size(mc_k_50_1e10), units = "MB")
+0 Mb
+> 
+> 
+> t_mc_k_50_5e10 <- system.time(mc_k_50_5e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_k_50_5e10
+    user   system  elapsed 
+3003.912    0.676 3004.882 
+> try(summary(mc_k_50_5e10)[, c(1:3, 8, 9)])
+Error in summary(mc_k_50_5e10)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_k_50_5e10) : All simulations failed.
+> print(object.size(mc_k_50_5e10), units = "MB")
+0 Mb
+> 
+> 
+> t_mc_k_50_1e11 <- system.time(mc_k_50_1e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_k_50_1e11
+    user   system  elapsed 
+3003.712    0.748 3004.885 
+> try(summary(mc_k_50_1e11)[, c(1:3, 8, 9)])
+Error in summary(mc_k_50_1e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_k_50_1e11) : All simulations failed.
+> print(object.size(mc_k_50_1e11), units = "MB")
+0 Mb
+> 
+> 
+> t_mc_k_50_5e11 <- system.time(mc_k_50_5e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_k_50_5e11
+    user   system  elapsed 
+3004.280    0.264 3004.885 
+> try(summary(mc_k_50_5e11)[, c(1:3, 8, 9)])
+Error in summary(mc_k_50_5e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_k_50_5e11) : All simulations failed.
+> print(object.size(mc_k_50_5e11), units = "MB")
+0 Mb
+> 
+> 
+> t_mc_k_50_1e12 <- system.time(mc_k_50_1e12 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e12,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_k_50_1e12
+    user   system  elapsed 
+3004.292    0.468 3004.893 
+> try(summary(mc_k_50_1e12)[, c(1:3, 8, 9)])
+Error in summary(mc_k_50_1e12)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_k_50_1e12) : All simulations failed.
+> print(object.size(mc_k_50_1e12), units = "MB")
+0 Mb
+> 
+> 
+> 
+> 
+> ###########################################################
+> 
+> 
+> 
+> ng <- 50 
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng)))
+> 
+> t_exp_k_50_1e8 <- system.time(exp_k_50_1e8 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e8,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_exp_k_50_1e8
+   user  system elapsed 
+  0.652   0.000   0.653 
+> try(summary(exp_k_50_1e8)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1       351    104992925     50705456       364    9924
+2       380    101291188     51176115       338    9953
+3       329    106684214     63742336       368    7594
+4       277    103064940     95902000       328   10131
+5       344    101352959     70437457       362    9924
+> print(object.size(exp_k_50_1e8), units = "MB")
+5.4 Mb
+> 
+> 
+> t_exp_k_50_1e9 <- system.time(exp_k_50_1e9 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e9,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_exp_k_50_1e9
+   user  system elapsed 
+ 12.496   0.000  12.494 
+> try(summary(exp_k_50_1e9)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      1287   1031151793    613666885       466   85483
+2      1350   1055315437    604642493       401   87487
+3       333   1005581737    730642755       260   42900
+4       432   1074764612    973632330       292   51384
+5      1010   1052610828    573701501       440   79544
+> print(object.size(exp_k_50_1e9), units = "MB")
+15.8 Mb
+> 
+> 
+> t_exp_k_50_1e10 <- system.time(exp_k_50_1e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.> t_exp_k_50_1e10
+   user  system elapsed 
+299.192   0.008 299.210 
+> try(summary(exp_k_50_1e10)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      3279  10922880565   4152066226       413  637016
+2      2236  10231712410   5697667783       346  482264
+3      1269  10300110046   9951908138       292  479481
+4      2300  10684349963   4528641330       363  537131
+5      2105  10282995163   8445590316       413  522212
+> print(object.size(exp_k_50_1e10), units = "MB")
+37 Mb
+> 
+> 
+> t_exp_k_50_5e10 <- system.time(exp_k_50_5e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = NA,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
