@@ -69,7 +69,7 @@ pancr <- allFitnessEffects(
 	             "MLL3", "TGFBR2", "PXDN"))
 
 
-Nindiv <- 500
+Nindiv <- 100
 
 
 ## keepEvery = 1
@@ -79,7 +79,7 @@ t_exp1 <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
-                            keepEvery = 1,
+                            keepPhylog = TRUE, keepEvery = 1,
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 
@@ -90,7 +90,7 @@ t_mc1 <- system.time(
                            detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA,
-                           keepEvery = 1,                                  
+                           keepPhylog = TRUE, keepEvery = 1,                                  
                            model = "McFL", 
                            mc.cores = 1))["elapsed"]
 
@@ -101,7 +101,7 @@ t_exp2 <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
-                            keepEvery = NA, 
+                            keepPhylog = TRUE, keepEvery = NA, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 
@@ -112,7 +112,7 @@ t_mc2 <- system.time(
                            detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA,
-                           keepEvery = NA,
+                           keepPhylog = TRUE, keepEvery = NA,
                            model = "McFL", 
                            mc.cores = 1))["elapsed"]
 
@@ -127,7 +127,7 @@ t_exp3 <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
-                            keepEvery = 1, 
+                            keepPhylog = TRUE, keepEvery = 1, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 
@@ -139,7 +139,7 @@ t_exp4 <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
-                            keepEvery = NA, 
+                            keepPhylog = TRUE, keepEvery = NA, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 
@@ -153,7 +153,7 @@ t_exp5 <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
-                            keepEvery = 1, 
+                            keepPhylog = TRUE, keepEvery = 1, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 
@@ -165,7 +165,7 @@ t_exp6 <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
-                            keepEvery = NA, 
+                            keepPhylog = TRUE, keepEvery = NA, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 
@@ -181,7 +181,7 @@ t_exp1_noc <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA, onlyCancer = FALSE,
-                            keepEvery = 1,
+                            keepPhylog = TRUE, keepEvery = 1,
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 t_mc1_noc <- system.time(
@@ -190,7 +190,7 @@ t_mc1_noc <- system.time(
                            detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA, onlyCancer = FALSE,
-                           keepEvery = 1,                                  
+                           keepPhylog = TRUE, keepEvery = 1,                                  
                            model = "McFL", 
                            mc.cores = 1))["elapsed"]
 ## keepEvery = NA
@@ -200,7 +200,7 @@ t_exp2_noc <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA, onlyCancer = FALSE,
-                            keepEvery = NA, 
+                            keepPhylog = TRUE, keepEvery = NA, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 t_mc2_noc <- system.time(
@@ -209,7 +209,7 @@ t_mc2_noc <- system.time(
                            detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA, onlyCancer = FALSE,
-                           keepEvery = NA,
+                           keepPhylog = TRUE, keepEvery = NA,
                            model = "McFL", 
                            mc.cores = 1))["elapsed"]
 ### exp3_noc to exp6_noc
@@ -221,7 +221,7 @@ t_exp3_noc <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA, onlyCancer = FALSE,
-                            keepEvery = 1, 
+                            keepPhylog = TRUE, keepEvery = 1, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 t_exp4_noc <- system.time(
@@ -232,7 +232,7 @@ t_exp4_noc <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA, onlyCancer = FALSE,
-                            keepEvery = NA, 
+                            keepPhylog = TRUE, keepEvery = NA, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 t_exp5_noc <- system.time(
@@ -243,7 +243,7 @@ t_exp5_noc <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA, onlyCancer = FALSE,
-                            keepEvery = 1, 
+                            keepPhylog = TRUE, keepEvery = 1, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 t_exp6_noc <- system.time(
@@ -254,13 +254,22 @@ t_exp6_noc <- system.time(
                             detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA, onlyCancer = FALSE,
-                            keepEvery = NA, 
+                            keepPhylog = TRUE, keepEvery = NA, 
                             model = "Exp", 
                             mc.cores = 1))["elapsed"]
 
 benchmark_1 <- all_sim_stats(exp1, mc1, exp2, mc2, exp3, exp4, exp5, exp6,
                          exp1_noc, mc1_noc, exp2_noc, mc2_noc, exp3_noc, exp4_noc, exp5_noc, exp6_noc
                          )
+
+## Add the info about key settings
+benchmark_1$keepEvery <- c(1, 1, NA, NA, 1, NA, 1, NA,
+                           1, 1, NA, NA, 1, NA, 1, NA)
+benchmark_1$PDBaseline <- c(rep(1.2 * 500, 4), 5e4, 5e4, 5e5, 5e5,
+                            rep(1.2 * 500, 4), 5e4, 5e4, 5e5, 5e5)
+benchmark_1$n2 <- c(rep(2 * 500, 4), 5e5, 5e5, 5e7, 5e7,
+                    rep(2 * 500, 4), 5e5, 5e5, 5e7, 5e7)
+benchmark_1$onlyCancer <- c(rep(TRUE, 8), rep(FALSE, 8))
 
 save(file = "../../data/benchmark_1.RData", benchmark_1)
 
