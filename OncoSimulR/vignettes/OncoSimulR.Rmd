@@ -7778,27 +7778,16 @@ simulation functions contains the simple summary statistic `errorMF`
 that can be used to assess the quality of the
 approximation[^errorMF].
 
-[^errorMF]: We record the largest difference between the computed
-    death rate and the death rate that would have been computed if
-    differences in population sizes had been caused by the addition
-    or subtraction of a single individual. Death rates are the
-    fitness are affected by density dependence and, thus, it is on
-    the death rates where the approximation that they are constant
-    over a short interval plays a role. If we were not using an
-    approximation, the two death rates above would be
-    identical. More precisely, let $A$ and $C$ denote two successive
+[^errorMF]: Death rates are affected by density dependence and,
+    thus, it is on the death rates where the approximation that they
+    are constant over a short interval plays a role. Thus, we
+    examine how large the difference between successive death rates
+    is. More precisely, let $A$ and $C$ denote two successive
     sampling periods, with $D_A = log(1 + N_A/K)$ and $D_C= log(1 +
     N_C/K)$ their death rates. `errorMF_size` stores the largest
-    $abs(D_C - D_A)$ between any two sampling periods. In addition,
-    we compute the largest difference had the change been larger
-    than the addition/subtraction of a single individual. Suppose
-    $N_C > N_A$; then we record $error = (D_C - log(1 + (N_A +
-    1)/K))/D_A$, where the second term corresponds to the death rate
-    that would had been computed from population size $N_A$ by
-    adding one individual. If $N_A > N_C$ we record $error =
-    (log(1 + (N_A - 1)/K) - D_C)/D_A$. The value `errorMF`
-    corresponds to the largest value of $error$ ever seen during a
-    simulation.  Additionally, a simple procedure to use is to run
+    $abs(D_C - D_A)$ between any two sampling periods ever seen
+    during a simulation. `errorMF` stores the largest $abs(D_C -
+    D_A)/D_A$.  Additionally, a simple procedure to use is to run
     the simulations with different values of `sampleEvery`, say the
     default value of 0.025 and values that are 10, 20, and 50 times
     larger or smaller, and assess their effects on the output of the
@@ -7810,6 +7799,42 @@ approximation[^errorMF].
     `sampleEvery` can lead to trouble and will be manifested too in
     the simulation output with large and unreasonable jumps in total
     population sizes and sudden extinctions.
+
+
+
+
+<!-- We record the largest difference between the computed -->
+<!--     death rate and the death rate that would have been computed if -->
+<!--     differences in population sizes had been caused by the addition -->
+<!--     or subtraction of a single individual. Death rates are the -->
+<!--     fitness are affected by density dependence and, thus, it is on -->
+<!--     the death rates where the approximation that they are constant -->
+<!--     over a short interval plays a role. If we were not using an -->
+<!--     approximation, the two death rates above would be -->
+<!--     identical. More precisely, let $A$ and $C$ denote two successive -->
+<!--     sampling periods, with $D_A = log(1 + N_A/K)$ and $D_C= log(1 + -->
+<!--     N_C/K)$ their death rates. `errorMF_size` stores the largest -->
+<!--     $abs(D_C - D_A)$ between any two sampling periods. In addition, -->
+<!--     we compute the largest difference had the change been larger -->
+<!--     than the addition/subtraction of a single individual. Suppose -->
+<!--     $N_C > N_A$; then we record $error = (D_C - log(1 + (N_A + -->
+<!--     1)/K))/D_A$, where the second term corresponds to the death rate -->
+<!--     that would had been computed from population size $N_A$ by -->
+<!--     adding one individual. If $N_A > N_C$ we record $error = -->
+<!--     (log(1 + (N_A - 1)/K) - D_C)/D_A$. The value `errorMF` -->
+<!--     corresponds to the largest value of $error$ ever seen during a -->
+<!--     simulation.  Additionally, a simple procedure to use is to run -->
+<!--     the simulations with different values of `sampleEvery`, say the -->
+<!--     default value of 0.025 and values that are 10, 20, and 50 times -->
+<!--     larger or smaller, and assess their effects on the output of the -->
+<!--     simulations and the `errorMF` statistic itself. You can check -->
+<!--     that using a `sampleEvery` much smaller than 0.025 rarely makes -->
+<!--     any difference in `errorMF` or in the simulation output (though -->
+<!--     it increases computing time significantly). And, just for the -->
+<!--     fun of it, you can also check that using huge values for -->
+<!--     `sampleEvery` can lead to trouble and will be manifested too in -->
+<!--     the simulation output with large and unreasonable jumps in total -->
+<!--     population sizes and sudden extinctions. -->
 
 
 

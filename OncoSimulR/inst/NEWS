@@ -4,6 +4,7 @@ Changes in version 2.5.2 (2016-11-20):
 	- LOD and POM (lines of descent, path of maximum, sensu Szendro et
 	  al.).
 	- simOGraph can also out rT data frames.
+	- Better (and better explained) estimates of simulation error for McFL.
 
 Changes in version 2.5.1 (2016-11-12):
 	- AND of detectedSizeP and lastMaxDr.

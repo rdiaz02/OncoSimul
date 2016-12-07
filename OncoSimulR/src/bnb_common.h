@@ -141,6 +141,7 @@ double returnMFE_new(double& en1,
 // 			   const double& K);
 
 void computeMcFarlandError_new(double& en1,
+			       double& en1sc,
 			       double& totPopSize_previous,
 			       double& DA_previous,
 			       const TypeModel typeModel,
@@ -148,6 +149,7 @@ void computeMcFarlandError_new(double& en1,
 			       const double& K);
 
 void computeMcFarlandError_new(double& en1,
+			       double& en1sc,
 			       double& totPopSize_previous,
 			       double& DA_previous,
 			       const std::string& typeFitness,

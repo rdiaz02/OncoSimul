@@ -1655,7 +1655,6 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
       // 			    typeModel, totPopSize, K); //, initSize);
       computeMcFarlandError_new(em1, em1sc, totPopSize_previous, DA_previous, 
 				typeModel, totPopSize, K); 
-      
 
       if(simulsDone)
 	break; //skip last updateRates
@@ -2084,7 +2083,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
   	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
- 
+  
   return
     List::create(Named("pops.by.time") = outNS,
 		 Named("NumClones") = uniqueGenotypes_vector_nr.size(), 

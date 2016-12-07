@@ -797,8 +797,11 @@ void computeMcFarlandError_new(double& em1,
   // Simple logic:
   // Really, simple thing: compute difference between successive death
   // rates, and also scale. Period.
+  
   if( typeModel == TypeModel::mcfarlandlog ) { 
     double etmp, etmpsc;
+    etmp = 0.0;
+    etmpsc = 0.0;
     double DC = log1p(totPopSize/K);
     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
@@ -807,7 +810,7 @@ void computeMcFarlandError_new(double& em1,
       etmpsc = etmp/DA_previous;
     }
     if(etmp > em1) em1 = etmp;
-    if(emtpsc > em1sc) em1sc = etmpsc;
+    if(etmpsc > em1sc) em1sc = etmpsc;
     DA_previous = DC;
     totPopSize_previous = totPopSize;
   }
@@ -825,6 +828,8 @@ void computeMcFarlandError_new(double& em1,
   // rates, and also scale. Period.
   if(typeFitness == "mcfarlandlog")  {    
     double etmp, etmpsc;
+    etmp = 0.0;
+    etmpsc = 0.0;
     double DC = log1p(totPopSize/K);
     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
@@ -833,7 +838,7 @@ void computeMcFarlandError_new(double& em1,
       etmpsc = etmp/DA_previous;
     }
     if(etmp > em1) em1 = etmp;
-    if(emtpsc > em1sc) em1sc = etmpsc;
+    if(etmpsc > em1sc) em1sc = etmpsc;
     DA_previous = DC;
     totPopSize_previous = totPopSize;
   }

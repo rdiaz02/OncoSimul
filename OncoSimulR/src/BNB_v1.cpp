@@ -1566,9 +1566,9 @@ static void innerBNB(const int& numGenes,
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
       }
       
-      computeMcFarlandError(e1, n_0, tps_0, 
-			    typeFitness, totPopSize, K); //, initSize);
-      computeMcFarlandError_new(en1, totPopSize_previous, DA_previous, 
+      // computeMcFarlandError(e1, n_0, tps_0, 
+      // 			    typeFitness, totPopSize, K); //, initSize);
+	computeMcFarlandError_new(em1, em1sc, totPopSize_previous, DA_previous, 
 			    typeFitness, totPopSize, K); 
       // Largest error in McFarlands' method
       // if( (typeFitness == "mcfarland0") ||
@@ -1895,10 +1895,11 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 	       extraTime,
 	       verbosity,
 	       totPopSize,
-	       e1,
-	       n_0,
+	       em1,
+	       em1sc,
+	       // n_0,
 	       // n_1,
-	       en1,
+	       // em1,
 	       ratioForce,
 	       currentTime,
 	       speciesFS,
