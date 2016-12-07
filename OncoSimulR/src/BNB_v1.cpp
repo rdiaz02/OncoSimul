@@ -808,7 +808,8 @@ static void innerBNB(const int& numGenes,
 		     double& totPopSize,
 		     double& e1,
 		     double& n_0,
-		     double& n_1,
+		     // double& n_1,
+		     double& en1,
 		     double& ratioForce,
 		     double& currentTime,
 		     int& speciesFS,
@@ -950,12 +951,15 @@ static void innerBNB(const int& numGenes,
   // for McFarland error
   e1 = 0.0;
   n_0 = 0.0;
-  n_1 = 0.0;
-  double tps_0, tps_1; 
+  // n_1 = 0.0;
+  double tps_0; //, tps_1; 
   tps_0 = totPopSize;
-  tps_1 = totPopSize;
+  // tps_1 = totPopSize;
 
-
+  en1 = 0;
+  double totPopSize_previous = totPopSize;
+  double DA_previous = log1p(totPopSize_previous/K);
+  
       // // FIXME debug
       // Rcpp::Rcout << "\n popSize[0]  at 10004 ";
       // print_spP(popParams[0]);
@@ -1561,9 +1565,10 @@ static void innerBNB(const int& numGenes,
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
       }
       
-      computeMcFarlandError(e1, n_0, n_1, tps_0, tps_1, 
+      computeMcFarlandError(e1, n_0, tps_0, 
 			    typeFitness, totPopSize, K); //, initSize);
-
+      computeMcFarlandError_new(en1, totPopSize_previous, DA_previous, 
+			    typeFitness, totPopSize, K); 
       // Largest error in McFarlands' method
       // if( (typeFitness == "mcfarland0") ||
       // 	  (typeFitness == "mcfarland") || 
@@ -1802,14 +1807,15 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
   // //McFarland
   // double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
 
-  double e1, n_0, n_1; // for McFarland error
+  double e1, n_0; //, n_1; // for McFarland error
   // double tps_0, tps_1; // for McFarland error
   // tps_0 = 0.0;
   // tps_1 = 0.0;
   e1 = 0.0;
   n_0 = 0.0;
-  n_1 = 0.0;
-
+  // n_1 = 0.0;
+  double en1; // new computation of McFarland error
+  
   // // For totPopSize_and_fill and bailing out
   // // should be static vars inside funct,
   // // but they keep value over calls in same R session.
@@ -1888,7 +1894,8 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 	       totPopSize,
 	       e1,
 	       n_0,
-	       n_1,
+	       // n_1,
+	       en1,
 	       ratioForce,
 	       currentTime,
 	       speciesFS,
@@ -2120,12 +2127,12 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 		 // drivers if keepEvery < 0, so we only return the last.
 		 Named("OccurringDrivers") = occurringDrivers,
 		 Named("PerSampleStats") = perSampleStats,
-		 Named("other") = Rcpp::List::create(Named("attemptsUsed") = numRuns,
-					       Named("errorMF") = 
-						     returnMFE(e1, // K, 
-							 typeFitness),
-					       Named("errorMF_size") = e1,
-					       Named("errorMF_n_0") = n_0,
+		       Named("other") = Rcpp::List::create(Named("attemptsUsed") = numRuns,
+							   Named("errorMF") =
+							   returnMFE_new(en1, typeFitness),
+							   Named("errorMF_size") = 
+							   returnMFE(e1, typeFitness), // Used to be e1, not log
+							   Named("errorMF_n_0") = n_0,
 #ifdef MIN_RATIO_MUTS
 					       Named("minDMratio") =
 					       g_min_death_mut_ratio,
@@ -2135,7 +2142,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 					       Named("minDMratio") = -99,
 					       Named("minBMratio") = -99,
 #endif
-					       Named("errorMF_n_1") = n_1,
+							   // Named("errorMF_n_1") = n_1,
 					       Named("UnrecoverExcept") = false)
 		 );
 

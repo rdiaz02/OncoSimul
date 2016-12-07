@@ -629,6 +629,25 @@ double returnMFE(double& e1,
     return -99;
 }
 
+// Get a -99 where there should be no error because of model
+double returnMFE_new(double& en1,
+		     const std::string& typeFitness) {
+  if(typeFitness == "mcfarlandlog")
+    return en1;
+  else
+    return -99;
+}
+
+double returnMFE_new(double& en1,
+		     const TypeModel typeModel) {
+  if(typeModel == TypeModel::mcfarlandlog)
+    return en1;
+  else
+    return -99;
+}
+
+
+
 
 
 // FIXME But I'd probably want a percent error, compared to the death rate
@@ -670,31 +689,178 @@ double returnMFE(double& e1,
 //   }
 // }
 
+// Former twisted function, which contains an (irrelevant for practical
+// purposes) error when we go from No = N1 - 1.
+
+// void computeMcFarlandError(double& e1,
+// 			   double& n_0,
+// 			   double& n_1,
+// 			   double& tps_0,
+// 			   double& tps_1,
+// 			   const std::string& typeFitness,
+// 			   const double& totPopSize,
+// 			   const double& K){
+
+//   if(typeFitness == "mcfarlandlog")  {
+//     double etmp;
+//     tps_1 = totPopSize;
+//     if( (tps_0 + 1.0) > tps_1 ) 
+//       etmp = (K + tps_0 + 1.0)/(K + tps_1);
+//     else
+//       etmp = (K + tps_1)/(K + tps_0 + 1);
+//     if(etmp > e1) {
+//       e1 = etmp;
+//       n_0 = tps_0;
+//       n_1 = tps_1;
+//     }
+//     tps_0 = tps_1;
+//   }
+// }
+
 void computeMcFarlandError(double& e1,
-			   double& n_0,
-			   double& n_1,
+			   double& n_0, // for the hell of keeping it
 			   double& tps_0,
-			   double& tps_1,
 			   const std::string& typeFitness,
 			   const double& totPopSize,
 			   const double& K){
 
   if(typeFitness == "mcfarlandlog")  {
     double etmp;
-    tps_1 = totPopSize;
-    if( (tps_0 + 1.0) > tps_1 ) 
-      etmp = (K + tps_0 + 1.0)/(K + tps_1);
-    else
+    double tps_1 = totPopSize;
+    if( tps_1 > (tps_0 + 1)) {
       etmp = (K + tps_1)/(K + tps_0 + 1);
+    } else if ( tps_0 > (tps_1 + 1) ) {
+      etmp = (K + tps_0 - 1)/(K + tps_1);
+    } else { // no change or change by 1 means no error
+      etmp = 1;
+    }
     if(etmp > e1) {
       e1 = etmp;
-      n_0 = tps_0;
-      n_1 = tps_1;
+      n_0 = tps_0; // just for the hell of keeping it
     }
     tps_0 = tps_1;
   }
 }
 
+// The logic 
+// Death is log( 1 + N/K) so log( (K + N)/K )
+
+// We go from size at A (tps_0) to size at C (tps_1)
+
+// These expressions compute the absolute value of the difference in death
+// rates between the actual death rate (DC) and the death rate that would
+// have taken place if change had been by one birth or death (DB):
+
+// Suppose DC > DA:
+// DC - DA = log( (K + tps_1)/K ) - log( (K + tps_0 + 1)/N  ) =
+//         = log( (K + tps_1)/(K + tps_0 + 1) )
+// To avoid logs, we store the ratio. 
+
+
+
+void computeMcFarlandError(double& e1,
+			   double& n_0, // for the hell of keeping it
+			   double& tps_0,
+			   const TypeModel typeModel,
+			   const double& totPopSize,
+			   const double& K){
+
+  if( typeModel == TypeModel::mcfarlandlog ) {
+    double etmp;
+    double tps_1 = totPopSize;
+    if( tps_1 > (tps_0 + 1)) {
+      etmp = (K + tps_1)/(K + tps_0 + 1);
+    } else if ( tps_0 > (tps_1 + 1) ) {
+      etmp = (K + tps_0 - 1)/(K + tps_1);
+    } else { // no change or change by 1 means no error
+      etmp = 1;
+    }
+    if(etmp > e1) {
+      e1 = etmp;
+      n_0 = tps_0; // just for the hell of keeping it
+    }
+    tps_0 = tps_1;
+  }
+}
+
+void computeMcFarlandError_new(double& en1,
+			       double& totPopSize_previous,
+			       double& DA_previous,
+			       const TypeModel typeModel,
+			       const double& totPopSize,
+			       const double& K){
+  // Simple logic:
+
+  // If we updated whenever there was a birth or death we would have these
+  // changes between time points A and B (where A comes before B):
+  // DA = log(1 + totPopSize_previous/K) [= log1p(totPopSize_previous/K)]
+  // Birth of 1:
+  //   DB = log1p((totPopSize_previous + 1)/K)
+  // Death of 1:
+  //   DB = log1p((totPopSize_previous - 1)/K)
+  
+
+  // But we actually have C, not B with:
+  //   DC = log1p(totPopSize/K)
+
+  // So we compute: abs(DC - DB)/DA
+
+  // We can store DA. And yes, DA is generally almost identical to DB.
+  
+  if( typeModel == TypeModel::mcfarlandlog ) { 
+    double etmp;
+    double DC = log1p(totPopSize/K);
+    
+    
+    if(totPopSize == totPopSize_previous) {
+      etmp = 0.0;
+    } else {
+      double DB;
+      if ( totPopSize > totPopSize_previous ) {
+	DB = log1p((totPopSize_previous + 1)/K);
+      } else if ( totPopSize < totPopSize_previous ) {
+	DB = log1p((totPopSize_previous - 1)/K);
+      }
+      etmp = std::abs(DC - DB)/DA_previous;
+    }
+    if(etmp > en1) en1 = etmp;
+    
+    DA_previous = DC;
+    totPopSize_previous = totPopSize;
+  }
+}
+
+void computeMcFarlandError_new(double& en1,
+			       double& totPopSize_previous,
+			       double& DA_previous,
+			       const std::string& typeFitness,
+			       const double& totPopSize,
+			       const double& K){
+  // Same as above, but for the old, v.1, specification
+  if(typeFitness == "mcfarlandlog")  {
+
+    double etmp;
+    double DC = log1p(totPopSize/K);
+    
+    
+    if(totPopSize == totPopSize_previous) {
+      etmp = 0.0;
+    } else {
+      double DB;
+      if ( totPopSize > totPopSize_previous ) {
+	DB = log1p((totPopSize_previous + 1)/K);
+      } else if ( totPopSize < totPopSize_previous ) {
+	DB = log1p((totPopSize_previous - 1)/K);
+      }
+      etmp = std::abs(DC - DB)/DA_previous;
+    }
+    if(etmp > en1) en1 = etmp;
+    
+    DA_previous = DC;
+    totPopSize_previous = totPopSize;
+  }
+}
+  
 
 // void computeMcFarlandError(double& e1,
 // 				  double& n_0,
@@ -729,31 +895,6 @@ void computeMcFarlandError(double& e1,
 //     tps_0 = tps_1;
 //   }
 // }
-
-void computeMcFarlandError(double& e1,
-			   double& n_0,
-			   double& n_1,
-			   double& tps_0,
-			   double& tps_1,
-			   const TypeModel typeModel,
-			   const double& totPopSize,
-			   const double& K){
-
-  if( typeModel == TypeModel::mcfarlandlog ) {
-    double etmp;
-    tps_1 = totPopSize;
-    if( (tps_0 + 1.0) > tps_1 ) 
-      etmp = (K + tps_0 + 1.0)/(K + tps_1);
-    else
-	etmp = (K + tps_1)/(K + tps_0 + 1);
-    if(etmp > e1) {
-      e1 = etmp;
-      n_0 = tps_0;
-      n_1 = tps_1;
-    }
-    tps_0 = tps_1;
-  }
-}
 
 
 // void updateRatesMcFarland(std::vector<spParamsP>& popParams,
