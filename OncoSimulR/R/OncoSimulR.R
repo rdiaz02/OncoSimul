@@ -712,18 +712,24 @@ oncoSimulIndiv <- function(fp,
 }
 
 summary.oncosimul <- function(object, ...) {
+    ## This should be present even in HittedWallTime and HittedMaxTries
+    ## if those are not regarded as errors
+    pbp <- ("pops.by.time" %in% names(object) )
     
-    if(object$other$UnrecoverExcept) ## yes, when bailing out from
+    if(object$other$UnrecoverExcept) { ## yes, when bailing out from
                                      ## except. can have just minimal
                                      ## content
         return(NA)
-    else if (object$HittedWallTime || object$HittedMaxTries)
+    } else if( !pbp & (object$HittedWallTime || object$HittedMaxTries) ) {
         return(NA)
-    else {
+    } else if ( !pbp & !(object$HittedWallTime || object$HittedMaxTries) ) {
+        stop("Eh? No pops.by.time but did not hit wall time or max tries? BUG!")
+    } else {
         tmp <- object[c("NumClones", "TotalPopSize", "LargestClone",
                         "MaxNumDrivers", "MaxDriversLast",
                         "NumDriversLargestPop", "TotalPresentDrivers",
-                        "FinalTime", "NumIter", "HittedWallTime")]
+                        "FinalTime", "NumIter", "HittedWallTime",
+                        "HittedMaxTries")]
  
         tmp$errorMF <- object$other$errorMF
         tmp$minDMratio <- object$other$minDMratio
