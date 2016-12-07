@@ -205,7 +205,8 @@ is a summary of some of the key features:
 
 
  
-* You can specify arbitrary interactions between genes, with   arbitrary fitness effects, with  explicit support for:
+* You can specify arbitrary interactions between genes, with
+  arbitrary fitness effects, with explicit support for:
     - Restrictions in the accumulations of mutations, as specified by
       Oncogenetic Trees (OTs), Conjunctive Bayesian Networks (CBNs),
       semimonotone progression networks, and XOR relationships.
@@ -1079,7 +1080,7 @@ version 2.
 
 
 
-# Time and speed requirements of OncoSimulR? {#timings}
+# Time and space requirements of OncoSimulR {#timings}
 
 Time to complete the simulations and size of return objects depend
 on several, interacting factors. The usual rule of "experiment
@@ -1119,7 +1120,8 @@ Size of return objects will depend on:
 
 * Any factor that affects the number of clones tracked/returned, in
   particular: initial sizes and stopping conditions, mutation rate,
-  and how often you keep data (the `keepEvery` argument).
+  and how often you keep data (the `keepEvery` argument can make a
+  huge difference here).
 * Whether or not you keep the complete clone history (this affects
   mainly size of return object, not speed).
 
@@ -1129,7 +1131,10 @@ some of the main settings that affect execution time and size of
 returned objects. It should be understood, however, that many of the
 examples shown below do not represent typical use cases of
 OncoSimulR, but are used here to understand what, and how, affects
-time and size.
+time and size. As we will see in most examples in this vignette,
+typical use cases of OncoSimulR involve hundreds to thousands of
+genes on population sizes up to $10^6$ to $10^7$.
+
 
 Note that most of the code in this section is not executed during
 the building of the vignette, to keept vignette build time
@@ -1693,10 +1698,11 @@ number of simulations".
 
 ## Can we use a large number of genes? {#lnum}
 
-Yes. However, large numbers of genes can lead to unacceptable memory
-or CPU usage. We discuss several examples next, that illustrate some
-of the major issues to consider. Another example with 50,000 genes
-is shown in section \@ref(mcf50070).
+Yes. In fact, in OncoSimulR there is no pre-set limit on genome
+size. However, large numbers of genes can lead to unacceptable
+memory or CPU usage. We discuss several examples next, that
+illustrate some of the major issues to consider. Another example
+with 50,000 genes is shown in section \@ref(mcf50070).
 
 We have seen in \@ref(bench1) that for the Exp model, benchmark
 results using `detectionProb` require a lot of care and can be
@@ -1755,6 +1761,53 @@ print(object.size(e_10000), units = "MB")
 Each simulation takes about 1 second but note that the number of
 clones for most simulations is already over 4000 and that the size
 of the return object is close to 1 GB. 
+
+
+#### Interlude: where is that 1 GB coming from? {#wheresizefrom}
+
+In section \@ref(exp10000_1) we have seen an apparently innocuous
+simulation producing a return object of almost 1 GB. Where is that
+coming from? It means that each simulation produced about 200 MB of
+output. 
+
+Let us look at one simulation in more detail:
+
+```{r sizedetail, eval = FALSE, echo = TRUE}
+r1 <- oncoSimulIndiv(u,
+                     model = "Exp",
+                     mu = 1e-7,
+                     detectionSize = 1e6,
+                     detectionDrivers = NA,
+                     detectionProb = NA,
+                     keepPhylog = TRUE,
+                     onlyCancer = FALSE,
+                     mutationPropGrowth = TRUE
+                     )
+summary(r1)[c(1, 8)]
+##   NumClones  FinalTime
+## 1      3887        345
+
+print(object.size(r1), units = "MB")
+## 160 Mb
+
+sizes <- lapply(r1, function(x) object.size(x)/(1024^2))
+sort(unlist(sizes), decreasing = TRUE)[1:2]
+## Genotypes pops.by.time 
+##       148.28        10.26 
+
+dim(r1$Genotypes)
+## [1] 10000  3887
+```
+
+The above shows the reason: the `Genotypes` matrix is a 10000 by
+3887 integer matrix (with a 0 and 1 indicating not-mutated/mutated
+for each gene in each genotype) and in R integers use 4 bytes
+each. And the `pops.by.time` is 346 by 3888 (the 1 in $346 = 345 +
+1$ comes from time 0 and the 1 in $3888 = 3887 + 1$ is due to the
+column with the time index) double matrix and doubles use 8 bytes.
+
+
+
 
 
 #### Exponential, 10,000 genes, example 2 {#exp10000_2}
@@ -1861,7 +1914,7 @@ t_e_50000np <- system.time(e_50000np <- oncoSimulPop(5,
                                                  detectionProb = NA,
                                                  keepPhylog = TRUE,
                                                  onlyCancer = FALSE,
-                                                 keepEvery = NA,
+                                                 keepEvery = 1,
                                                  mutationPropGrowth = FALSE,
                                                  mc.cores = 1
                                                  ))
@@ -2226,6 +2279,93 @@ tracking around 12000 clones even when we prune all clones without
 descendants.
 
 
+
+### An example with $s = 0.05$ {#largegenes005}
+
+A script with the above runs but using $s=0.05$ instead of $s=0.1$
+is available from the repository
+(`miscell-files/vignette_bench_Rout/large_num_genes_0.05.Rout`). I
+will single out a couple of cases here.
+
+First, we repeat the run shown in section \@ref(mc50000ex5):
+
+```{r mcf5muk005, echo = TRUE, eval = FALSE}
+t_mc_50000_nmpg_5mu_k <- system.time(mc_50000_nmpg_5mu_k <- oncoSimulPop(2,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 5e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = 1,
+                                                   mutationPropGrowth = FALSE,
+                                                   mc.cores = 1
+                                                   ))
+t_mc_50000_nmpg_5mu_k
+##    user  system elapsed 
+## 305.512   5.164 310.711 
+ 
+summary(mc_50000_nmpg_5mu_k)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1     61737      1003273       104460  295.8731  204214
+## 2     65072      1000540       133068  296.6243  210231
+ 
+print(object.size(mc_50000_nmpg_5mu_k), units = "MB")
+## 24663.6 Mb
+
+```
+
+Note we use only two replicates, since those two already lead to a
+24 GB return object as we are tracking more than 60,000 clones, more
+than twice those with $s=0.1$.  The reason for the difference in
+number of clones and iterations is of course the change from $s=0.1$
+to $s=0.05$: under the McFarland model to reach population sizes of
+$10^6$ starting from an equilibrium population of 500 we need about
+43 mutations (whereas only about 22 are needed if $s=0.1$).
+
+
+Next, let us compare \@ref(mc50000ex1):
+
+```{r mc50000_1_005, echo = TRUE, eval = FALSE}
+t_mc_50000_nmpg <- system.time(mc_50000_nmpg <- oncoSimulPop(5,
+                                                   u,
+                                                   model = "McFL",
+                                                   mu = 1e-7,
+                                                   detectionSize = 1e6,
+                                                   detectionDrivers = NA,
+                                                   detectionProb = NA,
+                                                   keepPhylog = TRUE,
+                                                   onlyCancer = FALSE,
+                                                   keepEvery = NA,
+                                                   mutationPropGrowth = FALSE,
+                                                   mc.cores = 1
+                                                   ))
+t_mc_50000_nmpg
+##    user  system elapsed 
+## 111.236   0.596 111.834 
+ 
+summary(mc_50000_nmpg)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      2646      1000700       217188   734.475  108566
+## 2      2581      1001626       209873   806.500  107296
+## 3      2903      1001409       125148   841.700  120859
+## 4      2310      1000146       473948   906.300   91519
+## 5      2704      1001290       448409   838.800  103556
+ 
+print(object.size(mc_50000_nmpg), units = "MB")
+## 2638.3 Mb
+
+```
+Using $s=0.05$ leads to a large increase in final time and number of
+iterations. However, as we are using the `keepEvery = NA` setting,
+the increase in number of clones tracked and in size of return
+object is much smaller than above. 
+
+
+
+
 Examples above: no setting for finalTime, but a moot point (all well
 < 1000)
 
@@ -2317,58 +2457,140 @@ FALSE`.
 
 
 
+## Population sizes $\geq 10^{10}$ {#popgtzx}
+
+We have already seen examples where population sizes reach $10^{8}$
+to $10^{10}$, as in Tables \@ref(tab:bench1b), \@ref(tab:timing3),
+\@ref(tab:timing3xf). What about even larger population sizes?
+
+The C++ code will unconditionally alert if population sizes exceed
+$4e^{15}$ as in those cases loosing precision (as we are using
+doubles) would be unavoidable, and we would also run into problems
+with the generation of binomial random variates (code that
+illustrates and discusses this problem is available in file
+"example-binom-problems.cpp", in directory
+"/inst/miscell"). However, well before we reach $4e^{15}$ we loose
+precision from other sources. One of the most noticeable ones is
+that when we reach population sizes around $1e^{11}$ the C++ code
+will often alert us by throwing exceptions with the message
+`Recoverable exception ti set to DBL\_MIN. Rerunning.`; I throw this
+exception because $t_i$, the random variable for time to next
+mutation, is less than `DBL_MIN`, the minimum representable
+floating-point number. This happens because, unless we use really
+tiny mutation rates, the time to a mutation starts getting closer to
+zero as population sizes grow very large. It might be possible to
+ameliorate these problems somewhat by using long doubles (instead of
+doubles) or special purpose libraries that provide more
+precision. However, this would make it harder to run the same code
+in different operating systems and would likely decrease execution
+speed on the rest of the common scenarios for which OncoSimulR has
+been designed.
 
 
-## Population sizes larger than $10^{10}$ {#popgtzx}
-
-McFarland: easily pop sizes of 1e6 or 1e7. For Exp, 1e7 to
-1e9. Starting at 1e10 we run into trouble
-
-Yes but:
-anything that affects number of clones will huge times and object
-sizes blablab
-Longer genomes, larger mu even worse with larger pop sizes. But
-large pop sizes bring other issues of their own.
-
-I will use much smaller genomes to focus on the problems inherent to
-large pop. sizes:
-
-
-Focus on the "examples-large.R script
-
-So with and without keepEvery = NA (or 1)
-
-
-We have already seen examples where population sizes are larger than
-$10^{8}$, as in Tables \@ref(tab:bench1b), \@ref(tab:timing3),
-\@ref(tab:timing3xf). 
 
 
 
+The following code shows some examples where we use population sizes
+of $10^{10}$ or larger. Since we do not want simulations in the
+exponential model to end because of extinction, I use a fitness
+specification where all genes have a positive fitness effect and we
+start all simulations from a large population (to make it very
+unlikely that the population will become extinct before a cell
+mutates). We set the maximum running time to 10 minutes. We keep the
+history of the clones and use `keepEvery = 1`.
 
 
+```{r ex-large-pop-size, eval = FALSE, echo = TRUE}
+ng <- 50 
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng)))
+```
 
 
+```{r ex-large-mf, eval = FALSE, echo = TRUE}
+t_mc_k_50_1e11 <- system.time(mc_k_50_1e11 <- oncoSimulPop(5,
+                                                     u,
+                                                     model = "McFL",
+                                                     mu = 1e-7,
+                                                     detectionSize = 1e11,
+                                                     initSize = 1e5,
+                                                     detectionDrivers = NA,
+                                                     detectionProb = NA,
+                                                     keepPhylog = TRUE,
+                                                     onlyCancer = FALSE,
+                                                     mutationPropGrowth = FALSE,
+                                                     keepEvery = 1,
+                                                     finalTime = 5000,
+                                                     mc.cores = 1,
+                                                     max.wall.time = 600
+                                                     ))
 
-## Number of genes and population size {#bench2}
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
 
-We have seen in \@ref(bench1) that for the Exp model, benchmark
-results using `detectionProb` require a lot of care and can be
-misleading. Here, we will fix initial and final population
-sizes. Moreover, to avoid the confounding factor of the `onlyCancer
-= TRUE` argument, we will set it to FALSE, so we measure directly
-the time of individual runs.
+t_mc_k_50_1e11
+## user  system elapsed 
+## 613.612   0.040 613.664 
 
+summary(mc_k_50_1e11)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      5491 100328847809  44397848771  1019.950  942764
+## 2      3194 100048090441  34834178374   789.675  888819
+## 3      5745 100054219162  24412502660   927.950  929231
+## 4      4017 101641197799  60932177160   750.725  480938
+## 5      5393 100168156804  41659212367   846.250  898245
 
-Since we want to examine the effects of number of genes, our fitness
-specification will be a simple one as follows:
-
-```{r fitspecbench2, echo = TRUE, eval = FALSE}
-allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+## print(object.size(mc_k_50_1e11), units = "MB")
+## 177.8 Mb
 
 ```
-so that for a number of genes $ng$, half of the genes have a
-positive fitness effect and the other half a negative effect.
+
+Notice the exception with the warning about $t_i$. Notice also that
+this takes a long time and we run a very large number of iterations.
+
+
+We can run the exponential model with `detectionSize = 1e10`:
+
+```{r ex-large-exp, eval = FALSE, echo = TRUE}
+t_exp_k_50_1e10 <- system.time(exp_k_50_1e10 <- oncoSimulPop(5,
+                                                     u,
+                                                     model = "Exp",
+                                                     mu = 1e-7,
+                                                     detectionSize = 1e10,
+                                                     initSize = 1e5,
+                                                     detectionDrivers = NA,
+                                                     detectionProb = NA,
+                                                     keepPhylog = TRUE,
+                                                     onlyCancer = FALSE,
+                                                     mutationPropGrowth = FALSE,
+                                                     keepEvery = 1,
+                                                     finalTime = 5000,
+                                                     mc.cores = 1
+                                                     ))
+t_exp_k_50_1e10
+##   user  system elapsed 
+## 95.096   0.000  95.096 
+ 
+summary(exp_k_50_1e10)[, c(1:3, 8, 9)]
+##   NumClones TotalPopSize LargestClone FinalTime NumIter
+## 1      1532  11236821546   5771228736       198  235332
+## 2      1839  10275500842   7473388584       201  264559
+## 3      1380  12034729505  10829426434       196  286746
+## 4      1715  11651224770  10025117531       231  294371
+## 5      2109  10966816038   3143709882       226  311862
+
+```
+
+
+However, with those same settings, we can not reach $10^{11}$ in 10
+minutes. We could set `max.wall.time` to a value larger than 600 to
+allow us to reach larger sizes but then we would be waiting for a
+possibly intolerable time for simulations to finish. Moreover, this
+would eventually fail as simulations would keep hitting the $t_i$
+exception without ever being able to complete. Finally, even if we
+are very patient, hitting that $t_i$ exception should make us worry
+about possible biases in the samples.
+
+
 
 
 
@@ -7540,30 +7762,9 @@ sampledGenotypes(samplePop(pancr16))
 ```
 
 
-<!-- Uncomment when ready. O.w. confusing. -->
-<!-- # Additional comments and examples about time, size, and simulation limits {#moretiming} -->
-
-<!-- Place here the example from mcfl as slow because of the size of allFitnessEffects -->
-<!-- Trick in McFl is possibly just keeping track of the number of which -->
-<!-- is a lot simpler than of the full clones. -->
-
-<!-- Add also comments on where it is not reasonable to use OncoSimulR -->
-<!-- many genotypes ---we keep track of them--- -->
-<!-- only care about number of drivers or passengers --we keep track of -->
-<!-- genotypes -->
-<!-- need fixed population sizes (strict FisherWrifht or Moran) -->
 
 
 
-# Additional comments and examples about time, size, and simulation limits {#moretiming}
-
-<!-- poner en How long does it take -->
-
-
-## Population sizes $>10^{10}$ {#pop1010}
-
-(The following examples are commented out for the sake of execution
-speed and memory usage).
 
 
 
