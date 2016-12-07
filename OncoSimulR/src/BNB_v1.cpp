@@ -806,10 +806,10 @@ static void innerBNB(const int& numGenes,
 		     const double& extraTime,
 		     const int& verbosity,
 		     double& totPopSize,
-		     double& e1,
-		     double& n_0,
+		     double& em1,
+		     double& em1sc,
 		     // double& n_1,
-		     double& en1,
+		     // double& en1,
 		     double& ratioForce,
 		     double& currentTime,
 		     int& speciesFS,
@@ -949,14 +949,15 @@ static void innerBNB(const int& numGenes,
   double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
 
   // for McFarland error
-  e1 = 0.0;
-  n_0 = 0.0;
+  em1 = 0.0;
+  em1sc = 0.0;
+  // n_0 = 0.0;
   // n_1 = 0.0;
-  double tps_0; //, tps_1; 
-  tps_0 = totPopSize;
+  // double tps_0; //, tps_1; 
+  // tps_0 = totPopSize;
   // tps_1 = totPopSize;
 
-  en1 = 0;
+  
   double totPopSize_previous = totPopSize;
   double DA_previous = log1p(totPopSize_previous/K);
   
@@ -1807,14 +1808,16 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
   // //McFarland
   // double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
 
-  double e1, n_0; //, n_1; // for McFarland error
+  // double e1, n_0; //, n_1; // for McFarland error
   // double tps_0, tps_1; // for McFarland error
   // tps_0 = 0.0;
   // tps_1 = 0.0;
-  e1 = 0.0;
-  n_0 = 0.0;
+  // e1 = 0.0;
+  // n_0 = 0.0;
   // n_1 = 0.0;
-  double en1; // new computation of McFarland error
+  double em1, em1sc; // new computation of McFarland error
+  em1 = 0.0;
+  em1sc = 0.0;
   
   // // For totPopSize_and_fill and bailing out
   // // should be static vars inside funct,
@@ -2129,10 +2132,10 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
 		 Named("PerSampleStats") = perSampleStats,
 		       Named("other") = Rcpp::List::create(Named("attemptsUsed") = numRuns,
 							   Named("errorMF") =
-							   returnMFE_new(en1, typeFitness),
+							   returnMFE_new(em1sc, typeFitness),
 							   Named("errorMF_size") = 
-							   returnMFE(e1, typeFitness), // Used to be e1, not log
-							   Named("errorMF_n_0") = n_0,
+							   returnMFE_new(em1, typeFitness), // Used to be e1, not log
+							   // Named("errorMF_n_0") = n_0,
 #ifdef MIN_RATIO_MUTS
 					       Named("minDMratio") =
 					       g_min_death_mut_ratio,

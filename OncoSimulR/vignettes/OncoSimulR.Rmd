@@ -440,6 +440,11 @@ want many more scenarios, many more simulations, compare runs with
 appropriate statistical methods, etc, etc, etc.
 
 
+```{r firstload}
+## Load the package
+library(OncoSimulR) 
+```
+
 ### Recovering restrictions in the order of accumulation of mutations {#ex-order}
 
 This is a question that was addressed, for instance in
@@ -792,15 +797,15 @@ accumulation of the drivers). This means that the syntax for
 specifying those fitness models could probably be a lot simpler
 (e.g., specify $s$ per driver). But it also means that the code
 could probably be much faster. First, because fitness evaluation is
-much simpler. Second, and possibly much more important, because what
+easier. Second, and possibly much more important, because what
 we need to keep track of leads to much simpler and economic
 structures: we do not need to keep track of clones as types of cells
 with different mutations, but only of clone types as defined by the
 number of mutated drivers, and keeping track of clones can be
 expensive ---see section \@ref(timings). So for those cases where
 you do not need the full flexibility of OncoSimulR, special purpose
-software might be simpler to use and faster to run. Of course, for
-some types of problems this special purpose software might not
+software might be easier to use and faster to run. Of course, for
+some types of problems this special purpose software might not be
 available, though.
 
 
@@ -845,10 +850,11 @@ Using this package will often involve the following steps:
 
 
 
-Before anything else, let us load the package. We also explicitly load 
-`r Biocpkg("graph")` and `r CRANpkg("igraph")` for the vignette to work (you
-do not need that for your usual interactive work). And I set the default
-color for vertices in igraph.
+Before anything else, let us load the package in case it was not yet
+loaded. We also explicitly load `r Biocpkg("graph")` and `r
+CRANpkg("igraph")` for the vignette to work (you do not need that
+for your usual interactive work). And I set the default color for
+vertices in igraph.
 
 ```{r, results="hide",message=FALSE, echo=TRUE, include=TRUE}
 library(OncoSimulR)
@@ -2663,7 +2669,7 @@ use the same parameterization as in the original one in
 
 For death rate, we use the expression that @McFarland2013 (see their
 p. 2911) use "(...) for large cancers (grown to $10^6$ cells)": $D(N) =
-\log(1 + N)/K$ where $K$ is the initial equilibrium population size. As
+\log(1 + N/K)$ where $K$ is the initial equilibrium population size. As
 the authors explain, for large N/K the above expression "(...)
 recapitulates Gompertzian dynamics observed experimentally for large
 tumors".
@@ -7772,24 +7778,38 @@ simulation functions contains the simple summary statistic `errorMF`
 that can be used to assess the quality of the
 approximation[^errorMF].
 
-[^errorMF]: Briefly, we keep track of the largest difference between
-two successive death rates, because it is the death rates that are
-affected by density dependence and, thus, it is on the death rates
-where the approximation that they are constant over a short interval
-plays a role. We want this value to be as reasonably close as
-possible to the difference in death rates from adding or subtracting
-just only one individual to the population. Additionally, a simple
-procedure to use is to run the simulations with different values of
-`sampleEvery`, say the default value of 0.025 and values that are
-10, 20, and 50 times larger or smaller, and assess their effects on
-the output of the simulations and the `errorMF` statistic
-itself. You can check that using a `sampleEvery` much smaller than
-0.025 rarely makes any difference in `errorMF` or in the simulation
-output (though it increases computing time significantly). And, just
-for the fun of it, you can also check that using huge values for
-`sampleEvery` can lead to trouble and will be manifested too in the
-simulation output with large and unreasonable jumps in total
-population sizes and sudden extinctions.
+[^errorMF]: We record the largest difference between the computed
+    death rate and the death rate that would have been computed if
+    differences in population sizes had been caused by the addition
+    or subtraction of a single individual. Death rates are the
+    fitness are affected by density dependence and, thus, it is on
+    the death rates where the approximation that they are constant
+    over a short interval plays a role. If we were not using an
+    approximation, the two death rates above would be
+    identical. More precisely, let $A$ and $C$ denote two successive
+    sampling periods, with $D_A = log(1 + N_A/K)$ and $D_C= log(1 +
+    N_C/K)$ their death rates. `errorMF_size` stores the largest
+    $abs(D_C - D_A)$ between any two sampling periods. In addition,
+    we compute the largest difference had the change been larger
+    than the addition/subtraction of a single individual. Suppose
+    $N_C > N_A$; then we record $error = (D_C - log(1 + (N_A +
+    1)/K))/D_A$, where the second term corresponds to the death rate
+    that would had been computed from population size $N_A$ by
+    adding one individual. If $N_A > N_C$ we record $error =
+    (log(1 + (N_A - 1)/K) - D_C)/D_A$. The value `errorMF`
+    corresponds to the largest value of $error$ ever seen during a
+    simulation.  Additionally, a simple procedure to use is to run
+    the simulations with different values of `sampleEvery`, say the
+    default value of 0.025 and values that are 10, 20, and 50 times
+    larger or smaller, and assess their effects on the output of the
+    simulations and the `errorMF` statistic itself. You can check
+    that using a `sampleEvery` much smaller than 0.025 rarely makes
+    any difference in `errorMF` or in the simulation output (though
+    it increases computing time significantly). And, just for the
+    fun of it, you can also check that using huge values for
+    `sampleEvery` can lead to trouble and will be manifested too in
+    the simulation output with large and unreasonable jumps in total
+    population sizes and sudden extinctions.
 
 
 

@@ -611,23 +611,23 @@ void init_tmpP(spParamsP& tmpParam) {
 //     return -99;
 // }
 
-double returnMFE(double& e1,
-		 // const double& K,
-		 const std::string& typeFitness) {
-  if(typeFitness == "mcfarlandlog")
-    return log(e1);
-  else
-    return -99;
-}
+// double returnMFE(double& e1,
+// 		 // const double& K,
+// 		 const std::string& typeFitness) {
+//   if(typeFitness == "mcfarlandlog")
+//     return log(e1);
+//   else
+//     return -99;
+// }
 
-double returnMFE(double& e1,
-		 // const double& K,
-			const TypeModel typeModel) {
-  if(typeModel == TypeModel::mcfarlandlog)
-    return log(e1);
-  else
-    return -99;
-}
+// double returnMFE(double& e1,
+// 		 // const double& K,
+// 			const TypeModel typeModel) {
+//   if(typeModel == TypeModel::mcfarlandlog)
+//     return log(e1);
+//   else
+//     return -99;
+// }
 
 // Get a -99 where there should be no error because of model
 double returnMFE_new(double& en1,
@@ -717,150 +717,216 @@ double returnMFE_new(double& en1,
 //   }
 // }
 
-void computeMcFarlandError(double& e1,
-			   double& n_0, // for the hell of keeping it
-			   double& tps_0,
-			   const std::string& typeFitness,
-			   const double& totPopSize,
-			   const double& K){
+// void computeMcFarlandError(double& e1,
+// 			   double& n_0, // for the hell of keeping it
+// 			   double& tps_0,
+// 			   const std::string& typeFitness,
+// 			   const double& totPopSize,
+// 			   const double& K){
 
-  if(typeFitness == "mcfarlandlog")  {
-    double etmp;
-    double tps_1 = totPopSize;
-    if( tps_1 > (tps_0 + 1)) {
-      etmp = (K + tps_1)/(K + tps_0 + 1);
-    } else if ( tps_0 > (tps_1 + 1) ) {
-      etmp = (K + tps_0 - 1)/(K + tps_1);
-    } else { // no change or change by 1 means no error
-      etmp = 1;
-    }
-    if(etmp > e1) {
-      e1 = etmp;
-      n_0 = tps_0; // just for the hell of keeping it
-    }
-    tps_0 = tps_1;
-  }
-}
+//   if(typeFitness == "mcfarlandlog")  {
+//     double etmp;
+//     double tps_1 = totPopSize;
+//     if( tps_1 > tps_0 ) {
+//       etmp = (K + tps_1)/(K + tps_0);
+//     } else if ( tps_0 > tps_1 ) {
+//       etmp = (K + tps_0)/(K + tps_1);
+//     } else { // no change or change by 1 means no error
+//       etmp = 1;
+//     }
+//     if(etmp > e1) {
+//       e1 = etmp;
+//       n_0 = tps_0; // just for the hell of keeping it
+//     }
+//     tps_0 = tps_1;
+//   }
+// }
 
-// The logic 
-// Death is log( 1 + N/K) so log( (K + N)/K )
+// // The logic 
+// // Death is log( 1 + N/K) so log( (K + N)/K )
 
-// We go from size at A (tps_0) to size at C (tps_1)
+// // We go from size at A (tps_0) to size at C (tps_1)
 
-// These expressions compute the absolute value of the difference in death
-// rates between the actual death rate (DC) and the death rate that would
-// have taken place if change had been by one birth or death (DB):
+// // These expressions compute the absolute value of the difference in death
+// // rates between the actual death rate (DC) and the death rate that would
+// // have taken place if change had been by one birth or death (DB):
 
-// Suppose DC > DA:
-// DC - DA = log( (K + tps_1)/K ) - log( (K + tps_0 + 1)/N  ) =
-//         = log( (K + tps_1)/(K + tps_0 + 1) )
-// To avoid logs, we store the ratio. 
+// // Suppose DC > DA:
+// // DC - DA = log( (K + tps_1)/K ) - log( (K + tps_0 + 1)/N  ) =
+// //         = log( (K + tps_1)/(K + tps_0 + 1) )
+// // To avoid logs, we store the ratio. 
 
 
 
-void computeMcFarlandError(double& e1,
-			   double& n_0, // for the hell of keeping it
-			   double& tps_0,
-			   const TypeModel typeModel,
-			   const double& totPopSize,
-			   const double& K){
+// void computeMcFarlandError(double& e1,
+// 			   double& e1std,
+// 			   double& n_0, // for the hell of keeping it
+// 			   double& tps_0,
+// 			   const TypeModel typeModel,
+// 			   const double& totPopSize,
+// 			   const double& K){
 
-  if( typeModel == TypeModel::mcfarlandlog ) {
-    double etmp;
-    double tps_1 = totPopSize;
-    if( tps_1 > (tps_0 + 1)) {
-      etmp = (K + tps_1)/(K + tps_0 + 1);
-    } else if ( tps_0 > (tps_1 + 1) ) {
-      etmp = (K + tps_0 - 1)/(K + tps_1);
-    } else { // no change or change by 1 means no error
-      etmp = 1;
-    }
-    if(etmp > e1) {
-      e1 = etmp;
-      n_0 = tps_0; // just for the hell of keeping it
-    }
-    tps_0 = tps_1;
-  }
-}
+//   if( typeModel == TypeModel::mcfarlandlog ) {
+//     double etmp;
+//     double etmpstd;
+//     double tps_1 = totPopSize;
+//     if( tps_1 > tps_0 ) {
+//       etmp = (K + tps_1)/(K + tps_0);
+//     } else if ( tps_0 > tps_1 ) {
+//       etmp = (K + tps_0)/(K + tps_1);
+//     } else { // no change or change by less than 1 means no error
+//       etmp = 1;
+//     }
+//     if(etmp > e1) {
+//       e1 = etmp;
+//       n_0 = tps_0; // just for the hell of keeping it
+//     }
+//     tps_0 = tps_1;
+//   }
+// }
 
-void computeMcFarlandError_new(double& en1,
+
+
+void computeMcFarlandError_new(double& em1,
+			       double& em1sc, // scaled
 			       double& totPopSize_previous,
 			       double& DA_previous,
 			       const TypeModel typeModel,
 			       const double& totPopSize,
 			       const double& K){
   // Simple logic:
-
-  // If we updated whenever there was a birth or death we would have these
-  // changes between time points A and B (where A comes before B):
-  // DA = log(1 + totPopSize_previous/K) [= log1p(totPopSize_previous/K)]
-  // Birth of 1:
-  //   DB = log1p((totPopSize_previous + 1)/K)
-  // Death of 1:
-  //   DB = log1p((totPopSize_previous - 1)/K)
-  
-
-  // But we actually have C, not B with:
-  //   DC = log1p(totPopSize/K)
-
-  // So we compute: abs(DC - DB)/DA
-
-  // We can store DA. And yes, DA is generally almost identical to DB.
-  
+  // Really, simple thing: compute difference between successive death
+  // rates, and also scale. Period.
   if( typeModel == TypeModel::mcfarlandlog ) { 
-    double etmp;
+    double etmp, etmpsc;
     double DC = log1p(totPopSize/K);
-    
-    
-    if(totPopSize == totPopSize_previous) {
+    if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
     } else {
-      double DB;
-      if ( totPopSize > totPopSize_previous ) {
-	DB = log1p((totPopSize_previous + 1)/K);
-      } else if ( totPopSize < totPopSize_previous ) {
-	DB = log1p((totPopSize_previous - 1)/K);
-      }
-      etmp = std::abs(DC - DB)/DA_previous;
+      etmp = std::abs(DC - DA_previous);
+      etmpsc = etmp/DA_previous;
     }
-    if(etmp > en1) en1 = etmp;
-    
+    if(etmp > em1) em1 = etmp;
+    if(emtpsc > em1sc) em1sc = etmpsc;
     DA_previous = DC;
     totPopSize_previous = totPopSize;
   }
 }
 
-void computeMcFarlandError_new(double& en1,
+void computeMcFarlandError_new(double& em1,
+			       double& em1sc, // scaled
 			       double& totPopSize_previous,
 			       double& DA_previous,
 			       const std::string& typeFitness,
 			       const double& totPopSize,
 			       const double& K){
-  // Same as above, but for the old, v.1, specification
-  if(typeFitness == "mcfarlandlog")  {
-
-    double etmp;
+  // Simple logic:
+  // Really, simple thing: compute difference between successive death
+  // rates, and also scale. Period.
+  if(typeFitness == "mcfarlandlog")  {    
+    double etmp, etmpsc;
     double DC = log1p(totPopSize/K);
-    
-    
-    if(totPopSize == totPopSize_previous) {
+    if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
     } else {
-      double DB;
-      if ( totPopSize > totPopSize_previous ) {
-	DB = log1p((totPopSize_previous + 1)/K);
-      } else if ( totPopSize < totPopSize_previous ) {
-	DB = log1p((totPopSize_previous - 1)/K);
-      }
-      etmp = std::abs(DC - DB)/DA_previous;
+      etmp = std::abs(DC - DA_previous);
+      etmpsc = etmp/DA_previous;
     }
-    if(etmp > en1) en1 = etmp;
-    
+    if(etmp > em1) em1 = etmp;
+    if(emtpsc > em1sc) em1sc = etmpsc;
     DA_previous = DC;
     totPopSize_previous = totPopSize;
   }
 }
+
+
+
+
+
+// void computeMcFarlandError_new(double& en1,
+// 			       double& totPopSize_previous,
+// 			       double& DA_previous,
+// 			       const TypeModel typeModel,
+// 			       const double& totPopSize,
+// 			       const double& K){
+//   // Simple logic:
+
+//   // If we updated whenever there was a birth or death we would have these
+//   // changes between time points A and B (where A comes before B):
+//   // DA = log(1 + totPopSize_previous/K) [= log1p(totPopSize_previous/K)]
+//   // Birth of 1:
+//   //   DB = log1p((totPopSize_previous + 1)/K)
+//   // Death of 1:
+//   //   DB = log1p((totPopSize_previous - 1)/K)
   
+
+//   // But we actually have C, not B with:
+//   //   DC = log1p(totPopSize/K)
+
+//   // So we compute: abs(DC - DB)/DA
+
+//   // We can store DA. And yes, DA is generally almost identical to DB.
+  
+//   if( typeModel == TypeModel::mcfarlandlog ) { 
+//     double etmp;
+//     double DC = log1p(totPopSize/K);
+    
+    
+//     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
+//       etmp = 0.0;
+//     } else {
+//       double DB;
+//       if ( totPopSize > totPopSize_previous ) {
+// 	DB = log1p((totPopSize_previous + 1)/K);
+//       } else { // if ( totPopSize < totPopSize_previous ) {
+// 	DB = log1p((totPopSize_previous - 1)/K);
+//       }
+//       etmp = std::abs(DC - DB)/DA_previous;
+//     }
+//     if(etmp > en1) en1 = etmp;
+    
+//     DA_previous = DC;
+//     totPopSize_previous = totPopSize;
+//   }
+// }
+
+
+
+
+// void computeMcFarlandError_new(double& en1,
+// 			       double& totPopSize_previous,
+// 			       double& DA_previous,
+// 			       const std::string& typeFitness,
+// 			       const double& totPopSize,
+// 			       const double& K){
+//   // Same as above, but for the old, v.1, specification
+//   if(typeFitness == "mcfarlandlog")  {
+
+//     double etmp;
+//     double DC = log1p(totPopSize/K);
+    
+    
+//     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
+//       etmp = 0.0;
+//     } else {
+//       double DB;
+//       if ( totPopSize > totPopSize_previous ) {
+// 	DB = log1p((totPopSize_previous + 1)/K);
+//       } else { // if ( totPopSize < totPopSize_previous ) {
+// 	DB = log1p((totPopSize_previous - 1)/K);
+//       }
+//       etmp = std::abs(DC - DB)/DA_previous;
+//     }
+//     if(etmp > en1) en1 = etmp;
+    
+//     DA_previous = DC;
+//     totPopSize_previous = totPopSize;
+//   }
+// }
+  
+
+
+
 
 // void computeMcFarlandError(double& e1,
 // 				  double& n_0,
