@@ -181,6 +181,75 @@ Type 'q()' to quit R.
 177.8 Mb
 > 
 > 
+> t_mc_k_50_5e11 <- system.time(mc_k_50_5e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_k_50_5e11
+    user   system  elapsed 
+3004.316    0.004 3004.376 
+> try(summary(mc_k_50_5e11)[, c(1:3, 8, 9)])
+Error in summary(mc_k_50_5e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_k_50_5e11) : All simulations failed.
+> print(object.size(mc_k_50_5e11), units = "MB")
+0 Mb
+> 
 > 
 > 
 > ###########################################################
@@ -261,7 +330,8 @@ Type 'q()' to quit R.
 +                                                      mutationPropGrowth = FALSE,
 +                                                      keepEvery = 1,
 +                                                      finalTime = 5000,
-+                                                      mc.cores = 1
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
 +                                                      ))
 > t_exp_k_50_1e10
    user  system elapsed 
@@ -290,30 +360,69 @@ Type 'q()' to quit R.
 +                                                      mutationPropGrowth = FALSE,
 +                                                      keepEvery = 1,
 +                                                      finalTime = 5000,
-+                                                      mc.cores = 1
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600,
++                                                      errorHitWallTime = FALSE,
++                                                      errorHitMaxTries = FALSE
 +                                                      ))
 
- Hitted wall time. Exiting.
- Hitting wall time is regarded as an error. 
-
  Recoverable exception ti set to DBL_MIN. Rerunning.
- Hitted wall time. Exiting.
- Hitting wall time is regarded as an error. 
-
- Hitted wall time. Exiting.
- Hitting wall time is regarded as an error. 
-
- Recoverable exception ti set to DBL_MIN. Rerunning.
- Hitted wall time. Exiting.
- Hitting wall time is regarded as an error. 
-
- Hitted wall time. Exiting.
- Hitting wall time is regarded as an error. 
-> t_exp_k_50_5e10
+ Recoverable exception ti set to DBL_MIN. Rerunning.> t_exp_k_50_5e10
     user   system  elapsed 
-1004.156    0.008 1004.207 
+1473.068    5.212 1478.664 
 > try(summary(exp_k_50_5e10)[, c(1:3, 8, 9)])
-Error in summary(exp_k_50_5e10)[, c(1:3, 8, 9)] : 
-  incorrect number of dimensions
-In addition: Warning message:
-In summary.oncosimulpop(exp_k_50_5e10) : All simulations failed.
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      5992  60585756440  13754309582       229 1596293
+2      3737  54135863337  18316822578       230 1311480
+3      1836  55507887408  52063865226       183 1260994
+4      6421  60907316952  18580534220       221 1500413
+5      4138  53226945905  22694573545       235 1300001
+> print(object.size(exp_k_50_5e10), units = "MB")
+47.2 Mb
+> 
+> 
+> 
+> t_exp_k_50_1e11 <- system.time(exp_k_50_1e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600,
++                                                      errorHitWallTime = FALSE,
++                                                      errorHitMaxTries = FALSE
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitted wall time. Exiting.> t_exp_k_50_1e11
+    user   system  elapsed 
+2959.068    0.128 2959.556 
+> try(summary(exp_k_50_1e11)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      6078  65172752616  16529682757  235.7590 1883438
+2      5370 106476643712  24662446729  232.0000 2516675
+3      2711  21911284363  17945303353  224.8608  543698
+4      2838  13241462284   2944300245  216.8091  372298
+5      7289  76166784312  10941729810  240.0217 1999489
+> print(object.size(exp_k_50_1e11), units = "MB")
+53.5 Mb
+> 
