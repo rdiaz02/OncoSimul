@@ -1,0 +1,657 @@
+---
+title: "OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression."
+author: "
+
+         Ramon Diaz-Uriarte\\
+
+         Dept. Biochemistry, Universidad Autónoma de Madrid, Instituto de
+         Investigaciones Biomédicas 'Alberto Sols' (UAM-CSIC), Madrid,
+         Spain.\\ 
+		 
+		 <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>
+		 "
+date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), '. Revision: ', system('git rev-parse --short HEAD', intern = TRUE))`"
+header-includes:
+    - \input{preamble.tex}
+output: 
+  bookdown::html_document2:
+    css: custom4.css
+    toc: yes
+    toc_float: true
+    fig_retina: null
+classoption: a4paper
+geometry: margin=3cm
+fontsize: 12pt
+bibliography: OncoSimulR.bib
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignettePackage{OncoSimulR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
+  %\VignetteDepends{OncoSimulR}
+---
+
+<!-- html_book seems to ignore the toc_float -->
+
+  <!-- bookdown::gitbook: -->
+  <!--   self_contained: false -->
+  <!--   split_by: rmd -->
+  <!--   css: custom4.css -->
+  <!--   github-repo: "rdiaz02/OncoSimul" -->
+  <!--   config: -->
+  <!--     toc: -->
+  <!--       collapse: subsection -->
+  <!--     download: null -->
+  <!--     sharing: null -->
+
+
+<!-- A great one? Well... Slow, and no subsubsection and strange scrolling-->
+<!-- render("OncoSimulR.Rmd", bookdown::gitbook(self_contained = FALSE, split_by = "none")) -->
+<!-- Slow rendering, and the clicking on TOC to get expanded entries does -->
+<!-- not work. -->
+<!-- And it creates a libs dir that takes 5 MB. -->
+<!-- What I like is the possibility to hide the TOC, change rendering -->
+<!-- (color, font size and type) and download.  -->
+
+<!-- This did not work well either.  -->
+  <!-- bookdown::gitbook: -->
+  <!--   toc-depth: 4  -->
+  <!--   self_contained: false -->
+  <!--   split_by: none -->
+  <!--   css: custom4.css -->
+  <!--   github-repo: "rdiaz02/OncoSimul" -->
+  <!--   config: -->
+  <!--     toc: -->
+  <!--       collapse: section -->
+  <!--       scroll_highlight: true -->
+  <!--       after: null -->
+  <!--       before: null -->
+  <!--       toc-depth: 4		 -->
+  <!--     toolbar: -->
+  <!--       position: fixed -->
+  <!--     edit: -->
+  <!--       link: null -->
+  <!--       text: null -->
+  <!--     download: null -->
+  <!--     search: no -->
+  <!--     fontsettings: -->
+  <!--       theme: white -->
+  <!--       family: sans -->
+  <!--       size: 2 -->
+  <!--     sharing: null -->
+
+<!-- download, only on my web site -->
+<!-- EPUB and MOBI and PDF -->
+<!-- url: "https\://" -->
+
+<!-- output:  -->
+<!--   bookdown::html_document2:  -->
+<!--     toc: yes -->
+<!--     toc_float: true -->
+<!--     css: custom4.css -->
+
+
+<!-- ##    <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz> -->
+<!-- ## date: "`r Sys.Date()`" -->
+
+<!-- ## Bioc html_document no refs -->
+<!-- ## Bioc html_document2 too wide margins and really ugly -->
+<!-- ## Simplest is to use bookdown and add BioC CSS -->
+<!-- ## Rmdformats is really neat, but no support for \@ref -->
+<!-- ## PDF as: 
+
+<!-- render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE)  -->
+
+<!-- -->
+
+
+<!-- After the fix in BiocStyle 2.3.24 can use this too, which gives the  -->
+<!-- BiocStyle output, but it is not the same as the one for Rnw and -->
+<!-- breaks refs, etc. I do not really like it-->
+<!-- ## PDF as: render("OncoSimulR.Rmd", output_format = BiocStyle::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE)) -->
+
+
+
+
+
+<!-- Fomr https://github.com/rstudio/bookdown/issues/153 -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+
+
+```{r setup, include=FALSE}
+## use collapse for bookdown, to collapse all the source and output
+## blocks from one code chunk into a single block
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
+options(width = 70)
+require(BiocStyle)
+```
+
+<!-- bookdown::pdf_document2 seems to produce the tex even if failures -->
+
+
+<!-- This did not work -->
+<!--     bookdown::pdf_document2: -->
+<!--       template: template2.tex	 -->
+<!--       keep_tex: true -->
+<!--       toc: true -->
+
+<!-- I convert Rfunction to italics on typewriter -->
+<!-- sed -i 's/\\Rfunction{\([^}]\+\)}/*`\1`*/g' p22.md -->
+
+
+
+
+
+
+# Introduction {#intro}
+
+this worked before output
+"usepackage{rotating}"
+
+
+OncoSimulR was originally developed to simulate tumor progression
+using several models of tumor progression with emphasis on allowing
+users to set restrictions in the accumulation of mutations as
+specified, for example, by Oncogenetic Trees
+[OT: @Desper1999JCB; @Szabo2008] or Conjunctive Bayesian Networks
+[CBN: @Beerenwinkel2007; @Gerstung2009; @Gerstung2011], with the
+possibility of adding passenger mutations to the simulations and
+allowing for several types of sampling.
+
+
+Since then, OncoSimulR has been vastly extended to allow you to
+specify other types of restrictions in the accumulation of genes, as
+such as the XOR models of @Korsunsky2014 or the "semimonotone" model
+of Farahani and Lagergren [@Farahani2013]. Moreover, different
+fitness effects related to the order in which mutations appear can
+also be incorporated, involving arbitrary numbers of genes. This is
+different from "restrictions in the order of accumulation of
+mutations". With order effects, shown empirically in a recent cancer
+paper by Ortmann and collaborators [@Ortmann2015], the effect of
+having both mutations "A" and "B" differs depending on whether "A"
+appeared before or after "B". More generally, now OncoSimulR also
+allows you to specify arbitrary epistatic interactions between
+arbitrary collections of genes and to model, for example, synthetic
+mortality or synthetic viability (again, involving an arbitrary
+number of genes, some of which might also depend on other genes, or
+show order effects with other genes). Moreover, it is possible to
+specify the above interactions in terms of modules, not genes. This
+idea is discussed in, for example, @Raphael2014a and @Gerstung2011:
+the restrictions encoded in, say, CBNs or OT can be considered to
+apply not to genes, but to modules, where each module is a set of
+genes (and the intersection between modules is the empty set) that
+performs a specific biological function. Modules, then, play the
+role of a "union operation" over the set of genes in a module. In
+addition, arbitrary numbers of genes without interactions (and with
+fitness effects coming from any distribution you might want) are
+also possible.
+
+
+The models so far implemented are all continuous time models, which
+are simulated using the BNB algorithm of @Mather2012 (see sections
+\@ref(bnbmutation) and \@ref(bnbdensdep) for more detailed comments
+on the usage of this algorithm). The core of the code is implemented
+in C++, providing for fast execution.  To help with simulation
+studies, code to simulate random graphs of the kind often seen in
+CBN, OTs, etc, is also available. Finally, OncoSimulR also allows
+for the generation of random fitness landscapes and the
+representation of fitness landscapes.
+
+## Key features of OncoSimulR {#key}
+
+As mentioned above, OncoSimulR is now a very general package for forward
+genetic simulation, with applicability well beyond tumor progression. This
+is a summary of some of the key features:
+
+<!-- FIXME: add the tables of the poster -->
+
+
+ 
+* You can specify arbitrary interactions between genes, with
+  arbitrary fitness effects, with explicit support for:
+    - Restrictions in the accumulations of mutations, as specified by
+      Oncogenetic Trees (OTs), Conjunctive Bayesian Networks (CBNs),
+      semimonotone progression networks, and XOR relationships.
+		  
+    - Epistatic interactions, including, but not limited to, synthetic
+       viability and synthetic lethality.
+    - Order effects.
+	
+* You can add passenger mutations.
+* You can add mutator/antimutator effects.
+* Fitness and mutation rates can be gene-specific.
+* More generally, you can add arbitrary numbers of non-interacting
+      genes with arbitrary fitness effects.
+  
+* you can allow for deviations from the OT, CBN, semimonotone, and
+      XOR models, specifying a penalty for such deviations (the $s_h$
+      parameter).
+      
+* You can conduct multiple simulations, and sample from them with
+      different temporal schemes and using both whole tumor or single cell
+      sampling. 
+	  
+* You can stop the simulations using a flexible combination of
+      conditions, from final time to number of drivers to population
+      size, to fixation of certain genotypes, to a stochastic
+      stopping mechanism that depends on size, etc.  
+  
+* Right now, three different models are available, two that lead
+      to exponential growth, one of them loosely based on @Bozic2010, and
+      another that leads to logistic-like growth, based on @McFarland2013.
+      
+<!-- * Code in C++ is available (though not yet callable from R) for -->
+<!--       using several other models, including the one from @Beerenwinkel2007b. -->
+      
+* You can use very large numbers of genes (e.g., see an example of
+      50000 in section \@ref(mcf50070) ).
+      
+* Simulations are generally very fast as I use C++ to implement
+      the BNB algorithm.
+      
+* You can obtain the true sequence of events and the phylogenetic
+      relationships between clones.
+    
+* You can generate random fitness landscapes (under the House of
+      Cards, Rough Mount Fuji, or additive models, or combinations of the
+      former) and use those landscapes as input to the simulation
+      functions.
+      
+* You can plot fitness landscapes.
+      
+* You can obtain some basic measures of evolutionary predictability
+  from the simulations.
+  
+
+
+
+
+The table below, modified from the table at the
+[Genetics Simulation Resources (GSR) page](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed)
+provides a summary of the key features of OncoSimulR. (An
+explanation of the meaning of terms specific to the GSR table is
+available from
+https://popmodels.cancercontrol.cancer.gov/gsr/search/ or from the
+[Genetics Simulation Resources table itslef](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed),
+by moving the mouse over each term).
+
+
+
+|Attribute Category     | Attribute                                     |
+|-----------------------|-----------------------------------------------|
+|**Target**             |  |
+|&nbsp; Type of Simulated Data|           Haploid DNA Sequence|
+|&nbsp; variations            |           Biallelic Marker, Genotype or Sequencing Error|
+|**Simulation Method**            |           Forward-time|
+|&nbsp; Type of Dynamical Model | Continuous time|
+|&nbsp; Entities Tracked | Individuals (genetic clones)|
+|**Input** | Program specific (R data frames and matrices specifying genotypes' fitness, gene effects, and starting genotype) |
+|**Output**||
+|&nbsp; Data Type| Genotype or Sequence, Individual Relationship (complete parent-child relationships between clones), Demographic (populations sizes of all clones at sampling times), Diversity Measures (LOD, POM, diversity of genotypes), Fitness|
+|&nbsp; Sample Type|	Random or Independent, Longitudinal, Other (proportional to population size)|
+|**Evolutionary Features**	||
+|&nbsp; Mating Scheme| Asexual Reproduction |
+|&nbsp; Demographic||	
+|&nbsp; &nbsp; Population Size Changes|	Exponential (two models), Logistic (McFarland et al., 2013)|
+|&nbsp; Fitness Components||	
+|&nbsp; &nbsp; Birth Rate|	Individually Determined from Genotype (models "Exp" and "McFL")|
+|&nbsp; &nbsp; Death Rate|	Individually Determined from Genotype (model "Bozic"), Influenced by Environment ---population size (model "McFL")|
+|&nbsp;Natural Selection||	
+|&nbsp; &nbsp; Determinant|	Single and Multi-locus, Fitness of Offspring,  Environmental Factors (population size)|
+|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects|
+|&nbsp; Mutation Models|	Two-allele Mutation Model (wildtype, mutant), without back mutation|
+|&nbsp; Events Allowed|	Varying Genetic Features: change of individual mutation rates (mutator/antimutator genes)|
+|&nbsp; Spatial Structure| No Spatial Structure (perfectly mixed and no migration)|
+Table: (\#tab:osrfeatures) Key features of OncoSimulR. Based on the
+table from
+https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
+.
+
+
+<!-- Why not "Carrying cappacity" instead of logistic? Both are very -->
+<!-- similar, but the GSR page says, for carrying capacity "This includes models with age or stage-specific carrying capacities" -->
+
+
+<!-- Table: Key features of OncoSimulR (partially modified from the Genetics Simulation Resources table at https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed){#tablekeyfeatures} -->
+<!-- |**Interface** | Command-Line, Script-Based| -->
+<!-- |Development|| -->
+<!-- |&nbsp; Platforms| Linux and Unix, Windows, Mac OS X| -->
+<!-- |&nbsp; Language| R, C++| -->
+<!-- |&nbsp; License| GNU GPL v3| -->
+
+
+
+
+Further details about the original motivation for wanting to
+simulate data this way in the context of tumor progression can be
+found in @Diaz-Uriarte2015, where additional comments about model
+parameters and caveats are discussed.
+
+
+Are there similar programs? The Java program by @Reiter2013a offers
+somewhat similar functionality to the previous version of
+OncoSimulR, but it is restricted to at most four drivers (whereas
+v.1 of OncoSimulR allowed for up to 64), you cannot use arbitrary
+CBNs or OTs (or XORs or semimonotone graphs) to specify
+restrictions, there is no allowance for passengers, and a single
+type of model (a discrete time Galton-Watson process) is
+implemented. The current functionality of OncoSimulR goes well
+beyond the the previous version (and, thus, also the TPT of
+[@Reiter2013a]). We now allow you to specify all types of fitness
+effects in other general forward genetic simulators such as FFPopSim
+[@Zanini2012], and some that, to our knowledge (e.g., order effects)
+are not available from any genetics simulator. In addition, the
+"Lego system" to flexibly combine different fitness specifications
+is also unique; by "Lego system" I mean that we can combine
+different pieces and blocks, similarly to what we do with Lego
+bricks. (I find this an intuitive and very graphical analogy which I
+have copied from @Hothorn_2006; @Hothorn_2008).
+
+<!-- <zz more details above? -->
+
+
+<!-- These are some tables that might help to get an idea of the -->
+<!-- functionality; they come from this -->
+<!-- poster[http://dx.doi.org/10.7490/f1000research.1112860.1](http://dx.doi.org/10.7490/f1000research.1112860.1) -->
+<!-- presented at ECCB 2016. -->
+
+<!-- I need to define a custom block. See -->
+<!-- https://bookdown.org/yihui/bookdown/custom-blocks.html. Later -->
+
+
+
+
+
+
+## What kinds of questions is OncoSimulR suited for? {#generalwhatfor}
+
+Mainly questions that would involve combinations of:
+
+* Simulating asexual evolution (the `oncoSimul*` functions) where:
+     - fitness is:
+        - A function of specific epistatic effects between genes
+        - A function of order effects
+        - A function of epistatic effects specified using
+          DAGs/posets where these DAGs/posets:
+		     - Are user-specified
+	         - Generated randomly (`simOGraph`)
+        - Any mapping between genotypes and fitness:
+            - User-specified
+            - Generated randomly from families of random fitness landscapes (`rfitness`)     
+     - mutation:
+          - can vary between genes
+          - can be affected by other genes
+		 
+* Examining times to evolutionarily or biomedically relevant events
+  (fixation of genotypes, reaching a minimal size, acquiring a
+  minimal number of driver genes, etc ---specified with the stopping
+  conditions to the `oncoSimul*` functions).
+
+* Using different sampling schemes (`samplePop`) that are related
+  to:
+    - Assessing genotypes from single-cell vs. whole tumor (or whole
+      population) with the  `typeSample` argument
+    - Genotyping error (`propError` argument)
+    - Timing of samples (`timeSample` argument)
+    - ... and assessing the consequences of those on the observed
+      genotypes and their diversity (`sampledGenotypes`) and any other
+      inferences that depend on the observational process.
+	- OncoSimulR returns the genotypes at each of the sampling
+	  points, so you are not restricted by what the
+	  `samplePop` function provides.
+  
+
+* Tracing the genealogical relationships of clones
+  (`plotClonePhylog`) and assessing evolutionary predictability
+  (`LOD`, `POM`).
+
+
+
+Some specific questions that you can address with the help of
+OncoSimulR are discussed in section \@ref(whatfor).
+
+-----
+
+A quick overview of the main functions and their relationships is
+shown in the figure below, where we use italics for the type/class
+of R object and courier for the name of the functions.
+<!-- Note: figure1.png, and how to create it, explained in miscell-files -->
+<!-- in the repo -->
+
+<!-- ![Relationship between the main functions in OncoSimulR.](figure1.png) -->
+
+
+
+```{r frelats, eval=TRUE,echo=FALSE, fig.cap="Relationships between the main functions in OncoSimulR."}
+knitr::include_graphics("figure1.png")
+```
+
+
+
+## Examples of questions that can be addressed with OncoSimulR {#whatfor}
+
+Most of the examples in the rest of this vignette, starting with
+those in \@ref(quickexample), focus on the mechanics. Here, we will
+illustrate some problems in cancer genomics and evolutionary
+genetics where OncoSimulR could be of help. This section does not
+try to provide an answer to any of these questions (those would be
+full papers by themselves) but simply to illustrate where you can
+use OncoSimulR; the possible uses of OncoSimulR are only limited by
+your ingenuity. Finally, I will only use short snippets of working
+code as we are limited by time of execution; for real work you would
+want many more scenarios, many more simulations, compare runs with
+appropriate statistical methods, etc, etc, etc.
+
+
+```{r firstload}
+## Load the package
+library(OncoSimulR) 
+```
+
+Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and
+\@ref(tab:bench1b) when run with `onlyCancer = FALSE`
+```{r bench1d, eval=TRUE, echo = FALSE}
+data(benchmark_1)
+knitr::kable(benchmark_1[9:16, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.",
+	"keepEvery",
+	"PDBaseline", "n2")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max.",
+				  "keepEvery",
+				  "PDBaseline", "n2"
+				  ),
+##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
+##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
+	align = "c")
+```
+
+
+
+
+### Changing fitness: $s=0.1$ and $s=0.05$ {#bench1xf}
+
+In the above fitness specification the fitness effect of each gene
+(when its restrictions are satisfied) is $s = 0.1$ (see section
+\@ref(numfit) for details). Here we rerun all the above benchmark
+using $s= 0.05$; results are shown below:
+
+
+Table: (\#tab:timing3xf) Benchmarks of all models in Tables \@ref(tab:bench1),
+\@ref(tab:bench1b) and \@ref(tab:timing3) using $s=0.05$ (instead of
+$s=0.1$).
+```{r bench1dx, eval=TRUE, echo = FALSE}
+data(benchmark_1_0.05)
+knitr::kable(benchmark_1_0.05[, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.",
+	"keepEvery",
+	"PDBaseline", "n2", "onlyCancer")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max.",				  
+				  "keepEvery",
+				  "PDBaseline", "n2", "onlyCancer"
+				  ),
+##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
+##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
+	align = "c")
+```
+
+# Table xtable
+** Here is the table**
+
+```{r xtablex, results = 'asis'}
+library(xtable)
+data(benchmark_1_0.05)
+print(xtable(benchmark_1_0.05[, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.",
+	"keepEvery",
+	"PDBaseline", "n2", "onlyCancer")]), 
+	## type = "html",
+	floating.environment='sidewaystable',
+	comment = FALSE)
+	
+```
+\clearpage
+
+
+
+
+```{r xtable0, results = 'asis'}
+library(xtable)
+print(xtable(head(mtcars)), type = "html")
+```
+
+
+```{r xtable3, results = 'asis', echo = FALSE}
+coco <- xtable(benchmark_1_0.05[, c(1, 2)])
+names(coco)[c(1, 2)] <- c("Con ruputuras muy largas y grnades costuras", "U con \n paque")
+print(xtable(coco, align = c('l', '|R{1.6cm}|', 'p{2cm}')), 
+## type = "html", 
+comment = FALSE)
+```
+
+
+```{r testing, results='asis'}
+library(xtable)
+df <- structure(list(ID = c(101L, 102L, 103L, 104L, 105L, 106L), 
+                       Gr1 = c(10.76,983.4, 34.000, 20, 23.8457, 13.32),
+                       Gr2 = c(NA,NA, NA, 20L, NA, NA)
+                       ), 
+                  .Names = c("ID", "Grade1 era un grade mu", "Grade2"), 
+                  class = c("tbl_df", "data.frame"), 
+                  row.names = c(NA, -6L))
+print(xtable(df,
+       align = c('l', '|p{0.5cm}|', 'p{0.5cm}', 'r'), 
+       digits=c(0,0,1,0)))
+	   
+```
+
+
+
+
+
+
+
+
+
+\clearpage
+
+## Pander table
+
+```{r panderex}
+library(pander)
+panderOptions('table.split.cells', 8)
+
+tt <- benchmark_1_0.05
+colnames(tt)[c(1:3)] <- c("a2", "esta casa es buena", "otra cosa")
+pander(tt, split.cells = 8)
+```
+
+
+
+
+
+As expected, having a larger $s$ leads to faster processes in most
+cases, since we reach the exiting conditions sooner. That is not the
+case, however, in `exp5` and `exp6` (and `exp5_noc` and
+`exp6_noc`). 
+
+When running with $s=0.05$ the simulations exit at a later time (see
+column "Final Time") but they exit with smaller population sizes. We
+have here an interaction between sampling frequency, speed of growth
+of the population, mutation events and number of clones. In
+populations that grow much faster mutation events will happen more
+often (which will trigger further iterations of the algorithm); in
+addition, more new clones will be created, even if they only exist
+for short times (including times shorter than 1 period, so they
+would not be reflected at the sampling periods). These differences
+are proportionally larger the larger the rate of growth of the
+population. Thus, they are larger between, say, the `exp5` at
+$s=0.1$ and $s=0.05$ than between the `exp4` at the two different
+$s$: the `exp5` exit conditions can only be satisfied at much larger
+population sizes so at populations sizes when growth is much faster
+(recall we are dealing with exponential growth). Recall also that
+with the default settings in `detectionProb`, we assess the exiting
+condition every 20 time periods (argument `checkSizePEvery`); this
+means that for fast growing populations, the increase in population
+size between successive checks of the exit conditions will be much
+larger.
+
+
+Thus, what is happening in the `exp5` and `exp6` with $s=0.1$ is
+that close to the time the exit conditions could be satisfied, they
+are growing very fast, accumulating mutants, and incurring in
+additional iterations. They exit sooner in terms of time periods,
+but they do much more work before arriving there.
+
+
+The moral here is that in complex simulations like this, the effects
+of some parameters ($s$ in this case) might look counter-intuitive
+at first. Thus the need to "experiment before launching a large
+number of simulations". 
+
+
+
+
+<!-- %% remember to use bibexport to keep just the minimal bib needed -->
+<!-- %% bibexport -o extracted.bib OncoSimulR.aux -->
+<!-- %% rm OncoSimulR.bib -->
+<!-- %% mv extracted.bib OncoSimulR.bib -->
+<!-- %% and then turn URL of packages into notes -->
+
+
+
+
+<!-- Local Variables: -->
+<!-- fill-column: 68 -->
+<!-- End: -->
+
+
+
