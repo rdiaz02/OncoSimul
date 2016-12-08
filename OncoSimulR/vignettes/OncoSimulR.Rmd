@@ -2357,7 +2357,7 @@ ends up displacing the others.
 
 
 
-### Are we keeping the complete history (genealogies) of the clones? {#histlargegenes}
+### Are we keeping the complete history (genealogy) of the clones? {#histlargegenes}
 
 Yes we are if we run with `keepPhylog = TRUE`, regardless of the
 setting for `keepEvery`. 
@@ -2417,13 +2417,14 @@ plotClonePhylog(e_50000[[1]]) ## plot not shown
 What is the cost of keep the clone genealogies? In terms of time it
 is minor. In terms of space, and as shown in the example above, we
 can end up storing a data frame with tends of thousands of rows and
-three columns, two of them factors. In the example above the size of
-that data frame is approximately 2 MB for a single simulation. This
-is smaller than the `pops.by.time` or `Genotypes` matrices, but it
-can quickly build up if you routinely launch, say, 1000 simulations
-via `oncoSimulPop` and that is why the default is `keepPhylog =
-FALSE` as this information is not needed as often as that in the
-other two matrices (`pops.by.time` and `Genotypes`).
+three columns (two factors, one float). In the example above the
+size of that data frame is approximately 2 MB for a single
+simulation. This is much smaller than the `pops.by.time` or
+`Genotypes` matrices, but it can quickly build up if you routinely
+launch, say, 1000 simulations via `oncoSimulPop`. That is why the
+default is `keepPhylog = FALSE` as this information is not needed as
+often as that in the other two matrices (`pops.by.time` and
+`Genotypes`).
 
 zz: genealogies and tracking history: be consistent
 
@@ -2464,10 +2465,10 @@ The following code shows some examples where we use population sizes
 of $10^{10}$ or larger. Since we do not want simulations in the
 exponential model to end because of extinction, I use a fitness
 specification where all genes have a positive fitness effect and we
-start all simulations from a large population (to make it very
-unlikely that the population will become extinct before a cell
-mutates). We set the maximum running time to 10 minutes. We keep the
-history of the clones and use `keepEvery = 1`.
+start all simulations from a large population (to make it unlikely
+that the population will become extinct before cells mutate and
+start increasing in numbers). We set the maximum running time to 10
+minutes. We keep the history of the clones and use `keepEvery = 1`.
 
 
 ```{r ex-large-pop-size, eval = FALSE, echo = TRUE}
@@ -2514,8 +2515,10 @@ summary(mc_k_50_1e11)[, c(1:3, 8, 9)]
 
 ```
 
-Notice the exception with the warning about $t_i$. Notice also that
-this takes a long time and we run a very large number of iterations.
+We get to $10^{11}$. But notice the exception with the warning about
+$t_i$. Notice also that this takes a long time and we run a very
+large number of iterations (getting close to one million in some
+cases).
 
 
 We can run the exponential model with `detectionSize = 1e10`:
