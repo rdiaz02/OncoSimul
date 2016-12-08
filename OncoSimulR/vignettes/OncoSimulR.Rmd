@@ -5803,6 +5803,50 @@ not reach a large size, it did not accumulate drivers, etc).
 
 
 
+## Plotting genotype/driver abundance over time; plotting the simulated trajectories {#plotraj}
+
+We have seen many of these plots already, starting with
+\@ref(fig:iep1x1) and \@ref(fig:iep2x2) and we will see many more
+below, in the examples, starting with section \@ref(buaer2) such as
+in figures \@ref(fig:baux1) and \@ref(fig:buax2). In a nutshell,
+what we are plotting is the information contained in the
+`pops.by.time` matrix, the matrix that contains the abundances of
+all the clones (or genotypes) at each of the sampling periods.
+
+
+The functions that do the work are called `plot` and these are
+actually methods for objects of class "oncosimul" and "oncosi
+mulpop". You can access the help by doing `?plot.oncosimul`, for
+example.
+
+What entities are shown in the plot? You can show the trajectories of:
+
+- numbers of drivers (e.g., \@ref(fig:baux1));
+
+- genotypes --or clones or haplotypes (e.g., \@ref(fig:baux2)).
+
+
+(Of course, showing "drivers" requires that you have specified
+certain genes as drivers. )
+
+
+What types of plots are available?
+
+- line plots;
+
+- stacked plots;
+
+- stream plots.
+
+All those three are shown in both of \@ref(fig:baux1) and \@ref(fig:baux2).
+
+
+If you run multiple simulations using `oncoSimulPop` you can plot
+the trajectories of all of the simulations.
+
+
+
+
 ## Stochastic detection mechanism: "detectionProb"  {#detectprob}
 
 This is the process that is controlled by the argument
@@ -5928,7 +5972,7 @@ in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
 <!-- % meaning.  -->
 
 
-## Stochastic detection mechanism and minimum number of drivers {#anddrvprob}
+### Stochastic detection mechanism and minimum number of drivers {#anddrvprob}
 
 We said above that we exit as soon as any of the conditions is
 reached (i.e., we use an OR operation over the exit
@@ -5943,7 +5987,6 @@ as specified by `detectionDrivers`. Note, though, that this does not
 guarantee that when you sample the population, all those drivers
 will be detected (as this depends on the actual proportion of cells
 with the drivers and the settings of `samplePop`).
-
 
 
 ## Fixation of genes/gene combinations with Ochs and Desai example {#fixation}
@@ -6658,35 +6701,32 @@ of the simulations.
 simulate using:
 
 
-* `oncoSimulIndiv` repeatedly (maybe within
-  *`mclapply`*), to parallelize the run).
-* `oncoSimulPop`. `oncoSimulPop` is basically a
-  thin wrapper around `oncoSimulIndiv` that uses
-  *`mclapply`*.
+  - `oncoSimulIndiv` repeatedly (maybe within *`mclapply`*), to  parallelize the run).
+  
+  - `oncoSimulPop`. `oncoSimulPop` is basically a thin wrapper around `oncoSimulIndiv` that uses  *`mclapply`*.
 
-   In both cases, you specify the conditions for ending the simulations (as
-   explained in \@ref(endsimul)).
-
-   Then, you will use function `oncoSimulSample` to obtain the matrix
-   of samples by mutations.
+In both cases, you specify the conditions for ending the simulations
+(as explained in \@ref(endsimul)). Then, you will use function
+`samplePop` to obtain the matrix of samples by mutations.
 
   
-**You do not want to keep the complete history of the
-  simulations**. You will simulate using:
+**You do not want to keep the complete history of the simulations**. You will simulate using:
 
 
-* `oncoSimulIndiv` repeatedly,  with argument `keepEvery = NA`. 
-* `oncoSimulPop`, with argument `keepEvery = NA`. 
+- `oncoSimulIndiv` repeatedly,  with argument `keepEvery = NA`. 
 
-   In both cases you specify the conditions for ending the simulations (as
-   explained in \@ref(endsimul)).  Then, you will use function
-   `oncoSimulSample`.
+
+- `oncoSimulPop`, with argument `keepEvery = NA`. 
+
+     In both cases you specify the conditions for ending the
+     simulations (as explained in \@ref(endsimul)).  Then, you will
+     use function `samplePop`.
 
 
   
-* `oncoSimulSample`, specifying the conditions for ending the
-  simulations (as explained in \@ref(endsimul)). In this case, you will
-  not use `oncoSimulSample`, as that is implicitly called by
+- `oncoSimulSample`, specifying the conditions for ending the
+  simulations (as explained in \@ref(endsimul)). In this case, you
+  will not use `samplePop`, as that is implicitly called by
   `oncoSimulSample`.  The output is directly the matrix (and a
   little bit of summary from each run), and during the simulation it
   only stores one time point.
@@ -6871,6 +6911,53 @@ the call to *`samplePop`*).
 
 <!-- samplePop can only sample with the arguments you give -->
 <!-- (especially ) -->
+
+
+zz: complete history as history of pop changes. Different from
+genealopy. Clarify.
+
+zz: clone is equivalent to genotype of haplotype
+
+## Whole-tumor and single-cell sampling, and do we always want to sample? {#alwayssamp}
+
+`samplePop` is designed to emulate the process of obtaining a sample
+from a (set of) "patient(s)". But there is no need to sample. The
+history of the population, with a granularity is controlled by
+argument `keepEvery`, is kept in the matrix `pops.by.time` which
+contains the number of cells of every clone at every sampling point
+(see further details in \@ref(trackindivs)). This is the information
+used in the plots that show the trajectory of a simulation, the
+plots that show the change in genotype or driver abundance over time
+(see section \@ref(plotraj) and examples mentioned there).
+
+Regardless of whether and how you plot the information in
+`pops.by.time`, you can also sample one or multiple simulations
+using `samplePop`. In **whole-tumor** sampling the resolution is the
+whole tumor (or the whole population). Thus, a key argument is
+`thresholdWhole`, the threshold for detecting a mutation: a gene is
+considered mutated if it is altered in at least "thresholdWhole"
+proportion of the cells in that simulation (at a particular time
+point). This of course means that your "sampled genotype" might not
+correspond to any existing genotype because we are summing over all
+cells in the population; for instance suppose that at the time we
+take the sample there are only two clones in the population, one
+with a frequency of 0.4 that has gene A mutated, and a second one
+with a frequency of 0.6 that has gene B mutated. If you set
+`thresholdWhole` to values $leq 0.4$ the sampled genotype will show
+both A and B mutated. **Single-cell** sampling is provided as an
+option in contrast to whole-tumor sampling. Here any sampled
+genotype will correspond to an existing genotype as you are sampling
+with single-cell resolution.
+
+
+When `samplePop` is run on a set of simulated data of, say, 100
+simulated trajectories (100 "subjects"), it will produce a matrix
+with 100 rows (100 "subjects"). But if it makes sense in the context
+of your problem you can of course run `samplePop` repeatedly.
+
+
+
+
 
 ## Differences between "samplePop" and "oncoSimulSample" {#diffsample}
 
