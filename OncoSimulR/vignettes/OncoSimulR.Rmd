@@ -345,19 +345,6 @@ different pieces and blocks, similarly to what we do with Lego
 bricks. (I find this an intuitive and very graphical analogy which I
 have copied from @Hothorn_2006; @Hothorn_2008).
 
-<!-- <zz more details above? -->
-
-
-<!-- These are some tables that might help to get an idea of the -->
-<!-- functionality; they come from this -->
-<!-- poster[http://dx.doi.org/10.7490/f1000research.1112860.1](http://dx.doi.org/10.7490/f1000research.1112860.1) -->
-<!-- presented at ECCB 2016. -->
-
-<!-- I need to define a custom block. See -->
-<!-- https://bookdown.org/yihui/bookdown/custom-blocks.html. Later -->
-
-
-
 
 
 
@@ -1138,19 +1125,15 @@ typical use cases of OncoSimulR involve hundreds to thousands of
 genes on population sizes up to $10^6$ to $10^7$.
 
 
-
-
 Note that most of the code in this section is not executed during
 the building of the vignette, to keept vignette build time
 reasonable and prevent using huge amounts of RAM. All of the code,
 ready to be sourced and run is available from the 'inst/miscell'
 directory (and the summary output from some of the benchmarks is
-available from the 'data' directory as data set zz).  zz: specify which
+available from the 'miscell-files/vignette_bench_Rout' directory of
+the main OncoSimul repository at
+https://github.com/rdiaz02/OncoSimul). 
 
-
-
-zz: explain keepPhylog does not add much time (some space), but a moot
-point if keepEvery = NA.
 
 ## Exp and McFL with "detectionProb" and pancreas example {#bench1}
 
@@ -1171,18 +1154,11 @@ simulation are returned.
 data(benchmark_1) 
 ``` 
 
-Will run `r unique(benchmark_1$Numindiv)` simulations. <!-- This -->
-<!-- represents a small number of simulations in a particular epistasis -->
-<!-- scenario we are interested in. --> The results I show are for a laptop
-with an 8-core Intel Xeon E3-1505M CPU, running Debian
-GNU/Linux. 
+Will run `r unique(benchmark_1$Numindiv)` simulations.  The results
+I show are for a laptop with an 8-core Intel Xeon E3-1505M CPU,
+running Debian GNU/Linux.
 
 
-
-zz: improve output: make the key settings clear: keepEvery and
-detectionProb settings.
-
-<!-- zz: fixme!!! explain sv2  -->
 
 ```{r timing1, eval=FALSE}
 
@@ -1613,17 +1589,6 @@ TRUE` or `onlyCancer = FALSE` will depend on the question being asked (see
 \@ref(exbauer) for a question where we will naturally want to use
 `onlyCancer = FALSE`).
 
-
-To summarize this section, we have seen: 
-  - Both McFL and Exp can be run in short times over a range of
-      sizes for the `detectionProb` mechanism using a complex
-      fitness specification with a small number of genes.
-  - The `keepEvery` argument can have a large effect on time in the
-    McFL models and specially on object sizes. If only the end
-    result of the simulation is to be used, you should set
-    `keepEvery = NA`.
-
-
 ### Changing fitness: $s=0.1$ and $s=0.05$ {#bench1xf}
 
 In the above fitness specification the fitness effect of each gene
@@ -1715,9 +1680,6 @@ sizes. Moreover, to avoid the confounding factor of the `onlyCancer
 = TRUE` argument, we will set it to FALSE, so we measure directly
 the time of individual runs.
 
-
-
-zz: not the typical use cases see also section where I discuss all this.
 
 ### Exponential model with 10,000 and 50,000 genes {#exp50000}
 
@@ -2370,30 +2332,32 @@ object is much smaller than above.
 
 
 
-Examples above: no setting for finalTime, but a moot point (all well
-< 1000)
-
-Other factors: initial size
 
 
-Illustrates that OncoSimulR pays a price if we want to track
-history. Also we need to keep genotypes, not just numbers of drivers
-and passengers: this is needed for complex fitness models with complex
-epistasis and order effects.
 
-In general, more than 10000 clones a huge slowdown and increase in
-memory consumption.
 
-zz: why prunning rarely matters with exp but does with McFL. But it
-might matter with exp depending on fitness details.
 
 zz: pay attention to num iterations
 
 
+### The different consequences of `keepEvery = NA` in Exp and McFL models {#kpexpmc}
 
-McF and Exp: often the case is that Exp uses a lot fewer iterations
+We have seen that `keepEvery = NA` often leads to much smaller
+return objects when using the McFarland model than when using the
+Exp model. Why? Because in the McFarland model there is strong
+competition and there can be complete clonal sweeps so that a single
+clone might be all that is left after some time. This is not the
+case in the exponential models. This, of course, is not always the
+case and can depend on the difference in fitness effects between
+different genes. In particular, we have seen several examples where
+even with `keepEvery=NA` there are a lot of clones in the McFL
+models because there are many clones of similar fitness so no clone
+ends up displacing the others.
 
-### Are we keeping the complete history of the clones? {#histlargegenes}
+
+
+
+### Are we keeping the complete history (genealogies) of the clones? {#histlargegenes}
 
 Yes we are if we run with `keepPhylog = TRUE`, regardless of the
 setting for `keepEvery`. 
@@ -2450,16 +2414,18 @@ plotClonePhylog(e_50000[[1]]) ## plot not shown
 
 ```
 
-What is the cost of tracking the history? In terms of time it is
-minor. In terms of space, and as shown in the example above, we can
-end up storing a data frame with tends of thousands of rows and
+What is the cost of keep the clone genealogies? In terms of time it
+is minor. In terms of space, and as shown in the example above, we
+can end up storing a data frame with tends of thousands of rows and
 three columns, two of them factors. In the example above the size of
 that data frame is approximately 2 MB for a single simulation. This
+is smaller than the `pops.by.time` or `Genotypes` matrices, but it
 can quickly build up if you routinely launch, say, 1000 simulations
 via `oncoSimulPop` and that is why the default is `keepPhylog =
-FALSE`.
+FALSE` as this information is not needed as often as that in the
+other two matrices (`pops.by.time` and `Genotypes`).
 
-
+zz: genealogies and tracking history: be consistent
 
 ## Population sizes $\geq 10^{10}$ {#popgtzx}
 
@@ -2602,8 +2568,38 @@ zz: why detectionProb more sense for McFL
 
 
 
+## A summary of some determinants of running time and space consumption 
 
+To summarize this section, we have seen: 
+  - Both McFL and Exp can be run in short times over a range of
+      sizes for the `detectionProb` mechanism using a complex
+      fitness specification with a small number of genes.
+	  
+  - The `keepEvery` argument can have a large effect on time in the
+    McFL models and specially on object sizes. If only the end
+    result of the simulation is to be used, you should set
+    `keepEvery = NA`.
+	
+  - The distribution of fitness effects can have large effects on
+    running times. Sometimes these are intuitive and simple to
+    reason about, sometimes they are not as they interact with other
+    factors (e.g., stopping mechanism, numbers of clones, etc). In
+    general, there can be complex interactions between different
+    settings, from mutation rate to fitness effects to initial
+    size. As usual, test before launching a massive simulation.
 
+  - Simulations start to slow down and lead to a very large object
+    size when we keep track of around 6000 to 10000 clones. Whatever
+    leads to these patterns will slow down the simulations.
+	
+  - OncoSimulR needs to keep track of genotypes, not just numbers of
+    drivers and passengers, because it allows you to use complex
+    fitness and mutation specifications that depend on specific
+    genotypes. The `keepEvery = NA` is an approach to keep the
+    minimal history needed, but it is unavoidable that during the
+    simulations we might be forced to deal with many thousands of
+    different clones.
+ 
 
 
 
