@@ -588,7 +588,8 @@ print(xtable(df,
 ```{r panderex}
 library(pander)
 panderOptions('table.split.cells', 8)
-
+set.alignment('right')
+panderOptions('round', 0)
 tt <- benchmark_1_0.05
 colnames(tt)[c(1:3)] <- c("a2", "esta casa es buena", "otra cosa")
 pander(tt, split.cells = 8)

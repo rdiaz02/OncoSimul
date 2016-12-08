@@ -7798,20 +7798,20 @@ paper @Gillespie1993 writes in p. 972:
 
 
 
-> > Allelic genealogies are represented in the computer by a rooted
-> > tree, each node of which is a unique haplotype.  A haplotype node is
-> > a data structure with pointers to parent and sibling nodes and with
-> > values of the current abundance and selection coefficient of the
-> > haplotype.  Each node also records the generation at which the
-> > haplotype first appeared in the population with its mutant site
-> > (the origination time of the site) and, should the mutation become
-> > fixed-the node becomes the root node for all alleles in the
-> > population-the fixation time of the site.  When haplotypes without
-> > descendents are lost from the population, the allelic genealogy is
-> > pruned to free computer memory.  When the simulation is completed,
-> > the properties of the origination and fixation point processes may
-> > be studied by 'climbing' the tree and recording the origination and
-> > fixation times of sites."
+> Allelic genealogies are represented in the computer by a rooted
+> tree, each node of which is a unique haplotype.  A haplotype node is
+> a data structure with pointers to parent and sibling nodes and with
+> values of the current abundance and selection coefficient of the
+> haplotype.  Each node also records the generation at which the
+> haplotype first appeared in the population with its mutant site
+> (the origination time of the site) and, should the mutation become
+> fixed-the node becomes the root node for all alleles in the
+> population-the fixation time of the site.  When haplotypes without
+> descendents are lost from the population, the allelic genealogy is
+> pruned to free computer memory.  When the simulation is completed,
+> the properties of the origination and fixation point processes may
+> be studied by 'climbing' the tree and recording the origination and
+> fixation times of sites."
 
 
 OncoSimulR does something very similar. Note that we never prune any
