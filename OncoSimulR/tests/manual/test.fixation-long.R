@@ -2,7 +2,11 @@
 ## on our, or user's, machines
 ## But using all cores might be bad, and also precludes my logic
 ## of launching many at the same time.
-cat("\n Starting long fixation  at", date(), "\n") 
+cat("\n Starting long fixation  at", date(), "\n")
+
+## Since we run the long tests after simply loading the package
+list_g_matches_fixed <- OncoSimulR:::list_g_matches_fixed
+
 test_that("Check output is correct", {
     initS <- 200
     u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
