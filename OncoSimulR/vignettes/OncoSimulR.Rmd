@@ -780,8 +780,8 @@ using: see \@{tomlin-except}.)
 OncoSimulR is designed for complex fitness specifications and
 selection scenarios and uses forward-time simulations; the types of
 questions where OncoSimulR can be of help are discussed in sections
-\@ref(generalwhatfor) and \@ref(whatfor) and time and space
-requirements of OncoSimulR are addressed in section
+\@ref(generalwhatfor) and \@ref(whatfor) and running time and space
+consumption of OncoSimulR are addressed in section
 \@ref(timings). You should be aware that **coalescent simulations**,
 sometimes also called backward-time simulations, are much more
 efficient for simulating neutral data as well as some special
@@ -798,13 +798,14 @@ accumulation of the drivers). This means that the syntax for
 specifying those fitness models could probably be a lot simpler
 (e.g., specify $s$ per driver). But it also means that the code
 could probably be much faster. First, because fitness evaluation is
-easier. Second, and possibly much more important, because what
-we need to keep track of leads to much simpler and economic
-structures: we do not need to keep track of clones as types of cells
-with different mutations, but only of clone types as defined by the
-number of mutated drivers, and keeping track of clones can be
-expensive ---see section \@ref(timings). So for those cases where
-you do not need the full flexibility of OncoSimulR, special purpose
+easier. Second, and possibly much more important, because what we
+need to keep track of leads to much simpler and economic structures:
+we do not need to keep track of clones (where two cells are regarded
+as different clones if the differ anywhere in their genotype), but
+only of clone types as defined by the number of mutated drivers, and
+keeping track of clones can be expensive ---see sections
+\@ref(timings) and \@ref(trackindivs). So for those cases where you
+do not need the full flexibility of OncoSimulR, special purpose
 software might be easier to use and faster to run. Of course, for
 some types of problems this special purpose software might not be
 available, though.
@@ -1080,16 +1081,16 @@ version 2.
 
 
 
-# Time and space requirements of OncoSimulR {#timings}
+# Running time and space consumption of OncoSimulR {#timings}
 
-Time to complete the simulations and size of return objects depend
-on several, interacting factors. The usual rule of "experiment
-before launching a large number of simulations" applies, but here we
-will walk through several cases to get a feeling for the major
-factors that affect speed and size. Many of the comments on this
-section need to use ideas discussed in other places of this
-document. If you read this section first, you might want to come
-back after reading the relevant parts.
+Time to complete the simulations and size of return objects (space
+consumption) depend on several, interacting factors. The usual rule
+of "experiment before launching a large number of simulations"
+applies, but here we will walk through several cases to get a
+feeling for the major factors that affect speed and size. Many of
+the comments on this section need to use ideas discussed in other
+places of this document. If you read this section first, you might
+want to come back after reading the relevant parts.
 
 
 
@@ -1126,14 +1127,17 @@ Size of return objects will depend on:
   mainly size of return object, not speed).
 
 
-In the sections that follow, we go over several cases to illustrate
-some of the main settings that affect execution time and size of
-returned objects. It should be understood, however, that many of the
-examples shown below do not represent typical use cases of
-OncoSimulR, but are used here to understand what, and how, affects
-time and size. As we will see in most examples in this vignette,
+In the sections that follow, we go over several cases to understand
+some of the main settings that affect running time (or execution
+time) and space consumption (the size of returned objects). It
+should be understood, however, that many of the examples shown below
+do not represent typical use cases of OncoSimulR and are used only
+to identify what and how affects running time and space
+consumption. As we will see in most examples in this vignette,
 typical use cases of OncoSimulR involve hundreds to thousands of
 genes on population sizes up to $10^6$ to $10^7$.
+
+
 
 
 Note that most of the code in this section is not executed during
@@ -1700,7 +1704,7 @@ number of simulations".
 
 Yes. In fact, in OncoSimulR there is no pre-set limit on genome
 size. However, large numbers of genes can lead to unacceptable
-memory or CPU usage. We discuss several examples next, that
+memory usage ot running time. We discuss several examples next, that
 illustrate some of the major issues to consider. Another example
 with 50,000 genes is shown in section \@ref(mcf50070).
 
@@ -2608,7 +2612,37 @@ zz: why detectionProb more sense for McFL
 
 # Specifying fitness effects {#specfit}
 
+OncoSimulR uses a standard continuous time model, where individual
+cells divide, die, and mutate with rates that can depend on genotype
+and population size; over time the abundance of the different
+genotypes changes by the action of selection (due to differences in
+net growth rates between genotypes), drift, and mutation. As a
+result of a mutation in a pre-existing clone new clones arise, and
+the birth rate of a newly arisen clone is determined at the time of
+its emergence as a function of its genotype.  Simulations can use an
+use exponential growth model or a model with carrying capacity that
+follows @McFarland2013. For the exponential growth model, the death
+rate is fixed at one whereas in the model with carrying capacity
+death rate increases with population size. In both cases, therefore,
+fitness differences between genotypes in a given population at a
+given time are due to differences in the mapping between genotype
+and birth rate. There is second exponential model (called "Bozic")
+where birth rate is fixed at one, and genotype determines death rate
+instead of birth rate (see details in \@ref(numfit)). So when we
+discuss specifying fitness effects or the effects of genes on
+fitness, we are actually referring to specifying effects on birth
+(or death) rates, which then translate into differences in fitness
+(since the other rate, death or birth, is either fixed, as in the
+Exp and Bozic models, or depends on the population size). This is
+also shown in Table \@ref(tab:osrfeatures), in the rows for "Fitness
+components", under "Evolutionary Features".
+
+
+
+
 ## Introduction to the specification of fitness effects {#introfit}
+
+
 
 With OncoSimulR you can specify different types of effects on fitness:
 
@@ -6922,7 +6956,7 @@ zz: clone is equivalent to genotype of haplotype
 
 `samplePop` is designed to emulate the process of obtaining a sample
 from a (set of) "patient(s)". But there is no need to sample. The
-history of the population, with a granularity is controlled by
+history of the population, with a granularity that is controlled by
 argument `keepEvery`, is kept in the matrix `pops.by.time` which
 contains the number of cells of every clone at every sampling point
 (see further details in \@ref(trackindivs)). This is the information
@@ -7697,8 +7731,8 @@ full mapping genotyeps to fitness, or by providing that mapping by
 specifying the effects of the different gene combinations). In some
 cases, however, we might want to specify a particular model that
 generates the fitness landscape, and then have fitnesses be random
-variables obtained under this model. In this random fitness
-landscape the fitness of the genotypes is a random variable
+variables obtained under this model. In other words, in this random
+fitness landscape the fitness of the genotypes is a random variable
 generated under some specific model.  Random fitness landscapes are
 used extensively, for instance, to understand the evolutionary
 consequences of different types of epistatic interactions (e.g.,
