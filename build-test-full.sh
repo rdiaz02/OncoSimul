@@ -1,7 +1,8 @@
 #!/bin/bash
 
 ## if second argument is "ghp", then push to github pages the html and pdf
-
+## if second is "cran" another check, as in CRAN, that will detect things
+## such as mc.cores > 2
 V_R=$1
 
 V_ADA=$(cat ./OncoSimulR/DESCRIPTION | grep Version | cut -d' ' -f2)
@@ -171,6 +172,7 @@ if [ "$2" = "ghp" ]; then
 fi
     
 
-
-
-
+## for very paranoid checks
+if [ "$2" = "cran" ]; then
+    R --vanilla CMD check --as-cran --timings OncoSimulR_$V_ADA.tar.gz
+fi
