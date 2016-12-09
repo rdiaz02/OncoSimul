@@ -54,6 +54,7 @@ rm ./OncoSimulR/vignettes/*.bbl
 rm ./OncoSimulR/vignettes/*.aux
 rm ./OncoSimulR/vignettes/*.toc
 rm ./OncoSimulR/vignettes/OncoSimulR.tex
+rm ./OncoSimulR/vignettes/OncoSimulR.html
 rm ./OncoSimulR/vignettes/*.pdf
 rm ./OncoSimulR/vignettes/*.log
 rm ./OncoSimulR/vignettes/*.out
