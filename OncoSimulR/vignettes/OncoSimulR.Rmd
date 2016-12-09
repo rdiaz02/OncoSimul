@@ -7833,27 +7833,6 @@ And from here you could see the error that was returned by
 we pass `initSize = 1e-5`).
 
 
-## What can you do with the simulations?
-
-This is up to you. In section \@ref(sample-1) we show an example
-where we infer an oncogenetic tree from simulated data and in
-section \@ref(whatfor) we go over a varied set of scientific
-questions where OncoSimulR could help.
-
-
-<!-- %% As an example, we can try to infer an oncogenetic tree -->
-<!-- %% (and plot it) using the `r CRANpkg("Oncotree")` package @Oncotree after -->
-<!-- %% getting a quick look at the marginal frequencies of events: -->
-
-<!-- %% <<fig.width=4, fig.height=4>>= -->
-<!-- %% colSums(pancrSamp)/nrow(pancrSamp) -->
-
-<!-- %% require(Oncotree) -->
-<!-- %% otp <- oncotree.fit(pancrSamp) -->
-<!-- %% plot(otp) -->
-<!-- %% @  -->
-
-
 ## Whole tumor sampling, genotypes, and allele counts: what  gives? {#wtsampl}
 
 You are obtaining genotypes, regardless of order.  When we use "whole
@@ -7882,7 +7861,7 @@ increase is small compared with significant benefits of jumping over
 birth and death reactions for the case of rare mutations."
 
 Since the earliest versions, OncoSimulR has provided information to
-assess these issues. The output of function *`oncoSimulIndiv`*
+assess these issues. The output of function `oncoSimulIndiv`
 includes a list called *"other"* that itself includes two lists
 named *"minDMratio"* and *"minBMratio"*, the smallest ratio, over
 all simulations, of death rate to mutation rate or birth rate to
@@ -8028,6 +8007,25 @@ avoid the "Recoverable exception ti set to DBL_MIN. Rerunning."
 issue (see discussion in section \@ref(popgtzx)).
 
 
+## What can you do with the simulations?
+
+This is up to you. In section \@ref(sample-1) we show an example
+where we infer an oncogenetic tree from simulated data and in
+section \@ref(whatfor) we go over a varied set of scientific
+questions where OncoSimulR could help.
+
+
+<!-- %% As an example, we can try to infer an oncogenetic tree -->
+<!-- %% (and plot it) using the `r CRANpkg("Oncotree")` package @Oncotree after -->
+<!-- %% getting a quick look at the marginal frequencies of events: -->
+
+<!-- %% <<fig.width=4, fig.height=4>>= -->
+<!-- %% colSums(pancrSamp)/nrow(pancrSamp) -->
+
+<!-- %% require(Oncotree) -->
+<!-- %% otp <- oncotree.fit(pancrSamp) -->
+<!-- %% plot(otp) -->
+<!-- %% @  -->
 
 
 # Using v.1 posets and simulations {#v1}
