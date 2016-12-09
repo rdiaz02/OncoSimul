@@ -308,16 +308,6 @@ https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
 <!-- similar, but the GSR page says, for carrying capacity "This includes models with age or stage-specific carrying capacities" -->
 
 
-<!-- Table: Key features of OncoSimulR (partially modified from the Genetics Simulation Resources table at https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed){#tablekeyfeatures} -->
-<!-- |**Interface** | Command-Line, Script-Based| -->
-<!-- |Development|| -->
-<!-- |&nbsp; Platforms| Linux and Unix, Windows, Mac OS X| -->
-<!-- |&nbsp; Language| R, C++| -->
-<!-- |&nbsp; License| GNU GPL v3| -->
-
-
-
-
 Further details about the original motivation for wanting to
 simulate data this way in the context of tumor progression can be
 found in @Diaz-Uriarte2015, where additional comments about model
@@ -402,7 +392,6 @@ shown in the figure below, where we use italics for the type/class
 of R object and courier for the name of the functions.
 <!-- Note: figure1.png, and how to create it, explained in miscell-files -->
 <!-- in the repo -->
-
 <!-- ![Relationship between the main functions in OncoSimulR.](figure1.png) -->
 
 
@@ -1080,11 +1069,6 @@ places of this document. If you read this section first, you might
 want to come back after reading the relevant parts.
 
 
-
-<!-- How long simulations take and how depend on several factors. This section -->
-<!-- gives a quick view. Longer examples and more detailed comments are -->
-<!-- provided in section \@ref(moretimings). -->
-
 Speed will depend on:
 
 * Your hardware, of course.
@@ -1122,7 +1106,7 @@ do not represent typical use cases of OncoSimulR and are used only
 to identify what and how affects running time and space
 consumption. As we will see in most examples in this vignette,
 typical use cases of OncoSimulR involve hundreds to thousands of
-genes on population sizes up to $10^6$ to $10^7$.
+genes on population sizes up to $10^5$ to $10^7$. 
 
 
 Note that most of the code in this section is not executed during
@@ -1239,61 +1223,7 @@ summary(unlist(lapply(exp1, "[[", "TotalPopSize")))
 ```
 
 
-
-<!-- ```{r, echo=FALSE, results='hide'} -->
-<!-- dftm1 <- data.frame(Simulation = c("ep1_exp", "ep1_mc", "ep2_exp","ep2_mc"),  -->
-<!--     ElapsedTime = c(0.8, 6.6, 1.1, 5.8), Size = c(1.6, 16.6, 1.6, 20.6)) -->
-
-<!-- ``` -->
-
 The above runs yield the following:
-
-<!-- ```{r, results='show', echo=FALSE} -->
-<!-- knitr::kable(dftm1, col.names = c("Simulation", "Elapsed Time (s)", "Object Size (MB)")) -->
-
-<!-- ``` -->
-
-
-
-<!-- <\!-- |Simulation | Elapsed Time (s)| Object Size (MB)| -\-> -->
-<!-- <\!-- |:----------|----------------:|----------------:| -\-> -->
-<!-- <\!-- |ep1_exp    |              0.8|              1.6| -\-> -->
-<!-- <\!-- |ep1_mc     |              6.6|             16.6| -\-> -->
-<!-- <\!-- |ep2_exp    |              1.1|              1.6| -\-> -->
-<!-- <\!-- |ep2_mc     |              5.8|             20.6| -\-> -->
-
-<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<!-- Simulation    Elapsed Time (s)         Object Size (MB)   Median Number Clones  Median Number Iteration   Median Final Time  Median Total Pop. Size  -->
-<!-- ----------  ---------------------    --------------------   -->
-<!-- ep1_exp                  0.8              1.6 -->
-
-<!-- ep1_mc                   6.6             16.6 -->
-
-<!-- ep2_exp                  1.1              1.6 -->
-
-<!-- ep2_mc                   5.8             20.6 -->
-<!-- ----------  ---------------------    --------------------- -->
-
-
-
-
-<!-- ------------------------------------------------------------------------------------- -->
-<!--                                                 exp1      mc1      exp2       mc2	 -->
-<!-- ------------------------------------------     --------- -------- ---------  -------- -->
-<!-- Elapsed Time, average per simulation (s)       0.002      0.70     0.0015     0.68	 -->
-											                                         
-<!-- Object Size, average per simulation (MB)       0.03      4.0       0.01       0.01		 -->
-											                                         
-<!-- Median Number of Clones                         2         13        1          1		 -->
-											                                         
-<!-- Median Number of Iterations                     274       850000    253        830000 -->
-											                                         
-<!-- Median Final Time                               273       21700     252        20236	 -->
-											                                         
-<!-- Median Total Population Size                    1147      683       1057       692 	 -->
-<!-- -----------------------------------------      --------- -------- ---------  -------- -->
-<!-- Table: (\#tab:timing1) Benchmarks of Exp and McFL models using the default -->
-<!-- `detectionProb` with two settings of `keepEvery`. -->
 
 
 ```{r bench1, eval=TRUE, echo = FALSE}
@@ -1325,22 +1255,21 @@ lead to stopping the simulations very quickly in the exponential
 model because as soon as a clone with fitness $>1$ appears it starts
 growing exponentially. In fact, we can see that the number of
 iterations and the final time are much smaller in the Exp than in
-the McFL model. This table also shows that the `keepEvery = NA`
-setting, which was in effect in simulations "exp2" and "mc2", can
-make a difference especially for the McFL models, as seen by the
-median number of clones and the size of the object; we will return
-to this issue below as execution time and object size (which affects
-RAM usage) depend strongly on number of clones tracked.
+the McFL model. 
 
-<!-- Models `exp2` and `mc2` do not store any intermediate population samples -->
-<!-- (`keepEvery = NA`) so clones that become extinct at any sampling period -->
-<!-- are pruned and only the existing clones at the end of the simulation are -->
-<!-- returned. In contrast, models `exp1` and `mc1` store population samples at -->
-<!-- time intervals of 1 (`keepEvery = 1`), even if many of those clones -->
-<!-- eventually become extinct. This makes a difference especially for the McFL -->
-<!-- models, as seen by the median number of clones and the size of the -->
-<!-- object. We will return to this issue below as execution time and object -->
-<!-- size (which affects RAM usage) depend strongly on number of clones tracked. -->
+
+This table also shows that the `keepEvery = NA` setting, which was
+in effect in simulations "exp2" and "mc2", can make a difference
+especially for the McFL models, as seen by the median number of
+clones and the size of the object. Models `exp2` and `mc2` do not
+store any intermediate population samples so clones that become
+extinct at any sampling period are pruned and only the existing
+clones at the end of the simulation are returned. In contrast,
+models `exp1` and `mc1` store population samples at time intervals
+of 1 (`keepEvery = 1`), even if many of those clones eventually
+become extinct. We will return to this issue below as execution time
+and object size (which affects RAM usage) depend strongly on number
+of clones tracked.
 
 
 
@@ -1410,25 +1339,6 @@ t_exp6 <- system.time(
 ```
 
 
-
-<!-- ------------------------------------------------------------------------------------- -->
-<!--                                                exp3      exp4     exp5       exp6     -->
-<!-- ------------------------------------------    --------- -------- ---------  --------  -->
-<!-- Elapsed Time, average per simulation (s)      0.010      0.009     0.85     0.85 -->
-
-<!-- Object Size, average per simulation (MB)      0.41       0.01      0.90       0.02 -->
-
-<!-- Median Number of Clones                        14        9        31.5       26.51 -->
-
-<!-- Median Number of Iterations                    2780      2770     43900      58230 -->
-
-<!-- Median Final Time                              1870      1870     2235       1586 -->
-
-<!-- Median Total Population Size                   8.0e6     7.8e6     1.1e9      1.3e9  -->
-<!-- -----------------------------------------     --------- -------- ---------  -------- -->
-<!-- Table: (\#tab:timing2) Benchmarks of Exp models modifying the default `detectionProb` with two settings of `keepEvery`. -->
-
-
 ```{r bench1b, eval=TRUE, echo = FALSE}
 data(benchmark_1)
 knitr::kable(benchmark_1[5:8, c("time_per_simul",
@@ -1485,17 +1395,7 @@ population size (see section \@ref(mcfl)).
 The number of attempts until cancer was reached in the above models is
 shown in the following table:
 
-<!-- ```{r tableattemptsvalue, eval = TRUE, echo = FALSE} -->
-<!-- ## From running the code -->
 
-<!-- tableattemptsvalues <- c(exp1 = 2, mc1 = 1, exp2 = 2, mc2 = 1, -->
-<!--                          exp3 = 5, exp4 = 5, exp5 = 5.5, exp6 = 5) -->
-<!-- tableattemptsvalues <- data.frame(Attempts_Until_Cancer = tableattemptsvalues) -->
-
-<!-- knitr::kable(tableattemptsvalues, booktabs = TRUE, -->
-<!--              caption = "Number of attempts until cancer.", align = "c") -->
-
-<!-- ``` -->
 
 ```{r bench1c, eval=TRUE, echo = FALSE}
 data(benchmark_1)
@@ -1515,41 +1415,10 @@ instance, `median(unlist(lapply(exp1, function(x) x$other$attemptsUsed)))`
 
 
 
-
-
-<!-- There are large differences in speed between models and sizes of -->
-<!-- objects differ too: in these cases, the simulations using the "McFL" -->
-<!-- model run for much longer (2000 to 2000 time units, vs. 100 to 1500 -->
-<!-- of the "Exp" models) and also had a larger number of clones returned -->
-<!-- (5 to 16 vs. 1 to 3). As said above, for further details go to -->
-<!-- section \@ref(moretimings). -->
-
-
 We can rerun all of the above models with argument `onlyCancer = FALSE`
 and the results are shown below (note that the differences between this
 table and table \@ref(tab:bench1) for the McFL models only reflecting
 sampling variation).
-
-
-<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
-<!--                                               exp1      mc1      exp2       mc2	      exp3      exp4          exp5         exp6     -->
-<!-- ------------------------------------------   --------- -------- ---------  --------  --------- ---------- -----------  -----------  -->
-<!-- Elapsed Time, average per simulation (s)     0.001      0.64      0.001       0.64	  0.002     0.002      0.040         0.090 -->
-											                                       
-<!-- Object Size, average per simulation (MB)     0.04       3.5        0.01       0.01	   0.17     0.01        0.16         0.01 -->
-											                                       
-<!-- Median Number of Clones                       2         12        0          1		   2         0          2            0 -->
-											                                       
-<!-- Median Number of Iterations                   374       796000    312        739000    791       759        499           692 -->
-											                                       
-<!-- Median Final Time                             373       19940     312        18500	   7900      666        498           674 -->
-											                                       
-<!-- Median Total Population Size                  0         689       0          691 	   0         0          0             0  -->
-
-<!-- Mean  Total Population  Size                  517       705       639        699       1.5e6    6.2e6       1.9e8       5.3e8 -->
-<!-- -----------------------------------------    --------- -------- ---------  --------  --------- ---------- ----------   ----------- -->
-<!-- Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:timing1) and -->
-<!-- \@ref(tab:timing2) when run with `onlyCancer = FALSE`. -->
 
 
 Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and
@@ -2079,7 +1948,12 @@ The above shows the reason: the `Genotypes` matrix is a 10000 by
 for each gene in each genotype) and in R integers use 4 bytes
 each. And the `pops.by.time` is 346 by 3888 (the 1 in $346 = 345 +
 1$ comes from time 0 and the 1 in $3888 = 3887 + 1$ is due to the
-column with the time index) double matrix and doubles use 8 bytes.
+column with the time index) double matrix and doubles use 8
+bytes[^popsbytime]. 
+
+[^popsbytime]:These matrices do not exist during most of the
+execution of the C++ code; they are generated right before returning
+from the C++ code.
 
 
 
@@ -3142,11 +3016,9 @@ fitness (or random fitness landscapes), as we will do in section
 We will see an example of this way of passing fitness again in
 \@ref(bauer), where will compare it with the lego system.
 
+
 <!-- % Please see the documentation of *`allFitnessEffects`* for further -->
 <!-- % details and examples. -->
-
-
-
 
 
 <!-- % This can be done with OncoSimulR (e.g., see sections \@ref(e2), \@ref(e3) -->
@@ -3197,8 +3069,6 @@ different ways.
 Most of the rest of this section is devoted to explaining how to combine
 those pieces. Before that, however, we need to discuss the fitness model
 we use.
-
-
 
 <!-- % As we will see in the examples (e.g., see sections \@ref(e2), \@ref(e3), -->
 <!-- % \@ref(exlong)) OncoSimulR makes it simple to be explicit about the mapping -->
@@ -3289,8 +3159,6 @@ extinct is very, very close to zero for all reasonable values of mutation
 rate}. How do we signal immediate extinction or no viability in this case?
 You can set the value of $s = -\infty$.
 
-<!-- %% Setting a value of -->
-<!-- %% $s < -90$ has the same effect. -->
 
 In general, if you want to identify some mutations or some
 combinations of mutations as leading to immediate extinction (i.e.,
@@ -3300,12 +3168,6 @@ examples below evaluate fitness by its effects on the birth
 rate. You can see one where we do it both ways in Section
 \@ref(fit-neg-pos).
 
-
-
-<!-- \footnote{In the C++ -->
-<!-- code there is a different model, not directly callable from R for now, -->
-<!-- called ``bozic2" that is slightly different. These comments apply to -->
-<!-- the model that is right now callable from R -->
 
 
 ## Genes without interactions {#noint}
@@ -6094,66 +5956,6 @@ not reach a large size, it did not accumulate drivers, etc).
 
 
 
-
-
-<!-- % The simplest procedure is to run the simulation for a fixed number of time -->
-<!-- % periods (as specified by argument `finalTime`) or until the -->
-<!-- % population goes extinct, whichever happens first. This might be what you -->
-<!-- % want to do when you examine general population genetics scenarios without -->
-<!-- % focusing on possible sampling issues. To do this, set `finalTime` -->
-<!-- % to the value you want and set `onlyCancer = FALSE`; in addition, -->
-<!-- % set `detectionProb` to "NA" and `detectionDrivers` and -->
-<!-- % `detectionSize` to "NA" or to impossibly large -->
-<!-- % numbers\footnote{Setting `detectionDrivers` and -->
-<!-- %   `detectionSize` to "NA" is in fact equivalent to setting them -->
-<!-- %   to the largest possible numbers: $2^32 -1$ and $\infty$, -->
-<!-- %   respectively.}. This scenario is the `onlyCancer = FALSE` because -->
-<!-- % you simply collect the simulation output, regardless of what happened with -->
-<!-- % the population (it became extinct, it did not reach a large size, it did -->
-<!-- % not accumulate drivers, etc). -->
-
-
-<!-- % If we set `onlyCancer = TRUE`. Here a simulation will be repeated -->
-<!-- % until the first one of the "reach cancer" conditions is met\footnote{Of -->
-<!-- %   course, the "reach cancer" idea and the `onlyCancer` argument -->
-<!-- %   are generic names; this could have been labeled "reach cardiovascular -->
-<!-- %   disease" or "reach whatever interests me".}. These conditions are: -->
-
-<!-- % \begin{itemize} -->
-
-<!-- % \item total population size, given by `detectionSize`; -->
-
-<!-- % \item number of drivers in any one genotype or clone, given by -->
-<!-- %   `detectionDrivers`; note that this allows you to stop the -->
-<!-- %   simulation as soon as a **specific genotype** is found, by using -->
-<!-- %   exactly and only the genes that make that genotype as the drivers; -->
-
-<!-- % \item a stochastic detection mechanism, where "detecting cancer" is a -->
-<!-- %   function of total population size, with arguments as given in -->
-<!-- %   `detectionProb`; this is explained below: \@ref(detectprob). -->
-
-<!-- % \end{itemize} -->
-
-
-
-<!-- % The simplest procedure is to run the simulation for a fixed number of time -->
-<!-- % periods (as specified by argument `finalTime`) or until the -->
-<!-- % population goes extinct, whichever happens first. This might be what you -->
-<!-- % want to do when you examine general population genetics scenarios without -->
-<!-- % focusing on possible sampling issues. To do this, set `finalTime` -->
-<!-- % to the value you want and set `onlyCancer = FALSE`; in addition, -->
-<!-- % set `detectionProb` to "NA" and `detectionDrivers` and -->
-<!-- % `detectionSize` to "NA" or to impossibly large -->
-<!-- % numbers\footnote{Setting `detectionDrivers` and -->
-<!-- %   `detectionSize` to "NA" is in fact equivalent to setting them -->
-<!-- %   to the largest possible numbers: $2^32 -1$ and $\infty$, -->
-<!-- %   respectively.}. This scenario is the `onlyCancer = FALSE` because -->
-<!-- % you simply collect the simulation output, regardless of what happened with -->
-<!-- % the population (it became extinct, it did not reach a large size, it did -->
-<!-- % not accumulate drivers, etc). -->
-
-
-
 ## Plotting genotype/driver abundance over time; plotting the simulated trajectories {#plotraj}
 
 We have seen many of these plots already, starting with
@@ -6216,21 +6018,6 @@ probability of detection as a function of size and determine (by comparing
 against a random uniform number) if the simulation should finish. For
 simplicity, and to make sure the probability is bounded between 0 and 1,
 we use the function
-
-<!-- % \begin{equation} -->
-<!-- %   \label{eq:2} -->
-<!-- %   P(N) = 1 - e^{-cPDetect (N - PDBaseline)}, N > PDBaseline \\ -->
-<!-- %   P(N) = 0, N \leq PDBaseline -->
-<!-- % \end{equation} -->
-
-
-<!-- $$ -->
-<!--   P(N) =  -->
-<!--   \begin{cases} -->
-<!--   1 - e^{ -cPDetect (N - PDBaseline)} & \text{if } N > PDBaseline \\ -->
-<!--   0 & \text{if } N \leq PDBaseline -->
-<!--   \end{cases} -->
-<!-- $$ {#eq:2} -->
 
 
 \begin{equation}
@@ -6319,18 +6106,6 @@ will resemble more and more an exponential distribution.
 
 In this vignette, there are some further examples of using this mechanism
 in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
-
-
-<!-- % Further comments about this procedure and its relation to sampling -->
-<!-- % multiple simulations are provided in \@ref(popss-osp). -->
-<!-- % ### So does `finalTime` matter much?} -->
-<!-- % \label{meaning-final-time} -->
-<!-- % This should be implicit from the above discussion, but `finalTime` -->
-<!-- % basically works as a stopping point for the simulations and, in contrast -->
-<!-- % to the other mechanisms for exiting a simulation, has rarely any special -->
-<!-- % meaning.  -->
-
-
 
 
 
@@ -6436,8 +6211,6 @@ head(summary(od100)[, c(1:3, 8:9)])
 
 
 ## Bauer's example again {#bauer2} 
-
-<!-- Cannot write the correct Bauer's example, because conversion fails -->
 
 We will use the model of @Bauer2014 that we saw in section \@ref(bauer).
 
@@ -6664,19 +6437,6 @@ sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
 summary(sm)
 ``` 
 
-<!-- %% We will use several plots here. -->
-
-<!-- %% <<>>= -->
-<!-- %% ## Show drivers, line plot -->
-<!-- %% plot(sm, show = "drivers", type = "line", addtot = TRUE) -->
-<!-- %% ## drivers, stacked -->
-<!-- %% plot(sm, show = "drivers", type = "stacked") -->
-
-<!-- %% ## Genotypes, line plot -->
-<!-- %% plot(sm, show = "genotypes", type = "line") -->
-<!-- %% ## genotypes, stacked -->
-<!-- %% plot(sm, show = "genotypes", type = "stacked") -->
-<!-- %% @  -->
 
 
 ```{r smbosb1}
@@ -6952,24 +6712,6 @@ simulation will run until `finalTime` if `onlyCancer = FALSE`.)
 As we mentioned above (section \@ref(fit-neg-pos)) death rates of 0 can
 lead to trouble when using Bozic's model:
 
-<!-- %% <<>>= -->
-
-<!-- %% set.seed(987) -->
-<!-- %% ie3 <- allFitnessEffects(noIntGenes = rexp(3)) -->
-<!-- %% evalAllGenotypes(ie3, order = FALSE, addwt = TRUE,  -->
-<!-- %%                  model = "Bozic") -->
-
-<!-- %% ie3_b <- oncoSimulIndiv(ie3, model = "Bozic") -->
-
-<!-- %% evalAllGenotypes(ie3, order = FALSE, addwt = TRUE) -->
-
-<!-- %% ie3_e <- oncoSimulIndiv(ie3, model = "Exp") -->
-
-<!-- %% @  -->
-
-<!-- %% Even simpler -->
-
-<!-- %% ## set.seed(987) -->
 
 ```{r}
 i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
@@ -7094,13 +6836,6 @@ In both cases, you specify the conditions for ending the simulations
   only stores one time point.
   
 
-
-<!-- % In this case, you will not use `oncoSimulSample`, as that is -->
-<!-- % implicitly called by `oncoSimulSample`. -->
-  
-
-
-
 Why the difference between the above cases? If you keep the complete
 history, you can take samples at any of the times between the beginning
 and the end of the simulations. If you do not keep the history, you can
@@ -7210,72 +6945,6 @@ final matrix of populations by mutations, keeping the complete
 history the above is wasteful, because we store fully all of the
 simulations (in the call to *`oncoSimulPop`*) and then sample (in
 the call to *`samplePop`*).
-
-
-<!-- % We will use the "pancreas" example, above section \@ref(pancreas). -->
-<!-- % <<>>= -->
-
-<!-- % pancrPop <- oncoSimulPop(10, pancr, -->
-<!-- %                          detectionSize = 1e7, -->
-<!-- %                          keepEvery = 10, -->
-<!-- %                          mc.cores = 2) -->
-
-<!-- % summary(pancrPop) -->
-
-<!-- % @  -->
-
-<!-- % The above runs the simulation process 10 times, and stores the -->
-<!-- % results. We can then sample from them: -->
-
-<!-- % <<>>= -->
-<!-- % pancrSPop <- samplePop(pancrPop) -->
-<!-- % pancrSPop -->
-<!-- % @  -->
-
-
-
-<!-- % But if we are only interested in the final matrix of populations by -->
-<!-- % mutations, the above is wasteful, because we store fully all of the -->
-<!-- % simulations (in the call to *`oncoSimulPop`*) and then sample (in -->
-<!-- % the call to *`samplePop`*). In particular, data from every -->
-<!-- % sampling time (as given by `sampleEvery`) is preserved. It is in the -->
-<!-- % call to *`samplePop`* when we actually sample the data. -->
-
-
-<!-- % An alternative approach is to use the function -->
-<!-- % *`oncoSimulSample`*. The output is directly the matrix (and a -->
-<!-- % little bit of summary from each run), and during the simulation it only -->
-<!-- % stores one time point.  -->
-
-
-<!-- % <<>>= -->
-
-<!-- % pancrSamp <- oncoSimulSample(10, pancr) -->
-<!-- % pancrSamp -->
-
-<!-- % @  -->
-
-<!-- % %% FIXME: or oncoSimulPop with keepEvery = NULL. of mclapply of oncoSimulIndiv -->
-
-
-
-
-<!-- FIXME -->
-<!-- make this longer or restructure or whatever -->
-
-<!-- ## Further criteria for choosing between sampling procedures {#choose-proc} -->
-
-<!-- Further criteria to use when choosing between sampling procedures is -->
-<!-- to realize that if you use *`oncoSimulPop`* the arguments for -->
-<!-- `detectionSize` and `detectionDrivers` must be the same for all -->
-<!-- simulations. This is not the case for *`oncoSimulSample`*. -->
-
-
-<!-- samplePop can only sample with the arguments you give -->
-<!-- (especially ) -->
-
-
-
 
 
 ## Whole-tumor and single-cell sampling, and do we always want to sample? {#alwayssamp}
@@ -7408,43 +7077,6 @@ are examining a large number of different scenarios.
 <!-- % never is a value where for population size where that size is reached.  -->
 
 
-
-
-<!-- % ## Dealing with errors in -->
-<!-- %   *`oncoSimulPop`* {#errorosp} -->
-
-<!-- % Suppose you did something like -->
-
-<!-- % <<>>= -->
-<!-- % pancrError <- oncoSimulPop(10, pancr, -->
-<!-- %                            initSize = 1e-5, -->
-<!-- %                            detectionSize = 1e7, -->
-<!-- %                            keepEvery = 10, -->
-<!-- %                            mc.cores = 2) -->
-<!-- % @  -->
-
-<!-- % The warning you are seeing tells you there was an error in the functions -->
-<!-- % called by *`mclapply`*. If you check the help for -->
-<!-- % *`mclpapply`* you'll see that it returns a try-error object, so we -->
-<!-- % can inspect it. For instance, we can do: -->
-
-<!-- % <<>>= -->
-<!-- % pancrError[[1]] -->
-<!-- % @  -->
-
-<!-- % But that output is hard to read. This is better: -->
-
-<!-- % <<>>= -->
-<!-- % pancrError[[1]][1] -->
-<!-- % @  -->
- 
-<!-- % And from here you can clearly see the error that was returned by -->
-<!-- % *`oncoSimulIndiv`*: `initSize < 1` (which is indeed true: -->
-<!-- % we pass `initSize = 1e-5`). -->
-<!-- %% FIXME: use cases of each. -->
-
-
-
 <!-- %% in an attempt to explain it, this just makes it too confusing. The -->
 <!-- %% above is enough. -->
 <!-- %% ## What if there is order? {#sim-order} -->
@@ -7563,261 +7195,6 @@ are examining a large number of different scenarios.
 <!-- %% comprehensive set of tests in file zz. You are welcome to suggest more -->
 <!-- %% tricky scenarios (and tests for them). -->
 
-
-<!-- %% # Introduction} -->
-
-<!-- %% This vignette presents the OncoSimulR package. OncoSimulR allows you to -->
-<!-- %% simulate tumor progression using several models of tumor progression. In -->
-<!-- %% these simulations you can restrict the order in which mutations can -->
-<!-- %% accumulate. For instance, you can restrict the allowed order as specified, -->
-<!-- %% for instance, in Oncogenetic Tree (OT; @Desper1999JCB, Szabo2008) or -->
-<!-- %% Conjunctive Bayesian Network (CBN; @Beerenwinkel2007, Gerstung2009, -->
-<!-- %%   Gerstung2011}) models. Moreover, you can add passenger mutations to the -->
-<!-- %% simulations. The models so far implemented are all continuous time models, -->
-<!-- %% which are simulated using the BNB algorithm of Mather et -->
-<!-- %% al.\ @Mather2012. This is a summary of some of the key features: -->
-
-
-<!-- %% \begin{itemize} -->
-<!-- %% \item You can pass arbitrary restrictions as specified by OTs or CBNs. -->
-  
-<!-- %% \item You can add passenger mutations. -->
-  
-<!-- %% \item You can allow for deviations from the OT and CBN models, specifying -->
-<!-- %%   a penalty for such deviations (the $s_h$ parameter). -->
-  
-<!-- %% \item Right now, three different models are available, two that lead to -->
-<!-- %%   exponential growth, one of them loosely based on Bozic et al.\ -->
-<!-- %%   \cite{Bozic2010}, and another that leads to logistic-like growth, based -->
-<!-- %%   on McFarland et al.\ \cite{McFarland2013}. -->
-<!-- %% \item Simulations are generally very fast as I use the BNB algorithm -->
-<!-- %%   implemented in C++. -->
-<!-- %% \end{itemize} -->
-
-
-<!-- %% Further details about the motivation for wanting to -->
-<!-- %% simulate data this way can be found in \cite{ot-biorxiv}, where additional -->
-<!-- %% comments about model parameters and caveats are discussed. The Java -->
-<!-- %% program by \cite{Reiter2013a} offers somewhat similar functionality, but -->
-<!-- %% they are restricted to at most four drivers, you cannot use arbitrary CBNs -->
-<!-- %% or OTs to specify order restrictions, there is no allowance for -->
-<!-- %% passengers, and a single type of model (a discrete time Galton-Watson -->
-<!-- %% process) is implemented. -->
-
-
-
-
-
-<!-- %% Using this package will often involve the following steps: -->
-
-<!-- %% \begin{enumerate} -->
-<!-- %% \item Specify the restrictions in the order of mutations: section \@ref(poset). -->
-<!-- %% \item Simulate cancer progression: section \@ref(simul). You can simulate -->
-<!-- %%   for a single subject or for a set of subjects. You will need to -->
-<!-- %%   \begin{itemize} -->
-<!-- %%   \item Decide on a model (e.g., Bozic or McFarland). -->
-<!-- %%   \item Specify the parameters of the model. -->
-<!-- %%   \end{itemize} -->
-<!-- %%   Of course, at least for initial playing around, you can use the defaults. -->
-  
-<!-- %% \item Sample from the simulated data: section \@ref(sample), and do -->
-<!-- %%   something with those simulated data (e.g., fit an OT model to -->
-<!-- %%   them). What you do with the data, however, is outside the scope of this -->
-<!-- %%   package.    -->
-<!-- %% \end{enumerate} -->
-
-
-<!-- %% Before anything else, let us load the package. We also explicitly load -->
-<!-- %% `r Biocpkg("graph")` for the vignette to work (you do not need that for your -->
-<!-- %% usual interactive work). -->
-
-<!-- %% <<>>= -->
-<!-- %% library(OncoSimulR) -->
-<!-- %% library(graph) -->
-<!-- %% @  -->
-
-
-<!-- %% # Specifying restrictions: posets {#poset} -->
-
-<!-- %% How to specify the restrictions is shown in the help for -->
-<!-- %% *`poset`*. It is often useful, to make sure you did not make any -->
-<!-- %% mistakes, to plot the poset. This is from the examples (we use an "L" -->
-<!-- %% after a number so that the numbers are integers, not doubles; we could -->
-<!-- %% alternatively have modified `storage.mode`). -->
-
-<!-- %% <<fig.height=3>>= -->
-<!-- %% ## Node 2 and 3 depend on 1, and 4 depends on no one -->
-<!-- %% p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L)) -->
-<!-- %% plotPoset(p1, addroot = TRUE) -->
-<!-- %% @  -->
-
-<!-- %% <<fig.height=3>>= -->
-<!-- %% ## A simple way to create a poset where no gene (in a set of 15) depends -->
-<!-- %% ## on any other. -->
-<!-- %% p4 <- cbind(0L, 15L) -->
-<!-- %% plotPoset(p4, addroot = TRUE) -->
-<!-- %% @  -->
-
-
-
-<!-- %% Specifying posets is actually straightforward. For instance, we can -->
-<!-- %% specify the pancreatic cancer poset in Gerstung et al.\ -->
-<!-- %% \cite{Gerstung2011} (their figure 2B, left). We specify the poset using -->
-<!-- %% numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2, -->
-<!-- %% etc). This example is also in the help for *`poset`*: -->
-
-<!-- %% <<fig.height=3>>= -->
-<!-- %% pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5), -->
-<!-- %%                                c(2, 3, 4, 5, 6, 6, 6, 7, 7)) -->
-<!-- %% storage.mode(pancreaticCancerPoset) <- "integer" -->
-<!-- %% plotPoset(pancreaticCancerPoset, -->
-<!-- %%           names = c("KRAS", "SMAD4", "CDNK2A", "TP53", -->
-<!-- %%                     "MLL3","PXDN", "TGFBR2")) -->
-<!-- %% @ -->
-<!-- %% # Simulating cancer progression {#simul} -->
-
-
-<!-- %% We can simulate the progression in a single subject. Using an example -->
-<!-- %% very similar to the one in the help: -->
-
-
-<!-- %% <<echo=FALSE,results='hide',error=FALSE>>= -->
-<!-- %% options(width=60) -->
-<!-- %% @  -->
-
-<!-- %% <<>>= -->
-<!-- %% ## use poset p1101 -->
-<!-- %% data(examplePosets) -->
-<!-- %% p1101 <- examplePosets[["p1101"]] -->
-
-<!-- %% ## Bozic Model -->
-<!-- %% b1 <- oncoSimulIndiv(p1101, keepEvery = 15) -->
-<!-- %% summary(b1) -->
-<!-- %% @  -->
-
-
-<!-- %% The first thing we do is make it simpler (for future examples) to use a -->
-<!-- %% set of restrictions. In this case, those encoded in poset p1101. Then, we -->
-<!-- %% run the simulations and look at a simple summary and a plot. %% We explicitly -->
-<!-- %% %% set `silent = TRUE` to prevent the vignette from filling up with -->
-<!-- %% %% intermediate output. -->
-
-<!-- %% If you want to plot the trajectories, it is better to keep more frequent -->
-<!-- %% samples,  so you can see when clones appear: -->
-
-<!-- %% <<fig.height=5, fig.width=5>>= -->
-<!-- %% b2 <- oncoSimulIndiv(p1101, keepEvery = 1) -->
-                    
-<!-- %% summary(b2) -->
-<!-- %% plot(b2) -->
-<!-- %% @  -->
-
-
-<!-- %% The following is an example where we do not care about passengers, but we -->
-<!-- %% want to use a different graph, and we want a few more drivers before -->
-<!-- %% considering cancer has been reached. And we allow it to run for longer. -->
-<!-- %% Note that in the McF model `detectionSize` really plays no -->
-<!-- %% role. Note also how we pass the poset: it is the same as before, but now -->
-<!-- %% we directly access the poset in the list of posets. -->
-
-<!-- %% <<>>= -->
-
-<!-- %% m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL",  -->
-<!-- %%                      numPassengers = 0, detectionDrivers = 8,  -->
-<!-- %%                      mu = 5e-7, initSize = 4000,  -->
-<!-- %%                      sampleEvery = 0.025, -->
-<!-- %%                      finalTime = 25000, keepEvery = 5,  -->
-<!-- %%                      detectionSize = 1e6)  -->
-<!-- %% plot(m2, addtot = TRUE, log = "") -->
-
-<!-- %% @  -->
-
-
-<!-- %% The default is to simulate progression until a simulation reaches cancer -->
-<!-- %% (i.e., only simulations that satisfy the detectionDrivers or the -->
-<!-- %% detectionSize will be returned). If you use the McF model with large -->
-<!-- %% enough `initSize` this will often be the case but not if you use -->
-<!-- %% very small `initSize`. Likewise, most of the Bozic runs do not -->
-<!-- %% reach cancer. Lets try a few: -->
-
-<!-- %% <<>>= -->
-<!-- %% b3 <- oncoSimulIndiv(p1101, onlyCancer = FALSE) -->
-<!-- %% summary(b3) -->
-
-<!-- %% b4 <- oncoSimulIndiv(p1101, onlyCancer = FALSE) -->
-<!-- %% summary(b4) -->
-<!-- %% @  -->
-
-<!-- %% Plot those runs: -->
-
-<!-- %% <<fig.width=8, fig.height=4>>= -->
-<!-- %% par(mfrow = c(1, 2)) -->
-<!-- %% par(cex = 0.8) ## smaller font -->
-<!-- %% plot(b3) -->
-<!-- %% plot(b4) -->
-<!-- %% @  -->
-
-
-<!-- %% ## Simulating progression in several subjects} -->
-
-<!-- %% To simulate the progression in a bunch of subjects (we will use only -->
-<!-- %% four, so as not to fill the vignette with plots) we can do, with the same -->
-<!-- %% settings as above: -->
-
-<!-- %% <<>>= -->
-<!-- %% p1 <- oncoSimulPop(4, p1101) -->
-<!-- %% par(mfrow = c(2, 2)) -->
-<!-- %% plot(p1) -->
-<!-- %% @  -->
-<!-- %% # Sampling from a set of simulated subjects {#sample} -->
-<!-- %% \label{sec:sampling-from-set} -->
-<!-- %% You will often want to do something with the simulated data. For instance, -->
-<!-- %% sample the simulated data. Here we will obtain the trajectories for 100 -->
-<!-- %% subjects in a scenario without passengers. Then we will sample with the -->
-<!-- %% default options and store that as a vector of genotypes (or a matrix of -->
-<!-- %% subjects by genes): -->
-<!-- %% <<>>= -->
-<!-- %% m1 <- oncoSimulPop(100, examplePosets[["p1101"]],  -->
-<!-- %%                    numPassengers = 0) -->
-<!-- %% @  -->
-<!-- %% The function *`samplePop`* samples that object, and also gives you -->
-<!-- %% some information about the output: -->
-<!-- %% <<>>= -->
-<!-- %% genotypes <- samplePop(m1) -->
-<!-- %% @  -->
-<!-- %% What can you do with it? That is up to you. As an example, let us try to -->
-<!-- %% infer an oncogenetic tree (and plot it) using the `r CRANpkg("Oncotree")` -->
-<!-- %% package \cite{Oncotree} after getting a quick look at the marginal -->
-<!-- %% frequencies of events: -->
-
-<!-- %% <<fig.width=4, fig.height=4>>= -->
-<!-- %% colSums(genotypes)/nrow(genotypes) -->
-
-<!-- %% require(Oncotree) -->
-<!-- %% ot1 <- oncotree.fit(genotypes) -->
-<!-- %% plot(ot1) -->
-<!-- %% @  -->
-
-<!-- %% Your run will likely differ from mine, but with the defaults (detection -->
-<!-- %% size of $10^8$) it is likely that events down the tree will never -->
-<!-- %% appear. You can set `detectionSize = 1e9` and you will see that -->
-<!-- %% events down the tree are now found in the cross-sectional sample. -->
-
-
-<!-- %% Alternatively, you can use single cell sampling and that, sometimes, -->
-<!-- %% recovers one or a couple more events. -->
-
-<!-- %% <<fig.width=4, fig.height=4>>= -->
-<!-- %% genotypesSC <- samplePop(m1, typeSample = "single") -->
-<!-- %% colSums(genotypesSC)/nrow(genotypesSC) -->
-
-<!-- %% ot2 <- oncotree.fit(genotypesSC) -->
-<!-- %% plot(ot2) -->
-<!-- %% @  -->
-
-<!-- %% You can of course rename the columns of the output matrix to something -->
-<!-- %% else if you want so the names of the nodes will reflect those potentially -->
-<!-- %% more meaningful names. -->
 
 
 
@@ -7981,16 +7358,6 @@ plot(g1)
 
 which might be easier to show complex relationships or identify central or
 key clones.
-
-
-<!-- %% There is support in R for phylog, blablabal. But does not work for our -->
-<!-- %% specific problem. So use igraph blablabla -->
-
-
-<!-- %% <<>>= -->
-<!-- %% plotClonePhylog(mcf1s, TRUE, FALSE, FALSE) -->
-<!-- %% plotClonePhylog(tmp, FALSE, FALSE, FALSE) -->
-<!-- %% @  -->
 
 
 It is of course quite possible that, especially if we consider few genes,
@@ -8210,14 +7577,6 @@ sampledGenotypes(samplePop(pancr16))
 
 
 
-
-
-
-
-
-
-
-
 # FAQ, odds and ends 
 
 ### What we mean by "clone"; and "I want clones disregarding passengers" {#meaningclone}
@@ -8397,7 +7756,7 @@ we pass `initSize = 1e-5`).
 This is up to you. In section \@ref(sample-1) we show an example
 where we infer an oncogenetic tree from simulated data and in
 section \@ref{whatfor} we go over a varied set of scientific
-questions where OncoSimulR could help
+questions where OncoSimulR could help.
 
 
 <!-- %% As an example, we can try to infer an oncogenetic tree -->
@@ -8490,43 +7849,6 @@ approximation[^errorMF].
     `sampleEvery` can lead to trouble and will be manifested too in
     the simulation output with large and unreasonable jumps in total
     population sizes and sudden extinctions.
-
-
-
-
-<!-- We record the largest difference between the computed -->
-<!--     death rate and the death rate that would have been computed if -->
-<!--     differences in population sizes had been caused by the addition -->
-<!--     or subtraction of a single individual. Death rates are the -->
-<!--     fitness are affected by density dependence and, thus, it is on -->
-<!--     the death rates where the approximation that they are constant -->
-<!--     over a short interval plays a role. If we were not using an -->
-<!--     approximation, the two death rates above would be -->
-<!--     identical. More precisely, let $A$ and $C$ denote two successive -->
-<!--     sampling periods, with $D_A = log(1 + N_A/K)$ and $D_C= log(1 + -->
-<!--     N_C/K)$ their death rates. `errorMF_size` stores the largest -->
-<!--     $abs(D_C - D_A)$ between any two sampling periods. In addition, -->
-<!--     we compute the largest difference had the change been larger -->
-<!--     than the addition/subtraction of a single individual. Suppose -->
-<!--     $N_C > N_A$; then we record $error = (D_C - log(1 + (N_A + -->
-<!--     1)/K))/D_A$, where the second term corresponds to the death rate -->
-<!--     that would had been computed from population size $N_A$ by -->
-<!--     adding one individual. If $N_A > N_C$ we record $error = -->
-<!--     (log(1 + (N_A - 1)/K) - D_C)/D_A$. The value `errorMF` -->
-<!--     corresponds to the largest value of $error$ ever seen during a -->
-<!--     simulation.  Additionally, a simple procedure to use is to run -->
-<!--     the simulations with different values of `sampleEvery`, say the -->
-<!--     default value of 0.025 and values that are 10, 20, and 50 times -->
-<!--     larger or smaller, and assess their effects on the output of the -->
-<!--     simulations and the `errorMF` statistic itself. You can check -->
-<!--     that using a `sampleEvery` much smaller than 0.025 rarely makes -->
-<!--     any difference in `errorMF` or in the simulation output (though -->
-<!--     it increases computing time significantly). And, just for the -->
-<!--     fun of it, you can also check that using huge values for -->
-<!--     `sampleEvery` can lead to trouble and will be manifested too in -->
-<!--     the simulation output with large and unreasonable jumps in total -->
-<!--     population sizes and sudden extinctions. -->
-
 
 
 Note that, as the authors point out, approximations are common with
