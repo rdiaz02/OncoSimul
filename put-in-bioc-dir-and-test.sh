@@ -24,7 +24,8 @@ rm ./Subversion-in-BioC/OncoSimulR/inst/*
 rm ./Subversion-in-BioC/OncoSimulR/data/*
 rm ./Subversion-in-BioC/OncoSimulR/inst/miscell/*
 
-
+cp OncoSimulR/vignettes/preamble.tex ./Subversion-in-BioC/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/figure1.png ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/custom4.css ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.Rmd ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.bib ./Subversion-in-BioC/OncoSimulR/vignettes/.
@@ -50,6 +51,7 @@ cp OncoSimulR/man/*.Rd ./Subversion-in-BioC/OncoSimulR/man/.
 cp OncoSimulR/inst/NEWS ./Subversion-in-BioC/OncoSimulR/inst/.
 cp OncoSimulR/inst/CITATION ./Subversion-in-BioC/OncoSimulR/inst/.
 cp OncoSimulR/inst/miscell/example-binom-problems.cpp ./Subversion-in-BioC/OncoSimulR/inst/miscell/.
+cp OncoSimulR/inst/miscell/*.R ./Subversion-in-BioC/OncoSimulR/inst/miscell/.
 
 cp OncoSimulR/data/*.RData ./Subversion-in-BioC/OncoSimulR/data/.
 
