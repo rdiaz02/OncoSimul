@@ -852,7 +852,8 @@ test_that("samplePop deals with failures in simuls", {
     
     fe <- allFitnessEffects(noIntGenes = c(-0.1, -0.2, -0.3))
     uu <- oncoSimulIndiv(fe, max.wall.time = 0.2, max.num.tries = 5)
-    uup <- oncoSimulPop(4, fe, max.wall.time = 0.2, max.num.tries = 5)
+    uup <- oncoSimulPop(4, fe, max.wall.time = 0.2, max.num.tries = 5,
+                        mc.cores = 2)
     expect_warning(uus <- samplePop(uu),
                    "It looks like this simulation never completed",
                    fixed = TRUE)
@@ -881,7 +882,7 @@ test_that("summary.oncosimulepop deals with failures in simuls", {
                    fixed = TRUE)
     ## And it works when only some fail
     fe2 <- allFitnessEffects(noIntGenes = c(0.1, 0.2, 0.3))
-    uu2 <- oncoSimulPop(2, fe2)
+    uu2 <- oncoSimulPop(2, fe2, mc.cores = 2)
     uu <- oncoSimulPop(2, fe, max.wall.time = 0.2, max.num.tries = 5, mc.cores = 2)
     u3 <- c(uu, uu2)
     class(u3) <- "oncosimulpop"
