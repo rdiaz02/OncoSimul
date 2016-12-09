@@ -987,7 +987,7 @@ static void innerBNB(const int& numGenes,
   // anything. FIXME!!
 
   if(initMutant >= 0)
-    throw std::invalid_argument("initMutant no longer allowed. But in R code.");
+    throw std::invalid_argument("initMutant no longer allowed. Bug in R code.");
   // if(initMutant >= 0) {
   //   popParams[0].numMutablePos = numGenes - 1;
   //   Genotypes[0].set(initMutant);
@@ -1747,7 +1747,7 @@ Rcpp::List BNB_Algo5(Rcpp::IntegerMatrix restrictTable,
   	>= pow(2, 64)) )
     throw std::range_error("The size of unsigned long long is too short.");
   if(numGenes > 64)  
-    throw std::range_error("This version only accepts up to 64 genes. Caught in R");
+    throw std::range_error("This version only accepts up to 64 genes. Should be caught in R");
 
   bool runAgain = true;
   bool reachDetection = false;

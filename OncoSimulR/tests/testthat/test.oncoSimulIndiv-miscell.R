@@ -875,14 +875,14 @@ test_that("samplePop deals with failures in simuls", {
 test_that("summary.oncosimulepop deals with failures in simuls", {
     
     fe <- allFitnessEffects(noIntGenes = c(-0.1, -0.2, -0.3))
-    uup <- oncoSimulPop(4, fe, max.wall.time = 0.2, max.num.tries = 5)
+    uup <- oncoSimulPop(4, fe, max.wall.time = 0.2, max.num.tries = 5, mc.cores = 2)
     expect_warning(uus <- summary(uup),
                    "All simulations failed",
                    fixed = TRUE)
     ## And it works when only some fail
     fe2 <- allFitnessEffects(noIntGenes = c(0.1, 0.2, 0.3))
     uu2 <- oncoSimulPop(2, fe2)
-    uu <- oncoSimulPop(2, fe, max.wall.time = 0.2, max.num.tries = 5)
+    uu <- oncoSimulPop(2, fe, max.wall.time = 0.2, max.num.tries = 5, mc.cores = 2)
     u3 <- c(uu, uu2)
     class(u3) <- "oncosimulpop"
     expect_warning(uu3ps <- summary(u3),
@@ -1003,6 +1003,21 @@ test_that("AND_DrvProbExit exercising and test it works" , {
     expect_true(sum(m3p[nrow(m3p), , drop = FALSE]) >= 100)
 }
 )
+
+
+
+
+test_that("exercising oncoSimulIndiv, max size warning", {
+    p1 <- allFitnessEffects(noIntGenes = rep(.1, 10))
+    expect_output(oncoSimulIndiv(p1, initSize = 1.5e15, verbosity = 1,
+                                 onlyCancer = FALSE, mu= 1e-7))
+    data(examplePosets)
+    p701 <- examplePosets[["p701"]]
+    expect_output(oncoSimulIndiv(p701, initSize = 4.1e15, verbosity = 1,
+                                 onlyCancer = FALSE, mu= 1e-7))
+})
+
+
 
 
 cat(paste("\n Ending oncoSimulIndiv-miscell tests", date(), "\n"))

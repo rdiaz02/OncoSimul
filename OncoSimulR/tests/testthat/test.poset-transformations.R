@@ -32,6 +32,7 @@ test_that("expected errors in simOGraph", {
 test_that("simOGraph works", {
     expect_true(inherits(simOGraph(6, out = "rT"), "data.frame"))
     expect_true(inherits(simOGraph(3), "matrix"))
+    expect_true(inherits(simOGraph(3, geneNames = NULL), "matrix"))
     expect_true(inherits(simOGraph(3, geneNames = c("A", "UU", "FF")), "matrix"))
     })
 

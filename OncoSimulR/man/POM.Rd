@@ -139,7 +139,8 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
 
 
 pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE)
-pancr8 <- oncoSimulPop(8, pancr, model = "Exp", keepPhylog = TRUE)
+pancr8 <- oncoSimulPop(8, pancr, model = "Exp", keepPhylog = TRUE,
+                       mc.cores = 2)
 
 POM(pancr1)
 LOD(pancr1)

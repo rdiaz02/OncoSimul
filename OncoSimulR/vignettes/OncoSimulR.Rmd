@@ -474,6 +474,7 @@ g1 <- simOGraph(4, out = "rT")
 
 ## 2. Simulate two evolutionary trajectories
 s1 <- oncoSimulPop(10, allFitnessEffects(g1, drvNames = 1:4),
+                   mc.cores = 2,
                    seed = NULL) ## repeatability
 
 ## 3. Sample those data uniformly, and add noise
@@ -552,7 +553,7 @@ od_sim <- oncoSimulPop(10, od, muEF = odm,
                        model = "McFL",
                        mu = 1e-4, detectionDrivers = NA, finalTime = NA,
                        detectionSize = NA, detectionProb = NA,
-                       onlyCancer = TRUE,
+                       onlyCancer = TRUE, mc.cores = 2,
                        seed = NULL) 
 ## What is the frequency of each final genotype?
 sampledGenotypes(samplePop(od_sim))
@@ -606,8 +607,8 @@ to_Magellan(rl, file = "rl1.txt")
 simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),
                         keepPhylog = TRUE, keepEvery = 1,
                         initSize = 4000,
-                        seed = NULL,
-                        mc.cores = 2) ## for repeatability
+                        seed = NULL, ## for repeatability
+                        mc.cores = 2) 
 
 ## 4. Obtain measures of evolutionary predictability
 diversityLOD(LOD(simulrl))
@@ -670,7 +671,8 @@ RNGkind("L'Ecuyer-CMRG")
 totalpops <- 5
 sb1 <- oncoSimulPop(totalpops, fbauer, model = "Exp",
                     initSize = 100,
-                    onlyCancer = FALSE,
+                    onlyCancer = FALSE, 
+					mc.cores = 2,
                     seed = NULL)
 ## What proportion of the simulations do not end up extinct?
 sum(summary(sb1)[, "TotalPopSize"] > 0)/totalpops
@@ -721,6 +723,7 @@ totalpops <- 5
 soe1 <- oncoSimulPop(totalpops, o3, model = "Exp",
                     initSize = 500,
                     onlyCancer = FALSE,
+					mc.cores = 2,
                     seed = NULL)
 					
 ## What proportion of the simulations do not end up extinct?
