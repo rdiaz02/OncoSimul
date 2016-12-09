@@ -597,6 +597,14 @@ pander(tt, split.cells = 8)
 
 
 
+```{r f1, fig.cap = "A caption"}
+plot(1)
+```
+
+And I want to refer to that as fig \@ref(fig:f1).
+
+No fig as \@ref(f1).
+
 
 
 As expected, having a larger $s$ leads to faster processes in most

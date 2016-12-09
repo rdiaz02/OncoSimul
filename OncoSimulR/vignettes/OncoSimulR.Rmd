@@ -248,7 +248,8 @@ is a summary of some of the key features:
       the BNB algorithm.
       
 * You can obtain the true sequence of events and the phylogenetic
-      relationships between clones.
+      relationships between clones (see section \@ref(meaningclone)
+      for the details of what we mean by "clone").
     
 * You can generate random fitness landscapes (under the House of
       Cards, Rough Mount Fuji, or additive models, or combinations of the
@@ -260,9 +261,6 @@ is a summary of some of the key features:
 * You can obtain some basic measures of evolutionary predictability
   from the simulations.
   
-
-
-
 
 The table below, modified from the table at the
 [Genetics Simulation Resources (GSR) page](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed)
@@ -282,7 +280,7 @@ by moving the mouse over each term).
 |&nbsp; variations            |           Biallelic Marker, Genotype or Sequencing Error|
 |**Simulation Method**            |           Forward-time|
 |&nbsp; Type of Dynamical Model | Continuous time|
-|&nbsp; Entities Tracked | Individuals (genetic clones)|
+|&nbsp; Entities Tracked | Individuals (genetic clones ---\@ref(meaningclone))|
 |**Input** | Program specific (R data frames and matrices specifying genotypes' fitness, gene effects, and starting genotype) |
 |**Output**||
 |&nbsp; Data Type| Genotype or Sequence, Individual Relationship (complete parent-child relationships between clones), Demographic (populations sizes of all clones at sampling times), Diversity Measures (LOD, POM, diversity of genotypes), Fitness|
@@ -344,6 +342,8 @@ is also unique; by "Lego system" I mean that we can combine
 different pieces and blocks, similarly to what we do with Lego
 bricks. (I find this an intuitive and very graphical analogy which I
 have copied from @Hothorn_2006; @Hothorn_2008).
+
+
 
 
 
@@ -948,7 +948,7 @@ ep1 <- oncoSimulIndiv(sv2, model = "McFL",
 <!-- %% @  -->
 
 
-```{r iep1x1,fig.width=6.5, fig.height=4.5}
+```{r iep1x1,fig.width=6.5, fig.height=4.5, fig.cap="Plot of drivers of an epistasis simulation"}
 ## 3. We will not analyze those data any further. We will only plot
 ## them.  For the sake of a small plot, we thin the data.
 plot(ep1, show = "drivers", xlim = c(0, 1500),
@@ -1010,7 +1010,7 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
 <!-- %                      finalTime = 10000, -->
 <!-- %                      onlyCancer = FALSE)
 -->
-```{r iep2x2,fig.width=6.5, fig.height=5}
+```{r iep2x2, fig.width=6.5, fig.height=5, fig.cap= "Plot of genotypes of an epistais simulation."}
 ## 3. What genotypes and drivers we get? And play with limits
 ##    to show only parts of the data. We also aggressively thin
 ##    the data.
@@ -1792,10 +1792,18 @@ Why not use the `detectionProb` mechanism with the `Exp` models?
 Because it can be hard to intuitively understand what are reasonable
 settings of the parameters of the `detectionProb` mechanism for a
 population that is growing exponentially, especially if different
-genes have very different effects on fitness. In contrast, the
-`detectionProb` mechanism might make more sense in the case of a
-population that is growing under a model of carrying capacity with
-possibly large periods of stasis.
+genes have very different effects on fitness and we are using
+fitness specifications that are so different (compare the fitness
+landscape of six genes with the pancreas specification with the
+`re_4000`). In contrast, the `detectionProb` mechanism might be
+simpler to reason about in the case of a population that is growing
+under a model of carrying capacity with possibly large periods of
+stasis. Let us emphasize that it is not that the `detectionProb`
+mechanism does not make sens with the Exp model; it is simply that
+the parameters might need finer adjustment for them to make sense,
+and in these benchmarks we are dealing with widely different fitness
+specifications.
+
 
 Note that we specify `checkSizePEvery = 4` (instead of the default,
 which is 20). Why? Because the fitness specifications where fitness
@@ -2633,14 +2641,6 @@ object is much smaller than above.
 
 
 
-
-
-
-
-
-zz: pay attention to num iterations
-
-
 ### The different consequences of `keepEvery = NA` in Exp and McFL models {#kpexpmc}
 
 We have seen that `keepEvery = NA` often leads to much smaller
@@ -2727,7 +2727,7 @@ default is `keepPhylog = FALSE` as this information is not needed as
 often as that in the other two matrices (`pops.by.time` and
 `Genotypes`).
 
-zz: genealogies and tracking history: be consistent
+
 
 ## Population sizes $\geq 10^{10}$ {#popgtzx}
 
@@ -2885,10 +2885,6 @@ if we are very patient, hitting that $t_i$ exception should make us
 worry about possible biases in the samples.
 
 
-
-
-
-zz: why detectionProb more sense for McFL
 
 
 
@@ -6162,8 +6158,8 @@ not reach a large size, it did not accumulate drivers, etc).
 
 We have seen many of these plots already, starting with
 \@ref(fig:iep1x1) and \@ref(fig:iep2x2) and we will see many more
-below, in the examples, starting with section \@ref(buaer2) such as
-in figures \@ref(fig:baux1) and \@ref(fig:buax2). In a nutshell,
+below, in the examples, starting with section \@ref(bauer2) such as
+in figures \@ref(fig:baux1) and \@ref(fig:baux2). In a nutshell,
 what we are plotting is the information contained in the
 `pops.by.time` matrix, the matrix that contains the abundances of
 all the clones (or genotypes) at each of the sampling periods.
@@ -6469,7 +6465,7 @@ b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000,
 
 We will now use a variety of plots
 
-```{r baux1,fig.width=6.5, fig.height=10}
+```{r baux1,fig.width=6.5, fig.height=10, fig.cap="Three drivers' plots of a simulation of Bauer's model"}
 par(mfrow = c(3, 1))
 ## First, drivers
 plot(b1, type = "line", addtot = TRUE)
@@ -6477,7 +6473,7 @@ plot(b1, type = "stacked")
 plot(b1, type = "stream")
 ``` 
 
-```{r baux2,fig.width=6.5, fig.height=10}
+```{r baux2,fig.width=6.5, fig.height=10, fig.cap="Three genotypes' plots of a simulation of Bauer's model"}
 par(mfrow = c(3, 1))
 ## Next, genotypes
 plot(b1, show = "genotypes", type = "line")
@@ -7279,10 +7275,8 @@ the call to *`samplePop`*).
 <!-- (especially ) -->
 
 
-zz: complete history as history of pop changes. Different from
-genealopy. Clarify.
 
-zz: clone is equivalent to genotype of haplotype
+
 
 ## Whole-tumor and single-cell sampling, and do we always want to sample? {#alwayssamp}
 
@@ -8226,15 +8220,58 @@ sampledGenotypes(samplePop(pancr16))
 
 # FAQ, odds and ends 
 
+### What we mean by "clone"; and "I want clones disregarding passengers" {#meaningclone}
+
+In this vignette we often use "clone" or "genotype"
+interchangeably. A clone denotes a set of cells that have identical
+genotypes. So if you are using a fitness specification with four
+genes (i.e., your genome has only four loci), there can be up to $16
+= 2^4$ different genotypes or clones. Any two entities that differ
+in the genotype are different clones. And this applies regardless of
+whether or not you declare that some genes (loci) are drivers or
+not. So if you have four genes, it does not matter whether only the
+first or all four are regarded as drivers; you will always have at
+most 16 different clones or 16 different genotypes.
+
+
+Analogously, if you had 100 genes, 10 drivers and 90 passengers, you
+will have up to $2^{100}$ different clones or genotypes. Sure, one
+cell might have driver A mutated and passenger B mutated, and
+another cell might have driver A mutated and passenger C mutated. So
+if you only look at drivers you might be tempted to that they are
+"the same clone"; but they really are not the same clone (as they
+differ in their genotype). If you want summaries of simulations that
+collapse over some genes (say, some "passengers", the 90 passengers
+we just mentioned) look at the help for `samplePop`, argument
+`geneNames`.  This would allow you, for instance, to look at the
+diversity of clones/genotypes, considering as identical those
+genotypes that only differ in genes you deem relevant; something
+similar to defining a "drivers' clone" as all those sets of cells
+that have identical genotype with respect to only the drivers (so
+that in the example just mentioned both cells would be consider "the
+same clone" as they only differ with respect to
+passengers). However, this only applies to summaries of simulations
+once we are done simulating data. OncoSimulR will always track
+clones, as defined above, regardless of whether many of those clones
+have the same genotype if you only focus on driver genes; see also
+section \@ref(trackindivs).
+
+Labeling something as a "driver", therefore, does not affect what we
+mean by clone. Yes, labeling something as a driver can affect when
+you stop simulations if you use `detectionDrivers` as a stopping
+mechanism (see section \@ref(endsimul)). But, again, this has
+nothing to do with the definition of "clone".
+
 
 ## Does OncoSimulR keep track of individuals or of clones? And how can you keep track of such large populations? {#trackindivs}
 
 OncoSimulR keeps track of clones, where a clone is a set of cells
 that are genetically identical (note that this means completely
-identical over the whole set of genes/markers you are using). We are
-interested in examining the effects of selection, mutation, keeping
-track of the parent-child relationships between clones, etc, and
-thus we must keep track of the complete set of clones. 
+identical over the whole set of genes/markers you are using; see
+section \@ref(meaningclone)).  We are interested in examining the
+effects of selection, mutation, keeping track of the parent-child
+relationships between clones, etc, and thus we must keep track of
+the complete set of clones.
 
 We do not need to keep track of individual cells because, for all
 purposes, and since we do not consider spatial structure, two or
@@ -8286,7 +8323,7 @@ the complete genealogy will show clones A, B, C. Since function
 `plotClonePhylog` offers a lot of flexibility with respect to what
 clones to show depending on their population sizes at different
 times, you can prevent being shown B, but its existence is there
-should you need it (see also \@ref(histlargenes)).
+should you need it (see also \@ref(histlargegenes)).
 
 
 
