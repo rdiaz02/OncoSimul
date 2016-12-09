@@ -1644,12 +1644,13 @@ population. Thus, they are larger between, say, the `exp5` at
 $s=0.1$ and $s=0.05$ than between the `exp4` at the two different
 $s$: the `exp5` exit conditions can only be satisfied at much larger
 population sizes so at populations sizes when growth is much faster
-(recall we are dealing with exponential growth). Recall also that
-with the default settings in `detectionProb`, we assess the exiting
-condition every 20 time periods (argument `checkSizePEvery`); this
-means that for fast growing populations, the increase in population
-size between successive checks of the exit conditions will be much
-larger.
+(recall we are dealing with exponential growth). 
+
+Recall also that with the default settings in `detectionProb`, we
+assess the exiting condition every 20 time periods (argument
+`checkSizePEvery`); this means that for fast growing populations,
+the increase in population size between successive checks of the
+exit conditions will be much larger. 
 
 
 Thus, what is happening in the `exp5` and `exp6` with $s=0.1$ is
@@ -1663,6 +1664,306 @@ The moral here is that in complex simulations like this, the effects
 of some parameters ($s$ in this case) might look counter-intuitive
 at first. Thus the need to "experiment before launching a large
 number of simulations". 
+
+
+## Several "common use cases" runs {#benchusual}
+
+Let us execute some simulations under more usual conditions. The
+script is provided as 'benchmark_2.R', under '/inst/miscell', with
+output in the 'miscell-files/vignette_bench_Rout' directory of the
+main OncoSimul repository at
+https://github.com/rdiaz02/OncoSimul. The data are available as
+`data(benchmark_2)`.
+
+
+For fitness we will use the pancreas example, two random fitness
+landscapes, and four sets of independent genes (200 to 4000 genes)
+with fitness effects randomly drawn from exponential distributions:
+
+
+### Common use cases, set 1. {#common1}
+
+```{r fitusualb, echo = TRUE, eval = FALSE}
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), 
+                   "SMAD4", "CDNK2A", 
+                   "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                   "TP53", "MLL3",
+                   rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.1,
+               sh = -0.9,
+               typeDep = "MN"),
+    drvNames = c("KRAS", "SMAD4", "CDNK2A", "TP53", 
+	             "MLL3", "TGFBR2", "PXDN"))
+
+
+## Random fitness landscape with 6 genes 
+rfl6 <- rfitness(6, min_accessible_genotypes = 50)
+attributes(rfl6)$accessible_genotypes ## How many actually accessible
+rf6 <- allFitnessEffects(genotFitness = rfl6)
+
+
+## Random fitness landscape with 12 genes
+rfl12 <- rfitness(12, min_accessible_genotypes = 200)
+attributes(rfl12)$accessible_genotypes ## How many actually accessible
+rf12 <- allFitnessEffects(genotFitness = rfl12)
+
+
+
+
+## Independent genes; positive fitness from exponential distribution
+## mean around 0.1, and negative from exponential with mean around 0.02.
+## Half positive, half negative
+ng <- 200
+re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+
+ng <- 500
+re_500 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+
+ng <- 2000
+re_2000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+
+ng <- 4000
+re_4000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+
+```
+
+
+We will use the Exp and the McFL models, run with different
+parameters. For Exp the call will be
+
+```{r exp-usual-r, eval = FALSE, echo = TRUE}
+
+oncoSimulPop(Nindiv,
+            fitness,
+            detectionProb = NA, 
+            detectionSize = 1e6,
+            initSize = 500,
+            detectionDrivers = NA,
+            keepPhylog = TRUE,
+            model = "Exp",
+            errorHitWallTime = FALSE,
+            errorHitMaxTries = FALSE,
+            finalTime = 5000,
+            onlyCancer = FALSE,
+            mc.cores = 1,
+            sampleEvery = 0.5,
+			keepEvery = 1)
+```
+
+And for McFL:
+
+```{r mc-usual-r, eval = FALSE, echo = TRUE}
+initSize <- 1000
+oncoSimulPop(Nindiv,
+              fitness,
+               detectionProb = c(
+                   PDBaseline = 1.4 * initSize,
+                   n2 = 2 * initSize,
+                   p2 = 0.1,
+                   checkSizePEvery = 4),
+               initSize = initSize,
+               detectionSize = NA,
+               detectionDrivers = NA,
+               keepPhylog = TRUE,
+               model = "McFL",
+               errorHitWallTime = FALSE,
+               errorHitMaxTries = FALSE,
+               finalTime = 5000,
+               max.wall.time = 10,
+               onlyCancer = FALSE,
+               mc.cores = 1,
+			   keepEvery = 1)
+
+```
+
+
+For the exponential model we will stop simulations when the
+populations gets $>10^6$ (simulations start from 500 cells). For the
+McFarland model we will use the `detectionProb` mechanism (see
+section \@ref(detectprob) for details); we could have used as
+stopping mechanism `detectionSize = 2 * initSize` (which would be
+basically equivalent to reaching cancer, as argued in
+[@McFarland2013]); in this model we will also start from 1000, not
+500 (starting from 1000 we almost always reach cancer). 
+
+Why not use the `detectionProb` mechanism with the `Exp` models?
+Because it can be hard to intuitively understand what are reasonable
+settings of the parameters of the `detectionProb` mechanism for a
+population that is growing exponentially, especially if different
+genes have very different effects on fitness. In contrast, the
+`detectionProb` mechanism might make more sense in the case of a
+population that is growing under a model of carrying capacity with
+possibly large periods of stasis.
+
+Note that we specify `checkSizePEvery = 4` (instead of the default,
+which is 20). Why? Because the fitness specifications where fitness
+effects are drawn from exponential distributions (`re_200` to
+`re_4000` above) include many genes (well, up to 4000) some of them
+with possibly with very large effects. In this conditions,
+simulations will run very fast in the sense of "units of time", so
+checking every 20 units makes little sense as the population could
+have increased size several orders of magnitude in between checks
+(this is also mentioned in section \@ref(detectprob) and
+\@ref(bench1xf)). To ensure, however, that populations have really
+grown, we have increased the setting of `PDBaseline` (no simulation
+can be considered for stopping unless its size is 1.4 times larger
+than `initSize`).
+
+In all cases we use `keepEvery = 1` and `keepPhylog = TRUE`.
+
+Finally, we run all models with `errorHitWallTime = FALSE` and
+`errorHitMaxTries = FALSE` sot that we can see results even if
+stopping conditions are not met.
+
+
+
+```{r loadbench2usual, echo = FALSE, eval = TRUE} 
+data(benchmark_2) 
+``` 
+
+Results, using `r unique(benchmark_2$Numindiv)` simulations, are
+shown below.
+
+
+
+Table: (\#tab:timingusual) Benchmarks under some common use cases,
+set 1.
+```{r benchustable, eval=TRUE, echo = FALSE}
+data(benchmark_2)
+
+knitr::kable(benchmark_2[, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.", "Model", "fitness")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max.",
+				  "Model",
+				  "Fitness"
+				  ),
+	align = "c")
+```
+
+
+In most cases, simulations run reasonably fast (under 0.1 seconds)
+and the return objects are most of the time small. In will only
+focus on a few cases.
+
+The McFL model with the random fitness landscape `rf12` and with
+`pancr` does not satisfy the conditions of `detectionProb` in most
+cases: its median final time is 5000, which was the maximum final
+time specified. This suggests that the fitness landscape is such
+that it is extremely unlikely that we will get population sizes $>
+1400$ (remember we increase the setting for `PDBaseline`). There is
+nothing particular about using a fitness landscape of 12 genes or
+about the pancreas DAG, and this is just a chance event: other runs
+do not always show this pattern. However, complex fitness landscapes
+might be such that genotypes of high fitness (those that allow
+reaching a large population size quickly) are not easily accessible
+so reaching them might take a long time. This does not affect the
+exponential model in the same way because, well, because there is
+exponential growth in that model. You might want to play with the
+script and modify the call to `rfitness` (using different values of
+`reference` and `c`, for instance, to have simpler paths to a
+maximum) or the call to `oncoSimulPop` (with, say, `finalTime` to
+much larger values). Some of these issues are related to more
+general questions about fitness landscapes and accessibility (see
+section \@ref(ex-ochs) and references therein).
+
+You could also set `onlyCancer = TRUE`. This might make sense if you
+are interested in only seeing simulations that "reach cancer" (or
+reach a state you define as a function of size or drivers). However,
+if you are exploring fitness landscapes that setting might not
+always be reasonable (as reaching a particular minimal size, for
+instance, might just not be possible under some fitness landscapes).
+
+
+
+As we anticipated above, the `detectionProb` mechanism has to be
+used with care: some of the simulations run in very short "time
+units", such as those for the fitness specifications with 2000 and
+4000 genes. Having used a `checkSizePEvery = 20` there would not
+have made sense.
+
+
+Finally, it is interesting that in the cases examined here, the two
+slowest running simulations are from "Exp", with fitnesses `re_2000`
+and `re_4000` (and the third slowest is also Exp, under
+`re_500`). These are the cases with the larges number of
+clones. Why? In the "Exp" model there is no competition, and fitness
+specifications `re_2000` and `re_4000` have genomes with many genes
+with positive fitness contributions. It is thus very easy to obtain,
+from the wildtype ancestor, a large number of clones all of which
+have birth rates $>1$ and, thus, clones that are unlikely to go
+extinct. 
+
+
+
+
+### Common use cases, set 2. {#common1}
+
+We will now rerun the above changing the following:
+
+- `finalTime` is now set to 25000.
+- `onlyCancer` is not set to TRUE.
+- The "Exp" models will stop when population size $> 10^5$.
+
+
+This is in script 'benchmark_3.R', under '/inst/miscell', with
+output in the 'miscell-files/vignette_bench_Rout' directory of the
+main OncoSimul repository at https://github.com/rdiaz02/OncoSimul.
+The data are available as `data(benchmark_2)`.
+	
+Table: (\#tab:timingusual2) Benchmarks under some common use cases,
+set 2.	
+```{r benchustable2, eval=TRUE, echo = FALSE}
+data(benchmark_3)
+
+knitr::kable(benchmark_3[, c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.", "Model", "fitness")], 
+    booktabs = TRUE,
+	col.names = c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max.",
+				  "Model",
+				  "Fitness"
+				  ),
+	align = "c")
+```
+
+
+Now, since we increased the maximum final time and force runs to
+"reach cancer" the McFL run with the pancreas fitness specification
+takes a bit longer because it also has to do a larger number of
+iterations. Interestingly, notice that the median final time is
+close to 10000, so the runs above with maximum final time of 5000
+would have had a hard time being completed.
+
+Forcing simulations to "reach cancer", and just random differences
+between the random fitness landscape also affect strongly the McFL
+run under `rf12`: final time is below 5000 and the median number of
+iterations is about half of what was above.  
+
+Finally, by stopping the Exp simulations at $10^5$ simulations with
+`re_2000` and `re_4000` finish now in much shorter times (but they
+still take longer than their McFL counterparts) and the number of
+clones created is much smaller.
+
 
 
 ## Can we use a large number of genes? {#lnum}
@@ -2521,14 +2822,14 @@ large number of iterations (getting close to one million in some
 cases).
 
 
-We can run the exponential model with `detectionSize = 1e10`:
+We can run the exponential model with `detectionSize = 1e11`:
 
 ```{r ex-large-exp, eval = FALSE, echo = TRUE}
-t_exp_k_50_1e10 <- system.time(exp_k_50_1e10 <- oncoSimulPop(5,
+t_exp_k_50_1e11 <- system.time(exp_k_50_1e11 <- oncoSimulPop(5,
                                                      u,
                                                      model = "Exp",
                                                      mu = 1e-7,
-                                                     detectionSize = 1e10,
+                                                     detectionSize = 1e11,
                                                      initSize = 1e5,
                                                      detectionDrivers = NA,
                                                      detectionProb = NA,
@@ -2537,31 +2838,51 @@ t_exp_k_50_1e10 <- system.time(exp_k_50_1e10 <- oncoSimulPop(5,
                                                      mutationPropGrowth = FALSE,
                                                      keepEvery = 1,
                                                      finalTime = 5000,
-                                                     mc.cores = 1
+                                                     mc.cores = 1,
+                                                     max.wall.time = 600,
+                                                     errorHitWallTime = FALSE,
+                                                     errorHitMaxTries = FALSE
                                                      ))
-t_exp_k_50_1e10
-##   user  system elapsed 
-## 95.096   0.000  95.096 
+
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Hitted wall time. Exiting.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Hitted wall time. Exiting.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Recoverable exception ti set to DBL_MIN. Rerunning.
+## Hitted wall time. Exiting.
+## Hitted wall time. Exiting.
  
-summary(exp_k_50_1e10)[, c(1:3, 8, 9)]
+t_exp_k_50_1e11
+##     user   system  elapsed 
+## 2959.068    0.128 2959.556 
+try(summary(exp_k_50_1e11)[, c(1:3, 8, 9)])
 ##   NumClones TotalPopSize LargestClone FinalTime NumIter
-## 1      1532  11236821546   5771228736       198  235332
-## 2      1839  10275500842   7473388584       201  264559
-## 3      1380  12034729505  10829426434       196  286746
-## 4      1715  11651224770  10025117531       231  294371
-## 5      2109  10966816038   3143709882       226  311862
+## 1      6078  65172752616  16529682757  235.7590 1883438
+## 2      5370 106476643712  24662446729  232.0000 2516675
+## 3      2711  21911284363  17945303353  224.8608  543698
+## 4      2838  13241462284   2944300245  216.8091  372298
+## 5      7289  76166784312  10941729810  240.0217 1999489
 
-```
+print(object.size(exp_k_50_1e11), units = "MB")
+## 53.5 Mb
 
+``` 
 
-However, with those same settings, we can not reach $10^{11}$ in 10
-minutes. We could set `max.wall.time` to a value larger than 600 to
-allow us to reach larger sizes but then we would be waiting for a
-possibly intolerable time for simulations to finish. Moreover, this
-would eventually fail as simulations would keep hitting the $t_i$
-exception without ever being able to complete. Finally, even if we
-are very patient, hitting that $t_i$ exception should make us worry
-about possible biases in the samples.
+Note that we almost reached the `max.wall.time` (600 * 5 =
+3000). What if we wanted to go up to $10^{12}$? We could not do it
+in 10 minutes. We could set `max.wall.time` to a value larger than
+600 to allow us to reach larger sizes but then we would be waiting
+for a possibly intolerable time for simulations to finish. Moreover,
+this would eventually fail as simulations would keep hitting the
+$t_i$ exception without ever being able to complete. Finally, even
+if we are very patient, hitting that $t_i$ exception should make us
+worry about possible biases in the samples.
 
 
 
@@ -2583,13 +2904,14 @@ To summarize this section, we have seen:
     result of the simulation is to be used, you should set
     `keepEvery = NA`.
 	
-  - The distribution of fitness effects can have large effects on
-    running times. Sometimes these are intuitive and simple to
-    reason about, sometimes they are not as they interact with other
-    factors (e.g., stopping mechanism, numbers of clones, etc). In
-    general, there can be complex interactions between different
-    settings, from mutation rate to fitness effects to initial
-    size. As usual, test before launching a massive simulation.
+  - The distribution of fitness effects and the fitness landscape
+    can have large effects on running times. Sometimes these are
+    intuitive and simple to reason about, sometimes they are not as
+    they interact with other factors (e.g., stopping mechanism,
+    numbers of clones, etc). In general, there can be complex
+    interactions between different settings, from mutation rate to
+    fitness effects to initial size. As usual, test before launching
+    a massive simulation.
 
   - Simulations start to slow down and lead to a very large object
     size when we keep track of around 6000 to 10000 clones. Whatever
@@ -5952,6 +6274,14 @@ do we do that? When we assess probability of exiting is controlled by
 `checkSizePEvery` is "time between doctor appointments".
 
 
+An important **warning**, though: for populations that are growing
+very, very fast or where some genes might have very large effects on
+fitness even a moderate `checkSizPEvery` of, say, 10, might be
+inappropriate, since populations could have increased by several
+orders of magnitude between successive checks. This issue is also
+discussed in section \@ref(bench1xf) and \@ref(benchusual).
+
+
 Finally, you can specify $cPDetect$ directly (you will need to set
 `n2` and `p2` to NA). However, it might be more intuitive to
 specify the pair `n2`, `p2`, such that $P(n2) = p2$ (and
@@ -6003,6 +6333,9 @@ in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
 <!-- % basically works as a stopping point for the simulations and, in contrast -->
 <!-- % to the other mechanisms for exiting a simulation, has rarely any special -->
 <!-- % meaning.  -->
+
+
+
 
 
 ### Stochastic detection mechanism and minimum number of drivers {#anddrvprob}
