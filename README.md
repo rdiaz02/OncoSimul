@@ -37,11 +37,12 @@ progression: effects of passengers, evolutionary models, and sampling",
 [BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41).
 
 
+
 You can also find
 [OncoSimulR](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/)
 listed in the [Genetic Simulation Resources
 catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
-
+<div style="width: 180px; margin: 0 auto;"><a href="http://popmodels.cancercontrol.cancer.gov/gsr/"><img src="http://popmodels.cancercontrol.cancer.gov/gsr/static/img/gsr_tile.jpg" alt="Catalogued on GSR" width="180" height="60" /></a></div>
 
 # Installation
 
@@ -79,7 +80,6 @@ You can directly install from github:
 install.packages("devtools") ## if you don't have it already
 library(devtools)
 install_github("rdiaz02/OncoSimul/OncoSimulR")
-
 ``` 
 
 But sometimes the latest additions in this repo could be broken (see [Software status](#software-status)). And you
