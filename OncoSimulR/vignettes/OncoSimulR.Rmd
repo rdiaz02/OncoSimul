@@ -147,6 +147,13 @@ require(BiocStyle)
 
 # Introduction {#intro}
  
+OncoSimulR is an individual-based forward-time genetic simulator for
+biallelic markers (wildtype vs. mutated) in asexually reproducing
+populations without spatial structure (perfect mixing). Its design
+emphasizes flexible specification of fitness and mutator effects.
+ 
+ 
+ 
 OncoSimulR was originally developed to simulate tumor progression
 using several models of tumor progression with emphasis on allowing
 users to set restrictions in the accumulation of mutations as
@@ -193,7 +200,11 @@ in C++, providing for fast execution.  To help with simulation
 studies, code to simulate random graphs of the kind often seen in
 CBN, OTs, etc, is also available. Finally, OncoSimulR also allows
 for the generation of random fitness landscapes and the
-representation of fitness landscapes.
+representation of fitness landscapes and provides some statistics of
+of evolutionary predictability.
+
+
+
 
 ## Key features of OncoSimulR {#key}
 
@@ -335,12 +346,24 @@ have copied from @Hothorn_2006; @Hothorn_2008).
 
 
 
+In a nutshell, thus, salient features of OncoSimulR compared to
+other simulators are the unparalleled flexibility to specify fitness
+and mutator effects, with modules and order effects as particularly
+unique, and the options for sampling and stopping the simulations,
+particularly convenient in cancer evolution models. Also unique in
+this type of software is the addition of functions for simulating
+fitness landscapes and assessing evolutionary
+predictability. 
 
 
 
 ## What kinds of questions is OncoSimulR suited for? {#generalwhatfor}
 
-Mainly questions that would involve combinations of:
+OncoSimulR can be used to address questions that span from the
+effect of mutator genes in cancer, to the interplay between fitness
+landscapes and mutation rates. The main types of questions that
+OncoSimulR can help address involve combinations of:
+
 
 * Simulating asexual evolution (the `oncoSimul*` functions) where:
      - fitness is:
@@ -608,7 +631,7 @@ evolutionary model, etc).
 
 
 There are several ways to specify their model, as we discuss in
-section \ref@(bauer). We will use one based on DAGs here:
+section \@ref(bauer). We will use one based on DAGs here:
 
 
 ```{r exusagebau}
@@ -656,6 +679,60 @@ sum(summary(sb1)[, "TotalPopSize"] > 0)/totalpops
 ```{r hidden-rng-exbau, echo = FALSE}
 set.seed(NULL)
 ```
+### Epistatic interactions between drivers and passengers in cancer initiation {#exorder1intro}
+
+Instead of focusing on different models for epistatic interactions,
+you might want to examine the consequences of order effects
+[@Ortmann2015]. You would proceed as above, but using models that
+differ by, say, the presence or absence of order effects. Details on
+their specification are provided in section \@ref(oe). Here is one
+particular model (you would, of course, want to compare this to
+models without order effects or with other magnitudes and types of
+order effects):
+
+
+```{r oex1intro}
+
+o3 <- allFitnessEffects(orderEffects = c(
+                            "F > D > M" = -0.3,
+                            "D > F > M" = 0.4,
+                            "D > M > F" = 0.2,
+                            "D > M"     = 0.1,
+                            "M > D"     = 0.5))
+
+(oeag <- evalAllGenotypes(o3, addwt = TRUE, order = TRUE))
+
+``` 
+
+Now, run simulations and examine how frequently the runs do not end
+up in extinction. As above, for real, you would of course increase
+the number of total populations, the range of initial population
+sizes, mutation rate, etc):
+
+
+
+```{r hiddenbau, echo=FALSE}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+```
+
+```{r exusagebau2}
+totalpops <- 5
+soe1 <- oncoSimulPop(totalpops, o3, model = "Exp",
+                    initSize = 500,
+                    onlyCancer = FALSE,
+                    seed = NULL)
+					
+## What proportion of the simulations do not end up extinct?
+sum(summary(soe1)[, "TotalPopSize"] > 0)/totalpops
+
+```
+
+```{r hidden-rng-exbau, echo = FALSE}
+set.seed(NULL)
+```
+
+
 
 
 ### Effects of mutator and antimutator genes {#ex-mut-antimut}
@@ -1140,7 +1217,8 @@ data(benchmark_1)
 
 Will run `r unique(benchmark_1$Numindiv)` simulations.  The results
 I show are for a laptop with an 8-core Intel Xeon E3-1505M CPU,
-running Debian GNU/Linux.
+running Debian GNU/Linux (the results from these benchmarks are
+available as `data(benchmark_1)`).
 
 
 
@@ -1463,7 +1541,8 @@ TRUE` or `onlyCancer = FALSE` will depend on the question being asked (see
 In the above fitness specification the fitness effect of each gene
 (when its restrictions are satisfied) is $s = 0.1$ (see section
 \@ref(numfit) for details). Here we rerun all the above benchmark
-using $s= 0.05$; results are shown below:
+using $s= 0.05$; results are shown below (the results from these
+benchmarks are available as `data(benchmark_1_0.05)`):
 
 
 Table: (\#tab:timing3xf) Benchmarks of all models in Tables \@ref(tab:bench1),
@@ -1797,7 +1876,7 @@ We will now rerun the above changing the following:
 This is in script 'benchmark_3.R', under '/inst/miscell', with
 output in the 'miscell-files/vignette_bench_Rout' directory of the
 main OncoSimul repository at https://github.com/rdiaz02/OncoSimul.
-The data are available as `data(benchmark_2)`.
+The data are available as `data(benchmark_3)`.
 	
 Table: (\#tab:timingusual2) Benchmarks under some common use cases,
 set 2.	
@@ -1861,7 +1940,7 @@ the time of individual runs.
 
 ### Exponential model with 10,000 and 50,000 genes {#exp50000}
 
-#### Exponential, 10,000 genes, example 1  {#exp10000_1}
+#### Exponential, 10,000 genes, example 1  {#exp100001}
 
 We will start with 10000 genes and an exponential model, where we
 stop when the population grows over $1e6$ individuals:
@@ -1909,7 +1988,7 @@ of the return object is close to 1 GB.
 
 #### Interlude: where is that 1 GB coming from? {#wheresizefrom}
 
-In section \@ref(exp10000_1) we have seen an apparently innocuous
+In section \@ref(exp100001) we have seen an apparently innocuous
 simulation producing a return object of almost 1 GB. Where is that
 coming from? It means that each simulation produced about 200 MB of
 output. 
@@ -2001,7 +2080,7 @@ print(object.size(e_10000b), units = "MB")
 
 ```
 
-#### Exponential,  50,000 genes, example 1 {#exp50000_1}
+#### Exponential,  50,000 genes, example 1 {#exp500001}
 
 Let's use 50,000 genes. To keep object sizes reasonable we use
 `keepEvery = NA`. For now, we also set `mutationPropGrowth = FALSE`
@@ -2553,7 +2632,7 @@ limited if the `pops.by.time` matrix only contains the very last
 period. However, you can use `plotClonePhylog`
 and ask to be shown only clones that exist in the very last period.
 
-For instance, in run \@ref(exp50000_1) we could have looked at the
+For instance, in run \@ref(exp500001) we could have looked at the
 information stored for the history of clones by doing:
 
 ```{r filog_exp50000_1, echo = TRUE, eval = FALSE}
@@ -3915,7 +3994,7 @@ which "A" and "B" appeared.
 
 
 
-### Order effects: three-gene orders
+### Order effects: three-gene orders {#oeftres}
 
 Consider this case, where three specific three-gene orders and two
 two-gene orders (one of them a subset of one of the three) lead to
@@ -7755,7 +7834,7 @@ we pass `initSize = 1e-5`).
 
 This is up to you. In section \@ref(sample-1) we show an example
 where we infer an oncogenetic tree from simulated data and in
-section \@ref{whatfor} we go over a varied set of scientific
+section \@ref(whatfor) we go over a varied set of scientific
 questions where OncoSimulR could help.
 
 
@@ -7922,6 +8001,28 @@ warning).
 Oh, but you want to accumulate mutator effects and have some, or the
 early ones, have a large effects and the rest progressively smaller
 effects? You can do that using epistatic effects for mutator effects.
+
+
+## What are good values of `sampleEvery`? {#whatgoodsampleevery}
+
+First, we need to differentiate between the McFarland and the
+exponential models. If you use the McFarland model, you should read
+section \@ref(#bnbdensdep) but, briefly, the small default is
+probably a good choice. 
+
+With the exponential model, however, simulations can often be much
+faster if `sampleEvery` is large. How large? As large as you can
+make it. `sampleEvery` should not be larger than your desired
+`keepEvery`, where `keepEvery` determines the resolution or
+granularity of your samples (i.e., how often you take a snapshot of
+the population). If you only care about the final state, then set
+`keepEvery = NA`.
+
+The other factors that affects choosing a reasonable `sampleEvery`
+are mutation rate and population size. If population growth is very
+fast or mutation rate very large, you need to sample frequently to
+avoid the "Recoverable exception ti set to DBL_MIN. Rerunning."
+issue (see discussion in section \@ref(popgtzx)).
 
 
 
