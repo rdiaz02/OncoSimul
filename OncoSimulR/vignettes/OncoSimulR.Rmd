@@ -7705,7 +7705,7 @@ mechanism (see section \@ref(endsimul)). But, again, this has
 nothing to do with the definition of "clone".
 
 
-## Does OncoSimulR keep track of individuals or of clones? And how can you keep track of such large populations? {#trackindivs}
+## Does OncoSimulR keep track of individuals or of clones? And how can it keep track of such large populations? {#trackindivs}
 
 OncoSimulR keeps track of clones, where a clone is a set of cells
 that are genetically identical (note that this means completely
