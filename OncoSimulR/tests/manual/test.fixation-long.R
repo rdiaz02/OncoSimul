@@ -5,7 +5,7 @@
 cat("\n Starting long fixation  at", date(), "\n")
 
 ## Since we run the long tests after simply loading the package
-list_g_matches_fixed <- OncoSimulR:::list_g_matches_fixed
+## list_g_matches_fixed <- OncoSimulR:::list_g_matches_fixed
 
 test_that("Check output is correct", {
     initS <- 200
