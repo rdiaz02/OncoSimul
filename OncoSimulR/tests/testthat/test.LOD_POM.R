@@ -1,3 +1,4 @@
+date()
 test_that("Exercise LOD and POM code", {
     pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
                                           "TP53", "TP53", "MLL3"),
@@ -28,8 +29,10 @@ test_that("Exercise LOD and POM code", {
 
     pancr8 <- oncoSimulPop(8, pancr, model = "McFL",
                            keepPhylog = TRUE,
-                           max.num.tries = 1, mc.cores = 2,
-                           max.wall.time = 0.1,
+                           finalTime = 0.01,
+                           max.num.tries = 1,
+                           mc.cores = 2,
+                           max.wall.time = 0.01,
                            detectionSize = 1e6)
 
     expect_warning(LOD(pancr8),
@@ -39,44 +42,44 @@ test_that("Exercise LOD and POM code", {
                    "Missing needed components.", fixed = TRUE)
 
     
-    pancr8 <- suppressWarnings(suppressMessages(oncoSimulPop(8, pancr, model = "McFL",
+    pancr8 <- suppressWarnings(suppressMessages(oncoSimulPop(30, pancr, model = "McFL",
                                             keepPhylog = TRUE,
                                             onlyCancer = FALSE,
                                             finalTime = 0.01,
                                             sampleEvery = 0.5,
-                                            mu = 1e-9,
+                                            mu = 1e-8,
                                             mc.cores = 2,
                                             mutationPropGrowth = FALSE,
                                             initSize = 10)))
 
     lop8 <- suppressWarnings(LOD(pancr8))
     
-    ## expect_true(any(unlist(lapply(lop8,
-    ##                               function(x) x$lod_single))
-    ##                 %in% "No_descendants"))
+    expect_true(any(unlist(lapply(lop8,
+                                  function(x) x$lod_single))
+                    %in% "No_descendants"))
     ## there are descendants but all go extinct
-    pancr2 <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
-                                          "TP53", "TP53", "MLL3"),
-                                      child = c("KRAS","SMAD4", "CDNK2A", 
-                                          "TP53", "MLL3",
-                                          rep("PXDN", 3), rep("TGFBR2", 2)),
-                                      s = -0.9,
-                                      sh = -0.9,
-                                      typeDep = "MN"))
+    ## pancr2 <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+    ##                                       "TP53", "TP53", "MLL3"),
+    ##                                   child = c("KRAS","SMAD4", "CDNK2A", 
+    ##                                       "TP53", "MLL3",
+    ##                                       rep("PXDN", 3), rep("TGFBR2", 2)),
+    ##                                   s = -0.9,
+    ##                                   sh = -0.9,
+    ##                                   typeDep = "MN"))
 
     
-    gg <- allFitnessEffects(noIntGenes = rep(-.2, 100))
-    pancr22 <- oncoSimulPop(5, gg,
+    gg <- allFitnessEffects(noIntGenes = rep(-.9, 100))
+    pancr22 <- oncoSimulPop(10, gg,
                             model = "Exp",
                             keepPhylog = TRUE,
                             onlyCancer = FALSE,
                             initSize = 1e3,
                             mu = 1e-2,
                             mc.cores = 2,
-                            finalTime = 1.5)
-    
+                            finalTime = 2.5)
     lp22 <- LOD(pancr22)
     ## There is like soooo remote chance this will fail
     ## and the previous exercises the code anyway.
-    ## expect_true(any(unlist(lp22) %in% "WT_is_end")
+    expect_true(any(unlist(lp22) %in% "WT_is_end"))
 })
+date()
