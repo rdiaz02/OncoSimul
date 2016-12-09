@@ -1,5 +1,6 @@
 Changes in version 2.5.2 (2016-11-20):
-	- Diversity of sampled genotypes.
+        - Lots and lots of addition to vignette including benchmarks.
+        - Diversity of sampled genotypes.
 	- Genotyping error can be added in samplePop.
 	- LOD and POM (lines of descent, path of maximum, sensu Szendro et
 	  al.).
