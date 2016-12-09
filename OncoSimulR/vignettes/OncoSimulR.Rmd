@@ -420,7 +420,7 @@ of R object and courier for the name of the functions.
 
 
 ```{r frelats, eval=TRUE,echo=FALSE, fig.cap="Relationships between the main functions in OncoSimulR."}
-knitr::include_graphics("figure1.png")
+knitr::include_graphics("relfunct.png")
 ```
 
 
