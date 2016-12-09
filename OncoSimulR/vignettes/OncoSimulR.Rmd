@@ -7638,7 +7638,8 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
                                       sh = -0.3,
                                       typeDep = "MN"))
 
-pancr16 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE)
+pancr16 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE,
+                        mc.cores = 2)
 
 ## Look a the first POM 
 str(POM(pancr16)[1:3])
