@@ -7000,7 +7000,10 @@ case for `oncoSimulSample`. See further comments in
 
 
 The following are a few examples. First we run `oncoSimulPop` to obtain 4
-simulations and in the last line we sample from them: ```{r}
+simulations and in the last line we sample from them: 
+
+
+```{r pancrpopcreate}
 
 pancrPop <- oncoSimulPop(4, pancr,
                          detectionSize = 1e7,

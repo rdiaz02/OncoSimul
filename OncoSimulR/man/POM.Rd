@@ -49,7 +49,7 @@ diversityLOD(llod)
 \details{
 
   Lines of Descent (LOD) and Path of the Maximum (POM) were defined in
-  Szendro et al. (2014) and I follow those definitions here as closely
+  Szendro et al. (2013) and I follow those definitions here as closely
   as possible, as applied to a process in continuous time with sampling
   at user-specified periods.
 
@@ -62,7 +62,7 @@ diversityLOD(llod)
 
 
   For LOD my implementation is not exactly identical to the definition
-  given in p. 572 of Szendro et al. (2014). First, in case this might be
+  given in p. 572 of Szendro et al. (2013). First, in case this might be
   useful, for each simulation I keep all the paths that
   "(...) arrive at the most populated genotype at the final time" (first
   paragraph in p. 572 of Szendro et al.), whereas they only keep one

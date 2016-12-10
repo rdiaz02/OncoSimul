@@ -49,7 +49,7 @@ sampledGenotypes(y, genes = NULL)
     of their simulation.
 
     You can, alternatively, specify the population size at which you
-    want the sample to be taken. See argument \code{popSizeSample} .
+    want the sample to be taken. See argument \code{popSizeSample}.
   } 
   
   \item{typeSample}{
