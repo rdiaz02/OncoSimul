@@ -25,7 +25,7 @@ rm ./Subversion-in-BioC/OncoSimulR/data/*
 rm ./Subversion-in-BioC/OncoSimulR/inst/miscell/*
 
 cp OncoSimulR/vignettes/preamble.tex ./Subversion-in-BioC/OncoSimulR/vignettes/.
-cp OncoSimulR/vignettes/figure1.png ./Subversion-in-BioC/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/relfunct.png ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/custom4.css ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.Rmd ./Subversion-in-BioC/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/OncoSimulR.bib ./Subversion-in-BioC/OncoSimulR/vignettes/.
