@@ -3023,7 +3023,7 @@ as possible. Thus, there are two main ways of specifying fitness effects:
   of these were lego pieces. We will refer to this as the **lego system of
   fitness effects**. (As explained above, I find this an intuitive and very
   graphical analogy, which I have copied from @Hothorn_2006 and
-  @Hothorn_2008)).
+  @Hothorn_2008).
   
   
 * Explicitly passing to OncoSimulR a mapping of genotypes to
@@ -3092,7 +3092,7 @@ with mutated genes separated by commas:
 m4 <- data.frame(G = c("WT", "A", "B", "A, B"), F = c(1, 2, 3, 4))
 ``` 
 
-Now, let's give that to the *`allFitnessEffects`* function:
+Now, let's give that to the `allFitnessEffects` function:
 
 ```{r}
 fem4 <- allFitnessEffects(genotFitness = m4)
@@ -3111,7 +3111,7 @@ In this case, that plot is not very interesting (compare with the
 \@ref(posetslong)). 
 
 You can also check what OncoSimulR thinks the fitnesses are, with the
-*`evalAllGenotypes`* function that we will use repeatedly below
+`evalAllGenotypes` function that we will use repeatedly below
 (of course, here we should see the same fitnesses we entered):
 
 ```{r}
@@ -3154,7 +3154,7 @@ We will see an example of this way of passing fitness again in
 \@ref(bauer), where will compare it with the lego system.
 
 
-<!-- % Please see the documentation of *`allFitnessEffects`* for further -->
+<!-- % Please see the documentation of `allFitnessEffects` for further -->
 <!-- % details and examples. -->
 
 
@@ -3173,18 +3173,17 @@ We will see an example of this way of passing fitness again in
 <!-- % as possible.  -->
 
 
-An alternative general approach followed in many genetic simulators
-is to specify how particular combinations of alleles modify the
-wildtype genotype or the genotype that contains the individual
-effects of the interacting genes (e.g., see equation 1 in the
-supplementary material for FFPopSim, @Zanini2012).  For example, if
-we specify that a mutation in "A" contributes 0.04, a mutation in
-"B" contributes 0.03, and the double mutation "A:B" contributes 0.1,
-that means that the fitness of the "A, B" genotype (the genotype
-with A and B mutated) is that of the wildtype (1, by default), plus
-(actually, times ---see section \@ref(numfit)) the effects of having
-A mutated, plus (times) the effects of having B mutated, plus
-(times) the effects of "A:B" both being mutated.
+An alternative general approach followed in many genetic simulators is to
+specify how particular combinations of alleles modify the wildtype genotype
+or the genotype that contains the individual effects of the interacting
+genes (e.g., see equation 1 in the supplementary material for FFPopSim
+[@Zanini2012]).  For example, if we specify that a mutation in "A"
+contributes 0.04, a mutation in "B" contributes 0.03, and the double
+mutation "A:B" contributes 0.1, that means that the fitness of the "A, B"
+genotype (the genotype with A and B mutated) is that of the wildtype (1, by
+default), plus (actually, times ---see section \@ref(numfit)--- but plus on
+the log scale) the effects of having A mutated, plus (times) the effects of
+having B mutated, plus (times) the effects of "A:B" both being mutated.
 
 
 We will see below that with the "lego system" it is possible to do
@@ -3237,7 +3236,7 @@ For the Bozic model [@Bozic2010], however, the birth rate is set to
 In the original model of @McFarland2013, the effects of drivers
 contribute to the numerator of the birth rate, and those of the
 (deleterious) passengers to the denominator as: $\frac{(1 +
-s)^D}{(1 - s_p)^P}$, where $D$ and $P$ are, respectively, the total
+s)^d}{(1 - s_p)^p}$, where $d$ and $p$ are, respectively, the total
 number of drivers and passengers in a genotype, and here the fitness
 effects of all drivers is the same ($s$) and that of all passengers
 the same too ($s_p$). However, we can map from this ratio to the
@@ -3260,11 +3259,11 @@ the starting population is at equilibrium.
 
 ### No viability of clones and types of models {#noviab}
 
-For all models where fitness affects directly the birth rate (for now, all
-except Bozic), if you specify that some event (say, mutating gene A) has
-$s_A \le -1$, if that event happens then birth rate becomes zero which is
-taken to indicate that the clone is not even viable and thus disappears
-immediately without any chance for mutation[^3].
+For all models where fitness affects directly the birth rate (all except
+Bozic), if you specify that some event (say, mutating gene A) has $s_A \le
+-1$, if that event happens then birth rate becomes zero. This is taken to
+indicate that the clone is not even viable and thus disappears immediately
+without any chance for mutation[^3].
 
 [^3]:This is a shortcut that we take because we think that it is
   what you mean. Note, however, that technically a clone with birth
@@ -3309,7 +3308,7 @@ rate. You can see one where we do it both ways in Section
 
 ## Genes without interactions {#noint}
 
-This is a imple scenario. Each gene $i$ has a fitness effect $s_i$ if
+This is a simple scenario. Each gene $i$ has a fitness effect $s_i$ if
 mutated. The $s_i$ can come from any distribution you want. As an example
 let's use three genes. We know there are no order effects, but we will
 also see what happens if we examine genotypes as ordered.
@@ -3357,6 +3356,31 @@ for which order does not matter).
 
 And what if I want genes without interactions but I want modules (see
 section \@ref(modules0))? Go to section \@ref(mod-no-epi).
+
+
+## Numerical issues with death rates of 0 in Bozic model {#ex-0-death}
+
+As we mentioned above (section \@ref(fit-neg-pos)) death rates of 0 can
+lead to trouble when using Bozic's model:
+
+
+```{r}
+i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
+evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
+                 model = "Bozic")
+i1_b <- oncoSimulIndiv(i1, model = "Bozic")
+
+``` 
+
+
+Of course, there is no problem in using the above with other models:
+
+```{r}
+evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
+                 model = "Exp")
+i1_e <- oncoSimulIndiv(i1, model = "Exp")
+summary(i1_e)
+``` 
 
 
 
@@ -3440,7 +3464,7 @@ numbers), while the values of `s` are much larger positive numbers.
 
 In version 1 of this package we used posets in the sense of
 @Beerenwinkel2007 and @Gerstung2009, as explained in section
-\@ref(poset) and in the help for *`poset`*. Here, we continue using
+\@ref(poset) and in the help for `poset`. Here, we continue using
 two columns, that specify parents and children, but we add columns
 for the specific values of fitness effects (both s and sh ---i.e.,
 fitness effects for what happens when restrictions are and are not
@@ -4184,7 +4208,7 @@ all(ag[53:64, "Fitness"] == 0.7)
 
 We can of course have more than two genes per module. This just repeats
 the above, with five genes (there are 325 genotypes, and that is why we
-pass the "max" argument to *`evalAllGenotypes`*, to allow for
+pass the "max" argument to `evalAllGenotypes`, to allow for
 more than the default 256).
 
 ```{r}
@@ -4555,7 +4579,7 @@ evalAllGenotypes(e3, order = FALSE, addwt = TRUE)
 ``` 
 
 Note that this is the way you would specify effects with FFPopsim
-@Zanini2012. Whether this specification or the previous one with
+[@Zanini2012]. Whether this specification or the previous one with
 "-" is simpler will depend on the model. For synthetic mortality and
 viability, I think the one using "-" is simpler to map genotype tables
 to fitness effects. See also section \@ref(e3) and \@ref(theminus) and the
@@ -5142,7 +5166,7 @@ some also accumulate additional fitness-enhancing mutations). Things start
 getting out of hand shortly after time 250. The code below takes a
 few minutes and is commented, but you can run it to get an idea of the
 increase in the number of clones and their relationships (the usage of
-*`plotClonePhylog`* is explained in section \@ref(phylog)).
+`plotClonePhylog` is explained in section \@ref(phylog)).
 
 ```{r, eval=FALSE}
 
@@ -5187,12 +5211,12 @@ par(op)
 # Plotting fitness landscapes {#plot-fit-land}
 
 
-The *`evalAllGenotypes`* and related functions allow you to obtain
+The `evalAllGenotypes` and related functions allow you to obtain
 tables of the genotype to fitness mappings. It might be more convenient to
 actually plot that, allowing us to quickly identify local minima and
 maxima and get an idea of how the fitness landscape looks.
 
-In *`plotFitnessLandscape`* I have blatantly and shamelessly copied most
+In `plotFitnessLandscape` I have blatantly and shamelessly copied most
 of the looks of the plots of MAGELLAN [@brouillet_magellan:_2015] (see
 also <http://wwwabi.snv.jussieu.fr/public/Magellan/>), a very nice
 web-based tool for fitness landscape plotting and analysis (MAGELLAN
@@ -5231,7 +5255,7 @@ We have set `use_ggrepel = TRUE` to avoid overlap of labels.
 
 <!-- \clearpage -->
 
-For some types of objects, directly invoking *`plot`* will give
+For some types of objects, directly invoking `plot` will give
 you the fitness plot
 
 ```{r, fig.width=6.5, fig.height=5}
@@ -5323,7 +5347,7 @@ plot(fbauer)
 ``` 
 
 
-And if you compare the tabular output of *`evalAllGenotypes`* you can
+And if you compare the tabular output of `evalAllGenotypes` you can
 see that the values of fitness reproduces the fitness landscape that they
 show in their Figure 1. We can also use our plot for fitness landscapes:
 
@@ -5337,12 +5361,12 @@ plot(b1, use_ggrepel = TRUE)
 An alternative approach to specify the fitness, if the number of
 genotypes is reasonably small, is to directly evaluate fitness as
 given by their expressions. Then, use the `genotFitness` argument to
-*`allFitnessEffects`*. 
+`allFitnessEffects`. 
 
 We will create all possible genotypes; then we will write a function
 that gives the fitness of each genotype according to their
 expression; finally, we will call this function on the data frame of
-genotypes, and pass this data frame to *`allFitnessEffects`*.
+genotypes, and pass this data frame to `allFitnessEffects`.
 
 
 ```{r}
@@ -5915,13 +5939,13 @@ you need to decide:
 
 ## Can I start the simulation from a specific mutant? {#initmut}
 
-You bet. In v.1 you can only give the initial mutant as one with a single
-mutated gene. In version 2, however, you can specify the genotype for the
-initial mutant with the same flexibility as in
-*`evalGenotype`*. Here we show a couple of examples (we use the
-representation of the parent-child relationships ---discussed in section
-\@ref(phylog)--- of the clones so that you can see which clones appear, and
-from which, and check that we are not making mistakes).
+You bet. <!-- In v.1 you can only give the initial mutant as one with a single -->
+<!-- mutated gene. --> In version 2 you can specify the genotype for the
+initial mutant with the same flexibility as in `evalGenotype`. Here we show
+a couple of examples (we use the representation of the parent-child
+relationships ---discussed in section \@ref(phylog)--- of the clones so that
+you can see which clones appear, and from which, and check that we are not
+making mistakes).
 
 <!-- %% o3init <- allFitnessEffects(orderEffects = c( -->
 <!-- %%                             "M > D > F" = 0.99, -->
@@ -6068,7 +6092,7 @@ repeated again, within the following limits:
   simulation to be repeated to reach cancer;
 * `max.wall.time.total` and `max.num.tries.total`,
   similar to the above but over a set of simulations in function
-  *`oncoSimulSample`*.
+  `oncoSimulSample`.
 
 
 
@@ -6092,52 +6116,7 @@ regardless of what happened with the population (it became extinct, it did
 not reach a large size, it did not accumulate drivers, etc).
 
 
-
-## Plotting genotype/driver abundance over time; plotting the simulated trajectories {#plotraj}
-
-We have seen many of these plots already, starting with
-\@ref(fig:iep1x1) and \@ref(fig:iep2x2) and we will see many more
-below, in the examples, starting with section \@ref(bauer2) such as
-in figures \@ref(fig:baux1) and \@ref(fig:baux2). In a nutshell,
-what we are plotting is the information contained in the
-`pops.by.time` matrix, the matrix that contains the abundances of
-all the clones (or genotypes) at each of the sampling periods.
-
-
-The functions that do the work are called `plot` and these are
-actually methods for objects of class "oncosimul" and "oncosi
-mulpop". You can access the help by doing `?plot.oncosimul`, for
-example.
-
-What entities are shown in the plot? You can show the trajectories of:
-
-- numbers of drivers (e.g., \@ref(fig:baux1));
-
-- genotypes --clones (e.g., \@ref(fig:baux2)).
-
-
-(Of course, showing "drivers" requires that you have specified
-certain genes as drivers. )
-
-
-What types of plots are available?
-
-- line plots;
-
-- stacked plots;
-
-- stream plots.
-
-All those three are shown in both of \@ref(fig:baux1) and \@ref(fig:baux2).
-
-
-If you run multiple simulations using `oncoSimulPop` you can plot
-the trajectories of all of the simulations.
-
-
-
-
-## Stochastic detection mechanism: "detectionProb"  {#detectprob}
+### Stochastic detection mechanism: "detectionProb"  {#detectprob}
 
 This is the process that is controlled by the argument
 `detectionProb`. Here the probability of tumor detection increases
@@ -6246,7 +6225,7 @@ in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
 
 
 
-### Stochastic detection mechanism and minimum number of drivers {#anddrvprob}
+#### Stochastic detection mechanism and minimum number of drivers {#anddrvprob}
 
 We said above that we exit as soon as any of the conditions is
 reached (i.e., we use an OR operation over the exit
@@ -6261,6 +6240,10 @@ as specified by `detectionDrivers`. Note, though, that this does not
 guarantee that when you sample the population, all those drivers
 will be detected (as this depends on the actual proportion of cells
 with the drivers and the settings of `samplePop`).
+
+
+
+
 
 
 ## Fixation of genes/gene combinations with Ochs and Desai example {#fixation}
@@ -6345,9 +6328,50 @@ head(summary(od100)[, c(1:3, 8:9)])
 ```
 
 
+## Plotting genotype/driver abundance over time; plotting the simulated trajectories {#plotraj}
+
+We have seen many of these plots already, starting with
+\@ref(fig:iep1x1) and \@ref(fig:iep2x2) and we will see many more
+below, in the examples, starting with section \@ref(bauer2) such as
+in figures \@ref(fig:baux1) and \@ref(fig:baux2). In a nutshell,
+what we are plotting is the information contained in the
+`pops.by.time` matrix, the matrix that contains the abundances of
+all the clones (or genotypes) at each of the sampling periods.
 
 
-## Bauer's example again {#bauer2} 
+The functions that do the work are called `plot` and these are
+actually methods for objects of class "oncosimul" and "oncosi
+mulpop". You can access the help by doing `?plot.oncosimul`, for
+example.
+
+What entities are shown in the plot? You can show the trajectories of:
+
+- numbers of drivers (e.g., \@ref(fig:baux1));
+
+- genotypes or clones (e.g., \@ref(fig:baux2)).
+
+
+(Of course, showing "drivers" requires that you have specified
+certain genes as drivers. )
+
+
+What types of plots are available?
+
+- line plots;
+
+- stacked plots;
+
+- stream plots.
+
+All those three are shown in both of \@ref(fig:baux1) and \@ref(fig:baux2).
+
+
+If you run multiple simulations using `oncoSimulPop` you can plot
+the trajectories of all of the simulations.
+
+## Several examples of simulations and plotting simulation trajectories {#severalexplot}
+
+### Bauer's example again {#bauer2} 
 
 We will use the model of @Bauer2014 that we saw in section \@ref(bauer).
 
@@ -6412,7 +6436,7 @@ explicitly show parent-descendant relationships, which would hardly be
 realistically possible in these plots (although the plots of phylogenies
 in section \@ref(phylog) could be of help).
 
-## McFarland model with 5000 passengers and 70 drivers {#mcf5070}
+### McFarland model with 5000 passengers and 70 drivers {#mcf5070}
 
 ```{r, fig.width=6}
 
@@ -6458,7 +6482,7 @@ genotypes) trying to represent the genotypes makes no sense.
 
 
 
-## McFarland model with 50,000 passengers and 70 drivers: clonal competition {#mcf50070}
+### McFarland model with 50,000 passengers and 70 drivers: clonal competition {#mcf50070}
 
 The next is too slow (takes a couple of minutes in an i5 laptop) and too
 big to run in a vignette, because we keep track of over 4000 different
@@ -6539,7 +6563,7 @@ plot(mcfLs, type = "stacked", thinData = TRUE,
 
 
 
-## Loading fitnessEffects data for simulation examples {#fedata}
+### Loading fitnessEffects data for simulation examples {#fedata}
 We will use several of the previous examples. Most of them are in file
 `examplesFitnessEffects`, where they are stored inside a list,
 with named components (names the same as in the examples above):
@@ -6553,7 +6577,7 @@ names(examplesFitnessEffects)
 
 
 
-## Simulation with a conjunction example {#s-cbn1}
+### Simulation with a conjunction example {#s-cbn1}
 
 We will simulate using the simple CBN-like restrictions of
 section \@ref(cbn1) with two different models. 
@@ -6637,7 +6661,7 @@ log-transformed y-axis, even if there are other clones/genotypes present.
 
 
 
-## Simulation with order effects and McFL model {#clonalint}
+### Simulation with order effects and McFL model {#clonalint}
 
 <!-- %% Interesting to show effects of order: o3 -->
 
@@ -6844,29 +6868,6 @@ simulation will run until `finalTime` if `onlyCancer = FALSE`.)
 
 <!-- \clearpage -->
 
-## Numerical issues with death rates of 0 in Bozic model {#ex-0-death}
-
-As we mentioned above (section \@ref(fit-neg-pos)) death rates of 0 can
-lead to trouble when using Bozic's model:
-
-
-```{r}
-i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
-evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
-                 model = "Bozic")
-i1_b <- oncoSimulIndiv(i1, model = "Bozic")
-
-``` 
-
-
-Of course, there is no problem in using the above with other models:
-
-```{r}
-evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
-                 model = "Exp")
-i1_e <- oncoSimulIndiv(i1, model = "Exp")
-summary(i1_e)
-``` 
 
 
 
@@ -6880,10 +6881,10 @@ not available as a CRAN or BioConductor package, and thus we cannot depend
 on it for this vignette (or this package). You can, however, paste the
 code below and make it run locally.
 
-Before calling the *`streamgraph`* function, though, we need to
+Before calling the `streamgraph` function, though, we need to
 convert the data from the original format in which it is stored into
 "long format". A simple convenience function is provided as
-*`OncoSimulWide2Long`* in `r Biocpkg("OncoSimulR")`.
+`OncoSimulWide2Long` in `r Biocpkg("OncoSimulR")`.
 
 
 As an example, we will use the data we generated above for section
@@ -6928,11 +6929,11 @@ then obtain the matrix of runs by mutations (a matrix of
 individuals/samples by genes or, equivalently, a vector of "genotypes"),
 and do something with them.  OncoSimulR offers several ways of doing this.
 
-The key function here is *`samplePop`*, either called explicitly
-after *`oncoSimulPop`* (or *`oncoSimulIndiv`*), or implicitly as
-part of a call to *`oncoSimulSample`*. With *`samplePop`* you can
+The key function here is `samplePop`, either called explicitly
+after `oncoSimulPop` (or `oncoSimulIndiv`), or implicitly as
+part of a call to `oncoSimulSample`. With `samplePop` you can
 use **single cell** or **whole tumor** sampling (for details see the
-help of *`samplePop`*). Depending on how the simulations were
+help of `samplePop`). Depending on how the simulations were
 conducted, you might also sample at different times, or as a
 function of population sizes. A major difference between procedures
 has to do with whether or not you want to keep the complete history
@@ -6942,12 +6943,12 @@ of the simulations.
 simulate using:
 
 
-  - `oncoSimulIndiv` repeatedly (maybe within *`mclapply`*), to  parallelize the run).
+  - `oncoSimulIndiv` repeatedly (maybe within `mclapply`, to  parallelize the run).
   
-  - `oncoSimulPop`. `oncoSimulPop` is basically a thin wrapper around `oncoSimulIndiv` that uses  *`mclapply`*.
+  - `oncoSimulPop`. `oncoSimulPop` is basically a thin wrapper around `oncoSimulIndiv` that uses  `mclapply`.
 
 In both cases, you specify the conditions for ending the simulations
-(as explained in \@ref(endsimul)). Then, you will use function
+(as explained in \@ref(endsimul)). Then, you use function
 `samplePop` to obtain the matrix of samples by mutations.
 
   
@@ -6960,7 +6961,7 @@ In both cases, you specify the conditions for ending the simulations
 - `oncoSimulPop`, with argument `keepEvery = NA`. 
 
      In both cases you specify the conditions for ending the
-     simulations (as explained in \@ref(endsimul)).  Then, you will
+     simulations (as explained in \@ref(endsimul)).  Then, you 
      use function `samplePop`.
 
 
@@ -6978,28 +6979,28 @@ history, you can take samples at any of the times between the beginning
 and the end of the simulations. If you do not keep the history, you can
 only sample at the time the simulation exited.  Why would you want to use
 the second route? If we are only interested in the final matrix of
-individuals by mutations, keeping the complete history the above is
-wasteful, because we store fully all of the simulations (for example in
-the call to *`oncoSimulPop`*) and then sample (in the call to
-*`samplePop`*). Other reasons for choosing one over the other
-might have to do with flexibility (e.g., if you use
-*`oncoSimulPop`* the arguments for `detectionSize`,
-`detectionDrivers` must be the same for all simulations but this is
-not the case for *`oncoSimulSample`*) and parallelized
-execution. 
+individuals by mutations, keeping the complete history above is
+wasteful because we store fully all of the simulations (for example in
+the call to `oncoSimulPop`) and then sample (in the call to
+`samplePop`). <!-- Other reasons for choosing one over the other -->
+<!-- might have to do with flexibility (e.g., if you use -->
+<!-- `oncoSimulPop` the arguments for `detectionSize`, -->
+<!-- `detectionDrivers` must be the same for all simulations but this is -->
+<!-- not the case for `oncoSimulSample`) and parallelized -->
+<!-- execution.  -->
+Further criteria to use when choosing between sampling procedures is whether
+you need `detectionSize` and `detectionDrivers` do differ between
+simulations: if you use `oncoSimulPop` the arguments for `detectionSize` and
+`detectionDrivers` must be the same for all simulations but this is not the
+case for `oncoSimulSample`. See further comments in
+\@ref(diffsample). Finally, parallelized execution is available for
+`oncoSimulPop` but, by design, not for `oncoSimulSample`.
 
 
-Further criteria to use when choosing between sampling procedures is
-to realize that if you use *`oncoSimulPop`* the arguments for
-`detectionSize` and `detectionDrivers` must be the same for all
-simulations. This is not the case for *`oncoSimulSample`*. See
-further comments in \@ref(diffsample).
 
 
-
-The following are a few examples. First we run `oncoSimulPop` to
-obtain 4 simulations and in the last line we sample from them:
-```{r}
+The following are a few examples. First we run `oncoSimulPop` to obtain 4
+simulations and in the last line we sample from them: ```{r}
 
 pancrPop <- oncoSimulPop(4, pancr,
                          detectionSize = 1e7,
@@ -7013,15 +7014,15 @@ samplePop(pancrPop)
   
 
 Now a simple multiple call to `oncoSimulIndiv` wrapped inside
-*`mclapply`*; this is basically the same we just did above. We set
+`mclapply`; this is basically the same we just did above. We set
 the class of the object to allow direct usage of
-*`samplePop`*. (Note: in Windows `mc.cores > 1` is not
+`samplePop`. (Note: in Windows `mc.cores > 1` is not
 supported, so for the vignette to run in Windows, Linux, and Mac we
-explicitly set it here in the call to *`mclapply`*. For regular
+explicitly set it here in the call to `mclapply`. For regular
 usage, you will not need to do this; just use whatever is appropriate for
 your operating system and number of cores. As well, we do not need any of
-this with *`oncoSimulPop`* because the code inside
-*`oncoSimulPop`* already takes care of setting `mc.cores`
+this with `oncoSimulPop` because the code inside
+`oncoSimulPop` already takes care of setting `mc.cores`
 to 1 in Windows).
 
 ```{r}
@@ -7068,7 +7069,7 @@ which only keeps the very last sample:
 pancrPopNH[[1]]$pops.by.time
 ``` 
 
-Or we could have used *`oncoSimulSample`*:
+Or we could have used `oncoSimulSample`:
 
 ```{r}
 pancrSamp <- oncoSimulSample(4, pancr)
@@ -7080,8 +7081,8 @@ pancrSamp$popSamp
 Again, why the above differences? If we are only interested in the
 final matrix of populations by mutations, keeping the complete
 history the above is wasteful, because we store fully all of the
-simulations (in the call to *`oncoSimulPop`*) and then sample (in
-the call to *`samplePop`*).
+simulations (in the call to `oncoSimulPop`) and then sample (in
+the call to `samplePop`).
 
 
 ## Whole-tumor and single-cell sampling, and do we always want to sample? {#alwayssamp}
@@ -7096,30 +7097,28 @@ used in the plots that show the trajectory of a simulation, the
 plots that show the change in genotype or driver abundance over time
 (see section \@ref(plotraj) and examples mentioned there).
 
-Regardless of whether and how you plot the information in
-`pops.by.time`, you can also sample one or multiple simulations
-using `samplePop`. In **whole-tumor** sampling the resolution is the
-whole tumor (or the whole population). Thus, a key argument is
-`thresholdWhole`, the threshold for detecting a mutation: a gene is
-considered mutated if it is altered in at least "thresholdWhole"
-proportion of the cells in that simulation (at a particular time
-point). This of course means that your "sampled genotype" might not
-correspond to any existing genotype because we are summing over all
-cells in the population; for instance suppose that at the time we
-take the sample there are only two clones in the population, one
-with a frequency of 0.4 that has gene A mutated, and a second one
-with a frequency of 0.6 that has gene B mutated. If you set
-`thresholdWhole` to values $leq 0.4$ the sampled genotype will show
-both A and B mutated. **Single-cell** sampling is provided as an
-option in contrast to whole-tumor sampling. Here any sampled
-genotype will correspond to an existing genotype as you are sampling
-with single-cell resolution.
+Regardless of whether and how you plot the information in `pops.by.time`,
+you can also sample one or multiple simulations using `samplePop`. In
+**whole-tumor** sampling the resolution is the whole tumor (or the whole
+population). Thus, a key argument is `thresholdWhole`, the threshold for
+detecting a mutation: a gene is considered mutated if it is altered in at
+least "thresholdWhole" proportion of the cells in that simulation (at a
+particular time point). This of course means that your "sampled genotype"
+might not correspond to any existing genotype because we are summing over
+all cells in the population; for instance, suppose that at the time we take
+the sample there are only two clones in the population, one clone with a
+frequency of 0.4 that has gene A mutated, and a second clone one with a
+frequency of 0.6 that has gene B mutated. If you set `thresholdWhole` to
+values $\leq 0.4$ the sampled genotype will show both A and B
+mutated. **Single-cell** sampling is provided as an option in contrast to
+whole-tumor sampling. Here any sampled genotype will correspond to an
+existing genotype as you are sampling with single-cell resolution.
 
 
-When `samplePop` is run on a set of simulated data of, say, 100
-simulated trajectories (100 "subjects"), it will produce a matrix
-with 100 rows (100 "subjects"). But if it makes sense in the context
-of your problem you can of course run `samplePop` repeatedly.
+When `samplePop` is run on a set of simulated data of, say, 100 simulated
+trajectories (100 "subjects"), it will produce a matrix with 100 rows (100
+"subjects"). But if it makes sense in the context of your problem (e.g.,
+multiple samples per patient?) you can of course run `samplePop` repeatedly.
 
 
 
@@ -7128,7 +7127,7 @@ of your problem you can of course run `samplePop` repeatedly.
 ## Differences between "samplePop" and "oncoSimulSample" {#diffsample}
 
 
-*`samplePop`* provides two sampling times: "last" and
+`samplePop` provides two sampling times: "last" and
 "uniform". It also allows you to sample at the first sample time(s) at
 which the population(s) reaches a given size, which can be either the same
 or different for each simulation (with argument `popSizeSample`).
@@ -7143,18 +7142,18 @@ last time unit of their simulation.
 
 
 
-With *`oncoSimulSample`* we obtain samples that correspond to
-`timeSample = "last"` in *`samplePop`* by specifying a
-unique value for *`detectionSize`* and
-*`detectionDrivers`*. The data from each simulation will
+With `oncoSimulSample` we obtain samples that correspond to
+`timeSample = "last"` in `samplePop` by specifying a
+unique value for `detectionSize` and
+`detectionDrivers`. The data from each simulation will
 correspond to the time point at which those are reached (analogous to
 `timeSample = "last"`). How about uniform sampling? We pass a
-vector of *`detectionSize`* and *`detectionDrivers`*,
+vector of `detectionSize` and `detectionDrivers`,
 where each value of the vector comes from a uniform distribution. This is
-not identical to the "uniform" sampling of  *`oncoSimulSample`*,
+not identical to the "uniform" sampling of  `oncoSimulSample`,
 as we are not sampling uniformly over all time periods, but are stopping
 at uniformly distributed values over the stopping conditions. Arguably,
-however, the procedure in *`samplePop`* might be closer to what we
+however, the procedure in `samplePop` might be closer to what we
 mean with "uniformly sampled over the course of the disease" if that
 course is measured in terms of drivers or size of tumor.
 
@@ -7164,29 +7163,29 @@ course is measured in terms of drivers or size of tumor.
 <!-- % simulations were set to run only until they had just a small number of -->
 <!-- % cells. -->
 
-An advantage of *`oncoSimulSample`* is that we can specify
+An advantage of `oncoSimulSample` is that we can specify
 arbitrary sampling schemes, just by passing the appropriate vector
-*`detectionSize`* and *`detectionDrivers`*. A disadvantage
+`detectionSize` and `detectionDrivers`. A disadvantage
 is that if we change the stopping conditions we can not just resample the
 data, but we need to run it again.
 
-There is no difference between *`oncoSimulSample`* and
-*`oncoSimulPop`* + *`samplePop`* in terms of the
+There is no difference between `oncoSimulSample` and
+`oncoSimulPop` + `samplePop` in terms of the
 `typeSample` argument (whole tumor or single cell).
 
 
 Finally, there are some additional differences between the two
-functions. *`oncoSimulPop`* can run parallelized (it uses
-*`mclapply`*). This is not done with *`oncoSimulSample`*
+functions. `oncoSimulPop` can run parallelized (it uses
+`mclapply`). This is not done with `oncoSimulSample`
 because this function is designed for simulation experiments where you
 want to examine many different scenarios simultaneously. Thus, we provide
 additional stopping criteria (`max.wall.time.total` and
 `max.num.tries.total`) to determine whether to continue running the
 simulations, that bounds the total running time of all the simulations in
-a call to *`oncoSimulSample`*. And, if you are running multiple
+a call to `oncoSimulSample`. And, if you are running multiple
 different scenarios, you might want to make multiple, separate,
 independent calls (e.g., from different R processes) to
-*`oncoSimulSample`*, instead of relying in *`mclapply`*,
+`oncoSimulSample`, instead of relying in `mclapply`,
 since this is likely to lead to better usage of multiple cores/CPUs if you
 are examining a large number of different scenarios.
 
@@ -7195,12 +7194,12 @@ are examining a large number of different scenarios.
 
 
 
-<!-- % ### `popSizeSample` and *`oncoSimulPop`*} -->
+<!-- % ### `popSizeSample` and `oncoSimulPop`} -->
 <!-- % \label{popss-osp} -->
 
 
 <!-- % Suppose you run a set of simulations with a large `finalTime` with -->
-<!-- % *`oncoSimulPop`*. Since you can pass to *`samplePop`* a -->
+<!-- % `oncoSimulPop`. Since you can pass to `samplePop` a -->
 <!-- % vector for `popSizeSample` this might seem to resemble a -->
 <!-- % deterministic version of the stochastic detection mechanism -->
 <!-- % (\@ref(detectprob)): for each simulation, you would take a sample at the -->
@@ -7335,17 +7334,16 @@ are examining a large number of different scenarios.
 
 
 
-# Showing the relationships of clones {#phylog}
+# Showing the genealogical relationships of clones {#phylog}
 
-If you run simulations with the `keepPhylog = TRUE` argument, the
-simulations keep track of when every clone is generated, and that will
-allow us to see the parent-child relationships between clones. (This is
-disabled by default: the code runs a little bit slower and the result is
-larger.)
+If you run simulations with `keepPhylog = TRUE`, the simulations keep track
+of when every clone is generated, and that will allow us to see the
+parent-child relationships between clones. (This is disabled by default: the
+code runs a little bit slower and the result is larger.)
 
-In an abuse of terminology, we will use functions with the "phylog"
-term, but note these are not proper phylogenies. (Though you could
-construct proper phylogenies from the information kept).
+<!-- In an abuse of terminology, we will use functions with the "phylog" -->
+<!-- term, but note these are not proper phylogenies. (Though you could -->
+<!-- construct proper phylogenies from the information kept). -->
 
 
 Let us re-run a previous example:
@@ -7518,7 +7516,7 @@ par(op)
 
 ## Parent-child relationships from multiple runs {#phylogmult}
 
-If you use *`oncoSimulPop`* you can store and plot the
+If you use `oncoSimulPop` you can store and plot the
 ``phylogenies" of the different runs:
 
 ```{r}
@@ -7548,7 +7546,7 @@ par(op)
 ``` 
 
 
-This is so far disabled in function *`oncoSimulSample`*, since
+This is so far disabled in function `oncoSimulSample`, since
 that function is optimized for other uses. This might change in the future.
 
 
@@ -7573,9 +7571,9 @@ landscapes (e.g., @brouillet_magellan:_2015).
 
 
 With OncoSimulR it is possible to generate mappings of genotype to
-fitness using the function *`rfitness`* that allows you to use from
+fitness using the function `rfitness` that allows you to use from
 a pure House of Cards model to a purely additive model. I have
-followed @szendro_quantitative_2013, @franke_evolutionary_2011 and
+followed @szendro_quantitative_2013 and @franke_evolutionary_2011 and
 model fitness as
 
 <!-- $$ -->
@@ -7598,16 +7596,16 @@ change the reference genotype to any of the genotypes: for the
 deterministic part, you make the fittest genotype be the one with all
 positions mutated by setting `reference = "max"`, or use the
 wildtype by using a string of 0s, or randomly select a genotype as a
-reference by using `reference = "random"`.  And by playing with $c$
-and $sd$ you can flexibly modify the relative weight of the purely House
-of Cards vs. additive component. The expression used above is also very
-similar to the one on @greene_changing_2014 if you use
-*`rfitness`* with the argument `reference = "max"`.
+reference by using `reference = "random"` or `reference = "random2"`.  
+And by changing $c$ and $sd$ you can flexibly modify the relative weight
+of the purely House of Cards vs. additive component. The expression used
+above is also very similar to the one on @greene_changing_2014 if you use
+`rfitness` with the argument `reference = "max"`.
 
 
 What can you do with these genotype to fitness mappings? You could plot
-them, you could use them as input for *`oncoSimulIndiv`* and
-related functions, or you could export them and plot them externally
+them, you could use them as input for `oncoSimulIndiv` and related
+functions, or you could export them (`to_Magellan`) and plot them externally
 (e.g., in MAGELLAN: <http://wwwabi.snv.jussieu.fr/public/Magellan/>,
 @brouillet_magellan:_2015).
 
@@ -7639,11 +7637,11 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 
 # Measures of evolutionary predictability and genotype diversity
 
-Several measures of evolutionary predictability have been proposed
-in the literature (see, e.g.,@szendro_predictability_2013 and
-references therein). We provide two, Lines of Descent (LOD) and
-Paths to the Maximum (POM), following @szendro_predictability_2013,
-and a simple measure of diversity of the actual genotypes sampled.
+Several measures of evolutionary predictability have been proposed in the
+literature (see, e.g., @szendro_predictability_2013 and references
+therein). We provide two, Lines of Descent (LOD) and Paths to the Maximum
+(POM), following @szendro_predictability_2013; we also provide a simple
+measure of diversity of the actual genotypes sampled.
 
 In @szendro_predictability_2013 "(...) paths defined as the time
 ordered sets of genotypes that at some time contain the largest
@@ -7655,28 +7653,47 @@ and keep samples (arguments `sampleEvery` and `keepEvery`), since we
 are running a continuous time process.
 
 
-@szendro_predictability_2013 also define Lines of descent (LODs)
-which "(...)  represent the lineages that arrive at the most
-populated genotype at the final time". In that same page (572) they
-provide the details on how the LODs are obtained. My implementation
-is not exactly identical to their definition. My `lod_single` is the
-first path to arrive at the genotype that eventually becomes the
-most populated genotype at the final time (and, in this sense,
-agrees with the LOD of Szendro et al.). However, in contrast to what
-is apparently done in Szendro et al. ("A given genotype may undergo
-several episodes of colonization and extinction that are stored by
-the algorithm, and the last episode before the colinization of the
-final state is used to construct the step."), I do not check that
-this genotype (which is the one that will become the most populated
-at final time) does not become extinct before the final
-colonization. So there could be other paths (all in `all_paths`
-list) that are actually the one(s) that are colonizers of the most
-populated genotype (with no extinction before the final
-colonization). I addition, and in case this might be useful, for
-each simulation I keep all the paths that "(...) arrive at the most
-populated genotype at the final time" (first paragraph in p. 572 of
+@szendro_predictability_2013 also define Lines of descent (LODs) which
+"(...)  represent the lineages that arrive at the most populated genotype at
+the final time". In that same page (572) they provide the details on how the
+LODs are obtained. My implementation is not exactly identical to the
+definition given in p. 572 of Szendro et al. First, in case this might be
+useful, for each simulation I keep all the paths that "(...) arrive at the
+most populated genotype at the final time" (first paragraph in p. 572 of
 Szendro et al.), whereas they only keep one (see second column of
-p. 572). 
+p. 572). However, I do provide a single LOD for each run, too. This is the
+first path to arrive at the genotype that eventually becomes the most
+populated genotype at the final time (and, in this sense, agrees with the
+LOD of Szendro et al.). However, in contrast to what is apparently done in
+Szendro ("A given genotype may undergo several episodes of colonization and
+extinction that are stored by the algorithm, and the last episode before the
+colonization of the final state is used to construct the step."), I do not
+check that this genotype (which is the one that will become the most
+populated at final time) does not become extinct before the final
+colonization. So there could be other paths (all in `all_paths`) that are
+actually the one(s) that are colonizers of the most populated genotype (with
+no extinction before the final colonization).
+
+<!-- My implementation is not exactly identical to their -->
+<!-- definition. My `lod_single` is the first path to arrive at the genotype that -->
+<!-- eventually becomes the most populated genotype at the final time (and, in -->
+<!-- this sense, agrees with the LOD of Szendro et al.). However, in contrast to -->
+<!-- what is apparently done in Szendro et al. ("A given genotype may undergo -->
+<!-- several episodes of colonization and extinction that are stored by the -->
+<!-- algorithm, and the last episode before the colinization of the final state -->
+<!-- is used to construct the step."), I do not check that this genotype (which -->
+<!-- is the one that will become the most populated at final time) does not -->
+<!-- become extinct before the final colonization. So there could be other paths -->
+<!-- that are actually the one(s) that are colonizers of the most populated -->
+<!-- genotype (with no extinction before the final colonization). Nevertheless, -->
+<!-- all the paths that "(...) arrive at the most populated genotype at the final -->
+<!-- time" (first paragraph in p. 572 of Szendro et al.), are stored (in the -->
+<!-- `all_paths` list returned). (This differs from Szendro et al., as they only -->
+<!-- keep one ---see second column of p. 572). -->
+
+<!-- As just said, in case this might be useful, for each simulation I keep all -->
+<!-- the paths that "(...) arrive at the most populated genotype at the final -->
+<!-- time" (first paragraph in p. 572 of Szendro et al.), whereas they only . -->
 
 
 To briefly show some output, we will use again the \@ref(pancreas)
@@ -7826,7 +7843,7 @@ in a clone with 1, but that is a different issue.)
 <!-- > be studied by 'climbing' the tree and recording the origination and -->
 <!-- > fixation times of sites." -->
 
-### `sampleEvery` `keepPhylog` and pruning {#prune}
+### `sampleEvery`, `keepPhylog`, and pruning {#prune}
 
 At each sampling time (where `sampleEvery` determines the time units
 between sampling times) the abundance of all the clones with number of
@@ -7893,8 +7910,8 @@ also \@ref(histlargegenes)).
 
 ## Dealing with errors in "oncoSimulPop" {#errorosp}
 
-When running OncoSimulR under Windows *`mclapply`* does not use
-multiple cores, and errors from *`oncoSimulPop`* are reported
+When running OncoSimulR under Windows `mclapply` does not use
+multiple cores, and errors from `oncoSimulPop` are reported
 directly. For example:
 
 ```{r}
@@ -7909,8 +7926,8 @@ if(.Platform$OS.type == "windows")
 
 
 Under POSIX operating systems (e.g., GNU/Linux or Mac OSX)
-*`oncoSimulPop`* can ran parallelized by calling
-*`mclapply`*. Now, suppose you did something like
+`oncoSimulPop` can ran parallelized by calling
+`mclapply`. Now, suppose you did something like
 
 ```{r}
 ## Do not run under Windows
@@ -7923,8 +7940,8 @@ if(.Platform$OS.type != "windows")
 ``` 
 
 The warning you are seeing tells you there was an error in the functions
-called by *`mclapply`*. If you check the help for
-*`mclpapply`* you'll see that it returns a try-error object, so we
+called by `mclapply`. If you check the help for
+`mclpapply` you'll see that it returns a try-error object, so we
 can inspect it. For instance, we could do:
 
 ```{r, eval=FALSE}
@@ -7938,7 +7955,7 @@ pancrError[[1]][1]
 ``` 
  
 And from here you could see the error that was returned by
-*`oncoSimulIndiv`*: `initSize < 1` (which is indeed true:
+`oncoSimulIndiv`: `initSize < 1` (which is indeed true:
 we pass `initSize = 1e-5`).
 
 
@@ -8098,7 +8115,7 @@ effects? You can do that using epistatic effects for mutator effects.
 
 First, we need to differentiate between the McFarland and the
 exponential models. If you use the McFarland model, you should read
-section \@ref(#bnbdensdep) but, briefly, the small default is
+section \@ref(bnbdensdep) but, briefly, the small default is
 probably a good choice. 
 
 With the exponential model, however, simulations can often be much
@@ -8150,7 +8167,7 @@ evaluation is much simpler ---we are working on further improving speed).
 ## Specifying restrictions: posets {#poset}
 
 How to specify the restrictions is shown in the help for
-*`poset`*. It is often useful, to make sure you did not make any
+`poset`. It is often useful, to make sure you did not make any
 mistakes, to plot the poset. This is from the examples (we use an "L"
 after a number so that the numbers are integers, not doubles; we could
 alternatively have modified `storage.mode`).
@@ -8174,7 +8191,7 @@ Specifying posets is actually straightforward. For instance, we can
 specify the pancreatic cancer poset in 
 @Gerstung2011 (their figure 2B, left). We specify the poset using
 numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2,
-etc). This example is also in the help for *`poset`*:
+etc). This example is also in the help for `poset`:
 
 ```{r, fig.height=3}
 pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
@@ -8336,7 +8353,7 @@ m1 <- oncoSimulPop(100, examplePosets[["p1101"]],
 
 ``` 
 
-The function *`samplePop`* samples that object, and also gives you
+The function `samplePop` samples that object, and also gives you
 some information about the output:
 
 ```{r}
@@ -8385,7 +8402,7 @@ more meaningful names.
 # Generating random DAGs for restrictions {#simo}
 
 You might want to randomly generate DAGs like those often found in the
-literature on oncogenetic trees et al. Function *`simOGraph`*
+literature on oncogenetic trees et al. Function `simOGraph`
 might help here. 
 
 ```{r}
