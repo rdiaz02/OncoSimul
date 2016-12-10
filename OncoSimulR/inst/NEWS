@@ -1,4 +1,4 @@
-Changes in version 2.5.2 (2016-11-20):
+Changes in version 2.5.2 (2016-12-10):
         - Lots and lots of addition to vignette including benchmarks.
         - Diversity of sampled genotypes.
 	- Genotyping error can be added in samplePop.
