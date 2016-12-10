@@ -210,7 +210,7 @@ tumor resolution, adding noise if we want.
 The models so far implemented are all continuous time models, which are
 simulated using the BNB algorithm of @Mather2012. The core of the code is
 implemented in C++, providing for fast execution.  To help with simulation
-studies, code to simulate random graphs of the kind often seen in CBN, OTs,
+studies, code to simulate random graphs of the kind often seen in CBNs, OTs,
 etc, is also available. Finally, OncoSimulR also allows for the generation
 of random fitness landscapes and the representation of fitness landscapes
 and provides some statistics of of evolutionary predictability.
@@ -292,7 +292,7 @@ provides a summary of the key features of OncoSimulR. (An
 explanation of the meaning of terms specific to the GSR table is
 available from
 https://popmodels.cancercontrol.cancer.gov/gsr/search/ or from the
-[Genetics Simulation Resources table itslef](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed),
+[Genetics Simulation Resources table itself](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed),
 by moving the mouse over each term).
 
 
@@ -485,7 +485,7 @@ g1 <- simOGraph(4, out = "rT")
 ## 2. Simulate two evolutionary trajectories
 s1 <- oncoSimulPop(10, allFitnessEffects(g1, drvNames = 1:4),
                    mc.cores = 2, ## adapt to your hardware
-                   seed = NULL) ## for repeatability in this vignette
+                   seed = NULL) ## for reproducibility in this vignette
 
 ## 3. Sample those data uniformly, and add noise
 d1 <- samplePop(s1, timeSample = "unif", propError = 0.1)
@@ -504,7 +504,7 @@ set.seed(7)
 RNGkind("L'Ecuyer-CMRG")
 ```
 
-### Epistasis and predictability in rugged fitness lanscapes in asexual populations {#ex-ochs}
+### Epistasis and predictability in rugged fitness landscapes in asexual populations {#ex-ochs}
 
 These questions encompass a wide range of specific issues that have been
 addressed in evolutionary genetics studies and which include from detailed
@@ -569,7 +569,7 @@ od_sim <- oncoSimulPop(10, od, muEF = odm,
                        detectionSize = NA, detectionProb = NA,
                        onlyCancer = TRUE, 
 					   mc.cores = 2, ## adapt to your hardware
-                       seed = NULL) ## for repeatability
+                       seed = NULL) ## for reproducibility
 ## What is the frequency of each final genotype?
 sampledGenotypes(samplePop(od_sim))
 ```
@@ -601,7 +601,7 @@ RNGkind("L'Ecuyer-CMRG")
 ## sampling procedure, or ...
 
 ## 1. Generate a random fitness landscape, from the Rough
-##    Mount Fuji model, with g genes, and c (additivity constant) and
+##    Mount Fuji model, with g genes, and c ("slope" constant) and
 ##    reference chosen randomly. Ask for a minimal number of accessible
 ##    genotypes
 g <- 6
@@ -623,7 +623,7 @@ to_Magellan(rl, file = "rl1.txt")
 simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),
                         keepPhylog = TRUE, keepEvery = 1,
                         initSize = 4000,
-                        seed = NULL, ## for repeatability
+                        seed = NULL, ## for reproducibility
                         mc.cores = 2) ## adapt to your hardware
 
 ## 4. Obtain measures of evolutionary predictability
@@ -689,7 +689,7 @@ sb1 <- oncoSimulPop(totalpops, fbauer, model = "Exp",
                     initSize = 100,
                     onlyCancer = FALSE, 
 					mc.cores = 2, ## adapt to your hardware
-                    seed = NULL) ## for repeatibility
+                    seed = NULL) ## for reproducibility
 ## What proportion of the simulations do not end up extinct?
 sum(summary(sb1)[, "TotalPopSize"] > 0)/totalpops
 
@@ -751,7 +751,7 @@ soe1 <- oncoSimulPop(totalpops, o3, model = "Exp",
                     initSize = 500,
                     onlyCancer = FALSE,
 					mc.cores = 2, ## adapt to your hardware
-                    seed = NULL) ## for repeatibility
+                    seed = NULL) ## for reproducibility
 					
 ## What proportion of the simulations do not end up extinct?
 sum(summary(soe1)[, "TotalPopSize"] > 0)/totalpops
@@ -837,7 +837,7 @@ st <- oncoSimulPop(4, ft, muEF = mt,
                    onlyCancer = TRUE,
                    keepEvery = NA, 
                    mc.cores = 2, ## adapt to your hardware
-                   seed = NULL) ## for repeatibility
+                   seed = NULL) ## for reproducibility
 
 ## How long did it take to reach cancer?
 unlist(lapply(st, function(x) x$FinalTime))
@@ -1147,7 +1147,7 @@ A PDF version of this vignette is available
 from <https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf>.  And an HTML
 version from <https://rdiaz02.github.io/OncoSimul/OncoSimulR.html>. These
 files should correspond to the most recent, github version, of the package
-(i.e., they might include changes not yet available from the BioConudctor
+(i.e., they might include changes not yet available from the BioConductor
 package).
 
 
@@ -1159,7 +1159,7 @@ version 2 of OncoSimulR. Version 1 is the version available up to, and
 including, BioConductor v. 3.1. Version 2 of OncoSimulR is available
 starting from BioConductor 3.2 (and, of course, available too from
 development versions of BioC).  So, if you are using the current stable or
-development version of BioConductor, or you grab the sources from github
+development version of BioConductor, or you grab the sources from GitHub
 (<https://github.com/rdiaz02/OncoSimul>) you are using what we call
 version 2. Please note that **the functionality of version 1 will soon be removed.**
 
@@ -1361,7 +1361,7 @@ knitr::kable(benchmark_1[1:4, c("time_per_simul",
 	align = "c")
 ```
 
-The above table shows that a naïve comparison (looking simply at
+The above table shows that a naive comparison (looking simply at
 execution time) might conclude that the McFL model is much, much
 slower than the Exp model. But that is not the complete story: using
 the `detectionProb` stopping mechanism (see \@ref(detectprob)) will
@@ -1387,14 +1387,14 @@ clones tracked.
 
 
 We can run the exponential model again modifying the arguments of the
-`detectionProb` mechanism; in two of the models below (`exp3` and `exp4`)
-no detection can take place unless populations are at least 100 times larger
-than the initial population size, and probability of detection is 0.1 with
-a poulation size 1,000 times larger than the initial one (`PDBaseline =
-5e4`, `n2 = 5e5`). In the other two models (`exp5` and `exp6`), no
-detection can take place unless populations are at least 1,000 times larger
-than the initial population size, and probability of detection is 0.1 with
-a population size 100,000 times larger than the initial one (`PDBaseline =
+`detectionProb` mechanism; in two of the models below (`exp3` and `exp4`) no
+detection can take place unless populations are at least 100 times larger
+than the initial population size, and probability of detection is 0.1 with a
+population size 1,000 times larger than the initial one (`PDBaseline = 5e4`,
+`n2 = 5e5`). In the other two models (`exp5` and `exp6`), no detection can
+take place unless populations are at least 1,000 times larger than the
+initial population size, and probability of detection is 0.1 with a
+population size 100,000 times larger than the initial one (`PDBaseline =
 5e5`, `n2 = 5e7`). In runs `exp3` and `exp5` we set `keepEvery = 1` and in
 runs `exp4` and `exp6` we set `keepEvery = NA`.
 
@@ -1974,7 +1974,7 @@ is much smaller.
 
 Yes. In fact, in OncoSimulR there is no pre-set limit on genome
 size. However, large numbers of genes can lead to unacceptable
-memory usage ot running time. We discuss several examples next that
+memory usage or running time. We discuss several examples next that
 illustrate some of the major issues to consider. Another example
 with 50,000 genes is shown in section \@ref(mcf50070).
 
@@ -3284,7 +3284,7 @@ without any chance for mutation[^3].
 
 Models based on Bozic, however, have a birth rate of 1 and mutations
 affect the death rate. In this case, a death rate larger than birth rate,
-per se, does not signal immediate extinction and, moreover, even for death
+*per se*, does not signal immediate extinction and, moreover, even for death
 rates that are a few times larger than birth rates, the clone could mutate
 before becoming extinct[^4].
 
@@ -3389,7 +3389,7 @@ summary(i1_e)
 
 ### AND, OR, XOR relationships {#andorxor}
 
-The literature on oncogenetic trees, CBNs, etc, has used graphs as a way
+The literature on Oncogenetic trees, CBNs, etc, has used graphs as a way
 of showing the restrictions in the order in which mutations can
 accumulate. The meaning of "convergent arrows" in these graphs, however,
 differs. In Figure 1 of @Korsunsky2014 we are shown a simple diagram
@@ -3421,7 +3421,7 @@ plot(examplesFitnessEffects[["cbn1"]])
 
 
 
-Note that oncogenetic trees [@Desper1999JCB; @Szabo2008] need not
+Note that Oncogenetic trees [@Desper1999JCB; @Szabo2008] need not
 deal with the above distinctions, since the DAGs are trees: no node has
 more than one incoming connection or more than one parent[^5].
 
@@ -4853,7 +4853,7 @@ modules <- c("Root" = "Root", "A" = "a1",
              "H" = "h1, h2", "I" = "i1",
              "J" = "j1, j2", "K" = "k1, k2", "M" = "m1")
 
-set.seed(1) ## for repeatability
+set.seed(1) ## for reproducibility
 noint <- rexp(5, 10)
 names(noint) <- paste0("n", 1:5)
 
@@ -5651,7 +5651,7 @@ We can specify this combining a graph and epistasis specifications:
 ```{r}
 su <- 0.1
 si <- -0.05
-fvi <- 1.2 ## the fitnes of the vi mutant
+fvi <- 1.2 ## the fitness of the vi mutant
 sv <- (fvi/(1 + si)) - 1
 sui <- suv <- -1
 od <- allFitnessEffects(
@@ -6175,7 +6175,7 @@ do we do that? When we assess probability of exiting is controlled by
 
 An important **warning**, though: for populations that are growing
 very, very fast or where some genes might have very large effects on
-fitness even a moderate `checkSizPEvery` of, say, 10, might be
+fitness even a moderate `checkSizePEvery` of, say, 10, might be
 inappropriate, since populations could have increased by several
 orders of magnitude between successive checks. This issue is also
 discussed in section \@ref(bench1xf) and \@ref(benchusual).
@@ -6184,7 +6184,7 @@ discussed in section \@ref(bench1xf) and \@ref(benchusual).
 Finally, you can specify $cPDetect$ directly (you will need to set
 `n2` and `p2` to NA). However, it might be more intuitive to
 specify the pair `n2`, `p2`, such that $P(n2) = p2$ (and
-from that pair we solve for the value of `cPDetect`).
+from that pair we solve for the value of `carpetbagged`).
 
 
 You can get a feeling for the effects of these arguments by playing with
@@ -6229,7 +6229,7 @@ in \@ref(s-cbn1) and \@ref(mcf5070), with the default arguments.
 
 We said above that we exit as soon as any of the conditions is
 reached (i.e., we use an OR operation over the exit
-conditions). There is a special exception to this porcedure: if you
+conditions). There is a special exception to this procedure: if you
 set `AND_DrvProbExit = TRUE`, both the number of drivers and the
 `detectionProb` mechanism condition must fulfilled. This means that
 the `detectionProb` mechanism not assessed unless the
@@ -6339,10 +6339,9 @@ what we are plotting is the information contained in the
 all the clones (or genotypes) at each of the sampling periods.
 
 
-The functions that do the work are called `plot` and these are
-actually methods for objects of class "oncosimul" and "oncosi
-mulpop". You can access the help by doing `?plot.oncosimul`, for
-example.
+The functions that do the work are called `plot` and these are actually
+methods for objects of class "oncosimul" and "oncosimulpop". You can access
+the help by doing `?plot.oncosimul`, for example.
 
 What entities are shown in the plot? You can show the trajectories of:
 
@@ -6806,7 +6805,7 @@ plot(tmp, type = "stacked", plotDiversity = TRUE,
 
 Now show the genotypes explicitly:
 ```{r tmpmdx7,fig.width=6.5, fig.height=5.3}
-## Improve telling appart the most abundant 
+## Improve telling apart the most abundant 
 ## genotypes by sorting colors
 ## differently via breakSortColors
 ## Modify ncols of legend, so it is legible by not overlapping
@@ -6895,7 +6894,7 @@ As an example, we will use the data we generated above for section
 ## Convert the data
 lb1 <- OncoSimulWide2Long(b1)
 
-## Install the streamgraph package from github and load
+## Install the streamgraph package from GitHub and load
 library(devtools)
 devtools::install_github("hrbrmstr/streamgraph")
 library(streamgraph)
@@ -7135,7 +7134,7 @@ multiple samples per patient?) you can of course run `samplePop` repeatedly.
 which the population(s) reaches a given size, which can be either the same
 or different for each simulation (with argument `popSizeSample`).
 "last" means to sample each individual in the very last time period of the
-simulation. "uniform" means sampling each individual at a time choosen
+simulation. "uniform" means sampling each individual at a time chosen
 uniformly from all the times recorded in the simulation between the time
 when the first driver appeared and the final time period. "unif" means
 that it is almost sure that different individuals will be sampled at
@@ -7558,7 +7557,7 @@ that function is optimized for other uses. This might change in the future.
 
 In most of the examples seen above, we have fully specified the
 fitness of the different genotypes (either by providing directly the
-full mapping genotyeps to fitness, or by providing that mapping by
+full mapping genotypes to fitness, or by providing that mapping by
 specifying the effects of the different gene combinations). In some
 cases, however, we might want to specify a particular model that
 generates the fitness landscape, and then have fitnesses be random
@@ -8095,7 +8094,7 @@ st <- oncoSimulPop(4, ft, muEF = mt,
                    onlyCancer = TRUE,
                    keepEvery = NA, 
                    mc.cores = 2, ## adapt to your hardware
-                   seed = NULL) ## for repeatibility
+                   seed = NULL) ## for reproducibility
 set.seed(NULL) ## return things to their "usual state"
 
 ```
@@ -8139,7 +8138,7 @@ issue (see discussion in section \@ref(popgtzx)).
 ## What can you do with the simulations?
 
 This is up to you. In section \@ref(sample-1) we show an example
-where we infer an oncogenetic tree from simulated data and in
+where we infer an Oncogenetic tree from simulated data and in
 section \@ref(whatfor) we go over a varied set of scientific
 questions where OncoSimulR could help.
 
@@ -8257,12 +8256,12 @@ plot(b2, type = "stacked")
 The following is an example where we do not care about passengers, but we
 want to use a different graph, and we want a few more drivers before
 considering cancer has been reached. And we allow it to run for longer.
-Note that in the McF model `detectionSize` really plays no
+Note that in the McFL model `detectionSize` really plays no
 role. Note also how we pass the poset: it is the same as before, but now
 we directly access the poset in the list of posets.
 
 ```{r, echo=FALSE,eval=TRUE}
-set.seed(1) ## for repeatability. Once I saw it not reach cancer.
+set.seed(1) ## for reproducibility. Once I saw it not reach cancer.
 ``` 
 ```{r}
 
@@ -8290,7 +8289,7 @@ plot(m2, type = "stacked",
 
 The default is to simulate progression until a simulation reaches cancer
 (i.e., only simulations that satisfy the detectionDrivers or the
-detectionSize will be returned). If you use the McF model with large
+detectionSize will be returned). If you use the McFL model with large
 enough `initSize` this will often be the case but not if you use
 very small `initSize`. Likewise, most of the Bozic runs do not
 reach cancer. Lets try a few:
@@ -8366,7 +8365,7 @@ genotypes <- samplePop(m1)
 
 
 What can you do with it? That is up to you. As an example, let us try to
-infer an oncogenetic tree (and plot it) using the `r CRANpkg("Oncotree")`
+infer an Oncogenetic tree (and plot it) using the `r CRANpkg("Oncotree")`
 package @Oncotree after getting a quick look at the marginal
 frequencies of events:
 
@@ -8405,7 +8404,7 @@ more meaningful names.
 # Generating random DAGs for restrictions {#simo}
 
 You might want to randomly generate DAGs like those often found in the
-literature on oncogenetic trees et al. Function `simOGraph`
+literature on Oncogenetic trees et al. Function `simOGraph`
 might help here. 
 
 ```{r}
@@ -8435,7 +8434,7 @@ proposed and named before; please let me know, best if with a reference.
 
 Should we remove direct connections if there are indirect? Or, should we
 set `removeDirectIndirect = TRUE`? Except for @Farahani2013,
-none of the DAGs I've seen in the context of CBNs, oncogenetic trees, etc,
+none of the DAGs I've seen in the context of CBNs, Oncogenetic trees, etc,
 include both direct and indirect connections between nodes. If these
 exist, reasoning about the model can be harder. For example, with CBN (AND
 or CMPN or monotone relationships) adding a direct connection makes no
@@ -8488,3 +8487,6 @@ set.seed(NULL)
 <!-- Local Variables: -->
 <!-- fill-column: 68 -->
 <!-- End: -->
+
+<!--  LocalWords:  genotype Genotyping
+ -->
