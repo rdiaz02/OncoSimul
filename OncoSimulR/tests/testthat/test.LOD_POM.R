@@ -53,10 +53,13 @@ test_that("Exercise LOD and POM code", {
                                             initSize = 10)))
 
     lop8 <- suppressWarnings(LOD(pancr8))
+
+    ## what if this is commented out?
     
-    expect_true(any(unlist(lapply(lop8,
-                                  function(x) x$lod_single))
-                    %in% "No_descendants"))
+    ## expect_true(any(unlist(lapply(lop8,
+    ##                               function(x) x$lod_single))
+    ##                 %in% "No_descendants"))
+
     ## there are descendants but all go extinct
     ## pancr2 <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
     ##                                       "TP53", "TP53", "MLL3"),
