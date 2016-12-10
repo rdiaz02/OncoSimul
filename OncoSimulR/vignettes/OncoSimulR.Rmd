@@ -291,7 +291,7 @@ by moving the mouse over each term).
 |&nbsp; variations            |           Biallelic Marker, Genotype or Sequencing Error|
 |**Simulation Method**            |           Forward-time|
 |&nbsp; Type of Dynamical Model | Continuous time|
-|&nbsp; Entities Tracked | Individuals (genetic clones ---\@ref(meaningclone))|
+|&nbsp; Entities Tracked | Clones (see \@ref(trackindivs))|
 |**Input** | Program specific (R data frames and matrices specifying genotypes' fitness, gene effects, and starting genotype) |
 |**Output**||
 |&nbsp; Data Type| Genotype or Sequence, Individual Relationship (complete parent-child relationships between clones), Demographic (populations sizes of all clones at sampling times), Diversity Measures (LOD, POM, diversity of genotypes), Fitness|
@@ -6058,7 +6058,7 @@ What entities are shown in the plot? You can show the trajectories of:
 
 - numbers of drivers (e.g., \@ref(fig:baux1));
 
-- genotypes --or clones or haplotypes (e.g., \@ref(fig:baux2)).
+- genotypes --clones (e.g., \@ref(fig:baux2)).
 
 
 (Of course, showing "drivers" requires that you have specified
@@ -7664,121 +7664,174 @@ sampledGenotypes(samplePop(pancr16))
 
 ### What we mean by "clone"; and "I want clones disregarding passengers" {#meaningclone}
 
-In this vignette we often use "clone" or "genotype"
-interchangeably. A clone denotes a set of cells that have identical
-genotypes. So if you are using a fitness specification with four
-genes (i.e., your genome has only four loci), there can be up to $16
-= 2^4$ different genotypes or clones. Any two entities that differ
-in the genotype are different clones. And this applies regardless of
-whether or not you declare that some genes (loci) are drivers or
-not. So if you have four genes, it does not matter whether only the
-first or all four are regarded as drivers; you will always have at
-most 16 different clones or 16 different genotypes.
+In this vignette we often use "clone" or "genotype" interchangeably. A
+clone denotes a set of cells that have identical genotypes. So if you are
+using a fitness specification with four genes (i.e., your genome has only
+four loci), there can be up to $16 = 2^4$ different genotypes or
+clones. Any two entities that differ in the genotype are different
+clones. And this applies regardless of whether or not you declare that
+some genes (loci) are drivers or not. So if you have four genes, it does
+not matter whether only the first or all four are regarded as drivers; you
+will always have at most 16 different clones or 16 different genotypes.
+Of course you can arrive at the same clone/genotype by different
+routes. Just think about loci A and B in our four-loci genome, and how you
+can end up with a cell with both A and B mutated.
 
+Analogously, if you have 100 genes, 10 drivers and 90 passengers, you can
+have up to $2^{100}$ different clones or genotypes. Sure, one cell might
+have driver A mutated and passenger B mutated, and another cell might have
+driver A mutated and passenger C mutated. So if you only look at drivers
+you might be tempted to say that they are "the same clone for all
+practical purposes"; but they really are not the same clone as they differ
+in their genotype and this makes a lot of difference computationally. 
 
-Analogously, if you had 100 genes, 10 drivers and 90 passengers, you
-will have up to $2^{100}$ different clones or genotypes. Sure, one
-cell might have driver A mutated and passenger B mutated, and
-another cell might have driver A mutated and passenger C mutated. So
-if you only look at drivers you might be tempted to that they are
-"the same clone"; but they really are not the same clone (as they
-differ in their genotype). If you want summaries of simulations that
-collapse over some genes (say, some "passengers", the 90 passengers
-we just mentioned) look at the help for `samplePop`, argument
-`geneNames`.  This would allow you, for instance, to look at the
-diversity of clones/genotypes, considering as identical those
-genotypes that only differ in genes you deem relevant; something
-similar to defining a "drivers' clone" as all those sets of cells
-that have identical genotype with respect to only the drivers (so
-that in the example just mentioned both cells would be consider "the
-same clone" as they only differ with respect to
-passengers). However, this only applies to summaries of simulations
-once we are done simulating data. OncoSimulR will always track
-clones, as defined above, regardless of whether many of those clones
-have the same genotype if you only focus on driver genes; see also
-section \@ref(trackindivs).
+If you want summaries of simulations that collapse over some genes (say,
+some "passengers", the 90 passengers we just mentioned) look at the help
+for `samplePop`, argument `geneNames`.  This would allow you, for
+instance, to look at the diversity of clones/genotypes, considering as
+identical those genotypes that only differ in genes you deem relevant;
+something similar to defining a "drivers' clone" as the set formed from
+the union of all sets of cells that have identical genotype with respect
+to only the drivers (so that in the example just mentioned both cells
+would be considered "the same clone" as they only differ with respect to
+passengers). However, this "disregard some genes" only applies to
+summaries of simulations once we are done simulating data. OncoSimulR will
+always track clones, as defined above, regardless of whether many of those
+clones have the same genotype if you were to only focus on driver genes;
+see also section \@ref(trackindivs).
 
-Labeling something as a "driver", therefore, does not affect what we
-mean by clone. Yes, labeling something as a driver can affect when
-you stop simulations if you use `detectionDrivers` as a stopping
-mechanism (see section \@ref(endsimul)). But, again, this has
-nothing to do with the definition of "clone".
+Labeling something as a "driver", therefore, does not affect what we mean
+by clone. Yes, labeling something as a driver can affect when you stop
+simulations if you use `detectionDrivers` as a stopping mechanism (see
+section \@ref(endsimul)). But, again, this has nothing to do with the
+definition of "clone".
+
+<!-- Below we will see the expression haplotype. I am hesitant to use it -->
+<!-- because haplotypes often have implicit the idea of having been in -->
+<!-- Strictly, we keep track of clones, not haplotypes as -->
+<!-- the haplotype refers to inheritance. But you can arrive at the same -->
+<!-- clone through different routes so that two cells that are the same -->
+<!-- clone could have originated from different immediate parents. Just -->
+<!-- think of the ways you can get to a cell with both genes A and B -->
+<!-- mutated.  -->
+
+If this is all obvious to you, ignore it. I am adding it here because I've
+seen strange misunderstandings that eventually could be traced to the
+apparently multiple meanings of clone. (And to make the story complete,
+@Mather2012 use the expression "class" ---e.g., Algorithm 4 in the paper,
+Algorithm 5 in the supplementary material).
+
 
 
 ## Does OncoSimulR keep track of individuals or of clones? And how can it keep track of such large populations? {#trackindivs}
 
-OncoSimulR keeps track of clones, where a clone is a set of cells
-that are genetically identical (note that this means completely
-identical over the whole set of genes/markers you are using; see
-section \@ref(meaningclone)).  We are interested in examining the
-effects of selection, mutation, keeping track of the parent-child
-relationships between clones, etc, and thus we must keep track of
-the complete set of clones.
+OncoSimulR keeps track of clones, where a clone is a set of cells that are
+genetically identical (note that this means completely identical over the
+whole set of genes/markers you are using; see section
+\@ref(meaningclone)).  
+
+<!-- As we are interested in examining the effects of selection, mutation, -->
+<!-- keeping track of the parent-child relationships between clones, etc, and -->
+<!-- thus we must keep track of the complete set of clones. -->
 
 We do not need to keep track of individual cells because, for all
-purposes, and since we do not consider spatial structure, two or
-more cells that are genetically identical are interchangeable. This
-means, for instance, that the computational cost of keeping a
-population of a single clone with 1 individual or with 10^9
-individuals is exactly the same: we just keep track of the genotype
-(or haplotype if you want) and the number of cells.
+purposes, and since we do not consider spatial structure, two or more
+cells that are genetically identical are interchangeable. This means, for
+instance, that the computational cost of keeping a population of a single
+clone with 1 individual or with $10^9$ individuals is exactly the same: we
+just keep track of the genotype and the number of cells. (Sure, it is much
+more likely we will see a mutation soon in a clone with $10^9$ cells than
+in a clone with 1, but that is a different issue.)
 
 
-What we have explained is an obvious "trick" that has been used for
-a long time.  For instance, John H. Gillespie in his classical 1993
-paper @Gillespie1993 writes in p. 972:
-
-
-
-> Allelic genealogies are represented in the computer by a rooted
-> tree, each node of which is a unique haplotype.  A haplotype node is
-> a data structure with pointers to parent and sibling nodes and with
-> values of the current abundance and selection coefficient of the
-> haplotype.  Each node also records the generation at which the
-> haplotype first appeared in the population with its mutant site
-> (the origination time of the site) and, should the mutation become
-> fixed-the node becomes the root node for all alleles in the
-> population-the fixation time of the site.  When haplotypes without
-> descendents are lost from the population, the allelic genealogy is
-> pruned to free computer memory.  When the simulation is completed,
-> the properties of the origination and fixation point processes may
-> be studied by 'climbing' the tree and recording the origination and
-> fixation times of sites."
-
-
-OncoSimulR does something very similar. Note that we never prune any
-clone that had a population size larger than zero at any sampling
-period (so they are reflected in the `pops.by.time` matrix in the
-output). Note also that if you ask OncoSimulR to keep track of the
-complete parent-child relationships, you might see in the genealogy
-clones that are not present in `pops.by.time`, if these are clones
-that never had a population size larger than 0 at any sampling
-time. To give an example, suppose that clone A, with a population
-size larger than 0 at time 1, gives rise at time 1.5 to clone B;
-clone B then gives rise to clone C at time 1.8. Finally, suppose
-that at time 2 only clone C is alive, and suppose we only sample at
-times 1 and 2. Now, at time 1 clones B and C did not yet exist, and
-clone B is never alive at times 1 or 2, but we cannot remove clone B
-from our genealogy if we want to reflect the complete story of
-C. Thus, `pops.by.time` will show only clones A and C (not B) but
-the complete genealogy will show clones A, B, C. Since function
-`plotClonePhylog` offers a lot of flexibility with respect to what
-clones to show depending on their population sizes at different
-times, you can prevent being shown B, but its existence is there
-should you need it (see also \@ref(histlargegenes)).
+<!-- (or haplotype if -->
+<!-- you want, as that is the term used in the reference below ---but see -->
+<!-- \@(meaningclone)) -->
 
 
 
-Keeping track of clones (not individuals) and erasing clones that
-have no descendants from the `pops.by.time` matrix (and other
-internal structures in the C++ code, such as the map of genotypes to
-next mutation time or the table of genotypes) therefore leads to
-important memory and time savings. However, as explained in section
-\@{moretimings}, as we have to keep track of clones, very large
-genomes can represent a problem if they lead to the creation and
-tracking of many different clones. (Here, programs that only try to
-keep track of numbers of drivers, not individual clones, can of
-course achieve further speed improvements).
+<!-- What we have explained is an obvious "trick" that has been used for -->
+<!-- a long time.  For instance, John H. Gillespie in his classical 1993 -->
+<!-- paper @Gillespie1993 writes in p. 972: -->
+
+
+
+<!-- > Allelic genealogies are represented in the computer by a rooted -->
+<!-- > tree, each node of which is a unique haplotype.  A haplotype node is -->
+<!-- > a data structure with pointers to parent and sibling nodes and with -->
+<!-- > values of the current abundance and selection coefficient of the -->
+<!-- > haplotype.  Each node also records the generation at which the -->
+<!-- > haplotype first appeared in the population with its mutant site -->
+<!-- > (the origination time of the site) and, should the mutation become -->
+<!-- > fixed-the node becomes the root node for all alleles in the -->
+<!-- > population-the fixation time of the site.  When haplotypes without -->
+<!-- > descendents are lost from the population, the allelic genealogy is -->
+<!-- > pruned to free computer memory.  When the simulation is completed, -->
+<!-- > the properties of the origination and fixation point processes may -->
+<!-- > be studied by 'climbing' the tree and recording the origination and -->
+<!-- > fixation times of sites." -->
+
+### Prunning, `sampleEvery` and `keepPhylog` {#prunningclones}
+
+At each sampling time (where `sampleEvery` determines the time units
+between sampling times) the abundance of all the clones with number of
+cells $>0$ is recorded. This is the structure that at the end of the run
+is converted into the `pops.by.time` matrix.
+
+Now, some clones might arise from mutation between successive population
+samples but these might be extinct at the time we take a population
+sample. These clones do not appear in the `pops.by.time` matrix because,
+as we just said, they have 0 cells at the time of sampling. Of course,
+some of these clones might appear again later and reach a size larger than
+0 at some posterior sampling time; it is at this time when this/these
+clone(s) will appear in the `pops.by.time` matrix. This pruning of clones
+with 0 cells can allow considerable savings in computing time (OncoSimulR
+needs to keep track the genotype of clones, their population sizes, their
+birth, death, and mutation rates, their next mutation time and the last
+time they were updated and thus it is important that we only loop over
+structures with information that is really needed).
+
+However, as explained in section \@{moretimings}, we still need to track
+clones as clones, not simply as classes such as "number of mutated
+genes". Therefore, very large genomes can represent a problem if they lead
+to the creation and tracking of many different clones (even if they have
+the same number of mutated genes). In this case, programs that only 
+keep track of numbers of mutated genes or of drivers, not individual
+clones, can of course achieve better speed.
+
+<!-- Again, e that we never prune any -->
+<!-- clone that had a population size larger than zero at any sampling -->
+<!-- period (so they are reflected in the `pops.by.time` matrix in the -->
+<!-- output).  -->
+
+What about the genealogy? If you ask OncoSimulR to keep track of the
+complete parent-child relationships (`keepPhylog = TRUE`), you might see
+in the genealogy clones that are not present in `pops.by.time` if these
+are clones that never had a population size larger than 0 at any sampling
+time. To give an example, suppose that we will take population samples at
+times 0, 1, and 2. Clone A, with a population size larger than 0 at time
+1, gives rise at time 1.5 to clone B; clone B then gives rise to clone C
+at time 1.8. Finally, suppose that at time 2 only clone C is alive (when
+we carry out the update of the population with Algorithm 5 from
+@Mather2012, clones A and B have size 0). Now, at time 1 clones B and C
+did not yet exist, and clone B is never alive at times 1 or 2. Thus, clone
+B is not present in `pops.by.time`. But we cannot remove clone B from our
+genealogy if we want to reflect the complete history of C. Thus,
+`pops.by.time` will show only clones A and C (not B) but the complete
+genealogy will show clones A, B, C (and will show that B appeared from A
+at time 1.5 and C appeared from B at time 1.8). Since function
+`plotClonePhylog` offers a lot of flexibility with respect to what clones
+to show depending on their population sizes at different times, you can
+prevent being shown B, but its existence is there should you need it (see
+also \@ref(histlargegenes)).
+
+
+
+<!-- Keeping track of clones (not individuals) and erasing clones that have no -->
+<!-- descendants from the `pops.by.time` matrix (and other internal structures -->
+<!-- in the C++ code) therefore leads to important memory and time -->
+<!-- savings.  -->
+
 
 
 
