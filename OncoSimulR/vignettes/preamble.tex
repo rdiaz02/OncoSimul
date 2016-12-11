@@ -1,5 +1,6 @@
 \usepackage{rotating}
 \usepackage{array}
+\usepackage{pdflscape}
 
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\
 \arraybackslash\hspace{0pt}}m{#1}}
@@ -8,6 +9,11 @@
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\
 \arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{P}[1]{>{\raggedright\tabularxbackslash}p{#1}}
+
+%% http://stackoverflow.com/a/27334272
+\newcommand{\blandscape}{\begin{landscape}}
+\newcommand{\elandscape}{\end{landscape}}
+
 
 %%%Local Variables:
 %%% mode: latex

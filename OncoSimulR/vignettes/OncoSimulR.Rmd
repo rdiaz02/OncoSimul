@@ -322,7 +322,7 @@ by moving the mouse over each term).
 |&nbsp; Mutation Models|	Two-allele Mutation Model (wildtype, mutant), without back mutation|
 |&nbsp; Events Allowed|	Varying Genetic Features: change of individual mutation rates (mutator/antimutator genes)|
 |&nbsp; Spatial Structure| No Spatial Structure (perfectly mixed and no migration)|
-Table: (\#tab:osrfeatures) Key features of OncoSimulR. Modified from
+Table:(\#tab:osrfeatures) Key features of OncoSimulR. Modified from
 the original table from
 https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
 .
