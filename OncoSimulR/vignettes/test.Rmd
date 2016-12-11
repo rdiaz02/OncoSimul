@@ -505,7 +505,7 @@ FALSE`.  The results are shown below (note that the differences between
 this table and table \@ref(tab:bench1) for the McFL models are due only to
 sampling variation).
 
-\blandscape
+\bslandscape
 
 
 Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and \@ref(tab:bench1b) when run with `onlyCancer = FALSE`
@@ -534,7 +534,7 @@ pander(benchmark_1[9:16,
 	
 ```
 
-\elandscape
+\eslandscape
 
 \clearpage
 
@@ -559,7 +559,7 @@ for details). Here we rerun all the above benchmarks using $s= 0.05$ and
 results are shown below in Table \@(tab:timing3xf); the results from these
 benchmarks are available as `data(benchmark_1_0.05)`:
 
-\blandscape
+\bslandscape
 
 Table: (\#tab:timing3xf) Benchmarks of all models in Tables \@ref(tab:bench1), \@ref(tab:bench1b) and \@ref(tab:timing3) using $s=0.05$ (instead of $s=0.1$).
 ```{r bench1dx, eval=TRUE, echo = FALSE}
@@ -607,7 +607,7 @@ pander(benchmark_1_0.05[ , c("Elapsed Time, average per simulation (s)",
 				  )	
 ```
 
-\elandscape
+\eslandscape
 
 \clearpage
 
@@ -693,19 +693,24 @@ rf12 <- allFitnessEffects(genotFitness = rfl12)
 
 
 ## Independent genes; positive fitness from exponential distribution
-## mean around 0.1, and negative from exponential with mean around 0.02.
-## Half positive, half negative
+## mean around 0.1, and negative from exponential with mean around 
+## 0.02. Half of genes positive fitness effects, half negative.
+
 ng <- 200
-re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                           -rexp(ng/2, 50)))
 
 ng <- 500
-re_500 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_500 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                           -rexp(ng/2, 50)))
 
 ng <- 2000
-re_2000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_2000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                            -rexp(ng/2, 50)))
 
 ng <- 4000
-re_4000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_4000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                            -rexp(ng/2, 50)))
 
 ```
 
@@ -767,12 +772,12 @@ oncoSimulPop(Nindiv,
 
 
 For the exponential model we will stop simulations when the populations
-gets $>10^6$ cells (simulations start from 500 cells). For the McFarland
+have $>10^6$ cells (simulations start from 500 cells). For the McFarland
 model we will use the `detectionProb` mechanism (see section
 \@ref(detectprob) for details); we could have used as stopping mechanism
 `detectionSize = 2 * initSize` (which would be basically equivalent to
 reaching cancer, as argued in [@McFarland2013]) but we want to provide
-further runs under the `detectionProb` mechanism. We will start from 1000
+further examples under the `detectionProb` mechanism. We will start from 1000
 cells, not 500 (starting from 1000 we almost always reach cancer in a
 single execution).
 

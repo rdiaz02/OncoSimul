@@ -11,11 +11,73 @@
 \newcolumntype{P}[1]{>{\raggedright\tabularxbackslash}p{#1}}
 
 %% http://stackoverflow.com/a/27334272
-\newcommand{\blandscape}{\begin{landscape}}
-\newcommand{\elandscape}{\end{landscape}}
+% \newcommand{\blandscape}{\begin{landscape}}
+% \newcommand{\elandscape}{\end{landscape}}
+
+%% landscape does not allow sensible centering. Sideways does it.
+%% But does not rotate the page in the viewer
+% \newcommand{\bslandscape}{
+%     % \newgeometry{textwidth=297mm, textheight=100mm, left=0mm, bottom = 0mm}
+%   \newgeometry{margin=.2cm}
+%   \thispagestyle{empty}
+%   \begin{landscape}
+%     \begin{center}
+%       \footnotesize
+%   }
+%   \newcommand{\eslandscape}{
+%   \end{center}
+%   \end{landscape}
+%   \restoregeometry
+% }
+
+%%http://tex.stackexchange.com/a/212843
+% \newenvironment{rotatepage}%
+%     {\pagebreak[4]\global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 90}}%
+%     {\pagebreak[4]\global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 0}}%
+
+% \usepackage{etoolbox}    
+% \BeforeBeginEnvironment{sidewaystable*}{\begin{rotatepage}}
+% \AfterEndEnvironment{sidewaystable*}{\end{rotatepage}}  
 
 
-%%%Local Variables:
+
+\newcommand{\blandscape}{
+  \clearpage
+  \pagebreak[4]
+  \global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 90}
+  \begin{sidewaystable*}[t!]
+  \centering
+  \footnotesize
+}
+
+\newcommand{\elandscape}{
+\end{sidewaystable*}
+\clearpage
+\pagebreak[4]
+\global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 0}
+}
+
+\newcommand{\bslandscape}{
+  \clearpage
+  \pagebreak[4]
+  \global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 90}
+
+  \newgeometry{margin=0.1cm} 
+  \begin{sidewaystable*}[t!]
+  \centering
+  \footnotesize
+}
+
+\newcommand{\eslandscape}{
+\end{sidewaystable*}
+\restoregeometry
+\clearpage
+\pagebreak[4]
+\global\pdfpageattr\expandafter{\the\pdfpageattr/Rotate 0}
+}
+
+
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t
 %%% End:
