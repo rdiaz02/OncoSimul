@@ -11,6 +11,8 @@ author: "
 		 <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>
 		 "
 date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), '. Revision: ', system('git rev-parse --short HEAD', intern = TRUE))`"
+header-includes:
+    - \input{preamble.tex}
 output: 
   bookdown::html_document2:
     css: custom4.css
@@ -21,6 +23,7 @@ classoption: a4paper
 geometry: margin=3cm
 fontsize: 12pt
 bibliography: OncoSimulR.bib
+biblio-style: "apalike"
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression.}
@@ -145,8 +148,9 @@ require(pander)
 <!-- sed -i 's/\\Rfunction{\([^}]\+\)}/*`\1`*/g' p22.md -->
 
 
+\clearpage
 
-# Introduction {#intro}
+# Introduction {#introdd}
  
 OncoSimulR is an individual-based forward-time genetic simulator for
 biallelic markers (wildtype vs. mutated) in asexually reproducing
@@ -287,6 +291,7 @@ is a summary of some of the key features:
   from the simulations.
   
 
+
 The table below, modified from the table at the
 [Genetics Simulation Resources (GSR) page](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed)
 provides a summary of the key features of OncoSimulR. (An
@@ -296,7 +301,7 @@ https://popmodels.cancercontrol.cancer.gov/gsr/search/ or from the
 [Genetics Simulation Resources table itself](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed),
 by moving the mouse over each term).
 
-
+\clearpage
 
 |Attribute Category     | Attribute                                     |
 |-----------------------|-----------------------------------------------|
@@ -486,17 +491,19 @@ g1 <- simOGraph(4, out = "rT")
 ## 2. Simulate two evolutionary trajectories
 s1 <- oncoSimulPop(10, allFitnessEffects(g1, drvNames = 1:4),
                    mc.cores = 2, ## adapt to your hardware
-                   seed = NULL) ## for reproducibility in this vignette
+                   seed = NULL) ## for reproducibility of vignette
 
 ## 3. Sample those data uniformly, and add noise
 d1 <- samplePop(s1, timeSample = "unif", propError = 0.1)
 
-## 4. You would now run the appropriate inferential method and compare
-## observed and true
+## 4. You would now run the appropriate inferential method and
+## compare observed and true
+
 require(Oncotree)
 fit1 <- oncotree.fit(d1)
-## Now, compare fitted and original. This is well beyond the scope of this
-## document (and OncoSimulR itself).
+
+## Now, compare fitted and original. This is well beyond the
+## scope of this document (and OncoSimulR itself).
 
 ```
 
@@ -533,8 +540,8 @@ RNGkind("L'Ecuyer-CMRG")
 ```{r exochs}
 ## Specify fitness effects. 
 
-## Numeric values arbitrary, but set the intermediate genotype 
-## en route to ui as mildly deleterious so there is a valley. 
+## Numeric values arbitrary, but set the intermediate genotype en
+## route to ui as mildly deleterious so there is a valley.
 
 ## As in Ochs and Desai, the ui and uv genotypes
 ## can never appear. 
@@ -546,7 +553,9 @@ od <- allFitnessEffects(
                   "u:v" = uv, "i" = i,
                   "v:-i" = -Inf, "v:i" = vi))
 
-## For the sake of extending this example, also turn i into a mutator gene
+## For the sake of extending this example, also turn i into a
+## mutator gene
+
 odm <- allMutatorEffects(noIntGenes = c("i" = 50))
 
 ## How do mutation and fitness look like for each genotype?
@@ -601,19 +610,23 @@ RNGkind("L'Ecuyer-CMRG")
 ## reference genotype or evolutionary model, or stopping criterion, 
 ## sampling procedure, or ...
 
-## 1. Generate a random fitness landscape, from the Rough
-##    Mount Fuji model, with g genes, and c ("slope" constant) and
-##    reference chosen randomly. Ask for a minimal number of accessible
-##    genotypes
+## 1. Generate a random fitness landscape, from the Rough Mount
+##    Fuji model, with g genes, and c ("slope" constant) and
+##    reference chosen randomly. Ask for a minimal number of
+##    accessible genotypes
+
 g <- 6
 c <- runif(1, 1/5, 5)
 rl <- rfitness(g, c = c, min_accessible_genotypes = g)
 
-## Plot it if you want; commented here as it takes long for a vignette
+## Plot it if you want; commented here as it takes long for a
+## vignette
+
 ## plot(rl)
 
 ## Obtain landscape measures from Magellan. Export to Magellan
 to_Magellan(rl, file = "rl1.txt")
+
 ## (Getting the statistics requires you to install Magellan,
 ## and that requires either calling the web app 
 ## (http://wwwabi.snv.jussieu.fr/public/Magellan/) or
@@ -1166,7 +1179,7 @@ version 2. Please note that **the functionality of version 1 will soon be remove
 
 
 
-
+\clearpage
 
 # Running time and space consumption of OncoSimulR {#timings}
 
@@ -1231,6 +1244,91 @@ some of the benchmarks is available from the
 repository at https://github.com/rdiaz02/OncoSimul).
 
 
+```{r colnames_benchmarks, echo = FALSE, eval = TRUE}
+
+data(benchmark_1)
+data(benchmark_1_0.05)
+data(benchmark_2)
+data(benchmark_3)
+
+colnames(benchmark_1)[
+    match(c(
+	"time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean",
+	"TotalPopSize.Max.", "keepEvery",  "Attempts.Median",
+	"Attempts.Mean", "Attempts.Max.",
+	"PDBaseline", "n2", "onlyCancer"),
+	 colnames(benchmark_1)
+	)] <- c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				   "Total Population Size, mean",
+				  "Total Population Size, max.",
+				  "keepEvery",
+				  "Attempts until Cancer, median",
+				  "Attempts until Cancer, mean",
+				  "Attempts until Cancer, max.",
+				  "PDBaseline", "n2", "onlyCancer"
+				  )
+				  
+	
+colnames(benchmark_1_0.05)[
+    match(c("time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max.",
+	"keepEvery",
+	"PDBaseline", "n2", "onlyCancer", "Attempts.Median"),
+	colnames(benchmark_1_0.05))] <- c("Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max.",
+				  "keepEvery",
+				  "PDBaseline", "n2", "onlyCancer",
+				  "Attempts until Cancer, median"
+				  )
+
+
+colnames(benchmark_2)[match(c("Model", "fitness", "time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max."), colnames(benchmark_2))] <-  c("Model",
+				  "Fitness",
+	"Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max."
+				  )	
+				  
+colnames(benchmark_3)[match(c("Model", "fitness", "time_per_simul",
+    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+	"TotalPopSize.Max."), colnames(benchmark_3))] <-  c("Model",
+				  "Fitness",
+	"Elapsed Time, average per simulation (s)",
+	              "Object Size, average per simulation (MB)",
+				  "Number of Clones, median",
+				  "Number of Iterations, median",
+				  "Final Time, median",
+				  "Total Population Size, median",
+				  "Total Population Size, mean",
+				  "Total Population Size, max."
+				  )					  
+```
+
+
 ## Exp and McFL with "detectionProb" and pancreas example {#bench1}
 
 To get familiar with some of they factors that affect time and size,
@@ -1247,9 +1345,6 @@ period are pruned and only the existing clones at the end of the
 simulation are returned (see details in \@ref(prune)).
 
 
-```{r loadbench1, echo = FALSE, eval = TRUE} 
-data(benchmark_1) 
-``` 
 
 Will run `r unique(benchmark_1$Numindiv)` simulations.  The results
 I show are for a laptop with an 8-core Intel Xeon E3-1505M CPU,
@@ -1341,36 +1436,50 @@ summary(unlist(lapply(exp1, "[[", "TotalPopSize")))
 The above runs yield the following:
 
 
+\blandscape
+
+Table: (\#tab:bench1) Benchmarks of Exp and McFL models using the default `detectionProb` with two settings of `keepEvery`. 
 ```{r bench1, eval=TRUE, echo = FALSE}
-data(benchmark_1)
-knitr::kable(benchmark_1[1:4, c("time_per_simul",
-    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median",
-	"TotalPopSize.Max.", "keepEvery")], 
-    booktabs = TRUE,
-	col.names = c("Elapsed Time, average per simulation (s)",
-	              "Object Size, average per simulation (MB)",
-				  "Number of Clones, median",
-				  "Number of Iterations, median",
-				  "Final Time, median",
-				  "Total Population Size, median",
-				  "Total Population Size, max.",
-				  "keepEvery"
-				  ),
-    caption = "Benchmarks of Exp and McFL models using the default
-	`detectionProb` with two settings of `keepEvery`.", 
-	align = "c")
+
+panderOptions("table.split.table", 99999999)
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+
+set.alignment('right')
+panderOptions('round', 3)
+				          
+pander(benchmark_1[1:4, c("Elapsed Time, average per simulation (s)", 
+ 	              "Object Size, average per simulation (MB)",
+ 				  "Number of Clones, median",
+ 				  "Number of Iterations, median",
+ 				  "Final Time, median",
+ 				  "Total Population Size, median",
+ 				  "Total Population Size, max.",
+ 				  "keepEvery")],
+				  ## caption = "\\label{tab:bench1}Benchmarks of Exp and McFL  models using the default `detectionProb` with two settings of `keepEvery`."
+				  )
 ```
 
-The above table shows that a naive comparison (looking simply at
-execution time) might conclude that the McFL model is much, much
-slower than the Exp model. But that is not the complete story: using
-the `detectionProb` stopping mechanism (see \@ref(detectprob)) will
-lead to stopping the simulations very quickly in the exponential
-model because as soon as a clone with fitness $>1$ appears it starts
-growing exponentially. In fact, we can see that the number of
-iterations and the final time are much smaller in the Exp than in
-the McFL model. 
+\elandscape
+
+\clearpage
+
+
+
+The above table shows that a naive comparison (looking simply at execution
+time) might conclude that the McFL model is much, much slower than the Exp
+model. But that is not the complete story: using the `detectionProb`
+stopping mechanism (see \@ref(detectprob)) will lead to stopping the
+simulations very quickly in the exponential model because as soon as a
+clone with fitness $>1$ appears it starts growing exponentially. In fact,
+we can see that the number of iterations and the final time are much
+smaller in the Exp than in the McFL model.  We will elaborate on this
+point below (section \@ref(common1)), when we discuss the setting for
+`checkSizePEvery` (here left at its default value of 20): checking the
+exiting condition more often (smaller `checkSizePEvery`) would probably be
+justified here (notice also the very large final times) and would lead to
+a sharp decrease in number of iterations and, thus, running time.
+
 
 
 This table also shows that the `keepEvery = NA` setting, which was in effect
@@ -1452,30 +1561,38 @@ t_exp6 <- system.time(
 
 ```
 
+\blandscape
 
+Table: (\#tab:bench1b) Benchmarks of Exp models modifying the default `detectionProb` with two settings of `keepEvery`.
 ```{r bench1b, eval=TRUE, echo = FALSE}
-data(benchmark_1)
-knitr::kable(benchmark_1[5:8, c("time_per_simul",
-    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median",
-	"TotalPopSize.Max.", "keepEvery",
-	"PDBaseline", "n2")], 
-    booktabs = TRUE,
-	col.names = c("Elapsed Time, average per simulation (s)",
-	              "Object Size, average per simulation (MB)",
-				  "Number of Clones, median",
-				  "Number of Iterations, median",
-				  "Final Time, median",
-				  "Total Population Size, median",
-				  "Total Population Size, max.",				  
-				  "keepEvery",
-				  "PDBaseline", "n2"
-				  ),	
-    caption = "Benchmarks of Exp models modifying the default
-	`detectionProb` with two settings of `keepEvery`.", 
-	align = "c")
+panderOptions("table.split.table", 99999999)
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+set.alignment('right')
+panderOptions('round', 2)
+panderOptions('big.mark', ',')
+panderOptions('digits', 2)
+
+pander(benchmark_1[5:8, c("Elapsed Time, average per simulation (s)",
+ 	              "Object Size, average per simulation (MB)",
+ 				  "Number of Clones, median",
+ 				  "Number of Iterations, median",
+ 				  "Final Time, median",
+ 				  "Total Population Size, median",
+ 				  "Total Population Size, max.",
+ 				  "keepEvery",
+				  "PDBaseline",
+				  "n2")], 
+## 				  round = c(rep(2, 3), rep(0, 7)),
+## 				  digits = c(rep(2, 3), rep(1, 7)),
+	  ## caption = "\\label{tab:bench1b}Benchmarks of Exp and McFL models modifying the default `detectionProb` with two settings of `keepEvery`."
+    )
+
 ```
 
+\elandscape
+
+\clearpage
 
 As above,  `keepEvery = NA` (in `exp4` and `exp6`) leads to much
 smaller object sizes and slightly smaller numbers of clones and
@@ -1510,61 +1627,94 @@ initial population sizes) because of the dependency of death rate on total
 population size (see section \@ref(mcfl)).
 
 
-The number of attempts until cancer was reached in the above models is
-shown in the following table (the values can be obtained from any of the
-above runs doing, for instance, `median(unlist(lapply(exp1, function(x)
-x$other$attemptsUsed)))` ).:
+The number of attempts until cancer was reached in the above
+models is shown in the Table \@ref(tab:bench1c) (the values can be obtained from
+any of the above runs doing, for instance, `median(unlist(lapply(exp1,
+function(x) x$other$attemptsUsed)))` ):
 
-
-
+Table: (\#tab:bench1c) Number of attempts until cancer.
 ```{r bench1c, eval=TRUE, echo = FALSE}
-data(benchmark_1)
-knitr::kable(benchmark_1[1:8, c("Attempts.Median"), drop = FALSE], 
-    booktabs = TRUE,
-	row.names = TRUE,
-	col.names = "Attempts until cancer",
-    caption = "Median Number of attempts until cancer.", 
-	align = "r")
+panderOptions("table.split.table", 99999999)
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+set.alignment('right')
+panderOptions('round', 2)
+panderOptions('big.mark', ',')
+panderOptions('digits', 2)
+
+pander(benchmark_1[1:8, c(
+"Attempts until Cancer, median", 
+"Attempts until Cancer, mean", 
+"Attempts until Cancer, max.", 
+				  "PDBaseline",
+				  "n2")], 
+## 				  round = c(rep(2, 3), rep(0, 7)),
+## 				  digits = c(rep(2, 3), rep(1, 7)),
+	  ## caption = "\\label{tab:bench1c}Median number of attempts until cancer."
+    )
+## ## data(benchmark_1)
+## knitr::kable(benchmark_1[1:8, c("Attempts.Median",
+##                                 "PDBaseline", "n2"), drop = FALSE], 
+##     booktabs = TRUE,
+## 	row.names = TRUE,
+## 	col.names = c("Attempts until cancer", "PDBaseline", "n2"),
+##     caption = "Median number of attempts until cancer.", 
+## 	align = "r")
 	
 ```
 
 
-
-
+The McFL models finish in a single attempt. The exponential model
+simulations where we can exit with small population sizes (`exp1`, `exp2`)
+need many fewer attempts to reach cancer than those where large population
+sizes are required (`exp3` to `exp6`). There is no relevant different
+among those four, which is what we would expect: a population that has
+already reached a size of 50,000 cells from an initial population size of
+500 is obviously a growing population where there is at least one mutant
+with positive fitness; thus, it unlikely to go extinct and therefore
+having to grow up to at least 500,000 will not significantly increase the
+risk of extinction.
 
 
 We will now rerun all of the above models with argument `onlyCancer =
-FALSE`.  The results are shown below (note that the differences between
-this table and table \@ref(tab:bench1) for the McFL models are due only to
-sampling variation).
+FALSE`.  The results are shown in Table \@ref(tab:timing3) (note that the
+differences between this table and table \@ref(tab:bench1) for the McFL
+models are due only to sampling variation).
+
+\bslandscape
 
 
-Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and
-\@ref(tab:bench1b) when run with `onlyCancer = FALSE`
+Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and \@ref(tab:bench1b) when run with `onlyCancer = FALSE`
 ```{r bench1d, eval=TRUE, echo = FALSE}
-data(benchmark_1)
-knitr::kable(benchmark_1[9:16, c("time_per_simul",
-    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
-	"TotalPopSize.Max.",
-	"keepEvery",
-	"PDBaseline", "n2")], 
-    booktabs = TRUE,
-	col.names = c("Elapsed Time, average per simulation (s)",
-	              "Object Size, average per simulation (MB)",
-				  "Number of Clones, median",
-				  "Number of Iterations, median",
-				  "Final Time, median",
-				  "Total Population Size, median",
+panderOptions("table.split.table", 99999999)
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+panderOptions("table.split.cells", 15) ## does not fit otherwise
+set.alignment('right')
+panderOptions('round', 3)
+
+pander(benchmark_1[9:16, 
+    c("Elapsed Time, average per simulation (s)",
+ 	              "Object Size, average per simulation (MB)",
+ 				  "Number of Clones, median",
+ 				  "Number of Iterations, median",
+ 				  "Final Time, median",
+ 				  "Total Population Size, median",
 				  "Total Population Size, mean",
-				  "Total Population Size, max.",
-				  "keepEvery",
-				  "PDBaseline", "n2"
-				  ),
-##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
-##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
-	align = "c")
+ 				  "Total Population Size, max.",
+ 				  "keepEvery",
+				  "PDBaseline",
+				  "n2")],
+## caption = "\\label{tab:timing3} Benchmarks of models in Table \\@ref(tab:bench1) and \\@ref(tab:bench1b) when run with `onlyCancer = FALSE`."
+				  )	
+	
 ```
+
+\eslandscape
+
+\clearpage
+
+
 
 
 Now most simulations under the exponential model end up in extinction, as
@@ -1577,47 +1727,101 @@ on the question being asked (see, for example, section \@ref(exbauer) for
 a question where we will naturally want to use `onlyCancer = FALSE`).
 
 
+To make it easier to compare results with those of the next section, Table
+\@ref(tab:allr1bck) shows all the runs so far.
+
+
+\bslandscape
+
+Table: (\#tab:allr1bck) Benchmarks of all models in Tables \@ref(tab:bench1), \@ref(tab:bench1b) and \@ref(tab:timing3).  
+```{r bench1dx0, eval=TRUE, echo = FALSE}
+panderOptions("table.split.table", 99999999)
+## panderOptions("table.split.cells", 900)  ## For HTML
+panderOptions("table.split.cells", 19)
+
+set.alignment('right') 
+panderOptions('round', 3)
+	
+pander(benchmark_1[ , c("Elapsed Time, average per simulation (s)",
+ 	              "Object Size, average per simulation (MB)", 
+				  "Number of Clones, median", 
+				  "Number of Iterations, median", 
+				  "Final Time, median", "Total Population Size, median", 
+				  "Total Population Size, mean", "Total Population Size, max.",
+ 	              "keepEvery", "PDBaseline", "n2", "onlyCancer")], 
+				  ## caption = "\\label{tab:allr1bck}Benchmarks of all models in Tables \\@ref(tab:bench1), \\@ref(tab:bench1b)  and \\@ref(tab:timing3)."  
+				  )  
+```
+
+\eslandscape
+
+\clearpage
+
+
+
 ### Changing fitness: $s=0.1$ and $s=0.05$ {#bench1xf}
 
 In the above fitness specification the fitness effect of each gene (when
 its restrictions are satisfied) is $s = 0.1$ (see section \@ref(numfit)
 for details). Here we rerun all the above benchmarks using $s= 0.05$ and
-results are shown below in Table \@(tab:timing3xf); the results from these
+results are shown below in Table \@ref(tab:timing3xf); the results from these
 benchmarks are available as `data(benchmark_1_0.05)`:
 
+\bslandscape
 
-Table: (\#tab:timing3xf) Benchmarks of all models in Tables \@ref(tab:bench1),
-\@ref(tab:bench1b) and \@ref(tab:timing3) using $s=0.05$ (instead of
-$s=0.1$).
+Table: (\#tab:timing3xf) Benchmarks of all models in Table \@ref(tab:allr1bck) using $s=0.05$ (instead of $s=0.1$).
 ```{r bench1dx, eval=TRUE, echo = FALSE}
-data(benchmark_1_0.05)
-knitr::kable(benchmark_1_0.05[, c("time_per_simul",
-    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
-	"TotalPopSize.Max.",
-	"keepEvery",
-	"PDBaseline", "n2", "onlyCancer")], 
-    booktabs = TRUE,
-	col.names = c("Elapsed Time, average per simulation (s)",
-	              "Object Size, average per simulation (MB)",
-				  "Number of Clones, median",
-				  "Number of Iterations, median",
-				  "Final Time, median",
-				  "Total Population Size, median",
-				  "Total Population Size, mean",
-				  "Total Population Size, max.",				  
-				  "keepEvery",
-				  "PDBaseline", "n2", "onlyCancer"
-				  ),
-##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
-##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
-	align = "c")
+## data(benchmark_1_0.05)
+## knitr::kable(benchmark_1_0.05[, c("time_per_simul",
+##     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+## 	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+## 	"TotalPopSize.Max.",
+## 	"keepEvery",
+## 	"PDBaseline", "n2", "onlyCancer")], 
+##     booktabs = TRUE,
+## 	col.names = c("Elapsed Time, average per simulation (s)",
+## 	              "Object Size, average per simulation (MB)",
+## 				  "Number of Clones, median",
+## 				  "Number of Iterations, median",
+## 				  "Final Time, median",
+## 				  "Total Population Size, median",
+## 				  "Total Population Size, mean",
+## 				  "Total Population Size, max.",				  
+## 				  "keepEvery",
+## 				  "PDBaseline", "n2", "onlyCancer"
+## 				  ),
+## ##    caption = "Benchmarks of models in Table \@ref(tab:bench1) and
+## ##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
+## 	align = "c")
+	
+panderOptions("table.split.table", 99999999)
+## panderOptions("table.split.cells", 900)  ## For HTML
+panderOptions("table.split.cells", 19)
+
+set.alignment('right') 
+panderOptions('round', 3)
+	
+pander(benchmark_1_0.05[ , c("Elapsed Time, average per simulation (s)",
+ 	              "Object Size, average per simulation (MB)", 
+				  "Number of Clones, median", 
+				  "Number of Iterations, median", 
+				  "Final Time, median", 
+				  "Total Population Size, median", 
+				  "Total Population Size, mean", "Total Population Size, max.",
+ 	              "keepEvery", "PDBaseline", "n2", "onlyCancer")], 
+ 	              ## caption = "\\label{tab:timing3xf}Benchmarks of all models in Table \\@ref(tab:allr1bck) using $s=0.05$ (instead of $s=0.1$)."  
+)  
+				  
 ```
+
+\eslandscape
+
+\clearpage
 
 As expected, having a smaller $s$ leads to slower processes in most cases,
 since it takes longer to reach the exiting conditions sooner. Particularly
 noticeable are the runs for the McFL models (notice the increases in
-population size and number of iterations). 
+population size and number of iterations ---see also below). 
 
 
 That is not the case, however, for `exp5` and `exp6` (and `exp5_noc` and
@@ -1652,6 +1856,15 @@ additional iterations. They exit sooner in terms of time periods,
 but they do much more work before arriving there.
 
 
+The setting of `checkSizePEvery` is also having a huge effect on the McFL
+model simulations (the number of iterations is $>10^6$). Even more than in
+the previous section, checking the exiting condition more often (smaller
+`checkSizePEvery`) would probably be justified here (notice also the very
+large final times) and would lead to a sharp decrease in number of
+iterations and, thus, running time.
+
+
+
 The moral here is that in complex simulations like this, the effects
 of some parameters ($s$ in this case) might look counter-intuitive
 at first. Thus the need to "experiment before launching a large
@@ -1681,34 +1894,41 @@ pancr <- allFitnessEffects(
 	             "MLL3", "TGFBR2", "PXDN"))
 
 
-## Random fitness landscape with 6 genes 
+## Random fitness landscape with 6 genes
+## At least 50 accessible genotypes
 rfl6 <- rfitness(6, min_accessible_genotypes = 50)
-attributes(rfl6)$accessible_genotypes ## How many actually accessible
+attributes(rfl6)$accessible_genotypes ## How many accessible
 rf6 <- allFitnessEffects(genotFitness = rfl6)
 
 
 ## Random fitness landscape with 12 genes
+## At least 200 accessible genotypes
 rfl12 <- rfitness(12, min_accessible_genotypes = 200)
-attributes(rfl12)$accessible_genotypes ## How many actually accessible
+attributes(rfl12)$accessible_genotypes ## How many accessible
 rf12 <- allFitnessEffects(genotFitness = rfl12)
 
 
 
 
 ## Independent genes; positive fitness from exponential distribution
-## mean around 0.1, and negative from exponential with mean around 0.02.
-## Half positive, half negative
+## mean around 0.1, and negative from exponential with mean around 
+## 0.02. Half of genes positive fitness effects, half negative.
+
 ng <- 200
-re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                           -rexp(ng/2, 50)))
 
 ng <- 500
-re_500 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_500 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                           -rexp(ng/2, 50)))
 
 ng <- 2000
-re_2000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_2000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                            -rexp(ng/2, 50)))
 
 ng <- 4000
-re_4000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+re_4000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
+                                            -rexp(ng/2, 50)))
 
 ```
 
@@ -1770,12 +1990,12 @@ oncoSimulPop(Nindiv,
 
 
 For the exponential model we will stop simulations when the populations
-gets $>10^6$ cells (simulations start from 500 cells). For the McFarland
+have $>10^6$ cells (simulations start from 500 cells). For the McFarland
 model we will use the `detectionProb` mechanism (see section
 \@ref(detectprob) for details); we could have used as stopping mechanism
 `detectionSize = 2 * initSize` (which would be basically equivalent to
 reaching cancer, as argued in [@McFarland2013]) but we want to provide
-further runs under the `detectionProb` mechanism. We will start from 1000
+further examples under the `detectionProb` mechanism. We will start from 1000
 cells, not 500 (starting from 1000 we almost always reach cancer in a
 single execution).
 
@@ -1819,42 +2039,69 @@ met.
 
 
 
-```{r loadbench2usual, echo = FALSE, eval = TRUE} 
-data(benchmark_2) 
-``` 
+<!-- ```{r loadbench2usual, echo = FALSE, eval = TRUE}  -->
+<!-- data(benchmark_2)  -->
+<!-- ```  -->
 
 The results of the benchmarks, using `r unique(benchmark_2$Numindiv)`
 individual simulations, are shown in Table \@ref(tab:timingusual).
 
 
+\blandscape
 
-Table: (\#tab:timingusual) Benchmarks under some common use cases,
-set 1.
+Table: (\#tab:timingusual) Benchmarks under some common use cases, set 1.
 ```{r benchustable, eval=TRUE, echo = FALSE}
-data(benchmark_2)
+## data(benchmark_2)
 
-knitr::kable(benchmark_2[, c("Model", "fitness", "time_per_simul",
-    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
-	"TotalPopSize.Max.")], 
-    booktabs = TRUE,
-	col.names = c("Model",
-				  "Fitness",
-	"Elapsed Time, average per simulation (s)",
-	              "Object Size, average per simulation (MB)",
-				  "Number of Clones, median",
-				  "Number of Iterations, median",
-				  "Final Time, median",
-				  "Total Population Size, median",
-				  "Total Population Size, mean",
-				  "Total Population Size, max."
-				  ),
-	align = "c")
+## knitr::kable(benchmark_2[, c("Model", "fitness", "time_per_simul",
+##     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+## 	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+## 	"TotalPopSize.Max.")], 
+##     booktabs = TRUE,
+## 	col.names = c("Model",
+## 				  "Fitness",
+## 	"Elapsed Time, average per simulation (s)",
+## 	              "Object Size, average per simulation (MB)",
+## 				  "Number of Clones, median",
+## 				  "Number of Iterations, median",
+## 				  "Final Time, median",
+## 				  "Total Population Size, median",
+## 				  "Total Population Size, mean",
+## 				  "Total Population Size, max."
+## 				  ),
+## 	align = "c")
+
+panderOptions("table.split.table", 99999999)
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+
+## set.alignment('right', row.names = 'center')
+panderOptions('table.alignment.default', 'right')
+
+panderOptions('round', 3)
+
+pander(benchmark_2[ , c(
+    "Model", "Fitness",
+    "Elapsed Time, average per simulation (s)",
+ 	              "Object Size, average per simulation (MB)",
+ 				  "Number of Clones, median",
+ 				  "Number of Iterations, median",
+ 				  "Final Time, median",
+ 				  "Total Population Size, median",
+ 				  "Total Population Size, mean",				  
+ 				  "Total Population Size, max.")], 
+				  justify = c('left', 'left', rep('right', 8)),
+				  ## caption = "\\label{tab:timingusual}Benchmarks under some common use cases, set 1." 
+				  )	
+	
 ```
 
+\elandscape
+
+\clearpage
 
 In most cases, simulations run reasonably fast (under 0.1 seconds per
-individual simulation) and the return objects are small. In will only
+individual simulation) and the return objects are small. I will only
 focus on a few cases.
 
 The McFL model with random fitness landscape `rf12` and with `pancr` does
@@ -1928,29 +2175,56 @@ output in the 'miscell-files/vignette_bench_Rout' directory of the
 main OncoSimul repository at https://github.com/rdiaz02/OncoSimul.
 The data are available as `data(benchmark_3)`.
 	
-Table: (\#tab:timingusual2) Benchmarks under some common use cases,
-set 2.	
+\blandscape
+
+Table: (\#tab:timingusual2) Benchmarks under some common use cases, set 2.	
 ```{r benchustable2, eval=TRUE, echo = FALSE}
-data(benchmark_3)
+## data(benchmark_3)
 
-knitr::kable(benchmark_3[, c("Model", "fitness", "time_per_simul",
-    "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
-	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
-	"TotalPopSize.Max.")], 
-    booktabs = TRUE,
-	col.names = c("Model",
-				  "Fitness", "Elapsed Time, average per simulation (s)",
-	              "Object Size, average per simulation (MB)",
-				  "Number of Clones, median",
-				  "Number of Iterations, median",
-				  "Final Time, median",
-				  "Total Population Size, median",
-				  "Total Population Size, mean",
-				  "Total Population Size, max."
-				  ),
-	align = "c")
+## knitr::kable(benchmark_3[, c("Model", "fitness", "time_per_simul",
+##     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
+## 	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
+## 	"TotalPopSize.Max.")], 
+##     booktabs = TRUE,
+## 	col.names = c("Model",
+## 				  "Fitness", "Elapsed Time, average per simulation (s)",
+## 	              "Object Size, average per simulation (MB)",
+## 				  "Number of Clones, median",
+## 				  "Number of Iterations, median",
+## 				  "Final Time, median",
+## 				  "Total Population Size, median",
+## 				  "Total Population Size, mean",
+## 				  "Total Population Size, max."
+## 				  ),
+## 	align = "c")
 
+panderOptions("table.split.table", 99999999)
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+
+
+panderOptions('round', 3)
+panderOptions('table.alignment.default', 'right')
+
+pander(benchmark_3[ , c(
+    "Model", "Fitness",
+    "Elapsed Time, average per simulation (s)",
+ 	              "Object Size, average per simulation (MB)",
+ 				  "Number of Clones, median",
+ 				  "Number of Iterations, median",
+ 				  "Final Time, median",
+ 				  "Total Population Size, median",
+ 				  "Total Population Size, mean",				  
+ 				  "Total Population Size, max.")],
+				  justify = c('left', 'left', rep('right', 8)),
+				  ## caption = "\\label{tab:timingusual2}Benchmarks under some common use cases, set 2."
+				  )	
 ```
+
+\elandscape
+
+\clearpage
+
 
 Since we increased the maximum final time and forced runs to "reach
 cancer" the McFL run with the pancreas fitness specification takes a bit
@@ -1968,7 +2242,6 @@ Finally, by stopping the Exp simulations at $10^5$, simulations with
 `re_2000` and `re_4000` finish now in much shorter times (but they still
 take longer than their McFL counterparts) and the number of clones created
 is much smaller.
-
 
 
 ## Can we use a large number of genes? {#lnum}
@@ -1997,18 +2270,16 @@ stop when the population grows over $1e6$ individuals:
 ```{r exp10000, echo = TRUE, eval = FALSE}
 ng <- 10000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
-t_e_10000 <- system.time(e_10000 <- oncoSimulPop(5,
-                                                 u,
-                                                 model = "Exp",
-                                                 mu = 1e-7,
-                                                 detectionSize = 1e6,
-                                                 detectionDrivers = NA,
-                                                 detectionProb = NA,
-                                                 keepPhylog = TRUE,
-                                                 onlyCancer = FALSE,
-                                                 mutationPropGrowth = TRUE,
-                                                 mc.cores = 1
-                                ))
+
+t_e_10000 <- system.time(
+    e_10000 <- oncoSimulPop(5, u, model = "Exp", mu = 1e-7,
+                            detectionSize = 1e6,
+                            detectionDrivers = NA,
+                            detectionProb = NA,
+                            keepPhylog = TRUE,
+                            onlyCancer = FALSE,
+                            mutationPropGrowth = TRUE,
+                            mc.cores = 1))
 ```
 
 
@@ -2045,19 +2316,20 @@ NA` argument (this setting was explained in detail in section
 
 
 ```{r exp10000b, eval = FALSE, echo = TRUE}
-t_e_10000b <- system.time(e_10000b <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "Exp",
-                                                   mu = 1e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = NA,
-                                                   mutationPropGrowth = TRUE,
-                                                   mc.cores = 1
-                                ))
+t_e_10000b <- system.time(
+    e_10000b <- oncoSimulPop(5,
+                             u,
+                             model = "Exp",
+                             mu = 1e-7,
+                             detectionSize = 1e6,
+                             detectionDrivers = NA,
+                             detectionProb = NA,
+                             keepPhylog = TRUE,
+                             onlyCancer = FALSE,
+                             keepEvery = NA,
+                             mutationPropGrowth = TRUE,
+                             mc.cores = 1
+                             ))
 
 ```
 
@@ -2090,19 +2362,20 @@ reasonable decision depends on the problem; see also below.
 ```{r exp50000, echo = TRUE, eval = FALSE}
 ng <- 50000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
-t_e_50000 <- system.time(e_50000 <- oncoSimulPop(5,
-                                                 u,
-                                                 model = "Exp",
-                                                 mu = 1e-7,
-                                                 detectionSize = 1e6,
-                                                 detectionDrivers = NA,
-                                                 detectionProb = NA,
-                                                 keepPhylog = TRUE,
-                                                 onlyCancer = FALSE,
-                                                 keepEvery = NA,
-                                                 mutationPropGrowth = FALSE,
-                                                 mc.cores = 1
-                                                 ))
+t_e_50000 <- system.time(
+    e_50000 <- oncoSimulPop(5,
+                            u,
+                            model = "Exp",
+                            mu = 1e-7,
+                            detectionSize = 1e6,
+                            detectionDrivers = NA,
+                            detectionProb = NA,
+                            keepPhylog = TRUE,
+                            onlyCancer = FALSE,
+                            keepEvery = NA,
+                            mutationPropGrowth = FALSE,
+                            mc.cores = 1
+                            ))
 
 
 t_e_50000
@@ -2132,19 +2405,20 @@ What if we had not pruned?
 ```{r exp50000np, echo = TRUE, eval = FALSE}
 ng <- 50000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
-t_e_50000np <- system.time(e_50000np <- oncoSimulPop(5,
-                                                 u,
-                                                 model = "Exp",
-                                                 mu = 1e-7,
-                                                 detectionSize = 1e6,
-                                                 detectionDrivers = NA,
-                                                 detectionProb = NA,
-                                                 keepPhylog = TRUE,
-                                                 onlyCancer = FALSE,
-                                                 keepEvery = 1,
-                                                 mutationPropGrowth = FALSE,
-                                                 mc.cores = 1
-                                                 ))
+t_e_50000np <- system.time(
+    e_50000np <- oncoSimulPop(5,
+                              u,
+                              model = "Exp",
+                              mu = 1e-7,
+                              detectionSize = 1e6,
+                              detectionDrivers = NA,
+                              detectionProb = NA,
+                              keepPhylog = TRUE,
+                              onlyCancer = FALSE,
+                              keepEvery = 1,
+                              mutationPropGrowth = FALSE,
+                              mc.cores = 1
+                              ))
 
 t_e_50000np
 ##   user  system elapsed
@@ -2177,19 +2451,20 @@ What about the `mutationPropGrowth` setting? We will rerun the example in
 ng <- 50000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
 
-t_e_50000c <- system.time(e_50000c <- oncoSimulPop(5,
-                                                 u,
-                                                 model = "Exp",
-                                                 mu = 1e-7,
-                                                 detectionSize = 1e6,
-                                                 detectionDrivers = NA,
-                                                 detectionProb = NA,
-                                                 keepPhylog = TRUE,
-                                                 onlyCancer = FALSE,
-                                                 keepEvery = NA,
-                                                 mutationPropGrowth = TRUE,
-                                                 mc.cores = 1
-                                                 ))
+t_e_50000c <- system.time(
+    e_50000c <- oncoSimulPop(5,
+                             u,
+                             model = "Exp",
+                             mu = 1e-7,
+                             detectionSize = 1e6,
+                             detectionDrivers = NA,
+                             detectionProb = NA,
+                             keepPhylog = TRUE,
+                             onlyCancer = FALSE,
+                             keepEvery = NA,
+                             mutationPropGrowth = TRUE,
+                             mc.cores = 1
+                             ))
 
 t_e_50000c
 ##    user  system elapsed 
@@ -2239,19 +2514,20 @@ Let's start with  `mutationPropGrowth = FALSE` and `keepEvery = NA`:
 ng <- 50000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
 
-t_mc_50000_nmpg <- system.time(mc_50000_nmpg <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 1e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = NA,
-                                                   mutationPropGrowth = FALSE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000_nmpg <- system.time(
+    mc_50000_nmpg <- oncoSimulPop(5,
+                                  u,
+                                  model = "McFL",
+                                  mu = 1e-7,
+                                  detectionSize = 1e6,
+                                  detectionDrivers = NA,
+                                  detectionProb = NA,
+                                  keepPhylog = TRUE,
+                                  onlyCancer = FALSE,
+                                  keepEvery = NA,
+                                  mutationPropGrowth = FALSE,
+                                  mc.cores = 1
+                                  ))
 t_mc_50000_nmpg
 ##   user  system elapsed 
 ##  30.46    0.54   31.01 
@@ -2278,19 +2554,20 @@ Setting `keepEvery = 1` (i.e., keeping track of clones with an
 interval of 1):
 
 ```{r mc50000_kp, echo = TRUE, eval = FALSE}
-t_mc_50000_nmpg_k <- system.time(mc_50000_nmpg_k <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 1e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = 1,
-                                                   mutationPropGrowth = FALSE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000_nmpg_k <- system.time(
+    mc_50000_nmpg_k <- oncoSimulPop(5,
+                                    u,
+                                    model = "McFL",
+                                    mu = 1e-7,
+                                    detectionSize = 1e6,
+                                    detectionDrivers = NA,
+                                    detectionProb = NA,
+                                    keepPhylog = TRUE,
+                                    onlyCancer = FALSE,
+                                    keepEvery = 1,
+                                    mutationPropGrowth = FALSE,
+                                    mc.cores = 1
+                                    ))
 
 t_mc_50000_nmpg_k
 ##    user  system elapsed 
@@ -2324,19 +2601,20 @@ detection size by a factor of 3:
 ng <- 50000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
 
-t_mc_50000_nmpg_3e6 <- system.time(mc_50000_nmpg_3e6 <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 1e-7,
-                                                   detectionSize = 3e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = NA,
-                                                   mutationPropGrowth = FALSE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000_nmpg_3e6 <- system.time(
+    mc_50000_nmpg_3e6 <- oncoSimulPop(5,
+                                      u,
+                                      model = "McFL",
+                                      mu = 1e-7,
+                                      detectionSize = 3e6,
+                                      detectionDrivers = NA,
+                                      detectionProb = NA,
+                                      keepPhylog = TRUE,
+                                      onlyCancer = FALSE,
+                                      keepEvery = NA,
+                                      mutationPropGrowth = FALSE,
+                                      mc.cores = 1
+                                      ))
 t_mc_50000_nmpg_3e6
 ##    user  system elapsed 
 ##  77.240   1.064  78.308 
@@ -2368,19 +2646,20 @@ Let us use the same `detectionSize = 1e6` as in the first example
 ng <- 50000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
 
-t_mc_50000_nmpg_5mu <- system.time(mc_50000_nmpg_5mu <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 5e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = NA,
-                                                   mutationPropGrowth = FALSE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000_nmpg_5mu <- system.time(
+    mc_50000_nmpg_5mu <- oncoSimulPop(5,
+                                      u,
+                                      model = "McFL",
+                                      mu = 5e-7,
+                                      detectionSize = 1e6,
+                                      detectionDrivers = NA,
+                                      detectionProb = NA,
+                                      keepPhylog = TRUE,
+                                      onlyCancer = FALSE,
+                                      keepEvery = NA,
+                                      mutationPropGrowth = FALSE,
+                                      mc.cores = 1
+                                      ))
 
 t_mc_50000_nmpg_5mu
 ##    user  system elapsed 
@@ -2416,19 +2695,20 @@ with further details in \@ref(prune)).
 Finally, let's run the above example but with `keepEvery = 1`:
 
 ```{r mcf5muk, echo = TRUE, eval = FALSE}
-t_mc_50000_nmpg_5mu_k <- system.time(mc_50000_nmpg_5mu_k <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 5e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = 1,
-                                                   mutationPropGrowth = FALSE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000_nmpg_5mu_k <- system.time(
+    mc_50000_nmpg_5mu_k <- oncoSimulPop(5,
+                                        u,
+                                        model = "McFL",
+                                        mu = 5e-7,
+                                        detectionSize = 1e6,
+                                        detectionDrivers = NA,
+                                        detectionProb = NA,
+                                        keepPhylog = TRUE,
+                                        onlyCancer = FALSE,
+                                        keepEvery = 1,
+                                        mutationPropGrowth = FALSE,
+                                        mc.cores = 1
+                                        ))
 												   
 t_mc_50000_nmpg_5mu_k
 ##    user  system elapsed 
@@ -2471,19 +2751,20 @@ default of `mutationPropGrowth = TRUE`:
 ng <- 50000
 u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
 
-t_mc_50000 <- system.time(mc_50000 <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 1e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = NA,
-                                                   mutationPropGrowth = TRUE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000 <- system.time(
+    mc_50000 <- oncoSimulPop(5,
+                             u,
+                             model = "McFL",
+                             mu = 1e-7,
+                             detectionSize = 1e6,
+                             detectionDrivers = NA,
+                             detectionProb = NA,
+                             keepPhylog = TRUE,
+                             onlyCancer = FALSE,
+                             keepEvery = NA,
+                             mutationPropGrowth = TRUE,
+                             mc.cores = 1
+                             ))
 
 t_mc_50000
 ##    user  system elapsed 
@@ -2519,19 +2800,20 @@ single out a couple of cases here.
 First, we repeat the run shown in section \@ref(mc50000ex5):
 
 ```{r mcf5muk005, echo = TRUE, eval = FALSE}
-t_mc_50000_nmpg_5mu_k <- system.time(mc_50000_nmpg_5mu_k <- oncoSimulPop(2,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 5e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = 1,
-                                                   mutationPropGrowth = FALSE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000_nmpg_5mu_k <- system.time(
+    mc_50000_nmpg_5mu_k <- oncoSimulPop(2,
+                                        u,
+                                        model = "McFL",
+                                        mu = 5e-7,
+                                        detectionSize = 1e6,
+                                        detectionDrivers = NA,
+                                        detectionProb = NA,
+                                        keepPhylog = TRUE,
+                                        onlyCancer = FALSE,
+                                        keepEvery = 1,
+                                        mutationPropGrowth = FALSE,
+                                        mc.cores = 1
+                                        ))
 t_mc_50000_nmpg_5mu_k
 ##    user  system elapsed 
 ## 305.512   5.164 310.711 
@@ -2567,19 +2849,20 @@ $10^6$ starting from an equilibrium population of 500 we need about
 Next, let us rerun \@ref(mc50000ex1):
 
 ```{r mc50000_1_005, echo = TRUE, eval = FALSE}
-t_mc_50000_nmpg <- system.time(mc_50000_nmpg <- oncoSimulPop(5,
-                                                   u,
-                                                   model = "McFL",
-                                                   mu = 1e-7,
-                                                   detectionSize = 1e6,
-                                                   detectionDrivers = NA,
-                                                   detectionProb = NA,
-                                                   keepPhylog = TRUE,
-                                                   onlyCancer = FALSE,
-                                                   keepEvery = NA,
-                                                   mutationPropGrowth = FALSE,
-                                                   mc.cores = 1
-                                                   ))
+t_mc_50000_nmpg <- system.time(
+    mc_50000_nmpg <- oncoSimulPop(5,
+                                  u,
+                                  model = "McFL",
+                                  mu = 1e-7,
+                                  detectionSize = 1e6,
+                                  detectionDrivers = NA,
+                                  detectionProb = NA,
+                                  keepPhylog = TRUE,
+                                  onlyCancer = FALSE,
+                                  keepEvery = NA,
+                                  mutationPropGrowth = FALSE,
+                                  mc.cores = 1
+                                  ))
 t_mc_50000_nmpg
 ##    user  system elapsed 
 ## 111.236   0.596 111.834 
@@ -2791,22 +3074,23 @@ u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng)))
 
 
 ```{r ex-large-mf, eval = FALSE, echo = TRUE}
-t_mc_k_50_1e11 <- system.time(mc_k_50_1e11 <- oncoSimulPop(5,
-                                                     u,
-                                                     model = "McFL",
-                                                     mu = 1e-7,
-                                                     detectionSize = 1e11,
-                                                     initSize = 1e5,
-                                                     detectionDrivers = NA,
-                                                     detectionProb = NA,
-                                                     keepPhylog = TRUE,
-                                                     onlyCancer = FALSE,
-                                                     mutationPropGrowth = FALSE,
-                                                     keepEvery = 1,
-                                                     finalTime = 5000,
-                                                     mc.cores = 1,
-                                                     max.wall.time = 600
-                                                     ))
+t_mc_k_50_1e11 <- system.time(
+    mc_k_50_1e11 <- oncoSimulPop(5,
+                                 u,
+                                 model = "McFL",
+                                 mu = 1e-7,
+                                 detectionSize = 1e11,
+                                 initSize = 1e5,
+                                 detectionDrivers = NA,
+                                 detectionProb = NA,
+                                 keepPhylog = TRUE,
+                                 onlyCancer = FALSE,
+                                 mutationPropGrowth = FALSE,
+                                 keepEvery = 1,
+                                 finalTime = 5000,
+                                 mc.cores = 1,
+                                 max.wall.time = 600
+                                 ))
 
 ## Recoverable exception ti set to DBL_MIN. Rerunning.
 ## Recoverable exception ti set to DBL_MIN. Rerunning.
@@ -2837,24 +3121,25 @@ cases).
 Now the exponential model with `detectionSize = 1e11`:
 
 ```{r ex-large-exp, eval = FALSE, echo = TRUE}
-t_exp_k_50_1e11 <- system.time(exp_k_50_1e11 <- oncoSimulPop(5,
-                                                     u,
-                                                     model = "Exp",
-                                                     mu = 1e-7,
-                                                     detectionSize = 1e11,
-                                                     initSize = 1e5,
-                                                     detectionDrivers = NA,
-                                                     detectionProb = NA,
-                                                     keepPhylog = TRUE,
-                                                     onlyCancer = FALSE,
-                                                     mutationPropGrowth = FALSE,
-                                                     keepEvery = 1,
-                                                     finalTime = 5000,
-                                                     mc.cores = 1,
-                                                     max.wall.time = 600,
-                                                     errorHitWallTime = FALSE,
-                                                     errorHitMaxTries = FALSE
-                                                     ))
+t_exp_k_50_1e11 <- system.time(
+    exp_k_50_1e11 <- oncoSimulPop(5,
+                                  u,
+                                  model = "Exp",
+                                  mu = 1e-7,
+                                  detectionSize = 1e11,
+                                  initSize = 1e5,
+                                  detectionDrivers = NA,
+                                  detectionProb = NA,
+                                  keepPhylog = TRUE,
+                                  onlyCancer = FALSE,
+                                  mutationPropGrowth = FALSE,
+                                  keepEvery = 1,
+                                  finalTime = 5000,
+                                  mc.cores = 1,
+                                  max.wall.time = 600,
+                                  errorHitWallTime = FALSE,
+                                  errorHitMaxTries = FALSE
+                                  ))
 
 ## Recoverable exception ti set to DBL_MIN. Rerunning.
 ## Hitted wall time. Exiting.
@@ -2936,7 +3221,7 @@ To summarize this section, we have seen:
 
 
 
-
+\clearpage
 
 
 # Specifying fitness effects {#specfit}
@@ -4061,7 +4346,7 @@ c(1.01 * 1.02, 1.02, 1.02 * 1.1, 0.1 * 1.3, 1.03,
 
 ## Order effects {#oe}
 
-As explained in the introduction (\@ref(intro)), by order effects we
+As explained in the introduction (section \@ref(introdd)), by order effects we
 mean a phenomenon such as the one shown empirically by @Ortmann2015:
 the fitness of a double mutant "A", "B" is different depending on
 whether "A" was acquired before "B" or "B" before "A". This, of
@@ -5208,6 +5493,7 @@ plot(mue1, addtot = TRUE,
 par(op)
 ``` 
 
+\clearpage
 
 # Plotting fitness landscapes {#plot-fit-land}
 
@@ -5287,6 +5573,8 @@ plot(evalAllGenotypes(pancr, order = FALSE), use_ggrepel = TRUE)
 
 
 <!-- \clearpage -->
+
+\clearpage
 
 # Specifying fitness effects: some examples from the literature {#litex}
 
@@ -5916,7 +6204,7 @@ plot(rv2, expandModules = TRUE,   autofit = TRUE)
 <!-- %%       autofit = TRUE, -->
 <!-- %%       scale_char = 8) -->
 
-
+\clearpage
 
 # Running and plotting the simulations: starting, ending, and examples {#simul}
 
@@ -6921,6 +7209,7 @@ streamgraph(lb1, Genotype, Y, Time, scale = "continuous",
 <!-- %% but it gives me problems with knitr, etc). -->
 
 
+\clearpage
 
 # Sampling multiple simulations {#sample}
 
@@ -7336,6 +7625,7 @@ are examining a large number of different scenarios.
 
 
 
+\clearpage
 
 # Showing the genealogical relationships of clones {#phylog}
 
@@ -7553,6 +7843,7 @@ This is so far disabled in function `oncoSimulSample`, since
 that function is optimized for other uses. This might change in the future.
 
 
+\clearpage
 
 # Generating random fitness landscapes {#gener-fit-land}
 
@@ -7617,10 +7908,10 @@ functions, or you could export them (`to_Magellan`) and plot them externally
 ## A small example
 rfitness(3)
 
-## A 5-gene example, where the reference genotype is the one the one with
-## all positions mutated, similar to Greene and Crona, 2014.  We will plot
-## the landscape and use it for simulations We downplay the random
-## component with a sd = 0.5
+## A 5-gene example, where the reference genotype is the one the
+## one with all positions mutated, similar to Greene and Crona,
+## 2014.  We will plot the landscape and use it for simulations
+## We downplay the random component with a sd = 0.5
 
 r1 <- rfitness(5, reference = rep(1, 5), sd = 0.6)
 plot(r1)
@@ -7637,6 +7928,7 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 
 <!-- % @  -->
 
+\clearpage
 
 # Measures of evolutionary predictability and genotype diversity
 
@@ -7704,14 +7996,13 @@ example:
 
 
 ```{r lod_pom_ex}
-pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
-                                          "TP53", "TP53", "MLL3"),
-                                      child = c("KRAS","SMAD4", "CDNK2A", 
-                                          "TP53", "MLL3",
-                                          rep("PXDN", 3), rep("TGFBR2", 2)),
-                                      s = 0.05,
-                                      sh = -0.3,
-                                      typeDep = "MN"))
+pancr <- allFitnessEffects(
+    data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                          "TP53", "TP53", "MLL3"),
+               child = c("KRAS","SMAD4", "CDNK2A", 
+                         "TP53", "MLL3",
+                         rep("PXDN", 3), rep("TGFBR2", 2)),
+               s = 0.05, sh = -0.3, typeDep = "MN"))
 
 pancr16 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE,
                         mc.cores = 2)
@@ -7719,21 +8010,23 @@ pancr16 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE,
 ## Look a the first POM 
 str(POM(pancr16)[1:3])
 
-## Note here that for each simulation there is a "all_paths" and a "lod_single",
-## as explained above
+## Note here that for each simulation there is a "all_paths" and
+## a "lod_single", as explained above
 LOD(pancr16)[1:2]
 
-## The diversity of LOD (lod_single)  and POM might or might not be identical
+## The diversity of LOD (lod_single) and POM might or might not
+## be identical
 diversityPOM(POM(pancr16))
 diversityLOD(LOD(pancr16))
 
-## Show the genotypes and their diversity (which might, or might not,
-## differ from the diversity of LOD and POM)
+## Show the genotypes and their diversity (which might, or might
+## not, differ from the diversity of LOD and POM)
 sampledGenotypes(samplePop(pancr16))
 
 ```
 
 
+\clearpage
 
 # FAQ, odds and ends 
 
@@ -8156,6 +8449,7 @@ questions where OncoSimulR could help.
 <!-- %% plot(otp) -->
 <!-- %% @  -->
 
+\clearpage
 
 # Using v.1 posets and simulations {#v1}
 
@@ -8182,8 +8476,8 @@ plotPoset(p1, addroot = TRUE)
 ``` 
 
 ```{r, fig.height=3}
-## A simple way to create a poset where no gene (in a set of 15) depends
-## on any other.
+## A simple way to create a poset where no gene (in a set of 15)
+## depends on any other.
 p4 <- cbind(0L, 15L)
 plotPoset(p4, addroot = TRUE)
 ``` 
@@ -8449,6 +8743,7 @@ computing fitness, however, should deal with all of this just fine.
 
 
 
+\clearpage
 
 # Session info and packages used
 
