@@ -16,6 +16,8 @@ rm -r -f OncoSimulR-tex_files
 rm OncoSimulR.tex
 rm OncoSimulR.synctex.gz
 rm OncoSimulR-tex.tex
+rm OncoSimulR-tex.Rmd
+rm OncoSimulR-tex.pdf
 rm OncoSimulR-tex.synctex.gz
 rm rl1.txt
 gv0=$(git rev-parse --short HEAD)
