@@ -126,11 +126,13 @@ data(benchmark_2)
 data(benchmark_3)
 
 colnames(benchmark_1)[
-    match(c("time_per_simul",
+    match(c(
+	"time_per_simul",
     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
 	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean",
 	"TotalPopSize.Max.", "keepEvery",  "Attempts.Median",
-	"Attempts.Mean", "Attempts.Max."),
+	"Attempts.Mean", "Attempts.Max.",
+	"PDBaseline", "n2", "onlyCancer"),
 	 colnames(benchmark_1)
 	)] <- c("Elapsed Time, average per simulation (s)",
 	              "Object Size, average per simulation (MB)",
@@ -143,7 +145,8 @@ colnames(benchmark_1)[
 				  "keepEvery",
 				  "Attempts until Cancer, median",
 				  "Attempts until Cancer, mean",
-				  "Attempts until Cancer, max."
+				  "Attempts until Cancer, max.",
+				  "PDBaseline", "n2", "onlyCancer"
 				  )
 				  
 	
@@ -337,15 +340,20 @@ pander(benchmark_1[1:4, c("Elapsed Time, average per simulation (s)",
 
 
 
-The above table shows that a naive comparison (looking simply at
-execution time) might conclude that the McFL model is much, much
-slower than the Exp model. But that is not the complete story: using
-the `detectionProb` stopping mechanism (see \@ref(detectprob)) will
-lead to stopping the simulations very quickly in the exponential
-model because as soon as a clone with fitness $>1$ appears it starts
-growing exponentially. In fact, we can see that the number of
-iterations and the final time are much smaller in the Exp than in
-the McFL model. 
+The above table shows that a naive comparison (looking simply at execution
+time) might conclude that the McFL model is much, much slower than the Exp
+model. But that is not the complete story: using the `detectionProb`
+stopping mechanism (see \@ref(detectprob)) will lead to stopping the
+simulations very quickly in the exponential model because as soon as a
+clone with fitness $>1$ appears it starts growing exponentially. In fact,
+we can see that the number of iterations and the final time are much
+smaller in the Exp than in the McFL model.  We will elaborate on this
+point below (section \@ref(common1)), when we discuss the setting for
+`checkSizePEvery` (here left at its default value of 20): checking the
+exiting condition more often (smaller `checkSizePEvery`) would probably be
+justified here (notice also the very large final times) and would lead to
+a sharp decrease in number of iterations and, thus, running time.
+
 
 
 This table also shows that the `keepEvery = NA` setting, which was in effect
@@ -543,7 +551,7 @@ risk of extinction.
 
 
 We will now rerun all of the above models with argument `onlyCancer =
-FALSE`.  The results are shown in Table \@ref(tab:timings3) (note that the
+FALSE`.  The results are shown in Table \@ref(tab:timing3) (note that the
 differences between this table and table \@ref(tab:bench1) for the McFL
 models are due only to sampling variation).
 
@@ -593,17 +601,49 @@ on the question being asked (see, for example, section \@ref(exbauer) for
 a question where we will naturally want to use `onlyCancer = FALSE`).
 
 
+To make it easier to compare results with those of the next section, Table
+\@ref(tab:allr1bck) shows all the runs so far.
+
+
+\bslandscape
+
+Table: (\#tab:allr1bck) Benchmarks of all models in Tables \@ref(tab:bench1), \@ref(tab:bench1b) and \@ref(tab:timing3).  
+```{r bench1dx0, eval=TRUE, echo = FALSE}
+panderOptions("table.split.table", 99999999)
+## panderOptions("table.split.cells", 900)  ## For HTML
+panderOptions("table.split.cells", 19)
+
+set.alignment('right') 
+panderOptions('round', 3)
+	
+pander(benchmark_1[ , c("Elapsed Time, average per simulation (s)",
+ 	              "Object Size, average per simulation (MB)", 
+				  "Number of Clones, median", 
+				  "Number of Iterations, median", 
+				  "Final Time, median", "Total Population Size, median", 
+				  "Total Population Size, mean", "Total Population Size, max.",
+ 	              "keepEvery", "PDBaseline", "n2", "onlyCancer")], 
+				  ## caption = "\\label{tab:allr1bck}Benchmarks of all models in Tables \\@ref(tab:bench1), \\@ref(tab:bench1b)  and \\@ref(tab:timing3)."  
+				  )  
+```
+
+\eslandscape
+
+\clearpage
+
+
+
 ### Changing fitness: $s=0.1$ and $s=0.05$ {#bench1xf}
 
 In the above fitness specification the fitness effect of each gene (when
 its restrictions are satisfied) is $s = 0.1$ (see section \@ref(numfit)
 for details). Here we rerun all the above benchmarks using $s= 0.05$ and
-results are shown below in Table \@(tab:timing3xf); the results from these
+results are shown below in Table \@ref(tab:timing3xf); the results from these
 benchmarks are available as `data(benchmark_1_0.05)`:
 
 \bslandscape
 
-Table: (\#tab:timing3xf) Benchmarks of all models in Tables \@ref(tab:bench1), \@ref(tab:bench1b) and \@ref(tab:timing3) using $s=0.05$ (instead of $s=0.1$).
+Table: (\#tab:timing3xf) Benchmarks of all models in Table \@ref(tab:allr1bck) using $s=0.05$ (instead of $s=0.1$).
 ```{r bench1dx, eval=TRUE, echo = FALSE}
 ## data(benchmark_1_0.05)
 ## knitr::kable(benchmark_1_0.05[, c("time_per_simul",
@@ -632,21 +672,20 @@ panderOptions("table.split.table", 99999999)
 ## panderOptions("table.split.cells", 900)  ## For HTML
 panderOptions("table.split.cells", 19)
 
-set.alignment('right')
-panderOptions('round', 3)	
+set.alignment('right') 
+panderOptions('round', 3)
 	
 pander(benchmark_1_0.05[ , c("Elapsed Time, average per simulation (s)",
- 	              "Object Size, average per simulation (MB)",
- 				  "Number of Clones, median",
- 				  "Number of Iterations, median",
- 				  "Final Time, median",
- 				  "Total Population Size, median",
-				  "Total Population Size, mean",
- 				  "Total Population Size, max.",
- 				  "keepEvery",
-				  "PDBaseline", "n2", "onlyCancer")],
- ## caption = "\\label{tab:timing3xf}Benchmarks of all models in Tables \\@ref(tab:bench1), \\@ref(tab:bench1b) and \\@ref(tab:timing3) using $s=0.05$ (instead of $s=0.1$)."
-				  )	
+ 	              "Object Size, average per simulation (MB)", 
+				  "Number of Clones, median", 
+				  "Number of Iterations, median", 
+				  "Final Time, median", 
+				  "Total Population Size, median", 
+				  "Total Population Size, mean", "Total Population Size, max.",
+ 	              "keepEvery", "PDBaseline", "n2", "onlyCancer")], 
+ 	              ## caption = "\\label{tab:timing3xf}Benchmarks of all models in Table \\@ref(tab:allr1bck) using $s=0.05$ (instead of $s=0.1$)."  
+)  
+				  
 ```
 
 \eslandscape
@@ -656,7 +695,7 @@ pander(benchmark_1_0.05[ , c("Elapsed Time, average per simulation (s)",
 As expected, having a smaller $s$ leads to slower processes in most cases,
 since it takes longer to reach the exiting conditions sooner. Particularly
 noticeable are the runs for the McFL models (notice the increases in
-population size and number of iterations). 
+population size and number of iterations ---see also below). 
 
 
 That is not the case, however, for `exp5` and `exp6` (and `exp5_noc` and
@@ -689,6 +728,15 @@ that close to the time the exit conditions could be satisfied, they
 are growing very fast, accumulating mutants, and incurring in
 additional iterations. They exit sooner in terms of time periods,
 but they do much more work before arriving there.
+
+
+The setting of `checkSizePEvery` is also having a huge effect on the McFL
+model simulations (the number of iterations is $>10^6$). Even more than in
+the previous section, checking the exiting condition more often (smaller
+`checkSizePEvery`) would probably be justified here (notice also the very
+large final times) and would lead to a sharp decrease in number of
+iterations and, thus, running time.
+
 
 
 The moral here is that in complex simulations like this, the effects
