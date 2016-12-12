@@ -129,7 +129,8 @@ colnames(benchmark_1)[
     match(c("time_per_simul",
     "size_mb_per_simul", "NumClones.Median", "NumIter.Median",
 	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean",
-	"TotalPopSize.Max.", "keepEvery"),
+	"TotalPopSize.Max.", "keepEvery",  "Attempts.Median",
+	"Attempts.Mean", "Attempts.Max."),
 	 colnames(benchmark_1)
 	)] <- c("Elapsed Time, average per simulation (s)",
 	              "Object Size, average per simulation (MB)",
@@ -139,7 +140,10 @@ colnames(benchmark_1)[
 				  "Total Population Size, median",
 				   "Total Population Size, mean",
 				  "Total Population Size, max.",
-				  "keepEvery"
+				  "keepEvery",
+				  "Attempts until Cancer, median",
+				  "Attempts until Cancer, mean",
+				  "Attempts until Cancer, max."
 				  )
 				  
 	
@@ -149,7 +153,7 @@ colnames(benchmark_1_0.05)[
 	"FinalTime.Median", "TotalPopSize.Median", "TotalPopSize.Mean", 
 	"TotalPopSize.Max.",
 	"keepEvery",
-	"PDBaseline", "n2", "onlyCancer"),
+	"PDBaseline", "n2", "onlyCancer", "Attempts.Median"),
 	colnames(benchmark_1_0.05))] <- c("Elapsed Time, average per simulation (s)",
 	              "Object Size, average per simulation (MB)",
 				  "Number of Clones, median",
@@ -159,7 +163,8 @@ colnames(benchmark_1_0.05)[
 				  "Total Population Size, mean",
 				  "Total Population Size, max.",
 				  "keepEvery",
-				  "PDBaseline", "n2", "onlyCancer"
+				  "PDBaseline", "n2", "onlyCancer",
+				  "Attempts until Cancer, median"
 				  )
 
 
@@ -430,7 +435,9 @@ panderOptions("table.split.table", 99999999)
 panderOptions("table.split.cells", 900)  ## For HTML
 ## panderOptions("table.split.cells", 8) ## For PDF
 set.alignment('right')
-panderOptions('round', 3)
+panderOptions('round', 2)
+panderOptions('big.mark', ',')
+panderOptions('digits', 2)
 
 pander(benchmark_1[5:8, c("Elapsed Time, average per simulation (s)",
  	              "Object Size, average per simulation (MB)",
@@ -441,9 +448,12 @@ pander(benchmark_1[5:8, c("Elapsed Time, average per simulation (s)",
  				  "Total Population Size, max.",
  				  "keepEvery",
 				  "PDBaseline",
-				  "n2")],
+				  "n2")], 
+## 				  round = c(rep(2, 3), rep(0, 7)),
+## 				  digits = c(rep(2, 3), rep(1, 7)),
 	  ## caption = "\\label{tab:bench1b}Benchmarks of Exp and McFL models modifying the default `detectionProb` with two settings of `keepEvery`."
     )
+
 ```
 
 \elandscape
@@ -483,28 +493,59 @@ initial population sizes) because of the dependency of death rate on total
 population size (see section \@ref(mcfl)).
 
 
-The number of attempts until cancer was reached in the above models is
-shown in the following table (the values can be obtained from any of the
-above runs doing, for instance, `median(unlist(lapply(exp1, function(x)
-x$other$attemptsUsed)))` ).:
+The number of attempts until cancer was reached in the above
+models is shown in the Table \@ref(tab:bench1c) (the values can be obtained from
+any of the above runs doing, for instance, `median(unlist(lapply(exp1,
+function(x) x$other$attemptsUsed)))` ):
 
-
+Table: (\#tab:bench1c) Number of attempts until cancer.
 ```{r bench1c, eval=TRUE, echo = FALSE}
-## data(benchmark_1)
-knitr::kable(benchmark_1[1:8, c("Attempts.Median"), drop = FALSE], 
-    booktabs = TRUE,
-	row.names = TRUE,
-	col.names = "Attempts until cancer",
-    caption = "Median Number of attempts until cancer.", 
-	align = "r")
+panderOptions("table.split.table", 99999999)
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+set.alignment('right')
+panderOptions('round', 2)
+panderOptions('big.mark', ',')
+panderOptions('digits', 2)
+
+pander(benchmark_1[1:8, c(
+"Attempts until Cancer, median", 
+"Attempts until Cancer, mean", 
+"Attempts until Cancer, max.", 
+				  "PDBaseline",
+				  "n2")], 
+## 				  round = c(rep(2, 3), rep(0, 7)),
+## 				  digits = c(rep(2, 3), rep(1, 7)),
+	  ## caption = "\\label{tab:bench1c}Median number of attempts until cancer."
+    )
+## ## data(benchmark_1)
+## knitr::kable(benchmark_1[1:8, c("Attempts.Median",
+##                                 "PDBaseline", "n2"), drop = FALSE], 
+##     booktabs = TRUE,
+## 	row.names = TRUE,
+## 	col.names = c("Attempts until cancer", "PDBaseline", "n2"),
+##     caption = "Median number of attempts until cancer.", 
+## 	align = "r")
 	
 ```
 
 
+The McFL models finish in a single attempt. The exponential model
+simulations where we can exit with small population sizes (`exp1`, `exp2`)
+need many fewer attempts to reach cancer than those where large population
+sizes are required (`exp3` to `exp6`). There is no relevant different
+among those four, which is what we would expect: a population that has
+already reached a size of 50,000 cells from an initial population size of
+500 is obviously a growing population where there is at least one mutant
+with positive fitness; thus, it unlikely to go extinct and therefore
+having to grow up to at least 500,000 will not significantly increase the
+risk of extinction.
+
+
 We will now rerun all of the above models with argument `onlyCancer =
-FALSE`.  The results are shown below (note that the differences between
-this table and table \@ref(tab:bench1) for the McFL models are due only to
-sampling variation).
+FALSE`.  The results are shown in Table \@ref(tab:timings3) (note that the
+differences between this table and table \@ref(tab:bench1) for the McFL
+models are due only to sampling variation).
 
 \bslandscape
 
