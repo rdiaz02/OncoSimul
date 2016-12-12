@@ -1114,7 +1114,13 @@ is much smaller.
 
 
 
-
+<!-- Why not xtable tables? I tried but there seems to be no way to generate -->
+<!-- the labels and references for both html and latex. If the type of output -->
+<!-- is html, it outputs html directly, not pandoc, so I think it becomes -->
+<!-- impossible. You can get    Table: tab:tab1, but the tab:tab1 are not -->
+<!-- substituted by their values. So pander it was. I liked the sideways output -->
+<!-- of xtable in latex, but I've solved it with the commands in preamble, and -->
+<!-- by calling sideways directly in latex. And pander is very nice too. -->
 
 
 
