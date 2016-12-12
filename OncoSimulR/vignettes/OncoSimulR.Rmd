@@ -4672,7 +4672,7 @@ evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic")
 ```
 
 What gives here? The simulation code would alert you of this (see section
-\@ref(fit-neg-pos)) in this particular case because there are ``-1",
+\@ref(ex-0-death)) in this particular case because there are ``-1",
 which might indicate that this is not what you want. The problem is that
 you probably want the Death rate to be infinity (the birth rate was 0, so
 no clone viability, when we used birth rates ---section \@ref(noviab)).
