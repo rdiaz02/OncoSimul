@@ -10,7 +10,7 @@ author: "
 		 
 		 <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>
 		 "
-date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), suppressWarnings(ifelse(length(try(system('git rev-parse --short HEAD', ignore.stderr = TRUE, intern = TRUE))), paste0('. Revision: ', system('git rev-parse --short HEAD', intern = TRUE)), "")))`"
+date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), suppressWarnings(ifelse(length(try(system('git rev-parse --short HEAD', ignore.stderr = TRUE, intern = TRUE))), paste0('. Revision: ', system('git rev-parse --short HEAD', intern = TRUE)), '')))`"
 header-includes:
     - \input{preamble.tex}
 output: 
