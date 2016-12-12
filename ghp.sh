@@ -12,8 +12,12 @@ cd ../../
 cd ./OncoSimulR/vignettes
 mv OncoSimulR.pdf ../../../oncosimul-gh-pages/pdfs/.
 rm -r -f OncoSimulR_files
+rm -r -f OncoSimulR-tex_files
 rm OncoSimulR.tex
 rm OncoSimulR.synctex.gz
+rm OncoSimulR-tex.tex
+rm OncoSimulR-tex.synctex.gz
+rm rl1.txt
 gv0=$(git rev-parse --short HEAD)
 cd ../../../oncosimul-gh-pages
 gv=$(git rev-parse --short HEAD)
