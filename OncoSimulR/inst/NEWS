@@ -1,3 +1,7 @@
+Changes in version 2.5.2 (2016-12-12):
+	- Vignette uses pander in tables.
+	- Typos fixed and other enhancements in vignette.
+	
 Changes in version 2.5.2 (2016-12-10):
         - Lots and lots of addition to vignette including benchmarks.
         - Diversity of sampled genotypes.
