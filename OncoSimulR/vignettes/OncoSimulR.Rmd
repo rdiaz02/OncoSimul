@@ -590,7 +590,7 @@ sampledGenotypes(samplePop(od_sim))
 set.seed(NULL)
 ```
 
-## Predictability of evolution in complex fitness landscapes {#ex-predict}
+### Predictability of evolution in complex fitness landscapes {#ex-predict}
 
 Focusing now on predictability in more general fitness landscapes,
 we would run simulations under random fitness landscapes with varied
