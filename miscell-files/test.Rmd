@@ -118,8 +118,6 @@ Table:(\#tab:osrfeatures) Key features of OncoSimulR. Modified from the original
 
 ```{r colnames_benchmarks, echo = FALSE, eval = TRUE}
 
-
-
 data(benchmark_1)
 data(benchmark_1_0.05)
 data(benchmark_2)
