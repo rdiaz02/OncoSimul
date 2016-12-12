@@ -1195,7 +1195,7 @@ version 2. Please note that **the functionality of version 1 will soon be remove
 
 # Running time and space consumption of OncoSimulR {#timings}
 
-Time to complete the simulations and size of return objects (space
+Time to complete the simulations and size of returned objects (space
 consumption) depend on several, interacting factors. The usual rule
 of "experiment before launching a large number of simulations"
 applies, but here we will walk through several cases to get a
@@ -1733,7 +1733,7 @@ Now most simulations under the exponential model end up in extinction, as
 seen by the median population size of 0 (but not all, as the mean and
 max. population size are clearly away from zero). Consequently,
 simulations under the exponential model are now faster (and the size of
-the average return object is smaller). Of course, whether one should run
+the average returned object is smaller). Of course, whether one should run
 simulations with `onlyCancer = TRUE` or `onlyCancer = FALSE` will depend
 on the question being asked (see, for example, section \@ref(exbauer) for
 a question where we will naturally want to use `onlyCancer = FALSE`).
@@ -2113,7 +2113,7 @@ pander(benchmark_2[ , c(
 \clearpage
 
 In most cases, simulations run reasonably fast (under 0.1 seconds per
-individual simulation) and the return objects are small. I will only
+individual simulation) and the returned objects are small. I will only
 focus on a few cases.
 
 The McFL model with random fitness landscape `rf12` and with `pancr` does
@@ -2281,7 +2281,8 @@ stop when the population grows over $1e6$ individuals:
 
 ```{r exp10000, echo = TRUE, eval = FALSE}
 ng <- 10000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), 
+                                      rep(-0.1, ng/2)))
 
 t_e_10000 <- system.time(
     e_10000 <- oncoSimulPop(5, u, model = "Exp", mu = 1e-7,
@@ -2314,14 +2315,14 @@ print(object.size(e_10000), units = "MB")
 ```
 
 Each simulation takes about 1 second but note that the number of clones
-for most simulations is already over 4000 and that the size of the return
+for most simulations is already over 4000 and that the size of the returned
 object is close to 1 GB (a more detailed explanation of where this 1 GB
 comes from is deferred until section \@ref(wheresizefrom)).
 
 
 #### Exponential, 10,000 genes, example 2 {#exp10000_2}
 
-We can decrease the size of the return object if we use the `keepEvery =
+We can decrease the size of the returned object if we use the `keepEvery =
 NA` argument (this setting was explained in detail in section
 \@ref(bench1)):
 
@@ -2373,7 +2374,8 @@ reasonable decision depends on the problem; see also below.
 
 ```{r exp50000, echo = TRUE, eval = FALSE}
 ng <- 50000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), 
+                                      rep(-0.1, ng/2)))
 t_e_50000 <- system.time(
     e_50000 <- oncoSimulPop(5,
                             u,
@@ -2406,7 +2408,7 @@ print(object.size(e_50000), units = "MB")
 ## 7598.6 Mb
 ```
 
-Of course, simulations now take longer and the size of the return
+Of course, simulations now take longer and the size of the returned
 object is over 7 GB (we are keeping over 7000 clones, even if when
 we prune all those that went extinct). 
 
@@ -2416,7 +2418,8 @@ What if we had not pruned?
 
 ```{r exp50000np, echo = TRUE, eval = FALSE}
 ng <- 50000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), 
+                                      rep(-0.1, ng/2)))
 t_e_50000np <- system.time(
     e_50000np <- oncoSimulPop(5,
                               u,
@@ -2461,7 +2464,8 @@ What about the `mutationPropGrowth` setting? We will rerun the example in
 ```{r exp50000mpg, echo = TRUE, eval = FALSE}
 
 ng <- 50000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), 
+                                      rep(-0.1, ng/2)))
 
 t_e_50000c <- system.time(
     e_50000c <- oncoSimulPop(5,
@@ -2503,7 +2507,7 @@ time and the size of the object increases by almost 3 GB.
 
 What about larger population sizes or larger mutation rates? The
 number of clones starts growing fast, which means much slower
-execution times and much larger return objects (see also the examples
+execution times and much larger returned objects (see also the examples
 below).
 
 
@@ -2524,7 +2528,8 @@ Let's start with  `mutationPropGrowth = FALSE` and `keepEvery = NA`:
 
 ```{r mc50000_1, echo = TRUE, eval = FALSE}
 ng <- 50000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), 
+                                      rep(-0.1, ng/2)))
 
 t_mc_50000_nmpg <- system.time(
     mc_50000_nmpg <- oncoSimulPop(5,
@@ -2598,7 +2603,7 @@ print(object.size(mc_50000_nmpg_k), units = "MB")
 ```
 
 Computing time increases slightly but the major effect is seen on
-the size of the return object, that increases by a factor of about
+the size of the returned object, that increases by a factor of about
 4x, up to 8 GB, corresponding to the increase in about 4x in the
 number of clones being tracked (see details of where size comes from in
 section \@ref(wheresizefrom)).
@@ -2611,7 +2616,8 @@ detection size by a factor of 3:
 
 ```{r mc50000_popx, echo = TRUE, eval = FALSE}
 ng <- 50000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
+u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), 
+                                      rep(-0.1, ng/2)))
 
 t_mc_50000_nmpg_3e6 <- system.time(
     mc_50000_nmpg_3e6 <- oncoSimulPop(5,
@@ -2655,8 +2661,6 @@ Let us use the same `detectionSize = 1e6` as in the first example
 (\@ref(mc50000ex1)), but with 5x the mutation rate:
 
 ```{r mc50000_mux, echo = TRUE, eval = FALSE}
-ng <- 50000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
 
 t_mc_50000_nmpg_5mu <- system.time(
     mc_50000_nmpg_5mu <- oncoSimulPop(5,
@@ -2689,22 +2693,23 @@ print(object.size(mc_50000_nmpg_5mu), units = "MB")
 ## 8314.4 Mb
 ``` 
 
-The number of clones we are tracking is about 4x the number of clones of
-the first example (\@ref(mc50000ex1)), and roughly similar to the number
-of clones of the second example (\@ref(mc50000ex2)), and size of return
-object is similar to that of the second example.  But computing time has
-increased by a factor of about 5x and iterations have increased by a
-factor of about 2x. Iterations increase because mutation is more frequent;
-in addition, at each sampling period each iteration needs to do more work
-as it needs to loop over a larger number of clones and this larger number
-includes clones that are not shown here, because they are pruned (they are
-extinct by the time we exit the simulation ---again, pruning is discussed
-with further details in \@ref(prune)).
+The number of clones we are tracking is about 4x the number of
+clones of the first example (\@ref(mc50000ex1)), and roughly similar
+to the number of clones of the second example (\@ref(mc50000ex2)),
+and size of the returned object is similar to that of the second
+example.  But computing time has increased by a factor of about 5x
+and iterations have increased by a factor of about 2x. Iterations
+increase because mutation is more frequent; in addition, at each
+sampling period each iteration needs to do more work as it needs to
+loop over a larger number of clones and this larger number includes
+clones that are not shown here, because they are pruned (they are
+extinct by the time we exit the simulation ---again, pruning is
+discussed with further details in \@ref(prune)).
 
 
 #### McFarland, 50,000 genes, example 5 {#mc50000ex5}
 
-Finally, let's run the above example but with `keepEvery = 1`:
+Now let's run the above example but with `keepEvery = 1`:
 
 ```{r mcf5muk, echo = TRUE, eval = FALSE}
 t_mc_50000_nmpg_5mu_k <- system.time(
@@ -2741,7 +2746,7 @@ print(object.size(mc_50000_nmpg_5mu_k), units = "MB")
 
 We have already seen these effects before in section
 \@ref(mc50000ex2): using `keepEvery = 1` leads to a slight increase
-in execution time. What is really affected is the size of the return
+in execution time. What is really affected is the size of the returned
 object which increases by a factor of about 3x (and is now over
 20GB). That 3x corresponds, of course, to the increase in the number
 of clones being tracked. This, by the way, also allows us to
@@ -2760,8 +2765,6 @@ default of `mutationPropGrowth = TRUE`:
 
 
 ```{r mc50000_2, echo = TRUE, eval = FALSE}
-ng <- 50000
-u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng/2), rep(-0.1, ng/2)))
 
 t_mc_50000 <- system.time(
     mc_50000 <- oncoSimulPop(5,
@@ -2796,7 +2799,7 @@ print(object.size(mc_50000), units = "MB")
 ```
 
 Note the huge increase in computing time (related of course to the huge
-increase in number of iterations) and in the size of the return object: we
+increase in number of iterations) and in the size of the returned object: we
 have gone from having to track about 2000 clones to tracking over 12000
 clones even when we prune all clones without descendants.
 
@@ -2841,7 +2844,7 @@ print(object.size(mc_50000_nmpg_5mu_k), units = "MB")
 ```
 
 Note we use only two replicates, since those two already lead to a
-24 GB return object as we are tracking more than 60,000 clones, more
+24 GB returned object as we are tracking more than 60,000 clones, more
 than twice those with $s=0.1$.  The reason for the difference in
 number of clones and iterations is of course the change from $s=0.1$
 to $s=0.05$: under the McFarland model to reach population sizes of
@@ -2893,7 +2896,7 @@ print(object.size(mc_50000_nmpg), units = "MB")
 ```
 Using $s=0.05$ leads to a large increase in final time and number of
 iterations. However, as we are using the `keepEvery = NA` setting,
-the increase in number of clones tracked and in size of return
+the increase in number of clones tracked and in size of returned
 object is relatively small.
 
 
@@ -2901,7 +2904,7 @@ object is relatively small.
 
 ### The different consequences of `keepEvery = NA` in the Exp and McFL models {#kpexpmc}
 
-We have seen that `keepEvery = NA` often leads to much smaller return
+We have seen that `keepEvery = NA` often leads to much smaller returned
 objects when using the McFarland model than when using the Exp model. Why?
 Because in the McFarland model there is strong competition and there can
 be complete clonal sweeps so that in extreme cases a single clone might be
@@ -2990,7 +2993,7 @@ often as that in the other two matrices (`pops.by.time` and
 #### Interlude: where is that 1 GB coming from? {#wheresizefrom}
 
 In section \@ref(exp100001) we have seen an apparently innocuous
-simulation producing a return object of almost 1 GB. Where is that coming
+simulation producing a returned object of almost 1 GB. Where is that coming
 from? It means that each simulation produced almost 200 MB of output.
 
 Let us look at one simulation in more detail:
@@ -7954,7 +7957,7 @@ In @szendro_predictability_2013 "(...) paths defined as the time
 ordered sets of genotypes that at some time contain the largest
 subpopulation" are called "path of the maximum" (POM) (see their
 p. 572). In our case, POM are obtained from the `pops.by.time`
-return object (i.e., from the genotypes at each of the sampling
+returned object (i.e., from the genotypes at each of the sampling
 times) and, thus, the POMs will be affected by how often we sample
 and keep samples (arguments `sampleEvery` and `keepEvery`), since we
 are running a continuous time process.
