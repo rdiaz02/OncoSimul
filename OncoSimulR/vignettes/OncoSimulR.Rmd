@@ -152,10 +152,11 @@ require(pander)
 
 # Introduction {#introdd}
  
-OncoSimulR is an individual-based forward-time genetic simulator for
-biallelic markers (wildtype vs. mutated) in asexually reproducing
-populations without spatial structure (perfect mixing). Its design
-emphasizes flexible specification of fitness and mutator effects.
+OncoSimulR is an individual- or clone-based forward-time genetic
+simulator for biallelic markers (wildtype vs. mutated) in asexually
+reproducing populations without spatial structure (perfect
+mixing). Its design emphasizes flexible specification of fitness and
+mutator effects.
  
  
  
@@ -2259,7 +2260,7 @@ is much smaller.
 
 Yes. In fact, in OncoSimulR there is no pre-set limit on genome
 size. However, large numbers of genes can lead to unacceptable
-memory usage or running time. We discuss several examples next that
+memory usage and/or running time. We discuss several examples next that
 illustrate some of the major issues to consider. Another example
 with 50,000 genes is shown in section \@ref(mcf50070).
 
@@ -8104,23 +8105,33 @@ Algorithm 5 in the supplementary material).
 
 ## Does OncoSimulR keep track of individuals or of clones? And how can it keep track of such large populations? {#trackindivs}
 
-OncoSimulR keeps track of clones, where a clone is a set of cells that are
-genetically identical (note that this means completely identical over the
-whole set of genes/markers you are using; see section
-\@ref(meaningclone)).  
+OncoSimulR keeps track of clones, where a clone is a set of cells
+that are genetically identical (note that this means completely
+identical over the whole set of genes/markers you are using; see
+section \@ref(meaningclone)). We do not need to keep track of
+individual cells because, for all purposes, and since we do not
+consider spatial structure, two or more cells that are genetically
+identical are interchangeable. This means, for instance, that the
+computational cost of keeping a population of a single clone with 1
+individual or with $10^9$ individuals is exactly the same: we just
+keep track of the genotype and the number of cells. (Sure, it is
+much more likely we will see a mutation soon in a clone with $10^9$
+cells than in a clone with 1, but that is a different issue.)
+
+
+Of course, the entities that die, reproduce, and mutate are
+individual cells. This is of course dealt with by tracking clones
+(as is clearly shown by Algorithms 4 and 5 in @Mather2012). Tracking
+individuals, as individuals, would provide no advantage, but would
+increase the computational burden by many orders of magnitude.
+
+
+
 
 <!-- As we are interested in examining the effects of selection, mutation, -->
 <!-- keeping track of the parent-child relationships between clones, etc, and -->
 <!-- thus we must keep track of the complete set of clones. -->
 
-We do not need to keep track of individual cells because, for all
-purposes, and since we do not consider spatial structure, two or more
-cells that are genetically identical are interchangeable. This means, for
-instance, that the computational cost of keeping a population of a single
-clone with 1 individual or with $10^9$ individuals is exactly the same: we
-just keep track of the genotype and the number of cells. (Sure, it is much
-more likely we will see a mutation soon in a clone with $10^9$ cells than
-in a clone with 1, but that is a different issue.)
 
 
 <!-- (or haplotype if -->
