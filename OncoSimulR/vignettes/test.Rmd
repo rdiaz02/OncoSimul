@@ -48,6 +48,7 @@ MathJax.Hub.Config({
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 options(width = 70)
 require(BiocStyle)
+require(pander)
 ```
 
 \clearpage
@@ -116,7 +117,7 @@ Table:(\#tab:osrfeatures) Key features of OncoSimulR. Modified from the original
 
 
 ```{r colnames_benchmarks, echo = FALSE, eval = TRUE}
-library(pander)
+
 
 
 data(benchmark_1)

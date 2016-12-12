@@ -129,6 +129,7 @@ MathJax.Hub.Config({
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 options(width = 70)
 require(BiocStyle)
+require(pander)
 ```
 
 <!-- bookdown::pdf_document2 seems to produce the tex even if failures -->

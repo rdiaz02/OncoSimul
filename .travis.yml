@@ -24,7 +24,7 @@ before_install:
   - if [[ "$TRAVIS_R_VERSION_STRING" = 'bioc-devel' ]]; then mkdir ~/.R && echo 'CXX1X=g++ -std=c++0x -g -O2 -fPIC' > ~/.R/Makevars; fi
 
 install:
-  - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR")'
+  - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR")'
 
 # withr failing because of a broken dependency on "later". FIXME: return to using github' jimhester for withr and covr later.
 # install:
