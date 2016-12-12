@@ -1,4 +1,7 @@
-Changes in version 2.5.2 (2016-12-12):
+Changes in version 2.5.4 (2016-12-12):
+	- Vignette: miscell changes (order of examples, typos, etc)
+
+Changes in version 2.5.3 (2016-12-12):
 	- Vignette uses pander in tables.
 	- Typos fixed and other enhancements in vignette.
 	
