@@ -32,6 +32,9 @@ rm ./OncoSimulR/R/*~
 rm ./OncoSimulR/R/.Rhistory
 rm ./OncoSimulR/R/Rplots.pdf
 rm ./OncoSimulR/vignettes/*~
+rm ./OncoSimulR/vignettes/OncoSimulR-tex.*
+rm -r -f ./OncoSimulR/vignettes/OncoSimulR-tex_files
+rm ./OncoSimulR/vignettes/rl1.txt
 rm ./OncoSimulR/vignettes/Rplots.pdf
 rm ./OncoSimulR/vignettes/.Rhistory
 rm ./OncoSimulR/src/*.so
