@@ -727,7 +727,7 @@ of the individual done, and the number of attempts and time used.}
     which is -99 unless in the McFarland model. For the McFarland model
     it is the largest difference of successive death rates. The entries
     names minDMratio and minBMratio are the smallest ratio, over all
-    simulations, of death rate to mutation rate or birth rate to
+    simulations, of death rate to mutation rate and birth rate to
     mutation rate. The BNB algorithm thrives when those are large.}
   
 
