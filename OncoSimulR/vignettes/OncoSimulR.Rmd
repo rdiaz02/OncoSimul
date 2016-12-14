@@ -195,12 +195,13 @@ of genes in a module. In addition, arbitrary numbers of genes without
 interactions (and with fitness effects coming from any distribution you
 might want) are also possible.
 
-Mutator/antimutator genes, genes that alter the mutation rate of other genes
-(@gerrish_complete_2007, @tomlinson_mutation_1996), can also be simulated
-with OncoSimulR and specified with most of the mechanisms above (you can
-have, for instance, interactions between mutator genes). And, with regards
-to mutation rates, different genes can have different mutation rates
-(regardless of the presence or not of other mutator/antimutator genes).
+Mutator/antimutator genes, genes that alter the mutation rate of
+other genes [@gerrish_complete_2007; @tomlinson_mutation_1996], can
+also be simulated with OncoSimulR and specified with most of the
+mechanisms above (you can have, for instance, interactions between
+mutator genes). And, regardless of the presence or not of other
+mutator/antimutator genes, different genes can have different
+mutation rates.
 
 
 Simulations can be stopped as a function of total population size, number
@@ -220,7 +221,7 @@ implemented in C++, providing for fast execution.  To help with simulation
 studies, code to simulate random graphs of the kind often seen in CBNs, OTs,
 etc, is also available. Finally, OncoSimulR also allows for the generation
 of random fitness landscapes and the representation of fitness landscapes
-and provides some statistics of evolutionary predictability.
+and provides statistics of evolutionary predictability.
 
 
 
@@ -241,14 +242,14 @@ is a summary of some of its key features:
       Oncogenetic Trees (OTs), Conjunctive Bayesian Networks (CBNs),
       semimonotone progression networks, and XOR relationships.
 		  
-    - Epistatic interactions, including, but not limited to, synthetic
+    - Epistatic interactions including, but not limited to, synthetic
        viability and synthetic lethality.
     - Order effects.
 	
 * You can add passenger mutations.
 * You can add mutator/antimutator effects.
 * Fitness and mutation rates can be gene-specific.
-* More generally, you can add arbitrary numbers of non-interacting
+* You can add arbitrary numbers of non-interacting
       genes with arbitrary fitness effects.
   
 * you can allow for deviations from the OT, CBN, semimonotone, and
@@ -260,9 +261,9 @@ is a summary of some of its key features:
       sampling. 
 	  
 * You can stop the simulations using a flexible combination of
-      conditions, from final time to number of drivers to population
-      size, to fixation of certain genotypes, to a stochastic
-      stopping mechanism that depends on size, etc.  
+      conditions: final time, number of drivers, population
+      size, fixation of certain genotypes, and a stochastic
+      stopping mechanism that depends on population size.
   
 * Right now, three different models are available, two that lead
       to exponential growth, one of them loosely based on @Bozic2010, and
@@ -271,7 +272,7 @@ is a summary of some of its key features:
 <!-- * Code in C++ is available (though not yet callable from R) for -->
 <!--       using several other models, including the one from @Beerenwinkel2007b. -->
       
-* You can use very large numbers of genes (e.g., see an example of
+* You can use large numbers of genes (e.g., see an example of
       50000 in section \@ref(mcf50070) ).
       
 * Simulations are generally very fast: I use C++ to implement the BNB
@@ -289,7 +290,7 @@ is a summary of some of its key features:
       
 * You can plot fitness landscapes.
       
-* You can obtain some basic measures of evolutionary predictability
+* You can obtain statistics of evolutionary predictability
   from the simulations.
   
 
@@ -354,7 +355,7 @@ semimonotone graphs) to specify restrictions, there is no allowance for
 passengers, and a single type of model (a discrete time Galton-Watson
 process) is implemented. The current functionality of OncoSimulR goes well
 beyond the the previous version (and, thus, also the TPT of
-[@Reiter2013a]). We now allow you to specify all types of fitness effects
+@Reiter2013a). We now allow you to specify all types of fitness effects
 in other general forward genetic simulators such as FFPopSim
 [@Zanini2012], and some that, to our knowledge (e.g., order effects) are
 not available from any genetics simulator. In addition, the "Lego system"
@@ -413,12 +414,12 @@ OncoSimulR can help address involve combinations of:
     - ... and assessing the consequences of those on the observed
       genotypes and their diversity (`sampledGenotypes`) and any other
       inferences that depend on the observational process.
-	- OncoSimulR returns the genotypes at each of the sampling
-	  points, so you are not restricted by what the
-	  `samplePop` function provides.
+	- (OncoSimulR returns the abundances of all genotypes at each of
+	  the sampling points, so you are not restricted by what the
+	  `samplePop` function provides.)
   
 
-* Tracing the genealogical relationships of clones
+* Tracking the genealogical relationships of clones
   (`plotClonePhylog`) and assessing evolutionary predictability
   (`LOD`, `POM`).
 
@@ -489,32 +490,37 @@ RNGkind("L'Ecuyer-CMRG")
 ```
 
 ```{r ex-dag-inf}
-## 1. Simulate a DAG
+## For reproducibility
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
+## Simulate a DAG
 g1 <- simOGraph(4, out = "rT")
 
-## 2. Simulate 10 evolutionary trajectories
+## Simulate 10 evolutionary trajectories
 s1 <- oncoSimulPop(10, allFitnessEffects(g1, drvNames = 1:4),
                    mc.cores = 2, ## adapt to your hardware
                    seed = NULL) ## for reproducibility of vignette
 
-## 3. Sample those data uniformly, and add noise
+## Sample those data uniformly, and add noise
 d1 <- samplePop(s1, timeSample = "unif", propError = 0.1)
 
-## 4. You would now run the appropriate inferential method and
-## compare observed and true
+## You would now run the appropriate inferential method and
+## compare observed and true. For example
 
-require(Oncotree)
-fit1 <- oncotree.fit(d1)
+## require(Oncotree)
+## fit1 <- oncotree.fit(d1)
 
-## Now, compare fitted and original. This is well beyond the
-## scope of this document (and OncoSimulR itself).
+## Now, you'd compare fitted and original. This is well beyond 
+## the scope of this document (and OncoSimulR itself).
 
 ```
 
-```{r, echo=FALSE}
-set.seed(7)
-RNGkind("L'Ecuyer-CMRG")
+```{r hidden-rng-exochs, echo = FALSE}
+set.seed(NULL)
 ```
+
+
 
 ### Sign epistasis and probability of crossing fitness valleys {#ex-ochs}
 
@@ -526,13 +532,14 @@ questions that refer to larger, more complex fitness landscapes as in
 @szendro_predictability_2013 or @franke_evolutionary_2011 (see below).
 
 
-Using as an example @Ochs2015 (we will see this example also in section
-\@ref(ochsdesai), where we cover different ways of specifying fitness), we
-could specify the fitness landscape and run simulations until fixation
-(with argument `fixation` to `oncoSimulPop` ---see more details in section
-\@ref(fixation) where we also use this same model). We would then examine
-the proportion of genotypes fixed under different scenarios. And we can
-extend this example by adding mutator genes:
+Using as an example @Ochs2015 (we will see this example again in
+section \@ref(ochsdesai), where we cover different ways of
+specifying fitness), we could specify the fitness landscape and run
+simulations until fixation (with argument `fixation` to
+`oncoSimulPop` ---see more details in section \@ref(fixation), again
+with this example). We would then examine the proportion
+of genotypes fixed under different scenarios. And we can extend this
+example by adding mutator genes:
 
 
 ```{r hiddenochs, echo=FALSE}
@@ -541,6 +548,10 @@ RNGkind("L'Ecuyer-CMRG")
 ```
 
 ```{r exochs}
+## For reproducibility
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
 ## Specify fitness effects. 
 
 ## Numeric values arbitrary, but set the intermediate genotype en
@@ -588,7 +599,7 @@ od_sim <- oncoSimulPop(10, od, muEF = odm,
 sampledGenotypes(samplePop(od_sim))
 ```
 
-```{r hidden-rng-exochs, echo = FALSE}
+```{r hidden-rng-exochs33, echo = FALSE}
 set.seed(NULL)
 ```
 
@@ -610,6 +621,10 @@ RNGkind("L'Ecuyer-CMRG")
 ```
 
 ```{r exszendro}
+## For reproducibility
+set.seed(7)
+RNGkind("L'Ecuyer-CMRG")
+
 
 ## Repeat the following loop for different combinations of whatever
 ## interests you, such as number of genes, or distribution of the
@@ -617,11 +632,11 @@ RNGkind("L'Ecuyer-CMRG")
 ## reference genotype, or evolutionary model, or stopping criterion, 
 ## or sampling procedure, or ...
 
-## 1. Generate a random fitness landscape, from the Rough Mount
-##    Fuji model, with g genes, and c ("slope" constant) and
-##    reference chosen randomly (reference is random by default and 
-##    thus not specified below). Require a minimal number of  
-##    accessible genotypes
+##  Generate a random fitness landscape, from the Rough Mount
+##  Fuji model, with g genes, and c ("slope" constant) and
+##  reference chosen randomly (reference is random by default and 
+##  thus not specified below). Require a minimal number of  
+##  accessible genotypes
 
 g <- 6
 c <- runif(1, 1/5, 5)
@@ -640,14 +655,14 @@ to_Magellan(rl, file = "rl1.txt")
 ## or asking Magellan's authors for the software. This is of course
 ## beyond the scope of the example and the package.)
 
-## 3. Simulate evolution in that landscape many times (here just 10)
+## Simulate evolution in that landscape many times (here just 10)
 simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),
                         keepPhylog = TRUE, keepEvery = 1,
                         initSize = 4000,
                         seed = NULL, ## for reproducibility
                         mc.cores = 2) ## adapt to your hardware
 
-## 4. Obtain measures of evolutionary predictability
+## Obtain measures of evolutionary predictability
 diversityLOD(LOD(simulrl))
 diversityPOM(POM(simulrl))
 sampledGenotypes(samplePop(simulrl, typeSample = "whole"))
@@ -659,7 +674,7 @@ set.seed(NULL)
 
 
 
-### Mutator and antimutator genes {#ex-mut-antimut}
+### Mutator and antimutator genes {#exmutantimut}
 
 The effects of mutator and antimutator genes have been examined both
 in cancer genetics [@nowak_evolutionary_2006;
@@ -723,6 +738,11 @@ RNGkind("L'Ecuyer-CMRG")
 ```
 
 ```{r ex-tomlin2}
+## For reproducibility
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
+
 ddr <- 4
 st <- oncoSimulPop(4, ft, muEF = mt,
                    detectionDrivers = ddr,
@@ -827,11 +847,12 @@ plot(b1, use_ggrepel = TRUE) ## avoid overlapping labels
 ```
 
 Now run simulations and examine how frequently the runs end up with
-population sizes larger than a pre-specified threshold; for instance,
-below we look at increasing population size 4x in a maximum number of 2281
-time periods (for real, you would of course increase the number of total
-populations, the range of initial population sizes, model, mutation rate,
-required population size or number of drivers, etc):
+population sizes larger than a pre-specified threshold; for
+instance, below we look at increasing population size 4x in the
+default maximum number of 2281 time periods (for real, you would of
+course increase the number of total populations, the range of
+initial population sizes, model, mutation rate, required population
+size or number of drivers, etc):
 
 
 ```{r hiddenbau, echo=FALSE}
@@ -840,6 +861,10 @@ RNGkind("L'Ecuyer-CMRG")
 ```
 
 ```{r exusagebau2}
+## For reproducibility
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
 totalpops <- 5
 initSize <- 100
 sb1 <- oncoSimulPop(totalpops, fbauer, model = "Exp",
@@ -858,9 +883,9 @@ set.seed(NULL)
 
 
 Alternatively, to examine how long it takes to reach cancer for a
-pre-specified size, you could run simulations with `onlyCancer = TRUE`,
-specifying `detectionSize` and look at the value of `FinalTime` as we did
-above (section \@ref(ex-mut-antimut)):
+pre-specified size, you could look at the value of `FinalTime` as we
+did above (section \@ref(exmutantimut)) after running simulations
+with `onlyCancer = TRUE` and `detectionSize` set to some reasonable value:
 
 
 ```{r hiddenbau22, echo=FALSE}
@@ -904,10 +929,11 @@ order effects):
 
 ## Genotype "D, M" has different fitness effects
 ## depending on whether M or D mutated first.
+## Ditto for genotype "F, D, M".
 
-## Genotype "F, D, M" has different fitness
-## depending on which of the order in which the genes
-## mutated.
+## Meaning of specification: X > Y means
+## that X is mutated before Y.
+
 
 o3 <- allFitnessEffects(orderEffects = c(
                             "F > D > M" = -0.3,
@@ -936,6 +962,10 @@ RNGkind("L'Ecuyer-CMRG")
 ```
 
 ```{r exusageoe2}
+## For reproducibility
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
 totalpops <- 5
 soe1 <- oncoSimulPop(totalpops, o3, model = "Exp",
                     initSize = 500,
@@ -956,7 +986,7 @@ set.seed(NULL)
 As we just said, alternatively, to examine how long it takes to
 reach cancer you could run simulations with `onlyCancer = TRUE` and
 look at the value of `FinalTime` as we did above (section
-\@ref(ex-mut-antimut)).
+\@ref(exmutantimut)).
 
 
 
@@ -972,25 +1002,27 @@ simulations**, sometimes also called backward-time simulations, are much
 more efficient for simulating neutral data as well as some special selection
 scenarios [@Yuan2012; @Carvajal-Rodriguez2010; @Hoban2011].  
 
-In addition, since OncoSimulR allows you to specify fitness with arbitrary
-epistatic and order effects, as well as mutator effects, you need to learn
-the syntax of how to specify those effects and you might be paying a
-performance penalty if your scenario does not require this complexity. For
-instance, in the models in @Beerenwinkel2007b or @Bozic2010, the fitness of
-a genotype depends only on the total number of drivers mutated, but not on
-which drivers are mutated (and, thus, not on the epistatic interactions nor
-the order of accumulation of the drivers). This means that the syntax for
-specifying those fitness models could probably be a lot simpler (e.g.,
-specify $s$ per driver). 
+In addition, since OncoSimulR allows you to specify fitness with
+arbitrary epistatic and order effects, as well as mutator effects,
+you need to learn the syntax of how to specify those effects and you
+might be paying a performance penalty if your scenario does not
+require this complexity. For instance, in the model of
+@Beerenwinkel2007b, the fitness of a genotype depends only on the
+total number of drivers mutated, but not on which drivers are
+mutated (and, thus, not on the epistatic interactions nor the order
+of accumulation of the drivers). This means that the syntax for
+specifying that model could probably be a lot simpler
+(e.g., specify $s$ per driver).
 
-But it also means that code written for just that case could probably run
-much faster. First, because fitness evaluation is easier. Second, and
-possibly much more important, because what we need to keep track of leads to
-much simpler and economic structures: we do not need to keep track of clones
-(where two cells are regarded as different clones if they differ anywhere in
-their genotype), but only of clone types as defined by the number of mutated
-drivers, and keeping track of clones can be expensive ---see sections
-\@ref(timings) and \@ref(trackindivs). 
+But it also means that code written for just that case could
+probably run much faster. First, because fitness evaluation is
+easier. Second, and possibly much more important, because what we
+need to keep track of leads to much simpler and economic structures:
+we do not need to keep track of clones (where two cells are regarded
+as different clones if they differ anywhere in their genotype), but
+only of clone types or clone classes as defined by the number of
+mutated drivers, and keeping track of clones can be expensive ---see
+sections \@ref(timings) and \@ref(trackindivs).
 
 So for those cases where you do not need the full flexibility of OncoSimulR,
 special purpose software might be easier to use and faster to run. Of
@@ -1000,16 +1032,17 @@ be available, though.
 
 
 
-## Steps in using OncoSimulR {#steps}
+## Steps for using OncoSimulR {#steps}
 
 
 Using this package will often involve the following steps:
 
 
-1. Specify the fitness effects: sections \@ref(specfit) and \@ref(litex).
+1. Specify fitness effects: sections \@ref(specfit) and \@ref(litex).
 
-2. Simulate cancer progression: section \@ref(simul). You can simulate
-  for a single subject or for a set of subjects. You will need to:
+2. Simulate cancer progression: section \@ref(simul). You can
+  simulate for a single individual or subject or for a set of
+  subjects. You will need to:
   
     - Decide on a model. This basically amounts to choosing a model with
     exponential growth ("Exp" or "Bozic") or a model with carrying capacity
@@ -1089,7 +1122,7 @@ sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
 evalAllGenotypes(sv2, addwt = TRUE)
 
 ## 2. Simulate the data. Here we use the "McFL" model and set
-##    explicitly parameters for mutation rate, initial size and size
+##    explicitly parameters for mutation rate, initial size, size
 ##    of the population that will end the simulations, etc
 
 RNGkind("Mersenne-Twister")
@@ -1253,7 +1286,7 @@ paper:
 A PDF version of this vignette is available
 from <https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf>.  And an HTML
 version from <https://rdiaz02.github.io/OncoSimul/OncoSimulR.html>. These
-files should correspond to the most recent, github version, of the package
+files should correspond to the most recent, GitHub version, of the package
 (i.e., they might include changes not yet available from the BioConductor
 package).
 
@@ -1282,18 +1315,17 @@ of "experiment before launching a large number of simulations"
 applies, but here we will walk through several cases to get a
 feeling for the major factors that affect speed and size. Many of
 the comments on this section need to use ideas discussed in other
-places of this document; ff you read this section first, you might
+places of this document; if you read this section first, you might
 want to come back after reading the relevant parts.
 
 
 Speed will depend on:
 
 * Your hardware, of course.
-* The evolutionary model: using the "McFL" model is often slower
-  (this model includes density dependence and is more complex).
+* The evolutionary model.
 * The granularity of how often you keep data (`keepEvery`
   argument). Note that the default, which is to keep as often as you
-  sample (so that we preserve all history) can lead to very slow execution
+  sample (so that we preserve all history) can lead to slow execution
   times.
 * The mutation rate, because higher mutation rates lead to more
   clones, and more clones means we need to iterate over, well, more clones,
@@ -1305,6 +1337,7 @@ Speed will depend on:
 * The stopping conditions (`detectionProb`, `detectionDrivers`,
   `detectionSize` arguments) and whether or not simulations are run until
   cancer is reached (`onlyCancer` argument).
+* Most of the above factors can interact in complex ways.
 
 
 Size of returned objects will depend on:
@@ -1511,7 +1544,7 @@ t_mc2 <- system.time(
 
 ``` 
 
-And we can obtain times, sizes of objects, and summaries of numbers
+We can obtain times, sizes of objects, and summaries of numbers
 of clones, iterations, and final times doing, for instance:
 
 
@@ -1578,16 +1611,17 @@ a sharp decrease in number of iterations and, thus, running time.
 
 
 
-This table also shows that the `keepEvery = NA` setting, which was in
-effect in simulations `exp2` and `mc2`, can make a difference especially
-for the McFL models, as seen by the median number of clones and the size
-of the returned object. Models `exp2` and `mc2` do not store any
-intermediate population samples so clones that become extinct at any
-sampling period are pruned and only the existing clones at the end of the
-simulation are returned. In contrast, models `exp1` and `mc1` store
-population samples at time intervals of 1 (`keepEvery = 1`), even if many
-of those clones eventually become extinct. We will return to this issue
-below as execution time and object size depend strongly on number of
+This table also shows that the `keepEvery = NA` setting, which was
+in effect in simulations `exp2` and `mc2`, can make a difference
+especially for the McFL models, as seen by the median number of
+clones and the size of the returned object. Models `exp2` and `mc2`
+do not store any intermediate population samples so clones that
+become extinct at any sampling period are pruned and only the
+existing clones at the end of the simulation are returned. In
+contrast, models `exp1` and `mc1` store population samples at time
+intervals of 1 (`keepEvery = 1`), even if many of those clones
+eventually become extinct. We will return to this issue below as
+execution time and object size depend strongly on the number of
 clones tracked.
 
 
@@ -1601,9 +1635,12 @@ population size 1,000 times larger than the initial one (`PDBaseline = 5e4`,
 take place unless populations are at least 1,000 times larger than the
 initial population size, and probability of detection is 0.1 with a
 population size 100,000 times larger than the initial one (`PDBaseline =
-5e5`, `n2 = 5e7`). In runs `exp3` and `exp5` we set `keepEvery = 1` and in
+5e5`, `n2 = 5e7`)[^rva]. In runs `exp3` and `exp5` we set `keepEvery = 1` and in
 runs `exp4` and `exp6` we set `keepEvery = NA`.
 
+[^rva]:Again, these are not necessarily reasonable or common
+settings. We are using them to understand what and how affects
+running time and space consumption.
 
 
 ```{r timing2, eval = FALSE}
@@ -1697,7 +1734,8 @@ smaller object sizes and slightly smaller numbers of clones and
 execution times. Changing the exiting conditions (by changing
 `detectionProb` arguments) leads to large increases in number of
 iterations (in this case by factors of about 15x to 25x) and a
-corresponding increase in execution time.
+corresponding increase in execution time as well as much larger
+population sizes (in some cases $>10^{10}$).
 
 
 In some of the runs of `exp5` and `exp6` we get the (recoverable)
@@ -1717,16 +1755,16 @@ that simulations will be repeated until the exiting conditions are reached
 that ends up in extinction will be repeated. This setting can thus have a
 large effect on the exponential models, because when the initial
 population size is not very large and we start from the wildtype, it is
-not infrequent for simulations to become extinct (when birth and death
+not uncommon for simulations to become extinct (when birth and death
 rates are equal and the population size is small, it is easy to reach
 extinction before a mutation in a gene that increases fitness occurs). But
-this is rarely the case in the McFarland model (unless we use really small
+this is rarely the case in the McFarland model (unless we use really tiny
 initial population sizes) because of the dependency of death rate on total
 population size (see section \@ref(mcfl)).
 
 
 The number of attempts until cancer was reached in the above
-models is shown in the Table \@ref(tab:bench1c) (the values can be obtained from
+models is shown in  Table \@ref(tab:bench1c) (the values can be obtained from
 any of the above runs doing, for instance, `median(unlist(lapply(exp1,
 function(x) x$other$attemptsUsed)))` ):
 
@@ -1777,7 +1815,7 @@ risk of extinction.
 
 We will now rerun all of the above models with argument `onlyCancer =
 FALSE`.  The results are shown in Table \@ref(tab:timing3) (note that the
-differences between this table and table \@ref(tab:bench1) for the McFL
+differences between this table and Table \@ref(tab:bench1) for the McFL
 models are due only to sampling variation).
 
 \bslandscape
@@ -1833,7 +1871,7 @@ To make it easier to compare results with those of the next section, Table
 
 \bslandscape
 
-Table: (\#tab:allr1bck) Benchmarks of all models in Tables \@ref(tab:bench1), \@ref(tab:bench1b) and \@ref(tab:timing3).  
+Table: (\#tab:allr1bck) Benchmarks of all models in Tables \@ref(tab:bench1), \@ref(tab:bench1b), and \@ref(tab:timing3).  
 ```{r bench1dx0, eval=TRUE, echo = FALSE}
 panderOptions("table.split.table", 99999999)
 ## panderOptions("table.split.cells", 900)  ## For HTML
@@ -1850,7 +1888,7 @@ pander(benchmark_1[ , c("Elapsed Time, average per simulation (s)",
 				  "Total Population Size, mean", "Total Population Size, max.",
  	              "keepEvery", "PDBaseline", "n2", "onlyCancer")], 
 				  justify = c('left', rep('right', 12)), ##  o.w. hlines not right
-				  ## caption = "\\label{tab:allr1bck}Benchmarks of all models in Tables \\@ref(tab:bench1), \\@ref(tab:bench1b)  and \\@ref(tab:timing3)."  
+				  ## caption = "\\label{tab:allr1bck}Benchmarks of all models in Tables \\@ref(tab:bench1), \\@ref(tab:bench1b),  and \\@ref(tab:timing3)."  
 				  )  
 ```
 
@@ -1862,11 +1900,12 @@ pander(benchmark_1[ , c("Elapsed Time, average per simulation (s)",
 
 ### Changing fitness: $s=0.1$ and $s=0.05$ {#bench1xf}
 
-In the above fitness specification the fitness effect of each gene (when
-its restrictions are satisfied) is $s = 0.1$ (see section \@ref(numfit)
-for details). Here we rerun all the above benchmarks using $s= 0.05$ and
-results are shown below in Table \@ref(tab:timing3xf); the results from these
-benchmarks are available as `data(benchmark_1_0.05)`:
+In the above fitness specification the fitness effect of each gene
+(when its restrictions are satisfied) is $s = 0.1$ (see section
+\@ref(numfit) for details). Here we rerun all the above benchmarks
+using $s= 0.05$ (the results from these benchmarks are available as
+`data(benchmark_1_0.05)`) and results are shown below in Table
+\@ref(tab:timing3xf).
 
 \bslandscape
 
@@ -2013,12 +2052,12 @@ rf12 <- allFitnessEffects(genotFitness = rfl12)
 
 
 ## Independent genes; positive fitness from exponential distribution
-## mean around 0.1, and negative from exponential with mean around 
-## -0.02. Half of genes positive fitness effects, half negative.
+## with mean around 0.1, and negative from exponential with mean 
+## around -0.02. Half of genes positive fitness effects, half 
+## negative.
 
-ng <- 200
-re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
-                                           -rexp(ng/2, 50)))
+ng <- 200 re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10),
+-rexp(ng/2, 50)))
 
 ng <- 500
 re_500 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), 
@@ -2091,7 +2130,7 @@ oncoSimulPop(Nindiv,
 ```
 
 
-For the exponential model we will stop simulations when the populations
+For the exponential model we will stop simulations when populations
 have $>10^6$ cells (simulations start from 500 cells). For the McFarland
 model we will use the `detectionProb` mechanism (see section
 \@ref(detectprob) for details); we could have used as stopping mechanism
@@ -2123,11 +2162,11 @@ Note also that we specify `checkSizePEvery = 4` (instead of the default,
 which is 20). Why? Because the fitness specifications where fitness
 effects are drawn from exponential distributions (`re_200` to `re_4000`
 above) include many genes (well, up to 4000) some of them with possibly
-very large effects. In these conditions, simulations will run very fast in
+very large effects. In these conditions, simulations can run very fast in
 the sense of "units of time". If we check exiting conditions every 20
 units the population could have increased its size several orders of
 magnitude in between checks (this is also discussed in sections
-\@ref(detectprob) and \@ref(bench1xf)). You can verify this by running the
+\@ref(bench1xf) and \@ref(detectprob)). You can verify this by running the
 script with other settings for `checkSizePEvery` (and being aware that
 large settings might require you to wait for a long time). To ensure that
 populations have really grown, we have increased the setting of
@@ -2211,7 +2250,7 @@ The McFL model with random fitness landscape `rf12` and with `pancr` does
 not satisfy the conditions of `detectionProb` in most cases: its median
 final time is 5000, which was the maximum final time specified. This
 suggests that the fitness landscape is such that it is unlikely that we
-will reach population sizes $> 1400$ (remember we increase the setting for
+will reach population sizes $> 1400$ (remember we the setting for
 `PDBaseline`) before 5000 time units. There is nothing particular about
 using a fitness landscape of 12 genes and other runs in other 12-gene
 random fitness landscapes do not show this pattern. However, complex
@@ -2252,14 +2291,15 @@ a `checkSizePEvery = 20`  probably would not have made sense.
 
 
 Finally, it is interesting that in the cases examined here, the two
-slowest running simulations are from "Exp", with fitnesses `re_2000` and
-`re_4000` (and the third slowest is also Exp, under `re_500`). These are
-the cases with the largest number of clones. Why? In the "Exp" model there
-is no competition, and fitness specifications `re_2000` and `re_4000` have
-genomes with many genes with positive fitness contributions. It is thus
-very easy to obtain, from the wildtype ancestor, a large number of clones
-all of which have birth rates $>1$ and, thus, clones that are unlikely to
-become extinct.
+slowest running simulations are from "Exp", with fitnesses `re_2000`
+and `re_4000` (and the third slowest is also Exp, under
+`re_500`). These are also the cases with the largest number of
+clones. Why? In the "Exp" model there is no competition, and fitness
+specifications `re_2000` and `re_4000` have genomes with many genes
+with positive fitness contributions. It is thus very easy to obtain,
+from the wildtype ancestor, a large number of clones all of which
+have birth rates $>1$ and, thus, clones that are unlikely to become
+extinct.
 
 
 
@@ -2268,8 +2308,8 @@ become extinct.
 
 We will now rerun the simulations above changing the following:
 
-- `finalTime` is  set to 25000.
-- `onlyCancer` is  set to TRUE.
+- `finalTime`  set to 25000.
+- `onlyCancer`  set to TRUE.
 - The "Exp" models will stop when population size $> 10^5$.
 
 
@@ -2336,7 +2376,7 @@ iterations. Interestingly, notice that the median final time is close to
 10000, so the runs in \@ref(common1) with maximum final time of 5000 would
 have had a hard time finishing with `onlyCancer = TRUE`.
 
-Forcing simulations to "reach cancer", and just random differences between
+Forcing simulations to "reach cancer" and just random differences between
 the random fitness landscape also affect the McFL run under `rf12`: final
 time is below 5000 and the median number of iterations is about half of
 what was above.
@@ -2368,7 +2408,7 @@ to FALSE, so we measure directly the time of individual runs.
 #### Exponential, 10,000 genes, example 1  {#exp100001}
 
 We will start with 10000 genes and an exponential model, where we
-stop when the population grows over $1e6$ individuals:
+stop when the population grows over $10^6$ individuals:
 
 ```{r exp10000, echo = TRUE, eval = FALSE}
 ng <- 10000
@@ -2500,10 +2540,10 @@ print(object.size(e_50000), units = "MB")
 ```
 
 Of course, simulations now take longer and the size of the returned
-object is over 7 GB (we are keeping over 7000 clones, even if when
+object is over 7 GB (we are keeping more than 7,000 clones, even if when
 we prune all those that went extinct). 
 
-#### Exponential, example 4: 50,000 genes, example 2 {#exp50000_2}
+#### Exponential, 50,000 genes, example 2 {#exp50000_2}
 
 What if we had not pruned? 
 
@@ -2543,7 +2583,7 @@ print(object.size(e_50000np), units = "MB")
 
 ```
 The main effect is not on execution time but on object size (it has
-grown by 5 GB).
+grown by 5 GB). We are tracking more than 10,000 clones.
 
 
 #### Exponential,  50,000 genes, example 3 {#exp50000_3}
@@ -2629,6 +2669,7 @@ summary(r1)[c(1, 8)]
 print(object.size(r1), units = "MB")
 ## 160 Mb
 
+## Size of the two largest objects inside:
 sizes <- lapply(r1, function(x) object.size(x)/(1024^2))
 sort(unlist(sizes), decreasing = TRUE)[1:2]
 ## Genotypes pops.by.time 
@@ -2662,7 +2703,8 @@ other settings.
 
 #### McFarland, 50,000 genes, example 1 {#mc50000ex1}
 
-Let's start with  `mutationPropGrowth = FALSE` and `keepEvery = NA`:
+Let's start with  `mutationPropGrowth = FALSE` and `keepEvery =
+NA`. Simulations end when population size $\geq 10^6$.
 
 ```{r mc50000_1, echo = TRUE, eval = FALSE}
 ng <- 50000
@@ -2750,7 +2792,8 @@ section \@ref(wheresizefrom)).
 #### McFarland, 50,000 genes, example 3 {#mc50000ex3}
 
 We will set `keepEvery = NA` again, but we will now increase
-detection size by a factor of 3:
+detection size by a factor of 3 (so we stop when total population
+size becomes $\geq 3 * 10^6$).
 
 ```{r mc50000_popx, echo = TRUE, eval = FALSE}
 ng <- 50000
@@ -2884,15 +2927,15 @@ print(object.size(mc_50000_nmpg_5mu_k), units = "MB")
 
 We have already seen these effects before in section
 \@ref(mc50000ex2): using `keepEvery = 1` leads to a slight increase
-in execution time. What is really affected is the size of the returned
-object which increases by a factor of about 3x (and is now over
-20GB). That 3x corresponds, of course, to the increase in the number
-of clones being tracked. This, by the way, also allows us to
-understand the comment above, where we said that in these two cases
-(where we have increased mutation rate) at each iteration we need to
-do more work as at every update of the population the algorithm
-needs to loop over a much larger number of clones (even if many of
-those are eventually pruned).
+in execution time. What is really affected is the size of the
+returned object which increases by a factor of about 3x (and is now
+over 20GB). That 3x corresponds, of course, to the increase in the
+number of clones being tracked (now over 20,000). This, by the way,
+also allows us to understand the comment above, where we said that
+in these two cases (where we have increased mutation rate) at each
+iteration we need to do more work as at every update of the
+population the algorithm needs to loop over a much larger number of
+clones (even if many of those are eventually pruned).
 
 
 
@@ -2991,12 +3034,12 @@ $10^6$ starting from an equilibrium population of 500 we need about
 
 
 [^mcnum]: Given the dependence of death rates on population size in
-    McFarland's model (section \@ref(mcfl)), if all mutations have the
-    same fitness effects we can calculate the equilibrium population size
-    (where birth and death rates are equal) for a given number of mutated
-    genes: $K * (e^{(1 + s)^p} - 1)$ where $K$ is the initial equilibrium
-    size, $s$ the fitness effect of each mutation, and $p$ the number of
-    mutated genes.
+    McFarland's model (section \@ref(mcfl)), if all mutations have
+    the same fitness effects we can calculate the equilibrium
+    population size (where birth and death rates are equal) for a
+    given number of mutated genes as: $K * (e^{(1 + s)^p} - 1)$,
+    where $K$ is the initial equilibrium size, $s$ the fitness
+    effect of each mutation, and $p$ the number of mutated genes.
 
 
 Next, let us rerun \@ref(mc50000ex1):
@@ -3049,27 +3092,27 @@ be complete clonal sweeps so that in extreme cases a single clone might be
 all that is left after some time. This is not the case in the exponential
 models. 
 
-Of course, the details depend on the difference in fitness effects between
-different genotypes (or clones). In particular, we have seen several
-examples where even with `keepEvery=NA` there are a lot of clones in the
-McFL models. In those examples many clones had identical fitness (the
-fitness effects of all genes with positive fitness is the same, and ditto
-for the genes with negative fitness effects), so no clone ends up
-displacing all the others.
+Of course, the details depend on the difference in fitness effects
+between different genotypes (or clones). In particular, we have seen
+several examples where even with `keepEvery=NA` there are a lot of
+clones in the McFL models. In those examples many clones had
+identical fitness (the fitness effects of all genes with positive
+fitness was the same, and ditto for the genes with negative fitness
+effects), so no clone ends up displacing all the others.
 
 
 
 
 ### Are we keeping the complete history (genealogy) of the clones? {#histlargegenes}
 
-Yes we are if we run with `keepPhylog = TRUE`, regardless of the setting
-for `keepEvery`. As explained in section \@ref(trackindivs), OncoSimulR
-prunes clones that never had a population size larger than zero at any
-sampling period (so they are not reflected in the `pops.by.time` matrix in
-the output). And when set `keepEvery = NA` we are telling OncoSimulR to
-discard all sampling periods except the very last one (i.e., the
-`pops.by.time` matrix contains only the clones with 1 or more cells at the
-end of the simulation).
+Yes we are if we run with `keepPhylog = TRUE`, regardless of the
+setting for `keepEvery`. As explained in section \@ref(trackindivs),
+OncoSimulR prunes clones that never had a population size larger
+than zero at any sampling period (so they are not reflected in the
+`pops.by.time` matrix in the output). And when we set `keepEvery =
+NA` we are telling OncoSimulR to discard all sampling periods except
+the very last one (i.e., the `pops.by.time` matrix contains only the
+clones with 1 or more cells at the end of the simulation).
 
 `keepPhylog` operates differently: it records the exact time at
 which a clone appeared and the clone that gave rise to it. This
@@ -3077,9 +3120,11 @@ information is kept regardless of whether or not those clones appear
 in the `pops.by.time` matrix. 
 
 Keeping the complete genealogy might be of limited use if the
-`pops.by.time` matrix only contains the very last period. However, you can
-use `plotClonePhylog` and ask to be shown only clones that exist in the
-very last period.
+`pops.by.time` matrix only contains the very last period. However,
+you can use `plotClonePhylog` and ask to be shown only clones that
+exist in the very last period (while of course showing all of their
+ancestors, even if those are now extinct ---i.e., regardless of
+their abundance).
 
 For instance, in run \@ref(exp500001) we could have looked at the
 information stored about the genealogy of clones by doing (we look at the
@@ -3111,8 +3156,10 @@ clone, the column labeled "parent" are the mutated genes in the
 parent, and the column labeled "child" are the mutated genes in the child.
 
 
-And we could plot the clones that have a population size of at least
-one in the last period doing:
+And we could plot the genealogical relationships of clones that have
+a population size of at least one in the last period (again, while
+of course showing all of their ancestors, even if those are now
+extinct ---i.e., regardless of their current numbers) doing:
 
 ```{r noplotlconephylog, echo = TRUE, eval = FALSE}
 plotClonePhylog(e_50000[[1]]) ## plot not shown
@@ -3153,7 +3200,7 @@ illustrates and discusses this problem is available in file
 precision from other sources. One of the most noticeable ones is
 that when we reach population sizes around $10^{11}$ the C++ code
 will often alert us by throwing exceptions with the message
-`Recoverable exception ti set to DBL_MIN. Rerunning.`; I throw this
+`Recoverable exception ti set to DBL_MIN. Rerunning.` I throw this
 exception because $t_i$, the random variable for time to next
 mutation, is less than `DBL_MIN`, the minimum representable
 floating-point number. This happens because, unless we use really
@@ -3301,10 +3348,11 @@ biases in the samples.
 
 To summarize this section, we have seen: 
 
-  - Both McFL and Exp can be run in short times over a range of sizes for
-      the `detectionProb` mechanism using a complex fitness specification
-      with a small number of genes. These are the typical or common use
-      cases of OncoSimulR.
+  - Both McFL and Exp can be run in short times over a range of
+      sizes for the `detectionProb` and `detectionSize` mechanisms
+      using a complex fitness specification with  moderate numbers
+      of genes. These are the typical or common use cases of
+      OncoSimulR.
 	  
   - The `keepEvery` argument can have a large effect on time in the
     McFL models and specially on object sizes. If only the end
@@ -3324,12 +3372,13 @@ To summarize this section, we have seen:
     when we keep track of around 6000 to 10000 clones. Anything that leads
     to these patterns will slow down the simulations.
 	
-  - OncoSimulR needs to keep track of genotypes (or clones), not just
-    numbers of drivers and passengers, because it allows you to use
-    complex fitness and mutation specifications that depend on specific
-    genotypes. The `keepEvery = NA` is an approach to keep the minimal
-    history needed, but it is unavoidable that during the simulations we
-    might be forced to deal with many thousands of different clones.
+  - OncoSimulR needs to keep track of genotypes (or clones), not
+    just numbers of drivers and passengers, because it allows you to
+    use complex fitness and mutation specifications that depend on
+    specific genotypes. The `keepEvery = NA` is an approach to store
+    only the minimal information needed, but it is unavoidable that
+    during the simulations we might be forced to deal with many
+    thousands of different clones.
  
 
 
@@ -3343,7 +3392,7 @@ OncoSimulR uses a standard continuous time model, where individual
 cells divide, die, and mutate with rates that can depend on genotype
 and population size; over time the abundance of the different
 genotypes changes by the action of selection (due to differences in
-net growth rates between genotypes), drift, and mutation. As a
+net growth rates among genotypes), drift, and mutation. As a
 result of a mutation in a pre-existing clone new clones arise, and
 the birth rate of a newly arisen clone is determined at the time of
 its emergence as a function of its genotype.  Simulations can use an
@@ -3351,7 +3400,7 @@ use exponential growth model or a model with carrying capacity that
 follows @McFarland2013. For the exponential growth model, the death
 rate is fixed at one whereas in the model with carrying capacity
 death rate increases with population size. In both cases, therefore,
-fitness differences between genotypes in a given population at a
+fitness differences among genotypes in a given population at a
 given time are due to differences in the mapping between genotype
 and birth rate. There is second exponential model (called "Bozic")
 where birth rate is fixed at one, and genotype determines death rate
@@ -3375,15 +3424,17 @@ With OncoSimulR you can specify different types of effects on fitness:
 
 
 
-* A special type of epistatic effect that is particularly amenable to be
-  represented as a graph. In this graph, having, say, "B" be a child of "A"
-  means that a mutation in B can only accumulate if a mutation in A is
-  already present.  This is what OT [@Desper1999JCB; @Szabo2008], CBN
-  [@Beerenwinkel2007; @Gerstung2009; @Gerstung2011], progression networks
-  [@Farahani2013], and other similar models [@Korsunsky2014] generally
-  mean. Details are provided in section \@ref(posetslong). Note that this is
-  not an order effect (discussed below): the fitness of a genotype from this
-  DAGs is a function of whether or not the restrictions in the graph are
+* A special type of epistatic effect that is particularly amenable
+  to be represented as a graph (a DAG). In this graph having, say,
+  "B" be a child of "A" means that a mutation in B can only
+  accumulate if a mutation in A is already present.  This is what OT
+  [@Desper1999JCB; @Szabo2008], CBN [@Beerenwinkel2007;
+  @Gerstung2009; @Gerstung2011], progression networks
+  [@Farahani2013], and other similar models [@Korsunsky2014]
+  generally mean. Details are provided in section
+  \@ref(posetslong). Note that this is not an order effect
+  (discussed below): the fitness of a genotype from this DAGs is a
+  function of whether or not the restrictions in the graph are
   satisfied, not the historical sequence of how they were satisfied.
 
 * Effects where the order in which mutations are acquired matters, as
@@ -3441,14 +3492,16 @@ relevant differences.
   construct that mapping for a modest genotype of 500 genes (you'd have
   more genotypes than particles in the observable Universe).
   
-* For many models/data you often intuitively start with the fitness of
-  the genotypes, not the fitness consequences of the different
-  mutations. In these cases, you'd need to do the math to specify the
-  terms you want if you used the lego system.
+* For many models/data you often intuitively start with the fitness
+  of the genotypes, not the fitness consequences of the different
+  mutations. In these cases, you'd need to do the math to specify
+  the terms you want if you used the lego system so you'll probably
+  use the specification with the direct mapping genotype
+  $\rightarrow$ fitness.
   
-* Sometimes you already have a moderate size genotype $\rightarrow$
-  fitness mapping and you certainly do not want to do the math by 
-  hand: here the lego system would be painful to use.
+* Likewise, sometimes you already have a moderate size genotype
+  $\rightarrow$ fitness mapping and you certainly do not want to do
+  the math by hand: here the lego system would be painful to use.
   
 * But sometimes we do think in terms of "the effects on fitness of
   such and such mutations are" and that immediately calls for the lego
@@ -3463,7 +3516,7 @@ relevant differences.
   this).
   
 * The lego system might help you see what your model really means: in
-  many cases, you can obtain fairly succinct specification of complex
+  many cases, you can obtain fairly succinct specifications of complex
   fitness models with just a few terms. Similarly, depending on what your
   emphasis is, you can often specify the same fitness landscape in several
   different ways.
@@ -3550,7 +3603,7 @@ fitness (or random fitness landscapes), as we will do in section
 
 
 We will see an example of this way of passing fitness again in
-\@ref(bauer), where will compare it with the lego system.
+\@ref(bauer), where we will compare it with the lego system.
 
 
 <!-- % Please see the documentation of `allFitnessEffects` for further -->
@@ -4201,7 +4254,7 @@ the test directory to see a test that verifies this assertion).
 
 
 ## Modules {#modules0}
-As already mentioned, we can think in all the effects of fitness in terms
+As already mentioned, we can think of all the effects of fitness in terms
 not of individual genes but, rather, modules. This idea is discussed in,
 for example, @Raphael2014a, @Gerstung2011: the restrictions encoded
 in, say, the DAGs can be considered to apply not to genes, but to
@@ -4440,13 +4493,14 @@ the fitness of a double mutant "A", "B" is different depending on
 whether "A" was acquired before "B" or "B" before "A". This, of
 course, can be generalized to more than two genes.
 
-Note that these order effects are different from the order
-restrictions discussed in section \@ref(posetslong). In there we
-might say that acquiring "B" depends or is facilitated by having "A"
-mutated (and, unless we allowed for multiple mutations, having "A"
-mutated means having "A" mutated before "B"). However, once you have
-the genotype "A, B", its fitness does not depend on the order in
-which "A" and "B" appeared.
+Note that order effects are different from the restrictions in the
+order of accumulation of mutations discussed in section
+\@ref(posetslong). With restrictions in the order of accumulation of
+mutations we might say that acquiring "B" depends or is facilitated
+by having "A" mutated (and, unless we allowed for multiple
+mutations, having "A" mutated means having "A" mutated before
+"B"). However, once you have the genotype "A, B", its fitness does
+not depend on the order in which "A" and "B" appeared.
 
 
 
@@ -4457,7 +4511,7 @@ two-gene orders (one of them a subset of one of the three) lead to
 different fitness compared to the wild-type. We add also modules, to show
 its usage (but just limit ourselves to using one gene per module here). 
 
-Order effects are specified using a $x > y$, that means that that order
+Order effects are specified using a $x > y$, which means that that order
 effect is satisfied when module $x$ is mutated before module $y$.
 
 ```{r}
@@ -5030,64 +5084,6 @@ simulations, it is not possible to go from the wildtype to the double
 mutant in this model where the single mutants are not viable.
 
 
-
-
-### Synthetic viability using Bozic model {#fit-neg-pos}
-
-If we were to use the above specification with Bozic's models, we might
-not get what we think we should get:
-
-```{r}
-evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic")
-```
-
-What gives here? The simulation code would alert you of this (see section
-\@ref(ex-0-death)) in this particular case because there are ``-1",
-which might indicate that this is not what you want. The problem is that
-you probably want the Death rate to be infinity (the birth rate was 0, so
-no clone viability, when we used birth rates ---section \@ref(noviab)).
-
-Let us say so explicitly:
-
-```{r}
-s <- 0.2
-svB <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
-                                      "A : -B" = -Inf,
-                                      "A:B" = s))
-evalAllGenotypes(svB, order = FALSE, addwt = TRUE, model = "Bozic")
-```
-
-
-Likewise, values of $s$ larger than one have no effect beyond setting $s =
-1$ (a single term of $(1 - 1)$ will drive the product to 0, and as we
-cannot allow negative death rates negative values are set to 0):
-
-
-```{r}
-
-s <- 1
-svB1 <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
-                                       "A : -B" = -Inf,
-                                       "A:B" = s))
-
-evalAllGenotypes(svB1, order = FALSE, addwt = TRUE, model = "Bozic")
-
-
-s <- 3
-svB3 <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
-                                       "A : -B" = -Inf,
-                                       "A:B" = s))
-
-evalAllGenotypes(svB3, order = FALSE, addwt = TRUE, model = "Bozic")
-
-
-```
-
-Of course, death rates of 0.0 are likely to lead to trouble down the road,
-when we actually conduct simulations (see section \@ref(ex-0-death)).
-
-
-
 ### Synthetic viability, non-zero fitness, and modules
 
 This is a slightly more elaborate case, where there is one module and the
@@ -5176,8 +5172,64 @@ And if we look at order, of course it makes no difference:
 evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)
 ``` 
 
+## Possible issues with Bozic model {#boznumissues}
 
-## Numerical issues with death rates of 0 in Bozic model {#ex-0-death}
+### Synthetic viability using Bozic model {#fit-neg-pos}
+
+If we were to use the above specification with Bozic's models, we might
+not get what we think we should get:
+
+```{r}
+evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic")
+```
+
+What gives here? The simulation code would alert you of this (see section
+\@ref(ex-0-death)) in this particular case because there are ``-1",
+which might indicate that this is not what you want. The problem is that
+you probably want the Death rate to be infinity (the birth rate was 0, so
+no clone viability, when we used birth rates ---section \@ref(noviab)).
+
+Let us say so explicitly:
+
+```{r}
+s <- 0.2
+svB <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
+                                      "A : -B" = -Inf,
+                                      "A:B" = s))
+evalAllGenotypes(svB, order = FALSE, addwt = TRUE, model = "Bozic")
+```
+
+
+Likewise, values of $s$ larger than one have no effect beyond setting $s =
+1$ (a single term of $(1 - 1)$ will drive the product to 0, and as we
+cannot allow negative death rates negative values are set to 0):
+
+
+```{r}
+
+s <- 1
+svB1 <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
+                                       "A : -B" = -Inf,
+                                       "A:B" = s))
+
+evalAllGenotypes(svB1, order = FALSE, addwt = TRUE, model = "Bozic")
+
+
+s <- 3
+svB3 <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
+                                       "A : -B" = -Inf,
+                                       "A:B" = s))
+
+evalAllGenotypes(svB3, order = FALSE, addwt = TRUE, model = "Bozic")
+
+
+```
+
+Of course, death rates of 0.0 are likely to lead to trouble down the road,
+when we actually conduct simulations (see section \@ref(ex-0-death)).
+
+
+### Numerical issues with death rates of 0 in Bozic model {#ex-0-death}
 
 As we mentioned above (section \@ref(fit-neg-pos)) death rates of 0 can
 lead to trouble when using Bozic's model:
@@ -5187,6 +5239,7 @@ lead to trouble when using Bozic's model:
 i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Bozic")
+				 
 i1_b <- oncoSimulIndiv(i1, model = "Bozic")
 
 ``` 
@@ -5441,13 +5494,14 @@ You can specify mutator/antimutator genes
   all over the genome (similar to what happens with, say, mutations in
   mismatch-repair genes or microsatellite instability in cancer).
 
-The specification is very similar to that for fitness effects, except we
-do not (at least for now) the use of DAGs for poset-like structures nor
-allow for order effects (we have seen no reference in the literature to
+The specification is very similar to that for fitness effects,
+except we do not (at least for now) allow the use of DAGs nor of
+order effects (we have seen no reference in the literature to
 suggest any of these would be relevant). You can, however, specify
-epistasis and use modules. Note that the mutator genes must be a subset of
-the genes in the fitness effects; if you want to have mutator genes that
-have no direct fitness effects, give them a fitness effect of 0.
+epistasis and use modules. Note that the mutator genes must be a
+subset of the genes in the fitness effects; if you want to have
+mutator genes that have no direct fitness effects, give them a
+fitness effect of 0.
 
 
 This first is a very simple example with simple fitness effects and
@@ -5552,21 +5606,23 @@ mue1
 ``` 
 
 
-Of course, it is up to you to keep things reasonable: mutator effects are
-multiplicative, so if you specify, say, 20 genes (without modules), or 
-20 modules, each with a mutator effect of 50, the overall mutation rate
-can be increased by a factor of $50^{20}$ and that is unlikely to be what
-you really want.
+Of course, it is up to you to keep things reasonable: mutator
+effects are multiplicative, so if you specify, say, 20 genes
+(without modules), or 20 modules, each with a mutator effect of 50,
+the overall mutation rate can be increased by a factor of $50^{20}$
+and that is unlikely to be what you really want (see also section
+\@ref(tomlinexcept)).
 
-You can play with the following case (an extension of the example above),
-where a clone with a mutator phenotype and some fitness enhancing
-mutations starts giving rise to many other clones, some with additional
-mutator effects, and thus leading to the number of clones blowing up (as
-some also accumulate additional fitness-enhancing mutations). Things start
-getting out of hand shortly after time 250. The code below takes a
-few minutes and is commented, but you can run it to get an idea of the
-increase in the number of clones and their relationships (the usage of
-`plotClonePhylog` is explained in section \@ref(phylog)).
+You can play with the following case (an extension of the example
+above), where a clone with a mutator phenotype and some fitness
+enhancing mutations starts giving rise to many other clones, some
+with additional mutator effects, and thus leading to the number of
+clones blowing up (as some also accumulate additional
+fitness-enhancing mutations). Things start getting out of hand
+shortly after time 250. The code below takes a few minutes to run
+and is not executed here, but you can run it to get an idea of the
+increase in the number of clones and their relationships (the usage
+of `plotClonePhylog` is explained in section \@ref(phylog)).
 
 ```{r, eval=FALSE}
 
@@ -5577,7 +5633,7 @@ names(ni) <- c("a1", "a2", "b1", "b2", "b3", "c1", "c2",
                paste0("g", 1:10))
 
 ## Next is for nicer figure labeling.
-## consider drivers those with s >0
+## Consider as drivers genes with s >0
 gp <- which(ni > 0) 
 
 fe3 <- allFitnessEffects(noIntGenes = ni,
@@ -5599,6 +5655,7 @@ op <- par(ask = TRUE)
 plotClonePhylog(mue1, N = 10, timeEvents = TRUE) 
 plot(mue1, plotDrivers = TRUE, addtot = TRUE,
      plotDiversity = TRUE)
+	 
 ## The stacked plot is slow; be patient
 ## Most clones have tiny population sizes, and their lines
 ## are piled on top of each other
@@ -5656,6 +5713,8 @@ We have set `use_ggrepel = TRUE` to avoid overlap of labels.
 
 <!-- \clearpage -->
 
+\clearpage
+
 For some types of objects, directly invoking `plot` will give
 you the fitness landscape plot:
 
@@ -5665,7 +5724,7 @@ plot(ewb, use_ggrepel = TRUE)
 
 ``` 
 
-<!-- \clearpage -->
+\clearpage
 
 This is example (section \@ref(pancreas)) will give a very busy plot:
 
@@ -5916,7 +5975,8 @@ evalAllGenotypes(m1a2, order = FALSE, addwt = TRUE)
 
 But we could also modify the graph dependency structure, and we have to
 change the value of the coefficient, since that is what multiplies each of
-the terms for "A" and "B": $(1 + s_{AB}) = (1 + s)^2(1 + s_{AB3}) $
+the terms for "A" and "B": $(1 + s_{AB}) = (1 + s)^2(1 + s_{AB3})$
+
 
 ```{r}
 sab3 <- ((1 + sab)/((1 + s)^2)) - 1
@@ -6095,7 +6155,7 @@ evalAllGenotypes(od, addwt = TRUE)
 ```
 
 We will return to this model when we explain the usage of `fixation`
-for stopping the simulations (see \@{fixation}).
+for stopping the simulations (see \@ref(fixation)).
 
 
 
@@ -6455,13 +6515,14 @@ multiple simulations in \@ref(sample).
     to stop the simulation as soon as a **specific genotype** is
     found, by using exactly and only the genes that make that genotype as
     the drivers.
+	+ A gene or gene combination among those listed in `fixation`
+    becomes fixed in the population (i.e., has a frequency is 1)
+    (see details in (\@ref(fixation)). 
     + The tumor is detected according to a stochastic detection
     mechanism, where the probability of "detecting the tumor" increases
     with population size; this is explained below (\@ref(detectprob)) and
     is controlled by argument `detectionProb`.
-	+ A gene or gene combination among those listed in `fixation`
-    becomes fixed in the population (i.e., has a frequency is 1)
-    (see details in (\@ref(fixation)). 
+	
   
   
     As we exit as soon as any of the exiting conditions is reached,
@@ -6479,7 +6540,7 @@ multiple simulations in \@ref(sample).
 As an example of `onlyCancer = TRUE`, focusing on the first two
 mechanisms, suppose you give `detectionSize = 1e4` and `detectionDrivers
 =3` (and you have `detectionProb = NA`).  A simulation will exit as soon
-as it reaches a total population size of $1e4$ or any clone has four
+as it reaches a total population size of $10^4$ or any clone has four
 drivers, whichever comes first (if any of these happen before
 `finalTime`).
 
@@ -6688,13 +6749,13 @@ here.  We specify that we want to end the simulation when either the
 "u" or the "v, i" genotypes have reached fixation, by passing those
 genotype combinations as the `fixation` argument (in this example
 using `fixation = c("u", "v")` would have been equivalent, since the
-"v" genotype has fitness of 0).
+"v" genotype by itself has fitness of 0).
 
 
 We want to be explicit that fixation will be the one and only
 condition for ending the simulations, and thus we set arguments
 `detectionDrivers`, `finalTime`, `detectionSize` and `detectionProb`
-explicitly to `NA`. (We set the number of repetitions only to 50 for
+explicitly to `NA`. (We set the number of repetitions only to 10 for
 the sake of speed when creating the vignette).
 
 
@@ -6731,11 +6792,11 @@ head(summary(od100)[, c(1:3, 8:9)])
 
 ## Plotting genotype/driver abundance over time; plotting the simulated trajectories {#plotraj}
 
-We have seen many of these plots already, starting with
-\@ref(fig:iep1x1) and \@ref(fig:iep2x2) and we will see many more
-below, in the examples, starting with section \@ref(bauer2) such as
-in figures \@ref(fig:baux1) and \@ref(fig:baux2). In a nutshell,
-what we are plotting is the information contained in the
+We have seen many of these plots already, starting with Figure
+\@ref(fig:iep1x1) and Figure \@ref(fig:iep2x2) and we will see many
+more below, in the examples, starting with section \@ref(bauer2)
+such as in figures \@ref(fig:baux1) and \@ref(fig:baux2). In a
+nutshell, what we are plotting is the information contained in the
 `pops.by.time` matrix, the matrix that contains the abundances of
 all the clones (or genotypes) at each of the sampling periods.
 
@@ -6752,7 +6813,7 @@ What entities are shown in the plot? You can show the trajectories of:
 
 
 (Of course, showing "drivers" requires that you have specified
-certain genes as drivers. )
+certain genes as drivers.)
 
 
 What types of plots are available?
@@ -6763,7 +6824,8 @@ What types of plots are available?
 
 - stream plots.
 
-All those three are shown in both of \@ref(fig:baux1) and \@ref(fig:baux2).
+All those three are shown in both of Figure \@ref(fig:baux1) and
+Figure \@ref(fig:baux2).
 
 
 If you run multiple simulations using `oncoSimulPop` you can plot
@@ -7134,12 +7196,14 @@ plot(tmp, type = "stacked", plotDiversity = TRUE,
      thinData = TRUE, thinData.keep = 0.2)
 ``` 
 
-In this example (and at least under Linux, with both GCC and clang), we
-can see that the mutants with three drivers do not get established when we
+In this example (and at least under Linux, with both GCC and clang
+---random number streams in C++, and thus simulations, can differ
+between combinations of operating system and compiler), we can see
+that the mutants with three drivers do not get established when we
 stop the simulation at time 6000. This is one case where the summary
-statistics about number of drivers says little of value, as fitness is
-very different for genotypes with the same number of mutations, and does
-not increase in a simple way with drivers:
+statistics about number of drivers says little of value, as fitness
+is very different for genotypes with the same number of mutations,
+and does not increase in a simple way with drivers:
 
 ```{r}
 evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE,
@@ -7342,7 +7406,8 @@ function of population sizes. A major difference between procedures
 has to do with whether or not you want to keep the complete history
 of the simulations.
 
-**You want to keep the complete history of simulations**. You will
+**You want to keep the complete history of population sizes of
+clones during the simulations**. You will
 simulate using:
 
 
@@ -7355,7 +7420,8 @@ In both cases, you specify the conditions for ending the simulations
 `samplePop` to obtain the matrix of samples by mutations.
 
   
-**You do not want to keep the complete history of the simulations**. You will simulate using:
+**You do not want to keep the complete history of population sizes
+of clones during the simulations**. You will simulate using:
 
 
 - `oncoSimulIndiv` repeatedly,  with argument `keepEvery = NA`. 
@@ -7378,26 +7444,29 @@ In both cases, you specify the conditions for ending the simulations
   
 
 Why the difference between the above cases? If you keep the complete
-history, you can take samples at any of the times between the beginning
-and the end of the simulations. If you do not keep the history, you can
-only sample at the time the simulation exited.  Why would you want to use
-the second route? If we are only interested in the final matrix of
-individuals by mutations, keeping the complete history above is
-wasteful because we store fully all of the simulations (for example in
-the call to `oncoSimulPop`) and then sample (in the call to
-`samplePop`). <!-- Other reasons for choosing one over the other -->
-<!-- might have to do with flexibility (e.g., if you use -->
-<!-- `oncoSimulPop` the arguments for `detectionSize`, -->
-<!-- `detectionDrivers` must be the same for all simulations but this is -->
-<!-- not the case for `oncoSimulSample`) and parallelized -->
-<!-- execution.  -->
-Further criteria to use when choosing between sampling procedures is whether
-you need `detectionSize` and `detectionDrivers` do differ between
-simulations: if you use `oncoSimulPop` the arguments for `detectionSize` and
-`detectionDrivers` must be the same for all simulations but this is not the
-case for `oncoSimulSample`. See further comments in
-\@ref(diffsample). Finally, parallelized execution is available for
-`oncoSimulPop` but, by design, not for `oncoSimulSample`.
+history of population sizes, you can take samples at any of the
+times between the beginning and the end of the simulations. If you
+do not keep the history, you can only sample at the time the
+simulation exited (see section \@ref(trackindivs)). Why would you
+want to use the second route? If we are only interested in the final
+matrix of individuals by mutations, keeping the complete history
+above is wasteful because we store fully all of the simulations (for
+example in the call to `oncoSimulPop`) and then sample (in the call
+to `samplePop`). <!-- Other reasons for choosing one over the other
+--> <!-- might have to do with flexibility (e.g., if you use -->
+<!-- `oncoSimulPop` the arguments for `detectionSize`, --> <!--
+`detectionDrivers` must be the same for all simulations but this is
+--> <!-- not the case for `oncoSimulSample`) and parallelized -->
+<!-- execution.  --> 
+
+Further criteria to use when choosing between sampling procedures is
+whether you need `detectionSize` and `detectionDrivers` do differ
+between simulations: if you use `oncoSimulPop` the arguments for
+`detectionSize` and `detectionDrivers` must be the same for all
+simulations but this is not the case for `oncoSimulSample`. See
+further comments in \@ref(diffsample). Finally, parallelized
+execution is available for `oncoSimulPop` but, by design, not for
+`oncoSimulSample`.
 
 
 
@@ -7745,8 +7814,7 @@ are examining a large number of different scenarios.
 
 If you run simulations with `keepPhylog = TRUE`, the simulations keep track
 of when every clone is generated, and that will allow us to see the
-parent-child relationships between clones. (This is disabled by default: the
-code runs a little bit slower and the result is larger.)
+parent-child relationships between clones. (This is disabled by default).
 
 <!-- In an abuse of terminology, we will use functions with the "phylog" -->
 <!-- term, but note these are not proper phylogenies. (Though you could -->
@@ -7971,10 +8039,10 @@ variables obtained under this model. In other words, in this random
 fitness landscape the fitness of the genotypes is a random variable
 generated under some specific model.  Random fitness landscapes are
 used extensively, for instance, to understand the evolutionary
-consequences of different types of epistatic interactions (e.g.,
-@szendro_quantitative_2013, @franke_evolutionary_2011) and there are
+consequences of different types of epistatic interactions 
+[e.g., @szendro_quantitative_2013; @franke_evolutionary_2011] and there are
 especially developed tools for plotting and analyzing random fitness
-landscapes (e.g., @brouillet_magellan:_2015).
+landscapes [e.g., @brouillet_magellan:_2015].
 
 
 
@@ -8022,7 +8090,7 @@ functions, or you could export them (`to_Magellan`) and plot them externally
 ## A small example
 rfitness(3)
 
-## A 5-gene example, where the reference genotype is the one the
+## A 5-gene example, where the reference genotype is the
 ## one with all positions mutated, similar to Greene and Crona,
 ## 2014.  We will plot the landscape and use it for simulations
 ## We downplay the random component with a sd = 0.5
@@ -8177,18 +8245,20 @@ would not be surprised if this way of generating random graphs has been
 proposed and named before; please let me know, best if with a reference.
 
 
-Should we remove direct connections if there are indirect? Or, should we
-set `removeDirectIndirect = TRUE`? Except for @Farahani2013,
-none of the DAGs I've seen in the context of CBNs, Oncogenetic trees, etc,
-include both direct and indirect connections between nodes. If these
-exist, reasoning about the model can be harder. For example, with CBN (AND
-or CMPN or monotone relationships) adding a direct connection makes no
-difference iff we assume that the relationships encoded in the DAG are
-fully respected (e.g., all $s_h = -\infty$). But it can make a difference
-if we allow for deviations from the monotonicity, specially if we only
-check for the satisfaction of the presence of the immediate ancestors. And
-things get even trickier if we combine XOR with AND. The code for
-computing fitness, however, should deal with all of this just fine.
+Should we remove direct connections if there are indirect? Or,
+should we set `removeDirectIndirect = TRUE`? Except for
+@Farahani2013 and @ramazzotti_capri_2015, none of the DAGs I've seen
+in the context of CBNs, Oncogenetic trees, etc, include both direct
+and indirect connections between nodes. If these exist, reasoning
+about the model can be harder. For example, with CBN (AND or CMPN or
+monotone relationships) adding a direct connection makes no
+difference iff we assume that the relationships encoded in the DAG
+are fully respected (e.g., all $s_h = -\infty$). But it can make a
+difference if we allow for deviations from the monotonicity,
+specially if we only check for the satisfaction of the presence of
+the immediate ancestors. And things get even trickier if we combine
+XOR with AND. The code for computing fitness, however, should deal
+with all of this just fine.
 
 
 
@@ -8221,20 +8291,22 @@ you might be tempted to say that they are "the same clone for all
 practical purposes"; but they really are not the same clone as they differ
 in their genotype and this makes a lot of difference computationally. 
 
-If you want summaries of simulations that collapse over some genes (say,
-some "passengers", the 90 passengers we just mentioned) look at the help
-for `samplePop`, argument `geneNames`.  This would allow you, for
-instance, to look at the diversity of clones/genotypes, considering as
-identical those genotypes that only differ in genes you deem relevant;
-something similar to defining a "drivers' clone" as the set formed from
-the union of all sets of cells that have identical genotype with respect
-to only the drivers (so that in the example just mentioned both cells
-would be considered "the same clone" as they only differ with respect to
+If you want summaries of simulations that collapse over some genes
+(say, some "passengers", the 90 passengers we just mentioned) look
+at the help for `samplePop`, argument `geneNames`.  This would allow
+you, for instance, to look at the diversity of clones/genotypes,
+considering as identical those genotypes that only differ in genes
+you deem relevant; something similar to defining a "drivers' clone"
+as the set formed from the union of all sets of cells that have
+identical genotype with respect to only the drivers (so that in the
+example of "A, B" and "A, C" just mentioned both cells would be
+considered "the same clone" as they only differ with respect to
 passengers). However, this "disregard some genes" only applies to
-summaries of simulations once we are done simulating data. OncoSimulR will
-always track clones, as defined above, regardless of whether many of those
-clones have the same genotype if you were to only focus on driver genes;
-see also section \@ref(trackindivs).
+summaries of simulations once we are done simulating
+data. OncoSimulR will always track clones, as defined above,
+regardless of whether many of those clones have the same genotype if
+you were to only focus on driver genes; see also section
+\@ref(trackindivs).
 
 Labeling something as a "driver", therefore, does not affect what we mean
 by clone. Yes, labeling something as a driver can affect when you stop
@@ -8324,26 +8396,28 @@ between sampling times) the abundance of all the clones with number of
 cells $>0$ is recorded. This is the structure that at the end of the run
 is converted into the `pops.by.time` matrix.
 
-Now, some clones might arise from mutation between successive population
-samples but these might be extinct at the time we take a population
-sample. These clones do not appear in the `pops.by.time` matrix because,
-as we just said, they have 0 cells at the time of sampling. Of course,
-some of these clones might appear again later and reach a size larger than
-0 at some posterior sampling time; it is at this time when this/these
-clone(s) will appear in the `pops.by.time` matrix. This pruning of clones
-with 0 cells can allow considerable savings in computing time (OncoSimulR
-needs to keep track the genotype of clones, their population sizes, their
-birth, death, and mutation rates, their next mutation time and the last
-time they were updated and thus it is important that we only loop over
-structures with information that is really needed).
+Now, some clones might arise from mutation between successive
+population samples but these clones might be extinct by the time we
+take a population sample. These clones do not appear in the
+`pops.by.time` matrix because, as we just said, they have 0 cells at
+the time of sampling. Of course, some of these clones might appear
+again later and reach a size larger than 0 at some posterior
+sampling time; it is at this time when this/these clone(s) will
+appear in the `pops.by.time` matrix. This pruning of clones with 0
+cells can allow considerable savings in computing time (OncoSimulR
+needs to track the genotype of clones, their population sizes,
+their birth, death, and mutation rates, their next mutation time and
+the last time they were updated and thus it is important that we
+only loop over structures with information that is really needed).
 
-However, as explained in section \@{moretimings}, we still need to track
-clones as clones, not simply as classes such as "number of mutated
-genes". Therefore, very large genomes can represent a problem if they lead
-to the creation and tracking of many different clones (even if they have
-the same number of mutated genes). In this case, programs that only 
-keep track of numbers of mutated genes or of drivers, not individual
-clones, can of course achieve better speed.
+However, we still need to track clones as clones, not simply as
+classes such as "number of mutated genes". Therefore, very large
+genomes can represent a problem if they lead to the creation and
+tracking of many different clones (even if they have the same number
+of mutated genes), as we have seen, for instance, in section
+\@ref(lnum). In this case, programs that only keep track of numbers
+of mutated genes or of drivers, not individual clones, can of course
+achieve better speed.
 
 <!-- Again, e that we never prune any -->
 <!-- clone that had a population size larger than zero at any sampling -->
@@ -8351,25 +8425,27 @@ clones, can of course achieve better speed.
 <!-- output).  -->
 
 What about the genealogy? If you ask OncoSimulR to keep track of the
-complete parent-child relationships (`keepPhylog = TRUE`), you might see
-in the genealogy clones that are not present in `pops.by.time` if these
-are clones that never had a population size larger than 0 at any sampling
-time. To give an example, suppose that we will take population samples at
-times 0, 1, and 2. Clone A, with a population size larger than 0 at time
-1, gives rise at time 1.5 to clone B; clone B then gives rise to clone C
-at time 1.8. Finally, suppose that at time 2 only clone C is alive (when
-we carry out the update of the population with Algorithm 5 from
-@Mather2012, clones A and B have size 0). Now, at time 1 clones B and C
-did not yet exist, and clone B is never alive at times 1 or 2. Thus, clone
-B is not present in `pops.by.time`. But we cannot remove clone B from our
-genealogy if we want to reflect the complete history of C. Thus,
-`pops.by.time` will show only clones A and C (not B) but the complete
-genealogy will show clones A, B, C (and will show that B appeared from A
-at time 1.5 and C appeared from B at time 1.8). Since function
-`plotClonePhylog` offers a lot of flexibility with respect to what clones
-to show depending on their population sizes at different times, you can
-prevent being shown B, but its existence is there should you need it (see
-also \@ref(histlargegenes)).
+complete parent-child relationships (`keepPhylog = TRUE`), you might
+see in the genealogy clones that are not present in `pops.by.time`
+if these are clones that never had a population size larger than 0
+at any sampling time. To give an example, suppose that we will take
+population samples at times 0, 1, and 2. Clone A, with a population
+size larger than 0 at time 1, gives rise at time 1.5 to clone B;
+clone B then gives rise to clone C at time 1.8. Finally, suppose
+that at time 2 only clone C is alive. In other words, when we carry
+out the update of the population with Algorithm 5 from @Mather2012,
+clones A and B have size 0. Now, at time 1 clones B and C did not
+yet exist, and clone B is never alive at times 1 or 2. Thus, clone B
+is not present in `pops.by.time`. But we cannot remove clone B from
+our genealogy if we want to reflect the complete genealogy of C. Thus,
+`pops.by.time` will show only clones A and C (not B) but the
+complete genealogy will show clones A, B, C (and will show that B
+appeared from A at time 1.5 and C appeared from B at time
+1.8). Since function `plotClonePhylog` offers a lot of flexibility
+with respect to what clones to show depending on their population
+sizes at different times, you can prevent being shown B, but its
+existence is there should you need it (see also
+\@ref(histlargegenes)).
 
 
 
@@ -8433,7 +8509,7 @@ And from here you could see the error that was returned by
 we pass `initSize = 1e-5`).
 
 
-## Whole tumor sampling, genotypes, and allele counts: what  gives? {#wtsampl}
+## Whole tumor sampling, genotypes, and allele counts: what  gives? And what about order? {#wtsampl}
 
 You are obtaining genotypes, regardless of order.  When we use "whole
 tumor sampling", it is the frequency of the mutations in each gene that
@@ -8454,7 +8530,7 @@ mutation events are rare relative to birth and death events; the
 larger the mutation rate, the smaller the gains compared to other
 algorithms. As mentioned in their supplementary material (see p.5)
 "Note that the 'cost' of each step in BNB is somewhat higher than in
-SSA [SSA is the original Gillespie Stochastic Simulation Algorithm]
+SSA [SSA is the original Gillespie's Stochastic Simulation Algorithm]
 since it requires generation of several random numbers as compared
 to only two uniform random numbers for SSA. However this cost
 increase is small compared with significant benefits of jumping over
@@ -8526,7 +8602,7 @@ samples becomes reasonably short.
 ## Sometimes I get exceptions when running with mutator genes {#tomlinexcept}
 
 Yes, sure, the following will cause an exception; this is similar to
-the example used in \@(ex-mut-antimut) but there is one crucial
+the example used in \@ref(exmutantimut) but there is one crucial
 difference:
 
 ```{r ex-tomlin1exc}
