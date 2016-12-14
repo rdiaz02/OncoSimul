@@ -725,7 +725,7 @@ of the individual done, and the number of attempts and time used.}
     simulation error when using the McFarland model as well as other
     statistics. For the McFarland model, the relevant value is errorMF,
     which is -99 unless in the McFarland model. For the McFarland model it
-    is the largest difference of successive death rates. The entries names
+    is the largest difference of successive death rates. The entries named
     minDMratio and minBMratio are the smallest ratio, over all
     simulations, of death rate to mutation rate and birth rate to mutation
     rate, respectively. The BNB algorithm thrives when those are large.}
