@@ -2,6 +2,9 @@
 \usepackage{array}
 \usepackage{pdflscape}
 
+\usepackage{caption}
+\captionsetup{width=9cm}
+
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\
 \arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{C}[1]{>{\centering\let\newline\\
@@ -48,6 +51,7 @@
   \begin{sidewaystable*}[t!]
   \centering
   \footnotesize
+  \captionsetup{width=20cm}
 }
 
 \newcommand{\elandscape}{
@@ -66,6 +70,7 @@
   \begin{sidewaystable*}[t!]
   \centering
   \footnotesize
+  \captionsetup{width=20cm}
 }
 
 \newcommand{\eslandscape}{
