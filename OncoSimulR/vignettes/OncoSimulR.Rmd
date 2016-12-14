@@ -306,10 +306,10 @@ by moving the mouse over each term).
 \clearpage
 
 |Attribute Category                  | Attribute                                     |
-|-------------------------------------|-----------------------------------------------|
+|-------------------------------|-----------------------------------------------|
 |**Target**                           |  |
 |&nbsp; Type of Simulated Data        |           Haploid DNA Sequence|
-|&nbsp; variations                    |           Biallelic Marker, Genotype or Sequencing Error|
+|&nbsp; Variations                    |           Biallelic Marker, Genotype or Sequencing Error|
 |**Simulation Method**                |           Forward-time|
 |&nbsp; Type of Dynamical Model       | Continuous time|
 |&nbsp; Entities Tracked              | Clones (see \@ref(trackindivs))|
@@ -469,8 +469,8 @@ library(OncoSimulR)
 
 This is a question that was addressed, for instance, in
 @Diaz-Uriarte2015: do methods that try to infer restrictions in the
-order of accumulation of mutations (e.g., @Szabo2008, @Gerstung2009,
-@ramazzotti_capri_2015) work well under different evolutionary
+order of accumulation of mutations [e.g., @Szabo2008; @Gerstung2009;
+@ramazzotti_capri_2015] work well under different evolutionary
 models and with different sampling schemes? (This issue is also
 touched upon in section \@ref(sample-1)).
 
@@ -662,8 +662,8 @@ set.seed(NULL)
 ### Mutator and antimutator genes {#ex-mut-antimut}
 
 The effects of mutator and antimutator genes have been examined both
-in cancer genetics (@nowak_evolutionary_2006,
-@tomlinson_mutation_1996) and in evolutionary genetics
+in cancer genetics [@nowak_evolutionary_2006;
+@tomlinson_mutation_1996] and in evolutionary genetics
 [@gerrish_complete_2007], and are related to wider issues such as
 Muller's ratchet and the evolution of sex. There are, thus, a large
 range of questions related to mutator and antimutator genes.
@@ -684,10 +684,10 @@ of mutator genes (argument `muEF`). We would also change the criteria for
 reaching cancer and in our case we can easily do that by specifying
 different numbers in `detectionDrivers`. Of course, we would also want to
 examine the effects of varying numbers of mutators, drivers, and possibly
-fitness consequences of mutators (below we assume mutators are neutral and
+fitness consequences of mutators. Below we assume mutators are neutral and
 we assume there are no additional genes with deleterious mutations, but
-this need not be so, of course; see also
-@tomlinson_mutation_1996, @gerrish_complete_2007, @McFarland2014).
+this need not be so, of course [see also
+@tomlinson_mutation_1996; @gerrish_complete_2007; @McFarland2014].
 
 
 Let us run an example. For the sake of simplicity, we assume no
@@ -746,7 +746,7 @@ set.seed(NULL)
 
 (Incidentally, notice that it is easy to get OncoSimulR to throw an
 exception if you accidentally specify a huge mutation rate when all
-mutator genes are mutated: see section \@(tomlinexcept).)
+mutator genes are mutated: see section \@ref(tomlinexcept).)
 
 
 <!-- More complex example where we look at accumulation of deleterious -->
@@ -970,7 +970,7 @@ and \@ref(whatfor) and running time and space consumption of OncoSimulR are
 addressed in section \@ref(timings). You should be aware that **coalescent
 simulations**, sometimes also called backward-time simulations, are much
 more efficient for simulating neutral data as well as some special selection
-scenarios (@Yuan2012; @Carvajal-Rodriguez2010; @Hoban2011]).  
+scenarios [@Yuan2012; @Carvajal-Rodriguez2010; @Hoban2011].  
 
 In addition, since OncoSimulR allows you to specify fitness with arbitrary
 epistatic and order effects, as well as mutator effects, you need to learn
@@ -1551,6 +1551,7 @@ pander(benchmark_1[1:4, c("Elapsed Time, average per simulation (s)",
  				  "Total Population Size, median",
  				  "Total Population Size, max.",
  				  "keepEvery")],
+				  justify = c('left', rep('right', 8)), ##  o.w. hlines not right
 				  ## caption = "\\label{tab:bench1}Benchmarks of Exp and McFL  models using the default `detectionProb` with two settings of `keepEvery`."
 				  )
 ```
@@ -1661,8 +1662,9 @@ t_exp6 <- system.time(
 Table: (\#tab:bench1b) Benchmarks of Exp models modifying the default `detectionProb` with two settings of `keepEvery`.
 ```{r bench1b, eval=TRUE, echo = FALSE}
 panderOptions("table.split.table", 99999999)
-panderOptions("table.split.cells", Inf)  ## For HTML
-## panderOptions("table.split.cells", 12) ## For PDF
+panderOptions("table.split.cells", 900)  ## For HTML
+## panderOptions("table.split.cells", 8) ## For PDF
+
 set.alignment('right')
 panderOptions('round', 2)
 panderOptions('big.mark', ',')
@@ -1678,6 +1680,7 @@ pander(benchmark_1[5:8, c("Elapsed Time, average per simulation (s)",
  				  "keepEvery",
 				  "PDBaseline",
 				  "n2")], 
+				  justify = c('left', rep('right', 10)), ##  o.w. hlines not right
 ## 				  round = c(rep(2, 3), rep(0, 7)),
 ## 				  digits = c(rep(2, 3), rep(1, 7)),
 	  ## caption = "\\label{tab:bench1b}Benchmarks of Exp and McFL models modifying the default `detectionProb` with two settings of `keepEvery`."
@@ -1743,6 +1746,7 @@ pander(benchmark_1[1:8, c(
 "Attempts until Cancer, max.", 
 				  "PDBaseline",
 				  "n2")], 
+				  justify = c('left', rep('right', 5)), ##  o.w. hlines not right
 ## 				  round = c(rep(2, 3), rep(0, 7)),
 ## 				  digits = c(rep(2, 3), rep(1, 7)),
 	  ## caption = "\\label{tab:bench1c}Number of attempts until cancer."
@@ -1800,6 +1804,7 @@ pander(benchmark_1[9:16,
  				  "keepEvery",
 				  "PDBaseline",
 				  "n2")],
+				  justify = c('left', rep('right', 11)), ##  o.w. hlines not right
 ## caption = "\\label{tab:timing3} Benchmarks of models in Table \\@ref(tab:bench1) and \\@ref(tab:bench1b) when run with `onlyCancer = FALSE`."
 				  )	
 	
@@ -1844,6 +1849,7 @@ pander(benchmark_1[ , c("Elapsed Time, average per simulation (s)",
 				  "Final Time, median", "Total Population Size, median", 
 				  "Total Population Size, mean", "Total Population Size, max.",
  	              "keepEvery", "PDBaseline", "n2", "onlyCancer")], 
+				  justify = c('left', rep('right', 12)), ##  o.w. hlines not right
 				  ## caption = "\\label{tab:allr1bck}Benchmarks of all models in Tables \\@ref(tab:bench1), \\@ref(tab:bench1b)  and \\@ref(tab:timing3)."  
 				  )  
 ```
@@ -1904,6 +1910,7 @@ pander(benchmark_1_0.05[ , c("Elapsed Time, average per simulation (s)",
 				  "Total Population Size, median", 
 				  "Total Population Size, mean", "Total Population Size, max.",
  	              "keepEvery", "PDBaseline", "n2", "onlyCancer")], 
+				  justify = c('left', rep('right', 12)), ##  o.w. hlines not right
  	              ## caption = "\\label{tab:timing3xf}Benchmarks of all models in Table \\@ref(tab:allr1bck) using $s=0.05$ (instead of $s=0.1$)."  
 )  
 				  

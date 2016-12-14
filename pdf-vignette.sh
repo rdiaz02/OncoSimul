@@ -2,6 +2,12 @@
 ## simplify my workflow.
 cd ./OncoSimulR/vignettes
 
+
+texi2pdf -q relfunct.tex
+pdfcrop --noverbose relfunct.pdf relfunct-c.pdf
+mv relfunct-c.pdf relfunct.pdf
+
+
 ## Beware that the first table, the one based on GSR, should
 ## not be caught by this grep. In that table there is no
 ## space after ":" --- could use a different convention
@@ -11,6 +17,9 @@ sed -i 's/## caption = "\\\\label/caption = "\\\\label/' OncoSimulR-tex.Rmd
 sed -i 's/## panderOptions("table.split.cells", 8)/panderOptions("table.split.cells", 8)/' OncoSimulR-tex.Rmd
 sed -i 's/## panderOptions("table.split.cells", 12)/panderOptions("table.split.cells", 12)/' OncoSimulR-tex.Rmd
 sed -i 's/## panderOptions("table.split.cells", 15)/panderOptions("table.split.cells", 15)/' OncoSimulR-tex.Rmd
+
+
+sed -i 's/relfunct.png/relfunct.pdf/' OncoSimulR-tex.Rmd
 
 Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR-tex.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))'
 
