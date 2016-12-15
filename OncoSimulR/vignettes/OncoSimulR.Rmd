@@ -3688,15 +3688,56 @@ For the Bozic model [@Bozic2010], however, the birth rate is set to
 In the original model of @McFarland2013, the effects of drivers
 contribute to the numerator of the birth rate, and those of the
 (deleterious) passengers to the denominator as: $\frac{(1 +
-s)^d}{(1 - s_p)^p}$, where $d$ and $p$ are, respectively, the total
+s)^d}{(1 + s_p)^p}$, where $d$ and $p$ are, respectively, the total
 number of drivers and passengers in a genotype, and here the fitness
 effects of all drivers is the same ($s$) and that of all passengers
-the same too ($s_p$). However, we can map from this ratio to the
-usual product of terms by using a different value of $s_p$, that we
-will call $s_{pp} = -s_p/(1 + s_p)$ (see @McFarland2014-phd, his
-eq. 2.1 in p.9).  This reparameterization applies to v.2. In v.1 we
-use the same parameterization as in the original one in
-@McFarland2013.
+the same too ($s_p$). Note that, as written above, and as explicitly
+said in @McFarland2013 (see p. 2911) and @McFarland2014-phd (see
+p. 9), "(...)  $s_p$ is the ﬁtness disadvantage conferred by a
+passenger". In other words, the larger the $s_p$ the more
+deleterious the passenger.
+
+This is obvious, but I make it explicit because in our
+parameterization a positive $s$ means fitness advantage, whereas
+fitness disadvantages are associated with negative $s$. Of course,
+if you rewrite the above expression as $\frac{(1 + s)^d}{(1 -
+s_p)^p}$ then we are back in the "positive means fitness advantage
+and negative means fitness disadvantage".
+
+
+As @McFarland2014-phd explains (see p.\ 9, bottom), we can rewrite
+the above expression so that there are no terms in the
+denominator. McFarland writes is as (I copy verbatim from the fourth
+and fifth lines from the bottom on his p.\ 9) 
+$(1 + s_d)^{n_d} (1 - s_p^{'})^{n_p}$ where $s_p^{'} = s_p/(1 + s_p)$.
+
+
+However, if we want to express everything as products (no ratios)
+and use the "positive s means advantage and negative s means
+disadvantage" rule, we want to write the above expression as 
+$(1 + s_d)^{n_d} (1 + s_{pp})^{n_p}$ where $s_{pp} = -s_p/(1 + s_p)$. And
+this is actually what we do in v.2. There is an example, for
+instance, in section \@ref(mcf5070) where you will see:
+
+```{r mcflparam}
+sp <- 1e-3 
+spp <- -sp/(1 + sp)
+```
+
+so we are going from the "(...) $s_p$ is the ﬁtness disadvantage
+conferred by a passenger" in @McFarland2013 (p. 2911) and
+@McFarland2014-phd (p. 9) to the expression where we have a product
+$\prod (1 + s_i)$, with the "positive s means advantage and negative
+s means disadvantage" rule. This reparameterization applies to
+v.2. In v.1 we use the same parameterization as in the original one
+in @McFarland2013, but with the "positive s means advantage and negative
+s means disadvantage" rule (so we are using expression 
+$\frac{(1 + s)^d}{(1 - s_p)^p}$).
+
+
+<!-- However, we can map from this ratio to the usual product of terms by -->
+<!-- using a different value of $s_p$, that we will call $s_{pp} = -->
+<!-- -s_p/(1 + s_p)$ (see @McFarland2014-phd, his eq. 2.1 in p.9).  -->
 
 For death rate, we use the expression that @McFarland2013 (see their
 p. 2911) use "(...) for large cancers (grown to $10^6$ cells)": $D(N) =
