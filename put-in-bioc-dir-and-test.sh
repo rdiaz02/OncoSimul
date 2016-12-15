@@ -109,11 +109,11 @@ if [[ $# == 1 ]]; then
     echo " "
     ## time as explained in https://www.bioconductor.org/developers/package-guidelines/#correctness
     echo " ************************************ "
-    echo " *****   R CMD check: time OK?  ***** "
-    echo ""
-    time $V_R --vanilla CMD check --no-build-vignettes OncoSimulR_$V_P.tar.gz
-    echo " "
-    echo " ===========  done R CMD check vanilla time OK?   ========== "
+    # echo " *****   R CMD check: time OK?  ***** "
+    # echo ""
+    # time $V_R --vanilla CMD check --no-build-vignettes OncoSimulR_$V_P.tar.gz
+    # echo " "
+    # echo " ===========  done R CMD check vanilla time OK?   ========== "
 
     
 fi
