@@ -3707,7 +3707,7 @@ and negative means fitness disadvantage".
 
 As @McFarland2014-phd explains (see p.\ 9, bottom), we can rewrite
 the above expression so that there are no terms in the
-denominator. McFarland writes is as (I copy verbatim from the fourth
+denominator. McFarland writes it as (I copy verbatim from the fourth
 and fifth lines from the bottom on his p.\ 9) 
 $(1 + s_d)^{n_d} (1 - s_p^{'})^{n_p}$ where $s_p^{'} = s_p/(1 + s_p)$.
 
