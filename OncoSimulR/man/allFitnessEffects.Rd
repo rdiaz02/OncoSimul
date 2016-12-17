@@ -127,12 +127,14 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   Genotypes can be specified in two ways:
   \itemize{
     
-    \item As a matrix (or data frame) with g + 1 columns. Each of the
-    first g columns contains a 1 or a 0 indicating that the gene of that
-    column is mutated or not. Column g+ 1 contains the fitness
-    values. This is, for instance, the output you will get from
+    \item As a matrix (or data frame) with g + 1 columns (where g >
+    1). Each of the first g columns contains a 1 or a 0 indicating that
+    the gene of that column is mutated or not. Column g+ 1 contains the
+    fitness values. This is, for instance, the output you will get from
     \code{\link{rfitness}}. If the matrix has all columns named, those
-    will be used for the names of the genes.
+    will be used for the names of the genes. Of course, except for
+    column or row names, all entries in this matrix or data frame must
+    be numeric.
     
     \item As a two column data frame. The second column is fitness, and
     the first column are genotypes, given as a character vector. For

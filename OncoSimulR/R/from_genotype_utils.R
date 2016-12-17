@@ -99,12 +99,49 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 from_genotype_fitness <- function(x) {
     ## Would break with output from allFitnessEffects and
     ## output from allGenotypeAndMut
+    
+    ## For the very special and weird case of
+    ## a matrix but only a single gene so with a 0 and 1
+    ## No, this is a silly and meaningless case.
+    ## if( ( ncol(x) == 2 ) && (nrow(x) == 1) && (x[1, 1] == 1) ) {
+    
+    ## } else  blabla: 
+    
+    if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
+        stop("Input must inherit from matrix or data.frame.")
+    
+    ## if((ncol(x) > 2) && !(inherits(x, "matrix"))
+    ##     stop(paste0("Genotype fitness input either two-column data frame",
+    ##          " or a numeric matrix with > 2 columns."))
+    ## if( (ncol(x) > 2) && (nrow(x) == 1) )
+    ##     stop(paste0("It looks like you have a matrix for a single genotype",
+    ##                 " of a single gene. For this degenerate cases use",
+    ##                 " a data frame specification."))
+    
     if(ncol(x) > 2) {
+        if(inherits(x, "matrix")) {
+            if(!is.numeric(x))
+                stop("A genotype fitness matrix/data.frame must be numeric.")
+        } else if(inherits(x, "data.frame")) {
+            if(!all(unlist(lapply(x, is.numeric))))
+                stop("A genotype fitness matrix/data.frame must be numeric.")
+        }
+        
+        ## We are expecting here a matrix of 0/1 where columns are genes
+        ## except for the last column, that is Fitness
         ## Of course, can ONLY work with epistastis, NOT order
         return(genot_fitness_to_epistasis(x))
     } else {
+        if(!inherits(x, "data.frame"))
+            stop("genotFitness: if two-column must be data frame")
         ## Make sure no factors
         if(is.factor(x[, 1])) x[, 1] <- as.character(x[, 1])
+        ## Make sure no numbers
+        if(any(is.numeric(x[, 1])))
+            stop(paste0("genotFitness: first column of data frame is numeric.",
+                        " Ambiguous and suggests possible error. If sure,",
+                        " enter that column as character"))
+        
         omarker <- any(grepl(">", x[, 1], fixed = TRUE))
         emarker <- any(grepl(",", x[, 1], fixed = TRUE))
         nogoodepi <- any(grepl(":", x[, 1], fixed = TRUE))
@@ -120,17 +157,21 @@ from_genotype_fitness <- function(x) {
             ## involve epistasis and order. But they must have different
             ## genes. Otherwise, it is not manageable.
         }
-        if(emarker) {
-            x <- x[, c(1, 2)]
+        if( emarker || ( (!omarker) && (!emarker) && (!nogoodepi)) ) {
+            ## the second case above corresponds to passing just single letter genotypes
+            ## as there is not a single marker
+            x <- x[, c(1, 2), drop = FALSE]
             if(!all(colnames(x) == c("Genotype", "Fitness"))) {
                 message("Column names of object not Genotype and Fitness.",
                         " Renaming them assuming that is what you wanted")
                 colnames(x) <- c("Genotype", "Fitness")
             }
+            if((!omarker) && (!emarker) && (!nogoodepi)) {
+                message("All single-gene genotypes as input to from_genotype_fitness")
+            }
             ## Yes, we need to do this to  scale the fitness and put the "-"
             return(genot_fitness_to_epistasis(allGenotypes_to_matrix(x)))
         }
-        
     }
 }
 
@@ -161,7 +202,7 @@ genot_fitness_to_epistasis <- function(x) {
     ## Why should I stop?
     if(any(f < 0))
         message("Negative fitnesses. Watch out if you divide by the wildtype")
-    x <- x[, -ncol(x)]
+    x <- x[, -ncol(x), drop = FALSE]
     wt <- which(rowSums(x) == 0)
     fwt <- 1
     if(length(wt) == 1)
@@ -209,6 +250,7 @@ allGenotypes_to_matrix <- function(x) {
     if(length(anywt) == 1) {
         fwt <- x[anywt, 2]
         x <- x[-anywt, ]
+        ## Trivial case of passing just a WT?
     } else {
         fwt <- 1
     }
@@ -230,8 +272,8 @@ allGenotypes_to_matrix <- function(x) {
                m)
     ## Ensure sorted
     m <- data.frame(m)
-    rs <- rowSums(m[, -ncol(m)])
-    m <- m[order(rs), ]
+    rs <- rowSums(m[, -ncol(m), drop = FALSE])
+    m <- m[order(rs), , drop = FALSE]
     ## m <- m[do.call(order, as.list(cbind(rs, m[, -ncol(m)]))), ]
     return(m)
 }

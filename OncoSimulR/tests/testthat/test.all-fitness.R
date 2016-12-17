@@ -1190,5 +1190,147 @@ test_that("not all genes named", {
                  fixed = TRUE)
 })
 
+
+test_that("We can deal with single-gene genotypes and trivial cases" ,{
+
+    ## we get the message
+    expect_message(allFitnessEffects(
+        genotFitness = data.frame(g = c("A", "B"),
+                                  y = c(1, 2))), "All single-gene genotypes",
+        fixed = TRUE)
+
+    
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "A", "B", "A, B"),
+                   Fitness = c(1.0, 1.0, 2.0, 1.0),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = data.frame(g = c("A", "B"),
+                                                        y = c(1, 2))),
+            addwt = TRUE))
+    ))
+
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "A", "B", "A, B"),
+                   Fitness = c(1.0, 1.5, 2.9, 1.0),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = data.frame(g = c("A", "B"),
+                                                        y = c(1.5, 2.9))),
+            addwt = TRUE))
+    ))
+
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "A", "B", "E", "A, B", "A, E", "B, E", "A, B, E"),
+                   Fitness = c(1.0, 1.3, 2.4, 3.2, rep(1.0, 4)),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = data.frame(g = c("A", "B", "E"),
+                                                        y = c(1.3, 2.4, 3.2))),
+            addwt = TRUE))
+    ))
+
+
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "A"),
+                   Fitness = c(1.0, 1.0),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = data.frame(g = c("A"),
+                                                        y = c(1))),
+            addwt = TRUE))
+    ))
+    
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "A"),
+                   Fitness = c(1.0, 0.6),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = data.frame(g = c("A"),
+                                                        y = c(0.6))),
+            addwt = TRUE))
+    ))
+
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "A", "D", "F", "A, D", "A, F", "D, F", "A, D, F"),
+                   Fitness = c(rep(1, 7), 1.7),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = data.frame(g = c("A, D, F"),
+                                                        y = c(1.7))),
+            addwt = TRUE))
+    ))    
+
+
+    m <- rbind(c(1, 0, 1.2),
+               c(0, 1, 2.4))
+
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "A", "B", "A, B"),
+                   Fitness = c(1.0, 1.2, 2.4, 1.0),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = m),
+            addwt = TRUE))
+    ))    
+
+    m2 <- rbind(c(1, 0, 1.2),
+               c(0, 1, 2.4))
+    colnames(m2) <- c("U", "M", "Fitness")
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "M", "U", "M, U"),
+                   Fitness = c(1.0, 2.4, 1.2, 1.0),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = m2),
+            addwt = TRUE))
+    ))
+    
+    m2df <- data.frame(rbind(c(1, 0, 1.2),
+               c(0, 1, 2.4)))
+    colnames(m2df) <- c("U", "M", "Fitness")
+    expect_true(identical(
+        data.frame(Genotype = c("WT", "M", "U", "M, U"),
+                   Fitness = c(1.0, 2.4, 1.2, 1.0),
+                   stringsAsFactors = FALSE),
+        as.data.frame(evalAllGenotypes(
+            allFitnessEffects(genotFitness = m2df),
+            addwt = TRUE))
+    ))   
+
+    m3 <- matrix(c(1, 1.2), ncol = 2)
+    colnames(m3) <- c("U", "Fitness")
+    expect_error(
+        allFitnessEffects(genotFitness = m3),
+        "genotFitness: if two-column must be data frame",
+        fixed = TRUE)
+
+    ## Stupid
+    m5 <- data.frame(x = 1, y = 2, stringsAsFactors= FALSE)
+    expect_error(evalAllGenotypes(allFitnessEffects(genotFitness = m5)),
+                 "genotFitness: first column of data frame is numeric.",
+                 fixed = TRUE)
+
+    m6 <- matrix(letters[1:4], ncol = 4)
+    expect_error(allFitnessEffects(genotFitness = m6),
+                 "A genotype fitness matrix/data.frame must be numeric",
+                 fixed = TRUE)
+
+    m7 <- as.data.frame(matrix(letters[1:4], ncol = 4))
+    expect_error(allFitnessEffects(genotFitness = m7),
+                 "A genotype fitness matrix/data.frame must be numeric",
+                 fixed = TRUE)
+
+    m8 <- 1:9
+    expect_error(allFitnessEffects(genotFitness = m8),
+                 "Input must inherit from matrix or data.frame",
+                 fixed = TRUE)
+
+
+    
+
+})
+
+
 cat(paste("\n Ending all-fitness at", date()))
 
