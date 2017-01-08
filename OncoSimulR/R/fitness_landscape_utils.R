@@ -223,9 +223,6 @@ filter_inaccessible <- function(x, accessible_th) {
     return(x)
 }
 
-f1 <- function() {}
-
-x <- 99
 
 ## wrapper to the C++ code
 wrap_accessibleGenotypes <- function(x, th) {

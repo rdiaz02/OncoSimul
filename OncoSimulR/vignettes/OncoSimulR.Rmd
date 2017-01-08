@@ -226,6 +226,8 @@ and provides statistics of evolutionary predictability.
 
 
 
+
+
 ## Key features of OncoSimulR {#key}
 
 As mentioned above, OncoSimulR is now a very general package for forward
@@ -1292,6 +1294,19 @@ package).
 
 
 
+## Testing, code coverage, and other examples {#codecover}
+
+OncoSimulR includes more than 2000 tests that are run at every check
+cycle. These tests provide a code coverage of more than 90%
+including both the C++ and R code. Another set of over 500
+long-running (several hours) tests can be run on demand (see
+directory '/tests/manual'). In addition to serving as test cases,
+some of that code also provides further examples of usage.
+
+
+
+
+
 ## Versions {#versions}
 
 In this vignette and the documentation I often refer to version 1 (v.1) and
@@ -1567,9 +1582,9 @@ The above runs yield the following:
 Table: (\#tab:bench1) Benchmarks of Exp and McFL models using the default `detectionProb` with two settings of `keepEvery`. 
 ```{r bench1, eval=TRUE, echo = FALSE}
 
-panderOptions("table.split.table", 99999999)
-panderOptions("table.split.cells", 900)  ## For HTML
-## panderOptions("table.split.cells", 8) ## For PDF
+panderOptions('table.split.table', 99999999)
+panderOptions('table.split.cells', 900)  ## For HTML
+## panderOptions('table.split.cells', 8) ## For PDF
 
 set.alignment('right')
 panderOptions('round', 2)
@@ -1698,9 +1713,9 @@ t_exp6 <- system.time(
 
 Table: (\#tab:bench1b) Benchmarks of Exp models modifying the default `detectionProb` with two settings of `keepEvery`.
 ```{r bench1b, eval=TRUE, echo = FALSE}
-panderOptions("table.split.table", 99999999)
-panderOptions("table.split.cells", 900)  ## For HTML
-## panderOptions("table.split.cells", 8) ## For PDF
+panderOptions('table.split.table', 99999999)
+panderOptions('table.split.cells', 900)  ## For HTML
+## panderOptions('table.split.cells', 8) ## For PDF
 
 set.alignment('right')
 panderOptions('round', 2)
@@ -1770,9 +1785,9 @@ function(x) x$other$attemptsUsed)))` ):
 
 Table: (\#tab:bench1c) Number of attempts until cancer.
 ```{r bench1c, eval=TRUE, echo = FALSE}
-panderOptions("table.split.table", 99999999)
-panderOptions("table.split.cells", 900)  ## For HTML
-## panderOptions("table.split.cells", 12) ## For PDF
+panderOptions('table.split.table', 99999999)
+panderOptions('table.split.cells', 900)  ## For HTML
+## panderOptions('table.split.cells', 12) ## For PDF
 set.alignment('right')
 panderOptions('round', 2)
 panderOptions('big.mark', ',')
@@ -1823,10 +1838,10 @@ models are due only to sampling variation).
 
 Table: (\#tab:timing3) Benchmarks of models in Table \@ref(tab:bench1) and \@ref(tab:bench1b) when run with `onlyCancer = FALSE`
 ```{r bench1d, eval=TRUE, echo = FALSE}
-panderOptions("table.split.table", 99999999)
-panderOptions("table.split.cells", 900)  ## For HTML
-## panderOptions("table.split.cells", 8) ## For PDF
-panderOptions("table.split.cells", 15) ## does not fit otherwise
+panderOptions('table.split.table', 99999999)
+panderOptions('table.split.cells', 900)  ## For HTML
+## panderOptions('table.split.cells', 8) ## For PDF
+panderOptions('table.split.cells', 15) ## does not fit otherwise
 set.alignment('right')
 panderOptions('round', 3)
 
@@ -1873,9 +1888,9 @@ To make it easier to compare results with those of the next section, Table
 
 Table: (\#tab:allr1bck) Benchmarks of all models in Tables \@ref(tab:bench1), \@ref(tab:bench1b), and \@ref(tab:timing3).  
 ```{r bench1dx0, eval=TRUE, echo = FALSE}
-panderOptions("table.split.table", 99999999)
-## panderOptions("table.split.cells", 900)  ## For HTML
-panderOptions("table.split.cells", 19)
+panderOptions('table.split.table', 99999999)
+## panderOptions('table.split.cells', 900)  ## For HTML
+panderOptions('table.split.cells', 19)
 
 set.alignment('right') 
 panderOptions('round', 3)
@@ -1934,9 +1949,9 @@ Table: (\#tab:timing3xf) Benchmarks of all models in Table \@ref(tab:allr1bck) u
 ## ##   \@ref(tab:bench1b) when run with `onlyCancer = FALSE`", 
 ## 	align = "c")
 	
-panderOptions("table.split.table", 99999999)
-## panderOptions("table.split.cells", 900)  ## For HTML
-panderOptions("table.split.cells", 19)
+panderOptions('table.split.table', 99999999)
+## panderOptions('table.split.cells', 900)  ## For HTML
+panderOptions('table.split.cells', 19)
 
 set.alignment('right') 
 panderOptions('round', 3)
@@ -2213,9 +2228,9 @@ Table: (\#tab:timingusual) Benchmarks under some common use cases, set 1.
 ## 				  ),
 ## 	align = "c")
 
-panderOptions("table.split.table", 99999999)
-panderOptions("table.split.cells", 900)  ## For HTML
-## panderOptions("table.split.cells", 8) ## For PDF
+panderOptions('table.split.table', 99999999)
+panderOptions('table.split.cells', 900)  ## For HTML
+## panderOptions('table.split.cells', 8) ## For PDF
 
 ## set.alignment('right', row.names = 'center')
 panderOptions('table.alignment.default', 'right')
@@ -2341,9 +2356,9 @@ Table: (\#tab:timingusual2) Benchmarks under some common use cases, set 2.
 ## 				  ),
 ## 	align = "c")
 
-panderOptions("table.split.table", 99999999)
-panderOptions("table.split.cells", 900)  ## For HTML
-## panderOptions("table.split.cells", 8) ## For PDF
+panderOptions('table.split.table', 99999999)
+panderOptions('table.split.cells', 900)  ## For HTML
+## panderOptions('table.split.cells', 8) ## For PDF
 
 
 panderOptions('round', 3)

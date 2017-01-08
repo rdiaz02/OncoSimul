@@ -1,5 +1,8 @@
+Changes in version 2.5.8 (2017-01-09):
+	- Added code coverage comments to vignette.
+
 Changes in version 2.5.8 (2016-12-17):
-	- Handle trivial cases in genotFitness
+	- Handle trivial cases in genotFitness.
 
 Changes in version 2.5.7 (2016-12-15):
 	- Clarified McFarland parameterization.
