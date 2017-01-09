@@ -82,6 +82,9 @@ before_build:
 ## Make explicit. But I shouldn't need any line after install_bioc_deps
 build_script:
   - travis-tool.sh install_bioc_deps
+  - travis-tool.sh install_r gtable
+  - travis-tool.sh install_r chron DBI geforce ggraph pbkrtest scales
+  - travis-tool.sh install_bioc BiocGenerics
 
 ## I might not need these anymore? (which I never should have needed anyway)
 ## - travis-tool.sh install_r gtable
