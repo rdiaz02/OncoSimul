@@ -83,8 +83,9 @@ before_build:
 build_script:
   - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_r gtable lazyeval digest tibble reshape2 MASS
-  - travis-tool.sh install_r chron DBI lazyeval pbkrtest scales 
-  - travis-tool.sh install_bioc BiocGenerics
+  - travis-tool.sh install_r chron DBI lazyeval pbkrtest scales assetthat R6 
+  - travis-tool.sh install_r quantreg mgcv nnet magrittr NMF irlba Matrix
+  - travis-tool.sh install_bioc BiocGenerics graph
 
 ## I might not need these anymore? (which I never should have needed anyway)
 ## - travis-tool.sh install_r gtable
