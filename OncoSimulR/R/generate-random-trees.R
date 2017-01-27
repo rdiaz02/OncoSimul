@@ -81,8 +81,10 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
    
 
     ## Prune to remove indirect connections
-    if(multilevelParent & removeDirectIndirect)
-        adjMat <- transitiveReduction(adjMat)
+    if(multilevelParent & removeDirectIndirect) {
+        ## adjMat <- transitiveReduction(adjMat)
+        adjMat <- nem::transitive.reduction(adjMat)
+    }
     if(out == "adjmat")
         return(adjMat)
     else {
@@ -153,38 +155,59 @@ connectIndiv <- function(parents, nparents, n) {
 ##     return(setdiff(allP, parents))
 ## }
 
-findAllParents <- function(x, adjMat) {
-    if(x == 0)
-        return(NULL)
-    else{
-        p <- which(adjMat[, x + 1] == 1) - 1
-        p1 <- unlist(lapply(p, function(x) findAllParents(x, adjMat)))
-        return(c(p, p1))
-    }
-}
+## findAllParents <- function(x, adjMat) {
+##     if(x == 0)
+##         return(NULL)
+##     else{
+##         p <- which(adjMat[, x + 1] == 1) - 1
+##         p1 <- unlist(lapply(p, function(x) findAllParents(x, adjMat)))
+##         return(c(p, p1))
+##     }
+## }
 
-repeatedParents <- function(x, adjMat) {
-    ap <- findAllParents(x, adjMat)
-    dups <- duplicated(ap)
-    dupP <- setdiff(ap[dups], 0)
-    dupP
-}
+## repeatedParents <- function(x, adjMat) {
+##     ap <- findAllParents(x, adjMat)
+##     dups <- duplicated(ap)
+##     dupP <- setdiff(ap[dups], 0)
+##     dupP
+## }
 
 
-transitiveReduction <- function(adjMat) {
-    ## Return the transitive reduction
+## ## ## But this only works if a special order in the rows and columns
+## ## ## and will not work with the root row.
+## ## m1 <- matrix(0, ncol = 5, nrow = 5); colnames(m1) <- rownames(m1) <- LETTERS[1:5]
+## ## for(i in 1:4) m1[i, i+1] <- 1
+## ## library(ggm)
+## ## m1tc <- ggm::transClos(m1)
+## ## transitiveReduction(m1tc)
+
+
+## ## Other R and BioC packages that will do transitive reduction:
+## ## nem (BioC): works with adjacency matrices directly
+## ## rBiopaxParser (BioC): a wrapper to nem
+## ## rPref
+## ## relations
+## ## hasseDiagram
+
+## transitiveReduction <- function(adjMat) {
+##     ## Return the transitive reduction
+
+
     
-    ## We remove the direct connections. How? We search, for each node,
-    ## for the set of all parents/grandparents/grandgrandparents/etc. If
-    ## any of those ancestors is repeated, it means you go from that
-    ## ancestor to the node in question through at least two different
-    ## routes. Thus, ensure the direct is 0 (it might already be, no
-    ## problem). Once you do that, you know there are not both indirect
-    ## AND direct connections and thus you have the transitive reduction.
-    for(i in ncol(adjMat):2) {
-        dp <- repeatedParents( i - 1, adjMat)
-        if(length(dp))
-            adjMat[cbind(dp + 1, i)] <- 0L
-    }
-    return(adjMat)
-}
+    
+##     ## We remove the direct connections. How? We search, for each node,
+##     ## for the set of all parents/grandparents/grandgrandparents/etc. If
+##     ## any of those ancestors is repeated, it means you go from that
+##     ## ancestor to the node in question through at least two different
+##     ## routes. Thus, ensure the direct is 0 (it might already be, no
+##     ## problem). Once you do that, you know there are not both indirect
+##     ## AND direct connections and thus you have the transitive reduction.
+##     for(i in ncol(adjMat):2) {
+##         dp <- repeatedParents( i - 1, adjMat)
+##         if(length(dp))
+##             adjMat[cbind(dp + 1, i)] <- 0L
+##     }
+##     return(adjMat)
+## }
+
+

@@ -1,3 +1,6 @@
+Changes in version 2.5.10 (2017-01-27):
+	- Transitive reduction: calling nem in simOGraph
+	
 Changes in version 2.5.9 (2017-01-09):
 	- Added code coverage comments to vignette.
 
