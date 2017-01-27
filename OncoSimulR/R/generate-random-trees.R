@@ -82,7 +82,7 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
 
     ## Prune to remove indirect connections
     if(multilevelParent & removeDirectIndirect)
-        adjMat <- removeIndirectConnections(adjMat)
+        adjMat <- transitiveReduction(adjMat)
     if(out == "adjmat")
         return(adjMat)
     else {
@@ -171,14 +171,16 @@ repeatedParents <- function(x, adjMat) {
 }
 
 
-removeIndirectConnections <- function(adjMat) {
-    ## This is a bad name: we remove the direct connections. How? We
-    ## search, for each node, for the set of all
-    ## parents/grandparents/grandgranparents. If any of those ancestors is
-    ## repeated, it means you go from that ancestor to the node in
-    ## question through at least two different routes. Thus, ensure the
-    ## direct is 0 (it might already be, no problem). Once you do that,
-    ## you know there are not both indirect AND direct connections.
+transitiveReduction <- function(adjMat) {
+    ## Return the transitive reduction
+    
+    ## We remove the direct connections. How? We search, for each node,
+    ## for the set of all parents/grandparents/grandgrandparents/etc. If
+    ## any of those ancestors is repeated, it means you go from that
+    ## ancestor to the node in question through at least two different
+    ## routes. Thus, ensure the direct is 0 (it might already be, no
+    ## problem). Once you do that, you know there are not both indirect
+    ## AND direct connections and thus you have the transitive reduction.
     for(i in ncol(adjMat):2) {
         dp <- repeatedParents( i - 1, adjMat)
         if(length(dp))
