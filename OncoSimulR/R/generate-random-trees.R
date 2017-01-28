@@ -83,7 +83,7 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
     ## Prune to remove indirect connections
     if(multilevelParent & removeDirectIndirect) {
         ## adjMat <- transitiveReduction(adjMat)
-        trm <- nem::transitive.reduction(adjMat)
+        trm <- nem::transitive.reduction(nem::transitive.closure(adjMat))
         stopifnot(all(trm) %in% c(0L, 1L) )
         storage.mode(trm) <- "integer"
         adjMat <- trm
@@ -195,8 +195,14 @@ connectIndiv <- function(parents, nparents, n) {
 ## transitiveReduction <- function(adjMat) {
 ##     ## Return the transitive reduction
 
+## But note my bug report to BioC,
 
-    
+## https://support.bioconductor.org/p/91695/
+
+## See discussion and comments on
+## http://stackoverflow.com/a/6702198 
+## and comments on http://stackoverflow.com/a/2372202
+## So one need to do the transitive closure first.
     
 ##     ## We remove the direct connections. How? We search, for each node,
 ##     ## for the set of all parents/grandparents/grandgrandparents/etc. If
