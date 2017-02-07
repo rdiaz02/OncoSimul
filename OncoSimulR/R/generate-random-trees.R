@@ -84,7 +84,7 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
     if(multilevelParent & removeDirectIndirect) {
         ## adjMat <- transitiveReduction(adjMat)
         trm <- nem::transitive.reduction(nem::transitive.closure(adjMat))
-        stopifnot(all(trm) %in% c(0L, 1L) )
+        stopifnot(all(trm %in% c(0L, 1L) ))
         storage.mode(trm) <- "integer"
         adjMat <- trm
     }
