@@ -11,7 +11,8 @@
 \usage{
 
 rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
-         wt_is_1 = c("divide", "force", "no"), log = FALSE, min_accessible_genotypes = 0,
+         wt_is_1 = c("divide", "subtract", "force", "no"),
+         log = FALSE, min_accessible_genotypes = 0,
          accessible_th = 0)
 }
 
@@ -55,10 +56,20 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   likely that the final fitness will not respect the limits in
   \code{scale}.
 
+  If "subtract" we shift all the fitness values (subtracting fitness of
+  the wildtype and adding 1) so that the wildtype ends up with a fitness
+  of 1. This is also applied after \code{scale}, so if you specify both
+  "wt_is_1 = 'subtract'" and use an argument for \code{scale} it is most
+  likely that the final fitness will not respect the limits in
+  \code{scale} (though the distorsion might be simpler to see as just a
+  shift up or down).
+  
   If "force" we simply set the fitness of the wildtype to 1, without any
   divisions. This means that the \code{scale} argument would work (but
   it is up to you to make sure that the range of the scale argument
-  includes 1 or you might not get what you want).
+  includes 1 or you might not get what you want). Note that using this
+  option can easily lead to landscapes with no accessible genotypes
+  (unless you also use \code{scale}).
 
   If "none", the fitness of the wildtype is not touched.  }
 

@@ -5,7 +5,7 @@ rfitness <- function(g, c= 0.5,
                                      ## random genotype is chosen as
                                      ## reference. If "max" this is rep(1, g)
                      scale = NULL, ## a two-element vector: min and max
-                     wt_is_1 = c("divide", "force", "no"),
+                     wt_is_1 = c("divide", "subtract", "force", "no"),
                      ## wt_is_1 = TRUE, ## wt has fitness 1
                      log = FALSE, ## log only makes sense if all values >
                                  ## 0. scale with min > 0, and/or set
@@ -57,6 +57,8 @@ rfitness <- function(g, c= 0.5,
             if(min_fi < 0)
                 fi <- fi + 2 * abs(min(fi))
             fi <- fi/fi[1]
+        } else if (wt_is_1 == "subtract") {
+            fi <- fi - fi[1] + 1.0
         } else if(wt_is_1 == "force") {
             fi[1] <- 1.0
             if(!is.null(scale)) {
