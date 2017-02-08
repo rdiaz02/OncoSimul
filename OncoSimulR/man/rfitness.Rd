@@ -11,7 +11,7 @@
 \usage{
 
 rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
-         wt_is_1 = TRUE, log = FALSE, min_accessible_genotypes = 0,
+         wt_is_1 = c("divide", "force", "no"), log = FALSE, min_accessible_genotypes = 0,
          accessible_th = 0)
 }
 
@@ -46,10 +46,21 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   two-element vector, fitness is re-scaled between \code{scale[1]} (the
   minimum) and \code{scale[2]} (the maximum).}
 
-\item{wt_is_1}{If TRUE, fitness will be scaled so that the wildtype (the
-  genotype with no mutations) has fitness of 1. This is applied after
-  \code{scale}, so if you specify both it is most likely that the final
-  fitness will not respect the limits in \code{scale}.}
+\item{wt_is_1}{If "divide" (the default) the fitness of all genotypes is
+  divided by the fitness of the wildtype (after possibly adding a value
+  to ensure no negative fitness) so that the wildtype (the genotype with
+  no mutations) has fitness 1. This is a case of scaling, and it is
+  applied after \code{scale}, so if you specify both
+  "wt_is_1 = 'divide'" and use an argument for \code{scale} it is most
+  likely that the final fitness will not respect the limits in
+  \code{scale}.
+
+  If "force" we simply set the fitness of the wildtype to 1, without any
+  divisions. This means that the \code{scale} argument would work (but
+  it is up to you to make sure that the range of the scale argument
+  includes 1 or you might not get what you want).
+
+  If "none", the fitness of the wildtype is not touched.  }
 
 
 \item{log}{If TRUE, log-transform fitness.}
