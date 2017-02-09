@@ -10,10 +10,10 @@
 
 \usage{
 
-rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
-         wt_is_1 = c("divide", "subtract", "force", "no"),
-         log = FALSE, min_accessible_genotypes = 0,
-         accessible_th = 0)
+rfitness(g, c = 0.5, sd = 1, mu = 1, reference = "random", scale = NULL,
+         wt_is_1 = c("subtract", "divide", "force", "no"),
+         log = FALSE, min_accessible_genotypes = NULL,
+         accessible_th = 0, truncate_at_0 = TRUE)
 }
 
 
@@ -27,7 +27,11 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
     in Hamming distance from the reference genotype (see \code{reference}).}
 
   \item{sd}{The standard deviation of the random component (a normal
-  distribution of mean 0 and standard deviation \code{sd}).}
+  distribution of mean \code{mu} and standard deviation \code{sd}).}
+
+\item{mu}{The mean of the random component (a normal distribution of
+mean \code{mu} and standard deviation \code{sd}).}
+
 
 \item{reference}{The reference genotype: for the deterministic, additive
   part, this is the genotype with maximal fitness, and all other
@@ -76,7 +80,7 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
 
 \item{log}{If TRUE, log-transform fitness.}
 
-\item{min_accessible_genotypes}{If larger than 0, the minimum number of
+\item{min_accessible_genotypes}{If not NULL, the minimum number of
   accessible genotypes in the fitness landscape. A genotype is
   considered accessible if you can reach if from the wildtype by going
   through at least one path where all changes in fitness are larger or
@@ -91,6 +95,10 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   If the condition is not satisfied, we continue generating random
   fitness landscapes with the specified parameters until the condition
   is satisfied.
+
+  (Why check against NULL and not against zero? Because this allows you
+  to count accessible genotypes even if you do not want to ensure a
+  minimum number of accessible genotypes.)
 }
 
 \item{accessible_th}{The threshold for the minimal change in fitness at
@@ -99,6 +107,12 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
   \code{min_accessible_genotypes} is larger than 0.  So if you want to
   allow small decreases in fitness in successive steps, use a small
   negative value for \code{accessible_th}.  }
+
+\item{truncate_at_0}{If TRUE (the default) any fitness <= 0 is
+  substituted by a small positive constant (1e-9). Why? Because
+  MAGELLAN and some plotting routines can have trouble (specially if you
+  log) with values <=0. Or we might have trouble if we want to log the
+  fitness.}
 
 } 
 
@@ -112,14 +126,25 @@ rfitness(g, c = 0.5, sd = 1, reference = "random", scale = NULL,
 
   where \eqn{d(i, j)} is the Hamming distance between genotypes \eqn{i}
   and \eqn{j} (the number of positions that differ) and \eqn{x_i} is a
-  random variable (in this case, a normal deviate of mean 0 and standard
-  deviation \code{sd}).
+  random variable (in this case, a normal deviate of mean \code{mu}
+  and standard deviation \code{sd}).
 
   Setting \eqn{c = 0} we obtain a House of Cards model. Setting \eqn{sd
     = 0} fitness is given by the distance from the reference and if the
     reference is the genotype with all positions mutated, then we have a
     fully additive model (fitness increases linearly with the number of
     positions mutated).
+
+  For OncoSimulR, we often want the wildtype to have a mean of
+  1. Reasonable settings are \code{mu = 1} and \code{wt_is_1 =
+  'subtract'} so that we simulate from a distribution centered in 1, and
+  we make sure afterwards (via a simple shift) that the wildtype is
+  actuall 1. The \code{sd} controls the standard deviation, with the
+  usual working and meaning as in a normal distribution, unless \code{c}
+  is different from zero. In this case, with \code{c} large, the range
+  of the data can be large, specially if \code{g} (the number of genes)
+  is large.
+  
 } 
 
 \value{

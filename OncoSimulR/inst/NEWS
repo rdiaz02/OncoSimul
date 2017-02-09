@@ -1,5 +1,6 @@
 Changes in version 2.5.12 (2017-02-08):
-	- rfitness: allow simple forcing of wt to 1 and shifting by subtraction.
+	- rfitness: allow simple forcing of wt to 1, shifting by
+	  subtraction, and specifying mu of normal distribution.
 	- simOGraph: proper trm comparison.
 
 Changes in version 2.5.11 (2017-01-27):
