@@ -41,7 +41,9 @@ rfitness <- function(g, c= 0.5,
     
     m <- generate_matrix_genotypes(g)
     done <- FALSE
+    ## attempts <- 0 ## for debugging/tracking purposes
     while(!done) {
+        ## attempts <- attempts + 1
         f_r <- rnorm(nrow(m), mean = mu, sd = sd)
         if(inherits(reference, "character") && length(reference) == 1) {
             if(reference == "random") {
@@ -97,6 +99,7 @@ rfitness <- function(g, c= 0.5,
             ## num_accessible_genotypes <- count_accessible_g(m, accessible_th)
             ## Recall accessibleGenotypes includes the wt, if accessible.
             num_accessible_genotypes <- length(wrap_accessibleGenotypes(m, accessible_th)) - 1
+            ## message("\n     num_accessible_genotypes = ", num_accessible_genotypes, "\n")
             if(num_accessible_genotypes >= min_accessible_genotypes) {
                 done <- TRUE
                 attributes(m) <- c(attributes(m),
@@ -110,6 +113,7 @@ rfitness <- function(g, c= 0.5,
             done <- TRUE
         }
     }
+    ## message("\n number of attempts = ", attempts, "\n")
     class(m) <- c(class(m), "genotype_fitness_matrix")
     return(m)
 }
