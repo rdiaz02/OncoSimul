@@ -271,7 +271,7 @@ allGenotypes_to_matrix <- function(x) {
     m <- rbind(c(rep(0, length(all_genes)), fwt),
                m)
     ## Ensure sorted
-    m <- data.frame(m)
+    ## m <- data.frame(m)
     rs <- rowSums(m[, -ncol(m), drop = FALSE])
     m <- m[order(rs), , drop = FALSE]
     ## m <- m[do.call(order, as.list(cbind(rs, m[, -ncol(m)]))), ]
