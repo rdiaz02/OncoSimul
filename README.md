@@ -130,11 +130,13 @@ package).
 
 ## Further documentation
 
-
-This
-[bioRxiv preprint](http://biorxiv.org/content/early/2016/08/14/069500)
-gives a quick overview of OncoSimulR. You can also take a look at this
+This [paper published in Bioinformatics](https://doi.org/10.1093/bioinformatics/btx077)
+gives a quick overview of OncoSimulR (a former version is available as a 
+[bioRxiv preprint](http://biorxiv.org/content/early/2016/08/14/069500)). You can also take a look at this
 [poster presented/to be presented at ECCB 2016](http://dx.doi.org/10.7490/f1000research.1112860.1).
+
+
+If you use the package in publications **please cite the Bioinformatics paper**.
 
 
 

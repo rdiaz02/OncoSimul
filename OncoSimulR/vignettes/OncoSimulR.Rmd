@@ -1269,12 +1269,14 @@ In R, you can do
 ```{r}
 citation("OncoSimulR")
 ``` 
-which will tell you how to cite the package.
+which will tell you how to cite the package. Please, do cite the
+Bionformatics paper if you use the package in publications.
 
 
-This is the URL for the bioRxiv
-paper:
-[http://biorxiv.org/content/early/2016/08/14/069500](http://biorxiv.org/content/early/2016/08/14/069500). 
+This is the URL for the Bioinformatics paper: [https://doi.org/10.1093/bioinformatics/btx077](https://doi.org/10.1093/bioinformatics/btx077)
+(there is also an early preprint
+at [bioRxiv](http://biorxiv.org/content/early/2016/08/14/069500),
+but it should now point to the Bioinformatics paper). 
 
 <!-- This no longer helps that much with the many changes -->
 <!-- You -->

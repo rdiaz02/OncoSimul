@@ -1,22 +1,22 @@
-citHeader("If you use OncoSimulR, please cite the OncoSimulR bioRxiv paper.",
+citHeader("If you use OncoSimulR, please cite the OncoSimulR Bioinformatics paper.",
           " A former version of OncoSimulR has been used in a large",
           " comparative study of methods to infer restrictions,",
           " published in BMC Bioinformatics; you might want to cite that too,",
           " if appropriate, such as when referring to using evolutionary simulations",
-          " to assess oncogenetic tree methods performance.")
+          " to assess oncogenetic tree/cancer progression methods performance.")
 
 
 citEntry(entry="Article",
          author = "R Diaz-Uriarte",
-         title = "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
-         journal = "bioRxiv",
-         year = "2016",
-         doi = "10.1101/069500",
-         publisher = "Cold Spring Harbor Labs Journals",
-         url = "http://biorxiv.org/content/early/2016/08/14/069500",
+         title = "OncoSimulR: genetic simulation with arbitrary epistasis and mutator genes in asexual populations.",
+         journal = "Bioinformatics",
+         year = "2017",
+         doi = "10.1093/bioinformatics/btx077",
+         publisher = "Oxford University Press",
+         url = " https://doi.org/10.1093/bioinformatics/btx077",
          textVersion = paste("R Diaz-Uriarte.",
-                             "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
-                             " 2016. bioRxiv, http://dx.doi.org/10.1101/069500.")
+                             "OncoSimulR: genetic simulation with arbitrary epistasis and mutator genes in asexual populations.",
+                             " 2017. Bioinformatics, https://doi.org/10.1093/bioinformatics/btx077.")
          )
 
 ## citEntry(entry="Manual",
