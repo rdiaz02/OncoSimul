@@ -1,3 +1,30 @@
+Changes in version 2.6.0 (for BioC 3.5):
+	- Many additions to the vignette and documentation.
+	- LOD and POM (lines of descent, path of maximum, sensu Szendro et
+	  al.).
+        - Diversity of sampled genotypes.
+	- Genotyping error can be added in samplePop.
+	- fixation of a genotype/gene as stopping mechanism.
+	- rfitness: shifting by subtraction and mu of normal distribution.
+	- simOGraph: using proper transitive reduction.
+	- simOGraph can also output rT data frames.
+	- accessible genotypes now done in C++.
+	- Handling of trivial cases in genotFitness.
+	- Clarified McFarland parameterization.
+	- Better (and better explained) estimates of simulation error for McFL.	
+	- AND of detectedSizeP and lastMaxDr.
+	- sampledGenotypes in user code.
+	- clonePhylog et al: deal with never any descendant.
+	- samplePop can handle failed simulations graciously.
+	- summary.oncosimulpop can handle failed simulations graciously.
+	- Citation shows Bioinformatics paper.
+
+Changes in version 2.5.14 (2017-04-07):
+	- Fixed repeated entries in NEWS for BioC 3.5.
+
+Changes in version 2.5.13 (2017-04-07):
+	- Updated NEWS for BioC 3.5.
+
 Changes in version 2.5.12 (2017-02-18):
 	- rfitness: allow simple forcing of wt to 1, shifting by
 	  subtraction, and specifying mu of normal distribution.
