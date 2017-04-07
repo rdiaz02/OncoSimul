@@ -19,7 +19,7 @@ environment:
   global:
     TEST_DIR: OncoSimulR
     USE_RTOOLS: true
-    R_BUILD_ARGS: --keep-empty-dirs --no-resave-data --no-manual
+    R_BUILD_ARGS: --keep-empty-dirs --no-resave-data --no-manual --no-multiarch
     R_CHECK_ARGS: --timings --no-vignettes --no-manual 
 ## --no-manual and forward because they are needed for appveyor
 ## --install-args=--build --no-multiarch
