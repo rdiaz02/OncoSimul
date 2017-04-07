@@ -81,11 +81,13 @@ before_build:
 ## These are ggplot2 imports, so should work and did work. Oh well. 
 ## Make explicit. But I shouldn't need any line after install_bioc_deps
 build_script:
-  - travis-tool.sh install_bioc_deps
+  - travis-tool.sh install_bioc BiocGenerics graph nem 
+  - travis-tool.sh install_bioc BiocStyle Rgraphviz 
   - travis-tool.sh install_r gtable lazyeval digest tibble reshape2 MASS
   - travis-tool.sh install_r chron DBI lazyeval pbkrtest scales assetthat R6 
   - travis-tool.sh install_r quantreg mgcv nnet magrittr NMF irlba Matrix
-  - travis-tool.sh install_bioc BiocGenerics graph nem
+##- travis-tool.sh install_bioc_deps  ## not working in pre 3.5 in appveyor because repo
+## does not exist. So I pass the two packages, BiocStyle and Rgraphviz explicitly
 
 ## I might not need these anymore? (which I never should have needed anyway)
 ## - travis-tool.sh install_r gtable
