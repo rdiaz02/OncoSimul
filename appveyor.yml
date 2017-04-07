@@ -81,16 +81,19 @@ before_build:
 ## These are ggplot2 imports, so should work and did work. Oh well. 
 ## Make explicit. But I shouldn't need any line after install_bioc_deps
 build_script:
-  - travis-tool.sh install_bioc RBGL BiocGenerics graph
+  - travis-tool.sh install_r bgmm lpSolve
+  - travis-tool.sh install_bioc joda
+  - travis-tool.sh install_bioc RBGL
+  - travis-tool.sh install_bioc BioNet
+  - travis-tool.sh install_bioc lpNet
+  - travis-tool.sh install_bioc nem
+  - travis-tool.sh install_bioc BiocGenerics graph
   - travis-tool.sh install_bioc BiocStyle Rgraphviz
   - travis-tool.sh install_r Oncotree testthat pander data.table gtools igraph car dplyr smatr ggrepel
   - travis-tool.sh install_r gtable lazyeval digest tibble reshape2 MASS
   - travis-tool.sh install_r chron DBI lazyeval pbkrtest scales assetthat R6 
   - travis-tool.sh install_r quantreg mgcv nnet magrittr NMF irlba Matrix
-  - travis-tool.sh install_r lpSolve
-  - travis-tool.sh install_bioc BioNet
-  - travis-tool.sh install_bioc lpNet
-  ## BioNet pulls RBGL dependency ??
+  ## BioNet pulls RBGL dependency ?? joda does too. That is why bgmm lpSolv joda lpNet and BioNet are there
 ##  - travis-tool.sh install_bioc nem  ## lpNet (which depends on lpSolve) is there to pull the nem dependency
   
 ##- travis-tool.sh install_bioc_deps  ## not working in pre 3.5 in appveyor because repo
