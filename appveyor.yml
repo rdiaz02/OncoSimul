@@ -87,7 +87,9 @@ build_script:
   - travis-tool.sh install_r gtable lazyeval digest tibble reshape2 MASS
   - travis-tool.sh install_r chron DBI lazyeval pbkrtest scales assetthat R6 
   - travis-tool.sh install_r quantreg mgcv nnet magrittr NMF irlba Matrix
-  - travis-tool.sh install_bioc nem
+  - travis-tool.sh install_r lpSolve
+  - travis-tool.sh install_bioc lpNet
+##  - travis-tool.sh install_bioc nem  ## lpNet (which depends on lpSolve) is there to pull the nem dependency
   
 ##- travis-tool.sh install_bioc_deps  ## not working in pre 3.5 in appveyor because repo
 ## does not exist. So I pass the two packages, BiocStyle and Rgraphviz explicitly
