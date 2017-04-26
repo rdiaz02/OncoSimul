@@ -1,3 +1,6 @@
+Changes in version 2.7.1 (2017-04-26):
+	- Clarified simOGraph transitive reduction
+
 Changes in version 2.6.0 (for BioC 3.5):
 	- Many additions to the vignette and documentation.
 	- LOD and POM (lines of descent, path of maximum, sensu Szendro et

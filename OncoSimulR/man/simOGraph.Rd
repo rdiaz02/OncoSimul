@@ -34,8 +34,9 @@ s = 0.1, sh = -0.1, typeDep = "AND")
   \item{removeDirectIndirect}{
     Ensure that no two nodes are connected both directly (i.e., with an
   edge between them) and indirectly, through intermediate nodes. If
-  TRUE, the direct connections are removed from the graph starting from
-  the bottom.
+  TRUE, we return the transitive reduction of the DAG.
+  %% the final DAG returned is the transitive reduction of thethe direct
+  %% connections are removed from the graph starting from the bottom.
 }
 \item{rootName}{
   The name you want to give the "Root" node.

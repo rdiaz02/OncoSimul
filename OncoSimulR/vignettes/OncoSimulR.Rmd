@@ -3616,7 +3616,10 @@ plotFitnessLandscape(evalAllGenotypes(fem6))
 This way of giving a fitness specification to OncoSimulR might be
 ideal if you directly generate random mappings of genotypes to
 fitness (or random fitness landscapes), as we will do in section
-\@ref(gener-fit-land).
+\@ref(gener-fit-land). (Note for curious readers: actually, what we
+do now is convert the table of fitness of genotypes to a fitness
+specification with all possible epistatic interactions; look
+at the `fem6` object).
 
 
 We will see an example of this way of passing fitness again in
@@ -3633,6 +3636,15 @@ We will see an example of this way of passing fitness again in
 <!-- % probably do not want to be explicit about the mapping of $2^k$ genotypes -->
 <!-- % to fitness when $k$ is larger than, say, four or five, and definitely not -->
 <!-- % when $k$ is 10. -->
+
+
+<!-- Not for self: actually, what I really do is mapping -->
+<!-- the genotypes to epistasis effects. -->
+
+<!-- So we either use a succint description, or we map all -->
+<!-- to epistasis. -->
+
+
 
 
 ### How to specify fitness effects with the lego system {#howfit}
@@ -8304,19 +8316,51 @@ proposed and named before; please let me know, best if with a reference.
 
 
 Should we remove direct connections if there are indirect? Or,
-should we set `removeDirectIndirect = TRUE`? Except for
-@Farahani2013 and @ramazzotti_capri_2015, none of the DAGs I've seen
-in the context of CBNs, Oncogenetic trees, etc, include both direct
-and indirect connections between nodes. If these exist, reasoning
-about the model can be harder. For example, with CBN (AND or CMPN or
-monotone relationships) adding a direct connection makes no
-difference iff we assume that the relationships encoded in the DAG
-are fully respected (e.g., all $s_h = -\infty$). But it can make a
-difference if we allow for deviations from the monotonicity,
-specially if we only check for the satisfaction of the presence of
-the immediate ancestors. And things get even trickier if we combine
-XOR with AND. The code for computing fitness, however, should deal
-with all of this just fine.
+should we set `removeDirectIndirect = TRUE`? Setting
+`removeDirectIndirect = TRUE` is basically asking for
+the
+[transitive reduction](https://en.wikipedia.org/wiki/Transitive_reduction) of
+the generated DAG. Except for @Farahani2013 and
+@ramazzotti_capri_2015, none of the DAGs I've seen in the context of
+CBNs, Oncogenetic trees, etc, include both direct and indirect
+connections between nodes. If these exist, reasoning about the model
+can be harder. For example, with CBN (AND or CMPN or monotone
+relationships) adding a direct connection makes no difference iff we
+assume that the relationships encoded in the DAG are fully respected
+(e.g., all $s_h = -\infty$). But it can make a difference if we
+allow for deviations from the monotonicity, specially if we only
+check for the satisfaction of the presence of the immediate
+ancestors. And things get even trickier if we combine XOR with
+AND. <!-- The code for computing fitness, however, should deal with all -->
+<!-- of this just fine. --> Thus, I strongly suggest you leave the
+default `removeDirectIndirect = TRUE`. If you change it, you should
+double check that the fitnesses of the possible genotypes are what
+you expect. In fact, I would suggest that, to be sure you get what
+you think you should get, you convert the fitness from the DAG to a
+fitness table, and pass that to the simulations, and this requires
+using non-exposed user functions; to give you an idea, this could
+work (but you've been warned: this is dangerous!)
+
+
+```{r simographindirect, eval=FALSE,echo=TRUE}
+g2 <- simOGraph(4, out = "rT", removeDirectIndirect = FALSE)
+
+fe_from_d <- allFitnessEffects(g2)
+fitness_d <- evalAllGenotypes(fe_from_d)
+
+fe_from_t <- allFitnessEffects(genotFitness =
+                          OncoSimulR:::allGenotypes_to_matrix(fitness_d))
+						  
+## Compare
+fitness_d
+(fitness_t <- evalAllGenotypes(fe_from_t))
+
+identical(fitness_d, fitness_t)
+						  
+
+## ... but to be safe use fe_from_t as the fitnessEffects object for simulations
+
+```
 
 
 
