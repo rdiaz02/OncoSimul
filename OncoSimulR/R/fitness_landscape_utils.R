@@ -466,7 +466,13 @@ peak_valley <- function(x) {
     }
     bad_fwd <- vector("integer", nrow(x))
     for(i in 1:nrow(x)) {
+        ## Eh, why any? All.
+        ## Nope, any: we want peaks in general, not just
+        ## under assumption of "no back mutation"
+        ## We get a different result when we restrict to accessible
+        ## because all < 0 in adjacency are turned to NAs.
         if( any(x[, i] < 0, na.rm = TRUE) || bad_fwd[i] ) {
+        ## if( all(x[, i] < 0, na.rm = TRUE) ) {
             ## this node is bad. Any descendant with fitness >= is bad
             bad_fwd[i] <- 1
             reach_f <- which(x[i, ] <= 0)
