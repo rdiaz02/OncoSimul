@@ -33,9 +33,13 @@ the above.
 
 A former version of this code has been used in the paper "Identifying
 restrictions in the order of accumulation of mutations during tumor
-progression: effects of passengers, evolutionary models, and sampling",
+progression: effects of passengers, evolutionary models, and
+sampling",
 [BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41).
-
+OncoSimulR has also been used extensively in the simulations reported in
+the [bioRxiv](biorxiv.org/)
+preprint
+[Cancer Progression Models And Fitness Landscapes: A Many-To-Many Relationship](https://doi.org/10.1101/141465).
 
 
 You can also find
@@ -133,7 +137,7 @@ package).
 This [paper published in Bioinformatics](https://doi.org/10.1093/bioinformatics/btx077)
 gives a quick overview of OncoSimulR (a former version is available as a 
 [bioRxiv preprint](http://biorxiv.org/content/early/2016/08/14/069500)). You can also take a look at this
-[poster presented/to be presented at ECCB 2016](http://dx.doi.org/10.7490/f1000research.1112860.1).
+[poster presented at ECCB 2016](http://dx.doi.org/10.7490/f1000research.1112860.1).
 
 
 If you use the package in publications **please cite the Bioinformatics paper**.
