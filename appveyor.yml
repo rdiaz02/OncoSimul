@@ -23,13 +23,13 @@ environment:
     R_CHECK_ARGS: --timings --no-vignettes --no-manual 
 ## --no-manual and forward because they are needed for appveyor
 ## --install-args=--build --no-multiarch
-    
+## R_VERSION: depending on BioC version, it has to bee devel or patched (or stable)    
   matrix:
-   - R_VERSION: devel
+   - R_VERSION: patched
      R_ARCH: x64
      GCC_PATH: mingw_64
         
-   - R_VERSION: devel
+   - R_VERSION: patched
      R_ARCH: i386
      GCC_PATH: mingw_32
      
