@@ -1529,8 +1529,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 	    DP2(minNextMutationTime);
 	    DP2(tSample);
 	    DP2(popParams[sp].timeLastUpdate);
-	    DP2( currentTime -  popParams[sp].timeLastUpdate);
-	    DP2( currentTime <  popParams[sp].timeLastUpdate);
+	    DP2( (currentTime -  popParams[sp].timeLastUpdate) );
+	    DP2( (currentTime <  popParams[sp].timeLastUpdate) );
+	    DP2( ((currentTime -  popParams[sp].timeLastUpdate) <= DBL_MIN) );
 	    DP2(sp);
 	    DP2(to_update); // always 2
 	    DP2(u_1);

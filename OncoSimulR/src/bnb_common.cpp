@@ -243,9 +243,13 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// Tell those cases appart
 	Rcpp::Rcout << "ti <= DBL_MIN; separating cases \n";
 	DP2(ti);
-	DP2(ti == 0.0);
-	DP2(ti < DBL_MIN);
-	DP2(ti == DBL_MIN);
+	// bool ti_eq_00 = (ti == 0.0);
+	// bool ti_lt_DBL_MIN = (ti < DBL_MIN);
+	bool ti_eq_DBL_MIN = (ti == DBL_MIN);
+	
+	DP2( (ti == 0.0));
+	DP2( (ti < DBL_MIN));
+	DP2(ti_eq_DBL_MIN);
 #endif
 #ifdef DEBUGV	
 	// FIXME: pass verbosity as argument, and return the warning
