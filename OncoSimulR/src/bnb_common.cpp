@@ -241,15 +241,17 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
       if((ti == 0.0) || (ti <= DBL_MIN)) {
 #ifdef DEBUGW
 	// Tell those cases apart
-	Rcpp::Rcout << "\n ti <= DBL_MIN; separating cases \n";
-	DP2(ti);
+	// Rcpp::Rcout << "\n ti <= DBL_MIN; separating cases \n";
+	// DP2(ti);
 	std::string ti_dbl_comp;
 	if( ti == DBL_MIN) {
 	  ti_dbl_comp = "ti_equal_DBL_MIN";
+	  DP2(ti);
 	} else if (ti == 0.0) {
 	  ti_dbl_comp = "ti_equal_0.0";
 	} else if ( (ti < DBL_MIN) && (ti > 0.0) ) {
 	  ti_dbl_comp = "ti_gt_0.0_lt_DBL_MIN";
+	  DP2(ti);
 	}  else {
 	  ti_dbl_comp = "IMPOSSIBLE!";
 	}
