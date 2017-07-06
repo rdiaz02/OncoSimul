@@ -51,7 +51,7 @@ rmdir ./OncoSimulR/vignettes/figure
 rm ./OncoSimulR/vignettes/*.bbl
 rm ./OncoSimulR/vignettes/*.aux
 rm ./OncoSimulR/vignettes/*.toc
-rm ./OncoSimulR/vignettes/*.tex
+# rm ./OncoSimulR/vignettes/*.tex  ## NO!
 rm ./OncoSimulR/vignettes/*.pdf
 rm ./OncoSimulR/vignettes/*.log
 rm ./OncoSimulR/vignettes/*.out
