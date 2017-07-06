@@ -238,11 +238,20 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	print_spP(spP);
 	throw std::range_error("ti: ti not finite");
       }
-      if(ti == 0.0) {
+      if((ti == 0.0) || (ti <= DBL_MIN)) {
+#ifdef DEBUGW
+	// Tell those cases appart
+	Rcpp::Rcout << "ti <= DBL_MIN; separating cases \n";
+	DP2(ti);
+	DP2(ti == 0.0);
+	DP2(ti < DBL_MIN);
+	DP2(ti == DBL_MIN);
+#endif
 #ifdef DEBUGV	
 	// FIXME: pass verbosity as argument, and return the warning
 	// if set to more than 0?
-	Rcpp::Rcout << "\n\n\n WARNING: ti == 0. Setting it to DBL_MIN \n"; 
+	Rcpp::Rcout << "\n\n\n WARNING: ti == 0. Setting it to DBL_MIN \n";
+
 	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) / 
 			   (spP.R + spP.W - 2.0 * spP.birth) , spP.popSize);
 
@@ -279,6 +288,8 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// Rcpp::Rcout << "ti set to DBL_MIN\n";
 	// Yes, abort because o.w. we can repeat it many, manu times
 	// throw std::range_error("ti set to DBL_MIN");
+	// Even just touching DBL_MIN is enough to want a rerunExcept;
+	// no need for it to be 0.0.
 	throw rerunExcept("ti set to DBL_MIN");
       }
       if(ti < 0.001) ++ti_e3; // Counting how often this happens.

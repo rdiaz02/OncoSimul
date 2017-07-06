@@ -1335,6 +1335,7 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
     
     // ******************** 5.3 and do we sample? *********** 
     // Find minimum to know if we need to sample the whole pop
+    // We also obtain the nextMutant
     getMinNextMutationTime4(nextMutant, minNextMutationTime, 
 			    mapTimes);
     
@@ -1524,12 +1525,26 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 
 #ifdef DEBUGW
 	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0) {
-	    DP2(currentTime);
+	    DP2(currentTime); //this is set to minNextMutationTime above
+	    DP2(minNextMutationTime);
+	    DP2(tSample);
+	    DP2(popParams[sp].timeLastUpdate);
 	    DP2( currentTime -  popParams[sp].timeLastUpdate);
+	    DP2( currentTime <  popParams[sp].timeLastUpdate);
+	    DP2(sp);
+	    DP2(to_update); // always 2
+	    DP2(u_1);
+	    DP2(u_2);
 	    DP2(tmpdouble1);
 	    DP2(tmpdouble2);
 	    DP2(sp);
+	    DP2(nextMutant);
+	    // I suspect some of these correspond to immediate mutation
+	    // after sampling with a ti <= DBL_MIN
 	    DP2(popParams[sp].timeLastUpdate);
+	    DP2(popParams[nextMutant].timeLastUpdate);
+	    DP2(popParams[u_1].timeLastUpdate);
+	    DP2(popParams[u_2].timeLastUpdate);	    
 	    print_spP(popParams[sp]);
 	    throw std::out_of_range("currentTime - timeLastUpdate out of range. Serious bug or ti 0!");
 	  }
