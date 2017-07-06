@@ -1525,10 +1525,13 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 #ifdef DEBUGW
 	  if( (currentTime - popParams[sp].timeLastUpdate) <= 0.0) {
 	    DP2(currentTime);
+	    DP2( currentTime -  popParams[sp].timeLastUpdate);
+	    DP2(tmpdouble1);
+	    DP2(tmpdouble2);
 	    DP2(sp);
 	    DP2(popParams[sp].timeLastUpdate);
 	    print_spP(popParams[sp]);
-	    throw std::out_of_range("currentTime - timeLastUpdate out of range. Serious bug!");
+	    throw std::out_of_range("currentTime - timeLastUpdate out of range. Serious bug or ti 0!");
 	  }
 #endif
 	  // if(verbosity >= 2) {

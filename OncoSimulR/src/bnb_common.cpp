@@ -281,7 +281,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// throw std::range_error("ti set to DBL_MIN");
 	throw rerunExcept("ti set to DBL_MIN");
       }
-      if(ti < 0.001) ++ti_e3;
+      if(ti < 0.001) ++ti_e3; // Counting how often this happens.
       ti += currentTime;
     } 
   }
