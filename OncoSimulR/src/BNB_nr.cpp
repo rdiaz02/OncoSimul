@@ -1243,6 +1243,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	mapTimes_updateP(mapTimes, popParams, u_1, tmpdouble1);
 	popParams[u_1].timeLastUpdate = currentTime;
 
+	detect_ti_duplicates(mapTimes, tmpdouble1);  
+	
 #ifdef DEBUGV
 	Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime, update one ******\n For to_update = \n " 
 		  << "     tSample  = " << tSample
@@ -1272,6 +1274,12 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	mapTimes_updateP(mapTimes, popParams, u_2, tmpdouble2);
 	popParams[u_1].timeLastUpdate = currentTime;
 	popParams[u_2].timeLastUpdate = currentTime;
+
+	detect_ti_duplicates(mapTimes, tmpdouble1);
+	detect_ti_duplicates(mapTimes, tmpdouble2);
+	
+
+	
 
 #ifdef DEBUGV
 	Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime, update two ******\n " 
@@ -1310,6 +1318,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 					     tSample, ti_dbl_min, ti_e3);
 	  mapTimes_updateP(mapTimes, popParams, i, tmpdouble1);
 	  popParams[i].timeLastUpdate = currentTime;
+
+	  detect_ti_duplicates(mapTimes, tmpdouble1);
+
 	  
 #ifdef DEBUGV
 	  Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime, update all ******\n " 
@@ -1443,7 +1454,37 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    Rcpp::Rcout <<"\n     Creating new species   " << (numSpecies - 1)
 			<< "         from species "  <<   nextMutant;
 	  }
-	
+
+#ifdef DEBUGW
+	  if( (currentTime - popParams[nextMutant].timeLastUpdate) <= 0.0) {
+	    DP2(currentTime); //this is set to minNextMutationTime above
+	    DP2(minNextMutationTime);
+	    DP2(tSample);
+	    DP2(popParams[nextMutant].timeLastUpdate);
+	    DP2( (currentTime -  popParams[nextMutant].timeLastUpdate) );
+	    DP2( (currentTime <  popParams[nextMutant].timeLastUpdate) );
+	    DP2( (currentTime ==  popParams[nextMutant].timeLastUpdate) );
+	    DP2( ((currentTime -  popParams[nextMutant].timeLastUpdate) <= DBL_MIN) );
+	    DP2(ti_e3);
+	    DP2(ti_dbl_min);
+	    DP2(to_update); // always 2
+	    DP2(nextMutant);
+	    DP2(u_1);
+	    DP2(u_2);
+	    DP2(tmpdouble1);
+	    DP2(tmpdouble2);
+	    // I suspect some of these correspond to immediate mutation
+	    // after sampling with a ti that is tiny
+	    DP2(popParams[nextMutant].timeLastUpdate);
+	    DP2(popParams[u_1].timeLastUpdate);
+	    DP2(popParams[u_2].timeLastUpdate);
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[u_2].timeLastUpdate) );
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[nextMutant].timeLastUpdate) );
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[0].timeLastUpdate) );
+	    print_spP(popParams[nextMutant]);
+	    throw std::out_of_range("new species: currentTime - timeLastUpdate[sp] out of range. Serious bug or ti 0!");
+	  }
+#endif	  
 	  tmpParam.popSize = 1;
 
 	  nr_fitness(tmpParam, popParams[nextMutant],
@@ -1557,7 +1598,38 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    DP2( (popParams[u_1].timeLastUpdate - popParams[0].timeLastUpdate) );
 	    print_spP(popParams[sp]);
 	    print_spP(popParams[nextMutant]);
-	    throw std::out_of_range("currentTime - timeLastUpdate out of range. Serious bug or ti 0!");
+	    throw std::out_of_range("currentTime - timeLastUpdate[sp] out of range. Serious bug or ti 0!");
+	  }
+	  if( (currentTime - popParams[nextMutant].timeLastUpdate) <= 0.0) {
+	    DP2(currentTime); //this is set to minNextMutationTime above
+	    DP2(minNextMutationTime);
+	    DP2(tSample);
+	    DP2(popParams[nextMutant].timeLastUpdate);
+	    DP2( (currentTime -  popParams[nextMutant].timeLastUpdate) );
+	    DP2( (currentTime <  popParams[nextMutant].timeLastUpdate) );
+	    DP2( (currentTime ==  popParams[nextMutant].timeLastUpdate) );
+	    DP2( ((currentTime -  popParams[nextMutant].timeLastUpdate) <= DBL_MIN) );
+	    DP2(ti_e3);
+	    DP2(ti_dbl_min);
+	    DP2(to_update); // always 2
+	    DP2(sp);
+	    DP2(nextMutant);
+	    DP2(u_1);
+	    DP2(u_2);
+	    DP2(tmpdouble1);
+	    DP2(tmpdouble2);
+	    // I suspect some of these correspond to immediate mutation
+	    // after sampling with a ti that is tiny
+	    DP2(popParams[sp].timeLastUpdate);
+	    DP2(popParams[nextMutant].timeLastUpdate);
+	    DP2(popParams[u_1].timeLastUpdate);
+	    DP2(popParams[u_2].timeLastUpdate);
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[u_2].timeLastUpdate) );
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[nextMutant].timeLastUpdate) );
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[0].timeLastUpdate) );
+	    print_spP(popParams[sp]);
+	    print_spP(popParams[nextMutant]);
+	    throw std::out_of_range("currentTime - timeLastUpdate[nextMutant] out of range. Serious bug or ti 0!");
 	  }
 #endif
 	  // if(verbosity >= 2) {
@@ -2022,6 +2094,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  << ". Rerunning.";
       forceRerun = true;
       ++numRecoverExcept;
+      ++numRuns; // exception should count here!
       accum_ti_dbl_min += ti_dbl_min;
       accum_ti_e3 += ti_e3;
     } catch (const std::exception &e) {

@@ -1133,3 +1133,19 @@ void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
     perSampleStats(i, 4) = static_cast<double>(sampleNDrLargestPop[i]);
   }
 }
+
+
+void detect_ti_duplicates(const std::multimap<double, int>& mt,
+			  const double& ti) {
+
+  if(mt.count(ti) > 1) {
+	  Rcpp::Rcout <<"\n *** duplicated ti ***; might see problems later: ";
+	  std::multimap<double, int>::const_iterator it;
+	  for (it=mt.equal_range(ti).first;
+	       it!=mt.equal_range(ti).second; ++it) {
+	    Rcpp::Rcout << 'genotype: ' << (*it).second << '; time: ' <<
+	      (*it).first << "\n";
+	  }
+	  Rcpp::Rcout << "\n";
+	}
+}
