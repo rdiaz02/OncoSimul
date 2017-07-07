@@ -755,7 +755,7 @@ void addToPhylog(PhylogName& phylog,
 
 
 
-static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
+static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const double& initSize,
 			const double& K,
 			// const double& alpha,
@@ -809,7 +809,9 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
 			const double& PDBaseline,
 			const double& checkSizePEvery,
 			const bool& AND_DrvProbExit,
-			const std::vector< std::vector<int> >& fixation_l) {
+			const std::vector< std::vector<int> >& fixation_l,
+			 int& ti_dbl_min,
+			 int& ti_e3) {
   
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -939,8 +941,10 @@ static void nr_innerBNB(const fitnessEffectsAll& fitnessEffects,
   std::multimap<double, int> mapTimes;
   //std::multimap<double, int>::iterator m1pos;
 
-  int ti_dbl_min = 0;
-  int ti_e3 = 0;
+  // int ti_dbl_min = 0;
+  // int ti_e3 = 0;
+  ti_dbl_min = 0;
+  ti_e3 = 0;
 
 
       // // FIXME debug
@@ -1912,6 +1916,11 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   double currentTime = 0;
   int iter = 0;
 
+  int ti_dbl_min = 0;
+  int ti_e3 = 0;
+
+  int accum_ti_dbl_min = 0;
+  int accum_ti_e3 = 0;
   // bool AND_DrvProbExit = ( (cpDetect >= 0) &&
   // 			     (detectionDrivers < 1e9) &&
   // 			     (detectionSize < std::numeric_limits<double>::infinity()));
@@ -1994,9 +2003,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  PDBaseline,
 		  checkSizePEvery,
 		  AND_DrvProbExit,
-		  fixation_l);
+		  fixation_l,
+		  ti_dbl_min,
+		  ti_e3);
       ++numRuns;
       forceRerun = false;
+      accum_ti_dbl_min += ti_dbl_min;
+      accum_ti_e3 += ti_e3;
     } catch (rerunExcept &e) {
       Rcpp::Rcout << "\n Recoverable exception " << e.what() 
 		  << ". Rerunning.";
@@ -2144,9 +2157,12 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 										      Named("child") = phylog.child,
 										      Named("time") = phylog.time
 										      ),
-					       Named("UnrecoverExcept") = false)
+					       Named("UnrecoverExcept") = false,
+					       Named("ti_dbl_min") = ti_dbl_min,
+					       Named("ti_e3") = ti_e3,
+					       Named("accum_ti_dbl_min") = accum_ti_dbl_min,
+					       Named("accum_ti_e3") = accum_ti_e3)
 		 );
-
 }
 
 

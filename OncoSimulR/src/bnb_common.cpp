@@ -302,7 +302,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// no need for it to be 0.0.
 	throw rerunExcept("ti set to DBL_MIN");
       }
-      if(ti < 0.001) ++ti_e3; // Counting how often this happens.
+      if(ti < (2*DBL_MIN)) ++ti_e3; // Counting how often this happens.
       ti += currentTime;
     } 
   }
