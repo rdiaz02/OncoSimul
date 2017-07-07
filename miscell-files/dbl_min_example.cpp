@@ -30,5 +30,44 @@ int main() {
 
   DP2( ((a + ti) - a ) ); 
   DP2( (((a + ti) - a) < DBL_MIN) );
+
+  double b(244.258);
+  double b2 = b + (DBL_MIN + 0.5 * DBL_MIN);
+  double b3 = b + (1e290 * DBL_MIN);
+  double b4 = b + (1e300 * DBL_MIN);  
+
+  DP2( (b2 == b) );
+  DP2( (b2 - b) );
+  DP2( ((b2 -b) <= DBL_MIN) );
+
+
+  DP2( (b3 - b) );
+  DP2( ((b3 -b) <= DBL_MIN) );
+  DP2( ((b3 -b) <  DBL_MIN) );
+  DP2( ((b3 -b) == DBL_MIN) );
+
+  DP2( (b == b3));
+
+  DP2( (b == b4) );
+
+  
+  // bool done = 0;
+  // int i = 0;
+  // double theb = 0.0;
+  // while(!done) {
+  //   i++;
+  //   DP2(i);
+  //   theb = b + (i * DBL_MIN);
+  //   DP2(  (theb == b) );
+
+  //   DP2(theb);
+  //   DP2(b);
+  //   if( (theb != b)) {
+  //     done = 1;
+  //     std::cout << "Broke at " << i << "\n";
+  //   }
+
+  //   if(i > 100) done = 1;
+  // }
   return 0;
 }

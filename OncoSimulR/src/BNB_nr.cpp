@@ -1535,22 +1535,28 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    DP2(popParams[sp].timeLastUpdate);
 	    DP2( (currentTime -  popParams[sp].timeLastUpdate) );
 	    DP2( (currentTime <  popParams[sp].timeLastUpdate) );
+	    DP2( (currentTime ==  popParams[sp].timeLastUpdate) );
 	    DP2( ((currentTime -  popParams[sp].timeLastUpdate) <= DBL_MIN) );
-	    DP2(sp);
+	    DP2(ti_e3);
+	    DP2(ti_dbl_min);
 	    DP2(to_update); // always 2
+	    DP2(sp);
+	    DP2(nextMutant);
 	    DP2(u_1);
 	    DP2(u_2);
 	    DP2(tmpdouble1);
 	    DP2(tmpdouble2);
-	    DP2(sp);
-	    DP2(nextMutant);
 	    // I suspect some of these correspond to immediate mutation
-	    // after sampling with a ti <= DBL_MIN
+	    // after sampling with a ti that is tiny
 	    DP2(popParams[sp].timeLastUpdate);
 	    DP2(popParams[nextMutant].timeLastUpdate);
 	    DP2(popParams[u_1].timeLastUpdate);
-	    DP2(popParams[u_2].timeLastUpdate);	    
+	    DP2(popParams[u_2].timeLastUpdate);
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[u_2].timeLastUpdate) );
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[nextMutant].timeLastUpdate) );
+	    DP2( (popParams[u_1].timeLastUpdate - popParams[0].timeLastUpdate) );
 	    print_spP(popParams[sp]);
+	    print_spP(popParams[nextMutant]);
 	    throw std::out_of_range("currentTime - timeLastUpdate out of range. Serious bug or ti 0!");
 	  }
 #endif
@@ -1911,6 +1917,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // 5.1 Initialize 
 
   int numRuns = 0;
+  int numRecoverExcept = 0;
   bool forceRerun = false;
   
   double currentTime = 0;
@@ -2014,6 +2021,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       Rcpp::Rcout << "\n Recoverable exception " << e.what() 
 		  << ". Rerunning.";
       forceRerun = true;
+      ++numRecoverExcept;
+      accum_ti_dbl_min += ti_dbl_min;
+      accum_ti_e3 += ti_e3;
     } catch (const std::exception &e) {
       Rcpp::Rcout << "\n Unrecoverable exception: " << e.what()
 		  << ". Aborting. \n";
@@ -2158,8 +2168,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 										      Named("time") = phylog.time
 										      ),
 					       Named("UnrecoverExcept") = false,
-					       Named("ti_dbl_min") = ti_dbl_min,
-					       Named("ti_e3") = ti_e3,
+					       Named("numRecoverExcept") = numRecoverExcept,
 					       Named("accum_ti_dbl_min") = accum_ti_dbl_min,
 					       Named("accum_ti_e3") = accum_ti_e3)
 		 );

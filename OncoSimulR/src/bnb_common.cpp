@@ -303,7 +303,13 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	throw rerunExcept("ti set to DBL_MIN");
       }
       if(ti < (2*DBL_MIN)) ++ti_e3; // Counting how often this happens.
+      // Can be smaller than the ti_dbl_min count
       ti += currentTime;
+      // But we can still have issues here if the difference is too small
+      if( (ti <= currentTime) ) {
+	// Rcpp::Rcout << "\n (ti <= currentTime): expect problems\n";
+	throw rerunExcept("ti <= currentTime");
+      }
     } 
   }
   return ti;
