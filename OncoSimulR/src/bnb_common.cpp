@@ -239,24 +239,22 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	throw std::range_error("ti: ti not finite");
       }
       if((ti == 0.0) || (ti <= DBL_MIN)) {
-#ifdef DEBUGW
-	// Tell those cases apart
-	// Rcpp::Rcout << "\n ti <= DBL_MIN; separating cases \n";
-	// DP2(ti);
-	std::string ti_dbl_comp;
-	if( ti == DBL_MIN) {
-	  ti_dbl_comp = "ti_equal_DBL_MIN";
-	  DP2(ti);
-	} else if (ti == 0.0) {
-	  ti_dbl_comp = "ti_equal_0.0";
-	} else if ( (ti < DBL_MIN) && (ti > 0.0) ) {
-	  ti_dbl_comp = "ti_gt_0.0_lt_DBL_MIN";
-	  DP2(ti);
-	}  else {
-	  ti_dbl_comp = "IMPOSSIBLE!";
-	}
-	DP2(ti_dbl_comp);
-#endif
+// #ifdef DEBUGW
+//  // this is too verbose for routine use
+// 	std::string ti_dbl_comp;
+// 	if( ti == DBL_MIN) {
+// 	  ti_dbl_comp = "ti_equal_DBL_MIN";
+// 	  DP2(ti);
+// 	} else if (ti == 0.0) {
+// 	  ti_dbl_comp = "ti_equal_0.0";
+// 	} else if ( (ti < DBL_MIN) && (ti > 0.0) ) {
+// 	  ti_dbl_comp = "ti_gt_0.0_lt_DBL_MIN";
+// 	  DP2(ti);
+// 	}  else {
+// 	  ti_dbl_comp = "IMPOSSIBLE!";
+// 	}
+// 	DP2(ti_dbl_comp);
+// #endif
 #ifdef DEBUGV	
 	// FIXME: pass verbosity as argument, and return the warning
 	// if set to more than 0?
