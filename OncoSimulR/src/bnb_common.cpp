@@ -1134,18 +1134,25 @@ void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
   }
 }
 
+// Do not use this routinely. Too expensive and not needed.
+void detect_ti_duplicates(const std::multimap<double, int>& m,
+			  const double ti,
+			  const int species) {
 
-void detect_ti_duplicates(const std::multimap<double, int>& mt,
-			  const double& ti) {
+  double maxti = m.rbegin()->first;
+  if((ti < maxti) && (m.count(ti) > 1)) {
+    Rcpp::Rcout << "\n *** duplicated ti for species " << species << "\n";
 
-  if(mt.count(ti) > 1) {
-	  Rcpp::Rcout <<"\n *** duplicated ti ***; might see problems later: ";
-	  std::multimap<double, int>::const_iterator it;
-	  for (it=mt.equal_range(ti).first;
-	       it!=mt.equal_range(ti).second; ++it) {
-	    Rcpp::Rcout << 'genotype: ' << (*it).second << '; time: ' <<
-	      (*it).first << "\n";
-	  }
-	  Rcpp::Rcout << "\n";
-	}
+    std::multimap<double, int>::const_iterator it = m.lower_bound(ti);
+    std::multimap<double, int>::const_iterator it2 = m.upper_bound(ti);
+
+    while(it != it2) {
+      Rcpp::Rcout << "\tgenotype: " << (it->second) << "; time: " <<
+	(it->first) << "\n";
+      ++it;
+    }
+    Rcpp::Rcout << "\n\n\n";
+  }
 }
+
+

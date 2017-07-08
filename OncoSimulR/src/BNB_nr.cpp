@@ -1243,7 +1243,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	mapTimes_updateP(mapTimes, popParams, u_1, tmpdouble1);
 	popParams[u_1].timeLastUpdate = currentTime;
 
-	detect_ti_duplicates(mapTimes, tmpdouble1);  
+	detect_ti_duplicates(mapTimes, tmpdouble1, u_1);  
 	
 #ifdef DEBUGV
 	Rcpp::Rcout << "\n\n     ********* 5.2: call to ti_nextTime, update one ******\n For to_update = \n " 
@@ -1275,8 +1275,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	popParams[u_1].timeLastUpdate = currentTime;
 	popParams[u_2].timeLastUpdate = currentTime;
 
-	detect_ti_duplicates(mapTimes, tmpdouble1);
-	detect_ti_duplicates(mapTimes, tmpdouble2);
+	detect_ti_duplicates(mapTimes, tmpdouble1, u_1);
+	detect_ti_duplicates(mapTimes, tmpdouble2, u_2);
 	
 
 	
@@ -1319,7 +1319,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	  mapTimes_updateP(mapTimes, popParams, i, tmpdouble1);
 	  popParams[i].timeLastUpdate = currentTime;
 
-	  detect_ti_duplicates(mapTimes, tmpdouble1);
+	  detect_ti_duplicates(mapTimes, tmpdouble1, i);
 
 	  
 #ifdef DEBUGV
