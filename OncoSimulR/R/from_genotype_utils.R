@@ -313,21 +313,28 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
                       stdout = NULL)
     if(short) {
         ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
-        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(2:14)])
+        
+        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
         ## Make names more explicit, but check we have what we think we have
         ## New versions of Magellan produce different output apparently of variable length
-        stopifnot(length(tmp) == 13) ## 23)
-        stopifnot(identical(names(tmp),
+        stopifnot(length(tmp) == 24) ## 23)
+        stopifnot(identical(names(tmp)[1:13], ## only some
                             c("ngeno", "npeaks", "nsinks", "gamma", "gamma.", "r.s",
                               "nchains", "nsteps", "nori", "depth", "magn", "sign",
                               "rsign"))) ## , "w.1.", "w.2.", "w.3..", "mode_w", "s.1.",
-                              ## "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
-        names(tmp) <- c("n_genotypes", "n_peaks", "n_sinks", "gamma", "gamma_star",
+        ## "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
+        stopifnot(identical(names(tmp)[c(20, 24)],
+                            c("steps_m", "mProbOpt_0")))
+        ## steps_m: the mean number of steps over the entire landscape to
+        ## reach the global optimum
+        ## mProbOpt_0: The mean probability to
+        ## reach that optimum (again averaged over the entire landscape).
+        names(tmp)[1:13] <- c("n_genotypes", "n_peaks", "n_sinks", "gamma", "gamma_star",
                         "r/s","n_chains", "n_steps", "n_origins", "max_depth",
                         "epist_magn", "epist_sign", "epist_rsign")## ,
                         ## "walsh_coef_1", "walsh_coef_2", "walsh_coef_3", "mode_walsh",
                         ## "synerg_coef_1", "synerg_coef_2", "synerg_coef_3", "mode_synerg",
-                        ## "std_dev_pairs", "var_outdegree")
+        ## "std_dev_pairs", "var_outdegree")
     } else {
         tmp <- readLines(fnret)
     }
