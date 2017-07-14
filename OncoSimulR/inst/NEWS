@@ -1,6 +1,8 @@
 Changes in version 2.7.1 (2017-07-07):
 	- Clarified simOGraph transitive reduction.
 	- Better handling of ti corner cases.
+	- Magellan reading fuctions adapted to output of newer (as of
+	2017-07) version of Magellan
 
 Changes in version 2.6.0 (for BioC 3.5):
 	- Many additions to the vignette and documentation.

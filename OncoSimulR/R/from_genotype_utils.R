@@ -307,22 +307,27 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
     }
     
     to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
-    call_M <- system2(fl_statistics, args = paste(fn, shortarg, logarg, "-o", fnret))
+    ## newer versions of Magellan provide some extra values to standard output
+    call_M <- system2(fl_statistics,
+                      args = paste(fn, shortarg, logarg, "-o", fnret),
+                      stdout = NULL)
     if(short) {
-        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
+        ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
+        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(2:14)])
         ## Make names more explicit, but check we have what we think we have
-        stopifnot(length(tmp) == 23)
+        ## New versions of Magellan produce different output apparently of variable length
+        stopifnot(length(tmp) == 13) ## 23)
         stopifnot(identical(names(tmp),
                             c("ngeno", "npeaks", "nsinks", "gamma", "gamma.", "r.s",
                               "nchains", "nsteps", "nori", "depth", "magn", "sign",
-                              "rsign", "w.1.", "w.2.", "w.3..", "mode_w", "s.1.",
-                              "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
+                              "rsign"))) ## , "w.1.", "w.2.", "w.3..", "mode_w", "s.1.",
+                              ## "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
         names(tmp) <- c("n_genotypes", "n_peaks", "n_sinks", "gamma", "gamma_star",
                         "r/s","n_chains", "n_steps", "n_origins", "max_depth",
-                        "epist_magn", "epist_sign", "epist_rsign",
-                        "walsh_coef_1", "walsh_coef_2", "walsh_coef_3", "mode_walsh",
-                        "synerg_coef_1", "synerg_coef_2", "synerg_coef_3", "mode_synerg",
-                        "std_dev_pairs", "var_outdegree")
+                        "epist_magn", "epist_sign", "epist_rsign")## ,
+                        ## "walsh_coef_1", "walsh_coef_2", "walsh_coef_3", "mode_walsh",
+                        ## "synerg_coef_1", "synerg_coef_2", "synerg_coef_3", "mode_synerg",
+                        ## "std_dev_pairs", "var_outdegree")
     } else {
         tmp <- readLines(fnret)
     }
