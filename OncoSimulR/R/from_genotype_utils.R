@@ -285,7 +285,8 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
                            verbose = FALSE,
                            use_log = TRUE,
                            short = TRUE,
-                           fl_statistics = "fl_statistics") { # nocov start
+                           fl_statistics = "fl_statistics",
+                           replace_missing = FALSE) { # nocov start
     ## I always use 
     ## if(!is.null(x) && is.null(file))
     ##     stop("one of object or file name")
@@ -306,10 +307,16 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
         shortarg <- NULL
     }
     
+    if(replace_missing) {
+        zarg <- "-z"
+    } else {
+        zarg <- NULL
+    }
+
     to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
     ## newer versions of Magellan provide some extra values to standard output
     call_M <- system2(fl_statistics,
-                      args = paste(fn, shortarg, logarg, "-o", fnret),
+                      args = paste(fn, shortarg, logarg, zarg, "-o", fnret),
                       stdout = NULL)
     if(short) {
         ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
