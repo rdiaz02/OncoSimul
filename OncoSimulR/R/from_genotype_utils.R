@@ -257,7 +257,7 @@ allGenotypes_to_matrix <- function(x) {
     splitted_genots <- lapply(x$Genotype,
                              function(z) nice.vector.eo(z, ","))
 
-    all_genes <- unique(unlist(splitted_genots))
+    all_genes <- sort(unique(unlist(splitted_genots)))
 
     m <- matrix(0, nrow = length(splitted_genots), ncol = length(all_genes))
     the_match <- lapply(splitted_genots,
@@ -317,7 +317,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
         tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
         ## Make names more explicit, but check we have what we think we have
         ## New versions of Magellan produce different output apparently of variable length
-        stopifnot(length(tmp) == 24) ## 23)
+        stopifnot(length(tmp) >= 24) ## 23) ## variable length
         stopifnot(identical(names(tmp)[1:13], ## only some
                             c("ngeno", "npeaks", "nsinks", "gamma", "gamma.", "r.s",
                               "nchains", "nsteps", "nori", "depth", "magn", "sign",
@@ -329,6 +329,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
         ## reach the global optimum
         ## mProbOpt_0: The mean probability to
         ## reach that optimum (again averaged over the entire landscape).
+        ## but if there are multiple optima, there are many of these
         names(tmp)[1:13] <- c("n_genotypes", "n_peaks", "n_sinks", "gamma", "gamma_star",
                         "r/s","n_chains", "n_steps", "n_origins", "max_depth",
                         "epist_magn", "epist_sign", "epist_rsign")## ,
