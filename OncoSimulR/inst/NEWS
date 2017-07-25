@@ -1,9 +1,10 @@
-Changes in version 2.7.1 (2017-07-18):
+Changes in version 2.7.1 (2017-07-25):
 	- Clarified simOGraph transitive reduction.
 	- Better handling of ti corner cases.
 	- Magellan reading fuctions adapted to output of newer (as of
 	2017-07) version of Magellan
 	- sorting gene names in allGenotypes_to_matrix
+	- sampledGenotypes: genotype names with sorted gene names
 
 Changes in version 2.6.0 (for BioC 3.5):
 	- Many additions to the vignette and documentation.

@@ -1868,7 +1868,7 @@ sampledGenotypes <- function(y, genes = NULL) {
     }
     nn <- colnames(y)
     df <- data.frame(table(
-        apply(y, 1, function(z) paste(nn[as.logical(z)], collapse = ", ") )
+        apply(y, 1, function(z) paste(sort(nn[as.logical(z)]), collapse = ", ") )
     ))
     gn <- as.character(df[, 1])
     gn[gn == ""] <- "WT"
