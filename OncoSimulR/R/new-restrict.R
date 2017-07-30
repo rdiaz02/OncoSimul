@@ -1866,14 +1866,24 @@ sampledGenotypes <- function(y, genes = NULL) {
         cols <- which(colnames(y) %in% genes )
         y <- y[, cols]
     }
-    nn <- colnames(y)
+    ## nn <- colnames(y)
+    genotlabel <- function(u, nn = colnames(y)) {
+        if(any(is.na(u))) return(NA)
+        else {
+            return(paste(sort(nn[as.logical(u)]), collapse = ", "))
+        }
+    }
+    ## df <- data.frame(table(
+    ##     apply(y, 1, function(z) paste(sort(nn[as.logical(z)]), collapse = ", ") )
+    ## ))
     df <- data.frame(table(
-        apply(y, 1, function(z) paste(sort(nn[as.logical(z)]), collapse = ", ") )
-    ))
+        apply(y, 1, genotlabel),
+        useNA = "ifany"))
+
     gn <- as.character(df[, 1])
     gn[gn == ""] <- "WT"
     df <- data.frame(Genotype = gn, Freq = df[, 2], stringsAsFactors = FALSE)
-    attributes(df)$ShannonI <- shannonI(df$Freq)
+    attributes(df)$ShannonI <- shannonI(na.omit(df)$Freq)
     class(df) <- c("sampledGenotypes", class(df))
     return(df)
 }

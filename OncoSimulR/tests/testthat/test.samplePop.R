@@ -480,6 +480,22 @@ test_that("exercising sampling code, propError", {
                    fixed = TRUE)
 })
 
+
+
+
+test_that("sampledGenotypes deals with NAs", {
+    sp <- structure(c(1, NA, 1, 0, 0, NA, 0, 0, 0, NA, 0, 0, 0, NA, 0, 
+                      0, 0, NA, 1, 0, 0, NA, 0, 0, 0, NA, 0, 0, 1, NA, 1, 0),
+                    .Dim = c(4L, 
+                             8L),
+                    .Dimnames = list(NULL, c("ZZZ", "APC", "EVC2",
+                                             "VVV", 
+                                             "KRAS", "PIK3CA", "TCF7L2", "TP53")))
+    sg <- sampledGenotypes(sp)
+    expect_true(is.na(sg[4, 1]))
+    expect_true(sg[1, 1] == "WT")
+})
+
 cat(paste("\n Ending samplePop tests", date(), "\n"))
 
 
