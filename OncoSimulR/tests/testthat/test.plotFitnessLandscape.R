@@ -276,15 +276,25 @@ test_that("internal peak valley functions", {
 
 ## Beware that using peak_valley on only_accessible makes a difference
 test_that("internal peak valley functions w/wo inaccessible filter", {
-    ## A is inaccessible, a peak
+    ## A is accessible, a peak
     ## AB is a peak if only forward. But there is no
     ## reciprocal sign epistasis here!
 
     ## We want peaks in general, not just
-    ## under assumption of "no back mutation"
+    ## under assumption of "no back mutation"?
+
+    ## Well, no, that is not obvious with cancer progression models if we
+    ## do not allow back mutations.
+    
     ## We get a different result when we restrict to accessible
     ## because all < 0 in adjacency are turned to NAs.
+
+    ## Thinking in terms of adjacency matrix, AB is not a peak if it has a
+    ## positive and a negative entry in its column, because the negative
+    ## entry means there is an ancestor with larger fitness.
+    ## But see below for why plainly using the adjacency matrix can give bad results.
     
+    ## The next matrices are all fitness matrix. Last column is fitness.
     mf1 <- rbind(c(0, 0, 1),
              c(1, 0, 4),
              c(0, 1, 2),
@@ -300,7 +310,179 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
                              OncoSimulR:::filter_inaccessible(
                                               OncoSimulR:::genot_to_adj_mat(mf1), 0))$peak), 2)
 
+    ## filtering by inaccessible also likely gets rid of all
+    ## peaks in the non-accessible part of the fitness landscape.
+    ## But of course those cannot be peaks, since they are inaccessible
 
+    mf3 <- rbind(
+        c(0, 0, 0, 1),
+        c(1, 0, 0, 2),
+        c(0, 1, 0, 0.1),
+        c(0, 0, 1, 0.3),
+        c(1, 1, 0, 3),
+        c(1, 0, 1, 4),
+        c(0, 1, 1, 0.4),
+        c(1, 1, 1, 0.2)
+    )
+
+    ## plotFitnessLandscape(mf3)
+    ## BC is detected as a peak, the seventh entry
+    expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf3))$peak,
+                 c(5, 6, 7))
+
+    ## recall this gives the columns of the reduced matrix, which are the former
+    ## 5 and 6
+    expect_equal(OncoSimulR:::peak_valley(
+                                  OncoSimulR:::filter_inaccessible(
+                                                   OncoSimulR:::genot_to_adj_mat(mf3), 0))$peak,
+                 c(3, 4))
+
+
+
+    mf4 <- rbind(
+        c(0, 0, 0, 1),
+        c(1, 0, 0, 2),
+        c(0, 1, 0, 0.1),
+        c(0, 0, 1, 0.3),
+        c(1, 1, 0, 3),
+        c(1, 0, 1, 4),
+        c(0, 1, 1, 0.4),
+        c(1, 1, 1, 1.2)
+    )
+
+    ## plotFitnessLandscape(mf4)
+    
+    ## ABC is not detected as a peak, because it is not.
+    ## Issue is not its accessibility, but that AC and AB have larger fitness
+    ## see example with mf5
+    expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf4))$peak,
+                 c(5, 6))
+
+    ## recall this gives the columns of the reduced matrix, which are the former
+    ## 5 and 6
+    expect_equal(OncoSimulR:::peak_valley(
+                                  OncoSimulR:::filter_inaccessible(
+                                                   OncoSimulR:::genot_to_adj_mat(mf4), 0))$peak,
+                 c(3, 4))
+
+
+    ## Now ABC is accessible
+      mf5 <- rbind(
+        c(0, 0, 0, 1),
+        c(1, 0, 0, 2),
+        c(0, 1, 0, 0.1),
+        c(0, 0, 1, 0.3),
+        c(1, 1, 0, 3),
+        c(1, 0, 1, 4),
+        c(0, 1, 1, 0.4),
+        c(1, 1, 1, 3.5)
+    )
+ 
+      ## plotFitnessLandscape(mf5)
+      ## plotFitnessLandscape(mf5, only_accessible = TRUE)
+      
+      ## But only AC is the peak, correctly
+      expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf5))$peak,
+                   c(6))
+
+      ## Now, both AC and ABC are peaks
+      ## columns 4 and 5 correspond to genotypes 6 and 8
+      expect_equal(OncoSimulR:::peak_valley(
+                                    OncoSimulR:::filter_inaccessible(
+                                                     OncoSimulR:::genot_to_adj_mat(mf5), 0))$peak,
+                   c(4, 5))
+
+
+
+    ## AC and ABC same max fitness
+      mf6 <- rbind(
+        c(0, 0, 0, 1),
+        c(1, 0, 0, 2),
+        c(0, 1, 0, 0.1),
+        c(0, 0, 1, 0.3),
+        c(1, 1, 0, 3),
+        c(1, 0, 1, 4),
+        c(0, 1, 1, 0.4),
+        c(1, 1, 1, 4)
+    )
+ 
+      ## plotFitnessLandscape(mf6)
+      ## Both AC and ABC are peaks. Correctly
+      expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf6))$peak,
+                   c(6, 8))
+
+
+
+      ## A and AC
+      mf7 <- rbind(
+        c(0, 0, 0, 1),
+        c(1, 0, 0, 4),
+        c(0, 1, 0, 0.1),
+        c(0, 0, 1, 0.3),
+        c(1, 1, 0, 3),
+        c(1, 0, 1, 4),
+        c(0, 1, 1, 0.4),
+        c(1, 1, 1, 3.4)
+    )
+      ## plotFitnessLandscape(mf7)
+      ## Both A and AC are peaks. Correctly
+      expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf7))$peak,
+                   c(2, 6))
+
+      ## A, AC, ABC same max fitness
+      mf8 <- rbind(
+        c(0, 0, 0, 1),
+        c(1, 0, 0, 4),
+        c(0, 1, 0, 0.1),
+        c(0, 0, 1, 0.3),
+        c(1, 1, 0, 3),
+        c(1, 0, 1, 4),
+        c(0, 1, 1, 0.4),
+        c(1, 1, 1, 4)
+    )
+      ## plotFitnessLandscape(mf8)
+      ## Both A and AC are peaks. Correctly
+      expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf8))$peak,
+                   c(2, 6, 8))
+
+
+      ## A, AC, AB same max fitness
+      mf9 <- rbind(
+        c(0, 0, 0, 1),
+        c(1, 0, 0, 4),
+        c(0, 1, 0, 0.1),
+        c(0, 0, 1, 0.3),
+        c(1, 1, 0, 4),
+        c(1, 0, 1, 4),
+        c(0, 1, 1, 0.4),
+        c(1, 1, 1, 2.4)
+    )
+      ## plotFitnessLandscape(mf9, use_ggrepel = TRUE)
+      ## Both A and AC are peaks. Correctly
+      expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf9))$peak,
+                   c(2, 5, 6))
+
+      
+      
+      ## This illustrates that the "filter_inaccessible" is not just "do
+      ## not take into account inaccessible genotypes" but, properly, do
+      ## not take into account, do not allow any travelling through
+      ## inaccessible paths.
+
+      ## Thus, filter_inaccessible is the way to go if we want to exclude
+      ## backmutation.
+      
+      ## It also shows that naively looking at the adjacency matrix can
+      ## fail. Two reasons:
+
+      ## a) the last row will never have any entries and yet it need not
+      ## be a peak.
+
+      ## b) simply looking at adjacency matrix is not the correct
+      ## procedure when some fitnesses can be equal. That is what the
+      ## function peak_valley works hard to get right :-)
+      
+      
     cp2 <- structure(c(0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 

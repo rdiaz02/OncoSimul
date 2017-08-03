@@ -484,3 +484,5 @@ peak_valley <- function(x) {
     peak <- setdiff(candidate, bad)
     return(list(peak = peak, valley = valley))
 }
+
+
