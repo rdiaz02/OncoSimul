@@ -295,21 +295,55 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
     ## But see below for why plainly using the adjacency matrix can give bad results.
     
     ## The next matrices are all fitness matrix. Last column is fitness.
-    mf1 <- rbind(c(0, 0, 1),
-             c(1, 0, 4),
-             c(0, 1, 2),
-             c(1, 1, 3))
+    mf1 <- rbind(
+        c(0, 0, 1),
+        c(1, 0, 4),
+        c(0, 1, 2),
+        c(1, 1, 3)
+    )
 
-    expect_equal(
-        length(OncoSimulR:::peak_valley(
-                                OncoSimulR:::genot_to_adj_mat(mf1))$peak), 1)
+    plotFitnessLandscape(mf1)
     
     expect_equal(
-        length(
+        OncoSimulR:::peak_valley(
+                                OncoSimulR:::genot_to_adj_mat(mf1))$peak, 2)
+    
+    expect_equal(
             OncoSimulR:::peak_valley(
                              OncoSimulR:::filter_inaccessible(
-                                              OncoSimulR:::genot_to_adj_mat(mf1), 0))$peak), 2)
+                                              OncoSimulR:::genot_to_adj_mat(mf1), 0))$peak,
+        c(2, 4))
 
+    expect_equal(
+        OncoSimulR:::fast_peaks(mf1, 0),
+        c(2, 4))
+
+
+    ## reorder the rows of the matrix. Affects fast_peaks, as it should
+    mf1 <- rbind(
+        c(1, 0, 4),
+        c(0, 0, 1),
+        c(1, 1, 3),
+        c(0, 1, 2)
+    )
+    
+    plotFitnessLandscape(mf1)
+    ## this is not affected, since it uses, by construction, the ordered matrix
+    expect_equal(
+        OncoSimulR:::peak_valley(
+                                OncoSimulR:::genot_to_adj_mat(mf1))$peak, 2)
+    ## ditto
+    expect_equal(
+            OncoSimulR:::peak_valley(
+                             OncoSimulR:::filter_inaccessible(
+                                              OncoSimulR:::genot_to_adj_mat(mf1), 0))$peak,
+        c(2, 4))
+    expect_equal(
+        OncoSimulR:::fast_peaks(mf1, 0),
+        c(1, 3))
+
+
+    
     ## filtering by inaccessible also likely gets rid of all
     ## peaks in the non-accessible part of the fitness landscape.
     ## But of course those cannot be peaks, since they are inaccessible
@@ -337,7 +371,18 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
                                                    OncoSimulR:::genot_to_adj_mat(mf3), 0))$peak,
                  c(3, 4))
 
+    ## correct indices from original matrix
+    expect_equal(
+        OncoSimulR:::fast_peaks(mf3, 0),
+        c(5, 6))
 
+    ## works under reorder?
+    expect_equal(
+        OncoSimulR:::fast_peaks(mf3[c(5, 1, 2, 3, 7, 4, 6), ], 0),
+        c(1, 7))
+
+    
+  
 
     mf4 <- rbind(
         c(0, 0, 0, 1),
@@ -365,7 +410,11 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
                                                    OncoSimulR:::genot_to_adj_mat(mf4), 0))$peak,
                  c(3, 4))
 
+    expect_equal(
+        OncoSimulR:::fast_peaks(mf4, 0),
+        c(5, 6))
 
+    
     ## Now ABC is accessible
       mf5 <- rbind(
         c(0, 0, 0, 1),
@@ -392,7 +441,9 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
                                                      OncoSimulR:::genot_to_adj_mat(mf5), 0))$peak,
                    c(4, 5))
 
-
+      expect_equal(
+          OncoSimulR:::fast_peaks(mf5, 0),
+          c(6, 8))
 
     ## AC and ABC same max fitness
       mf6 <- rbind(
@@ -410,6 +461,12 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
       ## Both AC and ABC are peaks. Correctly
       expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf6))$peak,
                    c(6, 8))
+
+      ## fast peaks should refuse to run
+      expect_error(
+          OncoSimulR:::fast_peaks(mf6, 0),
+          "There could be several connected maxima",
+          fixed = TRUE)
 
 
 
@@ -429,6 +486,14 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
       expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf7))$peak,
                    c(2, 6))
 
+      ## fast peaks should refuse to run
+      expect_error(
+          OncoSimulR:::fast_peaks(mf7, 0),
+          "There could be several connected maxima",
+          fixed = TRUE)
+      
+
+      
       ## A, AC, ABC same max fitness
       mf8 <- rbind(
         c(0, 0, 0, 1),
@@ -445,7 +510,13 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
       expect_equal(OncoSimulR:::peak_valley(OncoSimulR:::genot_to_adj_mat(mf8))$peak,
                    c(2, 6, 8))
 
-
+      
+      ## fast peaks should refuse to run
+      expect_error(
+          OncoSimulR:::fast_peaks(mf8, 0),
+          "There could be several connected maxima",
+          fixed = TRUE)
+      
       ## A, AC, AB same max fitness
       mf9 <- rbind(
         c(0, 0, 0, 1),
@@ -568,7 +639,13 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
         OncoSimulR:::peak_valley(
                          OncoSimulR:::filter_inaccessible(
                                           OncoSimulR:::genot_to_adj_mat(cp2), 0))$peak), 6)
-   
+
+
+    expect_equal(
+          OncoSimulR:::fast_peaks(cp2, 0),
+        c(51, 55, 68, 74, 90, 107))
+
+    
 })
 
 

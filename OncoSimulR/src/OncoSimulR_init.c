@@ -12,6 +12,10 @@ SEXP OncoSimulR_evalRGenotypeAndMut(SEXP rGSEXP, SEXP rFESEXP, SEXP muEFSEXP, SE
 // SEXP OncoSimulR_readFitnessEffects(SEXP rFESEXP, SEXP echoSEXP);
 SEXP OncoSimulR_accessibleGenotypes(SEXP ySEXP, SEXP xSEXP, SEXP numMutSEXP, SEXP thSEXP);
 
+SEXP OncoSimulR_genot2AdjMat(SEXP ySEXP, SEXP xSEXP, SEXP numMutSEXP);
+SEXP OncoSimulR_peaksLandscape(SEXP ySEXP, SEXP xSEXP, SEXP numMutSEXP, SEXP thSEXP);
+SEXP OncoSimulR_accessibleGenotypes_former(SEXP ySEXP, SEXP xSEXP, SEXP numMutSEXP, SEXP thSEXP);
+
 // The number is the number of arguments
 R_CallMethodDef callMethods[]  = {
   {"OncoSimulR_nr_BNB_Algo5", (DL_FUNC) &OncoSimulR_nr_BNB_Algo5, 37},
@@ -19,6 +23,9 @@ R_CallMethodDef callMethods[]  = {
   {"OncoSimulR_evalRGenotype", (DL_FUNC) &OncoSimulR_evalRGenotype, 5},
   {"OncoSimulR_evalRGenotypeAndMut", (DL_FUNC) &OncoSimulR_evalRGenotypeAndMut, 6},
   {"OncoSimulR_accessibleGenotypes", (DL_FUNC) &OncoSimulR_accessibleGenotypes, 4},
+  {"OncoSimulR_genot2AdjMat", (DL_FUNC) &OncoSimulR_genot2AdjMat, 3},
+  {"OncoSimulR_peaksLandscape", (DL_FUNC) &OncoSimulR_peaksLandscape, 4},
+  {"OncoSimulR_accessibleGenotypes_former", (DL_FUNC) &OncoSimulR_accessibleGenotypes_former, 4},  
   //  {"OncoSimulR_readFitnessEffects", (DL_FUNC) &OncoSimulR_readFitnessEffects, 2},
   {NULL, NULL, 0}
 };

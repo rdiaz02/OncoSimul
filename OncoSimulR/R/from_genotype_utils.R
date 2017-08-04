@@ -23,7 +23,7 @@
 
 to_Magellan <- function(x, file,
                         max_num_genotypes = 2000) {
-    ## This is stupid if we already have, as entry, an object from
+    ## Go directly if you have, as entry, an object from
     ## rfitness!! to_Fitness_Matrix can be very slow.
     if(is.null(file)) {
         file <- tempfile()
@@ -44,7 +44,8 @@ to_Magellan <- function(x, file,
 to_Fitness_Matrix <- function(x, max_num_genotypes) {
     ## A general converter. Ready to be used by plotFitnessLandscape and
     ## Magellan exporter.
-    
+
+    ## FIXME: really, some of this is inefficient. Very. Fix it.
     if( (inherits(x, "genotype_fitness_matrix")) ||
         ( (is.matrix(x) || is.data.frame(x)) && (ncol(x) > 2) ) ) {
         ## Why this? We go back and forth twice. We need both things. We

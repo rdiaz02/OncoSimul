@@ -225,12 +225,44 @@ filter_inaccessible <- function(x, accessible_th) {
 
 
 ## wrapper to the C++ code
-wrap_accessibleGenotypes <- function(x, th) {
+fast_peaks <- function(x, th) {
     ## x is the fitness matrix, not adjacency matrix
+
+    ## Only works if no connected genotypes that form maxima. I.e., no
+    ## identical fitness. Do a sufficient check for it (too inclusive, though)
+    ## And only under no back mutation
+
+    original_pos <- 1:nrow(x)
     numMut <- rowSums(x[, -ncol(x)])
     o_numMut <- order(numMut)
     x <- x[o_numMut, ]
     numMut <- numMut[o_numMut]
+    f <- x[, ncol(x)]
+    ## Two assumptions
+    stopifnot(numMut[1] == 0)
+    ## make sure no repeated in those that could be maxima
+    if(any(duplicated(f[f >= f[1]])))
+        stop("There could be several connected maxima genotypes.",
+             " This function is not safe to use.")
+    
+    y <- x[, -ncol(x)]
+    storage.mode(y) <- "integer"
+    original_pos <- original_pos[o_numMut]
+    return(sort(original_pos[peaksLandscape(y, f,
+                          as.integer(numMut),
+                          th)]))
+}
+
+
+## wrapper to the C++ code
+wrap_accessibleGenotypes <- function(x, th) {
+    ## x is the fitness matrix, not adjacency matrix
+    original_pos <- 1:nrow(x)
+    numMut <- rowSums(x[, -ncol(x)])
+    o_numMut <- order(numMut)
+    x <- x[o_numMut, ]
+    numMut <- numMut[o_numMut]
+    original_pos <- original_pos[o_numMut]
     
     y <- x[, -ncol(x)]
     storage.mode(y) <- "integer"
@@ -238,7 +270,29 @@ wrap_accessibleGenotypes <- function(x, th) {
     acc <- accessibleGenotypes(y, x[, ncol(x)],
                                as.integer(numMut),
                                th)
-    return(acc[acc > 0])
+    ## return(acc[acc > 0])
+    return(sort(original_pos[acc[acc > 0]]))
+}
+
+
+## wrapper to the C++ code; the former one, only for testing. Remove
+## eventually FIXME
+wrap_accessibleGenotypes_former <- function(x, th) {
+    ## x is the fitness matrix, not adjacency matrix
+    original_pos <- 1:nrow(x)
+    numMut <- rowSums(x[, -ncol(x)])
+    o_numMut <- order(numMut)
+    x <- x[o_numMut, ]
+    numMut <- numMut[o_numMut]
+    original_pos <- original_pos[o_numMut]
+    
+    y <- x[, -ncol(x)]
+    storage.mode(y) <- "integer"
+
+    acc <- accessibleGenotypes_former(y, x[, ncol(x)],
+                                      as.integer(numMut),
+                                      th)
+    return(sort(original_pos[acc[acc > 0]]))
 }
 
 ## A transitional function
@@ -378,8 +432,10 @@ generate_matrix_genotypes <- function(g) {
 }
 
 
-
-genot_to_adj_mat <- function(x) {
+## The R version. See also the C++ one
+genot_to_adj_mat_R <- function(x) {
+    ## x is the fitness matrix
+    
     ## FIXME this can take about 23% of the time of the ggplot call.
     ## But them, we are quickly constructing a 2000*2000 matrix
     ## Given a genotype matrix, as given by allGenotypes_to_matrix, produce a
@@ -390,13 +446,16 @@ genot_to_adj_mat <- function(x) {
     ## FIXME: code is now in place to do all of this in C++
     
     ## Make sure sorted, so ancestors always before descendants
-    rs0 <- rowSums(x[, -ncol(x)])
-    x <- x[order(rs0), ]
-    rm(rs0)
+    original_pos <- 1:nrow(x)
+    numMut <- rowSums(x[, -ncol(x)])
+    o_numMut <- order(numMut)
+    x <- x[o_numMut, ]
+    original_pos <- original_pos[o_numMut]
+    rm(numMut)
     
     y <- x[, -ncol(x)]
     f <- x[, ncol(x)]
-    rs <- rowSums(y)
+    rs <- rowSums(y) ## redo for paranoia; could have ordered numMut
 
     ## Move this to C++?
     adm <- matrix(NA, nrow = length(rs), ncol = length(rs))
@@ -408,8 +467,31 @@ genot_to_adj_mat <- function(x) {
             if(sumdiff == 1) adm[i, j] <- (f[j] - f[i])
         }
     }
+    colnames(adm) <- rownames(adm) <- original_pos
     return(adm)
 }
+
+genot_to_adj_mat <- function(x) {
+    ## x is the fitness matrix
+
+    ## adding column and row names should rarely be necessary
+    ## as these are internal functions, etc. But just in case
+    original_pos <- 1:nrow(x)
+    numMut <- rowSums(x[, -ncol(x)])
+    o_numMut <- order(numMut)
+    x <- x[o_numMut, ]
+    numMut <- numMut[o_numMut]
+    original_pos <- original_pos[o_numMut]
+    
+    y <- x[, -ncol(x)]
+    storage.mode(y) <- "integer"
+
+    adm <- genot2AdjMat(y, x[, ncol(x)],
+                        as.integer(numMut))
+    colnames(adm) <- rownames(adm) <- original_pos
+    return(adm)
+}
+
 
 ## ## to move above to C++ note that loop can be
 ## for(i in 1:length(rs)) { ## i is the current genotype

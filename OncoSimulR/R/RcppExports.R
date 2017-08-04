@@ -21,6 +21,19 @@ accessibleGenotypes <- function(y, f, numMut, th) {
     .Call('OncoSimulR_accessibleGenotypes', PACKAGE = 'OncoSimulR', y, f, numMut, th)
 }
 
+
+genot2AdjMat <- function(y, f, numMut) {
+    .Call('OncoSimulR_genot2AdjMat', PACKAGE = 'OncoSimulR', y, f, numMut)
+}
+
+peaksLandscape <- function(y, f, numMut, th) {
+    .Call('OncoSimulR_peaksLandscape', PACKAGE = 'OncoSimulR', y, f, numMut, th)
+}
+
+accessibleGenotypes_former <- function(y, f, numMut, th) {
+    .Call('OncoSimulR_accessibleGenotypes_former', PACKAGE = 'OncoSimulR', y, f, numMut, th)
+}
+
 ## readFitnessEffects <- function(rFE, echo) {
 ##     invisible(.Call('OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
 ## }

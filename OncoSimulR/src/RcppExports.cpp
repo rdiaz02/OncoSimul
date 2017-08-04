@@ -141,6 +141,50 @@ BEGIN_RCPP
  END_RCPP
 }
 
+// genotype fitness matrix to adjacency matrix of genotypes
+Rcpp::NumericMatrix genot2AdjMat(Rcpp::IntegerMatrix y, Rcpp::NumericVector f, Rcpp::IntegerVector numMut);
+RcppExport SEXP OncoSimulR_genot2AdjMat(SEXP ySEXP, SEXP fSEXP, SEXP numMutSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+// Rcpp::RNGScope __rngScope;
+ Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type y(ySEXP);
+ Rcpp::traits::input_parameter< Rcpp::NumericVector >::type f(fSEXP);
+ Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type numMut(numMutSEXP);
+ __result = Rcpp::wrap(genot2AdjMat(y, f, numMut));
+ return __result;
+ END_RCPP
+}
+
+
+// evalRGenotypeAndMut
+Rcpp::IntegerVector peaksLandscape(Rcpp::IntegerMatrix y, Rcpp::NumericVector f, Rcpp::IntegerVector numMut, double th);
+RcppExport SEXP OncoSimulR_peaksLandscape(SEXP ySEXP, SEXP fSEXP, SEXP numMutSEXP, SEXP thSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+// Rcpp::RNGScope __rngScope;
+ Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type y(ySEXP);
+ Rcpp::traits::input_parameter< Rcpp::NumericVector >::type f(fSEXP);
+ Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type numMut(numMutSEXP);
+ Rcpp::traits::input_parameter< double >::type th(thSEXP);
+ __result = Rcpp::wrap(peaksLandscape(y, f, numMut, th));
+ return __result;
+ END_RCPP
+}
+
+// just for testing. Eventually remove
+Rcpp::IntegerVector accessibleGenotypes_former(Rcpp::IntegerMatrix y, Rcpp::NumericVector f, Rcpp::IntegerVector numMut, double th);
+RcppExport SEXP OncoSimulR_accessibleGenotypes_former(SEXP ySEXP, SEXP fSEXP, SEXP numMutSEXP, SEXP thSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+// Rcpp::RNGScope __rngScope;
+ Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type y(ySEXP);
+ Rcpp::traits::input_parameter< Rcpp::NumericVector >::type f(fSEXP);
+ Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type numMut(numMutSEXP);
+ Rcpp::traits::input_parameter< double >::type th(thSEXP);
+ __result = Rcpp::wrap(accessibleGenotypes_former(y, f, numMut, th));
+ return __result;
+ END_RCPP
+}
 
 
 // // readFitnessEffects
