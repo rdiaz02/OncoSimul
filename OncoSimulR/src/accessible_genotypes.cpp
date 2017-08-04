@@ -167,6 +167,99 @@ Rcpp::IntegerVector accessibleGenotypes(Rcpp::IntegerMatrix y,
 
 
 
+//   // [[Rcpp::export]]
+Rcpp::NumericMatrix genot2AdjMat(Rcpp::IntegerMatrix y,
+				 Rcpp::NumericVector f,
+				 Rcpp::IntegerVector numMut) {
+  // Return just the indices. Could preserve fitness, but would need
+  // another matrix.
+  int ng = y.nrow(); //it counts the wt
+  Rcpp::NumericMatrix adm(ng, ng);
+  int numMutdiff = 0;
+  // I would have thought this would be faster. It ain't.
+  // The last genotype never accesses anything.
+  // for(int i = 0; i < (ng - 1); ++i) {
+  //   // Candidate genotypes to be accessed from i are always of larger
+  //   // mutation by 1. And candidates can thus not have smaller index
+  //   for(int j = (i + 1); j < ng; ++j) {
+  //     if( (numMut(j) == (numMut(i) + 1)) &&
+  // 	  ( (f(j) - f(i)) >= th) &&
+  // 	  (HammingDistance(y(i, _), y(j, _)) == 1) ) {
+  // 	adm(i, j) = 1;
+  //     } else if( (numMut(j) > (numMut(i) + 1)) ) {
+  // 	break;
+  //     }
+  //   }
+  // }
+
+  // The last genotype never accesses anything.
+  for(int i = 0; i < (ng - 1); ++i) {
+    // Candidate genotypes to be accessed from i are always of larger
+    // mutation by 1. And candidates can thus not have smaller index
+    for(int j = (i + 1); j < ng; ++j) {
+      numMutdiff = numMut(j) - numMut(i);
+      if( numMutdiff > 1) { // no more to search
+  	break; 
+      } else if(numMutdiff == 1) {
+  	if( HammingDistance(y(i, Rcpp::_), y(j, Rcpp::_)) == 1) {
+  	  adm(i, j) =  (f(j) - f(i));
+  	}
+      }
+    }
+  }
+  return adm;
+}
+
+
+Rcpp::IntegerMatrix integerAdjMat(Rcpp::IntegerMatrix y,
+				  Rcpp::NumericVector f,
+				  Rcpp::IntegerVector numMut, //
+				  double th) {
+  // Return just the indices. Could preserve fitness, but would need
+  // another matrix.
+  int ng = y.nrow(); //it counts the wt
+  Rcpp::IntegerMatrix adm(ng, ng);
+  int numMutdiff = 0;
+  // I would have thought this would be faster. It ain't.
+  // The last genotype never accesses anything.
+  // for(int i = 0; i < (ng - 1); ++i) {
+  //   // Candidate genotypes to be accessed from i are always of larger
+  //   // mutation by 1. And candidates can thus not have smaller index
+  //   for(int j = (i + 1); j < ng; ++j) {
+  //     if( (numMut(j) == (numMut(i) + 1)) &&
+  // 	  ( (f(j) - f(i)) >= th) &&
+  // 	  (HammingDistance(y(i, _), y(j, _)) == 1) ) {
+  // 	adm(i, j) = 1;
+  //     } else if( (numMut(j) > (numMut(i) + 1)) ) {
+  // 	break;
+  //     }
+  //   }
+  // }
+
+  // The last genotype never accesses anything.
+  for(int i = 0; i < (ng - 1); ++i) {
+    // Candidate genotypes to be accessed from i are always of larger
+    // mutation by 1. And candidates can thus not have smaller index
+    for(int j = (i + 1); j < ng; ++j) {
+      numMutdiff = numMut(j) - numMut(i);
+      if( numMutdiff > 1) { // no more to search
+  	break; 
+      } else if(numMutdiff == 1) {
+  	// f(j) - f(i) is faster than HammingDistance
+  	// but might lead to more evals?
+  	// or fewer, depending on landscape
+  	if( ( (f(j) - f(i)) >= th) &&
+	    (HammingDistance(y(i, Rcpp::_), y(j, Rcpp::_)) == 1)
+  	    ) {
+  	  adm(i, j) = 1;
+	  // Rcpp::Rcout << "i = " << i << " j = " << j << " adm " << adm(i,j) << "\n"; 
+  	}
+      }
+    }
+  }
+  return adm;
+}
+
 
 
 

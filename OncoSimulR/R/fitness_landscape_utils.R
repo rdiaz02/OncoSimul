@@ -411,6 +411,25 @@ genot_to_adj_mat <- function(x) {
     return(adm)
 }
 
+## ## to move above to C++ note that loop can be
+## for(i in 1:length(rs)) { ## i is the current genotype
+##     for(j in (i:length(rs))) {
+##         if(rs[j] > (rs[i] + 1)) break;
+##         else if(rs[j] == (rs[i] + 1)) {
+##             ## and use here my HammingDistance function
+##             ## sumdiff <- sum(abs(y[j, ] - y[i, ]))
+##             ## if(sumdiff == 1) adm[i, j] <- (f[j] - f[i])
+##             if(HammingDistance(y[j, ], y[i, ]) == 1) adm[i, j] = (f[j] - f[i]);
+##             }
+##     }
+## }
+
+## actually, all that is already in accessibleGenotypes except for the
+## filling up of adm.
+
+
+
+
 
 peak_valley <- function(x) {
     ## FIXME: when there are no identical entries, all this
