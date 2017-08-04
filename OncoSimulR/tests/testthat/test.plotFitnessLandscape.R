@@ -541,7 +541,8 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
       ## inaccessible paths.
 
       ## Thus, filter_inaccessible is the way to go if we want to exclude
-      ## backmutation.
+      ## backmutation. In no bakcmutation, it is not possible to go from
+      ## m+1 to m mutations.
       
       ## It also shows that naively looking at the adjacency matrix can
       ## fail. Two reasons:
@@ -645,7 +646,77 @@ test_that("internal peak valley functions w/wo inaccessible filter", {
           OncoSimulR:::fast_peaks(cp2, 0),
         c(51, 55, 68, 74, 90, 107))
 
+    ## Nope, since filter inaccessible removes genotypes
+    expect_false(all(
+        OncoSimulR:::peak_valley(
+                         OncoSimulR:::filter_inaccessible(
+                                          OncoSimulR:::genot_to_adj_mat(cp2), 0))$peak ==
+        OncoSimulR:::fast_peaks(cp2, 0)))
+    
+
+    ## compare with the probl
+    gnn <- OncoSimulR:::to_Fitness_Matrix(cp2, 1000)$afe[, "Genotype"]
+
+    plotFitnessLandscape(cp2, use_ggrepel = TRUE, only_accessible = TRUE)
+    
+    expect_equal(
+        gnn[OncoSimulR:::fast_peaks(cp2, 0)],
+        c("KRAS, PXDN, TP53",
+          "MLL3, PXDN, SMAD4",
+          "CDKN2A, KRAS, MLL3, TP53",
+          "CDKN2A, KRAS, TGFBR2, TP53",
+          "KRAS, MLL3, TGFBR2, TP53",
+          "CDKN2A, KRAS, PXDN, SMAD4, TP53"))
+
+    ## can also check by removing the inacessible genotypes so the indices are the same
+    agg <- OncoSimulR:::wrap_accessibleGenotypes(cp2, 0)
+    cp3 <- cp2[agg, ]
+
+    ## This is NOT correct: we have removed the inacessible,
+    ## but we allow backmutation
+    ## OncoSimulR:::peak_valley(
+    ##                  OncoSimulR:::genot_to_adj_mat(cp3))$peak
+    
+    expect_equal(OncoSimulR:::peak_valley(
+                     OncoSimulR:::filter_inaccessible(
+                                      OncoSimulR:::genot_to_adj_mat(cp3), 0))$peak,
+                 OncoSimulR:::fast_peaks(cp3, 0))
+
+    gnn3 <- gnn[agg]
+
+    expect_equal(
+        gnn3[OncoSimulR:::fast_peaks(cp3, 0)],
+        c("KRAS, PXDN, TP53",
+          "MLL3, PXDN, SMAD4",
+          "CDKN2A, KRAS, MLL3, TP53",
+          "CDKN2A, KRAS, TGFBR2, TP53",
+          "KRAS, MLL3, TGFBR2, TP53",
+          "CDKN2A, KRAS, PXDN, SMAD4, TP53"))
+
     
 })
 
 
+
+test_that("Some random checks of the fast peaks function", {
+    niter <- 50
+    for(i in 1:niter) {
+        for(ng in 2:6) {
+            rtmp <- rfitness(ng)
+            p1 <- OncoSimulR:::peak_valley(
+                                   OncoSimulR:::filter_inaccessible(
+                                                    OncoSimulR:::genot_to_adj_mat(rtmp), 0))$peak
+            expect_equal(length(p1),
+                         length(OncoSimulR:::fast_peaks(rtmp, 0)))
+            agg <- OncoSimulR:::wrap_accessibleGenotypes(rtmp, 0)
+            if(length(agg) >= 2) {
+                ## cat(".")
+                p2 <- OncoSimulR:::peak_valley(
+                                       OncoSimulR:::filter_inaccessible(
+                                                        OncoSimulR:::genot_to_adj_mat(rtmp[agg, , drop = FALSE]), 0))$peak
+                expect_equal(p2, OncoSimulR:::fast_peaks(rtmp[agg, , drop = FALSE], 0))
+                expect_equal(length(p2), length(p1))
+            }
+        }
+    }
+})

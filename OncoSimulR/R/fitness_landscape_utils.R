@@ -18,6 +18,9 @@
 
 ## FIXME: show only accessible paths? 
 
+## FIXME: if using only_accessible, maybe we
+## can try to use fast_peaks, and use the slower
+## approach as fallback (if identical fitness)
 plotFitnessLandscape <- function(x, show_labels = TRUE,
                                  col = c("green4", "red", "yellow"),
                                  lty = c(1, 2, 3), use_ggrepel = FALSE,
