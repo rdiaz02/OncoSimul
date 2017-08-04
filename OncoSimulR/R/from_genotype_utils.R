@@ -325,14 +325,15 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
         tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
         ## Make names more explicit, but check we have what we think we have
         ## New versions of Magellan produce different output apparently of variable length
-        stopifnot(length(tmp) >= 24) ## 23) ## variable length
+        stopifnot(length(tmp) >= 23) ## 23) ## variable length
         stopifnot(identical(names(tmp)[1:13], ## only some
                             c("ngeno", "npeaks", "nsinks", "gamma", "gamma.", "r.s",
                               "nchains", "nsteps", "nori", "depth", "magn", "sign",
                               "rsign"))) ## , "w.1.", "w.2.", "w.3..", "mode_w", "s.1.",
         ## "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
-        stopifnot(identical(names(tmp)[c(20, 24)],
-                            c("steps_m", "mProbOpt_0")))
+        if(length(tmp) >= 24) ## the new version
+            stopifnot(identical(names(tmp)[c(20, 24)],
+                                c("steps_m", "mProbOpt_0")))
         ## steps_m: the mean number of steps over the entire landscape to
         ## reach the global optimum
         ## mProbOpt_0: The mean probability to
