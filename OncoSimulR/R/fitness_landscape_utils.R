@@ -590,3 +590,34 @@ peak_valley <- function(x) {
 }
 
 
+
+## For the future
+## ## data.frame (two columns: genotype with "," and Fitness) -> fitness graph (DAG)
+## ## Return an adj matrix of the fitness graph from a fitness
+## ## landscape
+## ## Based on code in plotFitnessLandscape
+## flandscape_to_fgraph <- function(afe) {
+##     gfm <- OncoSimulR:::allGenotypes_to_matrix(afe)
+##     ## mutated <- rowSums(gfm[, -ncol(gfm)])
+##     gaj <- OncoSimulR:::genot_to_adj_mat(gfm)
+##     gaj2 <- OncoSimulR:::filter_inaccessible(gaj, 0)
+##     stopifnot(all(na.omit(as.vector(gaj == gaj2))))
+##     remaining <- as.numeric(colnames(gaj2))
+##     ## mutated <- mutated[remaining]
+##     afe <- afe[remaining, , drop = FALSE]
+##     ## vv <- which(!is.na(gaj2), arr.ind = TRUE)
+
+##     gaj2 <- gaj2
+##     gaj2[is.na(gaj2)] <- 0
+##     gaj2[gaj2 > 0] <- 1
+##     colnames(gaj2) <- rownames(gaj2) <- afe[, "Genotype"]
+##     return(gaj2)
+## }
+## ## This could be done easily in C++, taking care of row/colnames at end,
+## ## without moving around the full adjacency matrix.
+## ## Skeleton for C++
+## ## a call to accessibleGenotypesPeaksLandscape
+## ## (with another argument or changing the returnpeaks by a three value thing)
+## ## after done with first loop, 
+## ## return the matrix adm[accessible > 0, accessible >0]
+## ## only need care with row/colnames
