@@ -1590,7 +1590,7 @@ get.the.time.for.sample <- function(tmp, timeSample, popSizeSample) {
           
           if (length(candidate.time) == 0) {
               warning(paste("There is not a single sampled time",
-                            "at which there are any mutants.",
+                            "at which there are any mutants with drivers. ",
                             "Thus, no uniform sampling possible.",
                             "You will get NAs"))
               the.time <- -99
