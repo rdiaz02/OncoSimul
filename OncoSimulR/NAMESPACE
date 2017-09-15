@@ -55,7 +55,7 @@ importFrom("gtools", combinations, permutations)
 
 importFrom("graphics", "axis", "box", "legend", "matplot", "par", "polygon")
 importFrom("methods", "as")
-importFrom("stats", "na.omit", "runif", "smooth.spline")
+importFrom("stats", "na.omit", "runif", "smooth.spline", "dist")
 importFrom("utils", "type.convert")
 importFrom("RColorBrewer", "brewer.pal")
 importFrom("grDevices", "colorRampPalette", "hsv", "rainbow")

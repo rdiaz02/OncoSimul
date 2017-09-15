@@ -46,7 +46,11 @@ sampledGenotypes(y, genes = NULL)
     different individuals will be sampled at different times. "last"
     does not guarantee that different individuals will be sampled at the
     same time unit, only that all will be sampled in the last time unit
-    of their simulation.
+    of their simulation. Another option is to explicitly specify a vector
+    of times at which you want each individual to be sampled (e.g. a 
+    series of exponentially distributed times with rate being the reciprocal
+    of the mean fixation time of the individuals' last mutant)
+    
 
     You can, alternatively, specify the population size at which you
     want the sample to be taken. See argument \code{popSizeSample}.

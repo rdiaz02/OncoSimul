@@ -300,7 +300,99 @@ test_that("exercising the sampling code, v2 objects, more", {
               expect_message(samplePop(o4, timeSample = "last",
                                        typeSample = "whole"),
                              "Subjects by Genes matrix of 4 subjects and 6 genes")
+
           })
+
+test_that("exercising the sampling code, v2 objects, more Santiago", {
+  cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+                    child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+                    s = 0.1,
+                    sh = -0.9,
+                    typeDep = "MN")
+  cbn1 <- allFitnessEffects(cs)
+  o1 <- oncoSimulIndiv(cbn1, detectionSize = 1e4,
+                       onlyCancer = TRUE,
+                       max.num.tries = 5000,
+                       sampleEvery = 0.03, keepEvery = 1)
+  o4 <- oncoSimulPop(4,
+                     cbn1,
+                     detectionSize = 1e4,
+                     onlyCancer = TRUE,
+                     mc.cores = 2,
+                     max.num.tries = 5000,
+                     sampleEvery = 0.03, keepEvery = 1)
+  ts <- c(10, 2312.32, 5443, 440)
+  ## Indv, default
+  expect_message(samplePop(o1),
+                 "Subjects by Genes matrix of 1 subjects and 6 genes")
+  ## Ind, "single"
+  expect_message(samplePop(o1, typeSample = "single",
+                           timeSample = "last"),
+                 "Subjects by Genes matrix of 1 subjects and 6 genes")
+  expect_message(samplePop(o1, typeSample = "single",
+                           timeSample = "unif"),
+                 "Subjects by Genes matrix of 1 subjects and 6 genes")
+  expect_message(samplePop(o1, typeSample = "single",
+                           timeSample = 500),
+                 "Subjects by Genes matrix of 1 subjects and 6 genes")
+  ## Ind, "whole"
+  expect_message(samplePop(o1, typeSample = "whole",
+                           timeSample = "last"),
+                 "Subjects by Genes matrix of 1 subjects and 6 genes")
+  expect_message(samplePop(o1, typeSample = "whole",
+                           timeSample = "unif"),
+                 "Subjects by Genes matrix of 1 subjects and 6 genes")
+  expect_message(samplePop(o1, typeSample = "whole",
+                           timeSample = 500),
+                 "Subjects by Genes matrix of 1 subjects and 6 genes")
+
+  ## Modal pop sampling excluded at the moment
+
+  # ## Ind, "modal"
+  # expect_message(samplePop(o1, typeSample = "mod",
+  #                          timeSample = "last"),
+  #                "Subjects by Genes matrix of 1 subjects and 6 genes")
+  # expect_message(samplePop(o1, typeSample = "modal",
+  #                          timeSample = "unif"),
+  #                "Subjects by Genes matrix of 1 subjects and 6 genes")
+  # expect_message(samplePop(o1, typeSample = "modal",
+  #                          timeSample = 500),
+  #                "Subjects by Genes matrix of 1 subjects and 6 genes")
+
+  ## Pop, default
+  expect_message(samplePop(o4),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  ## Pop, "single"
+  expect_message(samplePop(o4, typeSample = "single",
+                           timeSample = "last"),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_message(samplePop(o4, typeSample = "single",
+                           timeSample = "uniform"),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_message(samplePop(o4, typeSample = "single",
+                           timeSample = ts),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  ## Pop, "whole"
+  expect_message(samplePop(o4, typeSample = "whole",
+                           timeSample = "last"),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_message(samplePop(o4, typeSample = "whole",
+                           timeSample = "unif"),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_message(samplePop(o4, typeSample = "whole",
+                           timeSample = ts),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  # ## Pop, "modal"
+  # expect_message(samplePop(o4, typeSample = "mod",
+  #                          timeSample = "last"),
+  #                "Subjects by Genes matrix of 4 subjects and 6 genes")
+  # expect_message(samplePop(o4, typeSample = "modal",
+  #                          timeSample = "unif"),
+  #                "Subjects by Genes matrix of 4 subjects and 6 genes")
+  # expect_message(samplePop(o4, typeSample = "mod",
+  #                          timeSample = ts),
+  #                "Subjects by Genes matrix of 4 subjects and 6 genes")
+})
 
 
 
@@ -495,6 +587,103 @@ test_that("sampledGenotypes deals with NAs", {
     expect_true(is.na(sg[4, 1]))
     expect_true(sg[1, 1] == "WT")
 })
+
+test_that("exercising the sampling code, v1 objects", {
+  data(examplePosets)
+  p705 <- examplePosets[["p705"]]
+  r1 <- oncoSimulIndiv(p705,
+                       sampleEvery = 0.03, keepEvery = 1
+  )
+  p1 <- oncoSimulPop(4, p705, numPassengers = 30, mc.cores = 2,
+                     sampleEvery = 0.03, keepEvery = 1)
+  expect_message(samplePop(p1  ),
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
+  expect_message(samplePop(p1, typeSample = "single"),
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
+  expect_message(samplePop(p1, typeSample = "whole", timeSample = "unif"),
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
+  expect_message(samplePop(p1, typeSample = "single", timeSample = "unif"),
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
+  expect_message(samplePop(r1, typeSample = "whole", timeSample = "last"),
+                 "Subjects by Genes matrix of 1 subjects and 7 genes")
+  expect_message(samplePop(r1, typeSample = "single", timeSample = "last"),
+                 "Subjects by Genes matrix of 1 subjects and 7 genes")
+  expect_message(samplePop(r1, typeSample = "whole", timeSample = "unif"),
+                 "Subjects by Genes matrix of 1 subjects and 7 genes")
+  expect_message(samplePop(r1, typeSample = "single", timeSample = "uniform"),
+                 "Subjects by Genes matrix of 1 subjects and 7 genes")
+})
+
+test_that("exercising the sampling code, numerical timeSample", {
+  r4 <- rfitness(6, 
+                 # reference = rep(1, 4), 
+                 sd = 0.5)  
+  rfl <- allFitnessEffects(genotFitness = r4)
+  evalAllGenotypes(rfl)
+  # evalAllGenotypes(rfl)[which.max(evalAllGenotypes(rfl)[, 2]), 1]
+  
+  o4 <- oncoSimulPop(4,
+                     rfl, 
+                     # detectionSize = 1e6,
+                     # model = "McFL",
+                     # onlyCancer = FALSE,
+                     # max.num.tries = 5000,
+                     # mu = 5e-5,
+                     # sampleEvery = 0.03,
+                     # keepEvery = 1,
+                     mc.cores = detectCores())
+  # plot(o4, show = "genotypes")
+  # tfinal <- unlist(lapply(1:4, function(n) nrow(o4[[n]]$pops.by.time)))
+  tfinal <- unlist(lapply(1:4, function(n) o4[[n]]$FinalTime))
+  tmin <- min(tfinal)
+  tmax <- max(tfinal)
+  ts1 <- rep(0, 4)
+  ts2 <- rep(tmin - 1, 4)
+  ts3 <- rep(tmax + 50, 4)
+  ts4 <- c(124.2312, 6776257.44, 1243.45, 66116.3)
+  ts5 <- c(-123.2, -55, -3, -55)
+  samplePop(o4, timeSample = ts1)
+  
+  expect_message(samplePop(o4, timeSample = ts1),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_true(sampledGenotypes(samplePop(o4, timeSample = ts1))$Genotype == "WT")
+  expect_message(samplePop(o4, timeSample = ts2),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_message(samplePop(o4, timeSample = ts3),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  # expect_true() check that it's a fixed pop
+  expect_message(samplePop(o4, timeSample = ts4),
+                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_error(samplePop(o4, timeSample = ts5),
+                         "Cannot sample at negative times")
+  expect_error(samplePop(o4, timeSample = ts5),
+               "Cannot sample at negative times")
+})
+
+# test_that("exercising the sampling code, numerical timeSample", {
+#   cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
+#                     child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
+#                     s = 0.1,
+#                     sh = -0.9,
+#                     typeDep = "MN")
+#   cbn1 <- allFitnessEffects(cs)
+#   o4 <- oncoSimulPop(4,
+#                      cbn1, 
+#                      detectionSize = 1e4,
+#                      onlyCancer = TRUE,
+#                      mc.cores = 2,
+#                      max.num.tries = 5000,
+#                      sampleEvery = 0.03, 
+#                      keepEvery = 1)
+#   tfinal <- unlist(lapply(1:4, function(n) nrow(o4[[n]]$pops.by.time)))
+#   tmax <- max(tfinal)
+#   ts1 <- rep(1, 4)
+#   ts2 <- rep(tmax + 50, 4)
+#   expect_message(samplePop(o4, timeSample = ts1),
+#                  "Subjects by Genes matrix of 4 subjects and 6 genes")
+#   expect_message(samplePop(o4, timeSample = ts2),
+#                  "Subjects by Genes matrix of 4 subjects and 6 genes")
+# })
 
 cat(paste("\n Ending samplePop tests", date(), "\n"))
 

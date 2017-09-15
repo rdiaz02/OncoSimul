@@ -1860,39 +1860,93 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
 }
 
 sampledGenotypes <- function(y, genes = NULL) {
-    ## From a popSample object, or a matrix for that matter,
-    ## show the sampled genotypes and their frequencies
-    if(!is.null(genes)) {
-        cols <- which(colnames(y) %in% genes )
-        y <- y[, cols]
+  ## From a popSample object, or a matrix for that matter,
+  ## show the sampled genotypes and their frequencies
+  if(!is.null(genes)) {
+    cols <- which(colnames(y) %in% genes )
+    y <- y[, cols]
+  }
+  ## nn <- colnames(y)
+  genotlabel <- function(u, nn = colnames(y)) {
+    if(any(is.na(u))) return(NA)
+    else {
+      return(paste(sort(nn[as.logical(u)]), collapse = ", "))
     }
-    ## nn <- colnames(y)
-    genotlabel <- function(u, nn = colnames(y)) {
-        if(any(is.na(u))) return(NA)
-        else {
-            return(paste(sort(nn[as.logical(u)]), collapse = ", "))
-        }
-    }
-    ## df <- data.frame(table(
-    ##     apply(y, 1, function(z) paste(sort(nn[as.logical(z)]), collapse = ", ") )
-    ## ))
-    df <- data.frame(table(
-        apply(y, 1, genotlabel),
-        useNA = "ifany"))
-
-    gn <- as.character(df[, 1])
-    gn[gn == ""] <- "WT"
-    df <- data.frame(Genotype = gn, Freq = df[, 2], stringsAsFactors = FALSE)
-    attributes(df)$ShannonI <- shannonI(na.omit(df)$Freq)
-    class(df) <- c("sampledGenotypes", class(df))
-    return(df)
+  }
+  ## df <- data.frame(table(
+  ##     apply(y, 1, function(z)
+  ##       paste(sort(nn[as.logical(z)]), collapse = ", ") )
+  ## ))
+  df <- data.frame(table(apply(y, 1, genotlabel), 
+                         useNA = "ifany"))
+  gn <- as.character(df[, 1])
+  
+  ## To calculate Rao's diversity
+  # if (length(gn) > 1) {
+  #   ## To calculate the dissimilarity matrix for Rao's diversity,
+  #   ## we need the genotypes in binary
+  #   gn_bin <- unique(y)
+  #   ## Reorder them to match gn
+  #   gn_bin <- gn_bin[match(gn, apply(gn_bin, 1, genotlabel)), ]
+  #   ## Dmat <- apply(gn_bin, 1, function(a) 
+  #   ##   apply(gn_bin, 1, function(b) sum(xor(a, b))))
+  #   ## Exclude NAs before passing to dist
+  #   Dmat <- as.matrix(dist(na.omit(gn_bin), method = "manhattan"))
+  # } else {
+  #   Dmat <- 0
+  # }
+  
+  gn[gn == ""] <- "WT"
+  
+  df <- data.frame(Genotype = gn, Freq = df[, 2], stringsAsFactors = FALSE)
+  attributes(df)$ShannonI <- shannonI(na.omit(df)$Freq)
+  # attributes(df)$RaoI <- raoI(na.omit(df)$Freq, Dmat)
+  class(df) <- c("sampledGenotypes", class(df))
+  return(df)
 }
 
 print.sampledGenotypes <- function(x, ...) {
-    print.data.frame(x, ...)
-    cat("\n Shannon's diversity (entropy) of sampled genotypes: ")
-    cat(attributes(x)$ShannonI, "\n")
+  print.data.frame(x, ...)
+  cat("\n Shannon's diversity (entropy) of sampled genotypes: ")
+  cat(attributes(x)$ShannonI, "\n")
+  # cat("\n Rao's diversity (entropy) of sampled genotypes: ")
+  # cat(attributes(x)$RaoI, "\n")
 }
+
+# sampledGenotypes.old <- function(y, genes = NULL) {
+#     ## From a popSample object, or a matrix for that matter,
+#     ## show the sampled genotypes and their frequencies
+#     if(!is.null(genes)) {
+#         cols <- which(colnames(y) %in% genes )
+#         y <- y[, cols]
+#     }
+#     ## nn <- colnames(y)
+#     genotlabel <- function(u, nn = colnames(y)) {
+#         if(any(is.na(u))) return(NA)
+#         else {
+#             return(paste(sort(nn[as.logical(u)]), collapse = ", "))
+#         }
+#     }
+#     ## df <- data.frame(table(
+#     ##     apply(y, 1, function(z) paste(sort(nn[as.logical(z)]), collapse = ", ") )
+#     ## ))
+#     df <- data.frame(table(
+#         apply(y, 1, genotlabel),
+#         useNA = "ifany"))
+# 
+#     gn <- as.character(df[, 1])
+#     gn[gn == ""] <- "WT"
+#     df <- data.frame(Genotype = gn, Freq = df[, 2], stringsAsFactors = FALSE)
+#     attributes(df)$ShannonI <- shannonI(na.omit(df)$Freq)
+#     class(df) <- c("sampledGenotypes", class(df))
+#     return(df)
+# }
+
+# print.sampledGenotypes.old <- function(x, ...) {
+#     print.data.frame(x, ...)
+#     cat("\n Shannon's diversity (entropy) of sampled genotypes: ")
+#     cat(attributes(x)$ShannonI, "\n")
+# }
 
 
 list_g_matches_fixed <- function(x, y) {
