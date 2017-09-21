@@ -1696,7 +1696,6 @@ get.mut.vector <- function(x, timeSample, typeSample,
   pop <- x$pops.by.time[the.time, -1]
   
   if(all(pop == 0)) {
-    cat("\n tsampling = ", toString(the.time), "\n")
     stop("You found a bug: this should never happen")
   }
   
