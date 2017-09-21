@@ -190,6 +190,18 @@ sampledGenotypes(sp1)
 sampledGenotypes(sp2)
 
 
+## Sample at prespecified times. For example, calculate the mean
+## final time of the simulations, and generate exponentially
+## distributed sampling times with rate being the reciprocal
+## of this mean.
+
+final_times <- unlist(lapply(1:4, function(n) p1[[n]]$FinalTime))
+tsampling <- rexp(4, 1/mean(final_times))
+
+(sp3 <- samplePop(p1, timeSample = tsampling))
+sampledGenotypes(sp3)
+
+
 ## Now single cell sampling
 
 r1 <- oncoSimulIndiv(p705)
