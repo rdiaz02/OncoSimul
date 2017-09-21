@@ -619,21 +619,7 @@ test_that("exercising the sampling code, numerical timeSample", {
                  # reference = rep(1, 4), 
                  sd = 0.5)  
   rfl <- allFitnessEffects(genotFitness = r4)
-  evalAllGenotypes(rfl)
-  # evalAllGenotypes(rfl)[which.max(evalAllGenotypes(rfl)[, 2]), 1]
-  
-  o4 <- oncoSimulPop(4,
-                     rfl, 
-                     # detectionSize = 1e6,
-                     # model = "McFL",
-                     # onlyCancer = FALSE,
-                     # max.num.tries = 5000,
-                     # mu = 5e-5,
-                     # sampleEvery = 0.03,
-                     # keepEvery = 1,
-                     mc.cores = detectCores())
-  # plot(o4, show = "genotypes")
-  # tfinal <- unlist(lapply(1:4, function(n) nrow(o4[[n]]$pops.by.time)))
+  o4 <- oncoSimulPop(4, rfl, mc.cores = detectCores())
   tfinal <- unlist(lapply(1:4, function(n) o4[[n]]$FinalTime))
   tmin <- min(tfinal)
   tmax <- max(tfinal)
@@ -651,7 +637,6 @@ test_that("exercising the sampling code, numerical timeSample", {
                  "Subjects by Genes matrix of 4 subjects and 6 genes")
   expect_message(samplePop(o4, timeSample = ts3),
                  "Subjects by Genes matrix of 4 subjects and 6 genes")
-  # expect_true() check that it's a fixed pop
   expect_message(samplePop(o4, timeSample = ts4),
                  "Subjects by Genes matrix of 4 subjects and 6 genes")
   expect_error(samplePop(o4, timeSample = ts5),
