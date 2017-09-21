@@ -628,13 +628,14 @@ test_that("exercising the sampling code, numerical timeSample", {
   ts3 <- rep(tmax + 50, 4)
   ts4 <- c(124.2312, 6776257.44, 1243.45, 66116.3)
   ts5 <- c(-123.2, -55, -3, -55)
-  samplePop(o4, timeSample = ts1)
-  
+
   expect_message(samplePop(o4, timeSample = ts1),
                  "Subjects by Genes matrix of 4 subjects and 6 genes")
   expect_true(sampledGenotypes(samplePop(o4, timeSample = ts1))$Genotype == "WT")
   expect_message(samplePop(o4, timeSample = ts2),
                  "Subjects by Genes matrix of 4 subjects and 6 genes")
+  expect_message(samplePop(o4, timeSample = ts2[-1]),
+                 "length timeSample != number of subjects")
   expect_message(samplePop(o4, timeSample = ts3),
                  "Subjects by Genes matrix of 4 subjects and 6 genes")
   expect_message(samplePop(o4, timeSample = ts4),

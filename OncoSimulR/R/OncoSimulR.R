@@ -296,8 +296,7 @@ samplePop <- function(x, timeSample = "last",
   if(inherits(x, "oncosimulpop")) {
     ## If given a vector of sampling times, check it's of the proper length
     if (is.numeric(timeSample) && length(x) != length(timeSample)) {
-      cat("\n The size of the sampling times is not",
-          "equal to the number of simulations \n")
+      message("length timeSample != number of subjects")
     }
     z <- do.call(rbind,
                  Map(get.mut.vector,
