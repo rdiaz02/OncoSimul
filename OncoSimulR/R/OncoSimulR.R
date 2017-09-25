@@ -2092,20 +2092,20 @@ plotShannon <- function(z) {
 ## The vector of frequencies would be na.omit(df)$Freq.
 ## Notice the na.omit both in vector and matrix.
 
-# raoI <- function(x, Dmat) {
-#   ## Check if a scalar is given, and make it a 1x1 matrix for convenience
-#   if (!is.matrix(Dmat) && is.atomic(Dmat) && length(Dmat) == 1L) {
-#     Dmat <- as.matrix(Dmat)
-#   } else if (!is.matrix(Dmat)) {
-#     stop("Unknown argument for dissimilarity matrix")
-#   }
-#   if (nrow(Dmat) != ncol(Dmat) || nrow(Dmat) != length(x)) {
-#     stop("Dimensions of the dissimilarity matrix are incorrect")
-#   }
-#   sx <- sum(x)
-#   p <- x/sx
-#   return(p %*% Dmat %*% p)
-# }
+raoI <- function(x, Dmat) {
+  ## Check if a scalar is given, and make it a 1x1 matrix for convenience
+  if (!is.matrix(Dmat) && is.atomic(Dmat) && length(Dmat) == 1L) {
+    Dmat <- as.matrix(Dmat)
+  } else if (!is.matrix(Dmat)) {
+    stop("Unknown argument for dissimilarity matrix")
+  }
+  if (nrow(Dmat) != ncol(Dmat) || nrow(Dmat) != length(x)) {
+    stop("Dimensions of the dissimilarity matrix are incorrect")
+  }
+  sx <- sum(x)
+  p <- x/sx
+  return(p %*% Dmat %*% p)
+}
 
 # plotRao <- function(z) {
 #   Dmat <- as.matrix(dist(t(z$Genotypes), method = "manhattan"))
