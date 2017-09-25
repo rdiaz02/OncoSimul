@@ -335,61 +335,6 @@ samplePop <- function(x, timeSample = "last",
   return(z)
 }
 
-# samplePop.old <- function(x, timeSample = "last",
-#                       typeSample = "whole",
-#                       thresholdWhole = 0.5,
-#                       geneNames = NULL,
-#                       popSizeSample = NULL,
-#                       propError = 0) {
-#     ## timeSample <- match.arg(timeSample)
-#     gN <- geneNames
-#     
-#     if(!is.null(popSizeSample) && (length(popSizeSample) > 1) &&
-#        (length(popSizeSample) != length(x))) {
-#         message("length popSizeSample != number of subjects")
-#         popSizeSample <- rep(popSizeSample, length.out = length(x))
-#         }
-#     ## A hack to prevent Map from crashing with a NULL
-#     if(is.null(popSizeSample)) popSizeSample <- -99
-#     if(inherits(x, "oncosimulpop")) {
-#         z <- do.call(rbind,
-#                      Map(get.mut.vector,
-#                          x = x,
-#                          timeSample = timeSample,
-#                          typeSample = typeSample,
-#                          thresholdWhole = thresholdWhole,
-#                          popSizeSample = popSizeSample
-#                          ))
-#         ## We need to check if the object is coming from v.2., to avoid
-#         ## having to force passing a vector of names
-#         if(is.null(gN) && (!is.null(x[[1]]$geneNames)))
-#             gN <- x[[1]]$geneNames
-#     } else {
-#         z <- get.mut.vector(x,
-#                             timeSample = timeSample,
-#                             typeSample = typeSample,
-#                             thresholdWhole = thresholdWhole,
-#                             popSizeSample = popSizeSample)
-#         dim(z) <- c(1, length(z))
-#         if(is.null(gN) && (!is.null(x$geneNames)))
-#             gN <- x$geneNames
-#     }
-#     message("\n Subjects by Genes matrix of ",
-#         nrow(z), " subjects and ",
-#             ncol(z), " genes.\n")
-# 
-#     if(propError > 0) {
-#         z <- add_noise(z, propError)
-#     }
-#     if(!is.null(gN)) {
-#         colnames(z) <- gN
-#     } else {
-#         colnames(z) <- seq_len(ncol(z))
-#     }
-#     return(z)
-# }
-
-
 oncoSimulPop <- function(Nindiv,
                          fp,
                          model = "Exp",
@@ -1715,76 +1660,6 @@ get.mut.vector <- function(x, timeSample, typeSample,
   ## }
 
 }
-
-# get.the.time.for.sample.old <- function(tmp, timeSample, popSizeSample) {
-#     if( !is.null(popSizeSample) && (popSizeSample >= 0) )  {
-#         the.time <- closest_time(tmp, popSizeSample)
-#     } else if(timeSample == "last") {
-#         if(tmp$TotalPopSize == 0) {
-#             warning(paste("Final population size is 0.",
-#                           "Thus, there is nothing to sample with",
-#                           "sampling last. You will get NAs"))
-#             the.time <- -99
-#         } else {
-#             the.time <- nrow(tmp$pops.by.time)
-#         }
-#     } else if (timeSample %in% c("uniform", "unif")) {
-#           candidate.time <- which(tmp$PerSampleStats[, 4] > 0)
-#           
-#           if (length(candidate.time) == 0) {
-#               warning(paste("There is not a single sampled time",
-#                             "at which there are any mutants with drivers. ",
-#                             "Thus, no uniform sampling possible.",
-#                             "You will get NAs"))
-#               the.time <- -99
-#               ## return(rep(NA, nrow(tmp$Genotypes)))
-#           } else if (length(candidate.time) == 1) {
-#                 message("Only one sampled time period with mutants.")
-#                 the.time <- candidate.time
-#             } else {
-#                   the.time <- sample(candidate.time, 1)
-#               }
-#     } else {
-#             stop("Unknown timeSample option")
-#         }
-#     return(the.time)
-# }
-# 
-# 
-# get.mut.vector.old <- function(x, timeSample, typeSample,
-#                            thresholdWhole, popSizeSample) {
-#     if(is.null(x$TotalPopSize)) {
-#         warning(paste("It looks like this simulation never completed.",
-#                       " Maybe it reached maximum allowed limits.",
-#                       " You will get NAs"))
-#         return(rep(NA, length(x$geneNames)))
-#     }
-#     the.time <- get.the.time.for.sample(x, timeSample, popSizeSample)
-#     if(the.time < 0) { 
-#         return(rep(NA, nrow(x$Genotypes)))
-#     } 
-#     pop <- x$pops.by.time[the.time, -1]
-#     
-#     if(all(pop == 0)) {
-#         stop("You found a bug: this should never happen")
-#     }
-#     
-#     if(typeSample %in% c("wholeTumor", "whole")) {
-#         popSize <- x$PerSampleStats[the.time, 1]
-#         return( as.numeric((tcrossprod(pop,
-#                                        x$Genotypes)/popSize) >= thresholdWhole) )
-#     } else if (typeSample %in%  c("singleCell", "single")) {
-# 
-#         return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
-#     } else {
-#         stop("Unknown typeSample option")
-#     }
-# }
-
-
-
-
-
 
 
 
