@@ -18,8 +18,8 @@ rm ../BioConductor-git/OncoSimulR/tests/testthat/*
 rm ../BioConductor-git/OncoSimulR/src/*
 rm ../BioConductor-git/OncoSimulR/R/*
 rm ../BioConductor-git/OncoSimulR/man/*
-rm ../BioConductor-git/OncoSimulR/inst/*
 rm ../BioConductor-git/OncoSimulR/data/*
+rm ../BioConductor-git/OncoSimulR/inst/*
 rm ../BioConductor-git/OncoSimulR/inst/miscell/*
 
 cp OncoSimulR/vignettes/relfunct.tex ../BioConductor-git/OncoSimulR/vignettes/.
