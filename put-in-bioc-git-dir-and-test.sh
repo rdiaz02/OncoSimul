@@ -1,28 +1,26 @@
 #!/bin/bash
 
-## This places the code to upload to BiC in the right place.
-## The Subversion-in-BioC directory is a special directory (under svn vc)
-## for the code in BioC. Yes, will eventually use
-## the bridge or similar.
+## This places the code to upload to BioC git repo in the right place.
 
 ## If passed an additional argument, with the path of an R version, it
 ## builds and tests.
 
 ## Yes, works under eshell.
 
+
 ## I need to clean up first, because otherwise when I remove files in the
 ## master git repo, they are not necessarily removed in the svn repo
 
-# rm ./Subversion-in-BioC/OncoSimulR/vignettes/*
-# rm ./Subversion-in-BioC/OncoSimulR/tests/*
-# rm ./Subversion-in-BioC/OncoSimulR/tests/manual/*
-# rm ./Subversion-in-BioC/OncoSimulR/tests/testthat/*
-# rm ./Subversion-in-BioC/OncoSimulR/src/*
-# rm ./Subversion-in-BioC/OncoSimulR/R/*
-# rm ./Subversion-in-BioC/OncoSimulR/man/*
-# rm ./Subversion-in-BioC/OncoSimulR/inst/*
-# rm ./Subversion-in-BioC/OncoSimulR/data/*
-# rm ./Subversion-in-BioC/OncoSimulR/inst/miscell/*
+rm ../BioConductor-git/OncoSimulR/vignettes/*
+rm ../BioConductor-git/OncoSimulR/tests/*
+rm ../BioConductor-git/OncoSimulR/tests/manual/*
+rm ../BioConductor-git/OncoSimulR/tests/testthat/*
+rm ../BioConductor-git/OncoSimulR/src/*
+rm ../BioConductor-git/OncoSimulR/R/*
+rm ../BioConductor-git/OncoSimulR/man/*
+rm ../BioConductor-git/OncoSimulR/inst/*
+rm ../BioConductor-git/OncoSimulR/data/*
+rm ../BioConductor-git/OncoSimulR/inst/miscell/*
 
 cp OncoSimulR/vignettes/relfunct.tex ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/preamble.tex ../BioConductor-git/OncoSimulR/vignettes/.
