@@ -1979,7 +1979,7 @@ raoI <- function(x, Dmat) {
   }
   sx <- sum(x)
   p <- x/sx
-  return(p %*% Dmat %*% p)
+  return(as.numeric(p %*% Dmat %*% p))
 }
 
 # plotRao <- function(z) {

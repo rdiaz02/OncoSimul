@@ -38,11 +38,11 @@ test_that("checking numerical correction of the raoI function", {
   raoI32check <- (0.3 * (1 * 0.2 + 1 * 0.5)
                   + 0.2 * (1 * 0.3 + 2 * 0.5)
                   + 0.5 * (1 * 0.3 + 2 * 0.2))
-  
-  expect_true(raoI1 == raoI1check)
-  expect_true(raoI2 == raoI2check)
-  expect_true(raoI31 == raoI31check)
-  expect_true(raoI32 == raoI32check)
+
+  expect_equal(raoI1, raoI1check)
+  expect_equal(raoI2, raoI2check)
+  expect_equal(raoI31, raoI31check)
+  expect_equal(raoI32, raoI32check)
 })
 
 test_that("checking numerical correction of the raoI function, more", {
@@ -79,10 +79,10 @@ test_that("checking numerical correction of the raoI function, more", {
                   + 0.2 * (2 * 0.3 + 5 * 0.5)
                   + 0.5 * (7 * 0.3 + 5 * 0.2))
   
-  expect_true(raoI1 == raoI1check)
-  expect_true(raoI2 == raoI2check)
-  expect_true(raoI31 == raoI31check)
-  expect_true(raoI32 == raoI32check)
+  expect_equal(raoI1, raoI1check)
+  expect_equal(raoI2, raoI2check)
+  expect_equal(raoI31, raoI31check)
+  expect_equal(raoI32, raoI32check)
 })
 
 test_that("checking numerical correction of the raoI function, random", {
@@ -116,13 +116,8 @@ test_that("checking numerical correction of the raoI function, random", {
       lapply(1:ngenotypes, function(m) 
         freqsn[n] * sum(xor(Genotypes[, n], Genotypes[, m])) * freqsn[m]))))
   
-  expect_true(all(Dmat == Dmatalt))
   expect_equivalent(Dmat, Dmatalt)
-  expect_true(raoI == raoIcheck)
-  ## raoIcheck2 sometimes differs from raoI in eps < 1e⁻15.
-  ## sum function precision? (vs using dot product inside raoI)
-  ## Check if raoI equals raoIcheck2 up to 6 digits of precision:
-  expect_true(round(raoI, digits = 6) == round(raoIcheck2, digits = 6))
+  expect_equal(raoI, raoIcheck)
+  expect_equal(raoI, raoIcheck2)
 })
-
 
