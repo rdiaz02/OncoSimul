@@ -1969,7 +1969,10 @@ plotShannon <- function(z) {
 
 raoI <- function(x, Dmat) {
   ## Check if a scalar is given, and make it a 1x1 matrix for convenience
-  if (!is.matrix(Dmat) && is.atomic(Dmat) && length(Dmat) == 1L) {
+  if (!is.matrix(Dmat) && 
+      !is.character(Dmat) && 
+      is.atomic(Dmat) && 
+      length(Dmat) == 1L) {
     Dmat <- as.matrix(Dmat)
   } else if (!is.matrix(Dmat)) {
     stop("Unknown argument for dissimilarity matrix")

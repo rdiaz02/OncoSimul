@@ -121,3 +121,29 @@ test_that("checking numerical correction of the raoI function, random", {
   expect_equal(raoI, raoIcheck2)
 })
 
+test_that("checking numerical correction of the raoI function, errors", {
+  ngenes <- 10
+  ngenotypes <- 20
+  Genotypes <- matrix(0, nrow = ngenes, ncol = ngenotypes)
+  ## First genotype will be WT.
+  ## The last genotype will be that with all genes mutated.
+  ## The rest will be random, only checking none are duplicated
+  while(any(duplicated(t(Genotypes)))) {
+    Genotypes[, 2:(ngenotypes-1)] <- matrix(
+      sample(0:1, ngenes * (ngenotypes - 2), replace = TRUE),
+      nrow = ngenes, ncol = ngenotypes - 2)
+    Genotypes[, ngenotypes] <- rep(1, ngenes)
+  }
+  Dmat <- as.matrix(dist(t(Genotypes), method = "manhattan"))
+  freqs <- sample(0:200, ngenotypes)
+
+  expect_error(OncoSimulR:::raoI(freqs, "string"), 
+               "Unknown argument for dissimilarity matrix")
+  expect_error(OncoSimulR:::raoI(freqs, NULL), 
+               "Unknown argument for dissimilarity matrix")
+  expect_error(OncoSimulR:::raoI(freqs[-1], Dmat), 
+               "Dimensions of the dissimilarity matrix are incorrect")
+  expect_error(OncoSimulR:::raoI(freqs, Dmat[-1, ]), 
+               "Dimensions of the dissimilarity matrix are incorrect")
+
+})
