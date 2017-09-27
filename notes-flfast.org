@@ -1,0 +1,5 @@
+* Change comment in vignette:
+\@ref(gener-fit-land). (Note for curious readers: actually, what we
+do now is convert the table of fitness of genotypes to a fitness
+specification with all possible epistatic interactions; look
+at the `fem6` object).
