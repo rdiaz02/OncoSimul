@@ -89,6 +89,18 @@ install_github("rdiaz02/OncoSimul/OncoSimulR")
 But sometimes the latest additions in this repo could be broken (see [Software status](#software-status)). And you
 can of course clone this repo, and install from there.
 
+## BioConductor github repository
+
+The github repository for this package is this one:
+https://github.com/rdiaz02/OncoSimul . Since mid-2017 BioConductor is
+maintained using git, but since this directory contains other files and
+directories in addition to the OncoSimulR package itself, I have not used
+option ["Sync an existing GitHub repository with
+Bioconductor"](https://www.bioconductor.org/developers/how-to/git/sync-existing-repositories). Instead,
+I continue using this github repo, but then locally update a
+Bioconductor-only repository of just the OncoSimulR code (as explained in
+[Maintain a Bioconductor-only repository for an existing
+package](https://www.bioconductor.org/developers/how-to/git/maintain-bioc-only/)).
 
 # Documentation
 

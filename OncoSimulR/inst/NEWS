@@ -1,13 +1,13 @@
-Changes in version 2.7.2 (2017-08-04):
+Changes in version 2.7.2 (2017-09-27):
 	- genot_to_adj_mat in C++.
 	- fast_peaks (for no backmutation cases).
 	- Better explanation and testing of peaks and valleys.
 	- Clarified simOGraph transitive reduction.
 	- Better handling of ti corner cases.
 	- Magellan reading fuctions adapted to output of newer (as of
-	2017-07) version of Magellan
-	- sorting gene names in allGenotypes_to_matrix
-	- sampledGenotypes: genotype names with sorted gene names
+	  2017-07) version of Magellan.
+	- sorting gene names in allGenotypes_to_matrix.
+	- sampledGenotypes: genotype names with sorted gene names.
 
 Changes in version 2.6.0 (for BioC 3.5):
 	- Many additions to the vignette and documentation.
