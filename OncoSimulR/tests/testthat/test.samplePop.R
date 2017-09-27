@@ -615,11 +615,11 @@ test_that("exercising the sampling code, v1 objects", {
 })
 
 test_that("exercising the sampling code, numerical timeSample", {
-  r4 <- rfitness(6, 
-                 # reference = rep(1, 4), 
-                 sd = 0.5)  
-  rfl <- allFitnessEffects(genotFitness = r4)
-  o4 <- oncoSimulPop(4, rfl, mc.cores = detectCores())
+  data(examplePosets)
+  p705 <- examplePosets[["p705"]]
+  
+  o4 <- oncoSimulPop(4, p705, numPassengers = 30, mc.cores = 2)
+  
   tfinal <- unlist(lapply(1:4, function(n) o4[[n]]$FinalTime))
   tmin <- min(tfinal)
   tmax <- max(tfinal)
@@ -628,20 +628,20 @@ test_that("exercising the sampling code, numerical timeSample", {
   ts3 <- rep(tmax + 50, 4)
   ts4 <- c(124.2312, 6776257.44, 1243.45, 66116.3)
   ts5 <- c(-123.2, -55, -3, -55)
-
+  
   expect_message(samplePop(o4, timeSample = ts1),
-                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
   expect_true(sampledGenotypes(samplePop(o4, timeSample = ts1))$Genotype == "WT")
   expect_message(samplePop(o4, timeSample = ts2),
-                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
   expect_message(samplePop(o4, timeSample = ts2[-1]),
                  "length timeSample != number of subjects")
   expect_message(samplePop(o4, timeSample = ts3),
-                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
   expect_message(samplePop(o4, timeSample = ts4),
-                 "Subjects by Genes matrix of 4 subjects and 6 genes")
+                 "Subjects by Genes matrix of 4 subjects and 37 genes")
   expect_error(samplePop(o4, timeSample = ts5),
-                         "Cannot sample at negative times")
+               "Cannot sample at negative times")
   expect_error(samplePop(o4, timeSample = ts5),
                "Cannot sample at negative times")
 })
