@@ -44,7 +44,7 @@ r_github_packages:
 #######  x11
 ## try to use bioc devel with an R release
 install:
-  - Rscript -e 'source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite("BiocInstaller");try(useDevel());biocLite("BiocInstaller");install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander",  "knitr"));biocLite(c("BiocStyle", "nem"));devtools::install_deps("OncoSimulR")'
+  - Rscript -e 'source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite("BiocInstaller");library(BiocInstaller);try(useDevel());install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander",  "knitr"));biocLite(c("BiocStyle", "nem"));devtools::install_deps("OncoSimulR")'
 
 #######  x22
 ## install:
