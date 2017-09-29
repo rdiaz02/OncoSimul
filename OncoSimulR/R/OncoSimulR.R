@@ -1977,7 +1977,7 @@ raoI <- function(x, Dmat) {
   } else if (!is.matrix(Dmat)) {
     stop("Unknown argument for dissimilarity matrix")
   }
-  if (nrow(Dmat) != ncol(Dmat) || nrow(Dmat) != length(x)) {
+  if ((nrow(Dmat) != ncol(Dmat)) || (nrow(Dmat) != length(x))) {
     stop("Dimensions of the dissimilarity matrix are incorrect")
   }
   sx <- sum(x)
