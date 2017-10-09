@@ -3,3 +3,30 @@
 do now is convert the table of fitness of genotypes to a fitness
 specification with all possible epistatic interactions; look
 at the `fem6` object).
+
+
+* R code
+
+  - allFitnessEffects(... genotFitness)
+    - calls: from_genotype_fitness(genotFitness) [(that is in from_genotype_utils)]
+	- calls genot_fitness_to_epistasis
+
+
+* C++
+  - convertFitnessEffects
+  - evalGenotypeFitness
+    - this uses fitnessEffectsAll struct
+
+* How to
+
+  - non-specified genotypes are given fitness of 0 (this is a breaking change)
+  - any <0 fitness genotype (and any unspecified genotype) is removed from the table.
+  - we read into C++: a map?
+  - fitness evaluation only requires searching in the map. And if no
+    match, fitness of 0.
+  - Do only for birth rates for now.
+
+* Watch out for
+  - No modules if fitness landscape spec, I guess.  "If you want to
+    specify modules, you must use the lego system (the explicit mapping of
+    genotypes is, by its very nature, ill-suited for this)." (in vignette)
