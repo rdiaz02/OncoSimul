@@ -7,15 +7,63 @@ at the `fem6` object).
 
 * R code
 
-  - allFitnessEffects(... genotFitness)
+  - allFitnessEffects(... genotFitness) [in new-restrcit.R]
     - calls: from_genotype_fitness(genotFitness) [(that is in from_genotype_utils)]
-	- calls genot_fitness_to_epistasis
+      - calls genot_fitness_to_epistasis
+
+  - result, after converted to epistasis, used in a call to
+    allFitnessORMutatorEffects
+
+** In R, do
+   - pass the fitness landscape to allFitnessEffects
+   - do not make the conversion to epistasis
+   - have allFitnessORMutatorEffects input the fitness landscape
+     - simplify (rm <= 0 fitness); yes, do here.
+     - add a new component to the out: the plain, simple, fitness landscape
+     - also needs to extract some other things:
+       - genes so allNamedGenes(rFE) in nr_oncosimul.internal works:
+         create the geneModule:
+	 list(long.rt = NA
+                long.epistasis = NA
+                long.orderEffects = NA
+                long.geneNoInt = NA
+                geneModule = geneModule,
+                gMOneToOne = gMOneToOne,
+                geneToModule = geneToModule,
+                graph = NA
+                drv = drv,
+                rT = NA
+                epistasis = NA
+                orderEffects = NA
+                noIntGenes = NA,
+                fitnessLandscape = fitnessLandscape
+                )
+		
+   - do not allow this for Bozic! Only birth rates??
+
 
 
 * C++
-  - convertFitnessEffects
+  - The fitness effect comes in rFE component, input to nr_BNB_Ak¡log5 in
+    BNB_nr.cpp
+
+  - convertFitnessEffects(rFE) deals with it.
   - evalGenotypeFitness
     - this uses fitnessEffectsAll struct
+
+** In C++, do:
+
+   - First: how are genotypes searched and stored?
+     - Store in "rest" component of Genotype? Or create another vector?
+       - yes, cleaner, another: "flGenes"
+   - ?? How do we know those are flGenes?
+     - createNewGenotype??
+   - modify convertFitnessEffects to deal with landscape
+     - create a fitnessLandscape map
+   - modify evalGenotypeFitness to deal with it
+   - beware of fitness_as_genes
+     - in general, beware of anything with noInt, or rest, or Genotype as structure
+
 
 * How to
 
