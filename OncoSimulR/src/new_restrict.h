@@ -151,7 +151,10 @@ struct Genotype {
   std::vector<int> orderEff;
   std::vector<int> epistRtEff; //always sorted
   std::vector<int> rest; // always sorted
+  std::vector<int> flGenes; // always sorted; the fitness landscape genes
 };
+
+
 
 
 

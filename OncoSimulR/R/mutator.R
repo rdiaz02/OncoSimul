@@ -25,6 +25,8 @@ allMutatorEffects <- function(epistasis = NULL,
                               keepInput = TRUE) {
     ## This is on purpose to prevent using a rT or orderEffects. Those are
     ## not tested to work with mutator.
+
+    ## Neither do we accept a fitness landscape object either for now.
     allFitnessORMutatorEffects(
         rT = NULL,
         epistasis = epistasis,

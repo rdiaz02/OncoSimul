@@ -461,6 +461,9 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
 
+  //zz: do I want Rcpp::List or Rcpp::DataFrame for fitnessLandscape_df?
+  // I want to create map asap. And
+  
   // zz: With fitness landscape, probably skip all that follows,
   // and just fill up the fe.FitnessLandscape map
   
