@@ -628,7 +628,7 @@ allFitnessEffects <- function(rT = NULL,
                  " you cannot pass any of rT, epistasis, orderEffects",
                  " noIntGenes or geneToModule.")
         }
-        epistasis <- from_genotype_fitness(genotFitness)
+        ## epistasis <- from_genotype_fitness(genotFitness)
     }
     allFitnessORMutatorEffects(
         rT = rT,
@@ -638,9 +638,41 @@ allFitnessEffects <- function(rT = NULL,
         geneToModule = geneToModule,
         drvNames = drvNames,
         keepInput = keepInput,
+        genotFitness = genotFitness,
         calledBy = "allFitnessEffects")
 }
 
+## Former version
+## allFitnessEffects <- function(rT = NULL,
+##                               epistasis = NULL,
+##                               orderEffects = NULL,
+##                               noIntGenes = NULL,
+##                               geneToModule = NULL,
+##                               drvNames = NULL,
+##                               genotFitness = NULL,
+##                               keepInput = TRUE) {
+
+##     if(!is.null(genotFitness)) {
+##         if(!is.null(rT) || !is.null(epistasis) ||
+##            !is.null(orderEffects) || !is.null(noIntGenes) ||
+##            !is.null(geneToModule)) {
+##             stop("You have a non-null genotFitness.",
+##                  " If you pass the complete genotype to fitness mapping",
+##                  " you cannot pass any of rT, epistasis, orderEffects",
+##                  " noIntGenes or geneToModule.")
+##         }
+##         epistasis <- from_genotype_fitness(genotFitness)
+##     }
+##     allFitnessORMutatorEffects(
+##         rT = rT,
+##         epistasis = epistasis,
+##         orderEffects = orderEffects,
+##         noIntGenes = noIntGenes,
+##         geneToModule = geneToModule,
+##         drvNames = drvNames,
+##         keepInput = keepInput,
+##         calledBy = "allFitnessEffects")
+## }
 
 ## allFitnessEffects <- function(rT = NULL,
 ##                               epistasis = NULL,

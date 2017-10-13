@@ -461,6 +461,9 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
 
+  // zz: With fitness landscape, probably skip all that follows,
+  // and just fill up the fe.FitnessLandscape map
+  
   if(rrt.size()) {
     fe.Poset = rTable_to_Poset(rrt);
   } 

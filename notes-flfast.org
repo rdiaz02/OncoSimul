@@ -57,7 +57,8 @@ at the `fem6` object).
      - Store in "rest" component of Genotype? Or create another vector?
        - yes, cleaner, another: "flGenes"
    - ?? How do we know those are flGenes?
-     - createNewGenotype??
+     - createNewGenotype??  but early on, if using flandscape, just push
+       into flGenes and sort and bail out
    - modify convertFitnessEffects to deal with landscape
      - create a fitnessLandscape map
    - modify evalGenotypeFitness to deal with it
