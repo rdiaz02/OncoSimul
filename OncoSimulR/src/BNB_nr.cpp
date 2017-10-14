@@ -739,7 +739,8 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
   }
 }
 
-
+// zz: add population size of parent, to get the true LOD
+// as in Szendro
 void addToPhylog(PhylogName& phylog,
 		 const Genotype& parent,
 		 const Genotype& child,
@@ -1531,7 +1532,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	  
 	    g_tmp1_nr = tmpParam.death/tmpParam.mutation;
 	    if(g_tmp1_nr < g_min_death_mut_ratio_nr) g_min_death_mut_ratio_nr = g_tmp1_nr;	
-#endif	  
+#endif
+
+	      //zz: LOD:
+	    // here first call to addToPhylog, with popSize popParams[sp].popSize
 	  } else {// fitness is 0, so we do not add it
 	    --sp;
 	    --numSpecies;
@@ -1679,6 +1683,11 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	  // popParams[sp].timeLastUpdate = -99999.99999; // to catch errors
 #endif
 	  //popParams[sp].Flag = true;
+
+	    //zz: LOD:
+	    // here one of the calls to addToPhylog, with popSize popParams[sp].popSize
+	    
+
 	}
 	//   ***************  5.7 ***************
 	// u_2 irrelevant if to_update = 1;
