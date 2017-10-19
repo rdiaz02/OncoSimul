@@ -3711,6 +3711,13 @@ For the Bozic model [@Bozic2010], however, the birth rate is set to
 
 [^2]: You can change this if you really want to. 
 
+<!-- On their interpretation/naming: -->
+<!-- I do \prod (1 + s_i). The s_i I could call "selection coefficients", -->
+<!--      as Gillespie, 1993; or "mutation effects", as in Fogle et al., 2008, -->
+<!--      or Dayarian and Shraiman, 2014. -->
+<!--    - The multiplicative \Prod (1+ s_j) is typicalone, as in Beerenwinkel -->
+<!--      2007, PLoS Comp Biol -->
+
 
 ### McFarland parameterization {#mcfl}
 
