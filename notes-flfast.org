@@ -57,6 +57,9 @@ Note we use min_filter_fitness = 1e-9.
    - beware of fitness_as_genes
      - in general, beware of anything with noInt, or rest, or Genotype as structure
 
+** CHECK
+   - anything that gakes a Genotype as input in the C++ code.
+     - the output using drivers is not working. Not being counted as drivers
 
 * How to
 

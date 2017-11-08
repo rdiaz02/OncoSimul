@@ -1092,6 +1092,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     init_tmpP(tmpParam);
   } else { //no initMutant
     popParams[0].numMutablePos = numGenes;
+    DP2(numGenes);
     // if(typeModel == TypeModel::beerenwinkel) {
     //   popParams[0].death = 1.0;
     //   // initialize to prevent birth/mutation warning with Beerenwinkel
@@ -1408,6 +1409,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       }
 
       if(popParams[nextMutant].numMutablePos != 0) {
+	DP1("OK, can generate mutants");
 	// this is the usual case. The alternative is the dummy or null mutation
 
       
@@ -1421,6 +1423,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			newMutations,
 			ran_gen,
 			mu);
+	//DP2(newMutations);
 	// nr_change
 	// getMutatedPos_bitset(mutatedPos, numMutablePosParent, // r,
 	// 		     ran_gen,
@@ -1434,6 +1437,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 					fitnessEffects,
 					ran_gen,
 					true);
+	DP2(newMutations[0]);
+	DP1("the new genotype");
+	print_Genotype(newGenotype);
 	// nr_change
 	// newGenotype = Genotypes[nextMutant];
 	// newGenotype.set(mutatedPos);
@@ -1696,6 +1702,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       } else { // the null or dummy mutation case
 	// We increase size by 1, as we already called Algo3. And then
 	// update the ti.
+	DP1("the dummy case!!!!");
 	++popParams[nextMutant].popSize;
 	to_update = 1;
 	u_1 = nextMutant;

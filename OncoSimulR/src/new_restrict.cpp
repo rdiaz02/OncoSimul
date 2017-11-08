@@ -118,7 +118,8 @@ bool detectedSizeP(const double n, const double cPDetect,
 bool operator==(const Genotype& lhs, const Genotype& rhs) {
   return (lhs.orderEff == rhs.orderEff) &&
     (lhs.epistRtEff == rhs.epistRtEff) &&
-    (lhs.rest == rhs.rest);
+    (lhs.rest == rhs.rest) &&
+    (lhs.flGenes == rhs.flGenes);
 }
 
 // Added for completeness, but not used now
@@ -194,6 +195,8 @@ void print_Genotype(const Genotype& ge) {
   for(auto const &oo : ge.epistRtEff) Rcpp::Rcout << " " << oo;
   Rcpp::Rcout << "\n\t\t non interaction genes :";
   for(auto const &oo : ge.rest) Rcpp::Rcout << " " << oo;
+  Rcpp::Rcout << "\n\t\t fitness landscape genes :";
+  for(auto const &oo : ge.flGenes) Rcpp::Rcout << " " << oo;
   Rcpp::Rcout << std::endl;
 }
 
@@ -539,12 +542,13 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
 			   " There should be no other terms. "
 			   " Bug in R code");
   }
-  
-  if(fl_df.nrows() && rgm.size() ) {
-    throw std::logic_error("\n Fitness landscape specification."
-			   " Cannot use modules. "
-			   " Bug in R code");
-  }
+
+  // This is silly
+  // if(fl_df.nrows() && (rgm.size() > 4) ) {
+  //   throw std::logic_error("\n Fitness landscape specification."
+  // 			   " Cannot use modules. "
+  // 			   " Bug in R code");
+  // }
   
   fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
   fe.allOrderG = sortedAllOrder(fe.orderE);
@@ -744,7 +748,10 @@ Genotype createNewGenotype(const Genotype& parent,
     // But this can be easily fixed in the future; like this?
     // if(g <= (fe.fitnessLandscape.NumID.size() + 1)) {
     // and restructure the else logic for the noInt
+    DP1("in createNewGenotype");
+    DP2(g);
     if(fe.fitnessLandscape.NumID.size()) {
+      DP1("inside the adding of genes to fl");
       newGenot.flGenes.push_back(g);
       sort_flgenes = true;
     } else {
@@ -790,7 +797,9 @@ Genotype createNewGenotype(const Genotype& parent,
   if(sort_epist)
     sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
   if(sort_flgenes)
-    sort(newGenot.flGenes.begin(), newGenot.flGenes.end()); 
+    sort(newGenot.flGenes.begin(), newGenot.flGenes.end());
+  DP1("before exiting create");
+  print_Genotype(newGenot);
   return newGenot;
 }
 
@@ -876,25 +885,30 @@ Genotype convertGenotypeFromInts(const std::vector<int>& gg,
     // Very similar to logic in createNewGenotype for placing each gene in
     // its correct place, which needs to look at module mapping.
     for(auto const &g : gg) {
-      if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
-	// We can be dealing with modules
-	int m; 
-	if(fe.gMOneToOne) {
-	  m = g; 
-	} else {
-	  m = fe.Gene_Module_tabl[g].ModuleNumID;
-	}
-	if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
-	  newGenot.epistRtEff.push_back(g);
-	} else {
-	  newGenot.orderEff.push_back(g);
-	}
+      if(fe.fitnessLandscape.NumID.size()) {
+	newGenot.flGenes.push_back(g);
       } else {
-	// No interaction genes so no module stuff
-	newGenot.rest.push_back(g);
+	if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+	  // We can be dealing with modules
+	  int m; 
+	  if(fe.gMOneToOne) {
+	    m = g; 
+	  } else {
+	    m = fe.Gene_Module_tabl[g].ModuleNumID;
+	  }
+	  if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
+	    newGenot.epistRtEff.push_back(g);
+	  } else {
+	    newGenot.orderEff.push_back(g);
+	  }
+	} else {
+	  // No interaction genes so no module stuff
+	  newGenot.rest.push_back(g);
+	}
       }
     }    
 
+    sort(newGenot.flGenes.begin(), newGenot.flGenes.end());
     sort(newGenot.rest.begin(), newGenot.rest.end());
     sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
   } else {
@@ -1187,11 +1201,17 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // which is the value in the fitness landscape as interpreted now.
   // i.e., s = birth rate - 1;
   if(F.fitnessLandscape.NumID.size()) {
+    DP1("fl entering");
+    DP2(F.fitnessLandscape.NumID.size());
     std::string gs = concatIntsString(ge.flGenes);
+    DP2(gs);
     if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
       s.push_back(-1.0);
+      DP1("-1.0 for fitness");
     } else {
       s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
+      DP1("non zero fitness");
+      DP2(F.fitnessLandscape.flmap.at(gs) - 1);
     }
     return s;
   }
