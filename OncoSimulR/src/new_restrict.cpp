@@ -228,7 +228,13 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
   for(auto const &b: F.genesNoInt.NumID) {
     g0.push_back(b);
   }
+  // sort(g0.begin(), g0.end());
+  for(auto const &b: F.fitnessLandscape.NumID) {
+    g0.push_back(b);
+  }
   sort(g0.begin(), g0.end());
+
+  
   // Can we assume the fitness IDs go from 0 to n? Nope: because of
   // muEF. But we assume in several places that there are no repeated
   // elements in the output from this function.
@@ -526,13 +532,13 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
       throw std::logic_error("\n Nothing inside this fitnessEffects; why are you here?"
 			     "  Bug in R code.");
   }
-
+  
   // At least for now, if fitness landscape nothing else allowed
-  if(fl_df.nrows() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0) {
-      throw std::logic_error("\n Fitness landscape specification."
-			     " There should be no other terms. "
-			     " Bug in R code")
-    }
+  if(fl_df.nrows() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0)) {
+    throw std::logic_error("\n Fitness landscape specification."
+			   " There should be no other terms. "
+			   " Bug in R code");
+  }
   
   fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
   fe.allOrderG = sortedAllOrder(fe.orderE);
@@ -548,6 +554,14 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size(). Bug in R code.");
   }
+  // At least for now
+  if(fe.fitnessLandscape.NumID.size() > 0) {
+    if(fe.genomeSize != static_cast<int>(fe.fitnessLandscape.NumID.size())) {
+      throw std::logic_error("\n genomeSize != genes in fitness landscape."
+			     "Bug in R code.");
+    }
+  }
+  
   return fe;
 }
 
