@@ -206,6 +206,7 @@ vector<int> genotypeSingleVector(const Genotype& ge) {
   allgG.insert(allgG.end(), ge.orderEff.begin(), ge.orderEff.end());
   allgG.insert(allgG.end(), ge.epistRtEff.begin(), ge.epistRtEff.end());
   allgG.insert(allgG.end(), ge.rest.begin(), ge.rest.end());
+  allgG.insert(allgG.end(), ge.flGenes.begin(), ge.flGenes.end());
   // this should not be unique'd as it aint' sorted
   return allgG;
 }
@@ -263,6 +264,9 @@ vector<int> allGenesinGenotype(const Genotype& ge){
     allgG.push_back(g2);
   for(auto const &g3 : ge.rest)
     allgG.push_back(g3);
+  for(auto const &g4 : ge.flGenes)
+    allgG.push_back(g4);
+  
   sort(allgG.begin(), allgG.end());
   // Remove duplicates see speed comparisons here:
   // http://stackoverflow.com/questions/1041620/whats-the-most-efficient-way-to-erase-duplicates-and-sort-a-vector

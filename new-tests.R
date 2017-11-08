@@ -96,11 +96,11 @@ test_that("fitness evaluation what we expect", {
 
 set.seed(1)
 rxx <- rfitness(5)
-rxx[2, 6] <- 5
+rxx[2, 6] <- 2
 simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
                                            drvNames = LETTERS[1:5]),
                          model = "Exp", initSize = 5000,
                          onlyCancer = FALSE,
-                         finalTime = 500,
+                         finalTime = 300,
                          verbosity = 3)
 summary(simul1)

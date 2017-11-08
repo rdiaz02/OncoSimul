@@ -213,7 +213,7 @@ std::vector<int> genotypeSingleVector(const Genotype& ge);
 
 bool operator==(const Genotype& lhs, const Genotype& rhs);
 
-bool operator<(const Genotype& lhs, const Genotype& rhs);
+// bool operator<(const Genotype& lhs, const Genotype& rhs);
 
 
 TypeModel stringToModel(const std::string& dep);
