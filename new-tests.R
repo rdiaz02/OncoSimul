@@ -61,3 +61,6 @@ for(i in 1:10) {
 ## FIXME: to do
 ## taken an rT, convert to fitness landscape, and verify we get
 ## same fitnesses
+
+## this should work!
+allFitnessEffects(genotFitness = rxx, drvNames = LETTERS[1:4])

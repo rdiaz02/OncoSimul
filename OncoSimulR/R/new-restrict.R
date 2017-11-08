@@ -379,7 +379,8 @@ getNamesID <- function(fp) {
 }
 
 
-getGeneIDNum <- function(geneModule, geneNoInt, drv, sort = TRUE) {
+getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
+                         drv, sort = TRUE) {
     ## It returns the genes, as NumID, in the given vector with names drv
     ## initMutant uses this, for simplicity, without sorting, but noInt
     ## are always sorted
@@ -388,19 +389,22 @@ getGeneIDNum <- function(geneModule, geneNoInt, drv, sort = TRUE) {
 
     ## Yes, we must do it twice because we do not know before hand which
     ## is which. This makes sure no NA. Period.
-    if(any(is.na( match(drv, c(geneModule$Gene, geneNoInt$Gene))))) {
+    if(any(is.na( match(drv, c(geneModule$Gene, geneNoInt$Gene,
+                               fitnessLandscape_gene_id$Gene))))) {
         stop(paste("For driver or initMutant you have passed genes",
                    "not in the fitness table."))
     }
     
     indicesM <- as.vector(na.omit(match( drv, geneModule$Gene)))
     indicesI <- as.vector(na.omit(sort(match( drv, geneNoInt$Gene))))
+    indicesF <- as.vector(na.omit(sort(match( drv, fitnessLandscape_gene_id$Gene))))
     if(sort) {
         indicesM <- sort(indicesM)
     }
     return(c(
         geneModule$GeneNumID[indicesM],
-        geneNoInt$GeneNumID[indicesI])
+        geneNoInt$GeneNumID[indicesI],
+        fitnessLandscape_gene_id$GeneNumID[indicesF],)
     )
 }
 
@@ -590,7 +594,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
         graphE <- NULL
     }
     if(!is.null(drvNames)) {
-        drv <- unique(getGeneIDNum(geneModule, geneNoInt, drvNames))
+        drv <- unique(getGeneIDNum(geneModule, geneNoInt, fitnessLandscape_gene_id,
+                                   drvNames))
         ## drivers should never be in the geneNoInt; Why!!!???
         ## Catch the problem. This is an overkill,
         ## so since we catch the issue, we could leave the geneNoInt. But
@@ -1763,7 +1768,8 @@ nr_oncoSimul.internal <- function(rFE,
             initMutant <- nice.vector.eo(initMutant, ",")
         }
         initMutant <- getGeneIDNum(rFE$geneModule,
-                             rFE$long.geneNoInt,
+                                   rFE$long.geneNoInt,
+                                   rFE$fitnessLandscape_gene_id,
                                    initMutant,
                              FALSE)
        if(length(initMutant) >= countGenesFe(rFE)) {
