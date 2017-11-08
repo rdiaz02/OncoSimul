@@ -42,12 +42,13 @@ at the `fem6` object).
    - do not allow this for Bozic! Only birth rates??
 
 
+Note we use min_filter_fitness = 1e-9.
 
 * C++
   - The fitness effect comes in rFE component, input to nr_BNB_Ak¡log5 in
     BNB_nr.cpp
 
-  - convertFitnessEffects(rFE) deals with it.
+  - convertFitnessEffects(rFE) deals with it. (in new_restrict.cpp)
   - evalGenotypeFitness
     - this uses fitnessEffectsAll struct
 
@@ -79,3 +80,14 @@ at the `fem6` object).
   - No modules if fitness landscape spec, I guess.  "If you want to
     specify modules, you must use the lego system (the explicit mapping of
     genotypes is, by its very nature, ill-suited for this)." (in vignette)
+
+
+
+
+
+
+
+* What happens with mutator?  
+  - the fl specification?
+  - do we have modules?
+

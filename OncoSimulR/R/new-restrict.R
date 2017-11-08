@@ -552,7 +552,30 @@ allFitnessORMutatorEffects <- function(rT = NULL,
     } else {
         geneNoInt <- data.frame()
     }
-
+    
+    if(is.null(genotFitness)) {
+        genotFitness <- matrix(NA, nrow = 0, ncol = 1)
+        fitnessLandscape_df <- data.frame()
+        fitnessLandscape_gene_id <- data.frame()
+    } else {
+        ## Yes, I am duplicating stuff for now.
+        ## This makes life simpler in C++:
+        ## In the map, the key is the genotype name, as
+        ## cnn <- colnames(genotFitness)[-ncol(genotFitness)]
+        cnn <- 1:(ncol(genotFitness) - 1)
+        gfn <- apply(genotFitness[, -ncol(genotFitness)], 1,
+                     function(x) paste(cnn[as.logical(x)],
+                                       collapse = ", "))
+        ## rownames(genotFitness) <- gfn
+        fitnessLandscape_df <-
+            data.frame(Genotype = gfn,
+                       Fitness = genotFitness[, ncol(genotFitness)],
+                       stringsAsFactors = FALSE)
+        fitnessLandscape_gene_id <- data.frame(
+            Gene = colnames(genotFitness)[-ncol(genotFitness)],
+            GeneNumID = cnn)
+    }
+    
     if( (length(long.rt) + length(long.epistasis) + length(long.orderEffects) +
              nrow(geneNoInt) + nrow(genotFitness)) == 0)
         stop("You have specified nothing!")
@@ -584,25 +607,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
         ## drv <- geneModule$GeneNumID[-1]
         drv <- vector(mode = "integer", length = 0L)
     }
-    if(is.null(genotFitness)) {
-        genotFitness <- matrix(NA, nrow = 0, ncol = 1)
-        fitnessLandscape_df <- data.frame()
-    } else {
-        ## Yes, I am duplicating stuff for now.
-        ## This makes life simpler in C++:
-        ## In the map, the key is the genotype name, as
-        ## cnn <- colnames(genotFitness)[-ncol(genotFitness)]
-        cnn <- 1:(ncol(genotFitess) - 1)
-        gfn <- apply(genotFitness[, -ncol(genotFitness)],
-                     function(x) paste(cnn[as.logical(x)],
-                                       collapse = ", "))
-        ## rownames(genotFitness) <- gfn
-        fitnessLandscape_df <-
-            data.frame(Genotype = gfn,
-                       Fitness = genotFitness[, ncol(genotFitness)],
-                       stringsAsFactors = FALSE)
-        
-    }
+  
     if(!keepInput) {
         rT <- epistasis <- orderEffects <- noIntGenes <- NULL
     }
@@ -621,7 +626,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 orderEffects = orderEffects,
                 noIntGenes = noIntGenes,
                 fitnessLandscape = genotFitness,
-                fitnessLandscape_df = fitnessLandscape_df
+                fitnessLandscape_df = fitnessLandscape_df,
+                fitnessLandscape_gene_id = fitnessLandscape_gene_id
                 )
     if(calledBy == "allFitnessEffects") {
         class(out) <- c("fitnessEffects")
@@ -857,6 +863,8 @@ allFitnessEffects <- function(rT = NULL,
 
         genotFitness_std <- to_genotFitness_std(genotFitness, simplify = TRUE)
         ## epistasis <- from_genotype_fitness(genotFitness)
+    } else {
+        genotFitness_std <- NULL
     }
     allFitnessORMutatorEffects(
         rT = rT,

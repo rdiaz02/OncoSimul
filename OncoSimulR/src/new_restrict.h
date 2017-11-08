@@ -47,6 +47,13 @@ struct genesWithoutInt {
   std::vector<double> s;
 };
 
+
+struct fitnessLandscape_struct {
+  std::vector<int> NumID;
+  std::vector<std::string> names;
+  // zz: maybe not a char; hold on
+  std::map<std::string, double> flmap;
+}
 struct Poset_struct {
   Dependency typeDep;
   int childNumID; //Not redundant
@@ -99,7 +106,8 @@ struct fitnessEffectsAll {
 			     //not modules. Sorted.
   std::vector<int> drv; // Sorted.
   genesWithoutInt genesNoInt;
-  
+  // zz:
+  fitnessLandscape_struct fitnessLandscape;
 };
 
 inline fitnessEffectsAll nullFitnessEffects() {

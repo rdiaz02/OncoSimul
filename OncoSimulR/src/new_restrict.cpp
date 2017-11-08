@@ -29,6 +29,18 @@ using std::vector;
 using std::back_inserter;
 
 
+std::string concatIntsString(const std::vector<int>& ints,
+			     const std::string sep = ", ") {
+  std::string strout;
+  std::string comma = "";
+  for(auto const &g : ints) {
+    strout += (comma + to_string(g));
+    comma = sep;
+  }
+  return strout;
+}
+
+
 double prodFitness(const std::vector<double>& s) {
   return accumulate(s.begin(), s.end(), 1.0,
 		    [](double x, double y) {return (x * std::max(0.0, (1 + y)));});
@@ -381,7 +393,22 @@ std::vector<int> GeneToModule(const std::vector<int>& Drv,
 }
 
 
+fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
+						Rcpp::DataFrame fl_df) {
+  fitnessLandscape_struct flS;
+  flS.names = Rcpp::as<std::vector<std::string> >(flg["Gene"]);
+  flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
 
+  Rcpp::CharacterVector genotNames = fl_df["Genotype"];
+  Rcpp::NumericVector fitness = fl_df["Fitness"];
+  
+  // Fill up the map genotypes(as string) to fitness
+  for(size_t i = 0; i != fl_df.nrows(); ++i) {
+    flS.flmap.insert({genotNames[i], fitness[i]});
+  }
+
+  return flS;
+}
 
 genesWithoutInt convertNoInts(Rcpp::List nI) {
 
@@ -461,11 +488,23 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
 
+  Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
+  Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
+  
   //zz: do I want Rcpp::List or Rcpp::DataFrame for fitnessLandscape_df?
   // I want to create map asap. And
   
   // zz: With fitness landscape, probably skip all that follows,
   // and just fill up the fe.FitnessLandscape map
+
+  // zz:
+  // add the genes to allGenes; should be the only thing
+  // create a structure
+  
+  
+  if(fl_df.nrows()) {
+    fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
+  }
   
   if(rrt.size()) {
     fe.Poset = rTable_to_Poset(rrt);
@@ -483,17 +522,25 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   }
   // If this is null, use the nullFitnessEffects function; never
   // end up here.
-  if( (rrt.size() + re.size() + ro.size() + rgi.size()) == 0) {
+  if( (rrt.size() + re.size() + ro.size() + rgi.size() + fl_df.nrows()) == 0) {
       throw std::logic_error("\n Nothing inside this fitnessEffects; why are you here?"
 			     "  Bug in R code.");
   }
+
+  // At least for now, if fitness landscape nothing else allowed
+  if(fl_df.nrows() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0) {
+      throw std::logic_error("\n Fitness landscape specification."
+			     " There should be no other terms. "
+			     " Bug in R code")
+    }
   
   fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
   fe.allOrderG = sortedAllOrder(fe.orderE);
   fe.allPosetG = sortedAllPoset(fe.Poset);
   fe.gMOneToOne = rone;
   fe.allGenes = allGenesinFitness(fe);
-  fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.s.size();
+  fe.genomeSize =  fe.Gene_Module_tabl.size() - 1 + fe.genesNoInt.s.size() +
+    fe.fitnessLandscape.NumID.size();
   fe.drv = as<std::vector<int> > (drv);
   sort(fe.drv.begin(), fe.drv.end()); //should not be needed, but just in case
   // cannot trust R gives it sorted

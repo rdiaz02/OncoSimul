@@ -29,8 +29,8 @@ m3 <- rbind(c(0, 0, 0, 1.3), c(1, 0, 0, 2.0))
 colnames(m3) <- c("A", "B", "C", "Fitness")
 m4 <- rbind(c(0, 0, 0, 1.3), c(1, 0, 0, 2.0), c(0, 1, 1, 0))
 colnames(m4) <- c("A", "B", "C", "Fitness")
-expect_equal(to_genotFitness_std(df3), m3)
-expect_equal(to_genotFitness_std(df3, simplify = FALSE), m4)
+expect_equal(OncoSimulR:::to_genotFitness_std(df3), m3)
+expect_equal(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
 
 for(i in 1:10) {
     rxx <- rfitness(7)
@@ -58,5 +58,6 @@ for(i in 1:10) {
     expect_identical(m1x, gn)
 }
 
+## FIXME: to do
 ## taken an rT, convert to fitness landscape, and verify we get
 ## same fitnesses
