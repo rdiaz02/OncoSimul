@@ -63,4 +63,17 @@ for(i in 1:10) {
 ## same fitnesses
 
 ## this should work!
-allFitnessEffects(genotFitness = rxx, drvNames = LETTERS[1:4])
+test_that("drv names OK", {
+    rxx <- rfitness(5)
+    expect_silent(allFitnessEffects(genotFitness = rxx, drvNames = LETTERS[1:4]))
+    })
+
+## I think this is already tested
+## rxx <- rfitness(3)
+## allFitnessEffects(genotFitness = rxx,
+##                   geneToModule = c("Root" = "Root",
+##                                    "A" = "a1, a2",
+##                                    "B" = "b1",
+##                                    "C" = "c1"))
+
+## Make sure warning if using Bozic

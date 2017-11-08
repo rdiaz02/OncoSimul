@@ -404,7 +404,7 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
     return(c(
         geneModule$GeneNumID[indicesM],
         geneNoInt$GeneNumID[indicesI],
-        fitnessLandscape_gene_id$GeneNumID[indicesF],)
+        fitnessLandscape_gene_id$GeneNumID[indicesF])
     )
 }
 
@@ -577,7 +577,9 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                        stringsAsFactors = FALSE)
         fitnessLandscape_gene_id <- data.frame(
             Gene = colnames(genotFitness)[-ncol(genotFitness)],
-            GeneNumID = cnn)
+            GeneNumID = cnn,
+            stringsAsFactors = FALSE)
+        
     }
     
     if( (length(long.rt) + length(long.epistasis) + length(long.orderEffects) +

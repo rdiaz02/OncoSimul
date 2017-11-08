@@ -54,15 +54,6 @@ Note we use min_filter_fitness = 1e-9.
 
 ** In C++, do:
 
-   - First: how are genotypes searched and stored?
-     - Store in "rest" component of Genotype? Or create another vector?
-       - yes, cleaner, another: "flGenes"
-   - ?? How do we know those are flGenes?
-     - createNewGenotype??  but early on, if using flandscape, just push
-       into flGenes and sort and bail out
-   - modify convertFitnessEffects to deal with landscape
-     - create a fitnessLandscape map
-   - modify evalGenotypeFitness to deal with it
    - beware of fitness_as_genes
      - in general, beware of anything with noInt, or rest, or Genotype as structure
 
@@ -91,3 +82,5 @@ Note we use min_filter_fitness = 1e-9.
   - the fl specification?
   - do we have modules?
 
+* Future: 
+  - allow passing noIntGenes with the fl specification.

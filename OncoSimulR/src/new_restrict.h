@@ -53,7 +53,8 @@ struct fitnessLandscape_struct {
   std::vector<std::string> names;
   // zz: maybe not a char; hold on
   std::map<std::string, double> flmap;
-}
+};
+
 struct Poset_struct {
   Dependency typeDep;
   int childNumID; //Not redundant
@@ -127,11 +128,17 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.genesNoInt.NumID.resize(0);
   f.genesNoInt.names.resize(0);
   f.genesNoInt.s.resize(0);
+  f.fitnessLandscape.NumID.resize(0);
+  f.fitnessLandscape.names.resize(0);
+  f.fitnessLandscape.flmap.clear();
   return f;
 }
 
 
-
+// FIXME: fitness_as_genes and Genotype are identical
+// structures. Why not use the same thing?
+// Because even if just four vectors of ints, have different meaning.
+// Humm... 
 struct fitness_as_genes {
   // fitnessEffectsAll in terms of genes.  Useful for output
   // conversions. There could be genes that are both in orderG and
@@ -141,8 +148,17 @@ struct fitness_as_genes {
   std::vector<int> orderG;
   std::vector<int> posetEpistG;
   std::vector<int> noInt;
+  std::vector<int> flGenes;
 };
 
+inline fitness_as_genes zero_fitness_as_genes() {
+  fitness_as_genes g;
+  g.orderG.resize(0);
+  g.posetEpistG.resize(0);
+  g.noInt.resize(0);
+  g.flGenes.resize(0);
+  return g;
+}
 // There are no shared genes in order and epist.  Any gene in orderEff can
 // also be in the posets or general epistasis, but orderEff is only for
 // those that have order effects.
@@ -172,6 +188,7 @@ inline Genotype wtGenotype() {
   g.orderEff.resize(0);
   g.epistRtEff.resize(0);
   g.rest.resize(0);
+  g.flGenes.resize(0);
   return g;
 }
 

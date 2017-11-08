@@ -22,6 +22,7 @@
 #include <iomanip> 
 #include <algorithm>
 #include <random>
+#include <string>
 
 
 using namespace Rcpp;
@@ -34,7 +35,7 @@ std::string concatIntsString(const std::vector<int>& ints,
   std::string strout;
   std::string comma = "";
   for(auto const &g : ints) {
-    strout += (comma + to_string(g));
+    strout += (comma + std::to_string(g));
     comma = sep;
   }
   return strout;
@@ -405,7 +406,9 @@ fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
   flS.names = Rcpp::as<std::vector<std::string> >(flg["Gene"]);
   flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
 
-  Rcpp::CharacterVector genotNames = fl_df["Genotype"];
+  std::vector<std::string> genotNames =
+    Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
+  // Rcpp::CharacterVector genotNames = fl_df["Genotype"];
   Rcpp::NumericVector fitness = fl_df["Fitness"];
   
   // Fill up the map genotypes(as string) to fitness
@@ -497,16 +500,13 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
   
-  //zz: do I want Rcpp::List or Rcpp::DataFrame for fitnessLandscape_df?
-  // I want to create map asap. And
-  
-  // zz: With fitness landscape, probably skip all that follows,
-  // and just fill up the fe.FitnessLandscape map
+ 
 
-  // zz:
-  // add the genes to allGenes; should be the only thing
-  // create a structure
-  
+  // In the future, if we want noInt and fitnessLandscape, all
+  // we need is use the fitness landscape with an index smaller than those
+  // of noInt. So we can use noInt with shift being those in fitnessLandscape.
+
+  // BEWARE: will need to modify also createNewGenotype.
   
   if(fl_df.nrows()) {
     fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
@@ -537,6 +537,12 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   if(fl_df.nrows() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0)) {
     throw std::logic_error("\n Fitness landscape specification."
 			   " There should be no other terms. "
+			   " Bug in R code");
+  }
+  
+  if(fl_df.nrows() && rgm.size() ) {
+    throw std::logic_error("\n Fitness landscape specification."
+			   " Cannot use modules. "
 			   " Bug in R code");
   }
   
@@ -649,10 +655,15 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   // Extract the noInt. Then those in order effects by creating a multimap
   // to go from map to genes. Then all remaining genes are those only in
   // poset. By set_difference.
-  fitness_as_genes fg;
+  fitness_as_genes fg = zero_fitness_as_genes();
+
+  fg.flGenes = fe.fitnessLandscape.NumID;
+  if(fg.flGenes.size()) {
+    return fg;
+  }
 
   fg.noInt = fe.genesNoInt.NumID;
-
+  
   std::multimap<int, int> MG;
   for( auto const &mt : fe.Gene_Module_tabl) {
     MG.insert({mt.ModuleNumID, mt.GeneNumID});
@@ -712,6 +723,7 @@ Genotype createNewGenotype(const Genotype& parent,
   std::vector<int> tempOrder; // holder for multiple muts if order.
   bool sort_rest = false;
   bool sort_epist = false;
+  bool sort_flgenes = false;
 
   // FIXME: we need to create the mutations!
 
@@ -727,27 +739,37 @@ Genotype createNewGenotype(const Genotype& parent,
   //   std::vector<int> mutG (ge.epistRtEff);
   //   mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
   for(auto const &g : mutations) {
-    if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
-      // We can be dealing with modules
-      int m; 
-      if(fe.gMOneToOne) {
-	m = g; 
-      } else {
-	m = fe.Gene_Module_tabl[g].ModuleNumID;
-      }
-      if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
-	newGenot.epistRtEff.push_back(g);
-	sort_epist = true;
-      } else {
-	tempOrder.push_back(g);
-      }
+    // If we are dealing with a fitness landscape, that is as far as we go here
+    // at least for now. No other genes affect fitness.
+    // But this can be easily fixed in the future; like this?
+    // if(g <= (fe.fitnessLandscape.NumID.size() + 1)) {
+    // and restructure the else logic for the noInt
+    if(fe.fitnessLandscape.NumID.size()) {
+      newGenot.flGenes.push_back(g);
+      sort_flgenes = true;
     } else {
-      // No interaction genes so no module stuff
-      newGenot.rest.push_back(g);
-      sort_rest = true;
-    }
-  }    
-
+      if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+	// We can be dealing with modules
+	int m; 
+	if(fe.gMOneToOne) {
+	  m = g; 
+	} else {
+	  m = fe.Gene_Module_tabl[g].ModuleNumID;
+	}
+	if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
+	  newGenot.epistRtEff.push_back(g);
+	  sort_epist = true;
+	} else {
+	  tempOrder.push_back(g);
+	}
+      } else {
+	// No interaction genes so no module stuff
+	newGenot.rest.push_back(g);
+	sort_rest = true;
+      }
+    }    
+  }
+  
   // If there is order but multiple simultaneous mutations
   // (chromothripsis), we randomly insert them
 
@@ -767,7 +789,8 @@ Genotype createNewGenotype(const Genotype& parent,
     sort(newGenot.rest.begin(), newGenot.rest.end());
   if(sort_epist)
     sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
-  
+  if(sort_flgenes)
+    sort(newGenot.flGenes.begin(), newGenot.flGenes.end()); 
   return newGenot;
 }
 
@@ -1147,13 +1170,33 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   checkLegitGenotype(ge, F);
   
   std::vector<double> s;
-  if( (ge.orderEff.size() + ge.epistRtEff.size() + ge.rest.size()) == 0) {
+  if( (ge.orderEff.size() + ge.epistRtEff.size() +
+       ge.rest.size() + ge.flGenes.size()) == 0) {
     Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
     // s.push_back(1.0); //Eh??!! 1? or 0? FIXME It should be empty! and have prodFitness
     // deal with it.
     return s;
   }
 
+  // If we are dealing with a fitness landscape, that is as far as we go here
+  // at least for now. No other genes affect fitness.
+  // But this can be easily fixed in the future; do not return
+  // s below, but keep adding, maybe the noIntGenes.
+  // Recall also  prodFitness uses, well, the prod of 1 + s
+  // so we want an s s.t. 1 + s = birth rate passed, 
+  // which is the value in the fitness landscape as interpreted now.
+  // i.e., s = birth rate - 1;
+  if(F.fitnessLandscape.NumID.size()) {
+    std::string gs = concatIntsString(ge.flGenes);
+    if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
+      s.push_back(-1.0);
+    } else {
+      s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
+    }
+    return s;
+  }
+   
+  
   // Genes without any restriction or epistasis are just genes. No modules.
   // So simple we do it here.
   if(F.genesNoInt.shift > 0) {
