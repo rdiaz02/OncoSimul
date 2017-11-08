@@ -712,6 +712,13 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
       i != fe.genesNoInt.NumID.size(); ++i){
     gg.insert({fe.genesNoInt.NumID[i], fe.genesNoInt.names[i]});
   }
+
+  for(size_t i = 0;
+      i != fe.fitnessLandscape.NumID.size(); ++i){
+    gg.insert({fe.fitnessLandscape.NumID[i], fe.fitnessLandscape.names[i]});
+  }
+
+  
   return gg;
 }
 

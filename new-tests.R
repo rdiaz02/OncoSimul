@@ -104,3 +104,29 @@ simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
                          finalTime = 300,
                          verbosity = 3)
 summary(simul1)
+
+
+set.seed(1)
+rxx <- rfitness(5)
+rxx[2, 6] <- 2
+simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
+                                           drvNames = LETTERS[1:5]),
+                         model = "Exp", initSize = 5000,
+                         onlyCancer = FALSE,
+                         finalTime = 1000,
+                         verbosity = 0)
+summary(simul1)
+
+
+
+
+
+rxx <- rfitness(5)
+simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
+                                           drvNames = LETTERS[1:5]),
+                         model = "Exp", initSize = 5000,
+                         onlyCancer = FALSE,
+                         finalTime = 1000,
+                         verbosity = 0)
+summary(simul1)
+

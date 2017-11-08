@@ -598,7 +598,6 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
 
   std::vector<int> order_int;
   std::vector<int> rest_int;
-
    
   for(auto const &g : genotypeV) {
     if( binary_search(fg.orderG.begin(), fg.orderG.end(), g)) {
@@ -612,10 +611,16 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
   std::string order_part;
   std::string rest;
   std::string comma = "";
+  
   // FIXME: when sure no problems, remove at if needed for speed.
   for(auto const &g : order_int) {
     order_part += (comma + intName.at(g));
     comma = " > "; // comma = ", ";
+  }
+  comma = "";
+  for(auto const &g : rest_int) {
+    rest += (comma + intName.at(g));
+    comma = ", ";
   }
   comma = "";
   for(auto const &g : rest_int) {
