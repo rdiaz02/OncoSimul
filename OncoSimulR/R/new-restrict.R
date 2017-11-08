@@ -1378,6 +1378,7 @@ evalAllGenotypesORMut <- function(fmEffects,
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
+
     allf <- vapply(allg$genotNums,
                    function(x) evalRGenotype(x, fmEffects, FALSE,
                                              prodNeg,
@@ -1424,7 +1425,10 @@ generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
                                        function(x) choose(n, x) * factorial(x)))}
     else
         tot <- function(n) {2^n}
-    nn <- nrow(fitnessEffects$geneModule) -1  + nrow(fitnessEffects$long.geneNoInt)
+    nn <- nrow(fitnessEffects$geneModule) -1  +
+        nrow(fitnessEffects$long.geneNoInt) +
+        nrow(fitnessEffects$fitnessLandscape_gene_id)
+    
     tnn <- tot(nn)
     if(tnn > max) {
         m <- paste("There are", tnn, "genotypes.")
@@ -1451,7 +1455,8 @@ generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
     }
     genotNums <- list.of.vectors(genotNums)
     names <- c(fitnessEffects$geneModule$Gene[-1],
-               fitnessEffects$long.geneNoInt$Gene)
+               fitnessEffects$long.geneNoInt$Gene,
+               fitnessEffects$fitnessLandscape_gene_id$Gene)
     
     genotNames <- unlist(lapply(lapply(genotNums, function(x) names[x]),
                                 function(z)
@@ -1925,7 +1930,8 @@ nr_oncoSimul.internal <- function(rFE,
 
 countGenesFe <- function(fe) {
     ## recall geneModule has Root always
-    nrow(fe$geneModule) + nrow(fe$long.geneNoInt) - 1
+    nrow(fe$geneModule) + nrow(fe$long.geneNoInt) +
+        nrow(fe$fitnessLandscape_gene_id) - 1 
 }
 
 allNamedGenes <- function(fe){

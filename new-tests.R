@@ -1,3 +1,6 @@
+library(OncoSimulR)
+library(testthat)
+
 df1 <- data.frame(Genotype = c("A", "B, C"), Fitness = c(1.3, 2),
                   stringsAsFactors = FALSE)
 expect_warning(OncoSimulR:::allGenotypes_to_matrix(df1),
@@ -77,3 +80,26 @@ test_that("drv names OK", {
 ##                                    "C" = "c1"))
 
 ## Make sure warning if using Bozic
+
+test_that("fitness evaluation what we expect", {
+    for(i in 1:10) {
+        rxx <- rfitness(5)
+        ## allFitnessEffects(genotFitness = rxx)
+        eag <- evalAllGenotypes(allFitnessEffects(genotFitness = rxx),
+                                addwt = TRUE)
+        rxxf <- rxx[, "Fitness"]
+        rxxf[rxxf <= 1e-09] <- 0
+        expect_equal(rxxf, eag[, "Fitness"])
+    }
+})
+
+
+rxx <- rfitness(5)
+
+simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
+                                           drvNames = LETTERS[1:5]),
+                         model = "Exp", initSize = 1000,
+                         onlyCancer = FALSE,
+                         finalTime = 100,
+                         verbosity = 3)
+summary(simul1)
