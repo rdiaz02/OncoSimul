@@ -12,15 +12,17 @@ test_that("Exercise plotting and dealing with different matrix input", {
 
     m6 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
     expect_message(plotFitnessLandscape(m6),
-                   "Setting/resetting gene names because", fixed = TRUE)
+                   "No column names:", fixed = TRUE)
 
+    ## the next are so ill formed that they should not be accepted
     m7 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
-    expect_message(plotFitnessLandscape(m7),
-                   "Setting/resetting gene names because", fixed = TRUE)
+    expect_error(plotFitnessLandscape(m7),
+                    "duplicated column names", fixed = TRUE)
 
+    ## zz: why isn't this working?
     m8 <- cbind(A = c(0, 1, 0, 1), c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
     expect_message(plotFitnessLandscape(m8),
-                   "Setting/resetting gene names because", fixed = TRUE)
+                   "No column names:", fixed = TRUE)
 
     
     ## Specify fitness with allFitnessEffects, and plot it

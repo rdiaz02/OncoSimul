@@ -56,8 +56,8 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
         ## Major change as of flfast: no longer using from_genotype_fitness
         afe <- evalAllGenotypes(allFitnessEffects(
-            genotFitness = x,
-            ## epistasis = from_genotype_fitness(x)
+            genotFitness = x
+            ##, epistasis = from_genotype_fitness(x)
         ),
             order = FALSE, addwt = TRUE, max = max_num_genotypes)
 
@@ -142,16 +142,17 @@ to_genotFitness_std <- function(x, simplify = TRUE,
         ## except for the last column, that is Fitness
         ## Of course, can ONLY work with epistastis, NOT order
         ## return(genot_fitness_to_epistasis(x))
+        if(any(duplicated(colnames(x))))
+            stop("duplicated column names")
         if(!is.null(colnames(x)) && sort_gene_names) {
-            ncx <- (ncol(x) - 1)
+            ncx <- ncol(x)
             cnx <- colnames(x)[-ncx]
             ocnx <- gtools::mixedorder(cnx)
             if(!(identical(cnx[ocnx], cnx))) {
                 message("Sorting gene column names alphabetically")
-                x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx + 1)])
+                x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
             }
         }
-        
         if(is.null(colnames(x))) {
             ncx <- (ncol(x) - 1)
             message("No column names: assigning gene names from LETTERS")
@@ -161,7 +162,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
             colnames(x) <- c(LETTERS[1:ncx], "Fitness")
         }
         if(any(colnames(x) == "")) {
-            warning("At least one column named ''. Expect problems")
+            warning("At least one column named ''")
         }
     } else {
         if(!inherits(x, "data.frame"))
