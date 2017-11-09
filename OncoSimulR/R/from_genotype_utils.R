@@ -53,9 +53,14 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         ## columns names
         ## if( (is.null(colnames(x))) || any(grepl("^$", colnames(x))))
         ##    stop("Matrix x must have column names")
+
+        ## Major change as of flfast: no longer using from_genotype_fitness
         afe <- evalAllGenotypes(allFitnessEffects(
-            epistasis = from_genotype_fitness(x)),
+            genotFitness = x,
+            ## epistasis = from_genotype_fitness(x)
+        ),
             order = FALSE, addwt = TRUE, max = max_num_genotypes)
+
         ## Might not be needed with the proper gfm object (so gmf <- x)
         ## but is needed if arbitrary matrices.
         gfm <- allGenotypes_to_matrix(afe) 
@@ -198,7 +203,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
                 colnames(x) <- c("Genotype", "Fitness")
             }
             if((!omarker) && (!emarker) && (!nogoodepi)) {
-                message("All single-gene genotypes as input to from_genotype_fitness")
+                message("All single-gene genotypes as input to to_genotFitness_std")
             }
             ## Yes, we need to do this to  scale the fitness and put the "-"
             x <- allGenotypes_to_matrix(x)
@@ -211,85 +216,89 @@ to_genotFitness_std <- function(x, simplify = TRUE,
     }
 }
 
+## Deprecated after flfast
+## to_genotFitness_std is faster and has better error checking
+## and is very similar and does not use
+## the genot_fitness_to_epistasis, which is not reasonable anymore.
 
-from_genotype_fitness <- function(x) {
-    ## Would break with output from allFitnessEffects and
-    ## output from allGenotypeAndMut
+## from_genotype_fitness <- function(x) {
+##     ## Would break with output from allFitnessEffects and
+##     ## output from allGenotypeAndMut
     
-    ## For the very special and weird case of
-    ## a matrix but only a single gene so with a 0 and 1
-    ## No, this is a silly and meaningless case.
-    ## if( ( ncol(x) == 2 ) && (nrow(x) == 1) && (x[1, 1] == 1) ) {
+##     ## For the very special and weird case of
+##     ## a matrix but only a single gene so with a 0 and 1
+##     ## No, this is a silly and meaningless case.
+##     ## if( ( ncol(x) == 2 ) && (nrow(x) == 1) && (x[1, 1] == 1) ) {
     
-    ## } else  blabla: 
+##     ## } else  blabla: 
     
-    if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
-        stop("Input must inherit from matrix or data.frame.")
+##     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
+##         stop("Input must inherit from matrix or data.frame.")
     
-    ## if((ncol(x) > 2) && !(inherits(x, "matrix"))
-    ##     stop(paste0("Genotype fitness input either two-column data frame",
-    ##          " or a numeric matrix with > 2 columns."))
-    ## if( (ncol(x) > 2) && (nrow(x) == 1) )
-    ##     stop(paste0("It looks like you have a matrix for a single genotype",
-    ##                 " of a single gene. For this degenerate cases use",
-    ##                 " a data frame specification."))
+##     ## if((ncol(x) > 2) && !(inherits(x, "matrix"))
+##     ##     stop(paste0("Genotype fitness input either two-column data frame",
+##     ##          " or a numeric matrix with > 2 columns."))
+##     ## if( (ncol(x) > 2) && (nrow(x) == 1) )
+##     ##     stop(paste0("It looks like you have a matrix for a single genotype",
+##     ##                 " of a single gene. For this degenerate cases use",
+##     ##                 " a data frame specification."))
     
-    if(ncol(x) > 2) {
-        if(inherits(x, "matrix")) {
-            if(!is.numeric(x))
-                stop("A genotype fitness matrix/data.frame must be numeric.")
-        } else if(inherits(x, "data.frame")) {
-            if(!all(unlist(lapply(x, is.numeric))))
-                stop("A genotype fitness matrix/data.frame must be numeric.")
-        }
+##     if(ncol(x) > 2) {
+##         if(inherits(x, "matrix")) {
+##             if(!is.numeric(x))
+##                 stop("A genotype fitness matrix/data.frame must be numeric.")
+##         } else if(inherits(x, "data.frame")) {
+##             if(!all(unlist(lapply(x, is.numeric))))
+##                 stop("A genotype fitness matrix/data.frame must be numeric.")
+##         }
         
-        ## We are expecting here a matrix of 0/1 where columns are genes
-        ## except for the last column, that is Fitness
-        ## Of course, can ONLY work with epistastis, NOT order
-        return(genot_fitness_to_epistasis(x))
-    } else {
-        if(!inherits(x, "data.frame"))
-            stop("genotFitness: if two-column must be data frame")
-        ## Make sure no factors
-        if(is.factor(x[, 1])) x[, 1] <- as.character(x[, 1])
-        ## Make sure no numbers
-        if(any(is.numeric(x[, 1])))
-            stop(paste0("genotFitness: first column of data frame is numeric.",
-                        " Ambiguous and suggests possible error. If sure,",
-                        " enter that column as character"))
+##         ## We are expecting here a matrix of 0/1 where columns are genes
+##         ## except for the last column, that is Fitness
+##         ## Of course, can ONLY work with epistastis, NOT order
+##         return(genot_fitness_to_epistasis(x))
+##     } else {
+##         if(!inherits(x, "data.frame"))
+##             stop("genotFitness: if two-column must be data frame")
+##         ## Make sure no factors
+##         if(is.factor(x[, 1])) x[, 1] <- as.character(x[, 1])
+##         ## Make sure no numbers
+##         if(any(is.numeric(x[, 1])))
+##             stop(paste0("genotFitness: first column of data frame is numeric.",
+##                         " Ambiguous and suggests possible error. If sure,",
+##                         " enter that column as character"))
         
-        omarker <- any(grepl(">", x[, 1], fixed = TRUE))
-        emarker <- any(grepl(",", x[, 1], fixed = TRUE))
-        nogoodepi <- any(grepl(":", x[, 1], fixed = TRUE))
-        ## if(omarker && emarker) stop("Specify only epistasis or order, not both.")
-        if(nogoodepi && emarker) stop("Specify the genotypes separated by a ',', not ':'.")
-        if(nogoodepi && !emarker) stop("Specify the genotypes separated by a ',', not ':'.")
-        ## if(nogoodepi && omarker) stop("If you want order, use '>' and if epistasis ','.")
-        ## if(!omarker && !emarker) stop("You specified neither epistasis nor order")
-        if(omarker) {
-            ## do something. To be completed
-            stop("This code not yet ready")
-            ## You can pass to allFitnessEffects genotype -> fitness mappings that
-            ## involve epistasis and order. But they must have different
-            ## genes. Otherwise, it is not manageable.
-        }
-        if( emarker || ( (!omarker) && (!emarker) && (!nogoodepi)) ) {
-            ## the second case above corresponds to passing just single letter genotypes
-            ## as there is not a single marker
-            x <- x[, c(1, 2), drop = FALSE]
-            if(!all(colnames(x) == c("Genotype", "Fitness"))) {
-                message("Column names of object not Genotype and Fitness.",
-                        " Renaming them assuming that is what you wanted")
-                colnames(x) <- c("Genotype", "Fitness")
-            }
-            if((!omarker) && (!emarker) && (!nogoodepi)) {
-                message("All single-gene genotypes as input to from_genotype_fitness")
-            }
-            ## Yes, we need to do this to  scale the fitness and put the "-"
-            return(genot_fitness_to_epistasis(allGenotypes_to_matrix(x)))
-        }
-    }
-}
+##         omarker <- any(grepl(">", x[, 1], fixed = TRUE))
+##         emarker <- any(grepl(",", x[, 1], fixed = TRUE))
+##         nogoodepi <- any(grepl(":", x[, 1], fixed = TRUE))
+##         ## if(omarker && emarker) stop("Specify only epistasis or order, not both.")
+##         if(nogoodepi && emarker) stop("Specify the genotypes separated by a ',', not ':'.")
+##         if(nogoodepi && !emarker) stop("Specify the genotypes separated by a ',', not ':'.")
+##         ## if(nogoodepi && omarker) stop("If you want order, use '>' and if epistasis ','.")
+##         ## if(!omarker && !emarker) stop("You specified neither epistasis nor order")
+##         if(omarker) {
+##             ## do something. To be completed
+##             stop("This code not yet ready")
+##             ## You can pass to allFitnessEffects genotype -> fitness mappings that
+##             ## involve epistasis and order. But they must have different
+##             ## genes. Otherwise, it is not manageable.
+##         }
+##         if( emarker || ( (!omarker) && (!emarker) && (!nogoodepi)) ) {
+##             ## the second case above corresponds to passing just single letter genotypes
+##             ## as there is not a single marker
+##             x <- x[, c(1, 2), drop = FALSE]
+##             if(!all(colnames(x) == c("Genotype", "Fitness"))) {
+##                 message("Column names of object not Genotype and Fitness.",
+##                         " Renaming them assuming that is what you wanted")
+##                 colnames(x) <- c("Genotype", "Fitness")
+##             }
+##             if((!omarker) && (!emarker) && (!nogoodepi)) {
+##                 message("All single-gene genotypes as input to from_genotype_fitness")
+##             }
+##             ## Yes, we need to do this to  scale the fitness and put the "-"
+##             return(genot_fitness_to_epistasis(allGenotypes_to_matrix(x)))
+##         }
+##     }
+## }
 
 
 
@@ -326,6 +335,7 @@ genot_fitness_to_epistasis <- function(x) {
     fwt <- 1
     if(length(wt) == 1)
         fwt <- f[wt]
+    ## No longer being used when we pass fitness landscapse: flfast
     if(!isTRUE(all.equal(fwt, 1))) {
         message("Fitness of wildtype != 1. ",
                 "Dividing all fitnesses by fitness of wildtype.")

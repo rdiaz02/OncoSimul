@@ -512,7 +512,6 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   // In the future, if we want noInt and fitnessLandscape, all
   // we need is use the fitness landscape with an index smaller than those
   // of noInt. So we can use noInt with shift being those in fitnessLandscape.
-
   // BEWARE: will need to modify also createNewGenotype.
   
   if(fl_df.nrows()) {

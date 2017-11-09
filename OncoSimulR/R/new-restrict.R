@@ -1750,6 +1750,14 @@ nr_oncoSimul.internal <- function(rFE,
              " there must be at least two gene/loci).")
     }
 
+    ## Must deal with objects from previous, pre flfast, modifications
+    ## Could move this way down to the bottom, right before
+    ## .Call
+    if(!exists("fitnessLandscape_gene_id", where = rFE)) {
+        rFE$fitnessLandscape_df <- data.frame()
+        rFE$fitnessLandscape_gene_id <- data.frame()
+    }
+    
     namedGenes <- allNamedGenes(rFE)
 
     if( length(mu) > 1) {
@@ -1946,8 +1954,13 @@ nr_oncoSimul.internal <- function(rFE,
 
 countGenesFe <- function(fe) {
     ## recall geneModule has Root always
-    nrow(fe$geneModule) + nrow(fe$long.geneNoInt) +
-        nrow(fe$fitnessLandscape_gene_id) - 1 
+    ## We want to be able to use objects that did not have
+    ## the fitness landscape component
+    if(exists("fitnessLandscape_gene_id", where = fe))
+        return(nrow(fe$geneModule) + nrow(fe$long.geneNoInt) +
+            nrow(fe$fitnessLandscape_gene_id) - 1)
+    else
+        return(nrow(fe$geneModule) + nrow(fe$long.geneNoInt) - 1)
 }
 
 allNamedGenes <- function(fe){
@@ -1967,7 +1980,8 @@ allNamedGenes <- function(fe){
     ##              "no interaction genes must be named ",
     ##              "(i.e., the noIntGenes vector must have names).")
 
-    if(nrow(fe$fitnessLandscape)) {
+    ## accommodate objects w/o fitnessLandscape
+    if(!is.null(fe$fitnessLandscape) && nrow(fe$fitnessLandscape)) {
         v1 <-
             data.frame(Gene = colnames(fe$fitnessLandscape)[-ncol(fe$fitnessLandscape)],
                        stringsAsFactors = FALSE)
