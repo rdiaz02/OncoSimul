@@ -1386,7 +1386,6 @@ evalAllGenotypesORMut <- function(fmEffects,
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
-
     allf <- vapply(allg$genotNums,
                    function(x) evalRGenotype(x, fmEffects, FALSE,
                                              prodNeg,
@@ -1982,17 +1981,19 @@ allNamedGenes <- function(fe){
 
     ## accommodate objects w/o fitnessLandscape
     if(!is.null(fe$fitnessLandscape) && nrow(fe$fitnessLandscape)) {
-        v1 <-
-            data.frame(Gene = colnames(fe$fitnessLandscape)[-ncol(fe$fitnessLandscape)],
-                       stringsAsFactors = FALSE)
-        v1$GeneNumID <- seq.int(nrow(v1))
+        gn <-
+            gtools::mixedsort(
+                        colnames(fe$fitnessLandscape)[-ncol(fe$fitnessLandscape)])
+        v1 <- data.frame(Gene = gn, GeneNumID = seq.int(length(gn)),
+                        stringsAsFactors = FALSE)
     } else {
         v1 <- fe$geneModule[, c("Gene", "GeneNumID")]
         if(nrow(fe$long.geneNoInt)) {
             v1 <- rbind(v1,
                         fe$long.geneNoInt[, c("Gene", "GeneNumID")])
         }
-        v1 <- v1[-which(v1[, "Gene"] == "Root"), ]
+        if(any(v1[, "Gene"] == "Root"))
+            v1 <- v1[-which(v1[, "Gene"] == "Root"), ]
     }
     rownames(v1) <- NULL
     return(v1)

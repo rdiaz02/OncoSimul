@@ -71,8 +71,8 @@ test_that("exercising the poset plotting code", {
 
 
 test_that("exercising plotClonePhylog", {
-              data(examplesFitnessEffects)
-              tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+    data(examplesFitnessEffects)
+    tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                                      model = "McFL", 
                                      mu = 5e-6,
                                      detectionSize = 1e8, 

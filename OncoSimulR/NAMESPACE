@@ -52,7 +52,7 @@ import(graph)
 import(Rgraphviz)
 importFrom("parallel", mclapply, detectCores, mcMap)
 importFrom("gtools", combinations, permutations, mixedorder)
-
+## importFrom("compare", compare)
 importFrom("graphics", "axis", "box", "legend", "matplot", "par", "polygon")
 importFrom("methods", "as")
 importFrom("stats", "na.omit", "runif", "smooth.spline")

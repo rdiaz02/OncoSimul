@@ -18,14 +18,13 @@ test_that("Conversion for matrix", {
 
 
 test_that("Conversion for incomplete matrix", {
-
     m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
     fem6 <- allFitnessEffects(genotFitness = m6)
     evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
-
-    expect_true(all(evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)[, 2] ==
-                    c(1, m6[2, 3], 1, m6[1, 3])))
-    
+    expect_true(all(
+        evalAllGenotypes(fem6, addwt = TRUE,
+                         order = FALSE)[, 2]
+        == c(1, m6[2, 3], 0, m6[1, 3]))) ## flfast breaking change
 })
 
 
@@ -39,22 +38,31 @@ test_that("We fail with wrong separator, :", {
 
 
 test_that("Dividing fitness by wt and missing genot is 1", {
-    
     m7 <- cbind(c(1, 1, 0), c(1, 0, 0), c(2, 3, 5))
-    expect_message(fem7 <- allFitnessEffects(genotFitness = m7),
-                   "Fitness of wildtype != 1. Dividing all fitnesses by fitness of wildtype.",
-                   fixed = TRUE)
+    ## No longer that message
+    expect_warning(fem7 <- allFitnessEffects(genotFitness = m7),
+                    "Fitness of wildtype != 1. Dividing all fitnesses by fitness of wildtype.",
+                    fixed = TRUE)
+    ## expect_equivalent(evalAllGenotypes(fem7, order = FALSE, addwt = TRUE)[, 2],
+    ##                   c(5, 3, 0, 2))
     expect_equivalent(evalAllGenotypes(fem7, order = FALSE, addwt = TRUE)[, 2],
-                      c(1, 3/5, 1, 2/5))
+                      c(1, 3/5, 0, 2/5))
 })
 
-test_that("The WT is added if absent", {
-    m7 <- cbind(c(1, 1, 0), c(1, 0, 0), c(2, 3, 5))
-    fem7 <- allFitnessEffects(genotFitness = m7)
+test_that("The WT is added if absent, in two cases", {
+    m7 <- cbind(c(1, 1), c(1, 0), c(2, 3))
+    expect_warning(fem7 <- allFitnessEffects(genotFitness = m7),
+                   "No wildtype in the fitness landscape",
+                   fixed = TRUE)
+    ## the WT was added to the fitness landscape
+    expect_identical(fem7$fitnessLandscape[, "Fitness"],
+                     c(1, 2, 3))
     ag <- evalAllGenotypes(fem7, order = FALSE)
     ## internal call
+    ## the wt was added to the output from allGenotypes_to_matrix
+    ## though this is mostly redundant now
     expect_equivalent(OncoSimulR:::allGenotypes_to_matrix(ag)[, 3],
-                      c(1, 3/5, 1, 2/5))
+                      c(1, 3, 0, 2))
     ## the user visible, which is via plotFitnessLandscape -> to_Fitness_Matrix
     plot(ag)
 })

@@ -96,3 +96,7 @@ Note we use min_filter_fitness = 1e-9.
 
 * Future: 
   - allow passing noIntGenes with the fl specification.
+
+* Breaking changes
+  - fitness wildtype is still set to 1 but explain who to simulate BigBang?
+  - missing genotypes a fitness of 0

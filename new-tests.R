@@ -56,7 +56,8 @@ for(i in 1:10) {
     colnames(rxx)[1:ng] <- cnn
     fex <- allFitnessEffects(genotFitness = rxx)
     gn <- OncoSimulR:::allNamedGenes(fex)
-    m1x <- data.frame(Gene = cnn, GeneNumID = 1:ng,
+    m1x <- data.frame(Gene = gtools::mixedsort(cnn),
+                      GeneNumID = 1:ng,
                       stringsAsFactors = FALSE)
     expect_identical(m1x, gn)
 }
@@ -90,6 +91,7 @@ test_that("Bozic and fitness landscape spec", {
         verbosity = 0),
         "Bozic model passing a fitness landscape will not work for now",
         fixed = TRUE)
+    rm(rxx)
 })
 
 
@@ -107,41 +109,41 @@ test_that("fitness evaluation what we expect", {
 })
 
 
-set.seed(1)
-rxx <- rfitness(5)
-rxx[2, 6] <- 2
-simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
-                                           drvNames = LETTERS[1:5]),
-                         model = "Exp", initSize = 5000,
-                         onlyCancer = FALSE,
-                         finalTime = 300,
-                         verbosity = 3)
-summary(simul1)
+## set.seed(1)
+## rxx <- rfitness(5)
+## rxx[2, 6] <- 2
+## simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
+##                                            drvNames = LETTERS[1:5]),
+##                          model = "Exp", initSize = 5000,
+##                          onlyCancer = FALSE,
+##                          finalTime = 300,
+##                          verbosity = 3)
+## summary(simul1)
 
 
-set.seed(1)
-rxx <- rfitness(5)
-rxx[2, 6] <- 2
-simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
-                                           drvNames = LETTERS[1:5]),
-                         model = "Exp", initSize = 5000,
-                         onlyCancer = FALSE,
-                         finalTime = 1000,
-                         verbosity = 0)
-summary(simul1)
+## set.seed(1)
+## rxx <- rfitness(5)
+## rxx[2, 6] <- 2
+## simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
+##                                            drvNames = LETTERS[1:5]),
+##                          model = "Exp", initSize = 5000,
+##                          onlyCancer = FALSE,
+##                          finalTime = 1000,
+##                          verbosity = 0)
+## summary(simul1)
 
 
 
 
 
-rxx <- rfitness(7)
-simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
-                                           drvNames = LETTERS[1:7]),
-                         model = "Exp", initSize = 5000,
-                         onlyCancer = FALSE,
-                         finalTime = 1000,
-                         verbosity = 0)
-summary(simul1)
+## rxx <- rfitness(7)
+## simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
+##                                            drvNames = LETTERS[1:7]),
+##                          model = "Exp", initSize = 5000,
+##                          onlyCancer = FALSE,
+##                          finalTime = 1000,
+##                          verbosity = 0)
+## summary(simul1)
 
 
 ## n: number of genes
@@ -168,14 +170,14 @@ dag_fitness <- function(n) {
 }
 
 
-rtfl <- dag_fitness(5)
+## rtfl <- dag_fitness(5)
 
-set.seed(2)
-s1 <- oncoSimulIndiv(allFitnessEffects(rtfl$rt))
-set.seed(2)
-s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rtfl$fl))
-summary(s1)
-summary(s2)
+## set.seed(2)
+## s1 <- oncoSimulIndiv(allFitnessEffects(rtfl$rt))
+## set.seed(2)
+## s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rtfl$fl))
+## summary(s1)
+## summary(s2)
 
 
 test_that("rt and fl specifications are the same", {
@@ -192,9 +194,10 @@ test_that("rt and fl specifications are the same", {
         s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rtfl$fl))
         expect_identical(s1$pops.by.time, s2$pops.by.time)
         print(summary(s1))
-
-        ## FIXME
-        identical(s1[1:20], s2[1:20])
+        expect_identical(s1[1:length(s1)], s2[1:length(s2)])
+        ## they differ in the call attribute, of course
+        ## adding a package for this is an overkill
+        ## expect_true(compare::compare(s1, s2, ignoreAttrs = TRUE)$result)
     }
 })
 
@@ -202,3 +205,30 @@ test_that("rt and fl specifications are the same", {
 ## FIXME: some tests with mutator, etc?
 
 ## NOTE the BREAKING changes!!! missing genotypes set to 0
+
+
+
+
+## catching the label bug
+o3 <- allFitnessEffects(orderEffects = c(
+                                          "M > D > F" = 0.99,
+                                          "D > M > F" = 0.2,
+                                          "D > M"     = 0.1,
+                                          "M > D"     = 0.9),
+                                      noIntGenes = c("u" = 0.01, "z" = 0.01, "w" = 0.02),
+                                      geneToModule =
+                                          c("Root" = "Root",
+                                            "M" = "m",
+                                            "F" = "f",
+                                            "D" = "d") )
+              tmp <- oncoSimulIndiv(o3, model = "McFL",
+                      mu = 5e-5, finalTime = 500,
+                      detectionDrivers = 3,
+                      sampleEvery = 0.03,
+                      keepEvery = 1,
+                      onlyCancer = FALSE,
+                      initSize = 1000,
+                      keepPhylog = TRUE
+                     , initMutant = c("d > m > w")
+                      )
+tmp$GenotypesLabels

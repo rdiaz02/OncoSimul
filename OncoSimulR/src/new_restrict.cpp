@@ -664,13 +664,21 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   // poset. By set_difference.
   fitness_as_genes fg = zero_fitness_as_genes();
 
+  // fitness_as_genes fg;
   fg.flGenes = fe.fitnessLandscape.NumID;
   if(fg.flGenes.size()) {
     return fg;
   }
 
   fg.noInt = fe.genesNoInt.NumID;
-  
+  // //zz: debugging
+  // for(auto const &o : fe.genesNoInt.NumID) {
+  //   DP2(o);
+  // }
+  // for(auto const &o : fe.genesNoInt.names) {
+  //   DP2(o);
+  // }
+  // // 
   std::multimap<int, int> MG;
   for( auto const &mt : fe.Gene_Module_tabl) {
     MG.insert({mt.ModuleNumID, mt.GeneNumID});
@@ -690,6 +698,26 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
 		 back_inserter(fg.posetEpistG));
   // fg.posetEpistG.sort(fg.posetEpistG.begin(),
   // 		      fg.posetEpistG.end());
+
+  // // //zz: debugging
+  // DP1("order");
+  // for(auto const &o : fg.orderG) {
+  //   DP2(o);
+  // }
+  // DP1("posetEpist");
+  // for(auto const &o : fg.posetEpistG) {
+  //   DP2(o);
+  // }
+  // DP1("noint");
+  //   for(auto const &o : fg.noInt) {
+  //   DP2(o);
+  // }
+  // DP1("fl");
+  // for(auto const &o : fg.flGenes) {
+  //   DP2(o);
+  // }
+
+  
   return fg;
 }
 
@@ -712,6 +740,7 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
     gg.insert({fe.genesNoInt.NumID[i], fe.genesNoInt.names[i]});
   }
 
+  // zz
   for(size_t i = 0;
       i != fe.fitnessLandscape.NumID.size(); ++i){
     gg.insert({fe.fitnessLandscape.NumID[i], fe.fitnessLandscape.names[i]});

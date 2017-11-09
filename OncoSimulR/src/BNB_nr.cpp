@@ -622,11 +622,6 @@ std::string genotypeToNameString(const std::vector<int>& genotypeV,
     rest += (comma + intName.at(g));
     comma = ", ";
   }
-  comma = "";
-  for(auto const &g : rest_int) {
-    rest += (comma + intName.at(g));
-    comma = ", ";
-  }
   if(fg.orderG.size()) {
     strGenotype = order_part + order_sep + rest;
   } else {
@@ -2200,11 +2195,28 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   driverCounts(maxNumDrivers, totalPresentDrivers,
 	       countByDriver, presentDrivers,
 	       returnGenotypes, fitnessEffects.drv);
-  
+
+ 
   std::vector<std::string> genotypesAsStrings =
     genotypesToNameString(uniqueGenotypes_vector_nr, genesInFitness, intName);
   std::string driversAsString =
     driversToNameString(presentDrivers, intName);
+
+  // // // zz: debugging
+  // // // Correct too
+  // DP1("intName");
+  // for(auto mmm: intName) {
+  //   Rcpp::Rcout << mmm.first << " :" ;
+  //   Rcpp::Rcout << mmm.second << std::endl;
+  // }
+
+
+  // // wrong
+  // DP1("genotypesAsStrings");
+  // for(auto gas: genotypesAsStrings) {
+  //   Rcpp::Rcout << gas;
+  //   Rcpp::Rcout << std::endl;
+  // }
 
   
   std::vector<double> sampleLargestPopProp(outNS_i + 1);

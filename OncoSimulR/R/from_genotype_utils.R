@@ -148,7 +148,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
             ocnx <- gtools::mixedorder(cnx)
             if(!(identical(cnx[ocnx], cnx))) {
                 message("Sorting gene column names alphabetically")
-                x <- cbind(x[, ocnx], Fitness = x[, (ncx + 1)])
+                x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx + 1)])
             }
         }
         
@@ -209,6 +209,19 @@ to_genotFitness_std <- function(x, simplify = TRUE,
             x <- allGenotypes_to_matrix(x)
         }
     }
+    ## And, yes, scale all fitnesses by that of the WT
+    whichroot <- which(rowSums(x[, -ncol(x), drop = FALSE]) == 0)
+    if(length(whichroot) == 0) {
+        warning("No wildtype in the fitness landscape!!! Adding it with fitness 1.")
+        x <- rbind(c(rep(0, ncol(x) - 1), 1), x)
+    } else if(x[whichroot, ncol(x)] != 1) {
+        warning("Fitness of wildtype != 1.",
+                " Dividing all fitnesses by fitness of wildtype.")
+        vwt <- x[whichroot, ncol(x)]
+        x[, ncol(x)] <- x[, ncol(x)]/vwt
+    }
+    if(any(is.na(x)))
+        stop("NAs in fitness matrix")
     if(simplify) {
         return(x[x[, ncol(x)] > min_filter_fitness, ])
     } else {
