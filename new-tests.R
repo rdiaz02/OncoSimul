@@ -121,12 +121,69 @@ summary(simul1)
 
 
 
-rxx <- rfitness(5)
+rxx <- rfitness(7)
 simul1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx,
-                                           drvNames = LETTERS[1:5]),
+                                           drvNames = LETTERS[1:7]),
                          model = "Exp", initSize = 5000,
                          onlyCancer = FALSE,
                          finalTime = 1000,
                          verbosity = 0)
 summary(simul1)
 
+
+## n: number of genes
+dag_fitness <- function(n) {
+    s1min <- 0.1
+    s1max <- 0.7
+    dummys1 <- 0.5 ## to put something below, to begin with
+
+    rt <- simOGraph(n, out ="rT", geneNames = LETTERS[1:n],
+                    s = dummys1, sh = -99)
+    ## nparents = sample(2:5, 1),
+    ##                h = sample(2:5, 1))
+
+    ## Make sure we get variation 
+    uc <- unique(rt$child)
+    s1v <- runif(uc, s1min, s1max)
+    names(s1v) <- uc
+    rt$s <- s1v[rt$child]
+    
+    rtf <- evalAllGenotypes(allFitnessEffects(rt), addwt = TRUE)
+    fl <- OncoSimulR:::allGenotypes_to_matrix(rtf)
+    fl[fl[, "Fitness"] == 0, "Fitness"] <- 1e-9
+    return(list(rt = rt, fl = fl))
+}
+
+
+rtfl <- dag_fitness(5)
+
+set.seed(2)
+s1 <- oncoSimulIndiv(allFitnessEffects(rtfl$rt))
+set.seed(2)
+s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rtfl$fl))
+summary(s1)
+summary(s2)
+
+
+test_that("rt and fl specifications are the same", {
+    ## We test that passing a DAG as a DAG of restrictions or as its
+    ## fitness landscape give identical output
+    tests <- 10
+    ng <- 7
+    for(i in 1:tests) {
+        rtfl <- dag_fitness(ng)
+        is <- round(runif(1) * 100)
+        set.seed(is)
+        s1 <- oncoSimulIndiv(allFitnessEffects(rtfl$rt))
+        set.seed(is)
+        s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rtfl$fl))
+        expect_identical(s1$pops.by.time, s2$pops.by.time)
+        print(summary(s1))
+
+        ## FIXME
+        identical(s1[1:20], s2[1:20])
+    }
+})
+
+
+## FIXME: some tests with mutator, etc?
