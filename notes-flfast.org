@@ -4,6 +4,15 @@ do now is convert the table of fitness of genotypes to a fitness
 specification with all possible epistatic interactions; look
 at the `fem6` object).
 
+Bozic and fitness landscape specification
+if(nrow(rFE$fitnessLandscape_df) > 0)
+            warning("Bozic model passing a fitness landscape will not work",
+                    " for now.")
+        ## FIXME: bozic and fitness landscape
+        ## the issue is that in the C++ code we directly do
+        ## s = birth rate - 1
+        ## but we would need something different
+        ## Can be done going through epistasis, etc
 
 * R code
 

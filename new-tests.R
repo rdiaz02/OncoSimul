@@ -80,6 +80,19 @@ test_that("drv names OK", {
 ##                                    "C" = "c1"))
 
 ## Make sure warning if using Bozic
+test_that("Bozic and fitness landscape spec", {
+    rxx <- rfitness(7)
+    expect_warning(oncoSimulIndiv(
+        allFitnessEffects(genotFitness = rxx),
+        model = "Bozic", initSize = 5000,
+        onlyCancer = FALSE,
+        finalTime = 10,
+        verbosity = 0),
+        "Bozic model passing a fitness landscape will not work for now",
+        fixed = TRUE)
+})
+
+
 
 test_that("fitness evaluation what we expect", {
     for(i in 1:10) {
@@ -187,3 +200,5 @@ test_that("rt and fl specifications are the same", {
 
 
 ## FIXME: some tests with mutator, etc?
+
+## NOTE the BREAKING changes!!! missing genotypes set to 0

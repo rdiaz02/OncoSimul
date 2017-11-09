@@ -373,8 +373,12 @@ checkRT <- function(mdeps) {
 
 getNamesID <- function(fp) {
     ## Return a lookup table for names based on numeric IDs
-    idname <- c(fp$geneModule$GeneNumID,  fp$long.geneNoInt$GeneNumID)
-    names(idname) <- c(fp$geneModule$Gene, fp$long.geneNoInt$Gene)
+    idname <- c(fp$geneModule$GeneNumID,
+                fp$long.geneNoInt$GeneNumID,
+                fp$fitnessLandscape_gene_id$GeneNumID)
+    names(idname) <- c(fp$geneModule$Gene,
+                       fp$long.geneNoInt$Gene,
+                       fp$fitnessLandscape_gene_id$Gene)
     return(idname[-1]) ## remove Root!!
 }
 
@@ -567,7 +571,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
         ## In the map, the key is the genotype name, as
         ## cnn <- colnames(genotFitness)[-ncol(genotFitness)]
         cnn <- 1:(ncol(genotFitness) - 1)
-        gfn <- apply(genotFitness[, -ncol(genotFitness)], 1,
+        gfn <- apply(genotFitness[, -ncol(genotFitness), drop = FALSE], 1,
                      function(x) paste(cnn[as.logical(x)],
                                        collapse = ", "))
         ## rownames(genotFitness) <- gfn
@@ -1152,9 +1156,11 @@ evalGenotypeORMut <- function(genotype,
             genotype <- nice.vector.eo(genotype, ",")
         }
         all.g.nums <- c(fmEffects$geneModule$GeneNumID,
-                        fmEffects$long.geneNoInt$GeneNumID)
+                        fmEffects$long.geneNoInt$GeneNumID,
+                        fmEffects$fitnessLandscape_gene_id$GeneNumID)
         all.g.names <- c(fmEffects$geneModule$Gene,
-                         fmEffects$long.geneNoInt$Gene)
+                         fmEffects$long.geneNoInt$Gene,
+                         fmEffects$fitnessLandscape_gene_id$Gene)
         genotype <- all.g.nums[match(genotype, all.g.names)]
     }
     if(any(is.na(genotype)))
@@ -1225,9 +1231,11 @@ evalGenotypeFitAndMut <- function(genotype,
             genotype <- nice.vector.eo(genotype, ",")
         }
         all.g.nums <- c(fitnessEffects$geneModule$GeneNumID,
-                        fitnessEffects$long.geneNoInt$GeneNumID)
+                        fitnessEffects$long.geneNoInt$GeneNumID,
+                        fitnessEffects$fitnessLandscape_gene_id$GeneNumID)
         all.g.names <- c(fitnessEffects$geneModule$Gene,
-                         fitnessEffects$long.geneNoInt$Gene)
+                         fitnessEffects$long.geneNoInt$Gene,
+                         fitnessEffects$fitnessLandscape_gene_id$Gene)
         genotype <- all.g.nums[match(genotype, all.g.names)]
     }
     if(any(is.na(genotype)))
@@ -1796,6 +1804,14 @@ nr_oncoSimul.internal <- function(rFE,
     ## }
 
     if(typeFitness %in% c("bozic1", "bozic2")) {
+        if(nrow(rFE$fitnessLandscape_df) > 0)
+            warning("Bozic model passing a fitness landscape will not work",
+                    " for now.")
+        ## FIXME: bozic and fitness landscape
+        ## the issue is that in the C++ code we directly do
+        ## s = birth rate - 1
+        ## but we would need something different
+        ## Can be done going through epistasis, etc.
         thesh <- unlist(lapply(rFE$long.rt, function(x) x$sh))
         ## thes <- unlist(lapply(rFE$long.rt, function(x) x$s))
         thes <- unlist(c(lapply(rFE$long.rt, function(x) x$s),

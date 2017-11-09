@@ -51,7 +51,7 @@ importFrom("igraph", igraph.to.graphNEL, graph.data.frame, V, E,
 import(graph)
 import(Rgraphviz)
 importFrom("parallel", mclapply, detectCores, mcMap)
-importFrom("gtools", combinations, permutations)
+importFrom("gtools", combinations, permutations, mixedorder)
 
 importFrom("graphics", "axis", "box", "legend", "matplot", "par", "polygon")
 importFrom("methods", "as")

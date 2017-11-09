@@ -100,7 +100,9 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 ## but if we are passed a fitness landscapes as produced by
 ## rfitness, do nothing
 
-to_genotFitness_std <- function(x, simplify = TRUE, min_filter_fitness = 1e-9) {
+to_genotFitness_std <- function(x, simplify = TRUE,
+                                min_filter_fitness = 1e-9,
+                                sort_gene_names = TRUE) {
     ## Would break with output from allFitnessEffects and
     ## output from allGenotypeAndMut
     
@@ -135,6 +137,27 @@ to_genotFitness_std <- function(x, simplify = TRUE, min_filter_fitness = 1e-9) {
         ## except for the last column, that is Fitness
         ## Of course, can ONLY work with epistastis, NOT order
         ## return(genot_fitness_to_epistasis(x))
+        if(!is.null(colnames(x)) && sort_gene_names) {
+            ncx <- (ncol(x) - 1)
+            cnx <- colnames(x)[-ncx]
+            ocnx <- gtools::mixedorder(cnx)
+            if(!(identical(cnx[ocnx], cnx))) {
+                message("Sorting gene column names alphabetically")
+                x <- cbind(x[, ocnx], Fitness = x[, (ncx + 1)])
+            }
+        }
+        
+        if(is.null(colnames(x))) {
+            ncx <- (ncol(x) - 1)
+            message("No column names: assigning gene names from LETTERS")
+            if(ncx > length(LETTERS))
+                stop("More genes than LETTERS; please give gene names",
+                     " as you see fit.")
+            colnames(x) <- c(LETTERS[1:ncx], "Fitness")
+        }
+        if(any(colnames(x) == "")) {
+            warning("At least one column named ''. Expect problems")
+        }
     } else {
         if(!inherits(x, "data.frame"))
             stop("genotFitness: if two-column must be data frame")
