@@ -759,10 +759,7 @@ Genotype createNewGenotype(const Genotype& parent,
     // But this can be easily fixed in the future; like this?
     // if(g <= (fe.fitnessLandscape.NumID.size() + 1)) {
     // and restructure the else logic for the noInt
-    DP1("in createNewGenotype");
-    DP2(g);
     if(fe.fitnessLandscape.NumID.size()) {
-      DP1("inside the adding of genes to fl");
       newGenot.flGenes.push_back(g);
       sort_flgenes = true;
     } else {
@@ -809,8 +806,6 @@ Genotype createNewGenotype(const Genotype& parent,
     sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
   if(sort_flgenes)
     sort(newGenot.flGenes.begin(), newGenot.flGenes.end());
-  DP1("before exiting create");
-  print_Genotype(newGenot);
   return newGenot;
 }
 
@@ -1212,17 +1207,11 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // which is the value in the fitness landscape as interpreted now.
   // i.e., s = birth rate - 1;
   if(F.fitnessLandscape.NumID.size()) {
-    DP1("fl entering");
-    DP2(F.fitnessLandscape.NumID.size());
     std::string gs = concatIntsString(ge.flGenes);
-    DP2(gs);
     if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
       s.push_back(-1.0);
-      DP1("-1.0 for fitness");
     } else {
       s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
-      DP1("non zero fitness");
-      DP2(F.fitnessLandscape.flmap.at(gs) - 1);
     }
     return s;
   }

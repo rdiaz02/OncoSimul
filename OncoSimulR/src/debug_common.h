@@ -3,8 +3,8 @@
 
 #include<Rcpp.h>
 
-//#define DEBUGZ
-#define DEBUGV
+// #define DEBUGZ
+// #define DEBUGV
 #define DEBUGW
 
 #define DP1(x) {Rcpp::Rcout << "\n DEBUG2: I am at " << x << std::endl;}
