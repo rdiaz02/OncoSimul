@@ -179,7 +179,7 @@ all_simple_paths(fpc(OncoSimulR:::filter_phylog_df_LOD(fg3))$graph, from = "",
                  mode = "out")
 
 
-all_simple_paths(fpc(OncoSimulR:::fiter_phylog_df_LOD(fg3))$graph, to = "",
+all_simple_paths(fpc(OncoSimulR:::filter_phylog_df_LOD(fg3))$graph, to = "",
                  from = "A, B, C",
                  mode = "in")
 
