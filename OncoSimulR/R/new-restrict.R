@@ -1416,6 +1416,13 @@ evalAllGenotypesORMut <- function(fmEffects,
 evalAllGenotypes <- function(fitnessEffects, order = FALSE, max = 256,
                              addwt = FALSE,
                              model = "") {
+    ## Must deal with objects from previous, pre flfast, modifications
+ 
+    if(!exists("fitnessLandscape_gene_id", where = fitnessEffects)) {
+        fitnessEffects$fitnessLandscape_df <- data.frame()
+        fitnessEffects$fitnessLandscape_gene_id <- data.frame()
+    }
+
     evalAllGenotypesORMut(
         fmEffects = fitnessEffects,
         order = order,
@@ -1432,6 +1439,7 @@ generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
                                        function(x) choose(n, x) * factorial(x)))}
     else
         tot <- function(n) {2^n}
+    
     nn <- nrow(fitnessEffects$geneModule) -1  +
         nrow(fitnessEffects$long.geneNoInt) +
         nrow(fitnessEffects$fitnessLandscape_gene_id)

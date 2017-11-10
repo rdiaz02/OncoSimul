@@ -144,6 +144,14 @@ to_genotFitness_std <- function(x, simplify = TRUE,
         ## return(genot_fitness_to_epistasis(x))
         if(any(duplicated(colnames(x))))
             stop("duplicated column names")
+        
+        cnfl <- which(colnames(x)[-ncol(x)] == "")
+        if(length(cnfl)) {
+            freeletter <- setdiff(LETTERS, colnames(x))[1]
+            if(length(freeletter) == 0) stop("Renaiming failed")
+            warning("One column named ''. Renaming to ", freeletter)
+            colnames(x)[cnfl] <- freeletter
+        }
         if(!is.null(colnames(x)) && sort_gene_names) {
             ncx <- ncol(x)
             cnx <- colnames(x)[-ncx]
@@ -153,6 +161,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
                 x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
             }
         }
+        
         if(is.null(colnames(x))) {
             ncx <- (ncol(x) - 1)
             message("No column names: assigning gene names from LETTERS")
@@ -161,9 +170,9 @@ to_genotFitness_std <- function(x, simplify = TRUE,
                      " as you see fit.")
             colnames(x) <- c(LETTERS[1:ncx], "Fitness")
         }
-        if(any(colnames(x) == "")) {
-            warning("At least one column named ''")
-        }
+        
+        if(!all(as.matrix(x[, -ncol(x)]) %in% c(0, 1) ))
+            stop("First ncol - 1 entries not in {0, 1}.")
     } else {
         if(!inherits(x, "data.frame"))
             stop("genotFitness: if two-column must be data frame")

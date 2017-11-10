@@ -1,3 +1,7 @@
+Changes in version 2.9.1 (2017-11-10):
+	- Using fitness landscape directly when given as input (no
+          conversion to epistasis)
+
 Changes in version 2.7.2 (2017-09-27):
 	- genot_to_adj_mat in C++.
 	- fast_peaks (for no backmutation cases).

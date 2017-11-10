@@ -1283,7 +1283,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     colnames(mcn) <- c("A", "", "Fitness")
     expect_warning(evalAllGenotypes(
         allFitnessEffects(genotFitness = mcn)),
-        "At least one column named ''", fixed = TRUE)
+        "One column named ''", fixed = TRUE)
     rm(mcn)
     
     m2 <- rbind(c(1, 0, 1.2),
