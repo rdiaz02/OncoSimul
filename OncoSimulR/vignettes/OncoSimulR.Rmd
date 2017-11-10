@@ -3570,14 +3570,19 @@ fem4 <- allFitnessEffects(genotFitness = m4)
 wanted.)
 
 
-That's it. You can plot that fitnessEffects object
+That's it. You can try to plot that fitnessEffects object
 ```{r}
-plot(fem4)
+try(plot(fem4))
 ``` 
 
-In this case, that plot is not very interesting (compare with the
-`plot(pancr)` we saw in \@ref(quickexample) or the plots in
-\@ref(posetslong)). 
+In this case, you probably want to plot the fitness landscape. <!--  that plot is not very interesting (compare with the -->
+<!-- `plot(pancr)` we saw in \@ref(quickexample) or the plots in -->
+<!-- \@ref(posetslong)). --> 
+
+
+```{r, fig.width=6.5, fig.height = 6.5}
+plotFitnessLandscape(evalAllGenotypes(fem4))
+``` 
 
 You can also check what OncoSimulR thinks the fitnesses are, with the
 `evalAllGenotypes` function that we will use repeatedly below
@@ -3605,7 +3610,7 @@ genotypes (we will assume that the missing genotypes have fitness 1):
 m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
 fem6 <- allFitnessEffects(genotFitness = m6)
 evalAllGenotypes(fem6, addwt = TRUE)
-plot(fem6)
+## plot(fem6)
 ```
 
 ```{r, fig.width=6.5, fig.height = 6.5}

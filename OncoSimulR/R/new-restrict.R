@@ -1680,7 +1680,10 @@ plot.fitnessEffects <- function(x, type = "graphNEL",
     ## layout.reingold.tilford if really a tree
     ## o.w. it will use the default
     g <- x$graph
-    
+    if(is.null(g))
+        stop("This fitnessEffects object can not be ploted this way.",
+             " It is probably one with fitness landscape specification, ",
+             " so you might want to plot the fitness landscape instead.")
     if(type == "igraph") {
         if(expandModules && (!x$gMOneToOne)) {
             ## vlabels <- fe$geneToModule[vertex.attributes(g)$name]
