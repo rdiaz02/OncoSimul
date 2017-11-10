@@ -3616,14 +3616,47 @@ plotFitnessLandscape(evalAllGenotypes(fem6))
 This way of giving a fitness specification to OncoSimulR might be
 ideal if you directly generate random mappings of genotypes to
 fitness (or random fitness landscapes), as we will do in section
-\@ref(gener-fit-land). (Note for curious readers: actually, what we
-do now is convert the table of fitness of genotypes to a fitness
-specification with all possible epistatic interactions; look
-at the `fem6` object).
+\@ref(gener-fit-land). Specially when the fitness landscape contains
+many non-viable genotypes (which are considered those with fitness
+---birth rate--- $<1e-9$) this can result in considerable savings as
+we only need to check the fitness of the viable genotypes in a table
+(a C++ map). Note, however, that using the Bozic model with the
+fitness landscape specification is not tested. In addition, for
+speed, missing genotypes from the fitness landscape specification
+are taken to be non-viable genotypes (**beware!! this is a breaking
+change relative to versions < 2.9.1**)[^flfast].
+
+[^flfast]: Note for curious readers: it used to be the case that we
+converted the table of fitness of genotypes to a fitness
+specification with all possible epistatic interactions; you can take
+a look at the test file `test.genot_fitness_to_epistasis.R` that
+uses the `fem6` object. We no longer do that but instead pass
+directly the fitness landscape.
 
 
-We will see an example of this way of passing fitness again in
-\@ref(bauer), where we will compare it with the lego system.
+<!-- How to simulate Big Bang: start from some initMutant, say S, so that -->
+<!-- S A B C ...  Fitness -->
+<!-- 1 0 0 0 0    >1 -->
+
+<!-- and add that column of S with 1 to all genotypes from fitness -->
+
+<!-- * What happens with mutator?   -->
+<!--   - the fl specification? now tested-->
+<!--   - do we have modules? nope in fitness yes in mutator -->
+
+
+<!-- Bozic and fitness landscape specification -->
+<!-- if(nrow(rFE$fitnessLandscape_df) > 0) -->
+<!--             warning("Bozic model passing a fitness landscape will not work", -->
+<!--                     " for now.") -->
+<!--         ## FIXME: bozic and fitness landscape -->
+<!--         ## the issue is that in the C++ code we directly do -->
+<!--         ## s = birth rate - 1 -->
+<!--         ## but we would need something different -->
+<!--         ## Can be done going through epistasis, etc -->
+
+<!-- We will see an example of this way of passing fitness again in -->
+<!-- \@ref(bauer), where we will compare it with the lego system. -->
 
 
 <!-- % Please see the documentation of `allFitnessEffects` for further -->
