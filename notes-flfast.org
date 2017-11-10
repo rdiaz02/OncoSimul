@@ -3,6 +3,9 @@
 do now is convert the table of fitness of genotypes to a fitness
 specification with all possible epistatic interactions; look
 at the `fem6` object).
+used to do that with the genot_fitness_to_epistasis
+function. No longer used
+
 
 Bozic and fitness landscape specification
 if(nrow(rFE$fitnessLandscape_df) > 0)

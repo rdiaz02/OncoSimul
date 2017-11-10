@@ -327,7 +327,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
 
 
 
-
+## No longer used for real
 genot_fitness_to_epistasis <- function(x) {
     ## FIXME future:
 

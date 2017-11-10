@@ -1146,6 +1146,18 @@ evalGenotypeORMut <- function(genotype,
 
     if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
         stop("How did you call this function?. Bug.")
+
+    ## fmEffects could be a mutator effect
+    if(!exists("fitnessLandscape_gene_id", where = fmEffects)) {
+        fmEffects$fitnessLandscape_df <- data.frame()
+        fmEffects$fitnessLandscape_gene_id <- data.frame()
+    }
+
+    if( (model %in% c("Bozic", "bozic1", "bozic2")) &&
+        (nrow(fmEffects$fitnessLandscape_df) > 0)) {
+        warning("Bozic model passing a fitness landscape will not work",
+                    " for now.")
+    }
     
     if(echo)
         cat(paste("Genotype: ", genotype))
@@ -1220,6 +1232,17 @@ evalGenotypeFitAndMut <- function(genotype,
                                   verbose = FALSE,
                                   echo = FALSE,
                                   model = "") {
+    
+    ## Must deal with objects from previous, pre flfast, modifications
+    if(!exists("fitnessLandscape_gene_id", where = fitnessEffects)) {
+        fitnessEffects$fitnessLandscape_df <- data.frame()
+        fitnessEffects$fitnessLandscape_gene_id <- data.frame()
+    }
+    if( (model %in% c("Bozic", "bozic1", "bozic2")) &&
+        (nrow(fitnessEffects$fitnessLandscape_df) > 0)) {
+        warning("Bozic model passing a fitness landscape will not work",
+                    " for now.")
+    }
     prodNeg <- FALSE
     ## Next is from evalGenotypeAndMut
     if(echo)
@@ -1333,6 +1356,8 @@ evalAllGenotypesORMut <- function(fmEffects,
         stop("You are trying to get the mutator effects of a fitness specification. ",
              "You did not pass an object of class mutatorEffects.")
 
+    
+    
     ## if(!minimal)
     allg <- generateAllGenotypes(fitnessEffects = fmEffects,
                                  order = order, max = max)
@@ -1417,12 +1442,16 @@ evalAllGenotypes <- function(fitnessEffects, order = FALSE, max = 256,
                              addwt = FALSE,
                              model = "") {
     ## Must deal with objects from previous, pre flfast, modifications
- 
     if(!exists("fitnessLandscape_gene_id", where = fitnessEffects)) {
         fitnessEffects$fitnessLandscape_df <- data.frame()
         fitnessEffects$fitnessLandscape_gene_id <- data.frame()
     }
 
+    if( (model %in% c("Bozic", "bozic1", "bozic2")) &&
+        (nrow(fitnessEffects$fitnessLandscape_df) > 0)) {
+        warning("Bozic model passing a fitness landscape will not work",
+                    " for now.")
+    }
     evalAllGenotypesORMut(
         fmEffects = fitnessEffects,
         order = order,
@@ -1502,6 +1531,18 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
     } else {
         prodNeg <- FALSE
     }
+
+
+    ## Must deal with objects from previous, pre flfast, modifications
+    if(!exists("fitnessLandscape_gene_id", where = fitnessEffects)) {
+        fitnessEffects$fitnessLandscape_df <- data.frame()
+        fitnessEffects$fitnessLandscape_gene_id <- data.frame()
+    }
+    if( (model %in% c("Bozic", "bozic1", "bozic2")) &&
+        (nrow(fitnessEffects$fitnessLandscape_df) > 0)) {
+        warning("Bozic model passing a fitness landscape will not work",
+                    " for now.")
+    } 
     
     full2mutator_ <- matchGeneIDs(mutatorEffects,
                                   fitnessEffects)$Reduced
