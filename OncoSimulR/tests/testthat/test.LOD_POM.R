@@ -9,10 +9,12 @@ test_that("Exercise LOD and POM code", {
                                       sh = -0.3,
                                       typeDep = "MN"))
     pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE)
-    pancr8 <- oncoSimulPop(8, pancr, model = "Exp", keepPhylog = TRUE, mc.cores = 2)
+    pancr8 <- oncoSimulPop(18, pancr, model = "Exp", keepPhylog = TRUE,
+                           mc.cores = 2)
     expect_true(inherits(POM(pancr1), "character"))
     require(igraph)
-    expect_true(inherits(LOD(pancr1)$all_paths[[1]], "igraph.vs"))
+    expect_true(inherits(LOD(pancr1, strict = FALSE)$all_paths[[1]], "igraph.vs"))
+    expect_true(is.na(LOD(pancr1, strict = TRUE)$all_paths))
     expect_true(inherits(LOD(pancr1)$lod_single, "igraph.vs"))
     expect_true(inherits(POM(pancr8), "list"))
     expect_true(inherits(LOD(pancr8), "list"))
@@ -27,7 +29,7 @@ test_that("Exercise LOD and POM code", {
 
 
 
-    pancr8 <- oncoSimulPop(8, pancr, model = "McFL",
+    pancr88 <- oncoSimulPop(8, pancr, model = "McFL",
                            keepPhylog = TRUE,
                            finalTime = 0.01,
                            max.num.tries = 1,
@@ -35,10 +37,10 @@ test_that("Exercise LOD and POM code", {
                            max.wall.time = 0.01,
                            detectionSize = 1e6)
 
-    expect_warning(LOD(pancr8),
+    expect_warning(LOD(pancr88),
                    "Missing needed components.", fixed = TRUE)
 
-    expect_warning(POM(pancr8),
+    expect_warning(POM(pancr88),
                    "Missing needed components.", fixed = TRUE)
 
     
@@ -54,6 +56,12 @@ test_that("Exercise LOD and POM code", {
 
     lop8 <- suppressWarnings(LOD(pancr8))
 
+    lop8b <- suppressWarnings(LOD(pancr8, strict = TRUE))
+    lop8c <- suppressWarnings(LOD(pancr8, strict = FALSE))
+
+
+    OncoSimulR:::LOD_as_path(lop8)
+    
     ## what if this is commented out?
     
     ## expect_true(any(unlist(lapply(lop8,
@@ -72,6 +80,7 @@ test_that("Exercise LOD and POM code", {
 
     
     gg <- allFitnessEffects(noIntGenes = rep(-.9, 100))
+
     pancr22 <- oncoSimulPop(10, gg,
                             model = "Exp",
                             keepPhylog = TRUE,
@@ -80,9 +89,97 @@ test_that("Exercise LOD and POM code", {
                             mu = 1e-2,
                             mc.cores = 2,
                             finalTime = 2.5)
+
     lp22 <- LOD(pancr22)
+
+    lp23 <- LOD(pancr22, strict = TRUE)
+    lp24 <- LOD(pancr22, strict = FALSE)
     ## There is like soooo remote chance this will fail
     ## and the previous exercises the code anyway.
     ## expect_true(any(unlist(lp22) %in% "WT_is_end"))
+
+    
+
+    
 })
 date()
+
+
+
+## To see how the above works by returning LOD sensu stricto you can look
+## at this code:
+
+
+
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+                                               "TP53", "TP53", "MLL3"),
+                                           child = c("KRAS","SMAD4", "CDNK2A", 
+                                               "TP53", "MLL3",
+                                               rep("PXDN", 3), rep("TGFBR2", 2)),
+                                           s = 0.05,
+                                           sh = -0.3,
+                                           typeDep = "MN"))
+     
+     
+pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE)
+
+## All we need to get LOD sensu stricto (i.e., identical to Szendro)
+## is keep pop size of receiving, or destination, genotype.
+## Then, filter those where popSize > 0
+
+
+## And use first (starting from bottom) of that path
+## So find, for each child, the last event with popSize == 0,
+## and keep only that row.
+
+## Probably enough to run duplicated in reverse (on the df with popSize
+## child = 0)
+
+## The indices to keep: !rev(duplicated(rev(fg3[, 2])))
+
+fg1 <- pancr1$other$PhylogDF
+
+
+fg3 <- data.frame(parent = c("", "", "A", "B", "C", "A, B"),
+                  child =  c("A","B","A, B","A, B", "A, C", "A, B, C"),
+                  time = 1:6,
+                  pop_size_child = c(0, 0, 0, 0, 0, 0),
+                  stringsAsFactors = FALSE)
+
+
+fg4 <- data.frame(parent = c("", "", "A", "B", "C", "A, B"),
+                  child =  c("A","B","A, B","A, B", "A, C", "A, B, C"),
+                  time = 1:6,
+                  pop_size_child = c(0, 0, 0, 2, 0, 0),
+                  stringsAsFactors = FALSE)
+
+## from phylogClone, key parts
+fpc <- function(df) {
+    tG <- unique(c(df[, 1], df[, 2]))
+    g <- igraph::graph.data.frame(df[, c(1, 2)])
+    nodesInP <- unique(unlist(igraph::neighborhood(g, order = 1e+09, 
+                                                   nodes = tG, mode = "in")))
+    allLabels <- unique(as.character(unlist(df[, c(1, 2)])))
+    nodesRm <- setdiff(allLabels, V(g)$name[nodesInP])
+    g <- igraph::delete.vertices(g, nodesRm)
+    tmp <- list(graph = g, df = df)
+    class(tmp) <- c(class(tmp), "phylogClone")
+    return(tmp)
+}
+
+## ## Filter the PhylogDF so we obtain LOD, sensu stricto.
+## filter_phylog_df_LOD_ <- function(x) {
+##     x <- x[x$pop_size_child == 0, ]
+##     keep <- !rev(duplicated(rev(x$child)))
+##     return(x[keep, ])
+## }
+
+all_simple_paths(fpc(OncoSimulR:::filter_phylog_df_LOD(fg3))$graph, from = "",
+                 to = "A, B, C",
+                 mode = "out")
+
+
+all_simple_paths(fpc(OncoSimulR:::fiter_phylog_df_LOD(fg3))$graph, to = "",
+                 from = "A, B, C",
+                 mode = "in")
+

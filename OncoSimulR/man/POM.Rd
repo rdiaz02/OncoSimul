@@ -27,7 +27,7 @@
 \usage{
 
 POM(x)
-LOD(x)
+LOD(x, strict = TRUE)
 diversityPOM(lpom)
 diversityLOD(llod)
 }
@@ -36,6 +36,8 @@ diversityLOD(llod)
   2, so simulations with the old poset specification will not work) or
   class \code{oncosimul2} (a single simulation). For \code{LOD}
   simulations must have been run with \code{keepPhylog = TRUE}.}
+
+\item{strict}{If TRUE, a single LOD as in Szendro et al. See Details.}
 
 \item{lpom}{A list of POMs, as returned from \code{POM} on an object of
   class \code{oncosimulpop}.}
@@ -49,9 +51,9 @@ diversityLOD(llod)
 \details{
 
   Lines of Descent (LOD) and Path of the Maximum (POM) were defined in
-  Szendro et al. (2013) and I follow those definitions here as closely
-  as possible, as applied to a process in continuous time with sampling
-  at user-specified periods.
+  Szendro et al. (2013) and I follow those definitions here, as applied
+  to a process in continuous time with sampling at user-specified
+  periods.
 
   For POM, the results can depend strongly on how often we sample and
   keep samples (i.e., the \code{sampleEvery} and \code{keepEvery}
@@ -61,23 +63,29 @@ diversityLOD(llod)
   \code{oncoSimulSample} runs: these only keep the very last sample.
 
 
-  For LOD my implementation is not exactly identical to the definition
-  given in p. 572 of Szendro et al. (2013). First, in case this might be
-  useful, for each simulation I keep all the paths that
-  "(...) arrive at the most populated genotype at the final time" (first
-  paragraph in p. 572 of Szendro et al.), whereas they only keep one
-  (see second column of p. 572). However, I do provide a single LOD for
-  each run, too. This is the first path to arrive at the genotype that
-  eventually becomes the most populated genotype at the final time (and,
-  in this sense, agrees with the LOD of Szendro et al.). However, in
-  contrast to what is apparently done in Szendro
-  ("A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colonization of the final state is used to construct the step."),
-  I do not check that this genotype (which is the one that will become
+  For LOD, when using \code{strict = TRUE}, a single LOD per simulation
+  is returned, with the same meaning as that in p. 572 of Szendro et
+  al. (2013). "A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colonization of the final state is used to construct the step.", and I check that this genotype (which is the one that will become
   the most populated at final time) does not become extinct before the
-  final colonization. So there could be other paths (all in
-  \code{all_paths}) that are actually the one(s) that are colonizers of
-  the most populated genotype (with no extinction before the final
-  colonization).
+  final colonization. 
+
+  If \code{strict = FALSE} then a I return both \code{all_paths} and
+  \code{lod_single}, with meanings as follow.  First, in case this might
+  be useful, for each simulation I keep all the paths that
+  "(...) arrive at the most populated genotype at the final time" (first
+  paragraph in p. 572 of Szendro et al.), and these are stored in
+  \code{all_paths}.  When \code{strict = FALSE} I also provide another
+  single LOD for each run, too. This is the first path to arrive at the
+  genotype that eventually becomes the most populated genotype at the
+  final time (and, in this sense, agrees with the LOD of Szendro et
+  al.). However, in contrast to what is done in Szendro
+  ("A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colonization of the final state is used to construct the step.")
+  and when \code{strict = TRUE}, I do not check that this genotype
+  (which is the one that will become the most populated at final time)
+  does not become extinct before the final colonization. So there could
+  be other paths (all in \code{all_paths}) that are actually the one(s)
+  that are colonizers of the most populated genotype (with no extinction
+  before the final colonization).
   
   
 }
@@ -90,13 +98,15 @@ diversityLOD(llod)
   the times of sampling.
 
   For \code{LOD}, if \code{x} is a single simulation, a two-element
-  list. The first, \code{all_paths}, contains all paths to the
-  maximum. The second, \code{lod_single}, contain the single LOD which
-  is closest in meaning to the original definition of Szendro et
-  al. (See "Details"). If \code{x} is a list (population)  of
-  simulations, then a list where each element is a two-element list, as
-  just explained. All the lists contain objects of class "igraph.vs" (an
-  igraph vertex sequence: see \code{\link[igraph]{vertex_attr}}).  
+  list. If \code{strict = TRUE}, only \code{lod_single} is returned. If
+  \code{strict = FALSE}, \code{all_paths} contains all paths to the
+  maximum, and \code{lod_single} contains the single LOD which
+  first arrives at the maximum.
+
+  If \code{x} is a list (population) of simulations, then a list where
+  each element is a two-element list, as just explained. All the lists
+  contain objects of class "igraph.vs" (an igraph vertex sequence: see
+  \code{\link[igraph]{vertex_attr}}).
  
   For \code{diversityLOD} and \code{diversityPOM} a single element
   vector with the Shannon's diversity (entropy) of the \code{lod_single}

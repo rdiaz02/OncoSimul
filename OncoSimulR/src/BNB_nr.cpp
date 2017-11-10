@@ -744,14 +744,16 @@ static void nr_sample_all_pop_P(std::vector<int>& sp_to_remove,
 void addToPhylog(PhylogName& phylog,
 		 const Genotype& parent,
 		 const Genotype& child,
-		 double time,
+		 const double time,
 		 const std::map<int, std::string>& intName,
-		 const fitness_as_genes& fg) {
+		 const fitness_as_genes& fg,
+		 const double pop_size_child) {
   phylog.time.push_back(time);
   phylog.parent.push_back(genotypeToNameString(genotypeSingleVector(parent),
 					       fg, intName));
   phylog.child.push_back(genotypeToNameString(genotypeSingleVector(child),
 					      fg, intName));
+  phylog.pop_size_child.push_back(pop_size_child);
 }
 
 
@@ -1497,9 +1499,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    // if(keepMutationTimes)
 	    //   update_mutation_freqs(newMutation, currentTime, mutation_freq_at);
 	    //FIXME: phylog
-	    if(keepPhylog)
-	      addToPhylog(phylog, Genotypes[nextMutant], newGenotype, currentTime,
-			  intName, genesInFitness);
+	    // if(keepPhylog)
+	    //   addToPhylog(phylog, Genotypes[nextMutant], newGenotype, currentTime,
+	    // 		  intName, genesInFitness);
 	    
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
 	    tmpParam.mutation = mutationFromScratch(mu, tmpParam, newGenotype,
@@ -1536,8 +1538,13 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    if(g_tmp1_nr < g_min_death_mut_ratio_nr) g_min_death_mut_ratio_nr = g_tmp1_nr;	
 #endif
 
-	      //zz: LOD:
+	    // LOD:
 	    // here first call to addToPhylog, with popSize popParams[sp].popSize
+	    // and it is 0
+	    if(keepPhylog)
+	      addToPhylog(phylog, Genotypes[nextMutant], newGenotype, currentTime,
+			  intName, genesInFitness, 0);
+
 	  } else {// fitness is 0, so we do not add it
 	    --sp;
 	    --numSpecies;
@@ -1688,6 +1695,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 	    //zz: LOD:
 	    // here one of the calls to addToPhylog, with popSize popParams[sp].popSize
+	    if(keepPhylog)
+	      addToPhylog(phylog, Genotypes[nextMutant], newGenotype, currentTime,
+			  intName, genesInFitness, popParams[sp].popSize);
 	    
 
 	}
@@ -2270,7 +2280,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 					       Named("PhylogDF") =  DataFrame::create(
 										      Named("parent") = phylog.parent,
 										      Named("child") = phylog.child,
-										      Named("time") = phylog.time
+										      Named("time") = phylog.time,
+										      Named("pop_size_child") = phylog.pop_size_child
 										      ),
 					       Named("UnrecoverExcept") = false,
 					       Named("numRecoverExcept") = numRecoverExcept,

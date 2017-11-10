@@ -20,7 +20,15 @@ genot_max <- function(x) {
     x$GenotypesLabels[which.max(x$pops.by.time[nrow(x$pops.by.time), -1])]
 }
 
-LOD.internal <- function(x) {
+
+## Filter the PhylogDF so we obtain LOD, sensu stricto.
+filter_phylog_df_LOD <- function(y) {
+    y <- y[y$pop_size_child == 0, , drop = FALSE]
+    keep <- !rev(duplicated(rev(y$child)))
+    return(y[keep, ])
+}
+
+LOD.internal <- function(x, strict) {
     ## Not identical to LOD of Szendro because:
     
     ##  a) I think we want all paths, not just their single LOD, which I
@@ -38,6 +46,9 @@ LOD.internal <- function(x) {
                 " Returning NA.")
         return(list(all_paths = NA, lod_single = NA))
     }
+    if(strict)
+        x$other$PhylogDF <- filter_phylog_df_LOD(x$other$PhylogDF)
+    
     pc <- phylogClone(x, keepEvents = FALSE)
     
     if((length(pc) == 1) && (is.na(pc))) {
@@ -46,32 +57,42 @@ LOD.internal <- function(x) {
     }
     pcg <- pc$graph
     end <- genot_max(x)
-    all_paths <- igraph::all_simple_paths(pcg, from = "", to = end, mode = "out")
-    ## the next is partially redundant
-    ## graph_to_end <- igraph::make_ego_graph(pcg, order = 1e9, nodes = end,
-    ##                                        mode = "in")
-    ## if(length(graph_to_end) != 1) stop("length(graph_to_end) > 1")
-    ## I am not sure if I should keep the last one. Redundant
-
-    ## This gives a single path and it is the first entry into each
-    ## destination. But we do not check there is no extinction afterwards.
-    ## The closest to the single Szendro LOD
     if(end == "") {
-        ## Max is WT
         lod_single <- "WT_is_end"
+        all_paths <- list("WT_is_end")
     } else {
-        singlep <- pc$df
-        singlep[, 1] <- as.character(singlep[, 1])
-        singlep[, 2] <- as.character(singlep[, 2])
-        singlep <- singlep[ do.call(order, singlep[, c(2, 3)]), ]
-        singlep <- singlep[!duplicated(singlep[, 2]), ]
-        gsingle <- igraph::graph_from_data_frame(singlep)
-        lod_single <- igraph::all_simple_paths(gsingle, from = "", to = end, mode = "out")
-        if(length(lod_single) != 1) stop("lod_single != 1")
+        all_paths <- igraph::all_simple_paths(pcg, from = "", to = end,
+                                              mode = "out")
+       
+        if(!strict) {
+            ## the next is partially redundant
+            ## graph_to_end <- igraph::make_ego_graph(pcg, order = 1e9, nodes = end,
+            ##                                        mode = "in")
+            ## if(length(graph_to_end) != 1) stop("length(graph_to_end) > 1")
+            ## I am not sure if I should keep the last one. Redundant
+            
+            ## This gives a single path and it is the first entry into each
+            ## destination. But we do not check there is no extinction afterwards.
+            ## The closest to the single Szendro LOD
+            singlep <- pc$df
+            singlep[, 1] <- as.character(singlep[, 1])
+            singlep[, 2] <- as.character(singlep[, 2])
+            singlep <- singlep[ do.call(order, singlep[, c(2, 3)]), ]
+            singlep <- singlep[!duplicated(singlep[, 2]), ]
+            gsingle <- igraph::graph_from_data_frame(singlep)
+            lod_single <- igraph::all_simple_paths(gsingle, from = "", to = end, mode = "out")
+            if(length(lod_single) != 1) stop("lod_single != 1")
+        }
     }
-    return(list(all_paths = all_paths,
-                lod_single = lod_single[[1]])) ##, graph_to_end = graph_to_end[[1]]))
-                ## graph_phylog_clone = pcg))
+    if(strict) {
+        if(length(all_paths) > 1)
+            stop("length(all_paths) > 1???")
+        return(list(all_paths = NA,
+                    lod_single = all_paths[[1]]))
+    } else {
+        return(list(all_paths = all_paths,
+                    lod_single = lod_single[[1]]))
+    }
 }
 
 
@@ -99,6 +120,32 @@ diversityLOD <- function(llod) {
     shannonI(table(pathstr))
 }
 
+LOD_as_path <- function(llod) {
+    nn <- names(llod[[1]])
+    if( is_null_na(nn) ||
+        !(nn == c("all_paths", "lod_single")))
+        stop("Object must be a list of LODs")
+
+    path_l <- function(u) {
+        if(length(u$lod_single) == 1) {
+            if(u$lod_single == "WT_is_end")
+                return("WT")
+            if(u$lod_single == "No_descendants")
+                return("WT")
+        } else {
+            return(paste0("WT", paste(names(u$lod_single),
+                                      collapse = " -> ")) )
+        }
+    }
+    pathstr <- unlist(lapply(llod, path_l))
+    return(pathstr)
+    ## pathstr <- unlist(lapply(llod, function(x) paste(names(x$lod_single),
+    ##                                                  collapse = " -> ")))
+    ## return(paste0("WT", pathstr))
+}
+
+## We would just need a LOD_as_DAG
+
 diversityPOM <- function(lpom) {
     if(!inherits(lpom, "list"))
         stop("Object must be a list of POMs")
@@ -119,15 +166,15 @@ POM <- function(x) {
     UseMethod("POM", x)
 }
 
-LOD <- function(x) {
+LOD <- function(x, strict = TRUE) {
     UseMethod("LOD", x)
 }
 
 POM.oncosimul2 <- function(x) return(POM.internal(x))
-LOD.oncosimul2 <- function(x) return(LOD.internal(x))
+LOD.oncosimul2 <- function(x, strict = TRUE) return(LOD.internal(x, strict))
 
 POM.oncosimulpop <- function(x) return(lapply(x, POM.internal))
-LOD.oncosimulpop <- function(x) return(lapply(x, LOD.internal))
+LOD.oncosimulpop <- function(x, strict = TRUE) return(lapply(x, LOD.internal, strict))
 
 ## POM.oncosimul2 <- function(x) {
 ##     out <- POM.internal(x)

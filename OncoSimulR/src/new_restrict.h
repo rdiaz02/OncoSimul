@@ -203,6 +203,7 @@ struct PhylogName {
   std::vector<double> time;
   std::vector<std::string> parent;
   std::vector<std::string> child;
+  std::vector<double> pop_size_child;
   // yes, implicit constructor clears
 };
 
