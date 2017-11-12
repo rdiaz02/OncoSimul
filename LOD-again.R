@@ -75,3 +75,24 @@ all_simple_paths(fpc(clean_phylog_df(fg3))$graph, to = "",
 lod1 <- function(x) {
     
 }
+
+
+
+
+
+### Do it as follows:
+##  Always obtain POM and LOD, the sensu stricto version
+##  When running with keepPhylog, allow returning also
+##  the many LODs
+
+## LOD_all: the function that requires the "keepPhylog"
+
+## We have two structures in C++, and the LOD one is like the phylog, w/o
+## the popSize
+
+## the LOD always kept only called in the place of the code where we
+## create new species
+
+## POM is obtained directly in the C++ code.
+
+## Of course, change help and vignette
