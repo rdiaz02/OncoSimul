@@ -756,6 +756,21 @@ void addToPhylog(PhylogName& phylog,
   phylog.pop_size_child.push_back(pop_size_child);
 }
 
+// Only called when the child has pop size of 0
+// so true LOD
+void addToLOD(LOD& lod,
+	      const Genotype& parent,
+	      const Genotype& child,
+	      // const double time,
+	      const std::map<int, std::string>& intName,
+	      const fitness_as_genes& fg) {
+  // lod.time.push_back(time);
+  lod.parent.push_back(genotypeToNameString(genotypeSingleVector(parent),
+					       fg, intName));
+  lod.child.push_back(genotypeToNameString(genotypeSingleVector(child),
+					      fg, intName));
+}
+
 
 
 static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
@@ -814,7 +829,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const bool& AND_DrvProbExit,
 			const std::vector< std::vector<int> >& fixation_l,
 			 int& ti_dbl_min,
-			 int& ti_e3) {
+			 int& ti_e3,
+			 LOD& lod) {
   
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -829,7 +845,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   double dummyMutationRate = std::max(std::min(minmu/1.0e4, targetmindummy),
 				      mymindummy);
   // This should very rarely happen:
-  if(minmu <= 1e-9 ) {
+  if(minmu <= mymindummy) { // 1e-9 
     double newdd = minmu/100.0;
     Rcpp::Rcout << "WARNING: the smallest mutation rate is "
 		<< "<= " << mymindummy << ". That is a really small value"
@@ -845,6 +861,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   genot_out.clear();
 
   phylog = PhylogName();
+  lod = LOD();
   
   popSizes_out.clear();
   index_out.clear();
@@ -1544,6 +1561,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    if(keepPhylog)
 	      addToPhylog(phylog, Genotypes[nextMutant], newGenotype, currentTime,
 			  intName, genesInFitness, 0);
+	    // LOD, as LOD sensu stricto, always done now
+	    addToLOD(lod, Genotypes[nextMutant], newGenotype, // currentTime,
+			intName, genesInFitness);
 
 	  } else {// fitness is 0, so we do not add it
 	    --sp;
@@ -1913,7 +1933,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
   fitness_as_genes genesInFitness = fitnessAsGenes(fitnessEffects);
   PhylogName phylog;
-
+  LOD lod;
+  
   // Mutator effects
   fitnessEffectsAll muEF;
   if( (full2mutator.size() != 0) ) 
@@ -2109,7 +2130,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  AND_DrvProbExit,
 		  fixation_l,
 		  ti_dbl_min,
-		  ti_e3);
+		  ti_e3,
+		  lod);
       ++numRuns;
       forceRerun = false;
       accum_ti_dbl_min += ti_dbl_min;
@@ -2286,7 +2308,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 					       Named("UnrecoverExcept") = false,
 					       Named("numRecoverExcept") = numRecoverExcept,
 					       Named("accum_ti_dbl_min") = accum_ti_dbl_min,
-					       Named("accum_ti_e3") = accum_ti_e3)
+					       Named("accum_ti_e3") = accum_ti_e3,
+					       Named("LOD_DF") = DataFrame::create(
+										   Named("parent") = lod.parent,
+										   Named("child") = lod.child
+										   // , Named("time") = lod.time
+				   
+					       ))
 		 );
 }
 

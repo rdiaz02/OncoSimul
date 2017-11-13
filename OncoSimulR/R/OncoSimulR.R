@@ -1475,7 +1475,7 @@ phylogClone <- function(x, N = 1, t = "last", keepEvents = TRUE) {
     z <- which_N_at_T(x, N, t)
     tG <- x$GenotypesLabels[z] ## only for GenotypesLabels we keep all
     ## sample size info at each period
-
+    ## FIXME: aren't this and the next warnings redundant or aliased?
     if( (length(tG) == 1) && (tG == "")) {
         warning("There never was a descendant of WT")
     }

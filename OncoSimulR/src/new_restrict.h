@@ -208,6 +208,15 @@ struct PhylogName {
 };
 
 
+// This is all we need to then use igraph on the data frame.
+// simplified for the LOD that is always stored
+struct LOD {
+  // std::vector<double> time;
+  std::vector<std::string> parent;
+  std::vector<std::string> child;
+};
+
+
 
 
 std::vector<int> genotypeSingleVector(const Genotype& ge);

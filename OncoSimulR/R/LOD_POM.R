@@ -22,10 +22,52 @@ genot_max <- function(x) {
 
 
 ## Filter the PhylogDF so we obtain LOD, sensu stricto.
+## Now this is coming from LOD_DF, which already only has
+## implicitly pop_size_child == 0
 filter_phylog_df_LOD <- function(y) {
+    keep <- !rev(duplicated(rev(y$child)))
+    return(y[keep, ])
+}
+
+
+## ## Filter the PhylogDF so we obtain LOD, sensu stricto.
+filter_phylog_df_LOD_with_n <- function(y) {
     y <- y[y$pop_size_child == 0, , drop = FALSE]
     keep <- !rev(duplicated(rev(y$child)))
     return(y[keep, ])
+}
+
+
+## from phylogClone, key parts for the LOD strict structure
+phcl_from_lod <- function(df, x) {
+    ## the !keepEvents. Which I move here to speed things up.
+    df <- df[!duplicated(df[, c(1, 2)]), , drop = FALSE]
+    
+    tG <- unique(c(df[, 1], df[, 2]))
+    ## ## Do as in phylogClone. So that we have the same nodes
+    ## ## in LOD all and not LOD all?
+    ## z <- which_N_at_T(x, N = 1, t = "last")
+    ## tG <- x$GenotypesLabels[z]
+    
+    ## ## FIXME: aren't these two warnings redundant or aliased?
+    ## ## yes, partlt
+    ##  I think this can never happen now
+    ## if ((length(tG) == 1) && (tG == "")) {
+    ##     warning("There never was a descendant of WT")
+    ## }
+    if (nrow(df) == 0) {
+        warning("LOD structure has 0 rows: no descendants of initMutant ever appeared. ")
+        return(NA)
+    }
+    g <- igraph::graph.data.frame(df[, c(1, 2)])
+    nodesInP <- unique(unlist(igraph::neighborhood(g, order = 1e+09, 
+                                                   nodes = tG, mode = "in")))
+    allLabels <- unique(as.character(unlist(df[, c(1, 2)])))
+    nodesRm <- setdiff(allLabels, V(g)$name[nodesInP])
+    g <- igraph::delete.vertices(g, nodesRm)
+    tmp <- list(graph = g, df = df)
+    class(tmp) <- c(class(tmp), "phylogClone")
+    return(tmp)
 }
 
 LOD.internal <- function(x, strict) {
@@ -46,22 +88,46 @@ LOD.internal <- function(x, strict) {
                 " Returning NA.")
         return(list(all_paths = NA, lod_single = NA))
     }
-    if(strict)
-        x$other$PhylogDF <- filter_phylog_df_LOD(x$other$PhylogDF)
-    
-    pc <- phylogClone(x, keepEvents = FALSE)
+    if(strict) {
+        if (!inherits(x, "oncosimul2")) 
+            stop("LOD information is only stored with v >= 2")
+        y <- filter_phylog_df_LOD(x$other$LOD_DF)
+        pc <- phcl_from_lod(y)
+    } else {
+        pc <- phylogClone(x, keepEvents = FALSE)
+    }
+    ## need eval for oncoSimulPop calls and for LOD_as_path
+    initMutant <- x$InitMutant
     
     if((length(pc) == 1) && (is.na(pc))) {
-        return(list(all_paths = NA,
-                    lod_single = "No_descendants"))
+        lodlist <- list(all_paths = NA,
+                        lod_single = "No_descendants")
+        ## bail out here. We do not need the rest.
+        attributes(lodlist)$initMutant <- initMutant
+        return(lodlist)
     }
+
+    
     pcg <- pc$graph
     end <- genot_max(x)
-    if(end == "") {
-        lod_single <- "WT_is_end"
-        all_paths <- list("WT_is_end")
+
+    
+    ## if(!is.null(eval(attributes(x)$call$initMutant))) {
+    ##     initMutant <- eval(attributes(s7)$call$initMutant)
+    ## } else {
+    ##     initMutant <- ""
+    ## }
+    ## browser()
+    if(end == initMutant) {
+        if(initMutant == "") {
+            stinitm <- "WT"
+        } else {
+            stinitm <- paste0("initMutant(", initMutant, ")")
+        }
+        lod_single <- paste0(stinitm, "_is_end")
+        all_paths <- list(lod_single)
     } else {
-        all_paths <- igraph::all_simple_paths(pcg, from = "", to = end,
+        all_paths <- igraph::all_simple_paths(pcg, from = initMutant, to = end,
                                               mode = "out")
        
         if(!strict) {
@@ -80,19 +146,22 @@ LOD.internal <- function(x, strict) {
             singlep <- singlep[ do.call(order, singlep[, c(2, 3)]), ]
             singlep <- singlep[!duplicated(singlep[, 2]), ]
             gsingle <- igraph::graph_from_data_frame(singlep)
-            lod_single <- igraph::all_simple_paths(gsingle, from = "", to = end, mode = "out")
+            lod_single <- igraph::all_simple_paths(gsingle, from = initMutant,
+                                                   to = end, mode = "out")
             if(length(lod_single) != 1) stop("lod_single != 1")
         }
     }
     if(strict) {
         if(length(all_paths) > 1)
             stop("length(all_paths) > 1???")
-        return(list(all_paths = NA,
-                    lod_single = all_paths[[1]]))
+        lodlist <- list(all_paths = NA,
+                    lod_single = all_paths[[1]])
     } else {
-        return(list(all_paths = all_paths,
-                    lod_single = lod_single[[1]]))
+        lodlist <- list(all_paths = all_paths,
+                    lod_single = lod_single[[1]])
     }
+    attributes(lodlist)$initMutant <- initMutant
+    return(lodlist)
 }
 
 
@@ -121,23 +190,39 @@ diversityLOD <- function(llod) {
 }
 
 LOD_as_path <- function(llod) {
-    nn <- names(llod[[1]])
-    if( is_null_na(nn) ||
-        !(nn == c("all_paths", "lod_single")))
-        stop("Object must be a list of LODs")
-
+    ## nn <- names(llod[[1]])
+    ## if( is_null_na(nn) ||
+    ##     !(nn == c("all_paths", "lod_single")))
+    ##     stop("Object must be a list of LODs")
     path_l <- function(u) {
         if(length(u$lod_single) == 1) {
-            if(u$lod_single == "WT_is_end")
-                return("WT")
+            initMutant <- attributes(u)$initMutant
+            if(initMutant == "") initMutant <- "WT"
+            if(grepl("_is_end", u$lod_single))
+                return(initMutant)
             if(u$lod_single == "No_descendants")
-                return("WT")
+                return(initMutant)
         } else {
-            return(paste0("WT", paste(names(u$lod_single),
-                                      collapse = " -> ")) )
+            ## Deal with "" meaning WT
+            the_names <- names(u$lod_single)
+            the_names_wt <- which(the_names == "")
+            
+            if(length(the_names_wt)) {
+                if(length(the_names_wt) > 1) stop("more than 1 WT?!")
+                if(the_names_wt > 1) stop("WT in position not 1?!")
+                the_names[the_names_wt] <- "WT"
+            }
+            return(paste(the_names, collapse = " -> ")) 
+            ## return(paste0("WT", paste(names(u$lod_single),
+            ##                           collapse = " -> ")) )
         }
     }
-    pathstr <- unlist(lapply(llod, path_l))
+    if(identical(names(llod), c("all_paths", "lod_single")))
+        pathstr <- path_l(llod)
+    else {
+        ## should be a list
+        pathstr <- unlist(lapply(llod, path_l))
+    }
     return(pathstr)
     ## pathstr <- unlist(lapply(llod, function(x) paste(names(x$lod_single),
     ##                                                  collapse = " -> ")))

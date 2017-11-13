@@ -1836,6 +1836,7 @@ nr_oncoSimul.internal <- function(rFE,
                        "mutation rate in the human genome is about 1e-11 to 1e-9."))
     }
     if(!is.null(initMutant)) {
+        initMutantString <- initMutant
        if(length(grep(">", initMutant))) {
             initMutant <- nice.vector.eo(initMutant, ">")
         } else if(length(grep(",", initMutant))) {
@@ -1853,6 +1854,7 @@ nr_oncoSimul.internal <- function(rFE,
        
     } else {
         initMutant <- vector(mode = "integer")
+        initMutantString <- ""
     }
     ## these are never user options
     ## if(initSize_species < 10) {
@@ -1958,7 +1960,6 @@ nr_oncoSimul.internal <- function(rFE,
         fixation_list <- list()
     }
 
-    
     return(c(
         nr_BNB_Algo5(rFE = rFE,
                      mu_ = mu,
@@ -1998,7 +1999,8 @@ nr_oncoSimul.internal <- function(rFE,
                      AND_DrvProbExit = AND_DrvProbExit,
                      fixation_list = fixation_list),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
-        geneNames = list(names(getNamesID(rFE)))
+        geneNames = list(names(getNamesID(rFE))),
+        InitMutant = initMutantString
     ))
 }
 
@@ -2048,6 +2050,11 @@ allNamedGenes <- function(fe){
             v1 <- v1[-which(v1[, "Gene"] == "Root"), ]
     }
     rownames(v1) <- NULL
+    if(any(v1$Gene == "WT")) {
+        warning("A gene is named WT. You can expect problems ",
+                "because we use WT to denote the wildtype ",
+                "genotype. You might want to change it.")
+    }
     return(v1)
 }
 
