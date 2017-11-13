@@ -4,6 +4,29 @@ cat(paste("\n Starting all fitness at", date()))
 ## mclapply and that file could run before this one
 
 
+test_that("WT named genes give a warning", {
+    m1 <- cbind(WT = c(0, 1), B = c(0, 1), Fitness = c(1, 1e-8))
+    expect_warning(s1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
+                                       detectionSize = 1, initSize = 100,
+                                       keepPhylog = TRUE),
+                   "A gene is named WT", fixed = TRUE)
+    fee <- allFitnessEffects(epistasis = c("A" = 0.3,
+                                           "B" = 0.5),
+                             geneToModule = c("Root" = "Root",
+                                              "A" = "WT, a2",
+                                              "B" = "b1"))
+    expect_warning(s1 <- oncoSimulIndiv(fee,
+                                       detectionSize = 1, initSize = 100,
+                                       keepPhylog = TRUE),
+                   "A gene is named WT", fixed = TRUE)
+    fee <- allFitnessEffects(epistasis = c("WT" = 0.3,
+                                           "B" = 0.5))
+    expect_warning(s1 <- oncoSimulIndiv(fee,
+                                       detectionSize = 1, initSize = 100,
+                                       keepPhylog = TRUE),
+                   "A gene is named WT", fixed = TRUE)
+})
+
 test_that("Root name in module table or not", {
     expect_silent(fee <- allFitnessEffects(epistasis = c("A" = 0.3,
                                            "B" = 0.5),
