@@ -103,14 +103,13 @@ LOD.internal <- function(x, strict) {
         lodlist <- list(all_paths = NA,
                         lod_single = "No_descendants")
         ## bail out here. We do not need the rest.
-        attributes(lodlist)$initMutant <- initMutant
+        if(initMutant != "")
+            attributes(lodlist)$initMutant <- initMutant
         return(lodlist)
     }
-
     
     pcg <- pc$graph
     end <- genot_max(x)
-
     
     ## if(!is.null(eval(attributes(x)$call$initMutant))) {
     ##     initMutant <- eval(attributes(s7)$call$initMutant)
@@ -160,7 +159,8 @@ LOD.internal <- function(x, strict) {
         lodlist <- list(all_paths = all_paths,
                     lod_single = lod_single[[1]])
     }
-    attributes(lodlist)$initMutant <- initMutant
+    if(initMutant != "")
+        attributes(lodlist)$initMutant <- initMutant
     return(lodlist)
 }
 
@@ -196,7 +196,10 @@ LOD_as_path <- function(llod) {
     ##     stop("Object must be a list of LODs")
     path_l <- function(u) {
         if(length(u$lod_single) == 1) {
-            initMutant <- attributes(u)$initMutant
+            if(is.null(attributes(u)$initMutant))
+                initMutant <- ""
+            else
+                initMutant <- attributes(u)$initMutant
             if(initMutant == "") initMutant <- "WT"
             if(grepl("_is_end", u$lod_single))
                 return(initMutant)
