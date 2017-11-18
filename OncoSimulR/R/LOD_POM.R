@@ -376,3 +376,14 @@ LOD.oncosimul2_pre_2.9.2 <- function(x, strict = TRUE)
 
 ## LOD.oncosimulpop_pre_2.9.2 <- function(x, strict = TRUE)
 ##     return(lapply(x, LOD.internal_pre_2.9.2, strict))
+
+
+
+
+
+
+## Note for self: we could get all the LODs per simulation in the strict
+## sense of those never becoming extinct if we subset the phylogClone
+## object to children in which if we arrive at the children at any two
+## times t and t+k, we retain only rows where any time > t is such that
+## the popsize is > 0. But this is not worth it now.

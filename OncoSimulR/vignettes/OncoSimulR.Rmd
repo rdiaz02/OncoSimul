@@ -8248,17 +8248,22 @@ are running a continuous time process.
 @szendro_predictability_2013 also define Lines of Descent (LODs)
 which "(...)  represent the lineages that arrive at the most
 populated genotype at the final time". In that same page (572) they
-provide the details on how the LODs are obtained. I provide two
-implementations, one where a single LOD per simulation is returned,
-with the same meaning as in @szendro_predictability_2013, and
-another where I keep all the paths that "(...) arrive at the most
-populated genotype at the final time" (first paragraph in p. 572 of
-Szendro et al.). We can also obtain a single LOD that is the first
-path to arrive at the genotype that eventually becomes the most
-populated genotype at the final time (and, in this sense, agrees
-with the LOD of Szendro et al.). See the help file for details.
-Obtaining LOD requires that the simulations be run with `keepPhylog
-= TRUE` (we need the genealogy of clones).
+provide the details on how the LODs are obtained. Starting with
+version 2.9.2 of OncoSimulR I only provide an implementation where a
+single LOD per simulation is returned, with the same meaning as in
+@szendro_predictability_2013.
+
+<!-- I provide two -->
+<!-- implementations, one where a single LOD per simulation is returned, -->
+<!-- with the same meaning as in @szendro_predictability_2013, and -->
+<!-- another where I keep all the paths that "(...) arrive at the most -->
+<!-- populated genotype at the final time" (first paragraph in p. 572 of -->
+<!-- Szendro et al.). We can also obtain a single LOD that is the first -->
+<!-- path to arrive at the genotype that eventually becomes the most -->
+<!-- populated genotype at the final time (and, in this sense, agrees -->
+<!-- with the LOD of Szendro et al.). See the help file for details. -->
+<!-- Obtaining LOD requires that the simulations be run with `keepPhylog -->
+<!-- = TRUE` (we need the genealogy of clones). -->
 
 
 <!-- My implementation is not exactly identical to --> <!-- the
@@ -8307,8 +8312,8 @@ extinction before the final --> <!-- colonization). -->
 
 
 To briefly show some output, we will use again the \@ref(pancreas)
-example. Note that using LOD requires running the simulations with
-`keepPhylog = TRUE`.
+example. <!-- Note that using LOD requires running the simulations with -->
+<!-- `keepPhylog = TRUE`. -->
 
 
 ```{r lod_pom_ex}
@@ -8320,14 +8325,12 @@ pancr <- allFitnessEffects(
                          rep("PXDN", 3), rep("TGFBR2", 2)),
                s = 0.05, sh = -0.3, typeDep = "MN"))
 
-pancr16 <- oncoSimulPop(16, pancr, model = "Exp", keepPhylog = TRUE,
+pancr16 <- oncoSimulPop(16, pancr, model = "Exp",
                         mc.cores = 2)
 
 ## Look a the first POM 
 str(POM(pancr16)[1:3])
 
-## Note here that for each simulation there is a "all_paths" and
-## a "lod_single", as explained above
 LOD(pancr16)[1:2]
 
 ## The diversity of LOD (lod_single) and POM might or might not
