@@ -34,10 +34,11 @@ diversityLOD(llod)
 
 \arguments{ \item{x}{An object of class \code{oncosimulpop} (version >=
   2, so simulations with the old poset specification will not work) or
-  class \code{oncosimul2} (a single simulation). For \code{LOD}
-  simulations must have been run with \code{keepPhylog = TRUE}.}
+  class \code{oncosimul2} (a single simulation). }
 
-\item{strict}{If TRUE, a single LOD as in Szendro et al. See Details.}
+\item{strict}{If TRUE, a single LOD as in Szendro et al. See Details.
+  If FALSE, simulations must have been run with \code{keepPhylog = TRUE}
+  to compute all possible LODs (see Details).}
 
 \item{lpom}{A list of POMs, as returned from \code{POM} on an object of
   class \code{oncosimulpop}.}
@@ -65,11 +66,13 @@ diversityLOD(llod)
 
   For LOD, when using \code{strict = TRUE}, a single LOD per simulation
   is returned, with the same meaning as that in p. 572 of Szendro et
-  al. (2013). "A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colonization of the final state is used to construct the step.", and I check that this genotype (which is the one that will become
-  the most populated at final time) does not become extinct before the
-  final colonization. 
+  al. (2013). "A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colonization of the final state is used to construct the step.",
+  and I check that this genotype (which is the one that will become the
+  most populated at final time) does not become extinct before the final
+  colonization.
 
-  If \code{strict = FALSE} then a I return both \code{all_paths} and
+  If \code{strict = FALSE}, and if you have run the simulations with
+  \code{keepPhylog = TRUE}, then a I return both \code{all_paths} and
   \code{lod_single}, with meanings as follow.  First, in case this might
   be useful, for each simulation I keep all the paths that
   "(...) arrive at the most populated genotype at the final time" (first
@@ -85,7 +88,7 @@ diversityLOD(llod)
   does not become extinct before the final colonization. So there could
   be other paths (all in \code{all_paths}) that are actually the one(s)
   that are colonizers of the most populated genotype (with no extinction
-  before the final colonization).
+  before the final colonization). 
   
   
 }
@@ -99,9 +102,10 @@ diversityLOD(llod)
 
   For \code{LOD}, if \code{x} is a single simulation, a two-element
   list. If \code{strict = TRUE}, only \code{lod_single} is returned. If
-  \code{strict = FALSE}, \code{all_paths} contains all paths to the
-  maximum, and \code{lod_single} contains the single LOD which
-  first arrives at the maximum.
+  \code{strict = FALSE} (and simulations were run with \code{keepPhylog
+  = TRUE}), \code{all_paths} contains all paths to the maximum, and
+  \code{lod_single} contains the single LOD which first arrives at the
+  maximum.
 
   If \code{x} is a list (population) of simulations, then a list where
   each element is a two-element list, as just explained. All the lists

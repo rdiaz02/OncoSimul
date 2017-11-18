@@ -3193,9 +3193,9 @@ simulation. This is much smaller than the `pops.by.time` or
 launch, say, 1000 simulations via `oncoSimulPop`. That is why the
 default is `keepPhylog = FALSE` as this information is not needed as
 often as that in the other two matrices (`pops.by.time` and
-`Genotypes`). However, if you plan to measure evolutionary predictability
-using Lines of Descent, or LOD (section \@ref(evolpredszend)) you should
-run simulations with `keepPhylog = TRUE`.
+`Genotypes`). <!-- However, if you plan to measure evolutionary predictability -->
+<!-- using Lines of Descent, or LOD (section \@ref(evolpredszend)) you should -->
+<!-- run simulations with `keepPhylog = TRUE`. -->
 
 
 
@@ -8253,10 +8253,10 @@ implementations, one where a single LOD per simulation is returned,
 with the same meaning as in @szendro_predictability_2013, and
 another where I keep all the paths that "(...) arrive at the most
 populated genotype at the final time" (first paragraph in p. 572 of
-Szendro et al.), as well as a single LOD that is the first path to
-arrive at the genotype that eventually becomes the most populated
-genotype at the final time (and, in this sense, agrees with the LOD
-of Szendro et al.). See the help file for details.
+Szendro et al.). We can also obtain a single LOD that is the first
+path to arrive at the genotype that eventually becomes the most
+populated genotype at the final time (and, in this sense, agrees
+with the LOD of Szendro et al.). See the help file for details.
 Obtaining LOD requires that the simulations be run with `keepPhylog
 = TRUE` (we need the genealogy of clones).
 

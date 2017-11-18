@@ -1,4 +1,4 @@
-## Copyright 2016 Ramon Diaz-Uriarte
+## Copyright 2016, 2017 Ramon Diaz-Uriarte
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -70,7 +70,171 @@ phcl_from_lod <- function(df, x) {
     return(tmp)
 }
 
-LOD.internal <- function(x, strict) {
+LOD.internal <- function(x) {
+    if(is.null(x$pops.by.time)) {
+        warning("Missing needed components. This might be a failed simulation.",
+                " Returning NA.")
+        return(list(all_paths = NA, lod_single = NA))
+    }
+    if (!inherits(x, "oncosimul2")) 
+        stop("LOD information is only stored with v >= 2")
+    y <- filter_phylog_df_LOD(x$other$LOD_DF)
+    pc <- phcl_from_lod(y)
+    ## need eval for oncoSimulPop calls and for LOD_as_path
+    initMutant <- x$InitMutant
+    
+    if((length(pc) == 1) && (is.na(pc))) {
+        lod <- "No_descendants"
+        ## bail out here. We do not need the rest.
+        if(initMutant != "")
+            attributes(lod)$initMutant <- initMutant
+        return(lod)
+    }
+    
+    pcg <- pc$graph
+    end <- genot_max(x)
+    
+    if(end == initMutant) {
+        if(initMutant == "") {
+            stinitm <- "WT"
+        } else {
+            stinitm <- paste0("initMutant(", initMutant, ")")
+        }
+        lod <- paste0(stinitm, "_is_end")
+    } else {
+        all_paths <- igraph::all_simple_paths(pcg, from = initMutant, to = end,
+                                              mode = "out")
+        if(length(all_paths) > 1)
+            stop("length(all_paths) > 1???")
+        lod <- all_paths[[1]]
+    }
+    if(initMutant != "")
+        attributes(lod)$initMutant <- initMutant
+    return(lod)
+}
+
+
+
+
+POM.internal <- function(x) {
+    if(is.null(x$pops.by.time)) {
+        warning("Missing needed components. This might be a failed simulation.",
+                " Returning NA.")
+        return(NA)
+    }
+    x$GenotypesLabels[rle(apply(x$pops.by.time[, -1, drop = FALSE],
+                                1, which.max))$values]
+}
+
+
+diversityLOD <- function(llod) {
+    nn <- names(llod[[1]])
+    if( is_null_na(nn) ||
+        !(is.list(llod)))
+        stop("Object must be a list of LODs")
+    pathstr <- unlist(lapply(llod, function(x) paste(names(x),
+                                                     collapse = "_")))
+    shannonI(table(pathstr))
+}
+
+LOD_as_path <- function(llod) {
+    path_l <- function(u) {
+        if(length(u) == 1) {
+            if(is.null(attributes(u)$initMutant))
+                initMutant <- ""
+            else
+                initMutant <- attributes(u)$initMutant
+            if(initMutant == "") initMutant <- "WT"
+            if(grepl("_is_end", u))
+                return(initMutant)
+            if(u == "No_descendants")
+                return(initMutant)
+        } else {
+            ## Deal with "" meaning WT
+            the_names <- names(u)
+            the_names_wt <- which(the_names == "")
+            
+            if(length(the_names_wt)) {
+                if(length(the_names_wt) > 1) stop("more than 1 WT?!")
+                if(the_names_wt > 1) stop("WT in position not 1?!")
+                the_names[the_names_wt] <- "WT"
+            }
+            return(paste(the_names, collapse = " -> ")) 
+        }
+    }
+    if(!is.list(llod))
+        pathstr <- path_l(llod)
+    else
+        pathstr <- unlist(lapply(llod, path_l))
+    return(pathstr)
+}
+## We would just need a LOD_as_DAG
+
+diversityPOM <- function(lpom) {
+    if(!inherits(lpom, "list"))
+        stop("Object must be a list of POMs")
+    pomstr <- unlist(lapply(lpom, function(x) paste(x, collapse = "_")))
+    shannonI(table(pomstr))
+}
+
+## a legacy
+diversity_POM <- diversityPOM
+diversity_LOD <- diversityLOD
+
+
+POM <- function(x) {
+    UseMethod("POM", x)
+}
+
+LOD <- function(x, strict = TRUE) {
+    UseMethod("LOD", x)
+}
+
+POM.oncosimul2 <- function(x) return(POM.internal(x))
+LOD.oncosimul2 <- function(x) return(LOD.internal(x))
+
+POM.oncosimulpop <- function(x) return(lapply(x, POM.internal))
+LOD.oncosimulpop <- function(x) return(lapply(x, LOD.internal))
+
+## POM.oncosimul2 <- function(x) {
+##     out <- POM.internal(x)
+##     class(out) <- c(class(out), "oncosimul_pom")
+##     return(out)
+## }
+
+## LOD.oncosimul2 <- function(x) {
+##     out <- LOD.internal(x)
+##     class(out) <- c(class(out), "oncosimul_lod")
+##     return(out)
+## }
+
+
+## POM.oncosimulpop <- function(x) {
+##     out <- lapply(x, POM.internal)
+##     class(out) <- c(class(out), "oncosimul_pom_list")
+##     return(out)
+## }
+
+## LOD.oncosimulpop <- function(x) {
+##     out <- lapply(x, LOD.internal)
+##     class(out) <- c(class(out), "oncosimul_lod_list")
+##     return(out)
+## }
+
+
+## summary.oncosimul_lod_list <- function(x) {
+##     cat("List of ", length(x), " simulations\n.")
+##     cat("Shannon's diversity (entropy) = ", diversityLOD(x), "\n")
+## }
+
+## summary.oncosimul_pom_list <- function(x) {
+##     cat("List of ", length(x), " simulations\n.")
+##     cat("Shannon's diversity (entropy) = ", diversityPOM(x), "\n")
+## }
+
+
+
+LOD.internal_pre_2.9.2 <- function(x, strict) {
     ## Not identical to LOD of Szendro because:
     
     ##  a) I think we want all paths, not just their single LOD, which I
@@ -165,139 +329,50 @@ LOD.internal <- function(x, strict) {
 }
 
 
-POM.internal <- function(x) {
-    if(is.null(x$pops.by.time)) {
-        warning("Missing needed components. This might be a failed simulation.",
-                " Returning NA.")
-        return(NA)
-    }
-    x$GenotypesLabels[rle(apply(x$pops.by.time[, -1, drop = FALSE], 1, which.max))$values]
-}
 
-## First do, over a set of simulations, sim:
-## l_lod_single <- mclapply(sim, LODs)
-## l_poms <- mclapply(sim, POM)
-
-
-diversityLOD <- function(llod) {
-    nn <- names(llod[[1]])
-    if( is_null_na(nn) ||
-        !(nn == c("all_paths", "lod_single")))
-        stop("Object must be a list of LODs")
-    pathstr <- unlist(lapply(llod, function(x) paste(names(x$lod_single),
-                                                     collapse = "_")))
-    shannonI(table(pathstr))
-}
-
-LOD_as_path <- function(llod) {
-    ## nn <- names(llod[[1]])
-    ## if( is_null_na(nn) ||
-    ##     !(nn == c("all_paths", "lod_single")))
-    ##     stop("Object must be a list of LODs")
-    path_l <- function(u) {
-        if(length(u$lod_single) == 1) {
-            if(is.null(attributes(u)$initMutant))
-                initMutant <- ""
-            else
-                initMutant <- attributes(u)$initMutant
-            if(initMutant == "") initMutant <- "WT"
-            if(grepl("_is_end", u$lod_single))
-                return(initMutant)
-            if(u$lod_single == "No_descendants")
-                return(initMutant)
-        } else {
-            ## Deal with "" meaning WT
-            the_names <- names(u$lod_single)
-            the_names_wt <- which(the_names == "")
+## LOD_as_path_pre_2.9.2 <- function(llod) {
+##     path_l <- function(u) {
+##         if(length(u$lod_single) == 1) {
+##             if(is.null(attributes(u)$initMutant))
+##                 initMutant <- ""
+##             else
+##                 initMutant <- attributes(u)$initMutant
+##             if(initMutant == "") initMutant <- "WT"
+##             if(grepl("_is_end", u$lod_single))
+##                 return(initMutant)
+##             if(u$lod_single == "No_descendants")
+##                 return(initMutant)
+##         } else {
+##             ## Deal with "" meaning WT
+##             the_names <- names(u$lod_single)
+##             the_names_wt <- which(the_names == "")
             
-            if(length(the_names_wt)) {
-                if(length(the_names_wt) > 1) stop("more than 1 WT?!")
-                if(the_names_wt > 1) stop("WT in position not 1?!")
-                the_names[the_names_wt] <- "WT"
-            }
-            return(paste(the_names, collapse = " -> ")) 
-            ## return(paste0("WT", paste(names(u$lod_single),
-            ##                           collapse = " -> ")) )
-        }
-    }
-    if(identical(names(llod), c("all_paths", "lod_single")))
-        pathstr <- path_l(llod)
-    else {
-        ## should be a list
-        pathstr <- unlist(lapply(llod, path_l))
-    }
-    return(pathstr)
-    ## pathstr <- unlist(lapply(llod, function(x) paste(names(x$lod_single),
-    ##                                                  collapse = " -> ")))
-    ## return(paste0("WT", pathstr))
-}
-
-## We would just need a LOD_as_DAG
-
-diversityPOM <- function(lpom) {
-    if(!inherits(lpom, "list"))
-        stop("Object must be a list of POMs")
-    ## if(!inherits(x, "oncosimul_lod_list"))
-    ##     stop("This is not a list of POMs")
-    pomstr <- unlist(lapply(lpom, function(x) paste(x, collapse = "_")))
-    shannonI(table(pomstr))
-}
-
-## a legacy
-diversity_POM <- diversityPOM
-diversity_LOD <- diversityLOD
-
-## POM.oncosimul2 <- POM.internal
-## LOD2.oncosimul2 <- LOD.internal
-
-POM <- function(x) {
-    UseMethod("POM", x)
-}
-
-LOD <- function(x, strict = TRUE) {
-    UseMethod("LOD", x)
-}
-
-POM.oncosimul2 <- function(x) return(POM.internal(x))
-LOD.oncosimul2 <- function(x, strict = TRUE) return(LOD.internal(x, strict))
-
-POM.oncosimulpop <- function(x) return(lapply(x, POM.internal))
-LOD.oncosimulpop <- function(x, strict = TRUE) return(lapply(x, LOD.internal, strict))
-
-## POM.oncosimul2 <- function(x) {
-##     out <- POM.internal(x)
-##     class(out) <- c(class(out), "oncosimul_pom")
-##     return(out)
-## }
-
-## LOD.oncosimul2 <- function(x) {
-##     out <- LOD.internal(x)
-##     class(out) <- c(class(out), "oncosimul_lod")
-##     return(out)
+##             if(length(the_names_wt)) {
+##                 if(length(the_names_wt) > 1) stop("more than 1 WT?!")
+##                 if(the_names_wt > 1) stop("WT in position not 1?!")
+##                 the_names[the_names_wt] <- "WT"
+##             }
+##             return(paste(the_names, collapse = " -> ")) 
+##             ## return(paste0("WT", paste(names(u$lod_single),
+##             ##                           collapse = " -> ")) )
+##         }
+##     }
+##     if(identical(names(llod), c("all_paths", "lod_single")))
+##         pathstr <- path_l(llod)
+##     else {
+##         ## should be a list
+##         pathstr <- unlist(lapply(llod, path_l))
+##     }
+##     return(pathstr)
+##     ## pathstr <- unlist(lapply(llod, function(x) paste(names(x$lod_single),
+##     ##                                                  collapse = " -> ")))
+##     ## return(paste0("WT", pathstr))
 ## }
 
 
-## POM.oncosimulpop <- function(x) {
-##     out <- lapply(x, POM.internal)
-##     class(out) <- c(class(out), "oncosimul_pom_list")
-##     return(out)
-## }
 
-## LOD.oncosimulpop <- function(x) {
-##     out <- lapply(x, LOD.internal)
-##     class(out) <- c(class(out), "oncosimul_lod_list")
-##     return(out)
-## }
+LOD.oncosimul2_pre_2.9.2 <- function(x, strict = TRUE)
+    return(LOD.internal_pre_2.9.2(x, strict))
 
-
-## summary.oncosimul_lod_list <- function(x) {
-##     cat("List of ", length(x), " simulations\n.")
-##     cat("Shannon's diversity (entropy) = ", diversityLOD(x), "\n")
-## }
-
-## summary.oncosimul_pom_list <- function(x) {
-##     cat("List of ", length(x), " simulations\n.")
-##     cat("Shannon's diversity (entropy) = ", diversityPOM(x), "\n")
-## }
-
-
+## LOD.oncosimulpop_pre_2.9.2 <- function(x, strict = TRUE)
+##     return(lapply(x, LOD.internal_pre_2.9.2, strict))

@@ -12,13 +12,12 @@ test_that("Exercise LOD and POM code", {
     pancr8 <- oncoSimulPop(6, pancr, model = "Exp", keepPhylog = TRUE,
                            detectionSize = 1e5,
                            mc.cores = 2)
-    lop8 <- suppressWarnings(LOD(pancr8))
+    lop8 <- LOD(pancr8)
     OncoSimulR:::LOD_as_path(lop8)
     expect_true(inherits(POM(pancr1), "character"))
     require(igraph)
-    expect_true(inherits(LOD(pancr1, strict = FALSE)$all_paths[[1]], "igraph.vs"))
-    expect_true(is.na(LOD(pancr1, strict = TRUE)$all_paths))
-    expect_true(inherits(LOD(pancr1)$lod_single, "igraph.vs"))
+    ## expect_true(inherits(LOD(pancr1, strict = FALSE)$all_paths[[1]], "igraph.vs"))
+    expect_true(inherits(LOD(pancr1), "igraph.vs"))
     expect_true(inherits(POM(pancr8), "list"))
     expect_true(inherits(LOD(pancr8), "list"))
     expect_true(inherits(diversityPOM(POM(pancr8)), "numeric"))
@@ -50,23 +49,10 @@ test_that("Exercise LOD and POM code", {
                                             mutationPropGrowth = FALSE,
                                             initSize = 10)))
     lop8 <- suppressWarnings(LOD(pancr8))
-    lop8b <- suppressWarnings(LOD(pancr8, strict = TRUE))
-    lop8c <- suppressWarnings(LOD(pancr8, strict = FALSE))
+    lop8b <- suppressWarnings(LOD(pancr8))
     OncoSimulR:::LOD_as_path(lop8[[1]])
     OncoSimulR:::LOD_as_path(lop8)
-    ## what if this is commented out?
-    ## expect_true(any(unlist(lapply(lop8,
-    ##                               function(x) x$lod_single))
-    ##                 %in% "No_descendants"))
-    ## there are descendants but all go extinct
-    ## pancr2 <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
-    ##                                       "TP53", "TP53", "MLL3"),
-    ##                                   child = c("KRAS","SMAD4", "CDNK2A", 
-    ##                                       "TP53", "MLL3",
-    ##                                       rep("PXDN", 3), rep("TGFBR2", 2)),
-    ##                                   s = -0.9,
-    ##                                   sh = -0.9,
-    ##                                   typeDep = "MN"))
+
     gg <- allFitnessEffects(noIntGenes = rep(-.9, 100))
     pancr22 <- oncoSimulPop(10, gg,
                             model = "Exp",
@@ -77,8 +63,6 @@ test_that("Exercise LOD and POM code", {
                             mc.cores = 2,
                             finalTime = 2.5)
     lp22 <- LOD(pancr22)
-    lp23 <- LOD(pancr22, strict = TRUE)
-    lp24 <- LOD(pancr22, strict = FALSE)
     ## There is like soooo remote chance this will fail
     ## and the previous exercises the code anyway.
     ## expect_true(any(unlist(lp22) %in% "WT_is_end"))
@@ -91,28 +75,21 @@ test_that("Warnings when no descendants",  {
     s1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
                          mu = 1e-14, detectionSize = 1, initSize = 100,
                          keepPhylog = TRUE)
-    expect_warning(LOD(s1, strict = FALSE),
-                   "There never was a descendant of WT",
-                   fixed = TRUE)
-    expect_warning(LOD(s1, strict = FALSE),
-                   "PhylogDF has 0 rows:",
-                   fixed = TRUE)
-    ## expect_warning(LOD(s1, strict = TRUE),
-    ##                "There never was a descendant of WT",
-    ##                fixed = TRUE)
-    expect_warning(LOD(s1, strict = TRUE),
+    expect_warning(LOD(s1),
                    "LOD structure has 0 rows:",
                    fixed = TRUE)
     s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
                          mu = 1e-14, detectionSize = 1, initSize = 100,
                          keepPhylog = FALSE)
-    expect_warning(LOD(s2, strict = TRUE),
+    expect_warning(LOD(s2),
                    "LOD structure has 0 rows:",
                    fixed = TRUE)
 })
 
 date()
 test_that("LOD, strict, same as would be obtained from full structure", {
+    ## we are testing in an extremely paranoid way, against a
+    ## former version
 
     n <- 10
     for(i in 1:n) {
@@ -122,17 +99,17 @@ test_that("LOD, strict, same as would be obtained from full structure", {
         s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
                              initSize = 1000, detectionSize = 1e6,
                              keepPhylog = TRUE, mu = 1e-3)
-        lods <- LOD(s7, strict = TRUE)
-        loda <- LOD(s7, strict = FALSE)
+        lods <- LOD(s7)
+        loda <- LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
         ## lods should be among the loda
         if(!is.null(s7$pops.by.time)) {
             expect_true(any(
                 unlist(lapply(loda$all_paths,
                               function(x) identical(names(x),
-                                                    names(lods$lod_single))))))
+                                                    names(lods))))))
             if(length(loda$all_paths) == 1) {
                 expect_true(identical(names(loda$lod_single),
-                                      names(lods$lod_single)))
+                                      names(lods)))
             }
             ## print(OncoSimulR:::LOD_as_path(lods))
             ## print(OncoSimulR:::LOD_as_path(loda))
@@ -146,16 +123,16 @@ test_that("LOD, strict, same as would be obtained from full structure", {
                              initSize = 1000, detectionSize = 1e6,
                              keepPhylog = TRUE, mu = 1e-3,
                              initMutant = c("B"))
-        lods <- LOD(s7, strict = TRUE)
-        loda <- LOD(s7, strict = FALSE)
+        lods <- LOD(s7)
+        loda <- LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
         ## lods should be among the loda
         expect_true(any(
             unlist(lapply(loda$all_paths,
                           function(x) identical(names(x),
-                                                names(lods$lod_single))))))
+                                                names(lods))))))
         if(length(loda$all_paths) == 1) {
             expect_true(identical(names(loda$lod_single),
-                                  names(lods$lod_single)))
+                                  names(lods)))
         }
         ## print(loda)
     }
