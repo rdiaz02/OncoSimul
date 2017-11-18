@@ -186,7 +186,7 @@ POM <- function(x) {
     UseMethod("POM", x)
 }
 
-LOD <- function(x, strict = TRUE) {
+LOD <- function(x) {
     UseMethod("LOD", x)
 }
 

@@ -27,7 +27,7 @@
 \usage{
 
 POM(x)
-LOD(x, strict = TRUE)
+LOD(x)
 diversityPOM(lpom)
 diversityLOD(llod)
 }
