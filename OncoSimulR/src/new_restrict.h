@@ -216,6 +216,15 @@ struct LOD {
   std::vector<std::string> child;
 };
 
+// We only need the string, but if we store the genotype as such
+// we can avoid a costly conversion that often leads to storing nothing
+// in 
+struct POM {
+  // std::vector<double> time;
+  std::vector<std::string> genotypesString;
+  std::vector<Genotype> genotypes;
+};
+
 
 
 
@@ -294,5 +303,14 @@ bool detectedSizeP(const double n, const double cPDetect,
 		   const double PDBaseline, std::mt19937& ran_gen);
 
 std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist);
+
+void addToPOM(POM& pom,
+	      const Genotype& genotype,
+	      const std::map<int, std::string>& intName,
+	      const fitness_as_genes& fg);
+
+void addToPOM(POM& pom,
+	      const std::string string);
+
 #endif
 

@@ -230,7 +230,11 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					std::mt19937& ran_gen,
 					const bool& AND_DrvProbExit,
 					const std::vector<std::vector<int> >& fixation_l,
-					const double& fatalPopSize = 1e15) {
+					POM& pom,
+					const std::map<int, std::string>& intName,
+					const fitness_as_genes& genesInFitness,
+					const double& fatalPopSize = 1e15
+					) {
   // Fill out, but also compute totPopSize
   // and return sample summaries for popsize, drivers.
   
@@ -389,12 +393,17 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     storeThis = true;
 
 
+  
+  
+  // Reuse some info for POM
+
   if( storeThis ) {
     lastStoredSample = currentTime;
     outNS_i++;
     int ndr_lp = 0;
     double l_pop_s = 0.0;
-    
+    int largest_clone = -99;
+
     time_out.push_back(currentTime);
     
     for(size_t i = 0; i < popParams.size(); ++i) {
@@ -405,12 +414,21 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
       if(popParams[i].popSize > l_pop_s) {
 	l_pop_s = popParams[i].popSize;
 	ndr_lp = getGenotypeDrivers(Genotypes[i], drv).size();
+	largest_clone = i;
       }
     }
     sampleTotPopSize.push_back(totPopSize);
     sampleLargestPopSize.push_back(l_pop_s);
     sampleMaxNDr.push_back(max_ndr);
     sampleNDrLargestPop.push_back(ndr_lp);
+
+    if(l_pop_s > 0) {
+      if (largest_clone < 0)
+    	throw std::logic_error("largest_clone < 0");
+      addToPOM(pom, Genotypes[largest_clone], intName, genesInFitness);
+    } else {
+      addToPOM(pom, "_EXTINCTION_");
+    }
   } 
   
   if( !std::isfinite(totPopSize) ) {
@@ -419,8 +437,24 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
   if( std::isnan(totPopSize) ) {
     throw std::range_error("totPopSize is NaN");
   }
-  
-
+  // For POM
+  if( !storeThis ) {
+    double l_pop_s = 0.0;
+    int largest_clone = -99;
+    for(size_t i = 0; i < popParams.size(); ++i) {
+      if(popParams[i].popSize > l_pop_s) {
+	l_pop_s = popParams[i].popSize;
+	largest_clone = i;
+      }
+    }
+    if(l_pop_s > 0) {
+      if (largest_clone < 0)
+	throw std::logic_error("largest_clone < 0");
+      addToPOM(pom, Genotypes[largest_clone], intName, genesInFitness);
+    } else {
+      addToPOM(pom, "_EXTINCTION_");
+    }
+  }
 }
 
 // FIXME: I might want to return the actual drivers in each period
@@ -771,6 +805,30 @@ void addToLOD(LOD& lod,
 					      fg, intName));
 }
 
+void addToPOM(POM& pom,
+	      const Genotype& genotype,
+	      const std::map<int, std::string>& intName,
+	      const fitness_as_genes& fg) {
+
+  if (pom.genotypes.empty()) {
+    std::string g = genotypeToNameString(genotypeSingleVector(genotype),
+				       fg, intName);
+    pom.genotypesString.push_back(g);
+    pom.genotypes.push_back(genotype);
+  } else if ( !(pom.genotypes.back() == genotype) ) {
+    std::string g = genotypeToNameString(genotypeSingleVector(genotype),
+				       fg, intName);
+    pom.genotypesString.push_back(g);
+    pom.genotypes.push_back(genotype);
+  }
+}
+
+// to explicitly signal extinction
+void addToPOM(POM& pom,
+	      const std::string string) {
+  pom.genotypesString.push_back(string);
+}
+
 
 
 static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
@@ -830,7 +888,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const std::vector< std::vector<int> >& fixation_l,
 			 int& ti_dbl_min,
 			 int& ti_e3,
-			 LOD& lod) {
+			 LOD& lod,
+			 POM& pom) {
   
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -862,6 +921,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
   phylog = PhylogName();
   lod = LOD();
+  pom = POM();
   
   popSizes_out.clear();
   index_out.clear();
@@ -1792,7 +1852,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 					 nextCheckSizeP,
 					 ran_gen,
 					 AND_DrvProbExit,
-					 fixation_l); //keepEvery is for thinning
+					 fixation_l,
+					 pom, intName,
+					 genesInFitness); //keepEvery is for thinning
       if(verbosity >= 3) {
 	Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() 
 		  << "\n totPopSize after sampling " << totPopSize << "\n";
@@ -1934,6 +1996,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   fitness_as_genes genesInFitness = fitnessAsGenes(fitnessEffects);
   PhylogName phylog;
   LOD lod;
+  POM pom;
   
   // Mutator effects
   fitnessEffectsAll muEF;
@@ -2131,7 +2194,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  fixation_l,
 		  ti_dbl_min,
 		  ti_e3,
-		  lod);
+		  lod,
+		  pom);
       ++numRuns;
       forceRerun = false;
       accum_ti_dbl_min += ti_dbl_min;
@@ -2314,7 +2378,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 										   Named("child") = lod.child
 										   // , Named("time") = lod.time
 				   
-					       ))
+										   ),
+					       Named("POM") = Rcpp::wrap(pom.genotypesString)
+					       )
 		 );
 }
 

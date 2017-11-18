@@ -186,5 +186,6 @@ void updateRatesBeeren(std::vector<spParamsP>& popParams,
 void detect_ti_duplicates(const std::multimap<double, int>& m,
 			  const double ti,
 			  const int spcies);
+
 #endif
 
