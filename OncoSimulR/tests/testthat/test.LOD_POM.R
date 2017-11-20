@@ -39,9 +39,11 @@ test_that("Exercise LOD and POM code", {
                    "Missing needed components.", fixed = TRUE)
     expect_warning(POM(pancr88),
                    "Missing needed components.", fixed = TRUE)
-    pancr8 <- suppressWarnings(suppressMessages(oncoSimulPop(30, pancr, model = "McFL",
+    pancr8 <- suppressWarnings(suppressMessages(oncoSimulPop(20,
+                                                             pancr, model = "McFL",
                                             keepPhylog = TRUE,
                                             onlyCancer = FALSE,
+                                            max.num.tries = 2,
                                             finalTime = 0.01,
                                             sampleEvery = 0.5,
                                             mu = 1e-8,
@@ -52,12 +54,12 @@ test_that("Exercise LOD and POM code", {
     lop8b <- suppressWarnings(LOD(pancr8))
     OncoSimulR:::LOD_as_path(lop8[[1]])
     OncoSimulR:::LOD_as_path(lop8)
-
     gg <- allFitnessEffects(noIntGenes = rep(-.9, 100))
-    pancr22 <- oncoSimulPop(10, gg,
+    pancr22 <- oncoSimulPop(6, gg,
                             model = "Exp",
                             keepPhylog = TRUE,
                             onlyCancer = FALSE,
+                            max.num.tries = 2,
                             initSize = 1e3,
                             mu = 1e-2,
                             mc.cores = 2,
@@ -90,7 +92,6 @@ date()
 test_that("LOD, strict, same as would be obtained from full structure", {
     ## we are testing in an extremely paranoid way, against a
     ## former version
-
     n <- 10
     for(i in 1:n) {
         ng <- 6
@@ -100,7 +101,7 @@ test_that("LOD, strict, same as would be obtained from full structure", {
                              initSize = 1000, detectionSize = 1e6,
                              keepPhylog = TRUE, mu = 1e-3)
         lods <- LOD(s7)
-        loda <- LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
+        loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
         ## lods should be among the loda
         if(!is.null(s7$pops.by.time)) {
             expect_true(any(
@@ -124,7 +125,7 @@ test_that("LOD, strict, same as would be obtained from full structure", {
                              keepPhylog = TRUE, mu = 1e-3,
                              initMutant = c("B"))
         lods <- LOD(s7)
-        loda <- LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
+        loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
         ## lods should be among the loda
         expect_true(any(
             unlist(lapply(loda$all_paths,
@@ -135,6 +136,54 @@ test_that("LOD, strict, same as would be obtained from full structure", {
                                   names(lods)))
         }
         ## print(loda)
+    }
+})
+date()
+
+date()
+test_that("POM from C++ is the same as from the pops.by.time object", {
+    ## Must make sure keepEvery = sampleEvery or granularity of
+    ## C++ can be larger
+    n <- 10
+    for(i in 1:n) {
+        ng <- 6
+        rxx <- rfitness(ng)
+        rxx[sample(2:(ng + 1)), ng + 1] <- 1.5 ## make sure we get going
+        s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                             initSize = 1000, detectionSize = 1e6,
+                             mu = 1e-3)
+        pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+        ## if(!is.null(s7$pops.by.time)) {
+        expect_true(identical(s7$other$POM, pom))
+        ## }
+    }
+    ## with initMutant
+    for(i in 1:n) {
+        rxx <- rfitness(6)
+        rxx[3, 7] <- 1.5        
+        s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                             initSize = 1000, detectionSize = 1e6,
+                             mu = 1e-3,
+                             initMutant = c("B"))
+        pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+        ## if(!is.null(s7$pops.by.time)) {
+        expect_true(identical(s7$other$POM, pom))
+    }
+    ## try to make extinction likely
+    for(i in 1:n) {
+        rxx <- rfitness(6)
+        rxx[3, 7] <- 1e-8
+        s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                             initSize = 10, detectionSize = 1e6,
+                             mu = 1e-3,
+                             max.num.tries = 3,
+                             errorHitMaxTries = FALSE,
+                             initMutant = c("B"))
+        pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+        if(any(s7$other$POM == "_EXTINCTION_"))
+            expect_true(identical(s7$other$POM[-length(s7$other$POM)], pom))
+        else
+            expect_true(identical(s7$other$POM, pom))
     }
 })
 date()

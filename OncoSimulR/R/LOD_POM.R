@@ -14,6 +14,8 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+## Note that, in contrast to POM, LOD is not well defined if the population
+## becomes extinct.
 
 ## Functions to obtain LOD and POM similar to Szendro et al., 2014, PNAS.
 genot_max <- function(x) {
@@ -114,17 +116,16 @@ LOD.internal <- function(x) {
 }
 
 
-
-
 POM.internal <- function(x) {
     if(is.null(x$pops.by.time)) {
         warning("Missing needed components. This might be a failed simulation.",
                 " Returning NA.")
         return(NA)
+    } else {
+        x$other$POM
     }
-    x$GenotypesLabels[rle(apply(x$pops.by.time[, -1, drop = FALSE],
-                                1, which.max))$values]
 }
+
 
 
 diversityLOD <- function(llod) {
@@ -186,6 +187,7 @@ POM <- function(x) {
     UseMethod("POM", x)
 }
 
+
 LOD <- function(x) {
     UseMethod("LOD", x)
 }
@@ -195,6 +197,9 @@ LOD.oncosimul2 <- function(x) return(LOD.internal(x))
 
 POM.oncosimulpop <- function(x) return(lapply(x, POM.internal))
 LOD.oncosimulpop <- function(x) return(lapply(x, LOD.internal))
+
+
+
 
 ## POM.oncosimul2 <- function(x) {
 ##     out <- POM.internal(x)
@@ -231,6 +236,18 @@ LOD.oncosimulpop <- function(x) return(lapply(x, LOD.internal))
 ##     cat("List of ", length(x), " simulations\n.")
 ##     cat("Shannon's diversity (entropy) = ", diversityPOM(x), "\n")
 ## }
+
+
+
+POM_pre_2.9.2 <- function(x) {
+    if(is.null(x$pops.by.time)) {
+        warning("Missing needed components. This might be a failed simulation.",
+                " Returning NA.")
+        return(NA)
+    }
+    x$GenotypesLabels[rle(apply(x$pops.by.time[, -1, drop = FALSE],
+                                1, which.max))$values]
+}
 
 
 

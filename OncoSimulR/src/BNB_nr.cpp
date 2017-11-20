@@ -1169,6 +1169,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // we pass as the parent the tmpParam; it better initialize
     // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
+    addToPOM(pom, Genotypes[0], intName, genesInFitness);
   } else { //no initMutant
     popParams[0].numMutablePos = numGenes;
     
