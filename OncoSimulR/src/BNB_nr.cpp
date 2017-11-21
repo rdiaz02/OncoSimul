@@ -790,20 +790,45 @@ void addToPhylog(PhylogName& phylog,
   phylog.pop_size_child.push_back(pop_size_child);
 }
 
+// // Only called when the child has pop size of 0
+// // so true LOD
+// void addToLOD(LOD& lod,
+// 	      const Genotype& parent,
+// 	      const Genotype& child,
+// 	      // const double time,
+// 	      const std::map<int, std::string>& intName,
+// 	      const fitness_as_genes& fg) {
+//   // lod.time.push_back(time);
+//   lod.parent.push_back(genotypeToNameString(genotypeSingleVector(parent),
+// 					       fg, intName));
+//   lod.child.push_back(genotypeToNameString(genotypeSingleVector(child),
+// 					      fg, intName));
+// }
+
+
 // Only called when the child has pop size of 0
 // so true LOD
-void addToLOD(LOD& lod,
+// Use a map for LOD, and overwrite the parent:
+// we only add when the size of the child is 0
+// The key of the map is the child.
+void addToLOD(std::map<std::string, std::string>& lod,
 	      const Genotype& parent,
 	      const Genotype& child,
 	      // const double time,
 	      const std::map<int, std::string>& intName,
 	      const fitness_as_genes& fg) {
-  // lod.time.push_back(time);
-  lod.parent.push_back(genotypeToNameString(genotypeSingleVector(parent),
-					       fg, intName));
-  lod.child.push_back(genotypeToNameString(genotypeSingleVector(child),
-					      fg, intName));
+  std::string parent_str = genotypeToNameString(genotypeSingleVector(parent),
+					 fg, intName);
+  std::string child_str = genotypeToNameString(genotypeSingleVector(child),
+					       fg, intName);
+  lod[child_str] = parent_str;
+  // // lod.time.push_back(time);
+  // lod.parent.push_back(genotypeToNameString(genotypeSingleVector(parent),
+  // 					       fg, intName));
+  // lod.child.push_back(genotypeToNameString(genotypeSingleVector(child),
+  // 					      fg, intName));
 }
+
 
 void addToPOM(POM& pom,
 	      const Genotype& genotype,
@@ -888,7 +913,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const std::vector< std::vector<int> >& fixation_l,
 			 int& ti_dbl_min,
 			 int& ti_e3,
-			 LOD& lod,
+			 std::map<std::string, std::string>& lod,
+			 // LOD& lod,
 			 POM& pom) {
   
   double nextCheckSizeP = checkSizePEvery;
@@ -920,7 +946,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   genot_out.clear();
 
   phylog = PhylogName();
-  lod = LOD();
+  // lod = LOD(); 
+  lod.clear();
   pom = POM();
   
   popSizes_out.clear();
@@ -1996,7 +2023,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
   fitness_as_genes genesInFitness = fitnessAsGenes(fitnessEffects);
   PhylogName phylog;
-  LOD lod;
+  // LOD lod;
+  std::map<std::string, std::string> lod;
   POM pom;
   
   // Mutator effects
@@ -2327,6 +2355,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   fill_SStats(perSampleStats, sampleTotPopSize, sampleLargestPopSize,
   	      sampleLargestPopProp, sampleMaxNDr, sampleNDrLargestPop);
 
+  // create the lod return pieces. Move to a function later
+  std::vector<std::string> lod_parent;
+  std::vector<std::string> lod_child;
+  for (const auto &l : lod) {
+    lod_child.push_back(l.first);
+    lod_parent.push_back(l.second);
+  }
   
   return
     List::create(Named("pops.by.time") = outNS,
@@ -2375,10 +2410,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 					       Named("accum_ti_dbl_min") = accum_ti_dbl_min,
 					       Named("accum_ti_e3") = accum_ti_e3,
 					       Named("LOD_DF") = DataFrame::create(
-										   Named("parent") = lod.parent,
-										   Named("child") = lod.child
-										   // , Named("time") = lod.time
-				   
+										   Named("parent") = lod_parent, // lod.parent,
+										   Named("child") = lod_child //lod.child
 										   ),
 					       Named("POM") = Rcpp::wrap(pom.genotypesString)
 					       )
