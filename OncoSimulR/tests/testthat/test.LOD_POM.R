@@ -88,10 +88,12 @@ test_that("Warnings when no descendants",  {
                    fixed = TRUE)
 })
 
+
 date()
 test_that("LOD, strict, same as would be obtained from full structure", {
     ## we are testing in an extremely paranoid way, against a
     ## former version
+
     n <- 10
     for(i in 1:n) {
         ng <- 6
@@ -116,6 +118,15 @@ test_that("LOD, strict, same as would be obtained from full structure", {
             ## print(OncoSimulR:::LOD_as_path(loda))
         }
     }
+
+    
+})
+
+date()
+
+date()
+test_that("LOD, strict, same as would be obtained from full structure, with initMutant", {
+    n <- 100
     ## with initMutant
     for(i in 1:n) {
         rxx <- rfitness(6)

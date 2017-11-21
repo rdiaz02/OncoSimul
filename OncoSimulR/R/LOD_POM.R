@@ -23,29 +23,36 @@ genot_max <- function(x) {
 }
 
 
+
 ## Filter the PhylogDF so we obtain LOD, sensu stricto.
-## Now this is coming from LOD_DF, which already only has
-## implicitly pop_size_child == 0
+
+## No longer necessary with LOD from C++ removing duplicates
+## ## Now this is coming from LOD_DF, which already only has
+## ## implicitly pop_size_child == 0
+## Only used in one function use for testing
 filter_phylog_df_LOD <- function(y) {
     keep <- !rev(duplicated(rev(y$child)))
     return(y[keep, ])
 }
 
 
+
 ## ## Filter the PhylogDF so we obtain LOD, sensu stricto.
-filter_phylog_df_LOD_with_n <- function(y) {
-    y <- y[y$pop_size_child == 0, , drop = FALSE]
-    keep <- !rev(duplicated(rev(y$child)))
-    return(y[keep, ])
-}
+## ## For the old version
+## filter_phylog_df_LOD_with_n <- function(y) {
+##     y <- y[y$pop_size_child == 0, , drop = FALSE]
+##     keep <- !rev(duplicated(rev(y$child)))
+##     return(y[keep, ])
+## }
 
 
 ## from phylogClone, key parts for the LOD strict structure
 phcl_from_lod <- function(df, x) {
-    ## the !keepEvents. Which I move here to speed things up.
-    df <- df[!duplicated(df[, c(1, 2)]), , drop = FALSE]
+    ## no longer necessary
+    ## ## the !keepEvents. Which I move here to speed things up.
+    ## df <- df[!duplicated(df[, c(1, 2)]), , drop = FALSE]
     
-    tG <- unique(c(df[, 1], df[, 2]))
+    tG <- unique(c(as.character(df[, 1]), as.character(df[, 2])))
     ## ## Do as in phylogClone. So that we have the same nodes
     ## ## in LOD all and not LOD all?
     ## z <- which_N_at_T(x, N = 1, t = "last")
@@ -80,7 +87,8 @@ LOD.internal <- function(x) {
     }
     if (!inherits(x, "oncosimul2")) 
         stop("LOD information is only stored with v >= 2")
-    y <- filter_phylog_df_LOD(x$other$LOD_DF)
+    ## y <- filter_phylog_df_LOD(x$other$LOD_DF)
+    y <- x$other$LOD_DF
     pc <- phcl_from_lod(y)
     ## need eval for oncoSimulPop calls and for LOD_as_path
     initMutant <- x$InitMutant
