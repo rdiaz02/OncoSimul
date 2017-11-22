@@ -233,7 +233,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
     if(any(is.na(x)))
         stop("NAs in fitness matrix")
     if(simplify) {
-        return(x[x[, ncol(x)] > min_filter_fitness, ])
+        return(x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE])
     } else {
         return(x)
     }
