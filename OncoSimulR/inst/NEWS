@@ -1,5 +1,6 @@
-Changes in version 2.9.2 (2017-11-18):
+Changes in version 2.9.2 (2017-11-22):
 	- LOD: using only the strict Szendro et al. meaning.
+	- POM: computed in C++.
 	
 Changes in version 2.9.1 (2017-11-10):
 	- Using fitness landscape directly when given as input (no
