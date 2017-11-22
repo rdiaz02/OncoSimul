@@ -206,20 +206,22 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
                              initMutant = c("C"))
         set.seed(2 * si + i)
         s7b <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
-                             initSize = 100, detectionSize = 1e5,
-                             keepPhylog = TRUE, mu = 5e-3,
-                             initMutant = c("C"))
+                              initSize = 100, detectionSize = 1e5,
+                              keepPhylog = TRUE, mu = 5e-3,
+                              initMutant = c("C"))
         lods <- LOD(s7)
         print(lods)
         loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7b, strict = FALSE)
         ## lods should be among the loda
-        expect_true(any(
-            unlist(lapply(loda$all_paths,
-                          function(x) identical(names(x),
-                                                names(lods))))))
-        if(length(loda$all_paths) == 1) {
-            expect_true(identical(names(loda$lod_single),
-                                  names(lods)))
+        if(!is.null(s7$pops.by.time)) {
+            expect_true(any(
+                unlist(lapply(loda$all_paths,
+                              function(x) identical(names(x),
+                                                    names(lods))))))
+            if(length(loda$all_paths) == 1) {
+                expect_true(identical(names(loda$lod_single),
+                                      names(lods)))
+            }
         }
         ## print(loda)
     }
@@ -242,7 +244,8 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
                              mu = 1e-3)
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
         ## if(!is.null(s7$pops.by.time)) {
-        expect_true(identical(s7$other$POM, pom))
+        if(!is.null(s7$pops.by.time))
+            expect_true(identical(s7$other$POM, pom))
         ## }
     }
     ## with initMutant
@@ -255,7 +258,8 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
                              initMutant = c("B"))
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
         ## if(!is.null(s7$pops.by.time)) {
-        expect_true(identical(s7$other$POM, pom))
+        if(!is.null(s7$pops.by.time))
+            expect_true(identical(s7$other$POM, pom))
     }
     ## try to make extinction likely
     for(i in 1:n) {
@@ -268,10 +272,12 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
                              errorHitMaxTries = FALSE,
                              initMutant = c("B"))
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
-        if(any(s7$other$POM == "_EXTINCTION_"))
-            expect_true(identical(s7$other$POM[-length(s7$other$POM)], pom))
-        else
-            expect_true(identical(s7$other$POM, pom))
+        if(!is.null(s7$pops.by.time)) {
+            if(any(s7$other$POM == "_EXTINCTION_"))
+                expect_true(identical(s7$other$POM[-length(s7$other$POM)], pom))
+            else
+                expect_true(identical(s7$other$POM, pom))
+        }
     }
 })
 date()
