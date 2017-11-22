@@ -1,3 +1,4 @@
+cat(paste("\n Starting test.Z-driver-counts at", date(), "\n"))
 date()
 test_that("Assertion is correct when nothing returned",{
     ## Fixing the seed here isn't really needed. These are just a few
@@ -71,3 +72,5 @@ test_that("driverCounts: a run that used to cause crashes", {
 })
 
 set.seed(NULL)
+
+cat(paste("\n Ending test.Z-driver-counts at", date(), "\n"))

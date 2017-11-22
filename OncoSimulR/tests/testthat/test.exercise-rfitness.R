@@ -1,3 +1,4 @@
+cat(paste("\n Starting exercise-rfitness at", date(), "\n"))
 test_that("Expect output", {
 
     expect_output(print(rfitness(4)), "Fitness", fixed = TRUE)
@@ -45,3 +46,5 @@ test_that("Warnings if scale out of scale", {
     expect_warning(rfitness(4, wt_is_1 = "force", scale = c(0, 0.5)),
                    "Using wt_is_1 = force", fixed = TRUE)
 })
+
+cat(paste("\n Starting exercise-rfitness at", date(), "\n"))

@@ -1608,7 +1608,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
 ## 	    print_spP(popParams[nextMutant]);
 	    
 ## 	    DP1("end at mutation");
-cat("\n Done per-gene-mutation rates at", date(), "\n") ## whole file takes about 6 seconds
+cat("\n Ending per-gene-mutation rates at", date(), "\n") ## whole file takes about 6 seconds
 
 
 

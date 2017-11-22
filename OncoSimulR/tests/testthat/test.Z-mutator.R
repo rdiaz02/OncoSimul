@@ -1,3 +1,4 @@
+cat(paste("\n Starting test.Z-mutator at", date(), "\n"))
 test_that("Mutator genes missing from fitness", {
     RNGkind("Mersenne-Twister")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -268,3 +269,5 @@ test_that("fitness and mutator effects evaluation of actual values, long example
 })
 
 set.seed(NULL)
+
+cat(paste("\n Ending test.Z-mutator at", date(), "\n"))

@@ -1,3 +1,5 @@
+cat(paste("\n Starting genot_fitness_to_epistasis at", date(), "\n"))
+
 ## A minimal, simple check of this function which is a
 ## relict from the past
 test_that("genot_fitness_to_epistasis works minimally", {
@@ -23,3 +25,5 @@ test_that("genot_fitness_to_epistasis works minimally", {
     expect_true(identical(afe1mm[, "Fitness"],
                           afe2[, "Fitness"]))
 })
+
+cat(paste("\n Ending genot_fitness_to_epistasis at", date(), "\n"))

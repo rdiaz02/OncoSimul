@@ -1,6 +1,8 @@
 ## Starting with v. 2.1.2 modules do not require Root (unless, of course,
 ## you have a node named Root, as when using a DAG). They can use it, though.
 
+cat(paste("\n Starting test.modules-root-no-root at", date(), "\n"))
+
 test_that("Root not needed, but OK", {
     sa <- 0.1
     sb <- -0.2
@@ -62,3 +64,4 @@ test_that("Root needed with DAGs", {
                  "Some values in rT, epistasis,  or order effects not in geneToModule",
                  fixed = TRUE)
 })
+cat(paste("\n Ending test.modules-root-no-root at", date(), "\n"))

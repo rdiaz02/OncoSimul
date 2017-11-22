@@ -1,4 +1,4 @@
-cat(paste("\n Starting total-present-drivers tests", date(), "\n"))
+cat(paste("\n Starting Z-total-present-drivers tests", date(), "\n"))
 
 
 test_that("Count TotalPresentDrivers", {
@@ -90,6 +90,6 @@ test_that("Count TotalPresentDrivers", {
 })
 set.seed(NULL)
 set.seed(NULL)
-cat(paste("\n Ending total-present-drivers tests", date(), "\n"))
+cat(paste("\n Ending Z-total-present-drivers tests", date(), "\n"))
 
 

@@ -1,3 +1,5 @@
+cat(paste("\n Starting test.Z-all-fitness at", date(), "\n"))
+
 RNGkind("Mersenne-Twister")
 
 test_that("catches identical gene names in different modules", {
@@ -127,3 +129,5 @@ test_that("long example OK", {
 
 
 set.seed(NULL)
+
+cat(paste("\n Ending test.Z-all-fitness at", date(), "\n"))

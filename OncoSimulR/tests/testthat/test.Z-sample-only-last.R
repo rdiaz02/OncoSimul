@@ -1,4 +1,4 @@
-cat(paste("\n Starting sample-only-last tests", date(), "\n"))
+cat(paste("\n Starting Z-sample-only-last tests", date(), "\n"))
 
 data(examplePosets)
 RNGkind("Mersenne-Twister") 
@@ -101,4 +101,4 @@ for(i in 1:length(examplePosets)) {
 }
 
 set.seed(NULL)
-cat(paste("\n Ending sample-only-last tests", date(), "\n"))
+cat(paste("\n Ending Z-sample-only-last tests", date(), "\n"))

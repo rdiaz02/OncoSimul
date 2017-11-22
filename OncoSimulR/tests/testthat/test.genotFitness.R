@@ -1,3 +1,5 @@
+cat(paste("\n Starting genotFitness at", date(), "\n"))
+
 test_that("Conversion for data frame", {
     (m4 <- data.frame(G = c("A, B", "A", "WT", "B"), F = c(3, 2, 1, 4)))
     fem4 <- allFitnessEffects(genotFitness = m4)
@@ -104,3 +106,4 @@ test_that("genotFitness not combined with others", {
 })
 
 
+cat(paste("\n Ending genotFitness at", date(), "\n"))

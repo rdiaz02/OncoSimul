@@ -1,3 +1,4 @@
+cat(paste("\n Starting test.Z-rfitness-landscape at", date(), "\n"))
 test_that("exercise accessible genotypes code", {
     ## Because of compiler differences, this might only test the relevant
     ## code in Linux. But conditions will be true in all systems.
@@ -31,3 +32,5 @@ test_that("exercise accessible genotypes code", {
 }) 
 
 set.seed(NULL)
+
+cat(paste("\n Ending test.Z-rfitness-landscape at", date(), "\n"))

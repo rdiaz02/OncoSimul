@@ -1,3 +1,4 @@
+cat(paste("\n Starting test.Z-oncoSimulIndiv at", date(), "\n"))
 ## Some tests below might only work on Linux because of compiler
 ## differences, because the rng is done in C++, etc.
 ## Note that the difference is in whether a certain code
@@ -162,3 +163,5 @@ test_that("exercise mu > 1, new format", {
 
 
 set.seed(NULL)
+
+cat(paste("\n Ending test.Z-oncoSimulIndiv at", date(), "\n"))
