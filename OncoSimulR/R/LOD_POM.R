@@ -116,7 +116,7 @@ LOD.internal <- function(x) {
                                               mode = "out")
         if(length(all_paths) > 1)
             stop("length(all_paths) > 1???")
-        lod <- all_paths[[1]]
+        lod <- igraph::as_ids(all_paths[[1]])
     }
     if(initMutant != "")
         attributes(lod)$initMutant <- initMutant
@@ -137,14 +137,25 @@ POM.internal <- function(x) {
 
 
 diversityLOD <- function(llod) {
-    nn <- names(llod[[1]])
+    ## nn <- names(llod[[1]])
+    nn <- llod[[1]]
     if( is_null_na(nn) ||
         !(is.list(llod)))
         stop("Object must be a list of LODs")
-    pathstr <- unlist(lapply(llod, function(x) paste(names(x),
+    pathstr <- unlist(lapply(llod, function(x) paste(x,
                                                      collapse = "_")))
     shannonI(table(pathstr))
 }
+
+## diversityLOD <- function(llod) {
+##     nn <- names(llod[[1]])
+##     if( is_null_na(nn) ||
+##         !(is.list(llod)))
+##         stop("Object must be a list of LODs")
+##     pathstr <- unlist(lapply(llod, function(x) paste(names(x),
+##                                                      collapse = "_")))
+##     shannonI(table(pathstr))
+## }
 
 LOD_as_path <- function(llod) {
     path_l <- function(u) {
@@ -160,7 +171,8 @@ LOD_as_path <- function(llod) {
                 return(initMutant)
         } else {
             ## Deal with "" meaning WT
-            the_names <- names(u)
+            ## the_names <- names(u)
+            the_names <- u
             the_names_wt <- which(the_names == "")
             
             if(length(the_names_wt)) {
