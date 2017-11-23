@@ -8238,10 +8238,11 @@ measure of diversity of the actual genotypes sampled.
 In @szendro_predictability_2013 "(...) paths defined as the time
 ordered sets of genotypes that at some time contain the largest
 subpopulation" are called "Path of the Maximum" (POM) (see their
-p. 572). In our case, POM are obtained from the `pops.by.time`
-returned object (i.e., from the genotypes at each of the sampling
-times) and, thus, the POMs will be affected by how often we sample
-and keep samples (arguments `sampleEvery` and `keepEvery`), since we
+p. 572). In our case, POM are obtained by finding the clone with
+largest population size whenever we sample and, thus, <!-- from the
+`pops.by.time` --> <!-- returned object (i.e., from the genotypes at
+each of the sampling --> <!-- times) and, thus, --> the POMs will be
+affected by how often we sample (argument `sampleEvery`), since we
 are running a continuous time process.
 
 

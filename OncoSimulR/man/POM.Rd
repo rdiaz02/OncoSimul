@@ -56,12 +56,14 @@ diversityLOD(llod)
   to a process in continuous time with sampling at user-specified
   periods.
 
-  For POM, the results can depend strongly on how often we sample and
-  keep samples (i.e., the \code{sampleEvery} and \code{keepEvery}
-  arguments to \code{oncoSimulIndiv} and \code{oncoSimulPop}), since the
-  POM is computed from the values stored in the \code{pops.by.time}
-  matrix. This also explains why it is generally meaningless to use POM on
-  \code{oncoSimulSample} runs: these only keep the very last sample.
+  For POM, the results can depend strongly on how often we sample (i.e.,
+  the \code{sampleEvery} argument to \code{oncoSimulIndiv} and
+  \code{oncoSimulPop}), since the POM is computed by finding the clone
+  with largest population size whenever we sample.%% from the values
+  %% stored in the \code{pops.by.time} matrix.
+  This also explains why
+  it is generally meaningless to use POM on \code{oncoSimulSample} runs:
+  these only keep the very last sample.
 
 
   For LOD, %% when using \code{strict = TRUE}, 
@@ -165,8 +167,8 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
                                       typeDep = "MN"))
 
 
-pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE)
-pancr8 <- oncoSimulPop(8, pancr, model = "Exp", keepPhylog = TRUE,
+pancr1 <- oncoSimulIndiv(pancr, model = "Exp")
+pancr8 <- oncoSimulPop(8, pancr, model = "Exp",
                        mc.cores = 2)
 
 POM(pancr1)
