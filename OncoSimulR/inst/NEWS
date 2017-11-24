@@ -1,4 +1,4 @@
-Changes in version 2.9.2 (2017-11-22):
+Changes in version 2.9.2 (2017-11-24):
 	- LOD: using only the strict Szendro et al. meaning.
 	- POM: computed in C++.
 	
