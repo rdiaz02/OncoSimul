@@ -92,7 +92,9 @@ LOD.internal <- function(x) {
     pc <- phcl_from_lod(y)
     ## need eval for oncoSimulPop calls and for LOD_as_path
     initMutant <- x$InitMutant
-    
+
+    ## No descendants means that: never a descendant.
+    ## Note the same that the init mutant be the final state.
     if((length(pc) == 1) && (is.na(pc))) {
         lod <- "No_descendants"
         ## bail out here. We do not need the rest.

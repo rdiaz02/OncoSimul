@@ -229,9 +229,11 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
                                           lods))
                 }
             }
-            ## print(loda)
+        } else if (grepl("No_descendants", lods)) {
+            expect_true(identical(loda$lod_single,
+                                  lods)) 
         } else {
-          if(!is.null(s7$pops.by.time)) {
+            if(!is.null(s7$pops.by.time)) {
                 expect_true(any(
                     unlist(lapply(loda$all_paths,
                                   function(x) identical(x,
@@ -243,6 +245,7 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
             }  
         }
     }
+    
 })
 date()
 set.seed(NULL)
