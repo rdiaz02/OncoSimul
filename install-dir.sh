@@ -1,8 +1,19 @@
 #!/bin/bash
 
 V_R=$1
-export R_MAKEVARS_USER=/home/ramon/.R/Makevars
-
+# export R_MAKEVARS_USER=/home/ramon/.R/Makevars
+# export CXX="clang++"
+# export CC="clang"
+# export CXX1X="clang++"
+# export CFLAGS=" -Wall -g -O2"
+# export CPICFLAGS=" -fPIC"
+# export CPP="clang -E"
+# export CXXFLAGS=" -Wall -g -O2"
+# export CXXPICFLAGS=" -fPIC"
+# export CXXCPP="clang++ -E"
+# export CXX1XFLAGS=" -Wall -g -O2"
+# export CXX1XPICFLAGS=" -fPIC"
+# export CXX1XSTD=" -std=gnu++11"
 
 rm ./OncoSimulR/src/OncoSimulR.so
 rm ./OncoSimulR/src/OncoSimul.o

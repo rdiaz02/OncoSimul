@@ -407,8 +407,11 @@ std::vector<int> GeneToModule(const std::vector<int>& Drv,
 }
 
 
+// fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
+// 						Rcpp::DataFrame fl_df) {
 fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
-						Rcpp::DataFrame fl_df) {
+						Rcpp::List fl_df) {
+
   fitnessLandscape_struct flS;
   flS.names = Rcpp::as<std::vector<std::string> >(flg["Gene"]);
   flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
@@ -419,7 +422,8 @@ fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
   Rcpp::NumericVector fitness = fl_df["Fitness"];
   
   // Fill up the map genotypes(as string) to fitness
-  for(size_t i = 0; i != fl_df.nrows(); ++i) {
+  //for(size_t i = 0; i != fl_df.nrows(); ++i) {
+  for(size_t i = 0; i != genotNames.size(); ++i) {
     flS.flmap.insert({genotNames[i], fitness[i]});
   }
 
@@ -505,7 +509,10 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::IntegerVector drv = rFE["drv"];
 
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
-  Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
+  // clang does not like this
+  // Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
+  Rcpp::List fl_df = rFE["fitnessLandscape_df"];
+  
   
  
 
@@ -514,7 +521,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   // of noInt. So we can use noInt with shift being those in fitnessLandscape.
   // BEWARE: will need to modify also createNewGenotype.
   
-  if(fl_df.nrows()) {
+  // if(fl_df.nrows()) {
+  if(fl_df.size()) {
     fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
   }
   
@@ -534,13 +542,16 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   }
   // If this is null, use the nullFitnessEffects function; never
   // end up here.
-  if( (rrt.size() + re.size() + ro.size() + rgi.size() + fl_df.nrows()) == 0) {
+  
+  //   if( (rrt.size() + re.size() + ro.size() + rgi.size() + fl_df.nrows()) == 0) {
+  if( (rrt.size() + re.size() + ro.size() + rgi.size() + fl_df.size()) == 0) {
       throw std::logic_error("\n Nothing inside this fitnessEffects; why are you here?"
 			     "  Bug in R code.");
   }
   
   // At least for now, if fitness landscape nothing else allowed
-  if(fl_df.nrows() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0)) {
+  // if(fl_df.nrows() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0)) {
+  if(fl_df.size() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0)) {
     throw std::logic_error("\n Fitness landscape specification."
 			   " There should be no other terms. "
 			   " Bug in R code");
