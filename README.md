@@ -205,7 +205,10 @@ this file is not part of the OncoSimulR BioConductor package.
 (Note: Some of Appveyor's failures, if any, should be taken with a grain
 of salt, as Appveyor can fail for reasons that have nothing to do with
 the package, such as R not being downloaded correctly, etc. Look at the
-details of each failure.)
+details of each failure. Similarly, some of the errors in BioConductor,
+specially in the development branch, can be caused, specially in Windows,
+by some required packages not being yet available, often "car" and
+_"igraph". Again, look at the details of each failure.)
 <!-- Based on https://raw.githubusercontent.com/Bioconductor-mirror/illuminaio/master/README.md -->
 
 <!-- [![Travis-CI Build Status](https://travis-ci.org/rdiaz02/OncoSimul.svg?branch=master)](https://travis-ci.org/rdiaz02/OncoSimul) -->
