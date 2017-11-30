@@ -767,8 +767,26 @@ print.oncosimul <- function(x, ...) {
 ## }
 
 summary.oncosimulpop <- function(object, ...) {
+    ## some simulations could have failed seriously returning a NULL
+    ## FIXME: how, why?
+
+    rm1 <- which(unlist(lapply(object, is.null)))
+    if(length(rm1) > 0) {
+        if(length(rm1) < length(object)) {
+            warning("Some simulations returned NULL. They will be removed",
+                    " from the summary. The NULL runs are ",
+                    paste(rm1, collapse = ", "),
+                    ".")
+        } else {
+            warning("All simulations returned NULL.")
+            return(NA)
+        }
+    }
+    
     tmp <- lapply(object, summary)
-    rm <- which(unlist(lapply(tmp, function(x) (length(x) == 1) && (is.na(x)))))
+    rm <- which(unlist(lapply(tmp,
+                              function(x) (length(x) == 1) &&
+                                          (is.na(x) || is.null(x)))))
     if(length(rm) > 0)
         if(length(rm) < length(object)) {
         warning("Some simulations seem to have failed and will be removed",
