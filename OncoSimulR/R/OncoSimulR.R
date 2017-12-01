@@ -768,7 +768,7 @@ print.oncosimul <- function(x, ...) {
 
 summary.oncosimulpop <- function(object, ...) {
     ## some simulations could have failed seriously returning a NULL
-    ## FIXME: how, why?
+    ## FIXME: how, why? Out of memory?
 
     rm1 <- which(unlist(lapply(object, is.null)))
     if(length(rm1) > 0) {
@@ -782,11 +782,24 @@ summary.oncosimulpop <- function(object, ...) {
             return(NA)
         }
     }
+
+    ## I do not want to rm above for two reasons:
+    ##   - avoid re-asigning to the object
+    ##   - changing the numbering of the indices below if NULLs
+    ## So I need something more involved
+    ## Figure out exactly what the summary of a NULL is
+    sumnull <- summary(NULL)
     
     tmp <- lapply(object, summary)
+
+    ## rm <- which(unlist(lapply(tmp,
+    ##                           function(x) (length(x) == 1) &&
+    ##                                       (is.na(x) || is.null(x)))))
+
     rm <- which(unlist(lapply(tmp,
-                              function(x) (length(x) == 1) &&
-                                          (is.na(x) || is.null(x)))))
+                              function(x) ((length(x) == 1) &&
+                                           (is.na(x) || is.null(x))) ||
+                                          (identical(x, sumnull)))))
     if(length(rm) > 0)
         if(length(rm) < length(object)) {
         warning("Some simulations seem to have failed and will be removed",
