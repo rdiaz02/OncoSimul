@@ -1662,12 +1662,51 @@ get.mut.vector <- function(x, timeSample, typeSample,
         return( as.numeric((tcrossprod(pop,
                                        x$Genotypes)/popSize) >= thresholdWhole) )
     } else if (typeSample %in%  c("singleCell", "single")) {
-
         return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+    } else if (typeSample %in% c("singleCell-noWT", "single-noWT",
+                                 "singleCell-nowt", "single-nowt")) {
+        genots <- x$Genotypes
+        whichwt <- which(x$GenotypesLabels == "")
+        if(length(whichwt)) {
+            genots <- genots[, -whichwt, drop = FALSE]
+            pop <- pop[-whichwt]
+        }
+        return(genots[, sample(seq_along(pop), 1, prob = pop)])
     } else {
         stop("Unknown typeSample option")
     }
 }
+
+
+## get.mut.vector <- function(x, timeSample, typeSample,
+##                            thresholdWhole, popSizeSample) {
+##     if(is.null(x$TotalPopSize)) {
+##         warning(paste("It looks like this simulation never completed.",
+##                       " Maybe it reached maximum allowed limits.",
+##                       " You will get NAs"))
+##         return(rep(NA, length(x$geneNames)))
+##     }
+##     the.time <- get.the.time.for.sample(x, timeSample, popSizeSample)
+##     if(the.time < 0) { 
+##         return(rep(NA, nrow(x$Genotypes)))
+##     } 
+##     pop <- x$pops.by.time[the.time, -1]
+    
+##     if(all(pop == 0)) {
+##         stop("You found a bug: this should never happen")
+##     }
+    
+##     if(typeSample %in% c("wholeTumor", "whole")) {
+##         popSize <- x$PerSampleStats[the.time, 1]
+##         return( as.numeric((tcrossprod(pop,
+##                                        x$Genotypes)/popSize) >= thresholdWhole) )
+##     } else if (typeSample %in%  c("singleCell", "single")) {
+
+##         return(x$Genotypes[, sample(seq_along(pop), 1, prob = pop)])
+##     } else {
+##         stop("Unknown typeSample option")
+##     }
+## }
 
 
 

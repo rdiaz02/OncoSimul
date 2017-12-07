@@ -252,7 +252,13 @@ test_that("exercising the sampling code, v2 objects", {
               expect_message(samplePop(o4, timeSample = "last",
                                        typeSample = "whole"),
                              "Subjects by Genes matrix of 2 subjects and 10 genes")
-          })
+              expect_message(samplePop(o4, typeSample = "single-nowt",
+                                       timeSample = "last"),
+                            "Subjects by Genes matrix of 2 subjects and 10 genes")
+              expect_message(samplePop(o4, typeSample = "single-nowt",
+                                       timeSample = "uniform"),
+                             "Subjects by Genes matrix of 2 subjects and 10 genes")
+})
 
 test_that("exercising the sampling code, v2 objects, more", {
               cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
@@ -300,7 +306,13 @@ test_that("exercising the sampling code, v2 objects, more", {
               expect_message(samplePop(o4, timeSample = "last",
                                        typeSample = "whole"),
                              "Subjects by Genes matrix of 4 subjects and 6 genes")
-          })
+              expect_message(samplePop(o4, typeSample = "single-nowt",
+                                       timeSample = "last"),
+                            "Subjects by Genes matrix of 4 subjects and 6 genes")
+              expect_message(samplePop(o4, typeSample = "single-nowt",
+                                       timeSample = "uniform"),
+                             "Subjects by Genes matrix of 4 subjects and 6 genes")
+})
 
 
 
@@ -382,7 +394,10 @@ test_that("exercising sampling code, customSize", {
     expect_message(samplePop(o4, typeSample = "single",
                              popSizeSample = c(6100, 0, 5000, 9000)),
                    "Subjects by Genes matrix of 4 subjects and 6 genes")
-   
+
+    expect_message(samplePop(o4, typeSample = "single-nowt",
+                             popSizeSample = c(9000, 9000, 8500, 9000)),
+                   "Subjects by Genes matrix of 4 subjects and 6 genes")
 })
 
 

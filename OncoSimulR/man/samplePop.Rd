@@ -57,6 +57,8 @@ sampledGenotypes(y, genes = NULL)
     probability of sampling a cell (a clone) is directly proportional to
     its population size.  "wholeTumor" (or "whole") for whole tumor
     sampling (i.e., this is similar to a biopsy being the entire tumor).
+    "singleCell-noWT" or "single-nowt" is single cell sampling, but
+    excluding the wild type.
   }
   
   \item{thresholdWhole}{
