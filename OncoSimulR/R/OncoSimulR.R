@@ -1693,7 +1693,12 @@ get.mut.vector <- function(x, timeSample, typeSample,
             genots <- genots[, -whichwt, drop = FALSE]
             pop <- pop[-whichwt]
         }
-        return(genots[, sample(seq_along(pop), 1, prob = pop)])
+        if(all(pop == 0)) {
+            warning("No non-WT clone with required popSize or at required time")
+            return(rep(NA, nrow(x$Genotypes)))
+        } else {
+            return(genots[, sample(seq_along(pop), 1, prob = pop)])
+        }
     } else {
         stop("Unknown typeSample option")
     }
