@@ -327,6 +327,28 @@ samplePop <- function(x, timeSample = "last",
 }
 
 
+
+## single_largest_last_pop <- function(x) {
+##     last <- nrow(x$pops.by.time)
+##     largest <- which.max(x$pops.by.time[last, , drop = FALSE]) - 1
+##     genot <- x[["GenotypesLabels"]][largest]
+##     strsplit(genot, split = ", ")[[1]]
+## }
+
+
+## ## like samplePop(x, timeSample = "last") but return the single most abundant genotype
+## Just a prototype. Not well tested.
+## largest_last_pop <- function(x) {
+##     y <- lapply(x, single_largest_last_pop)
+##     allg <- sort(unique(unlist(y)))
+##     m <- t(vapply(y, function(z) {as.integer(allg %in%  z) },
+##                   integer(length(allg)) ))
+##     colnames(m) <- allg
+##     return(m)
+## }
+
+
+
 oncoSimulPop <- function(Nindiv,
                          fp,
                          model = "Exp",
