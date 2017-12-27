@@ -1,3 +1,10 @@
+Changes in version 2.9.6 (2017-12-27):
+	- Updated citation.
+	- An example (in miscell-files) about using and stopping with
+	modules.
+	- Prototype for sampling the single larges pop at last period
+	(function largest_last_pop, commented out for now).
+
 Changes in version 2.9.5 (2017-12-7):
 	- samplePop: new option "single-nowt"
 

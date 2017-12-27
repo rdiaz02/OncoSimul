@@ -1,7 +1,8 @@
 citHeader("If you use OncoSimulR, please cite the OncoSimulR Bioinformatics paper.",
-          " A former version of OncoSimulR has been used in a large",
-          " comparative study of methods to infer restrictions,",
-          " published in BMC Bioinformatics; you might want to cite that too,",
+          " OncoSimulR has been used in two large",
+          " comparative studies of methods to infer restrictions in",
+          " the order of accumulation of mutations (cancer progression models)",
+          " published in Bioinformatics and BMC Bioinformatics; you might want to cite those too,",
           " if appropriate, such as when referring to using evolutionary simulations",
           " to assess oncogenetic tree/cancer progression methods performance.")
 
@@ -11,25 +12,37 @@ citEntry(entry="Article",
          title = "OncoSimulR: genetic simulation with arbitrary epistasis and mutator genes in asexual populations.",
          journal = "Bioinformatics",
          year = "2017",
+         volume = "33",
+         number = "12",
+         pages = "1898--1899",
          doi = "10.1093/bioinformatics/btx077",
          publisher = "Oxford University Press",
          url = " https://doi.org/10.1093/bioinformatics/btx077",
          textVersion = paste("R Diaz-Uriarte.",
                              "OncoSimulR: genetic simulation with arbitrary epistasis and mutator genes in asexual populations.",
-                             " 2017. Bioinformatics, https://doi.org/10.1093/bioinformatics/btx077.")
+                             " 2017. Bioinformatics, 33, 1898--1899. https://doi.org/10.1093/bioinformatics/btx077.")
          )
 
-## citEntry(entry="Manual",
-##          author = "R Diaz-Uriarte",
-##          title = "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis.",
-##          year = "2015",
-##          note = "R package version 2.0.0",
-##          textVersion = paste("R Diaz-Uriarte.",
-##              "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis. 2015. BioConductor package version 2.0.0 ")
-## )
 
 
 ## citHeader("A former version of OncoSimulR has been used in this paper:")
+
+
+citEntry(entry="Article",
+         author = "R Diaz-Uriarte",
+         title = "Cancer progression models and fitness landscapes: a many-to-many relationship",
+         journal = "Bioinformatics",
+         year = "2017",
+         doi = "10.1093/bioinformatics/btx663",
+         url = "https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx663/",
+##         volume = "zz",
+##         number = "zz",
+         textVersion = paste("R Diaz-Uriarte.",
+                             "Cancer progression models and fitness landscapes: a many-to-many relationship",
+                             "2017", "Bioinformatics.",
+                             "https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx663/")
+)
+
 
 citEntry(entry="Article",
          author = "R Diaz-Uriarte",
