@@ -63,7 +63,7 @@ check.gm <- function(gm) {
 }
 
 gtm2 <- function(x) {
-    data.frame(cbind(nice.vector.eo(x, ","), x))
+    data.frame(cbind(nice.vector.eo(x, ","), x), stringsAsFactors = TRUE)
 }
 
 ## nice.vector.eo <- function(z, sep) {
@@ -88,7 +88,8 @@ gm.to.geneModuleL <- function(gm, one.to.one) {
     gm <- check.gm(gm)
    
     ## the named vector with the mapping into the long geneModule df
-    geneMod <- as.data.frame(rbindlist(lapply(gm, gtm2)))
+    geneMod <- as.data.frame(rbindlist(lapply(gm, gtm2)),
+                             stringsAsFactors = TRUE) ## this stringsAsFactors is key
     geneMod$Module <- names(gm)[geneMod[, 2]] ## reverse lookup table
     colnames(geneMod)[1] <- c("Gene")
     geneMod <- geneMod[, -2]
@@ -285,7 +286,8 @@ epist.order.to.pairs.modules <- function(x, sep, rm.sign = TRUE) {
 to.pairs.modules <- function(x, sep, rm.sign = TRUE) {
     df <- data.frame(rbindlist(
         lapply(names(x),
-               function(z) epist.order.to.pairs.modules(z, sep))))
+               function(z) epist.order.to.pairs.modules(z, sep))),
+        stringsAsFactors = TRUE)
     if(nrow(df) == 0L) { ## if only single genes in epist, we get nothing here.
         return(df)
     } else {
@@ -2257,7 +2259,8 @@ sampledGenotypes <- function(y, genes = NULL) {
     ## ))
     df <- data.frame(table(
         apply(y, 1, genotlabel),
-        useNA = "ifany"))
+        useNA = "ifany"),
+        stringsAsFactors = TRUE)
 
     gn <- as.character(df[, 1])
     gn[gn == ""] <- "WT"

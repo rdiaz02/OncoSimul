@@ -83,7 +83,8 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                 
     dd <- data.frame(muts = mutated,
                      fitness = tfm$afe$Fitness,
-                     label = tfm$afe$Genotype)
+                     label = tfm$afe$Genotype,
+                     stringsAsFactors = TRUE)
     cl <- gaj[vv]
     sg <- data.frame(x_from = mutated[vv[, 1]],
                      y_from = tfm$afe$Fitness[vv[, 1]],
@@ -91,7 +92,8 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                      y_to = tfm$afe$Fitness[vv[, 2]],
                      Change = factor(ifelse(cl == 0, "Neutral",
                                      ifelse(cl > 0, "Gain", "Loss")),
-                                     levels = c("Gain", "Loss", "Neutral")))
+                                     levels = c("Gain", "Loss", "Neutral")),
+                     stringsAsFactors = TRUE)
     ## From http://stackoverflow.com/a/17257422
     number_ticks <- function(n) {function(limits) pretty(limits, n)}
     

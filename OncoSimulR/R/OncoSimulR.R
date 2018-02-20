@@ -98,7 +98,8 @@ oncoSimulSample <- function(Nindiv,
                          extraTime = extraTime,
                          minDetectDrvCloneSz = minDetectDrvCloneSz,
                          detectionSize = detectionSize,
-                         detectionDrivers = detectionDrivers)[, -1, drop = FALSE]
+                         detectionDrivers = detectionDrivers,
+                         stringsAsFactors = TRUE)[, -1, drop = FALSE]
 
     ## FIXME: we are not triggering an error, just a message. This is on
     ## purpose, since some of these conditions DO provide useful
@@ -778,7 +779,8 @@ print.oncosimul <- function(x, ...) {
         cat("\n")
         cat("Final population composition:\n")
         df <- data.frame(Genotype = x$GenotypesLabels,
-                         N = x$pops.by.time[nrow(x$pops.by.time), -1])
+                         N = x$pops.by.time[nrow(x$pops.by.time), -1],
+                         stringsAsFactors = TRUE)
         print(df)
     }
 }
@@ -833,7 +835,7 @@ summary.oncosimulpop <- function(object, ...) {
             warning("All simulations failed.")
             return(NA)
         }
-    as.data.frame(rbindlist(tmp))
+    as.data.frame(rbindlist(tmp), stringsAsFactors = TRUE)
 }
 
 
@@ -1922,7 +1924,8 @@ OncoSimulWide2Long <- function(x) {
     return(data.frame(Time = rep(x$pops.by.time[, 1], nc),
                       Y = y,
                       Drivers = factor(rep(ndr, rep(nr, nc))),
-                      Genotype = rep(genotLabels, rep(nr, nc))))
+                      Genotype = rep(genotLabels, rep(nr, nc)),
+                      stringsAsFactors = TRUE))
 }
 
 

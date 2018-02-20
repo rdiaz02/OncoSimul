@@ -1,3 +1,7 @@
+Changes in version 2.9.7 (2017-02-20):
+	- fixed crash in some conditions when run with
+	stringsAsFactors = FALSE as global option
+	
 Changes in version 2.9.6 (2017-12-27):
 	- Updated citation.
 	- An example (in miscell-files) about using and stopping with
