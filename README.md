@@ -193,6 +193,10 @@ and is under the LaTeX Project Public License 1.3, which is
 this file is not part of the OncoSimulR BioConductor package.
 
 
+The files under miscell-files/AParramon_discrete_time are copyright
+Alberto Parramon, unless otherwise specified. This is an implementation of
+a discrete-time version of OncoSimulR.
+
 
 # Software status
 
