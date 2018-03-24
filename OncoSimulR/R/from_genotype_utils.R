@@ -41,6 +41,20 @@ to_Magellan <- function(x, file,
     }
 }
 
+
+
+## ## genotype_fitness_matrix -> fitness landscape as data frame
+## fmatrix_to_afe <- function(x) {
+##     stopifnot(inherits(x, "genotype_fitness_matrix"))
+##     y <- x[, -ncol(x)]
+##     nn <- apply(y, 1,
+##                 function(u) paste(sort(colnames(y)[as.logical(u)]),
+##                                   collapse = ", "))
+##     nn[nn == ""] <- "WT"
+##     return(data.frame(Genotype = nn, Fitness = x[, ncol(x)],
+##            stringsAsFactors = FALSE))
+## }
+
 to_Fitness_Matrix <- function(x, max_num_genotypes) {
     ## A general converter. Ready to be used by plotFitnessLandscape and
     ## Magellan exporter.
@@ -54,6 +68,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         ## if( (is.null(colnames(x))) || any(grepl("^$", colnames(x))))
         ##    stop("Matrix x must have column names")
 
+        ## This could use fmatrix_to_afe, above!!!
         ## Major change as of flfast: no longer using from_genotype_fitness
         afe <- evalAllGenotypes(allFitnessEffects(
             genotFitness = x

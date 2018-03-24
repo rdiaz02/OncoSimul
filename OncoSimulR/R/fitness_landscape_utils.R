@@ -603,6 +603,7 @@ peak_valley <- function(x) {
 ##     ## mutated <- rowSums(gfm[, -ncol(gfm)])
 ##     gaj <- OncoSimulR:::genot_to_adj_mat(gfm)
 ##     gaj2 <- OncoSimulR:::filter_inaccessible(gaj, 0)
+##     Eh! that is assuming no genotype is inaccessible!
 ##     stopifnot(all(na.omit(as.vector(gaj == gaj2))))
 ##     remaining <- as.numeric(colnames(gaj2))
 ##     ## mutated <- mutated[remaining]
