@@ -275,14 +275,26 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 	std::vector<int> thisg = allGenesinGenotype(Genotypes[i]);
 	for(size_t fc = 0; fc != popSize_fixation.size(); ++fc) {
 	  // Yes, fixation_l is sorted in R.
-	  if(std::includes(thisg.begin(), thisg.end(),
-			   fixation_l[fc].begin(), fixation_l[fc].end()) ) {
-	    popSize_fixation[fc] += popParams[i].popSize;
+	  // if fixation_l[fc] starts with a -9, we are asking
+	  // for exact genotype equality
+	  if(fixation_l[fc][0] == -9) {
+	    // exact genotype identity?
+	    if(std::equal(fixation_l[fc].begin() + 1, fixation_l[fc].end(),
+			  thisg.begin())) {
+	      popSize_fixation[fc] += popParams[i].popSize;
+	    }
+	  } else {	  
+	  // gene combination in fixation element present in genotype?
+	    if(std::includes(thisg.begin(), thisg.end(),
+			     fixation_l[fc].begin(), fixation_l[fc].end()) ) {
+	      popSize_fixation[fc] += popParams[i].popSize;
+	    }
 	  }
 	}
       }
       // Any fixated? But avoid trivial of totPopSize of 0!
       // Now check of > 0 is redundant as we check totPopSize > 0
+      // FIXME do we want tolerance around that value? 
       double max_popSize_fixation =
 	*std::max_element(popSize_fixation.begin(), popSize_fixation.end());
       if( (max_popSize_fixation > 0 ) &&
@@ -291,7 +303,21 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
       }
     }
   }
+
+  // // DEBUG
+  // if(fixated) {
+  //   // print fixation_l
+  //   // print popSize_fixation
+  //   // print totPopSize
+  //   DP1("popSize_fixation");
+  //   for(size_t fc = 0; fc != popSize_fixation.size(); ++fc) {
+  //     DP2(fc);
+  //     DP2(popSize_fixation[fc]);
+  //   }
+  //   DP2(totPopSize);
     
+  // }
+  
   if (keepEvery < 0) {
     storeThis = false;
   } else if( currentTime >= (lastStoredSample + keepEvery) ) {

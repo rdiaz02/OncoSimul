@@ -1946,6 +1946,12 @@ nr_oncoSimul.internal <- function(rFE,
     if(!is_null_na(fixation)) {
         ng <- namedGenes
         rownames(ng) <- namedGenes[, "Gene"]
+        ## Proposed extension to have exact matching of genotypes
+        ## ng <- rbind(
+        ##     data.frame(Gene = "_", GeneNumID = -9, stringsAsFactors = FALSE),
+        ##     ng)
+        ## rownames(ng) <- ng[, "Gene"]
+        
         ## Usual genotype specification and might allow ordered vectors
         ## in the future
         fixation_b <- lapply(fixation, nice.vector.eo, sep = ",")
@@ -1957,7 +1963,10 @@ nr_oncoSimul.internal <- function(rFE,
             stop(paste("The 'fixation' list contains genes that are not present",
                        " in the fitness effects."))
         ## Sorting here is crucial!!
+        browser()
         fixation_list <- lapply(fixation_b, function(x) sort(ng[x, 2]))
+
+        
     } else {
         fixation_list <- list()
     }
