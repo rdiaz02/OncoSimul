@@ -1,4 +1,7 @@
-Changes in version 2.9.7 (2017-02-20):
+Changes in version 2.9.8 (2018-03-26):
+	- fixation allows exact genotypes
+
+Changes in version 2.9.7 (2018-02-20):
 	- fixed crash in some conditions when run with
 	stringsAsFactors = FALSE as global option
 	
