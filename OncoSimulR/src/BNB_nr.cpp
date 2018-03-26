@@ -278,10 +278,11 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 	  // if fixation_l[fc] starts with a -9, we are asking
 	  // for exact genotype equality
 	  if(fixation_l[fc][0] == -9) {
-	    // exact genotype identity?
-	    if(std::equal(fixation_l[fc].begin() + 1, fixation_l[fc].end(),
-			  thisg.begin())) {
-	      popSize_fixation[fc] += popParams[i].popSize;
+	    // // exact genotype identity?
+	    std::vector<int> this_fix(fixation_l[fc].begin() + 1,
+				      fixation_l[fc].end());
+	    if(thisg == this_fix) {
+	      popSize_fixation[fc] = popParams[i].popSize;
 	    }
 	  } else {	  
 	  // gene combination in fixation element present in genotype?
@@ -2067,6 +2068,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   }
 
   // fixation: run until some genotype combinations fixed
+  // FIXME: later, extract tolerance as the very first element
+  // or very last. Oooops, but that is a float...
   std::vector < std::vector<int> > fixation_l(fixation_i.size());
   if( fixation_i.size() != 0 ) {
     fixation_l = list_to_vector_of_int_vectors(fixation_i);

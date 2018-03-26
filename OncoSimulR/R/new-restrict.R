@@ -1945,12 +1945,17 @@ nr_oncoSimul.internal <- function(rFE,
     ## Process the fixed list, if any
     if(!is_null_na(fixation)) {
         ng <- namedGenes
-        rownames(ng) <- namedGenes[, "Gene"]
+        ## rownames(ng) <- namedGenes[, "Gene"]
         ## Proposed extension to have exact matching of genotypes
-        ## ng <- rbind(
-        ##     data.frame(Gene = "_", GeneNumID = -9, stringsAsFactors = FALSE),
-        ##     ng)
-        ## rownames(ng) <- ng[, "Gene"]
+        ng <- rbind(
+             data.frame(Gene = "_", GeneNumID = -9, stringsAsFactors = FALSE),
+             ng)
+        rownames(ng) <- ng[, "Gene"]
+        ## FIXME
+        ## Later, accept a last argument, called tolerance.
+        ## If not present, set to 0
+        ## and then, at at the head of fixation_list below
+
         
         ## Usual genotype specification and might allow ordered vectors
         ## in the future
@@ -1963,10 +1968,7 @@ nr_oncoSimul.internal <- function(rFE,
             stop(paste("The 'fixation' list contains genes that are not present",
                        " in the fitness effects."))
         ## Sorting here is crucial!!
-        browser()
         fixation_list <- lapply(fixation_b, function(x) sort(ng[x, 2]))
-
-        
     } else {
         fixation_list <- list()
     }
