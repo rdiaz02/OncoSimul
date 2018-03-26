@@ -52,7 +52,6 @@ i <- 3
 ng <- 7
 RNGkind("Mersenne-Twister")
 load("fee.RData")
-
 set.seed(i)
 r4 <- oncoSimulIndiv( fp = fee,
                      model = "McFL",
@@ -63,7 +62,6 @@ r4 <- oncoSimulIndiv( fp = fee,
                      keepEvery = 1,
                      finalTime = 50000,
                      fixation = paste0("_,", unlist(x[["labelled_peaks"]])),
-                     ## fixation = c("_,A, B", "_,C, D"),
                      detectionDrivers = NA,
                      detectionProb = NA,
                      onlyCancer = TRUE,
@@ -73,15 +71,51 @@ r4 <- oncoSimulIndiv( fp = fee,
                      keepPhylog = FALSE)
 
 summary(r4)
-
-## stopping at ABCG, which is not a maximum, not a labelled peak
-
 r4$pops.by.time
-
 x$labelled_peaks
+
+
+set.seed(i)
+r5 <- oncoSimulIndiv( fp = fee,
+                     model = "McFL",
+                     initSize = 2000,
+                     mu = 1e-4,
+                     detectionSize = NA,
+                     sampleEvery = .03,
+                     keepEvery = 1,
+                     finalTime = 50000,
+                     fixation = c(paste0("_,", unlist(x[["labelled_peaks"]])),
+                                 fixation_tolerance = 0.05),
+                     detectionDrivers = NA,
+                     detectionProb = NA,
+                     onlyCancer = TRUE,
+                     max.num.tries = 500,
+                     max.wall.time = 20, 
+                     errorHitMaxTries = TRUE,
+                     keepPhylog = FALSE)
+summary(r5)
+
+54$pops.by.time
+x$labelled_peaks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 r4$GenotypesLabels[c(4, 5, 6, 8, 12, 13)]
 r4$pops.by.time[160, c(4, 5, 6, 8, 12, 13) + 1]
 sum(r4$pops.by.time[160, c(4, 5, 6, 8, 12, 13) + 1])
+
 
 
 ## Add tests

@@ -230,6 +230,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					std::mt19937& ran_gen,
 					const bool& AND_DrvProbExit,
 					const std::vector<std::vector<int> >& fixation_l,
+					const double& fixation_tolerance,
 					POM& pom,
 					const std::map<int, std::string>& intName,
 					const fitness_as_genes& genesInFitness,
@@ -299,7 +300,7 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
       double max_popSize_fixation =
 	*std::max_element(popSize_fixation.begin(), popSize_fixation.end());
       if( (max_popSize_fixation > 0 ) &&
-	  (max_popSize_fixation == totPopSize)) {
+	  (max_popSize_fixation >= (totPopSize * (1 - fixation_tolerance) )) ) {
 	fixated = true;
       }
     }
@@ -938,6 +939,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const double& checkSizePEvery,
 			const bool& AND_DrvProbExit,
 			const std::vector< std::vector<int> >& fixation_l,
+			 const double& fixation_tolerance,
 			 int& ti_dbl_min,
 			 int& ti_e3,
 			 std::map<std::string, std::string>& lod,
@@ -1908,6 +1910,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 					 ran_gen,
 					 AND_DrvProbExit,
 					 fixation_l,
+					 fixation_tolerance,
 					 pom, intName,
 					 genesInFitness); //keepEvery is for thinning
       if(verbosity >= 3) {
@@ -2068,12 +2071,19 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   }
 
   // fixation: run until some genotype combinations fixed
-  // FIXME: later, extract tolerance as the very first element
-  // or very last. Oooops, but that is a float...
-  std::vector < std::vector<int> > fixation_l(fixation_i.size());
+  
+  double fixation_tolerance = -9;
+  std::vector < std::vector<int> > fixation_l;
+
   if( fixation_i.size() != 0 ) {
-    fixation_l = list_to_vector_of_int_vectors(fixation_i);
+    Rcpp::List fggl = fixation_i["fixation_list"] ;
+    fixation_l = list_to_vector_of_int_vectors(fggl); // FIXME
+    fixation_tolerance = Rcpp::as<double>(fixation_i["fixation_tolerance"]);
+  } else {
+    fixation_l.resize(0); // explicit
   }
+ 
+  
 
   
   bool runAgain = true;
@@ -2250,6 +2260,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  checkSizePEvery,
 		  AND_DrvProbExit,
 		  fixation_l,
+		  fixation_tolerance,
 		  ti_dbl_min,
 		  ti_e3,
 		  lod,
