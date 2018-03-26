@@ -1955,15 +1955,27 @@ nr_oncoSimul.internal <- function(rFE,
         ## Later, accept a last argument, called tolerance.
         ## If not present, set to 0
         ## and then, at at the head of fixation_list below
-
-        if(is_null_na(fixation["fixation_tolerance"]))
-            fixation_tolerance <- 0
-        else {
-            fixation_tolerance <- as.numeric(fixation["fixation_tolerance"])
-            if( (fixation_tolerance > 1) || (fixation_tolerance < 0) )
-                stop("Impossible range for fixation tolerance")
-            fixation <- fixation[-which(names(fixation) == "fixation_tolerance")]
+        if(is.list(fixation)) {
+            if(
+            (is.null(fixation[["fixation_tolerance"]])) ||
+            (is.na(fixation[["fixation_tolerance"]])))
+                fixation_tolerance <- 0
+            else {
+                fixation_tolerance <- as.numeric(fixation[["fixation_tolerance"]])
+                fixation <- fixation[-which(names(fixation) == "fixation_tolerance")]
+            }
+        } else {
+            if(is_null_na(fixation["fixation_tolerance"]))
+                fixation_tolerance <- 0
+            else {
+                fixation_tolerance <- as.numeric(fixation["fixation_tolerance"])
+                fixation <- fixation[-which(names(fixation) == "fixation_tolerance")]
+            }
         }
+
+        if( (fixation_tolerance > 1) || (fixation_tolerance < 0) )
+                    stop("Impossible range for fixation tolerance")
+
         ## Usual genotype specification and might allow ordered vectors
         ## in the future
         fixation_b <- lapply(fixation, nice.vector.eo, sep = ",")

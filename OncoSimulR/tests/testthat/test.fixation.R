@@ -25,6 +25,14 @@ test_that("Minimal run", {
                    keepEvery = NA,
                    fixation = list("u", "v")
                    )
+    oncoSimulIndiv(od, muEF = odm, model = "McFL",
+                   mu = 1e-4, 
+                   onlyCancer = TRUE, finalTime = 15000, detectionSize = NA, detectionProb = NA,
+                   initSize = initS, 
+                   keepEvery = NA,
+                   fixation = list("u", "v", fixation_tolerance = 0.01)
+                   )
+
     oncoSimulPop(2, od, muEF = odm, model = "McFL",
                  mu = 1e-4, 
                  onlyCancer = TRUE, finalTime = 15000, detectionSize = NA, detectionProb = NA,
@@ -108,7 +116,7 @@ test_that("Catch errors", {
                    keepEvery = NA,
                    fixation = 98
                    ),
-                 "Each element of 'fixation' must be a single element character vector",
+                 "At least one element of 'fixation' must be a single element character vector",
                  fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                                 mu = 1e-4, 
@@ -117,7 +125,7 @@ test_that("Catch errors", {
                    keepEvery = NA,
                    fixation = list("u", c("u", "v"))
                    ),
-                 "Each element of 'fixation' must be a single element character vector",
+                 "Each element of 'fixation' must be a single element vector",
                  fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                                 mu = 1e-4, 
@@ -126,7 +134,7 @@ test_that("Catch errors", {
                    keepEvery = NA,
                    fixation = list("u", list("u", "v"))
                    ),
-                 "Each element of 'fixation' must be a single element character vector",
+                 "Each element of 'fixation' must be a single element vector",
                  fixed = TRUE)
     expect_error(oncoSimulIndiv(od, muEF = odm, model = "McFL",
                                 mu = 1e-4, 
