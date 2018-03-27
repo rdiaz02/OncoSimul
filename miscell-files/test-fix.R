@@ -121,3 +121,6 @@ sum(r4$pops.by.time[160, c(4, 5, 6, 8, 12, 13) + 1])
 ## Add tests
 ## Add tolerance
 ## Add to help files
+##   - no sense with exponential
+##   - list can be used
+##   examples of getting gene combs not genotypes
