@@ -61,7 +61,7 @@ script:
    - R CMD check OncoSimulR_*.tar.gz
 
 after_success:
-  - Rscript -e 'library(covr); options(covr.flags = c(CPPFLAGS = "-O3 -g --coverage", CXX1XFLAGS = "-O3 -g --coverage", CXXFLAGS = "-O3 -g --coverage", CFLAGS = "-O3 -g --coverage", LDFLAGS = "--coverage")); covr::codecov("OncoSimulR")'
+  - travis_wait 30 Rscript -e 'library(covr); options(covr.flags = c(CPPFLAGS = "-O3 -g --coverage", CXX1XFLAGS = "-O3 -g --coverage", CXXFLAGS = "-O3 -g --coverage", CFLAGS = "-O3 -g --coverage", LDFLAGS = "--coverage")); covr::codecov("OncoSimulR")'
 
 
 
