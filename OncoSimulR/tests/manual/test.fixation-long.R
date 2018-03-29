@@ -240,5 +240,111 @@ test_that("Check output is correct", {
 
     
 })
+
+
+
+
+## the really relevant is r2. The other two if they succeed in few
+## will succeed in more.
+system.time(
+    test_that("long Local max: not stopping, stopping, and tolerance", {
+        initS <- 4000
+    r1 <- matrix(0, ncol = 6, nrow = 9)
+    colnames(r1) <- c(LETTERS[1:5], "Fitness")
+    r1[1, 6] <- 1
+    r1[cbind((2:4), c(1:3))] <- 1
+    r1[2, 6] <- 1.4
+    r1[3, 6] <- 1.32
+    r1[4, 6] <- 1.32
+    r1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
+    r1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
+    r1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
+    r1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
+    r1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
+    class(r1) <- c("matrix", "genotype_fitness_matrix")
+    ## plot(r1) ## to see the fitness landscape
+    local_max_g <- c("A", "B, E", "A, B, C, D, E")
+    local_max <- paste0("_,", local_max_g)
+    fr1 <- allFitnessEffects(genotFitness = r1, drvNames = LETTERS[1:5])
+    ## we pass sets of genes, so not stopping at genotypes
+    r1 <- oncoSimulPop(200,
+                       fp = fr1,
+                       model = "McFL",
+                       initSize = initS,
+                       mu = 1e-4,
+                       detectionSize = NA,
+                       sampleEvery = .03,
+                       keepEvery = 1, 
+                       finalTime = 50000,
+                       fixation = local_max_g, 
+                       detectionDrivers = NA,
+                       detectionProb = NA,
+                       onlyCancer = TRUE,
+                       max.num.tries = 500,
+                       max.wall.time = 20, 
+                       errorHitMaxTries = TRUE,
+                       keepPhylog = FALSE,
+                       mc.cores = 2)
+    sr1 <- summary(r1)
+    expect_true(!all(sr1$TotalPopSize == sr1$LargestClone))
+    sp1 <- samplePop(r1, "last", "singleCell")
+    sgsp1 <- sampledGenotypes(sp1)
+    expect_true(!all(sgsp1$Genotype %in% local_max_g))
+    ## genotypes, exactly
+    mm <- rep(1e-4, 5)
+    mm[3] <- 2e-4
+    mm[1] <- 1e-5
+    names(mm) <- LETTERS[1:5]
+    r2 <- oncoSimulPop(2000,
+                       fp = fr1,
+                       model = "McFL",
+                       initSize = initS,
+                       mu = 1e-4,
+                       detectionSize = NA,
+                       sampleEvery = .03,
+                       keepEvery = 1, 
+                       finalTime = 50000,
+                       fixation = local_max, 
+                       detectionDrivers = NA,
+                       detectionProb = NA,
+                       onlyCancer = TRUE,
+                       max.num.tries = 500,
+                       max.wall.time = 20, 
+                       errorHitMaxTries = TRUE,
+                       keepPhylog = FALSE,
+                       mc.cores = 2)
+    sr2 <- summary(r2)
+    expect_true(all(sr2$TotalPopSize == sr2$LargestClone))
+    sp2 <- samplePop(r2, "last", "singleCell")
+    sgsp2 <- sampledGenotypes(sp2)
+    expect_true(all(sgsp2$Genotype %in% local_max_g))
+    ## tolerance
+    r3 <- oncoSimulPop(200,
+                       fp = fr1,
+                       model = "McFL",
+                       initSize = initS,
+                       mu = 1e-4,
+                       detectionSize = NA,
+                       sampleEvery = .03,
+                       keepEvery = 1, 
+                       finalTime = 50000,
+                       fixation = c(local_max, fixation_tolerance = 0.1),
+                       detectionDrivers = NA,
+                       detectionProb = NA,
+                       onlyCancer = TRUE,
+                       max.num.tries = 500,
+                       max.wall.time = 20, 
+                       errorHitMaxTries = TRUE,
+                       keepPhylog = FALSE,
+                       mc.cores = 2)
+    sr3 <- summary(r3)
+    expect_true(!all(sr3$TotalPopSize == sr3$LargestClone))
+    sp3 <- samplePop(r3, "last", "singleCell")
+    sgsp3 <- sampledGenotypes(sp3)
+    expect_true(!all(sgsp3$Genotype %in% local_max_g))
+})
+)
+
+
 cat("\n Ending long fixation  at", date(), "\n") 
 
