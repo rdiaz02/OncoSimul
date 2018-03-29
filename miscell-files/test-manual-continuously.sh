@@ -18,3 +18,5 @@ do
     nohup R --vanilla --slave < test-manual-continuously.R &> test-MANUAL-continuously-$run.Rout &
 done
 
+
+## and search for "Failed" in tests
