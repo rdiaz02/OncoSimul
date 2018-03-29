@@ -248,6 +248,7 @@ test_that("Check output is correct", {
 ## will succeed in more.
 system.time(
     test_that("long Local max: not stopping, stopping, and tolerance", {
+         cat("\n\n ************** fixation: long local max  ***********\n")  
         initS <- 4000
     r1 <- matrix(0, ncol = 6, nrow = 9)
     colnames(r1) <- c(LETTERS[1:5], "Fitness")
