@@ -298,6 +298,11 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// throw std::range_error("ti set to DBL_MIN");
 	// Even just touching DBL_MIN is enough to want a rerunExcept;
 	// no need for it to be 0.0.
+	
+	// Trying to understand what happens
+	Rcpp::Rcout << "         ti set to DBL_MIN: spP.popSize = " << spP.popSize << "\n";
+	// It seems poSize over 1e8, and even 3.5 e7 can trigger this exception (depending
+	// on mutation rate, of course)
 	throw rerunExcept("ti set to DBL_MIN");
       }
       if(ti < (2*DBL_MIN)) ++ti_e3; // Counting how often this happens.
