@@ -1782,6 +1782,9 @@ nr_oncoSimul.internal <- function(rFE,
                                   MMUEF = NULL, ## avoid partial matching, and set default
                                   fixation = NULL ## avoid partial matching
                                   ) {
+
+    default_min_successive_fixation <- 50 ## yes, set at this for now
+    
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
@@ -1958,23 +1961,42 @@ nr_oncoSimul.internal <- function(rFE,
         if(is.list(fixation)) {
             if(
             (is.null(fixation[["fixation_tolerance"]])) ||
-            (is.na(fixation[["fixation_tolerance"]])))
+            (is.na(fixation[["fixation_tolerance"]]))) {
                 fixation_tolerance <- 0
-            else {
+            } else {
                 fixation_tolerance <- as.numeric(fixation[["fixation_tolerance"]])
                 fixation <- fixation[-which(names(fixation) == "fixation_tolerance")]
             }
+            if(
+            (is.null(fixation[["min_successive_fixation"]])) ||
+            (is.na(fixation[["min_successive_fixation"]]))) {
+                min_successive_fixation <- default_min_successive_fixation
+            } else {
+                min_successive_fixation <- as.integer(fixation[["min_successive_fixation"]])
+                fixation <- fixation[-which(names(fixation) == "min_successive_fixation")]
+            }
+            
         } else {
-            if(is_null_na(fixation["fixation_tolerance"]))
+            if(is_null_na(fixation["fixation_tolerance"])) {
                 fixation_tolerance <- 0
-            else {
+            } else {
                 fixation_tolerance <- as.numeric(fixation["fixation_tolerance"])
                 fixation <- fixation[-which(names(fixation) == "fixation_tolerance")]
             }
+            if(is_null_na(fixation["min_successive_fixation"])) {
+                min_successive_fixation <- default_min_successive_fixation
+            } else {
+                min_successive_fixation <- as.integer(fixation["min_successive_fixation"])
+                fixation <- fixation[-which(names(fixation) == "min_successive_fixation")]
+            }
+            
         }
 
         if( (fixation_tolerance > 1) || (fixation_tolerance < 0) )
                     stop("Impossible range for fixation tolerance")
+
+        if( (min_successive_fixation < 0) )
+                    stop("Impossible range for min_successive_fixation")
 
         ## Usual genotype specification and might allow ordered vectors
         ## in the future
@@ -1989,7 +2011,8 @@ nr_oncoSimul.internal <- function(rFE,
         ## Sorting here is crucial!!
         fixation_list <- lapply(fixation_b, function(x) sort(ng[x, 2]))
         fixation_list <- list(fixation_list = fixation_list,
-                              fixation_tolerance = fixation_tolerance)
+                              fixation_tolerance = fixation_tolerance,
+                              min_successive_fixation = min_successive_fixation)
     } else {
         fixation_list <- list()
     }

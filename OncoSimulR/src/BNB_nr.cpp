@@ -231,6 +231,8 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 					const bool& AND_DrvProbExit,
 					const std::vector<std::vector<int> >& fixation_l,
 					const double& fixation_tolerance,
+					const int& min_successive_fixation,
+					int& num_successive_fixation,
 					POM& pom,
 					const std::map<int, std::string>& intName,
 					const fitness_as_genes& genesInFitness,
@@ -301,7 +303,12 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 	*std::max_element(popSize_fixation.begin(), popSize_fixation.end());
       if( (max_popSize_fixation > 0 ) &&
 	  (max_popSize_fixation >= (totPopSize * (1 - fixation_tolerance) )) ) {
-	fixated = true;
+	++num_successive_fixation;
+	// DP1("increased num_successive_fixation");
+	if(num_successive_fixation >= min_successive_fixation) fixated = true;
+      } else {
+	// DP1("zeroed num_successive_fixation");
+	num_successive_fixation = 0;
       }
     }
   }
@@ -940,6 +947,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const bool& AND_DrvProbExit,
 			const std::vector< std::vector<int> >& fixation_l,
 			 const double& fixation_tolerance,
+			 const int& min_successive_fixation,
 			 int& ti_dbl_min,
 			 int& ti_e3,
 			 std::map<std::string, std::string>& lod,
@@ -1118,6 +1126,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   int lastMaxDr = 0;
   double done_at = -9;
 
+
+  int num_successive_fixation = 0; // none so far
+
+  
 #ifdef MIN_RATIO_MUTS_NR
   g_min_birth_mut_ratio_nr = DBL_MAX;
   g_min_death_mut_ratio_nr = DBL_MAX;
@@ -1911,6 +1923,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 					 AND_DrvProbExit,
 					 fixation_l,
 					 fixation_tolerance,
+					 min_successive_fixation,
+					 num_successive_fixation,
 					 pom, intName,
 					 genesInFitness); //keepEvery is for thinning
       if(verbosity >= 3) {
@@ -2073,18 +2087,18 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   // fixation: run until some genotype combinations fixed
   
   double fixation_tolerance = -9;
+  int min_successive_fixation = 100;
   std::vector < std::vector<int> > fixation_l;
 
   if( fixation_i.size() != 0 ) {
     Rcpp::List fggl = fixation_i["fixation_list"] ;
     fixation_l = list_to_vector_of_int_vectors(fggl); // FIXME
     fixation_tolerance = Rcpp::as<double>(fixation_i["fixation_tolerance"]);
+    min_successive_fixation = Rcpp::as<int>(fixation_i["min_successive_fixation"]);
   } else {
     fixation_l.resize(0); // explicit
   }
  
-  
-
   
   bool runAgain = true;
   bool reachDetection = false;
@@ -2261,6 +2275,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  AND_DrvProbExit,
 		  fixation_l,
 		  fixation_tolerance,
+		  min_successive_fixation,
 		  ti_dbl_min,
 		  ti_e3,
 		  lod,

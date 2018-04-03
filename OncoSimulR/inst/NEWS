@@ -1,5 +1,6 @@
 Changes in version 2.9.8 (2018-03-26):
-	- fixation allows exact genotypes
+	- fixation allows exact genotypes, includes tolerance,
+	and checks for a successive number of specified periods
 
 Changes in version 2.9.7 (2018-02-20):
 	- fixed crash in some conditions when run with

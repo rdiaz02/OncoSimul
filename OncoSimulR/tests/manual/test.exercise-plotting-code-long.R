@@ -1,5 +1,11 @@
 ## RNGkind("Mersenne-Twister")
-cat(date())
+
+cat(paste("\n Starting exercise-plotting-code long at", date()))
+cat(paste("\n             a runif", runif(1), "\n"))
+cat(paste("\n             a runif", runif(1), "\n"))
+date()
+
+
 test_that("exercising plotClonePhylog", {
               data(examplesFitnessEffects)
               tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -300,3 +306,5 @@ test_that("passing colors", {
     plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
     plot(p1, type = "line", show = "genotypes", col = rainbow(3))
 })
+
+cat(paste("\n Ending exercise-plotting-code long at", date()))
