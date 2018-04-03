@@ -97,7 +97,7 @@ double probDetectSize(const double n, const double cPDetect,
 //   }
 // }
 
-
+// is this detected, by the probability of detection as a function of size?
 bool detectedSizeP(const double n, const double cPDetect,
 			const double PDBaseline, std::mt19937& ran_gen) {
   if(cPDetect < 0) {

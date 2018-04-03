@@ -361,7 +361,20 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     checkSizePNow = false;
   }
 
+  // We do not verify that conditions for exiting are also satisfied
+  // at the exit time when extraTime > 0. We could do that,
+  // checking again for the conditions (or the reasonable conditions, so
+  // probably not detectSizeP). For instance, with fixated.
 
+  // For fixated in particular, note that we evaluate fixation always, but
+  // we might be exiting when there is no longer fixation.  But the logic
+  // with fixation is probably to use as large a min_successive_fixation
+  // as desired and no extraTime.
+
+  // Probably would not need to check lastMaxDr and popSizeOverDDr
+  // as those should never decrease. Really?? FIXME
+
+  
   if(AND_DrvProbExit) {
     // The AND of detectionProb and drivers
     // fixated plays no role here, and cannot be passed from R
@@ -397,8 +410,12 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
 	  done_at = currentTime + extraTime;
 	}
       } else if (currentTime >= done_at) {
-  	simulsDone = true;
-  	reachDetection = true; 
+	// if(fixated) {
+	  simulsDone = true;
+	  reachDetection = true;
+	// } else {
+	//   done_at = -1;
+	// }
       }
     } else if( (fixated) ||
 	       (totPopSize >= detectionSize) ||
