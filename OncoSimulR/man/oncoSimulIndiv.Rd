@@ -442,20 +442,19 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   probability of reaching cancer for a set of simulations to be
   accepted.}
 
-\item{max.wall.time}{
-  Maximum wall time for each individual simulation run. If the
-  simulation is not done in this time, it is aborted.
+\item{max.wall.time}{ Maximum wall time for each individual simulation
+  run. If the simulation is not done in this time, it is aborted. (If
+  \code{max.num.tries = k}, each of the \code{k} simulations could take
+  up to this time.)
 
 }
 
 \item{max.wall.time.total}{
-
   Maximum wall time for all the simulations (when using
   \code{oncoSimulSample}), in seconds. If the simulation is not
   completed in this time, it is aborted. To prevent problems from a
   single individual simulation going wild, this limit is also enforced
   per simulation (so the run can be aborted directly from C++).
-
 }
 
 \item{errorHitMaxTries}{ If TRUE (the default) a simulation that reaches
