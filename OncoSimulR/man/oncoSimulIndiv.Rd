@@ -443,9 +443,9 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   accepted.}
 
 \item{max.wall.time}{ Maximum wall time for each individual simulation
-  run. If the simulation is not done in this time, it is aborted. (If
-  \code{max.num.tries = k}, each of the \code{k} simulations could take
-  up to this time.)
+  run. If the simulation is not done in this time, it is aborted.%%  (If
+  %% \code{max.num.tries = k}, each of the \code{k} simulations could take
+  %% up to this time.)
 
 }
 
