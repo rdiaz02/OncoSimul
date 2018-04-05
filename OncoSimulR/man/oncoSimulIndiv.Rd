@@ -442,11 +442,10 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   probability of reaching cancer for a set of simulations to be
   accepted.}
 
-\item{max.wall.time}{ Maximum wall time for each individual simulation
-  run. If the simulation is not done in this time, it is aborted.%%  (If
-  %% \code{max.num.tries = k}, each of the \code{k} simulations could take
-  %% up to this time.)
-
+\item{max.wall.time}{ Maximum wall time for the simulation of one
+  individual (over all \code{max.num.tries}). If the simulation is
+  not done in this time, it is aborted.  %% (If \code{max.num.tries = k},
+  %% time is kept track of over the k attempts;)
 }
 
 \item{max.wall.time.total}{
