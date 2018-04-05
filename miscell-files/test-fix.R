@@ -269,7 +269,8 @@ r1 <- oncoSimulPop(50,
     sgsp2 <- sampledGenotypes(sp2)
     expect_true(all(sgsp2$Genotype %in% local_max_g))
     ## tolerance
-    r3 <- oncoSimulPop(50,
+
+r3 <- oncoSimulPop(50,
                        fp = fr1,
                        model = "McFL",
                        initSize = initS,
@@ -287,10 +288,130 @@ r1 <- oncoSimulPop(50,
                        errorHitMaxTries = TRUE,
                        keepPhylog = FALSE,
                        mc.cores = 2)
-    sr3 <- summary(r3)
+
+sr3 <- summary(r3)
     expect_true(!all(sr3$TotalPopSize == sr3$LargestClone))
     sp3 <- samplePop(r3, "last", "singleCell")
     sgsp3 <- sampledGenotypes(sp3)
     expect_true(!all(sgsp3$Genotype %in% local_max_g))
 
 
+#### Can we do "fixation for anything?"
+####  In C++ code, ensure it is the same genotype?
+
+library(OncoSimulR)
+
+        initS <- 2000
+    r1 <- matrix(0, ncol = 6, nrow = 9)
+    colnames(r1) <- c(LETTERS[1:5], "Fitness")
+    r1[1, 6] <- 1
+    r1[cbind((2:4), c(1:3))] <- 1
+    r1[2, 6] <- 1.4
+    r1[3, 6] <- 1.32
+    r1[4, 6] <- 1.32
+    r1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
+    r1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
+    r1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
+    r1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
+    r1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
+    class(r1) <- c("matrix", "genotype_fitness_matrix")
+    ## plot(r1) ## to see the fitness landscape
+    local_max_g <- c("A", "B, E", "A, B, C, D, E")
+    local_max <- paste0("_,", local_max_g)
+    fr1 <- allFitnessEffects(genotFitness = r1, drvNames = LETTERS[1:5])
+    ## we pass sets of genes, so not stopping at genotypes
+
+anything <- LETTERS[1:5]
+
+
+r2 <- oncoSimulPop(50,
+                   fp = fr1,
+                   model = "McFL",
+                   initSize = initS,
+                   mu = 1e-4,
+                   detectionSize = NA,
+                   sampleEvery = .03,
+                   keepEvery = 1, 
+                   finalTime = 50000,
+                   fixation = c(anything,
+                                fixation_tolerance = 1e-4,
+                                min_successive_fixation = 500),
+                   detectionDrivers = NA,
+                   detectionProb = NA,
+                   onlyCancer = TRUE,
+                   max.num.tries = 500,
+                   max.wall.time = 20, 
+                   errorHitMaxTries = TRUE,
+                   keepPhylog = FALSE,
+                   mc.cores = 2)
+
+(sr2 <- summary(r2))
+
+
+
+r3 <- oncoSimulIndiv(fp = fr1,
+                   model = "McFL",
+                   initSize = initS,
+                   mu = 1e-4,
+                   detectionSize = NA,
+                   sampleEvery = .03,
+                   keepEvery = 1, 
+                   finalTime = 50000,
+                   fixation = c(anything,
+                                fixation_tolerance = 1e-4,
+                                min_successive_fixation = 500),
+                   detectionDrivers = NA,
+                   detectionProb = NA,
+                   onlyCancer = TRUE,
+                   max.num.tries = 500,
+                   max.wall.time = 20, 
+                   errorHitMaxTries = TRUE,
+                   keepPhylog = FALSE)
+
+sr3 <- summary(r3)
+
+
+
+
+r5 <- oncoSimulIndiv(fp = fr1,
+                   model = "McFL",
+                   initSize = initS,
+                   mu = 1e-4,
+                   detectionSize = NA,
+                   sampleEvery = .03,
+                   keepEvery = 1, 
+                   finalTime = 50000,
+                   fixation = c(local_max,
+                                fixation_tolerance = 1e-4,
+                                min_successive_fixation = 50,
+                                fixation_min_size = 6000),
+                   detectionDrivers = NA,
+                   detectionProb = NA,
+                   onlyCancer = TRUE,
+                   max.num.tries = 500,
+                   max.wall.time = 20, 
+                   errorHitMaxTries = TRUE,
+                   keepPhylog = FALSE)
+summary(r5)
+
+
+
+
+
+r3 <- oncoSimulIndiv(
+                       fp = fr1,
+                       model = "McFL",
+                       initSize = initS,
+                       mu = 1e-4,
+                       detectionSize = NA,
+                       sampleEvery = .03,
+                       keepEvery = 1, 
+                       finalTime = 50000,
+                       fixation = c(local_max, fixation_tolerance = 0.1),
+                       detectionDrivers = NA,
+                       detectionProb = NA,
+                       onlyCancer = TRUE,
+                       max.num.tries = 500,
+                       max.wall.time = 20, 
+                       errorHitMaxTries = TRUE,
+                       keepPhylog = FALSE)

@@ -1944,7 +1944,6 @@ nr_oncoSimul.internal <- function(rFE,
     ## if( is.null(n2)) n2 <- -9
 
     ## call <- match.call()
-    
     ## Process the fixed list, if any
     if(!is_null_na(fixation)) {
         ng <- namedGenes
@@ -1975,6 +1974,14 @@ nr_oncoSimul.internal <- function(rFE,
                 min_successive_fixation <- as.integer(fixation[["min_successive_fixation"]])
                 fixation <- fixation[-which(names(fixation) == "min_successive_fixation")]
             }
+            if(
+            (is.null(fixation[["fixation_min_size"]])) ||
+            (is.na(fixation[["fixation_min_size"]]))) {
+                fixation_min_size <- 0
+            } else {
+                fixation_min_size <- as.integer(fixation[["fixation_min_size"]])
+                fixation <- fixation[-which(names(fixation) == "fixation_min_size")]
+            }
             
         } else {
             if(is_null_na(fixation["fixation_tolerance"])) {
@@ -1989,7 +1996,12 @@ nr_oncoSimul.internal <- function(rFE,
                 min_successive_fixation <- as.integer(fixation["min_successive_fixation"])
                 fixation <- fixation[-which(names(fixation) == "min_successive_fixation")]
             }
-            
+            if(is_null_na(fixation["fixation_min_size"])) {
+                fixation_min_size <- 0
+            } else {
+                fixation_min_size <- as.integer(fixation["fixation_min_size"])
+                fixation <- fixation[-which(names(fixation) == "fixation_min_size")]
+            }
         }
 
         if( (fixation_tolerance > 1) || (fixation_tolerance < 0) )
@@ -1997,6 +2009,9 @@ nr_oncoSimul.internal <- function(rFE,
 
         if( (min_successive_fixation < 0) )
                     stop("Impossible range for min_successive_fixation")
+
+        if( (fixation_min_size < 0) )
+                    stop("Impossible range for fixation_min_size")
 
         ## Usual genotype specification and might allow ordered vectors
         ## in the future
@@ -2012,7 +2027,8 @@ nr_oncoSimul.internal <- function(rFE,
         fixation_list <- lapply(fixation_b, function(x) sort(ng[x, 2]))
         fixation_list <- list(fixation_list = fixation_list,
                               fixation_tolerance = fixation_tolerance,
-                              min_successive_fixation = min_successive_fixation)
+                              min_successive_fixation = min_successive_fixation,
+                              fixation_min_size = fixation_min_size)
     } else {
         fixation_list <- list()
     }
