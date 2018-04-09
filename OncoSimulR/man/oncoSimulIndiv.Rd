@@ -565,7 +565,7 @@ of the individual done, and the number of attempts and time used.}
   When using oncoSimulPop, if you want reproducibility, you might want
   to, in addition to setting \code{seed = NULL}, also do
   \code{RNGkind("L'Ecuyer-CMRG")} as we use
-  \code{\link[parallel]{mclapply}}; look at the vignette of
+  \code{\link[parallel:mclapply]{mclapply}}; look at the vignette of
   \pkg{parallel}.
 
 }
