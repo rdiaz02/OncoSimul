@@ -73,7 +73,7 @@ mean \code{mu} and standard deviation \code{sd}).}
   it is up to you to make sure that the range of the scale argument
   includes 1 or you might not get what you want). Note that using this
   option can easily lead to landscapes with no accessible genotypes
-  (unless you also use \code{scale}).
+  (even if you also use \code{scale}).
 
   If "none", the fitness of the wildtype is not touched.  }
 
