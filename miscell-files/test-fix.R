@@ -125,7 +125,7 @@ sum(r4$pops.by.time[160, c(4, 5, 6, 8, 12, 13) + 1])
 ##   - list can be used
 ##   examples of getting gene combs not genotypes
 
-
+## documentation: change cPDetect?
 
 
 ## min_succesive_fixation

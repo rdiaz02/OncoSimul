@@ -66,7 +66,7 @@ dp2 <- function(n, B, C) {
 
 ## the C for a given prob detection
 C_dp2 <- function(n, p, B) {
-    (B/(n-B)) * (-log(1 - p))
+    (-log(1 - p)) * (B/(n-B)) 
 }
 
 C_dp2(4000, 0.1, 2000 * 1.3)
@@ -96,6 +96,17 @@ dp2(2 * is, 1.3 * is, 0.1957) ## 0.1
 
 is <- 1e6
 dp2(2 * is, 1.3 * is, 0.1957) ## 0.1
+
+## and of course in all cases we have 0.1957
+initSize <- 2000
+C_dp2(2 * initSize, p = 0.1, B = 1.3 * initSize)
+
+initSize <- 5e4
+C_dp2(2 * initSize, p = 0.1, B = 1.3 * initSize)
+
+initSize <- 1e6
+C_dp2(2 * initSize, p = 0.1, B = 1.3 * initSize)
+
 
 
 

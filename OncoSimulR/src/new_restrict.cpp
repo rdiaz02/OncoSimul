@@ -74,9 +74,12 @@ double prodMuts(const std::vector<double>& s) {
 		    std::multiplies<double>());
 }
 
+
+
+// new cPDetect
 double set_cPDetect(const double n2, const double p2,
 		    const double PDBaseline) {
-  return (-log(1.0 - p2)/(n2 - PDBaseline));
+  return ( -log(1.0 - p2) *  (PDBaseline / (n2 - PDBaseline)) );
 }
 
 // Next two are identical, except for scaling the k. Use the simplest.
@@ -85,17 +88,35 @@ double probDetectSize(const double n, const double cPDetect,
   if(n <= PDBaseline) {
     return 0;
   } else {
-    return (1 - exp( -cPDetect * (n - PDBaseline)));
+    return (1 - exp( -cPDetect * ( (n - PDBaseline)/PDBaseline ) ));
   }
 }
 
-// double prob_exit_ratio(const double n, const double k, const double baseline) {
-//   if(n <= baseline) {
+
+// Former cpDetect mechanism
+
+// double set_cPDetect(const double n2, const double p2,
+// 		    const double PDBaseline) {
+//   return (-log(1.0 - p2)/(n2 - PDBaseline));
+// }
+
+// // Next two are identical, except for scaling the k. Use the simplest.
+// double probDetectSize(const double n, const double cPDetect,
+// 		      const double PDBaseline) {
+//   if(n <= PDBaseline) {
 //     return 0;
 //   } else {
-//     return (1 - exp( -c * ( (n - baseline)/baseline)));
+//     return (1 - exp( -cPDetect * (n - PDBaseline)));
 //   }
 // }
+
+// // double prob_exit_ratio(const double n, const double k, const double baseline) {
+// //   if(n <= baseline) {
+// //     return 0;
+// //   } else {
+// //     return (1 - exp( -c * ( (n - baseline)/baseline)));
+// //   }
+// // }
 
 // is this detected, by the probability of detection as a function of size?
 bool detectedSizeP(const double n, const double cPDetect,
@@ -114,6 +135,8 @@ bool detectedSizeP(const double n, const double cPDetect,
     }
   }
 }
+
+
 
 bool operator==(const Genotype& lhs, const Genotype& rhs) {
   return (lhs.orderEff == rhs.orderEff) &&
