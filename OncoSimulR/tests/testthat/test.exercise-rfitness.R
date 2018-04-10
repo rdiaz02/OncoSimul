@@ -47,4 +47,13 @@ test_that("Warnings if scale out of scale", {
                    "Using wt_is_1 = force", fixed = TRUE)
 })
 
+test_that("Error if wrong arguments", {
+    expect_error(rfitness(NA),
+                 "Number of genes argument (g) is null or NA",
+                 fixed = TRUE)
+    expect_error(rfitness(NULL),
+                 "Number of genes argument (g) is null or NA",
+                 fixed = TRUE)
+})
+
 cat(paste("\n Starting exercise-rfitness at", date(), "\n"))

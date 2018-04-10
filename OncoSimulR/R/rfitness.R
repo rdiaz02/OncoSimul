@@ -38,7 +38,7 @@ rfitness <- function(g, c= 0.5,
     ## FIXME future: do this with order too?
     ##    - do not generate a matrix of genotypes but a matrix of ordered genot.
     wt_is_1 = match.arg(wt_is_1)
-    
+    if(is_null_na(g)) stop("Number of genes argument (g) is null or NA")
     m <- generate_matrix_genotypes(g)
     done <- FALSE
     ## attempts <- 0 ## for debugging/tracking purposes
