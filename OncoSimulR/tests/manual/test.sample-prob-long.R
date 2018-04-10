@@ -21,7 +21,7 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = 1e-5),
+                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = 0.01),
                            finalTime = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -30,7 +30,7 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = .01),
+                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = .2),
                            finalTime = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -155,3 +155,8 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
 })
 
 cat(paste("\n Ending sample-prob-long tests", date(), "\n"))
+
+
+
+
+

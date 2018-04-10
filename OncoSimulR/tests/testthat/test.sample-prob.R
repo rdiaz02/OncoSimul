@@ -14,7 +14,9 @@ test_that("Increasing cPDetect decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100, checkSizePEvery = 20, cPDetect = 1e-4),
+                           detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100,
+                                             checkSizePEvery = 20,
+                                             cPDetect = 0.01), ## 1e-4),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -23,7 +25,9 @@ test_that("Increasing cPDetect decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100, checkSizePEvery = 20, cPDetect = 1e-2),
+                           detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100,
+                                             checkSizePEvery = 20,
+                                             cPDetect = 0.2), ##1e-2),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -50,7 +54,8 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 3500, PDBaseline = 2000,
+                                             checkSizePEvery = 7, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -59,7 +64,8 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .9, n2 = 3500, PDBaseline = 2000, checkSizePEvery = 7, cPDetect = NA),
+                           detectionProb = c(p2 = .9, n2 = 3500, PDBaseline = 2000,
+                                             checkSizePEvery = 7, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -87,7 +93,8 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 4000,  checkSizePEvery = 15, PDBaseline = 1900, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 4000,  checkSizePEvery = 15,
+                                             PDBaseline = 1900, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -96,7 +103,8 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 15,  PDBaseline = 1900, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 15,
+                                             PDBaseline = 1900, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -125,7 +133,8 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -134,7 +143,8 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -165,7 +175,8 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50, PDBaseline = 500, cPDetect = 1e-5),
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50,
+                                             PDBaseline = 500, cPDetect = 0.01), ## 1e-5),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -174,7 +185,8 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50, PDBaseline = 500, cPDetect = .01),
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50,
+                                             PDBaseline = 500, cPDetect = 0.2), ## .01),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -201,7 +213,8 @@ test_that("Increasing p2 decreases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -210,7 +223,8 @@ test_that("Increasing p2 decreases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .8, n2 = 8500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .8, n2 = 8500, checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -276,7 +290,8 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -285,7 +300,8 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -298,12 +314,6 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-
-
-
-
-
-
 
 
 ## And there is no need for fitness effects
@@ -320,7 +330,8 @@ test_that("Increasing cPDetect decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 10, PDBaseline = 1100,  cPDetect = 1e-4),
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 10,
+                                             PDBaseline = 1100,  cPDetect = 0.01), ## 1e-4),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -329,7 +340,8 @@ test_that("Increasing cPDetect decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA,checkSizePEvery = 10, PDBaseline = 1100, cPDetect = 1e-2),
+                           detectionProb = c(p2 = NA, n2 = NA,checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = 0.2), ## 1e-2),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -356,7 +368,8 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 3500,checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 3500,checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -365,7 +378,8 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .6, n2 = 3500,checkSizePEvery = 10,PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .6, n2 = 3500,checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -393,7 +407,8 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .15, n2 = 7000, checkSizePEvery = 5,PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .15, n2 = 7000, checkSizePEvery = 5,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -402,7 +417,8 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .15, n2 = 2001, checkSizePEvery = 5,PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .15, n2 = 2001, checkSizePEvery = 5,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -431,7 +447,8 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -440,7 +457,8 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10, PDBaseline = 1100, cPDetect = NA),
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10,
+                                             PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -748,9 +766,18 @@ test_that("Fails as expected" , {
                                 finalTime = NA, detectionSize = NA,
                                 onlyCancer = TRUE,
                                 detectionDrivers = NA),
-                 "PDBaseline < 0",
+                 "PDBaseline <= 0",
                  fixed = TRUE)
-
+    expect_error(oncoSimulIndiv(oi,
+                                model = "Exp",
+                                initSize = 2000,
+                                keepEvery = NA,
+                                detectionProb = c(n2 = 3000, p2 = .3, PDBaseline = 0),
+                                finalTime = NA, detectionSize = NA,
+                                onlyCancer = TRUE,
+                                detectionDrivers = NA),
+                 "PDBaseline <= 0",
+                 fixed = TRUE)
     expect_error(oncoSimulIndiv(oi,
                                 model = "Exp",
                                 initSize = 2000,
@@ -762,7 +789,6 @@ test_that("Fails as expected" , {
                                 detectionDrivers = NA),
                  "At least one stopping condition should be given",
                  fixed = TRUE)
-
     expect_error(oncoSimulIndiv(oi,
                                 model = "Exp",
                                 initSize = 2000,
@@ -774,8 +800,6 @@ test_that("Fails as expected" , {
                                 detectionDrivers = NA),
                  "At least one stopping condition should be given",
                  fixed = TRUE)
-
-    
 })
 
 

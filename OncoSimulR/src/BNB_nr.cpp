@@ -2075,6 +2075,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   double cPDetect = cPDetect_i;
   if( (n2 > 0) && (p2 > 0) ) {
+    if (PDBaseline <= 0) throw std::range_error("PDBaseline <= 0");
     cPDetect = set_cPDetect(n2, p2, PDBaseline);
     if(verbosity >= 1)
       Rcpp::Rcout << "  cPDetect set at " << cPDetect << "\n";

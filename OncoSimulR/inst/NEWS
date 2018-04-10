@@ -1,3 +1,8 @@
+Changes in version 2.9.9 (2018-04-10):
+	- probDetect mechanism changed. This could be a BREAKING CHANGE.
+	  The expression divides by the baseline. For fixed initSize, this
+	  is simply a matter of changing the cPDetect.
+
 Changes in version 2.9.8 (2018-03-26):
 	- fixation allows exact genotypes, includes tolerance,
 	and checks for a successive number of specified periods

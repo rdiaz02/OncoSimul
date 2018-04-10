@@ -2292,8 +2292,8 @@ detectionProbCheckParse <- function(x, initSize, verbosity) {
     
     if(x["checkSizePEvery"] <= 0)
         stop("checkSizePEvery <= 0")
-    if(x["PDBaseline"] < 0)
-        stop("PDBaseline < 0")
+    if(x["PDBaseline"] <= 0)
+        stop("PDBaseline <= 0")
     
     if(!is_null_na(x["n2"])) {
         if(x["n2"] <= x["PDBaseline"])
