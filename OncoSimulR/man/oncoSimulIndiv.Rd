@@ -639,7 +639,7 @@ of the individual done, and the number of attempts and time used.}
   uniform number). Probability of detection changes with population size
   according to the function
   
-  \deqn{ 1 - e^{-cPDetect (populationsize - PDBaseline)}}.
+  \deqn{ 1 - e^{-cPDetect ( (populationsize - PDBaseline)/PDBaseline )}}.
 
   You can pass \code{cPDetect} manually (you will need to set \code{n2}
   and \code{p2} to NA). However, it might be more intuitive to specify

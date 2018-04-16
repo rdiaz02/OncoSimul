@@ -118,8 +118,10 @@ dp1(3000, 1600, 1e-4)
 op <- par(mfrow = c(2, 1))
 
 initSize <- 2000
-curve(dp2(x, B = 1.3 * initSize, C = 0.2),
+curve(dp2(x, B = 1.3 * initSize,
+          C = C_dp2(2 * initSize, 0.001, 1.3 * initSize)),
       from = 1.3 * initSize, to = 4 * initSize)
+
 
 initSize <- 2000
 curve(dp2(x, B = 1.3 * initSize, C = 0.4),
@@ -153,4 +155,123 @@ dp1(4000, 2000 * 1.3, 7.526e-05) ## 0.1
 ## it asymptotes to 1. and is 0 when x = 0
 
 
+## An example of checkSizePEvery
+
+
+set.seed(1)
+gi <- rep(0.1, 10)
+names(gi) <- letters[1:10]
+oi <- allFitnessEffects(noIntGenes = gi)
+n <- 75
+max.tries <- 4
+
+set.seed(1)
+initSize <- 2000
+sa <- oncoSimulIndiv( oi,
+                     model = "McFL",
+                     initSize = initSize,
+                     keepEvery = NA,
+                     detectionProb = c(p2 = 0.01,
+                                       n2 = 2 * initSize,
+                                       PDBaseline = initSize,
+                                       checkSizePEvery = 20),
+                     finalTime = NA, detectionSize = NA,
+                     onlyCancer = TRUE,
+                     detectionDrivers = NA)
+sa
+
+set.seed(1)
+initSize <- 2000
+sa <- oncoSimulIndiv( oi,
+                     model = "McFL",
+                     initSize = initSize,
+                     keepEvery = NA,
+                     detectionProb = c(p2 = 0.01,
+                                       n2 = 2 * initSize,
+                                       PDBaseline = initSize,
+                                       checkSizePEvery = 20),
+                     finalTime = NA, detectionSize = NA,
+                     onlyCancer = TRUE,
+                     detectionDrivers = NA)
+sa
+
+set.seed(1)
+initSize <- 2000
+sb <- oncoSimulIndiv( oi,
+                     model = "McFL",
+                     initSize = initSize,
+                     keepEvery = NA,
+                     detectionProb = c(p2 = 0.01,
+                                       n2 = 2 * initSize,
+                                       PDBaseline = initSize,
+                                       checkSizePEvery = 0.1),
+                     finalTime = NA, detectionSize = NA,
+                     onlyCancer = TRUE,
+                     detectionDrivers = NA)
+sb
+
+
+set.seed(1)
+initSize <- 2000
+sc <- oncoSimulIndiv( oi,
+                     model = "McFL",
+                     initSize = initSize,
+                     keepEvery = NA,
+                     detectionProb = c(p2 = 0.00001,
+                                       n2 = 2 * initSize,
+                                       PDBaseline = initSize,
+                                       checkSizePEvery = 0.1),
+                     finalTime = NA, detectionSize = NA,
+                     onlyCancer = TRUE,
+                     detectionDrivers = NA)
+sc
+
+
+set.seed(1)
+initSize <- 2000
+sd <- oncoSimulIndiv( oi,
+                     model = "McFL",
+                     initSize = initSize,
+                     keepEvery = NA,
+                     detectionProb = c(p2 = 1 - (1 - 0.1)^(1/30),
+                                       n2 = 2 * initSize,
+                                       PDBaseline = 1.3 * initSize,
+                                       checkSizePEvery = 0.9),
+                     finalTime = NA, detectionSize = NA,
+                     onlyCancer = TRUE,
+                     detectionDrivers = NA)
+sd
+
+
+set.seed(1)
+
+initSize <- 2000
+sd <- oncoSimulIndiv( oi,
+                     model = "McFL",
+                     initSize = initSize,
+                     keepEvery = NA,
+                     detectionProb = c(p2 = 0.1,
+                                       n2 = 2 * initSize,
+                                       PDBaseline = 1.3 * initSize,
+                                       checkSizePEvery = 29),
+                     finalTime = NA, detectionSize = NA,
+                     onlyCancer = TRUE,
+                     detectionDrivers = NA)
+sd
+
+
+
+initSize <- 2000
+sd <- oncoSimulIndiv( oi,
+                     model = "McFL",
+                     initSize = initSize,
+                     keepEvery = NA,
+                     detectionProb = c(p2 = 1 - (1 - 0.1)^(1/2),
+                                       n2 = 2 * initSize,
+                                       PDBaseline = 1.3 * initSize,
+                                       checkSizePEvery = 15),
+                     finalTime = NA, detectionSize = NA,
+                     onlyCancer = TRUE,
+                     detectionDrivers = NA)
+sd
 

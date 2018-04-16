@@ -6715,23 +6715,43 @@ simplicity, and to make sure the probability is bounded between 0 and 1,
 we use the function
 
 
+% \begin{equation}
+%   P(N) = 
+%   \begin{cases}
+%   1 - e^{ -cPDetect (N - PDBaseline)} & \text{if } N > PDBaseline \\
+%   0 & \text{if } N \leq PDBaseline
+%   \end{cases}
+%   \label{eq:2}
+% \end{equation}
+
+
+
+
 \begin{equation}
   P(N) = 
   \begin{cases}
-  1 - e^{ -cPDetect (N - PDBaseline)} & \text{if } N > PDBaseline \\
-  0 & \text{if } N \leq PDBaseline
+  1 - e^{ -c ( (N - B)/B)} & \text{if } N > B \\
+  0 & \text{if } N \leq B
   \end{cases}
   \label{eq:2}
 \end{equation}
 
 
 where $P(N)$ is the probability that a tumor with a population size $N$
-will be detected, and $cPDetect$ controls the increase in $P(N)$ with
-population size; with $PDBaseline$ we both control the minimal population
-size at which this mechanism stats operating (because we will rarely want
-detection unless there is some meaningful increase of population size over
-`initSize`) and we model the increase in $P(N)$ as a function of
-differences with respect to $PDBaseline$.
+will be detected, and $c$ (argument $cPDetect$ in the `oncoSimul*`
+functions) controls how fast $P(N)$ increases with increasing population
+size relative to a baseline, $B$ ($PDBaseline$ in the `oncoSimul*`
+functions); with $B$ we both control the minimal population size at which
+this mechanism stats operating (because we will rarely want detection
+unless there is some meaningful increase of population size over
+`initSize`) and we model the increase in $P(N)$ as a function of relative
+differences with respect to $B$. (Note that this is **a major change** in
+version 2.9.9. Before version 2.9.9, the expression used was
+$P(N) = 1 - e^{ -c ( N - B)}$, so we did not make the increase relative to
+$B$; of course, you can choose an appropriate $c$ to make different models
+comparable, but the expression used before 2.9.9 made it much harder to
+compare simulations with very different initial population sizes, as
+baselines are often naturall a function of initial population sizes.)
 
 
 The $P(N)$ refers to the probability of detection at each one of the
@@ -6760,10 +6780,10 @@ orders of magnitude between successive checks. This issue is also
 discussed in section \@ref(bench1xf) and \@ref(benchusual).
 
 
-Finally, you can specify $cPDetect$ directly (you will need to set
-`n2` and `p2` to NA). However, it might be more intuitive to
-specify the pair `n2`, `p2`, such that $P(n2) = p2$ (and
-from that pair we solve for the value of $cPDetect$).
+Finally, you can specify $c$ ($cPDetect$) directly (you will need to set
+`n2` and `p2` to NA). However, it might be more intuitive to specify the
+pair `n2`, `p2`, such that $P(n2) = p2$ (and from that pair we solve for
+the value of $cPDetect$).
 
 
 You can get a feeling for the effects of these arguments by playing with
