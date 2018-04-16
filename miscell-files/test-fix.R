@@ -415,3 +415,59 @@ r3 <- oncoSimulIndiv(
                        max.wall.time = 20, 
                        errorHitMaxTries = TRUE,
                        keepPhylog = FALSE)
+
+
+
+
+
+
+r1 <- matrix(0, ncol = 6, nrow = 9)
+colnames(r1) <- c(LETTERS[1:5], "Fitness")
+r1[1, 6] <- 1
+r1[cbind((2:4), c(1:3))] <- 1
+r1[2, 6] <- 1.4
+r1[3, 6] <- 1.32
+r1[4, 6] <- 1.32
+r1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
+r1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
+r1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
+r1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
+r1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
+class(r1) <- c("matrix", "genotype_fitness_matrix")
+## plot(r1) ## to see the fitness landscape
+
+## The local fitness maxima are
+## c("A", "B, E", "A, B, C, D, E")
+
+fr1 <- allFitnessEffects(genotFitness = r1, drvNames = LETTERS[1:5])
+initS <- 2000
+r3 <- oncoSimulPop(10,
+                  fp = fr1,
+                  model = "McFL",
+                  initSize = initS,
+                  mu = 1e-4,
+                  detectionSize = NA,
+                  sampleEvery = .03,
+                  keepEvery = 1, 
+                  finalTime = 50000,
+                  fixation = c(paste0("_,",
+                  c("A", "B, E", "A, B, C, D, E")),
+                  fixation_tolerance = 0.1,
+                  min_successive_fixation = 200,
+                  fixation_min_size = 2300),
+                  detectionDrivers = NA,
+                  detectionProb = NA,
+                  onlyCancer = TRUE,
+                  max.num.tries = 500,
+                  max.wall.time = 20, 
+                  errorHitMaxTries = TRUE,
+                  keepPhylog = FALSE,
+                  mc.cores = 2)
+summary(r3)
+## All final genotypes should be local maxima                       
+sp3 <- samplePop(r3, "last", "singleCell")
+sgsp3 <- sampledGenotypes(sp3)
+
+
+sgsp3$Genotype %in% local_max_g
+

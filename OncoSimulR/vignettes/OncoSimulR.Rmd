@@ -534,14 +534,13 @@ questions that refer to larger, more complex fitness landscapes as in
 @szendro_predictability_2013 or @franke_evolutionary_2011 (see below).
 
 
-Using as an example @Ochs2015 (we will see this example again in
-section \@ref(ochsdesai), where we cover different ways of
-specifying fitness), we could specify the fitness landscape and run
-simulations until fixation (with argument `fixation` to
-`oncoSimulPop` ---see more details in section \@ref(fixation), again
-with this example). We would then examine the proportion
-of genotypes fixed under different scenarios. And we can extend this
-example by adding mutator genes:
+Using as an example @Ochs2015 (we will see this example again in section
+\@ref(ochsdesai), where we cover different ways of specifying fitness), we
+could specify the fitness landscape and run simulations until fixation
+(with argument `fixation` to `oncoSimulPop` ---see more details in section
+\@ref(fixation) and \@ref(fixationG), again with this example). We would
+then examine the proportion of genotypes fixed under different
+scenarios. And we can extend this example by adding mutator genes:
 
 
 ```{r hiddenochs, echo=FALSE}
@@ -6270,7 +6269,7 @@ evalAllGenotypes(od, addwt = TRUE)
 ```
 
 We will return to this model when we explain the usage of `fixation`
-for stopping the simulations (see \@ref(fixation)).
+for stopping the simulations (see \@ref(fixation) and \@ref(fixationG)).
 
 
 
@@ -6632,7 +6631,7 @@ multiple simulations in \@ref(sample).
     the drivers.
 	+ A gene or gene combination among those listed in `fixation`
     becomes fixed in the population (i.e., has a frequency is 1)
-    (see details in (\@ref(fixation)). 
+    (see details in (\@ref(fixation) and \@ref(fixationG)). 
     + The tumor is detected according to a stochastic detection
     mechanism, where the probability of "detecting the tumor" increases
     with population size; this is explained below (\@ref(detectprob)) and
@@ -6923,6 +6922,195 @@ Note the very large variability in reaching fixation
 ```{r sum-simul-ochs}
 head(summary(od100)[, c(1:3, 8:9)])
 ```
+
+
+### Fixation of genotypes {#fixationG}
+
+Section \@ref(fixation) deals with the fixation of gene/gene
+combinations. What if you want fixation on specific genotypes? To give an
+example, suppose a we have a five loci genotype and suppose that you want
+to stop the simulations only if genotypes ``A'', ``B, E'' or ``A, B, C, D,
+E'' reach fixation. You do not want to stop it if, say, genotype ``A, B,
+E'' reaches fixation. To specify genotypes, you prepend the genotype
+combinations with a ``_,'', and that tells OncoSimulR that you want
+fixation of *genotypes*, not just gene combinations.
+
+And of example of the differences between the mechanisms can be seen from
+this code:
+
+```{r fixationG1}
+## Create a simple fitness landscape
+r1 <- matrix(0, ncol = 6, nrow = 9)
+colnames(r1) <- c(LETTERS[1:5], "Fitness")
+r1[1, 6] <- 1
+r1[cbind((2:4), c(1:3))] <- 1
+r1[2, 6] <- 1.4
+r1[3, 6] <- 1.32
+r1[4, 6] <- 1.32
+r1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
+r1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
+r1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
+r1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
+r1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
+class(r1) <- c("matrix", "genotype_fitness_matrix")
+## plot(r1) ## to see the fitness landscape
+
+## Gene combinations
+local_max_g <- c("A", "B, E", "A, B, C, D, E")
+## Specify the genotypes
+local_max <- paste0("_,", local_max_g)
+
+fr1 <- allFitnessEffects(genotFitness = r1, drvNames = LETTERS[1:5])
+initS <- 2000
+## Stop on gene combinations
+r1 <- oncoSimulPop(10,
+                       fp = fr1,
+                       model = "McFL",
+                       initSize = initS,
+                       mu = 1e-4,
+                       detectionSize = NA,
+                       sampleEvery = .03,
+                       keepEvery = 1, 
+                       finalTime = 50000,
+                       fixation = local_max_g, 
+                       detectionDrivers = NA,
+                       detectionProb = NA,
+                       onlyCancer = TRUE,
+                       max.num.tries = 500,
+                       max.wall.time = 20, 
+                       errorHitMaxTries = TRUE,
+                       keepPhylog = FALSE,
+                       mc.cores = 2)
+sp1 <- samplePop(r1, "last", "singleCell")
+sgsp1 <- sampledGenotypes(sp1)
+sgsp1 ## often you will stop on gene combinations that
+      ## are not local maxima in the fitness landscape
+sgsp1$Genotype %in% local_max_g
+
+## Stop on genotypes
+
+r2 <- oncoSimulPop(10,
+                       fp = fr1,
+                       model = "McFL",
+                       initSize = initS,
+                       mu = 1e-4,
+                       detectionSize = NA,
+                       sampleEvery = .03,
+                       keepEvery = 1, 
+                       finalTime = 50000,
+                       fixation = local_max, 
+                       detectionDrivers = NA,
+                       detectionProb = NA,
+                       onlyCancer = TRUE,
+                       max.num.tries = 500,
+                       max.wall.time = 20, 
+                       errorHitMaxTries = TRUE,
+                       keepPhylog = FALSE,
+                       mc.cores = 2)
+## All final genotypes should be local maxima                       
+sp2 <- samplePop(r2, "last", "singleCell")
+sgsp2 <- sampledGenotypes(sp2)
+sgsp2$Genotype %in% local_max_g
+
+
+
+```
+
+### Fixation: tolerance, number of periods, minimal size
+
+In particular if you specify stopping on genotypes, you might want to
+think about three additional parameters: `fixation_tolerance`,
+`min_successive_fixation`, and `fixation_min_size`.
+
+`fixation_tolerance`: fixation is considered to have happened if the
+genotype/gene combinations specified as genotypes/gene combinations for
+fixation have reached a frequency $> 1 - fixation\_tolerance$. (The
+default is 0, so we ask for genotypes/gene combinations with a frequency
+of 1, which might not be what you want with large mutation rates and
+complex fitness landscape with genotypes of similar fitness.)
+
+
+`min_successive_fixation`: during how many successive sampling periods the
+conditions of fixation need to be fulfilled before declaring
+fixation. These must be successive sampling periods without interruptions
+(i.e., a single period when the condition is not fulfilled will set the
+counter to 0). This can help to exclude short, transitional, local maxima
+that are quickly replaced by other genotypes. (The default is 50, but this
+is probably too small for ``real life'' usage).
+
+`fixation_min_size`: you might only want to consider fixation to have
+happened if a minimal size has been reached (this can help weed out local
+maxima that have fitness that is barely above that of the wild-type
+genotype). (The default is 0).
+
+
+An example of using those options:
+
+```{r fixationG2}
+## Create a simple fitness landscape
+r1 <- matrix(0, ncol = 6, nrow = 9)
+colnames(r1) <- c(LETTERS[1:5], "Fitness")
+r1[1, 6] <- 1
+r1[cbind((2:4), c(1:3))] <- 1
+r1[2, 6] <- 1.4
+r1[3, 6] <- 1.32
+r1[4, 6] <- 1.32
+r1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
+r1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
+r1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
+r1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
+r1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
+class(r1) <- c("matrix", "genotype_fitness_matrix")
+## plot(r1) ## to see the fitness landscape
+
+## The local fitness maxima are
+## c("A", "B, E", "A, B, C, D, E")
+
+fr1 <- allFitnessEffects(genotFitness = r1, drvNames = LETTERS[1:5])
+initS <- 2000
+
+## Stop on genotypes
+
+r3 <- oncoSimulPop(10,
+                  fp = fr1,
+                  model = "McFL",
+                  initSize = initS,
+                  mu = 1e-4,
+                  detectionSize = NA,
+                  sampleEvery = .03,
+                  keepEvery = 1, 
+                  finalTime = 50000,
+                  fixation = c(paste0("_,",
+                  c("A", "B, E", "A, B, C, D, E")),
+                  fixation_tolerance = 0.1,
+                  min_successive_fixation = 200,
+                  fixation_min_size = 3000),
+                  detectionDrivers = NA,
+                  detectionProb = NA,
+                  onlyCancer = TRUE,
+                  max.num.tries = 500,
+                  max.wall.time = 20, 
+                  errorHitMaxTries = TRUE,
+                  keepPhylog = FALSE,
+                  mc.cores = 2)
+summary(r3)
+## All final genotypes should be local maxima                       
+sp3 <- samplePop(r3, "last", "singleCell")
+(sgsp3 <- sampledGenotypes(sp3))
+
+
+
+
+```
+
+
+
+
+
+### Mixing stopping on gene combinations and genotypes {#fixationmix}
+
+This will probably be awfully confusing and is not tested formally. Let me
+know if you think this is an important feature.
 
 
 ## Plotting genotype/driver abundance over time; plotting the simulated trajectories {#plotraj}

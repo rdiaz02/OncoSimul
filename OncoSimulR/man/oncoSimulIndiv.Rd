@@ -520,12 +520,43 @@ of the individual done, and the number of attempts and time used.}
   with \code{fixation} is not allowed (as it does not make much sense).}
 
 \item{fixation}{If non-NULL, a list or a vector, where each element of
-  is a string with a gene or a gene combination. Simulations will stop
-  as soon as any of the genes or gene combinations are fixed (i.e.,
-  reach frequency of one). If you pass gene combinations, separate genes
+  is a string with a gene or a gene combination or a genotype (see
+  below). Simulations will stop as soon as any of the genes or gene
+  combinations or genotypes are fixed (i.e., reach a minimal
+  frequency). If you pass gene combinations or genotypes, separate genes
   with commas (not '>'); this means order is not (yet?)  supported. This
   way of specifying gene combinations is the same as the one used for
   \code{initMutant} and \code{\link{evalGenotype}}.
+
+  To differentiate between gene combinations and specific genotypes,
+  genotypes are specified by prepending them with a "_,". For instance,
+  \code{fixation = c("A", "B, C")} specifies stopping on any genotypes
+  with those gene combinations. In contrast, \code{fixation = c("_,A",
+  "_,B, C" )} specifies stopping only on gentoypes "A" or "B, C". See
+  the vignette for further examples.
+  
+
+  In addition to the gene combinations or genotypes themeselves, you can
+  add to the list or vector the named elements
+  \code{fixation_tolerance}, \code{min_successive_fixation} and
+  \code{fixation_min_size}. \code{fixation_tolerance}: fixation is
+  considered to have happened if the genotype/gene combinations
+  specified as genotypes/gene combinations for fixation have reached a
+  frequency \code{> 1 - fixation_tolerance}. (The default is 0, so we
+  ask for genotypes/gene combinations with a frequency of 1, which might
+  not be what you want with large mutation rates and complex fitness
+  landscape with genotypes of similar
+  fitness.). \code{min_successive_fixation}: during how many successive
+  sampling periods the conditions of fixation need to be fulfilled
+  before declaring fixation. These must be successive sampling periods
+  without interruptions (i.e., a single period when the condition is not
+  fulfilled will set the counter to 0). This can help to exclude short,
+  transitional, local maxima that are quickly replaced by other
+  genotypes. (The default is 50, but this is probably too small for
+  ``real life'' usage). \code{fixation_min_size}: you might only want to
+  consider fixation to have happened if a minimal size has been reached
+  (this can help weed out local maxima that have fitness that is barely
+  above that of the wild-type genotype). (The default is 0).
 
   Using this option with \code{AND_DrvProbExit} is not allowed (as it
   does not make much sense). This option is not allowed either with the
