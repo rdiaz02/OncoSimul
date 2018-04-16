@@ -116,9 +116,17 @@ dp2(3000, 1600, .4)
 dp1(3000, 1600, 1e-4)
 
 op <- par(mfrow = c(2, 1))
+
 initSize <- 2000
-curve(dp2(x, B = 1.3 * initSize, C = 0.1957),
-      from = 1.3 * initSize, to = 20 * initSize)
+curve(dp2(x, B = 1.3 * initSize, C = 0.2),
+      from = 1.3 * initSize, to = 4 * initSize)
+
+initSize <- 2000
+curve(dp2(x, B = 1.3 * initSize, C = 0.4),
+      from = 1.3 * initSize, to = 4 * initSize)
+
+
+
 curve(dp1(x, B = 1.3 * initSize, C = 7.526e-05),
       from = 1.3 * initSize, to = 20 * initSize)
 
@@ -137,7 +145,12 @@ dp1(4000, 2000 * 1.3, 7.526e-05) ## 0.1
 
 
 
+## As an afterthought, it would have been even simpler to have
 
+## P(N) = a*x/(a*x + 1)
+## where x = (N - B)/B
+## and a gives the speed of increase at the start of the linear part
+## it asymptotes to 1. and is 0 when x = 0
 
 
 
