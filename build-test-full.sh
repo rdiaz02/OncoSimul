@@ -177,5 +177,5 @@ fi
 
 ## for very paranoid checks
 if [ "$2" = "cran" ]; then
-    R --vanilla CMD check --as-cran --timings OncoSimulR_$V_ADA.tar.gz
+    $V_R --vanilla CMD check --as-cran --timings OncoSimulR_$V_ADA.tar.gz
 fi
