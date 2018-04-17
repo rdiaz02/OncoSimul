@@ -125,5 +125,5 @@ test_that("error if root out of place in gm", {
 
 
 cat(paste("\n Ending epist-order-modules at", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

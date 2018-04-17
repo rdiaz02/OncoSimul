@@ -188,5 +188,5 @@ test_that("The indices of adjancey matrices are correct", {
 
 ## For peaks, see code in test.plotFitnessLandscape.R
 cat(paste("\n Ending accessible_genotypes at", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

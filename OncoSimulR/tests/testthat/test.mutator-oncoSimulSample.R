@@ -625,5 +625,5 @@ cat(paste("\n Finished test.mutator-oncoSimulSample.R test at", date(), "\n"))
 ## sed -i 's/summary(\([A-Za-z0-9]*\))/\1$popSummary\[, c(1:3, 8:9)\]/g' test.mutator-oncoSimulSample.R
 ## the last is not quite ok. Leaves to sets of the [, c(1:3, 8:9)][, c(1:3, 8:9)]. Replace in emacs.
 ## and a few others are missed. 
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

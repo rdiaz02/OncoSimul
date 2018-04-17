@@ -69,5 +69,5 @@ test_that("oncoSimulSample does not use drivers as stopping when there are none"
 })
 
 cat(paste("\n Ending oncoSimulSample-limits tests", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

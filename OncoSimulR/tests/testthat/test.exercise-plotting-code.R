@@ -529,5 +529,5 @@ test_that("exercising phylogClone", {
 
 cat(paste("\n Ending exercise-plotting-code at", date(), "\n"))
 
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

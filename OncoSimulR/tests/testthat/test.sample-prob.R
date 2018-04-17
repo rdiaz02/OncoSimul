@@ -3,13 +3,13 @@ cat(paste("\n Starting sample-prob", date(), "\n"))
 
 p.value.threshold <- 1e-4
 
-## a McFL version in long tests
+## a McFL version in long tests and also below
 date()
 test_that("Increasing cPDetect decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 800
+    n <- 200
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -17,7 +17,8 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = 0.01),
+                           detectionProb = c(p2 = NULL, n2 = NULL,
+                                             cPDetect = 0.05),
                            finalTime = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -26,7 +27,8 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = -9,
-                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = .2),
+                           detectionProb = c(p2 = NULL, n2 = NULL,
+                                             cPDetect = 2),
                            finalTime = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -47,7 +49,7 @@ test_that("Increasing p2 decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 120
+    n <- 200
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -55,7 +57,7 @@ test_that("Increasing p2 decreases time, Exp" , {
                            model = "Exp",
                            initSize = 3000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 10,  cPDetect = NULL),
+                           detectionProb = c(p2 = .005, n2 = 5000, checkSizePEvery = 1,  cPDetect = NULL),
                            finalTime = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -64,7 +66,7 @@ test_that("Increasing p2 decreases time, Exp" , {
                            model = "Exp",
                            initSize = 3000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .9, n2 = 8500, checkSizePEvery = 10,  cPDetect = NULL),
+                           detectionProb = c(p2 = .8, n2 = 5000, checkSizePEvery = 1,  cPDetect = NULL),
                            finalTime = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = 99, mc.cores = 2)
@@ -87,7 +89,7 @@ test_that("Increasing n2 increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 20 ## 70
+    n <- 30 ## 70
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -95,7 +97,7 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 4000,  checkSizePEvery = 15,
+                           detectionProb = c(p2 = .1, n2 = 4000,  checkSizePEvery = 1,
                                              PDBaseline = 1900, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -105,7 +107,7 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 15,
+                           detectionProb = c(p2 = .1, n2 = 2001, checkSizePEvery = 1,
                                              PDBaseline = 1900, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -128,7 +130,7 @@ test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 70
+    n <- 30
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -136,7 +138,7 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 20,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -146,7 +148,7 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 1,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -164,14 +166,12 @@ date()
 
 
 
-## Same, with Exp
-
 date()
 test_that("Increasing cPDetect decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 70
+    n <- 50
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -179,7 +179,7 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50,
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 5,
                                              PDBaseline = 500, cPDetect = 0.01), ## 1e-5),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -189,7 +189,7 @@ test_that("Increasing cPDetect decreases time, Exp" , {
                            model = "Exp",
                            initSize = 1000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 50,
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 5,
                                              PDBaseline = 500, cPDetect = 0.2), ## .01),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -207,10 +207,10 @@ date()
 
 date()
 test_that("Increasing p2 decreases time, Exp" , {
-    gi <- rep(0.1, 10)
+    gi <- rep(0.2, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 150
+    n <- 50
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -218,7 +218,7 @@ test_that("Increasing p2 decreases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 10,
+                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 2,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -228,7 +228,7 @@ test_that("Increasing p2 decreases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .8, n2 = 8500, checkSizePEvery = 10,
+                           detectionProb = c(p2 = .8, n2 = 8500, checkSizePEvery = 2,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
@@ -250,7 +250,7 @@ test_that("Increasing n2 increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 70
+    n <- 50
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -258,7 +258,7 @@ test_that("Increasing n2 increases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 9000, PDBaseline = 2100, cPDetect = NA),
+                           detectionProb = c(p2 = .21, n2 = 9000, PDBaseline = 2100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -267,7 +267,7 @@ test_that("Increasing n2 increases time, Exp" , {
                            model = "Exp",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 2101, PDBaseline = 2100, cPDetect = NA),
+                           detectionProb = c(p2 = .21, n2 = 2101, PDBaseline = 2100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = TRUE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -330,7 +330,7 @@ test_that("Increasing cPDetect decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 75
+    n <- 35 ## 75
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -338,8 +338,8 @@ test_that("Increasing cPDetect decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 10,
-                                             PDBaseline = 1100,  cPDetect = 0.01), ## 1e-4),
+                           detectionProb = c(p2 = NA, n2 = NA, checkSizePEvery = 2,
+                                             PDBaseline = 1100,  cPDetect = 0.1), ## 1e-4),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -348,8 +348,8 @@ test_that("Increasing cPDetect decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA,checkSizePEvery = 10,
-                                             PDBaseline = 1100, cPDetect = 0.2), ## 1e-2),
+                           detectionProb = c(p2 = NA, n2 = NA,checkSizePEvery = 2,
+                                             PDBaseline = 1100, cPDetect = 0.9), ## 1e-2),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
                            detectionDrivers = NA, mc.cores = 2)
@@ -369,7 +369,7 @@ test_that("Increasing p2 decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 80
+    n <- 40
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -377,7 +377,7 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 3500,checkSizePEvery = 10,
+                           detectionProb = c(p2 = .1, n2 = 3500,checkSizePEvery = 2,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
@@ -387,7 +387,7 @@ test_that("Increasing p2 decreases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .6, n2 = 3500,checkSizePEvery = 10,
+                           detectionProb = c(p2 = .6, n2 = 3500,checkSizePEvery = 2,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
@@ -409,7 +409,7 @@ test_that("Increasing n2 increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 80
+    n <- 40
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -417,7 +417,7 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .15, n2 = 7000, checkSizePEvery = 5,
+                           detectionProb = c(p2 = .15, n2 = 7000, checkSizePEvery = 1,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
@@ -427,7 +427,7 @@ test_that("Increasing n2 increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .15, n2 = 2001, checkSizePEvery = 5,
+                           detectionProb = c(p2 = .15, n2 = 2001, checkSizePEvery = 1,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
@@ -450,7 +450,7 @@ test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 80
+    n <- 25
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -458,7 +458,7 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 50,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
@@ -468,7 +468,7 @@ test_that("Increasing checkSizePEvery increases time" , {
                            model = "McFL",
                            initSize = 2000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 10,
+                           detectionProb = c(p2 = .1, n2 = 1500, checkSizePEvery = 1,
                                              PDBaseline = 1100, cPDetect = NA),
                            finalTime = NA, detectionSize = NA,
                            onlyCancer = FALSE,
@@ -842,5 +842,5 @@ date()
     ## hist(unlist(lapply(s5, function(x) x$FinalTime)))
 
 cat(paste("\n Ending sample-prob tests", date(), "\n"))
-cat(paste(" Took ", Sys.time() - inittime, "\n\n\n"))
+cat(paste(" Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n\n"))
 rm(inittime)

@@ -45,5 +45,5 @@ test_that("wide2long, two basic cases, minimal testing",
 })
 
 cat(paste("\n Ending wide2long tests", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

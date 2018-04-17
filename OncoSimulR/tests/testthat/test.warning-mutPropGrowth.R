@@ -77,5 +77,5 @@ test_that("mutationPropGrowth no warning with McFl, indiv", {
 cat(paste("\n Ending warning-mutPropGrowth tests", date(), "\n"))
 
 
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

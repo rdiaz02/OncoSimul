@@ -75,5 +75,5 @@ test_that("driverCounts: a run that used to cause crashes", {
 set.seed(NULL)
 
 cat(paste("\n Ending test.Z-driver-counts at", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

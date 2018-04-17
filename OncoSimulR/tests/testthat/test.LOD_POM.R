@@ -456,5 +456,5 @@ cat(paste("\n Ending LOD_POM at", date(), "\n"))
 ##         expect_true(identical(s7$other$POM, pom))
 ## }
 
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

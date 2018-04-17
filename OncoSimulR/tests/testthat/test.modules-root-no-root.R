@@ -66,5 +66,5 @@ test_that("Root needed with DAGs", {
                  fixed = TRUE)
 })
 cat(paste("\n Ending test.modules-root-no-root at", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

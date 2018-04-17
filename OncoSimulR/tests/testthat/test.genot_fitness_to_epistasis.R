@@ -28,5 +28,5 @@ test_that("genot_fitness_to_epistasis works minimally", {
 })
 
 cat(paste("\n Ending genot_fitness_to_epistasis at", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

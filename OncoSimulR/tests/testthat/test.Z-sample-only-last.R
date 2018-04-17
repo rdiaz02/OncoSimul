@@ -53,7 +53,7 @@ runBothFuncts <- function(seed, Poset, functionPair) {
 
 ## We only use one from each of 11, 9, 7.
 ## Whole collection tested in long tests
-examplePosets <- examplePosets[c(1, 5, 9)]
+examplePosets <- examplePosets[c(1, 5)] ##, 9)]
 for(i in 1:length(examplePosets)) {
     s1 <- round(runif(1) * 10000) ## do better as: as.integer(runif(1, 1, 1e9))
     Poset <- examplePosets[[i]]
@@ -103,5 +103,5 @@ for(i in 1:length(examplePosets)) {
 
 set.seed(NULL)
 cat(paste("\n Ending Z-sample-only-last tests", date(), "\n"))
-cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
