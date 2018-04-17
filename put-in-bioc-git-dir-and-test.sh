@@ -51,6 +51,7 @@ cp OncoSimulR/inst/NEWS ../BioConductor-git/OncoSimulR/inst/.
 cp OncoSimulR/inst/CITATION ../BioConductor-git/OncoSimulR/inst/.
 cp OncoSimulR/inst/miscell/example-binom-problems.cpp ../BioConductor-git/OncoSimulR/inst/miscell/.
 cp OncoSimulR/inst/miscell/*.R ../BioConductor-git/OncoSimulR/inst/miscell/.
+cp OncoSimulR/inst/testdata_fee.RData ../BioConductor-git/OncoSimulR/inst/.
 
 cp OncoSimulR/data/*.RData ../BioConductor-git/OncoSimulR/data/.
 
