@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting accessible_genotypes at", date(), "\n"))
 test_that("We obtain same accessible genotypes with different functions plus genot_to_adjm_mat", {
     ## More likely to catch bugs if many iters, rather than large matrices
@@ -185,6 +186,8 @@ test_that("The indices of adjancey matrices are correct", {
 })
 
 
-cat(paste("\n Ending accessible_genotypes at", date(), "\n"))
+cat(paste("\n Ending accessible_genotypes at", date(),
+          ". Took ", Sys.time() - inittime,
+          "\n"))
 
 ## For peaks, see code in test.plotFitnessLandscape.R

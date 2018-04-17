@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting LOD_POM at", date(), "\n"))
 date()
 test_that("Exercise LOD and POM code", {
@@ -428,8 +429,10 @@ date()
 ##                  from = "A, B, C",
 ##                  mode = "in")
 
-cat(paste("\n Ending LOD_POM at", date(), "\n"))
-
+cat(paste("\n Ending LOD_POM at", date(),
+          ". Took ", Sys.time() - inittime,
+          "\n"))
+rm(inittime)
 
 
 

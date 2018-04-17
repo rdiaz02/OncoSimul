@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting all fitness at", date()))
 ## RNGkind("Mersenne-Twister") ## we have some examples below with random
 ## genotype generation. We leave the default. We use L'Ecuyer when using
@@ -1370,5 +1371,6 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
 })
 
 
-cat(paste("\n Ending all-fitness at", date()))
+cat(paste("\n Ending all-fitness at", date(),
+          ". Took ", Sys.time() - inittime, "\n"))
 
