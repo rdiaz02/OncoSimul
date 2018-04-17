@@ -6714,14 +6714,14 @@ simplicity, and to make sure the probability is bounded between 0 and 1,
 we use the function
 
 
-% \begin{equation}
-%   P(N) = 
-%   \begin{cases}
-%   1 - e^{ -cPDetect (N - PDBaseline)} & \text{if } N > PDBaseline \\
-%   0 & \text{if } N \leq PDBaseline
-%   \end{cases}
-%   \label{eq:2}
-% \end{equation}
+ <!-- \begin{equation} -->
+ <!--   P(N) =  -->
+ <!--   \begin{cases} -->
+ <!--   1 - e^{ -cPDetect (N - PDBaseline)} & \text{if } N > PDBaseline \\ -->
+ <!--   0 & \text{if } N \leq PDBaseline -->
+ <!--   \end{cases} -->
+ <!--   \label{eq:2} -->
+ <!-- \end{equation} -->
 
 
 
@@ -6928,41 +6928,43 @@ head(summary(od100)[, c(1:3, 8:9)])
 
 Section \@ref(fixation) deals with the fixation of gene/gene
 combinations. What if you want fixation on specific genotypes? To give an
-example, suppose a we have a five loci genotype and suppose that you want
-to stop the simulations only if genotypes ``A'', ``B, E'' or ``A, B, C, D,
-E'' reach fixation. You do not want to stop it if, say, genotype ``A, B,
-E'' reaches fixation. To specify genotypes, you prepend the genotype
+example, suppose we have a five loci genotype and suppose that you want to
+stop the simulations only if genotypes "A", "B, E", or "A, B, C, D, E"
+reach fixation. You do not want to stop it if, say, genotype "A, B, E"
+reaches fixation. To specify genotypes, you prepend the genotype
 combinations with a ``_,'', and that tells OncoSimulR that you want
-fixation of *genotypes*, not just gene combinations.
+fixation of **genotypes**, not just gene combinations.
 
-And of example of the differences between the mechanisms can be seen from
+An example of the differences between the mechanisms can be seen from
 this code:
 
 ```{r fixationG1}
 ## Create a simple fitness landscape
-r1 <- matrix(0, ncol = 6, nrow = 9)
-colnames(r1) <- c(LETTERS[1:5], "Fitness")
-r1[1, 6] <- 1
-r1[cbind((2:4), c(1:3))] <- 1
-r1[2, 6] <- 1.4
-r1[3, 6] <- 1.32
-r1[4, 6] <- 1.32
-r1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
-r1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
-r1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
-r1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
-r1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
-class(r1) <- c("matrix", "genotype_fitness_matrix")
-## plot(r1) ## to see the fitness landscape
+rl1 <- matrix(0, ncol = 6, nrow = 9)
+colnames(rl1) <- c(LETTERS[1:5], "Fitness")
+rl1[1, 6] <- 1
+rl1[cbind((2:4), c(1:3))] <- 1
+rl1[2, 6] <- 1.4
+rl1[3, 6] <- 1.32
+rl1[4, 6] <- 1.32
+rl1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
+rl1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
+rl1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
+rl1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
+rl1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
+class(rl1) <- c("matrix", "genotype_fitness_matrix")
+## plot(rl1) ## to see the fitness landscape
 
 ## Gene combinations
 local_max_g <- c("A", "B, E", "A, B, C, D, E")
 ## Specify the genotypes
 local_max <- paste0("_,", local_max_g)
 
-fr1 <- allFitnessEffects(genotFitness = r1, drvNames = LETTERS[1:5])
+fr1 <- allFitnessEffects(genotFitness = rl1, drvNames = LETTERS[1:5])
 initS <- 2000
-## Stop on gene combinations
+
+
+######## Stop on gene combinations   #####
 r1 <- oncoSimulPop(10,
                        fp = fr1,
                        model = "McFL",
@@ -6983,11 +6985,12 @@ r1 <- oncoSimulPop(10,
                        mc.cores = 2)
 sp1 <- samplePop(r1, "last", "singleCell")
 sgsp1 <- sampledGenotypes(sp1)
-sgsp1 ## often you will stop on gene combinations that
-      ## are not local maxima in the fitness landscape
+## often you will stop on gene combinations that
+## are not local maxima in the fitness landscape
+sgsp1
 sgsp1$Genotype %in% local_max_g
 
-## Stop on genotypes
+####### Stop on genotypes   ####
 
 r2 <- oncoSimulPop(10,
                        fp = fr1,
@@ -7048,25 +7051,25 @@ An example of using those options:
 
 ```{r fixationG2}
 ## Create a simple fitness landscape
-r1 <- matrix(0, ncol = 6, nrow = 9)
-colnames(r1) <- c(LETTERS[1:5], "Fitness")
-r1[1, 6] <- 1
-r1[cbind((2:4), c(1:3))] <- 1
-r1[2, 6] <- 1.4
-r1[3, 6] <- 1.32
-r1[4, 6] <- 1.32
-r1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
-r1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
-r1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
-r1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
-r1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
-class(r1) <- c("matrix", "genotype_fitness_matrix")
-## plot(r1) ## to see the fitness landscape
+rl1 <- matrix(0, ncol = 6, nrow = 9)
+colnames(rl1) <- c(LETTERS[1:5], "Fitness")
+rl1[1, 6] <- 1
+rl1[cbind((2:4), c(1:3))] <- 1
+rl1[2, 6] <- 1.4
+rl1[3, 6] <- 1.32
+rl1[4, 6] <- 1.32
+rl1[5, ] <- c(0, 1, 0, 0, 1, 1.5)
+rl1[6, ] <- c(0, 0, 1, 1, 0, 1.54)
+rl1[7, ] <- c(1, 0, 1, 1, 0, 1.65)
+rl1[8, ] <- c(1, 1, 1, 1, 0, 1.75)
+rl1[9, ] <- c(1, 1, 1, 1, 1, 1.85)
+class(rl1) <- c("matrix", "genotype_fitness_matrix")
+## plot(rl1) ## to see the fitness landscape
 
 ## The local fitness maxima are
 ## c("A", "B, E", "A, B, C, D, E")
 
-fr1 <- allFitnessEffects(genotFitness = r1, drvNames = LETTERS[1:5])
+fr1 <- allFitnessEffects(genotFitness = rl1, drvNames = LETTERS[1:5])
 initS <- 2000
 
 ## Stop on genotypes
@@ -7081,10 +7084,10 @@ r3 <- oncoSimulPop(10,
                   keepEvery = 1, 
                   finalTime = 50000,
                   fixation = c(paste0("_,",
-                  c("A", "B, E", "A, B, C, D, E")),
-                  fixation_tolerance = 0.1,
-                  min_successive_fixation = 200,
-                  fixation_min_size = 3000),
+                                   c("A", "B, E", "A, B, C, D, E")),
+                               fixation_tolerance = 0.1,
+                               min_successive_fixation = 200,
+                               fixation_min_size = 3000),
                   detectionDrivers = NA,
                   detectionProb = NA,
                   onlyCancer = TRUE,
@@ -7093,13 +7096,6 @@ r3 <- oncoSimulPop(10,
                   errorHitMaxTries = TRUE,
                   keepPhylog = FALSE,
                   mc.cores = 2)
-summary(r3)
-## All final genotypes should be local maxima                       
-sp3 <- samplePop(r3, "last", "singleCell")
-(sgsp3 <- sampledGenotypes(sp3))
-
-
-
 
 ```
 
@@ -7109,8 +7105,9 @@ sp3 <- samplePop(r3, "last", "singleCell")
 
 ### Mixing stopping on gene combinations and genotypes {#fixationmix}
 
-This will probably be awfully confusing and is not tested formally. Let me
-know if you think this is an important feature.
+This would probably be awfully confusing and is not tested formally
+(though it should work). Let me know if you think this is an important
+feature. (Pull requests with tests welcome.)
 
 
 ## Plotting genotype/driver abundance over time; plotting the simulated trajectories {#plotraj}
