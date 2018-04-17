@@ -53,8 +53,6 @@ mutsPerCloneLast <- function(x, per.pop.mean = TRUE) {
 p.value.threshold <- 0.01
 
 test_that("single named gene in mut. fail", {
-    
-    
     cat("\n s01: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     muvar <- c("m" = 1e-5)
@@ -64,8 +62,6 @@ test_that("single named gene in mut. fail", {
 } )
 
 test_that("Per-gene mutation rates with old poset format, fail", {
-    
-    
     cat("\n s02: a runif is", runif(1), "\n")
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
@@ -76,8 +72,6 @@ test_that("Per-gene mutation rates with old poset format, fail", {
 } )
 
 test_that("Only no-int, and sorting", {
-    
-    
     cat("\n s03: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
@@ -103,8 +97,6 @@ test_that("Only no-int, and sorting", {
 } )
 
 test_that("Only no-int, unnamed, fail", {
-    
-    
     cat("\n s04: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
     OncoSimulR:::allNamedGenes(fea9)
@@ -115,8 +107,6 @@ test_that("Only no-int, unnamed, fail", {
 } )
 
 test_that("Only one, named, fail", {
-    
-    
     cat("\n s05: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1))
     muvar <- c("m" = 1e-5)
@@ -126,8 +116,6 @@ test_that("Only one, named, fail", {
 } )
 
 test_that("Only no-int, different names, fail", {
-    
-    
     cat("\n s06: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
@@ -138,8 +126,6 @@ test_that("Only no-int, different names, fail", {
 } )
 
 test_that("Only no-int, different numbers, fail", {
-    
-    
     cat("\n s07: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     muvar <- c("m" = 1e-5, "D" = 1e-7, "E" = 1e-7)
@@ -156,8 +142,6 @@ test_that("Only no-int, different numbers, fail", {
 
 date()
 test_that("0 or negative mu not allowed", {
-    
-    
     cat("\n s15: a runif is", runif(1), "\n")
     muvar2 <- c("U" = 0, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0.02, 5)
@@ -200,8 +184,6 @@ date()
 #### Repeating above, but with McFL
 
 test_that("McFL: Per-gene mutation rates with old poset format, fail", {
-    
-    
     cat("\n sz01: a runif is", runif(1), "\n")
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
@@ -211,9 +193,8 @@ test_that("McFL: Per-gene mutation rates with old poset format, fail", {
                  "Per-gene mutation rates cannot be used with the old poset format")
 } )
 
+
 test_that("McFL: Only no-int, and sorting", {
-    
-    
     cat("\n sz02: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
@@ -244,8 +225,6 @@ test_that("McFL: Only no-int, and sorting", {
 } )
 
 test_that("McFL: Only no-int, unnamed, fail", {
-    
-    
     cat("\n sz03: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c(0.1, 0.3))
     OncoSimulR:::allNamedGenes(fea9)
@@ -257,8 +236,6 @@ test_that("McFL: Only no-int, unnamed, fail", {
 } )
 
 test_that("McFL: Only one, named, fail", {
-    
-    
     cat("\n sz04: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1))
     muvar <- c("m" = 1e-5)
@@ -269,8 +246,6 @@ test_that("McFL: Only one, named, fail", {
 } )
 
 test_that("McFL: Only no-int, different names, fail", {
-    
-    
     cat("\n sz05: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     ## OncoSimulR:::allNamedGenes(fea9)
@@ -282,8 +257,6 @@ test_that("McFL: Only no-int, different names, fail", {
 } )
 
 test_that("McFL: Only no-int, different numbers, fail", {
-    
-    
     cat("\n sz06: a runif is", runif(1), "\n")
     fea9 <- allFitnessEffects(noIntGenes = c("m" = 0.1, "D" = 0.3))
     muvar <- c("m" = 1e-5, "D" = 1e-7, "E" = 1e-7)
@@ -299,10 +272,10 @@ test_that("McFL: Only no-int, different numbers, fail", {
 
 date()
 
+
 test_that("McFL: Same freqs, chisq, when s=0", {
     max.tries <- 4
     for(tries in 1:max.tries) {
-
         cat("\n s3: a runif is", runif(1), "\n")
         muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
         ni1 <- rep(0, 5)
@@ -331,8 +304,6 @@ test_that("McFL: Same freqs, chisq, when s=0", {
     
 date()
     
-date()
-
 test_that("McFL: Same freqs, chisq, when s", {
     max.tries <- 4
     for(tries in 1:max.tries) {
@@ -365,7 +336,7 @@ test_that("McFL: Same freqs, chisq, when s", {
 })
 date()
 
-date()
+
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0", {
     max.tries <- 4
     for(tries in 1:max.tries) {
@@ -435,7 +406,6 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
 date()
 
 date()
-
 test_that("McFL: Different freqs as they should be ordered when s and t > 1, again", {
     max.tries <- 4
     for(tries in 1:max.tries) {
@@ -468,7 +438,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
 })
 date()
 
-date()
+
 test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systematic mu", {
     max.tries <- 4
     for(tries in 1:max.tries) {
@@ -682,63 +652,6 @@ test_that("McFL: Init mutant with tiny mutation always present", {
     }
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
-})
-date()
-
-date()
-test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
-    max.tries <- 4
-    for(tries in 1:max.tries) {
-        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n s14: a runif is", runif(1), "\n")
-        muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
-        ni2 <- rep(0.01, 5)
-        names(ni2) <- names(muvar2)
-        ni2["U"] <- 0.5
-        fe1 <- allFitnessEffects(noIntGenes = ni2)
-        no <- 1e5
-        reps <- 400
-        ## Beware: with McFL final time has to be small or we will see
-        ## mutations in U as it is the only one left. 
-        bb <- oncoSimulPop(reps,
-                           fe1, mu = muvar2, onlyCancer = FALSE,
-                           initSize = no,
-                           model = "McFL",
-                           finalTime = 50,
-                           mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                           seed = NULL, detectionProb = NA, mc.cores = 2
-                           )
-        (expectedC <- no*reps*muvar2)
-        colSums(OncoSimulR:::geneCounts(bb))
-        T4 <- (colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-        T2 <- identical(
-            order(colSums(OncoSimulR:::geneCounts(bb))),
-            order(expectedC))
-        ## A chisq will not work as we increase finalTime.
-        no <- 1e7
-        cat("\n s14b: a runif is", runif(1), "\n")
-        bb <- oncoSimulPop(reps,
-                           fe1, mu = muvar2, onlyCancer = FALSE,
-                           initSize = no,
-                           model = "McFL",
-                           finalTime = .001,
-                           mutationPropGrowth = FALSE, ## cleaner, though no real effect
-                           seed = NULL, detectionProb = NA, mc.cores = 2
-                           )
-        (expectedC <- no*reps*muvar2)
-        colSums(OncoSimulR:::geneCounts(bb))
-        T3 <- (colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-        ## This will fail sometimes
-        p.fail <- 1e-2
-        T1 <- (chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
-                               p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
-        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
-    }
-    cat(paste("\n done tries", tries, "\n"))
-    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
-    ## expect_equal(
-        ##     order(colSums(OncoSimulR:::geneCounts(bb))),
-    ##     order(expectedC))
 })
 date()
 
@@ -1053,7 +966,7 @@ date()
 ## differences in birth rates between clones. So in most cases above
 ## setting it to FALSE makes little difference, but just to be cleaner.
 
-
+## FIXME: candidate to move to long?
 date()
 test_that("More mutpropgrowth, in modules of s", {
     max.tries <- 4
@@ -1120,6 +1033,7 @@ test_that("More mutpropgrowth, in modules of s", {
 })
 date()
 
+## FIXME: candidate to move to long
 date()
 test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-mut",{
     max.tries <- 4
@@ -1201,6 +1115,7 @@ test_that("McFL: oncoSimulSample: expected vs. observed for different per-gene-m
 })
 date()
 
+
 date()
 test_that("McFL: oncoSimulSample comparing different per-gene-mut",{
     max.tries <- 4
@@ -1273,118 +1188,8 @@ date()
 
 
 ## Repeat some above, allowing for mutPropGrowth
-date()
-test_that("McFL: Different freqs as they should be ordered and chisq, when s  and a tiny mu", {
-    max.tries <- 4
-    for(tries in 1:max.tries) {
-        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n mpg s14: a runif is", runif(1), "\n")
-        muvar2 <- c("U" = 1e-13, "z" = 5e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
-        ni2 <- rep(0.01, 5)
-        names(ni2) <- names(muvar2)
-        ni2["U"] <- 0.5
-        fe1 <- allFitnessEffects(noIntGenes = ni2)
-        no <- 1e5
-        reps <- 400
-        ## Beware: with McFL final time has to be small or we will see
-        ## mutations in U as it is the only one left. 
-        bb <- oncoSimulPop(reps,
-                           fe1, mu = muvar2, onlyCancer = FALSE,
-                           initSize = no,
-                           model = "McFL",
-                           finalTime = 50,
-                           mutationPropGrowth = TRUE,
-                           seed = NULL, detectionProb = NA, mc.cores = 2
-                           )
-        (expectedC <- no*reps*muvar2)
-        colSums(OncoSimulR:::geneCounts(bb))
-        T3 <- (colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-        T2 <- identical(
-            order(colSums(OncoSimulR:::geneCounts(bb))),
-            order(expectedC))
-        ## A chisq will not work as we increase finalTime.
-        no <- 1e7
-        cat("\n mpg s14b: a runif is", runif(1), "\n")
-        bb <- oncoSimulPop(reps,
-                           fe1, mu = muvar2, onlyCancer = FALSE,
-                           initSize = no,
-                           model = "McFL",
-                           finalTime = .001,
-                           mutationPropGrowth = TRUE,
-                           seed = NULL, detectionProb = NA, mc.cores = 2
-                           )
-        (expectedC <- no*reps*muvar2)
-        colSums(OncoSimulR:::geneCounts(bb))
-        expect_true(colSums(OncoSimulR:::geneCounts(bb))[1] == 0)
-        ## This will fail sometimes
-        p.fail <- 1e-2
-        T1 <- (chisq.test(colSums(OncoSimulR:::geneCounts(bb))[-1],
-                               p = expectedC[-1]/sum(expectedC))$p.value > p.fail)
-        ## expect_equal(
-        ##     order(colSums(OncoSimulR:::geneCounts(bb))),
-        ##     order(expectedC))
-          if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
-    }
-    cat(paste("\n done tries", tries, "\n"))
-    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
-})
-date()
 
 
-date()
-test_that("MCFL: Num clones, muts per clone for different per-gene-mut",{
-    max.tries <- 4
-    for(tries in 1:max.tries) {
-        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        ## Like previous, but larger finalTime, so no longer chi-square test
-        ## here.
-        cat("\n mpg mcdf2: a runif is", runif(1), "\n")
-        ng <- 40
-        ni <- rep(0, ng)
-        m1 <- runif(ng, min = 1e-6, max = 1e-5)
-        m2 <- runif(ng, min = 1e-4, max = 1e-3)
-        names(ni) <- names(m1) <- names(m2) <- c(replicate(ng,
-                                                           paste(sample(letters, 12), collapse = "")))
-        fe1 <- allFitnessEffects(noIntGenes = ni)
-        ft <- 2
-        no <- 1e5
-        reps <- 40
-        cat("\n mpg mcdf2a: a runif is", runif(1), "\n")
-        b1 <- oncoSimulPop(reps,
-                           fe1,
-                           mu = m1,
-                           onlyCancer = FALSE,
-                           initSize = no,
-                           finalTime = ft,
-                           mutationPropGrowth = TRUE,
-                           seed =NULL,
-                           model = "McFL",
-                           mc.cores = 2
-                           )
-        cat("\n mpg mcdf2b: a runif is", runif(1), "\n")
-        b2 <- oncoSimulPop(reps,
-                           fe1,
-                           mu = m2,
-                           onlyCancer = FALSE,
-                           initSize = no,
-                           finalTime = ft,
-                           mutationPropGrowth = TRUE, 
-                           seed =NULL,
-                           model = "McFL",
-                           mc.cores = 2
-                           )
-        T2 <- ( wilcox.test(summary(b2)$NumClones,
-                     summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
-        ## Note the short time, so this is not always very different as few
-        ## have double or triple mutants
-        T1 <- ( t.test(mutsPerClone(b2) ,
-                mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
-        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
-    }
-    cat(paste("\n done tries", tries, "\n"))
-    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
-})
-date()
 
 
 
@@ -1395,97 +1200,6 @@ date()
 ## actually stop slightly earlier. But we have much larger numbers of
 ## clones, etc. So we are not affected by issues of differences in
 ## populationSize.
-
-date()
-test_that(" McFL: And mutPropGrowth, 3",{
-    max.tries <- 4
-    for(tries in 1:max.tries) {
-        T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n mcsz033: a runif is", runif(1), "\n")
-        ## with very variable mut rates, there is huge variation in trajectories
-        ## and we would need huge reps.
-        muvar2 <- c("U" = 1e-4, "z" = 5e-5, "e" = 3e-4, "m" = 5e-4, "D" = 2e-4)
-        ni1 <- rep(.7, 5) 
-        names(ni1) <- names(muvar2)
-        fe1 <- allFitnessEffects(noIntGenes = ni1)
-        no <- 1e3 ## 1e5
-        reps <- 100 ## differences are not large
-        ft <- 16
-        cat("\n mcsz033a: a runif is", runif(1), "\n")
-        b1 <- oncoSimulPop(reps,
-                           fe1, mu = muvar2,
-                           mutationPropGrowth = FALSE,
-                           onlyCancer = FALSE,
-                           initSize = no,
-                           finalTime = ft,
-                           detectionSize = 9e8,
-                           sampleEvery = 0.001,
-                           model = "McFL",
-                           seed =NULL,
-                           keepEvery = .05, ## you want to keep often, because McFL con homogeneize
-                           mc.cores = 2
-                           )
-        cat("\n mcsz033b: a runif is", runif(1), "\n")
-        b2 <- oncoSimulPop(reps,
-                           fe1, mu = muvar2,
-                           mutationPropGrowth = TRUE,
-                           onlyCancer = FALSE,
-                           initSize = no,
-                           finalTime = ft,
-                           detectionSize = 9e8,
-                           sampleEvery = 0.001,
-                           model = "McFL",
-                           seed =NULL,
-                           keepEvery = .05,
-                           mc.cores = 2
-                           )
-        if(! (inherits(b1, "oncosimulpop") &&
-              inherits(b2, "oncosimulpop"))) {
-            cat("\n not proper objects")
-            next;
-        }
-        summary(b1)[, c(1:3, 8:9)]
-        summary(b2)[, c(1:3, 8:9)]
-        print(mean(mutsPerClone(b1)));print(mean(mutsPerClone(b2)))
-        print(median(summary(b1)$NumClones))
-        print(median(summary(b2)$NumClones))
-        ## More mutations in mutationPropGrowth
-        T1 <- ( t.test(mutsPerClone(b2) ,
-                     mutsPerClone(b1), alternative = "greater")$p.value < p.value.threshold)
-        T2 <- ( wilcox.test(summary(b2)$NumClones,
-                summary(b1)$NumClones, alternative = "greater")$p.value < p.value.threshold)
-        cat("\n T1 is", T1)
-        cat("\n T2 is", T2)
-        ## But frequency of mutations about the same? Nope: since very fast
-        ## growth and thus non-indep, huge variation in geneCounts in each
-        ## run, etc. so hard to compare geneCounts
-        ## Just for reference, here
-        ## First, look at run to run variation
-        ## OncoSimulR:::geneCounts(b1)
-        ## OncoSimulR:::geneCounts(b2)
-        ## ## The next makes sense
-        ## fb1 <- colSums(OncoSimulR:::geneCounts(b1))
-        ## fb2 <- colSums(OncoSimulR:::geneCounts(b2))
-        ## fb1
-        ## fb2
-        ## fb2/fb1
-        ## fb1/sum(fb1)
-        ## fb2/sum(fb2)
-        ## (fb2/sum(fb2))/(fb1/sum(fb1))
-        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
-    }
-    cat(paste("\n done tries", tries, "\n"))
-    expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
-})
-date()
-
-
-
-
-
-
-
-
 
 date()
 test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
@@ -1567,7 +1281,7 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-
+date()
 
 
 ##################### If you want to verify step by step that the C++ does
@@ -1609,6 +1323,8 @@ test_that("oncoSimulSample Without initmutant and modules, McFL, fixed size", {
 ## 	    print_spP(popParams[nextMutant]);
 	    
 ## 	    DP1("end at mutation");
+
+
 cat("\n Ending per-gene-mutation rates at", date(), "\n") ## whole file takes about 6 seconds
 
 

@@ -3,35 +3,33 @@ cat(paste("\n Starting sample-prob", date(), "\n"))
 
 p.value.threshold <- 1e-4
 
-test_that("Increasing cPDetect decreases time" , {
+## a McFL version in long tests
+date()
+test_that("Increasing cPDetect decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 75
+    n <- 800
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
                            oi,
-                           model = "McFL",
-                           initSize = 2000,
-                           keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100,
-                                             checkSizePEvery = 20,
-                                             cPDetect = 0.01), ## 1e-4),
-                           finalTime = NA, detectionSize = NA,
-                           onlyCancer = TRUE,
-                           detectionDrivers = NA, mc.cores = 2)
+                           model = "Exp",
+                           initSize = 1000,
+                           keepEvery = -9,
+                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = 0.01),
+                           finalTime = NA,
+                           onlyCancer = FALSE,
+                           detectionDrivers = 99, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
-                           model = "McFL",
-                           initSize = 2000,
-                           keepEvery = NA,
-                           detectionProb = c(p2 = NA, n2 = NA, PDBaseline = 1100,
-                                             checkSizePEvery = 20,
-                                             cPDetect = 0.2), ##1e-2),
-                           finalTime = NA, detectionSize = NA,
-                           onlyCancer = TRUE,
-                           detectionDrivers = NA, mc.cores = 2)
+                           model = "Exp",
+                           initSize = 1000,
+                           keepEvery = -9,
+                           detectionProb = c(p2 = NULL, n2 = NULL, cPDetect = .2),
+                           finalTime = NA,
+                           onlyCancer = FALSE,
+                           detectionDrivers = 99, mc.cores = 2)
         ta <- unlist(lapply(sa, function(x) x$FinalTime))
         tb <- unlist(lapply(sb, function(x) x$FinalTime))
         print(suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value))
@@ -41,35 +39,35 @@ test_that("Increasing cPDetect decreases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
-
-test_that("Increasing p2 decreases time" , {
+## McFL in long
+date()
+test_that("Increasing p2 decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 75
+    n <- 120
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
                            oi,
-                           model = "McFL",
-                           initSize = 2000,
+                           model = "Exp",
+                           initSize = 3000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .1, n2 = 3500, PDBaseline = 2000,
-                                             checkSizePEvery = 7, cPDetect = NA),
-                           finalTime = NA, detectionSize = NA,
-                           onlyCancer = TRUE,
-                           detectionDrivers = NA, mc.cores = 2)
+                           detectionProb = c(p2 = .1, n2 = 8500, checkSizePEvery = 10,  cPDetect = NULL),
+                           finalTime = NA,
+                           onlyCancer = FALSE,
+                           detectionDrivers = 99, mc.cores = 2)
         sb <- oncoSimulPop(n,
                            oi,
-                           model = "McFL",
-                           initSize = 2000,
+                           model = "Exp",
+                           initSize = 3000,
                            keepEvery = NA,
-                           detectionProb = c(p2 = .9, n2 = 3500, PDBaseline = 2000,
-                                             checkSizePEvery = 7, cPDetect = NA),
-                           finalTime = NA, detectionSize = NA,
-                           onlyCancer = TRUE,
-                           detectionDrivers = NA, mc.cores = 2)
+                           detectionProb = c(p2 = .9, n2 = 8500, checkSizePEvery = 10,  cPDetect = NULL),
+                           finalTime = NA,
+                           onlyCancer = FALSE,
+                           detectionDrivers = 99, mc.cores = 2)
         (ta <- unlist(lapply(sa, function(x) x$FinalTime)))
         (tb <- unlist(lapply(sb, function(x) x$FinalTime)))
         print(suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value))
@@ -79,14 +77,17 @@ test_that("Increasing p2 decreases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
 
+
+date()
 test_that("Increasing n2 increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
-    n <- 70
+    n <- 20 ## 70
     max.tries <- 4  
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
@@ -118,10 +119,11 @@ test_that("Increasing n2 increases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
 
-
+date()
 test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -158,12 +160,13 @@ test_that("Increasing checkSizePEvery increases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
 
 ## Same, with Exp
 
-
+date()
 test_that("Increasing cPDetect decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -200,8 +203,9 @@ test_that("Increasing cPDetect decreases time, Exp" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
-
+date()
 test_that("Increasing p2 decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -238,9 +242,10 @@ test_that("Increasing p2 decreases time, Exp" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
-
+date()
 test_that("Increasing n2 increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -275,10 +280,11 @@ test_that("Increasing n2 increases time, Exp" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
 
-
+date()
 test_that("Increasing checkSizePEvery increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -315,10 +321,11 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
 ## And there is no need for fitness effects
-
+date()
 test_that("Increasing cPDetect decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -355,8 +362,9 @@ test_that("Increasing cPDetect decreases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
-
+date()
 test_that("Increasing p2 decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -393,9 +401,10 @@ test_that("Increasing p2 decreases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
-
+date()
 test_that("Increasing n2 increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -432,10 +441,11 @@ test_that("Increasing n2 increases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
 
-
+date()
 test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -472,12 +482,13 @@ test_that("Increasing checkSizePEvery increases time" , {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
+date()
 
 
 
 
 
-
+date()
 test_that("Exercise the default option and other substitutions/defaults" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -656,8 +667,9 @@ test_that("Exercise the default option and other substitutions/defaults" , {
         "Individual OncoSimul trajectory",
         fixed = TRUE)
 })
+date()
 
-
+date()
 test_that("Fails as expected" , {
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
@@ -802,6 +814,7 @@ test_that("Fails as expected" , {
                  "At least one stopping condition should be given",
                  fixed = TRUE)
 })
+date()
 
 
 
