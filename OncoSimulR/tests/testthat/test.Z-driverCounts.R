@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting test.Z-driver-counts at", date(), "\n"))
 date()
 test_that("Assertion is correct when nothing returned",{
@@ -74,3 +75,5 @@ test_that("driverCounts: a run that used to cause crashes", {
 set.seed(NULL)
 
 cat(paste("\n Ending test.Z-driver-counts at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting test.flfast-additional.R test at", date()))
 date()
 
@@ -262,3 +263,5 @@ test_that("rt and fl specifications are the same", {
 
 
 cat(paste("\n Ending test.flfast-additional.R test at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

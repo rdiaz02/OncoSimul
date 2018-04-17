@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat("\n Starting per-gene-mutation rates at", date(), "\n") ## whole file takes about 30 seconds
 ## When submitting, probably move half of the tests (mcfl?) to the "long"
 ## file.
@@ -2046,3 +2047,5 @@ cat("\n Ending per-gene-mutation rates at", date(), "\n") ## whole file takes ab
 ## })
 ## date()
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting genotFitness at", date(), "\n"))
 
 test_that("Conversion for data frame", {
@@ -107,3 +108,5 @@ test_that("genotFitness not combined with others", {
 
 
 cat(paste("\n Ending genotFitness at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

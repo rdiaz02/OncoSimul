@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting simuls-runs-examples tests", date(), "\n"))
 
 ## None should crash or give an uncaught error
@@ -117,3 +118,5 @@ for(i in 1:length(examplesFitnessEffects)) {
 }
 
 cat(paste("\n Ending simuls-runs-examples tests", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

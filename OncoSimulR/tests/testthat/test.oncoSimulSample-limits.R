@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting oncoSimulSample-limits tests", date(), "\n"))
 
 ## RNGkind("Mersenne-Twister")
@@ -68,3 +69,5 @@ test_that("oncoSimulSample does not use drivers as stopping when there are none"
 })
 
 cat(paste("\n Ending oncoSimulSample-limits tests", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting to_Magella at", date(), "\n"))
 test_that("Expect output", {
     r1 <- rfitness(4)
@@ -10,3 +11,5 @@ test_that("Expect output", {
     expect_output(to_Magellan(allFitnessEffects(cs), NULL))
 })
 cat(paste("\n Ending to_Magella at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

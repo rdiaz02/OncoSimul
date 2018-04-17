@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 ### Since some tests are slow and some tests are very fragile, for now I
 ### leave date() and seed()
 
@@ -1253,3 +1254,5 @@ cat(paste("\n Finished test.flfast-mutator.R test at", date(), "\n"))
 
 
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting init-mutant tests", date(), "\n"))
 
 ## RNGkind("Mersenne-Twister")
@@ -656,3 +657,5 @@ cat(paste("\n Ending init-mutant tests", date(), "\n"))
 
 
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

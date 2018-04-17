@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting genot_fitness_to_epistasis at", date(), "\n"))
 
 ## A minimal, simple check of this function which is a
@@ -27,3 +28,5 @@ test_that("genot_fitness_to_epistasis works minimally", {
 })
 
 cat(paste("\n Ending genot_fitness_to_epistasis at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

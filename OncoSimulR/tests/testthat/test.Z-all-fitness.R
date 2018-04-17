@@ -131,6 +131,6 @@ test_that("long example OK", {
 
 set.seed(NULL)
 
-cat(paste("\n Ending test.Z-all-fitness at", date(),
-          ". Took ", Sys.time() - inittime,
-          "\n"))
+cat(paste("\n Ending test.Z-all-fitness at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

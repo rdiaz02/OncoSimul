@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting Z-total-present-drivers tests", date(), "\n"))
 
 
@@ -93,3 +94,5 @@ set.seed(NULL)
 cat(paste("\n Ending Z-total-present-drivers tests", date(), "\n"))
 
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting wide2long tests", date(), "\n"))
 
 ## RNGkind("Mersenne-Twister")
@@ -44,3 +45,5 @@ test_that("wide2long, two basic cases, minimal testing",
 })
 
 cat(paste("\n Ending wide2long tests", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat("\n Starting fixation  at", date(), "\n") ## about 4 seconds
 test_that("Minimal run", {
     initS <- 2000
@@ -560,3 +561,5 @@ system.time(
 
 
 cat("\n Ending fixation  at", date(), "\n")
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

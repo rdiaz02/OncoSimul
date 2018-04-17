@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 ## This is a short version of test.fitness-preds-long.R But it encompasses
 ## the most complex cases. It is expected that this will fail occasionally
 ## (based on p-values); thus, we loop twice if needed.
@@ -265,3 +266,5 @@ test_that("Observed vs expected, case III", {
 date()
 
 cat(paste("\n Ending fitness preds long at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

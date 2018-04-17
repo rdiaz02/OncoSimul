@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting sample-prob", date(), "\n"))
 
 p.value.threshold <- 1e-4
@@ -828,3 +829,5 @@ test_that("Fails as expected" , {
     ## hist(unlist(lapply(s5, function(x) x$FinalTime)))
 
 cat(paste("\n Ending sample-prob tests", date(), "\n"))
+cat(paste(" Took ", Sys.time() - inittime, "\n\n\n"))
+rm(inittime)

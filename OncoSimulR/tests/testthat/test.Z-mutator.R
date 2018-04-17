@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting test.Z-mutator at", date(), "\n"))
 test_that("Mutator genes missing from fitness", {
     RNGkind("Mersenne-Twister")
@@ -271,3 +272,5 @@ test_that("fitness and mutator effects evaluation of actual values, long example
 set.seed(NULL)
 
 cat(paste("\n Ending test.Z-mutator at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

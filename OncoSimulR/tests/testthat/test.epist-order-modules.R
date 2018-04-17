@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting epist-order-modules at", date()))
 
 ## A minimal thing, to make sure no screw ups
@@ -123,4 +124,6 @@ test_that("error if root out of place in gm", {
           })
 
 
-cat(paste("\n Ending epist-order-modules at", date()))
+cat(paste("\n Ending epist-order-modules at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

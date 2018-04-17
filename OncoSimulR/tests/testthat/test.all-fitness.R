@@ -1371,6 +1371,6 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
 })
 
 
-cat(paste("\n Ending all-fitness at", date(),
-          ". Took ", Sys.time() - inittime, "\n"))
-
+cat(paste("\n Ending all-fitness at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

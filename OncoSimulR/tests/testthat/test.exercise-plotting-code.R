@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting exercise-plotting-code at", date()))
 
 ## These are all used in the vignette and the help functions but we add
@@ -526,5 +527,7 @@ test_that("exercising phylogClone", {
     }
 })
 
-cat(paste("\n Ending exercise-plotting-code at", date()))
+cat(paste("\n Ending exercise-plotting-code at", date(), "\n"))
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

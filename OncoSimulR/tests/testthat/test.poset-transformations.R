@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 ## A set of tests to verify transformations between graph formats are
 ## OK. Recall that restrictionTable acts like a "sink": nothing is
 ## transformed from a restctiionTable to anything else.
@@ -803,3 +804,5 @@ tmp <- replicate(numSimul, checkAdjMatOGraph(rangeNodes = 2:50,
 
 
 cat(paste("\n Ending poset-transformations tests", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

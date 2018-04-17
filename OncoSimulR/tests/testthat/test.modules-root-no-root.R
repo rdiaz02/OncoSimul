@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 ## Starting with v. 2.1.2 modules do not require Root (unless, of course,
 ## you have a node named Root, as when using a DAG). They can use it, though.
 
@@ -65,3 +66,5 @@ test_that("Root needed with DAGs", {
                  fixed = TRUE)
 })
 cat(paste("\n Ending test.modules-root-no-root at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting oncoSimulIndiv-miscell tests", date(), "\n"))
 
 test_that("sampleEvery must have a value", {
@@ -1029,3 +1030,5 @@ cat(paste("\n Ending oncoSimulIndiv-miscell tests", date(), "\n"))
 
 
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

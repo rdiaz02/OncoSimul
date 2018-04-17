@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting test.Z-fixation at", date(), "\n"))
 
 
@@ -92,3 +93,5 @@ test_that("Three cases with fixation of genotypes" ,{
 
 set.seed(NULL)
 cat(paste("\n Ending test.Z-fixation at", date(), "\n"))
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 ## This actually tests much more than plotFitnessLandscape
 cat(paste("\n Starting plotFitnessLandscape at", date()))
 test_that("Exercise plotting and dealing with different matrix input", {
@@ -740,3 +741,5 @@ test_that("Some random checks of the fast peaks function", {
     }
 })
 cat(paste("\n Ending plotFitnessLandscape at", date()), "\n")
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

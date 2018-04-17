@@ -1,3 +1,4 @@
+inittime <- Sys.time()
 cat(paste("\n Starting at mutPropGrowth ", date(), "\n"))
 
 ## RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
@@ -551,3 +552,5 @@ cat("\n Ended test.mutPropGrowth: ", date(), "\n")
 
 
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)

@@ -429,13 +429,7 @@ date()
 ##                  from = "A, B, C",
 ##                  mode = "in")
 
-cat(paste("\n Ending LOD_POM at", date(),
-          ". Took ", Sys.time() - inittime,
-          "\n"))
-rm(inittime)
-
-
-
+cat(paste("\n Ending LOD_POM at", date(), "\n"))
 
 ### Why we need to exclude some POMs in the testing
 
@@ -462,3 +456,5 @@ rm(inittime)
 ##         expect_true(identical(s7$other$POM, pom))
 ## }
 
+cat(paste("  Took ", Sys.time() - inittime, "\n\n"))
+rm(inittime)
