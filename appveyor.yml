@@ -92,6 +92,7 @@ before_build:
 ## Make explicit. But I shouldn't need any line after install_bioc_deps
 build_script:
   - travis-tool.sh install_bioc_deps
+  - travis-tool.sh install_r data.table
 ##- travis-tool.sh install_bioc nem
 ##  - travis-tool.sh install_bioc BiocGenerics graph
 ##  - travis-tool.sh install_bioc BiocStyle Rgraphviz
