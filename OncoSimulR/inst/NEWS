@@ -1,3 +1,15 @@
+Changes in version 2.10.0 (for BioC 3.7):
+	- probDetect mechanism changed. This could be a BREAKING CHANGE.
+	  The expression divides by the baseline. For fixed initSize, this
+	  is simply a matter of changing the cPDetect.
+	- fixation allows exact genotypes, includes tolerance,
+ 	  and checks for a successive number of specified periods
+	- LOD: using only the strict Szendro et al. meaning.
+	- POM: computed in C++.
+	- Using fitness landscape directly when given as input (no
+          conversion to epistasis) and several improvements in speed when
+	  using fitness landscapes as input.
+
 Changes in version 2.9.10 (2018-04-19):
 	- test.Z-fixation: some tests only on Linux because rng is done in
 	C++.
