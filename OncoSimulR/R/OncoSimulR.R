@@ -1616,6 +1616,7 @@ plotClonePhylog <- function(x, N = 1, t = "last",
 
 closest_time <- function(x, size) {
     ## Find the first time when a given size is reached
+    ## But these are not times, but the position in pops.by.time. Bad naming.
     sizes <- rowSums(x$pops.by.time[, -1, drop = FALSE])
     candidates <- which(sizes >= size)
     if(length(candidates) == 0) {
@@ -1630,6 +1631,7 @@ closest_time <- function(x, size) {
 
 get.the.time.for.sample <- function(tmp, timeSample, popSizeSample) {
     if( !is.null(popSizeSample) && (popSizeSample >= 0) )  {
+        ## should be "closest_index" and "the.index"
         the.time <- closest_time(tmp, popSizeSample)
     } else if(timeSample == "last") {
         if(tmp$TotalPopSize == 0) {
