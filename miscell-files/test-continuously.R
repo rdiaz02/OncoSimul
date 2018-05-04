@@ -22,10 +22,10 @@ library(knitr)
 ## If /tmp is tmpfs in RAM much faster. And we clean up. So use that.
 td <- "/tmp"
 
-i <- 0
+iter <- 0
 while(TRUE) {
-    i <- i + 1
-    cat("\n\n Doing iteration ", i, "\n")
+    iter <- iter + 1
+    cat("\n\n Doing iteration ", iter, "\n")
     cat("\n And this is the first random uniform number ", runif(1), "\n")
     nn <- paste(sample(c(letters, 0:1), 15, replace = TRUE), collapse = "")
     nnn <- paste0(tempfile(pattern="Rtmp", tmpdir = td), nn)
