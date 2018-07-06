@@ -1,0 +1,46 @@
+citHeader("If you use OncoSimulR, please cite the OncoSimulR bioRxiv paper.",
+          " A former version of OncoSimulR has been used in a large",
+          " comparative study of methods to infer restrictions,",
+          " published in BMC Bioinformatics; you might want to cite that too,",
+          " if appropriate, such as when referring to using evolutionary simulations",
+          " to assess oncogenetic tree methods performance.")
+
+
+citEntry(entry="Article",
+         author = "R Diaz-Uriarte",
+         title = "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
+         journal = "bioRxiv",
+         year = "2016",
+         doi = "10.1101/069500",
+         publisher = "Cold Spring Harbor Labs Journals",
+         url = "http://biorxiv.org/content/early/2016/08/14/069500",
+         textVersion = paste("R Diaz-Uriarte.",
+                             "OncoSimulR: genetic simulation of cancer progression with arbitrary epistasis and mutator genes.",
+                             " 2016. bioRxiv, http://dx.doi.org/10.1101/069500.")
+         )
+
+## citEntry(entry="Manual",
+##          author = "R Diaz-Uriarte",
+##          title = "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis.",
+##          year = "2015",
+##          note = "R package version 2.0.0",
+##          textVersion = paste("R Diaz-Uriarte.",
+##              "OncoSimulR: Forward Genetic Simulation of Cancer Progresion with Epistasis. 2015. BioConductor package version 2.0.0 ")
+## )
+
+
+## citHeader("A former version of OncoSimulR has been used in this paper:")
+
+citEntry(entry="Article",
+         author = "R Diaz-Uriarte",
+         title = "Identifying restrictions in the order of accumulation of mutations during tumor progression: effects of passengers, evolutionary models, and sampling",
+         journal = "BMC Bioinformatics",
+         year = "2015",
+         doi = "10.1186/s12859-015-0466-7",
+         url = "http://www.biomedcentral.com/1471-2105/16/41/abstract",
+         volume = "16",
+         number = "41",
+         textVersion = paste("R Diaz-Uriarte.",
+             "Identifying restrictions in the order of accumulation of mutations during tumor progression: effects of passengers, evolutionary models, and sampling",
+             "BMC Bioinformatics, 16(41), 2015.")
+)

@@ -1,0 +1,10 @@
+(fset 'to-wilcox-greater
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 40 19 right left left M-backspace 119 105 108 99 111 120 46 116 101 company-dummy-event 115 116 19 62 right left backspace 44 down 18 109 101 100 105 97 110 right right right right right right right M-backspace 19 41 41 right left left left 44 32 97 108 116 101 114 110 97 116 105 118 101 32 61 33554464 34 103 114 101 97 116 101 114 right right 36 112 46 118 97 108 117 101 32 60 32 112 46 118 97 108 117 101 46 116 104 114 101 115 104 111 108 100 1 1] 0 "%d")) arg)))
+
+; ;; note that the previous one is not fully correct. You need to replace
+; ) , C-j
+; by , C-j
+; in every line where you have wilcox.test
+
+(fset 'to-t-test-greater
+   (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([19 109 101 97 110 right left M-backspace 116 46 116 101 115 116 19 62 right left backspace 44 down 18 109 101 97 110 right right right right right M-backspace up 19 44 left left backspace down left left 44 32 97 108 116 101 114 110 97 116 105 118 101 32 61 32 34 103 114 101 97 116 101 114 right right 36 112 46 118 97 108 101 backspace 117 101 32 60 32 112 46 118 97 108 117 101 46 116 104 114 101 115 104 111 108 100 1 1] 0 "%d")) arg)))

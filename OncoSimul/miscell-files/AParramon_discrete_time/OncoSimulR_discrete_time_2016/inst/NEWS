@@ -1,0 +1,288 @@
+Changes in version 2.3.14 (2017-08-26):
+	- Documentation improvements.
+	
+Changes in version 2.3.13 (2017-08-19):
+	- bioRxiv citation.
+	- Using Rmd for vignette.
+	- Improvements in vignette.
+
+Changes in version 2.3.12 (2017-08-10):
+	- Increase N in some tests.
+
+Changes in version 2.3.11 (2017-08-10):
+	- evalAllGenotypes: order = FALSE by default.
+	- Clarified difference plotFitnessEffects and plotFitnessLandscape.
+	
+Changes in version 2.3.10 (2017-07-14):
+	- The windows check failure with mc.cores.
+	
+Changes in version 2.3.9 (2017-07-09):
+	- Accessible genotypes in rfitness and plotFitnessLandscape
+
+Changes in version 2.3.8 (2017-07-08):
+	- PDBasline default is now 1.2.
+	
+Changes in version 2.3.7 (2016-07-05):
+	- Unused C++ code reorganiz.
+	- Added tests
+	- Vignette and documentation improvements.
+	- End simulations stochastically as a function of size.
+
+Changes in version 2.3.6 (2016-06-25):
+	- Improved test coverage
+	
+Changes in version 2.3.5 (2016-06-25):
+	- to_Magellan.
+
+Changes in version 2.3.4 (2016-06-24):
+	- Failing some tests in Win 32-bits
+	
+Changes in version 2.3.3 (2016-06-23):
+	- Vignette improvements and typo fixes.
+	- rfitness: generate fitness landscapes.
+	- Plot of fitness landscapes.
+	- Specify fitness by giving genotype-> fitness mapping.
+	- Tests showing same gene in epist./DAG/order.
+	- Clarified internal C++ unique/sorted in genotypes.
+	- Checks initMutant correct and bug initMutant mutable pos.
+	- samplePop: sample at arbitrary sizes.
+	- plot.oncosimulpop using auto for color.
+	- Mutator phenotype and gene-specific mutation rates.
+	- Bug fixed: to_update set at 2 when mutating to pre-existing.
+	- Lots and lots of new tests.
+
+Changes in version 2.2.0 (for BioC 3.3):
+	- Plots of genotypes.
+	- Stacked area and stream plots (code from Marc Taylor).
+	- Example of modules and no epistasis.
+	- Removed requirement of Root in geneToModule.
+	- More tests (and reorganized them)
+	- Miscell. improvements and typos fixed in documentation and vignette.
+	- Added mutationPropGrowth as argument.
+	- Some minor bug fixes and additional checks for user errors.
+
+Changes in version 2.1.6 (2016-04-14):
+	- Adapt to changes in today's release of testthat (1.0.0)
+
+Changes in version 2.1.5 (2016-04-09):
+	- Added a test of driverCounts, that does not depend on
+          OS/compiler.
+
+Changes in version 2.1.4 (2016-04-09):
+	- Moved to manual tests that depend on OS/compiler (for
+	reproduction of random number stream in C++).
+
+Changes in version 2.1.3 (2016-04-04):
+	- Fixed sporadic bug in countDrivers
+
+Changes in version 2.1.2 (2016-03-27):
+	- Arguments to BNB_Algo5 explicit.
+	- Example of modules and no epistasis.
+	- Removed requirement of Root in geneToModule.
+	- More tests (and reorganized them)
+	- Miscell. improvements in documentation and vignette.
+
+Changes in version 2.1.1 (2016-03-07):
+	- Added mutationPropGrowth as argument.
+	- Stacked area and stream plots (code from Marc Taylor).
+	- Plots of genotypes.
+	- Expanded vignette.
+
+Changes in version 1.99.9 (2015-10-08):
+	- Fixed NEWS file.
+	- Removed empty file.
+
+Changes in version 1.99.8 (2015-10-01):
+	- Test "initMutant with oncoSimulSample, 2" occasionally failed.
+
+Changes in version 1.99.7 (2015-09-27):
+	- initMutant available in oncoSimulPop and oncoSimulSample.
+
+Changes in version 1.99.6 (2015-09-26):
+	- Improved test coverage and removed stringsAsfactors from tests.
+	- Consistent handling of corner cases in Bozic.
+	- Miscell minor documentation improvements.
+
+Changes in version 1.99.5 (2015-06-25):
+	- Fixed bug in initMutant, added tests, and vignette section.
+
+Changes in version 1.99.4 (2015-06-22):
+	- Plotting true phylogenies.
+	- Tried randutils, from O'Neill. Won't work with gcc-4.6.
+	- bool issue in Windows/gcc-4.6.
+	- Most all to all.equal in tests.
+
+Changes in version 1.99.3 (2015-06-19):
+	- More examples to vignette
+	- Using Makevars
+	- More functionality to plot.fitnessEffects
+	- Will Windoze work now?
+
+Changes in version 1.99.2 (2015-06-19):
+	- Fixed typos and other minor in vignett.
+
+Changes in version 1.99.1 (2015-06-18):
+	- Try to compile in Windoze with the SSTR again.
+	- Reduce size of RData objects with resaveRdaFiles.
+	- Try to compile in Mac: mt RNG must include random in all files.
+
+Changes in version 1.99.01 (2015-06-17):
+	- Many MAJOR changes: we are done moving to v.2
+	  - New way of specifying restrictions (v.2) that allows
+	    arbitrary epistatic interactions and order effects, and
+	    very large (larger than 50000 genes) genomes.
+	  - When onlyCancer = TRUE, all iterations now in C++.
+	  - Many tests added.
+	  - Random DAG generation.
+	  - Some defaults for v.1 changed.
+
+Changes in version 1.99.00 (2015-04-23):
+	- Accumulated changes of former 99.1.2 to 99.1.14:
+	
+	- changes in intermediate version 1.99.1.14 (2015-04-23):
+		- Now are things OK (I messed up the repos)
+
+	- changes in intermediate version 99.1.13 (2015-04-23)
+		- Added a couple of drop = FALSE. Their absence lead to
+		  crashes in some strange, borderline cases.
+		- Increased version to make unambiguous version used for
+		  anal. CBN.
+
+	- changes in intermediate version 99.1.12 (2015-04-22)
+		- Removed lots of unused conversion helpers and added more
+		  strict checks and tests of those checks.
+
+	- changes in intermediate version 99.1.11 (2015-04-18)
+		- Tests of conversion helpers now really working.
+
+	- changes in intermediate version 99.1.10 (2015-04-16)
+		- Added conversion helpers as separate file.
+		- Added tests of conversion helpers.
+		- Added generate-random-trees code (separate file).
+		- More strict now on the poset format and conversions.
+
+	- changes in intermediate version 99.1.9 (2015-04-09)
+		- added null mutation for when we run out of mutable positions,
+		  and since not clear how to use BNB then.
+
+	- changes in intermediate version 99.1.8 (2015-04-03)
+		- added extraTime.
+
+	- changes in intermediate version 99.1.7 (2015-04-03)
+		- endTimeEvery removed. Now using minDDrPopSize if needed.
+
+	- changes in intermediate version 99.1.6 (2015-03-20)
+		- untilcancer and oncoSimulSample working together
+
+	- changes in intermediate version 99.1.5 (2015-03-20)
+		- Using the untilcancer branch
+
+	- changes in intermediate version 99.1.4 (2014-12-24)
+		- Added computation of min. of ratio birth/mutation and
+                  death/mutation.
+
+	- changes in intermediate version 99.1.3 (2014-12-23)
+		- Fixed segfault when hitting wall time and sampling only once.
+
+	- changes in intermediate version 99.1.2 (2014-12-16)
+		- Sampling only once
+
+Changes in version 0.99.2 (2014-07-14)
+	- Consistently using indentation in .Rd files.
+
+Changes in version 0.99.1 (2014-07-14)
+	- Minor changes for BioConductor submission: 
+	    - extended description
+	    - minor changes to vignette
+	    - improved documentation of posets
+
+Changes in version 0.99.0 (2014-06-26)
+	- First version submitted to BioConductor.
+
+
+
+Changes prior to the first BioC version.
+	Left here for historical purposes simply.
+
+preBioC_1.0.4   2013-03-21
+        - Versions K, M, O, P working.
+        - Versions O and P with u_1 and u_2 so as to provide comparable 
+          results to K and M.
+        - Sometimes problems with ti==0.
+
+preBioC_1.0.5   2013-03-22
+        - Cleaned up the code and left only version P.
+        - Added memory limits.
+
+preBioC_1.0.6   2013-03-22
+        - Added mutator genotype
+        - Only species with fitness > 0 go through ti calculation.
+
+preBioC_1.0.7 	2013-03-25
+        - Start run from a given mutation
+
+preBioC_1.0.8   2013-04-02
+	- Limits on outNS size to prevent segfaults.
+	- Do not transpose outNS in R (do in C++).
+	- Better code for sp_to_remove.
+
+preBioC_1.0.9   2013-04-02
+	- Some code in R moved to C++.
+	- Minimize increases in RAM in R related to 
+	  handling of temporaries.
+	- Moved out of main R function the creation of rarely used objects.
+
+preBioC_1.0.10  2013-04-04
+	- Info on actual drivers returned from C++	
+
+preBioC_1.0.11	2013-04-04
+	- Added time limit to main C++ loop execution and changed exploration 
+	  files  accordingly.
+
+preBioC_1.0.12	2013-04-15
+	- Per sample driver and populations stats in C++.
+	- Removed some rarely used output from C++.
+
+preBioC_1.0.13	2013-04-24
+	- Added continuous time Bozic fitness
+
+preBioC_1.0.14	2013-04-25
+	- Added Beerenwinkel et al., 2007 fitness.
+	- Added a few checks for loss of precision.
+	- Added thinning of output.
+
+preBioC_1.0.15	2013-04-26
+	- Unmet restrictions: allow variable penalty.
+	- Safety initializations and a bug fix.
+
+preBioC_1.0.16	2013-05-01
+	- Unmet restrictions: better mechanism (which also fixes a bug).
+	- Changed and cleared up the mess in the example trees.
+	- This is the version used to launch the first set of massive
+	simulations (bozic and exp)
+
+preBioC_1.0.17	2013-05-20
+	- Added McFarland et al. 2013 fitness.
+	- Some code cleaning.
+	- Fewer arguments in R function have default values 
+	(force user to be explicit).
+
+preBioC_1.0.18	2013-07-25
+	- Renamed the package
+	- Tried to use Youn and Simon's method. Calling code added.
+	- Tried to use Sakoparnig and Beerenwinkel's Bayesian CBN. Calling
+	code added.
+	- Fixed non-working code in metrics due to changes in functions in graph. 
+	- Added simple code for temporal order.
+	- Added old code for clonal ordering (not finished).
+	- Robustified other functions and start up (cbn, metrics,
+	plotting, etc).
+	- No dependencies on libgmp (multiprecission arith.) now; removed
+	from Makevars.
+	- Warning in R code if endTimeEvery is not negative in simulation models
+	where it should probably be negative. 
+
+preBioC_1.0.19	2014-xxx
+	- Changes and addition to plotting functions.
+	- Added comparison of adjacency matrices and other miscell
+	functions from the processing code of the simulations.

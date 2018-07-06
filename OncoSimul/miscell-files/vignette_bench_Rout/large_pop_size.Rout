@@ -1,0 +1,428 @@
+
+R Under development (unstable) (2016-11-03 r71622) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> rm(list = ls())
+> set.seed(NULL)
+> 
+> library(OncoSimulR)
+> 
+> 
+> 
+> 
+> ### keepEvery = 1
+> 
+> rm(list = ls())
+> 
+> ng <- 50 
+> u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng)))
+> 
+> t_mc_k_50_1e8 <- system.time(mc_k_50_1e8 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e8,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1
++                                                      ))
+> t_mc_k_50_1e8
+   user  system elapsed 
+  4.160   0.004   4.164 
+> try(summary(mc_k_50_1e8)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      1019    100083934     55762832   800.775   40113
+2      1063    100095289     85198302  1003.175   47969
+3      1139    100083468     81570417  1020.025   48960
+4      1328    100071996     20381273   917.625   45507
+5      1094    100085850     84645580   878.625   43650
+> print(object.size(mc_k_50_1e8), units = "MB")
+43.4 Mb
+> 
+> 
+> t_mc_k_50_1e9 <- system.time(mc_k_50_1e9 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e9,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1
++                                                      ))
+> t_mc_k_50_1e9
+   user  system elapsed 
+  7.872   0.016   7.889 
+> try(summary(mc_k_50_1e9)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      1407   1000092010    923794937  1015.650   67026
+2      1689   1001704766    501388092   954.950   63768
+3      2159   1000191503    803786479  1016.200   70579
+4      1444   1000679669    287401891   894.175   63990
+5      1591   1006665621    460714477   843.225   55105
+> print(object.size(mc_k_50_1e9), units = "MB")
+65.6 Mb
+> 
+> 
+> t_mc_k_50_1e10 <- system.time(mc_k_50_1e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1
++                                                      ))
+> t_mc_k_50_1e10
+   user  system elapsed 
+ 51.484   0.024  51.511 
+> try(summary(mc_k_50_1e10)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      3064  10029908961   4059225220   989.700  163846
+2      3365  10051437594   6079051045   993.825  185458
+3      2658  10002864090   6660066829   870.825  173655
+4      4046  10031434205   3124997874   920.650  204985
+5      2606  10036094460   2201065611   951.425  183961
+> print(object.size(mc_k_50_1e10), units = "MB")
+124.7 Mb
+> 
+> 
+> t_mc_k_50_5e10 <- system.time(mc_k_50_5e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_mc_k_50_5e10
+   user  system elapsed 
+221.556   0.024 221.584 
+> try(summary(mc_k_50_5e10)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      3983  50116665330  22163724221   930.325  455754
+2      2923  50140799765  20119098775  1006.650  418910
+3      2971  50035227673  20781292493   986.750  450142
+4      5106  50048196924  11639721504  1090.625  528920
+5      4886  50402187144   6481108125   966.100  579592
+> print(object.size(mc_k_50_5e10), units = "MB")
+165.5 Mb
+> 
+> 
+> t_mc_k_50_1e11 <- system.time(mc_k_50_1e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.> t_mc_k_50_1e11
+   user  system elapsed 
+613.612   0.040 613.664 
+> try(summary(mc_k_50_1e11)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      5491 100328847809  44397848771  1019.950  942764
+2      3194 100048090441  34834178374   789.675  888819
+3      5745 100054219162  24412502660   927.950  929231
+4      4017 101641197799  60932177160   750.725  480938
+5      5393 100168156804  41659212367   846.250  898245
+> print(object.size(mc_k_50_1e11), units = "MB")
+177.8 Mb
+> 
+> 
+> t_mc_k_50_5e11 <- system.time(mc_k_50_5e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "McFL",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_k_50_5e11
+    user   system  elapsed 
+3004.316    0.004 3004.376 
+> try(summary(mc_k_50_5e11)[, c(1:3, 8, 9)])
+Error in summary(mc_k_50_5e11)[, c(1:3, 8, 9)] : 
+  incorrect number of dimensions
+In addition: Warning message:
+In summary.oncosimulpop(mc_k_50_5e11) : All simulations failed.
+> print(object.size(mc_k_50_5e11), units = "MB")
+0 Mb
+> 
+> 
+> 
+> ###########################################################
+> 
+> 
+> 
+> ng <- 50 
+> u <- allFitnessEffects(noIntGenes = c(rep(0.1, ng)))
+> 
+> t_exp_k_50_1e8 <- system.time(exp_k_50_1e8 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e8,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1
++                                                      ))
+> t_exp_k_50_1e8
+   user  system elapsed 
+  0.312   0.000   0.312 
+> try(summary(exp_k_50_1e8)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1       247    104036225     66971427       239    4966
+2       256    110508790     65655659       146    3398
+3       236    107702261     64070973       203    5236
+4       265    109414551     57751499       157    5453
+5       194    112096108     93928516       172    5195
+> print(object.size(exp_k_50_1e8), units = "MB")
+2.3 Mb
+> 
+> 
+> t_exp_k_50_1e9 <- system.time(exp_k_50_1e9 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e9,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1
++                                                      ))
+> t_exp_k_50_1e9
+   user  system elapsed 
+  5.880   0.000   5.878 
+> try(summary(exp_k_50_1e9)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1       320   1202390750   1104749300       158   29696
+2       725   1187781559    655778877       176   32233
+3       650   1146587362    421275292       165   35471
+4      1120   1134056247    675195681       174   48092
+5       766   1020364522    583050016       206   41515
+> print(object.size(exp_k_50_1e9), units = "MB")
+6.5 Mb
+> 
+> 
+> t_exp_k_50_1e10 <- system.time(exp_k_50_1e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600
++                                                      ))
+> t_exp_k_50_1e10
+   user  system elapsed 
+ 95.096   0.000  95.096 
+> try(summary(exp_k_50_1e10)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      1532  11236821546   5771228736       198  235332
+2      1839  10275500842   7473388584       201  264559
+3      1380  12034729505  10829426434       196  286746
+4      1715  11651224770  10025117531       231  294371
+5      2109  10966816038   3143709882       226  311862
+> print(object.size(exp_k_50_1e10), units = "MB")
+17.6 Mb
+> 
+> 
+> t_exp_k_50_5e10 <- system.time(exp_k_50_5e10 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 5e10,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600,
++                                                      errorHitWallTime = FALSE,
++                                                      errorHitMaxTries = FALSE
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.> t_exp_k_50_5e10
+    user   system  elapsed 
+1473.068    5.212 1478.664 
+> try(summary(exp_k_50_5e10)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      5992  60585756440  13754309582       229 1596293
+2      3737  54135863337  18316822578       230 1311480
+3      1836  55507887408  52063865226       183 1260994
+4      6421  60907316952  18580534220       221 1500413
+5      4138  53226945905  22694573545       235 1300001
+> print(object.size(exp_k_50_5e10), units = "MB")
+47.2 Mb
+> 
+> 
+> 
+> t_exp_k_50_1e11 <- system.time(exp_k_50_1e11 <- oncoSimulPop(5,
++                                                      u,
++                                                      model = "Exp",
++                                                      mu = 1e-7,
++                                                      detectionSize = 1e11,
++                                                      initSize = 1e5,
++                                                      detectionDrivers = NA,
++                                                      detectionProb = NA,
++                                                      keepPhylog = TRUE,
++                                                      onlyCancer = FALSE,
++                                                      mutationPropGrowth = FALSE,
++                                                      keepEvery = 1,
++                                                      finalTime = 5000,
++                                                      mc.cores = 1,
++                                                      max.wall.time = 600,
++                                                      errorHitWallTime = FALSE,
++                                                      errorHitMaxTries = FALSE
++                                                      ))
+
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Recoverable exception ti set to DBL_MIN. Rerunning.
+ Hitted wall time. Exiting.
+ Hitted wall time. Exiting.> t_exp_k_50_1e11
+    user   system  elapsed 
+2959.068    0.128 2959.556 
+> try(summary(exp_k_50_1e11)[, c(1:3, 8, 9)])
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      6078  65172752616  16529682757  235.7590 1883438
+2      5370 106476643712  24662446729  232.0000 2516675
+3      2711  21911284363  17945303353  224.8608  543698
+4      2838  13241462284   2944300245  216.8091  372298
+5      7289  76166784312  10941729810  240.0217 1999489
+> print(object.size(exp_k_50_1e11), units = "MB")
+53.5 Mb
+> 

@@ -1,0 +1,460 @@
+
+R Under development (unstable) (2016-11-03 r71622) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ## Example code used in the vignette, but not executed there.
+> 
+> ## This can use memory rather quickly. You might want to rm objects and
+> ## gc().
+> 
+> library(OncoSimulR)
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger  (Mb) max used  (Mb)
+Ncells 1914616 102.3    3205452 171.2  2517580 134.5
+Vcells 2767249  21.2    4701432  35.9  4014638  30.7
+> 
+> ng <- 10000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_e_10000 <- system.time(e_10000 <- oncoSimulPop(5,
++                                                  u,
++                                                  model = "Exp",
++                                                  mu = 1e-7,
++                                                  detectionSize = 1e6,
++                                                  detectionDrivers = NA,
++                                                  detectionProb = NA,
++                                                  keepPhylog = TRUE,
++                                                  onlyCancer = FALSE,
++                                                  mutationPropGrowth = TRUE,
++                                                  mc.cores = 1
++                                 ))
+> t_e_10000
+   user  system elapsed 
+  6.152   0.268   6.423 
+> summary(e_10000)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      6624      1033791       555952       170   10893
+2        22            0            0       236     272
+3      7417      1063677       544222       200   11840
+4      5741      1010752       624277       329    9194
+5      6906      1008330       357895       401   11131
+> print(object.size(e_10000), units = "MB")
+1084.1 Mb
+> 
+> 
+> 
+> 
+> t_e_10000b <- system.time(e_10000b <- oncoSimulPop(5,
++                                                    u,
++                                                    model = "Exp",
++                                                    mu = 1e-7,
++                                                    detectionSize = 1e6,
++                                                    detectionDrivers = NA,
++                                                    detectionProb = NA,
++                                                    keepPhylog = TRUE,
++                                                    onlyCancer = FALSE,
++                                                    keepEvery = NA,
++                                                    mutationPropGrowth = TRUE,
++                                                    mc.cores = 1
++                                 ))
+> t_e_10000b
+   user  system elapsed 
+  6.464   0.100   6.561 
+> summary(e_10000b)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1         0            0            0       156     173
+2      2789      1103702       511568       203   12718
+3      2543      1020223       386222       325   11349
+4      2707      1128665       426013       276   10866
+5      2641      1003692       420479       239   11936
+> print(object.size(e_10000b), units = "MB")
+415.2 Mb
+> 
+> 
+> 
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells 1933399 103.3    3205452  171.2   2517580  134.5
+Vcells 2800668  21.4  162990590 1243.6 200138724 1527.0
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_e_50000 <- system.time(e_50000 <- oncoSimulPop(5,
++                                                  u,
++                                                  model = "Exp",
++                                                  mu = 1e-7,
++                                                  detectionSize = 1e6,
++                                                  detectionDrivers = NA,
++                                                  detectionProb = NA,
++                                                  keepPhylog = TRUE,
++                                                  onlyCancer = FALSE,
++                                                  keepEvery = NA,
++                                                  mutationPropGrowth = FALSE,
++                                                  mc.cores = 1
++                                                  ))
+> 
+> t_e_50000
+   user  system elapsed 
+ 80.928   2.100  83.030 
+> 
+> summary(e_50000)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1     10808      1094486        78861 166.86041   37200
+2     10007      1167913       376029 127.74245   29983
+3      8202      1041327       404123  95.65037   22123
+4     10297      1166823       355319 154.56272   30880
+5     10319      1212872       343050 116.68649   29652
+> 
+> print(object.size(e_50000), units = "MB")
+9502.7 Mb
+> 
+> 
+> 
+> #### McFL
+> 
+> 
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells 1933407 103.3    3205452  171.2    2517580  134.5
+Vcells 2866207  21.9 1195750552 9122.9 1247455653 9517.4
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_mc_50000_nmpg <- system.time(mc_50000_nmpg <- oncoSimulPop(5,
++                                                    u,
++                                                    model = "McFL",
++                                                    mu = 1e-7,
++                                                    detectionSize = 1e6,
++                                                    detectionDrivers = NA,
++                                                    detectionProb = NA,
++                                                    keepPhylog = TRUE,
++                                                    onlyCancer = FALSE,
++                                                    keepEvery = NA,
++                                                    mutationPropGrowth = FALSE,
++                                                    mc.cores = 1
++                                                    ))
+> t_mc_50000_nmpg
+   user  system elapsed 
+111.236   0.596 111.834 
+> 
+> summary(mc_50000_nmpg)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      2646      1000700       217188   734.475  108566
+2      2581      1001626       209873   806.500  107296
+3      2903      1001409       125148   841.700  120859
+4      2310      1000146       473948   906.300   91519
+5      2704      1001290       448409   838.800  103556
+> 
+> print(object.size(mc_50000_nmpg), units = "MB")
+2638.3 Mb
+> 
+> 
+> 
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger   (Mb)   max used   (Mb)
+Ncells 1933415 103.3    3205452  171.2    2517580  134.5
+Vcells 2997283  22.9  765280352 5838.7 1247455653 9517.4
+> 
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_mc_50000_nmpg_k <- system.time(mc_50000_nmpg_k <- oncoSimulPop(5,
++                                                    u,
++                                                    model = "McFL",
++                                                    mu = 1e-7,
++                                                    detectionSize = 1e6,
++                                                    detectionDrivers = NA,
++                                                    detectionProb = NA,
++                                                    keepPhylog = TRUE,
++                                                    onlyCancer = FALSE,
++                                                    keepEvery = 1,
++                                                    mutationPropGrowth = FALSE,
++                                                    mc.cores = 1
++                                                    ))
+> t_mc_50000_nmpg_k
+   user  system elapsed 
+121.972   5.792 127.766 
+> 
+> summary(mc_50000_nmpg_k)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1     25680      1002011       185176   975.350  115653
+2     25182      1002273       216333   916.100  113594
+3     26368      1002170       294905   820.925  116036
+4     24368      1001334       249347   718.200  102727
+5     27257      1000044       163800   590.375  110445
+> 
+> print(object.size(mc_50000_nmpg_k), units = "MB")
+25549.1 Mb
+> 
+> 
+> 
+> 
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells 1933423 103.3    3886542   207.6    2568044   137.2
+Vcells 2997289  22.9 3190636691 24342.7 3346862437 25534.6
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_mc_50000_nmpg_3e6 <- system.time(mc_50000_nmpg_3e6 <- oncoSimulPop(5,
++                                                    u,
++                                                    model = "McFL",
++                                                    mu = 1e-7,
++                                                    detectionSize = 3e6,
++                                                    detectionDrivers = NA,
++                                                    detectionProb = NA,
++                                                    keepPhylog = TRUE,
++                                                    onlyCancer = FALSE,
++                                                    keepEvery = NA,
++                                                    mutationPropGrowth = FALSE,
++                                                    mc.cores = 1
++                                                    ))
+> t_mc_50000_nmpg_3e6
+   user  system elapsed 
+393.076   1.584 394.668 
+> 
+> summary(mc_50000_nmpg_3e6)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1      6614      3000804       759384   740.875  188862
+2      6854      3002067       456612   869.225  200088
+3      6636      3002357       395409   699.725  191738
+4      6870      3006203       879770   887.150  191855
+5      6952      3001292       585702   887.425  206713
+> 
+> print(object.size(mc_50000_nmpg_3e6), units = "MB")
+6767.2 Mb
+> 
+> 
+> 
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells 1933431 103.3    3886542   207.6    2905226   155.2
+Vcells 3259441  24.9 2042007481 15579.3 3346862437 25534.6
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_mc_50000_nmpg_5mu <- system.time(mc_50000_nmpg_5mu <- oncoSimulPop(5,
++                                                    u,
++                                                    model = "McFL",
++                                                    mu = 5e-7,
++                                                    detectionSize = 1e6,
++                                                    detectionDrivers = NA,
++                                                    detectionProb = NA,
++                                                    keepPhylog = TRUE,
++                                                    onlyCancer = FALSE,
++                                                    keepEvery = NA,
++                                                    mutationPropGrowth = FALSE,
++                                                    mc.cores = 1
++                                                    ))
+
+ Hitted wall time. Exiting.
+ Hitting wall time is regarded as an error. 
+> t_mc_50000_nmpg_5mu
+   user  system elapsed 
+729.664   1.800 731.486 
+> 
+> summary(mc_50000_nmpg_5mu)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1     11367      1001501       116500  356.7481  227159
+2     10465      1001739       208785  335.9738  190641
+3      9679      1006554       610489  368.9726  174492
+4     10894      1000988       170230  304.9483  202650
+Warning message:
+In summary.oncosimulpop(mc_50000_nmpg_5mu) :
+  Some simulations seem to have failed and will be removed from the summary. The failed runs are 1.
+> 
+> print(object.size(mc_50000_nmpg_5mu), units = "MB")
+8358.6 Mb
+> 
+> 
+> ## The next one cannot be run with 5 as it crashes because of not enough RAM
+> ## in a lightly loaded system that has 32 GB RAM with
+> 
+> ## Error in oncoSimulIndiv(fp = fp, model = model, numPassengers = numPassengers,  : 
+> ##   Unrecoverable error: Error : cannot allocate vector of size 12.6 Gb
+> ## Calls: system.time ... oncoSimulPop -> mclapply -> lapply -> FUN -> oncoSimulIndiv
+> ## Timing stopped at: 529.3 5.104 534.5
+> ## Execution halted
+> ## Warning message:
+> ##         system call failed: Cannot allocate memory
+> 
+> ## Thus, we use only 2 replicates
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger   (Mb)   max used    (Mb)
+Ncells 1934740 103.4    3886542  207.6    2905226   155.2
+Vcells 3261772  24.9 1306884787 9970.8 3346862437 25534.6
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_mc_50000_nmpg_5mu_k <- system.time(mc_50000_nmpg_5mu_k <- oncoSimulPop(2,
++                                                    u,
++                                                    model = "McFL",
++                                                    mu = 5e-7,
++                                                    detectionSize = 1e6,
++                                                    detectionDrivers = NA,
++                                                    detectionProb = NA,
++                                                    keepPhylog = TRUE,
++                                                    onlyCancer = FALSE,
++                                                    keepEvery = 1,
++                                                    mutationPropGrowth = FALSE,
++                                                    mc.cores = 1
++                                                    ))
+> t_mc_50000_nmpg_5mu_k
+   user  system elapsed 
+305.512   5.164 310.711 
+> 
+> summary(mc_50000_nmpg_5mu_k)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1     61737      1003273       104460  295.8731  204214
+2     65072      1000540       133068  296.6243  210231
+> 
+> print(object.size(mc_50000_nmpg_5mu_k), units = "MB")
+24663.6 Mb
+> 
+> 
+> 
+> 
+> 
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells 1934748 103.4    3886542   207.6    2905226   155.2
+Vcells 3261780  24.9 3072254836 23439.5 3346862437 25534.6
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_mc_50000 <- system.time(mc_50000 <- oncoSimulPop(5,
++                                                    u,
++                                                    model = "McFL",
++                                                    mu = 1e-7,
++                                                    detectionSize = 1e6,
++                                                    detectionDrivers = NA,
++                                                    detectionProb = NA,
++                                                    keepPhylog = TRUE,
++                                                    onlyCancer = FALSE,
++                                                    keepEvery = NA,
++                                                    mutationPropGrowth = TRUE,
++                                                    mc.cores = 1,
++                                                    max.wall.time = 600,
++                                                    errorHitWallTime = FALSE,
++                                                    errorHitMaxTries = FALSE
++                                                    ))
+> t_mc_50000
+    user   system  elapsed 
+1438.616    3.632 1442.498 
+> 
+> summary(mc_50000)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1     16076      1005508       175472  619.3704  219399
+2     16669      1004425        85977  698.9237  251705
+3     16839      1002505       135446  567.5474  242991
+4     15751      1000260       112538  599.3973  208134
+5     17188      1005240        41395  635.0238  259493
+> 
+> print(object.size(mc_50000), units = "MB")
+16138.5 Mb
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> ### Move to bottom, since we can run out of RAM in these
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells 1934756 103.4    3886542   207.6    3200275   171.0
+Vcells 3786072  28.9 1966243094 15001.3 3346862437 25534.6
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_e_50000np <- system.time(e_50000np <- oncoSimulPop(5,
++                                                  u,
++                                                  model = "Exp",
++                                                  mu = 1e-7,
++                                                  detectionSize = 1e6,
++                                                  detectionDrivers = NA,
++                                                  detectionProb = NA,
++                                                  keepPhylog = TRUE,
++                                                  onlyCancer = FALSE,
++                                                  keepEvery = 1,
++                                                  mutationPropGrowth = FALSE,
++                                                  mc.cores = 1
++                                                  ))
+> 
+> t_e_50000np
+   user  system elapsed 
+100.196   4.528 104.738 
+> 
+> summary(e_50000np)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1     18964      1186281       554155  159.8129   29018
+2     23985      1002775       282770  164.9250   36840
+3     27392      1078455       101397  126.6296   40336
+4     23736      1150276       541278  158.7867   36943
+5     23515      1058606       249644  120.9874   35540
+> 
+> print(object.size(e_50000np), units = "MB")
+22605.8 Mb
+> 
+> 
+> 
+> rm(list = ls()); gc()
+          used  (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells 1934764 103.4    3886542   207.6    3200275   171.0
+Vcells 3786076  28.9 2841562209 21679.4 3346862437 25534.6
+> ng <- 50000
+> u <- allFitnessEffects(noIntGenes = c(rep(0.05, ng/2), rep(-0.05, ng/2)))
+> 
+> t_e_50000c <- system.time(e_50000c <- oncoSimulPop(5,
++                                                  u,
++                                                  model = "Exp",
++                                                  mu = 1e-7,
++                                                  detectionSize = 1e6,
++                                                  detectionDrivers = NA,
++                                                  detectionProb = NA,
++                                                  keepPhylog = TRUE,
++                                                  onlyCancer = FALSE,
++                                                  keepEvery = NA,
++                                                  mutationPropGrowth = TRUE,
++                                                  mc.cores = 1
++                                                  ))
+> 
+> t_e_50000c
+   user  system elapsed 
+ 137.14    2.42  139.57 
+> 
+> summary(e_50000c)[, c(1:3, 8, 9)]
+  NumClones TotalPopSize LargestClone FinalTime NumIter
+1     12914      1140243       195032  145.7525   44656
+2     12236      1171644       247396  142.6289   37276
+3     12692      1126903       175849  149.8798   42307
+4     11916      1021156       234410  151.9600   41701
+5     12599      1100812       111212  167.8300   43976
+> 
+> print(object.size(e_50000c), units = "MB")
+11936.1 Mb
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
