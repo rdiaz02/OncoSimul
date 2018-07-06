@@ -30,7 +30,7 @@
 // There are many vectors of these structs. This is just a problem
 // of coverage testing of structs. Google for it.
 
-enum class Dependency {monotone, semimonotone, xmpn, single, NA}; 
+enum class Dependency {monotone, semimonotone, xmpn, single, NA};
 // enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarland,
 //     beerenwinkel, mcfarland0,  bozic2};
 // enum class TypeModel {exp, bozic1, mcfarlandlog};
@@ -53,6 +53,12 @@ struct fitnessLandscape_struct {
   std::vector<std::string> names;
   // zz: maybe not a char; hold on
   std::map<std::string, double> flmap;
+  std::map<std::string, std::string> flFDFmap; //New line to define flFDFmap
+  std::map<std::string, std::string> flfVarsmap; //New line to define flfVarsmap
+};
+
+struct evalFVars_struct {//structure to store the map fVars to fitness (double)
+  std::map<std::string, double> evalFVarsmap;
 };
 
 struct Poset_struct {
@@ -61,7 +67,7 @@ struct Poset_struct {
   double s;
   double sh;
   std::vector<int> parentsNumID;
-  // The next two are clearly redundant but a triple check
+    // The next two are clearly redundant but a triple check
   std::string child;
   std::vector<std::string> parents;
 };
@@ -87,7 +93,7 @@ struct Gene_Module_struct {
 
 struct fitnessEffectsAll {
   bool gMOneToOne;
-  int genomeSize; 
+  int genomeSize;
   // We use allOrderG or allEpistRTG to place new mutations in their
   // correct place (orderEff or epistRtEff). Only one is needed.  Use the
   // one that is presumably always shorter which is allOrderG. And this is
@@ -108,6 +114,7 @@ struct fitnessEffectsAll {
   std::vector<int> drv; // Sorted.
   genesWithoutInt genesNoInt;
   // zz:
+  std::vector<std::string> fVars; //New line to store fVars
   fitnessLandscape_struct fitnessLandscape;
 };
 
@@ -124,6 +131,7 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.Gene_Module_tabl.resize(0);
   f.allGenes.resize(0);
   f.drv.resize(0);
+  f.fVars.resize(0);//new line to initialize fVars
   f.genesNoInt.shift = -99L;
   f.genesNoInt.NumID.resize(0);
   f.genesNoInt.names.resize(0);
@@ -131,14 +139,15 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.fitnessLandscape.NumID.resize(0);
   f.fitnessLandscape.names.resize(0);
   f.fitnessLandscape.flmap.clear();
+  f.fitnessLandscape.flFDFmap.clear();//new line to initialize flFDFmap
+  f.fitnessLandscape.flfVarsmap.clear();//new line to initialize flFDFmap
   return f;
 }
-
 
 // FIXME: fitness_as_genes and Genotype are identical
 // structures. Why not use the same thing?
 // Because even if just four vectors of ints, have different meaning.
-// Humm... 
+// Humm...
 struct fitness_as_genes {
   // fitnessEffectsAll in terms of genes.  Useful for output
   // conversions. There could be genes that are both in orderG and
@@ -218,7 +227,7 @@ struct LOD {
 
 // We only need the string, but if we store the genotype as such
 // we can avoid a costly conversion that often leads to storing nothing
-// in 
+// in
 struct POM {
   // std::vector<double> time;
   std::vector<std::string> genotypesString;
@@ -243,7 +252,7 @@ Dependency stringToDep(const std::string& dep);
 
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
-		     int& numMutablePosParent, 
+		     int& numMutablePosParent,
 		     std::vector<int>& newMutations,
 		     //randutils::mt19937_rng& ran_gen
 		     std::mt19937& ran_gen,
@@ -313,4 +322,3 @@ void addToPOM(POM& pom,
 	      const std::string string);
 
 #endif
-
