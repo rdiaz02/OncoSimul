@@ -1,0 +1,52 @@
+C++:
+
+fichero exprtk.hpp en src (cabecera de exprtk. Parece que en src funciona)
+
+#include "exprtk.hpp" en new-restrict.cpp
+
+#include <sstream> en new-restrict.cpp
+
+estructura modificada fitnessLandscape_struct en new_restrict.h (Ahora tiene dos mapa más:flFDFmap, que mapea genotipos a ecuaciones y flfVarsmap, que papea genotipos a variables)
+
+estructura modificada fitnessEffectsAll en new_restrict.h (Ahora tiene un elemnto mas fVars, vector de strings que contiene las variables)
+
+función modificada nullFitnessEffects() en new_restrict.h(En consonancia con el punto anterior)
+
+función modificada convertFitnessEffects en new_restrict.cpp (Hace lo mismo, pero lidiando con las nuevas modificaciones)
+
+función modificada convertFitnessLandscape en new_restrict.cpp (Hace lo mismo, salvo que pone a cero los mapas nuevos )
+
+función nueva convertFitnessLandscape_fdf en new_restrict.cpp (Hace lo propio el el caso fdf y pione a cero el mapa anterior)
+
+función modificada evalGenotypeFitness en new_restrict.cpp(Hace lo mismo que antes, pero distinge entre la casuística anterior y la nueva, en cuyo caso ejecuta la siguiente función)
+
+función nueva evalGenotypeFDFitnessEcuation en new_restrict.cpp (parsea y evalúa la ecuación de cada genotipo)
+
+estructura nueva evalFVars_struct new_restrict.h (contiene un mapa que une las variables con su valor (frecuencia) evaluado)
+
+función nueva evalFVars en new_restrict.cpp (crea el mapa anterior evaluando las variables cuando se la llama)
+
+función nueva stringVectorToIntVector en new_restrict.cpp (función auxiliar que toma un genotipo como string y lo convierte en vector de int)
+
+función nueva findPositionInGenotypes en new_restrict.cpp (función auxiliar que busca si un genotipo esta en Genotypes y saca su posición)
+
+función nueva frequency en new_restrict.cpp (calcula la frecuencia de un genotipo)
+
+R:
+
+(Todas son bastante triviales. Pretenden hacer una lista de para enviar a C++, en la que hay un dataframe nuevo en donde en la columna Fitness hay ecuaciones (strings) y una nueva lista con las variables)
+
+nueva función from_letters_to_vector_genotype en from_genotype_utils.R
+
+nueva función replaceWithNumbers en from_genotype_utils.R
+
+función modificada to_genotFitness_std en from_genotype_utils.R
+
+nueva función fVariables en new-restrict.R
+
+función modificada allFitnessORMutatorEffects en new-restrict.R
+
+función modificada allFitnessEffects en new-restrict.R
+
+Variables: 
+por ejemplo la frecuencia del genotipo 1,2 es f(1, 2)
