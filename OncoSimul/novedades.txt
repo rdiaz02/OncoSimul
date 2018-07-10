@@ -22,7 +22,6 @@ función nueva convertFitnessLandscape_fdf en new_restrict.cpp (Hace lo propio e
 
 función modificada evalGenotypeFitness en new_restrict.cpp(Hace lo mismo que antes, pero distinge entre la casuística anterior y la nueva, en cuyo caso ejecuta la siguiente función)
 
-funciones modificadas evalMutator, evalRGenotype y evalGenotypeAndMut en new_restrict.cpp para lidiar con los dos nuevos parámetros necesarios en evalGenotypeFitness (Genotypes y popParams)
 
 función nueva evalGenotypeFDFitnessEcuation en new_restrict.cpp (parsea y evalúa la ecuación de cada genotipo)
 
