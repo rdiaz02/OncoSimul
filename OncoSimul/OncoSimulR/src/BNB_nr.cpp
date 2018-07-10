@@ -1659,7 +1659,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	  nr_fitness(tmpParam, popParams[nextMutant],
 		     newGenotype,
 		     fitnessEffects,
-		     typeModel, , Genotypes, popParams);// , genTime,
+		     typeModel, Genotypes, popParams);// , genTime,
 		     // adjust_fitness_B, adjust_fitness_MF);
 
 	  if(tmpParam.birth > 0.0) {
