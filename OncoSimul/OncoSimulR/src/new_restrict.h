@@ -266,7 +266,9 @@ Genotype createNewGenotype(const Genotype& parent,
 			   bool random);
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
-					const fitnessEffectsAll& F);
+					const fitnessEffectsAll& F,
+          const std::vector<Genotype>& Genotypes,
+          const std::vector<spParamsP>& popParams);
 
 
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE);
