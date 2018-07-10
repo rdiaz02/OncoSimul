@@ -1382,8 +1382,8 @@ double evalGenotypeFDFitnessEcuation(Genotype ge,
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 																				const fitnessEffectsAll& F,
-																				const std::vector<Genotype>& Genotypes,
-			      	     											const std::vector<spParamsP>& popParams){
+																				std::vector<Genotype>& Genotypes,
+			      	     											std::vector<spParamsP>& popParams){
 
   // check_disable_later
   checkLegitGenotype(ge, F);
