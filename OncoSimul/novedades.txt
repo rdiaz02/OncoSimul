@@ -20,8 +20,9 @@ función modificada convertFitnessLandscape en new_restrict.cpp (Hace lo mismo, 
 
 función nueva convertFitnessLandscape_fdf en new_restrict.cpp (Hace lo propio el el caso fdf y pone a cero el mapa anterior)
 
-función modificada evalGenotypeFitness en new_restrict.cpp(Hace lo mismo que antes, pero distinge entre la casuística anterior y la nueva, en cuyo caso ejecuta la siguiente función)
+función modificada evalGenotypeFitness en new_restrict.cpp(Hace lo mismo que antes, pero distinge entre la casuística anterior y la nueva. Tiene dos argumentos más Genotypes y popParams)
 
+funciones modificada nr_fitness y nr_inerBNB en BNB_nr.cpp, para adecuar la modificación anterior(dos argumentos más Genotypes y popParams en la llamada a evalGenotypeFitness)
 
 función nueva evalGenotypeFDFitnessEcuation en new_restrict.cpp (parsea y evalúa la ecuación de cada genotipo)
 
