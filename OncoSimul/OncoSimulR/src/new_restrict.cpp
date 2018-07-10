@@ -1494,7 +1494,9 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 double evalMutator(const Genotype& fullge,
 		  const std::vector<int>& full2mutator,
 		  const fitnessEffectsAll& muEF,
-		  bool verbose = false) {
+		  bool verbose = false,
+			const std::vector<Genotype>& Genotypes,
+			const std::vector<spParamsP>& popParams) {
   // In contrast to nr_fitness, that sets birth and death, this simply
   // returns the multiplication factor for the mutation rate. This is used
   // by mutationFromParent and mutationFromScratch
@@ -1530,7 +1532,7 @@ double evalMutator(const Genotype& fullge,
     return 1.0;
   } else {
     Genotype newg = convertGenotypeFromInts(g2, muEF);
-    vector<double> s = evalGenotypeFitness(newg, muEF);
+    vector<double> s = evalGenotypeFitness(newg, muEF, Genotypes, popParams);
 
     // just for checking
     if(verbose) {
