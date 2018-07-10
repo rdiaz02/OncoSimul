@@ -1293,7 +1293,8 @@ double frequency(int pos, std::vector<spParamsP>& popParams){
 }
 
 //This function returns 0 if genotype is not in Genotypes and position+1 otherwise
-int findPositionInGenotypes(std::vector<Genotype>& Genotypes, std::vector<int> genotype){
+int findPositionInGenotypes(std::vector<Genotype>& Genotypes,
+	std::vector<int> genotype){
   int index;
   for(size_t i = 0; i < Genotypes.size(); i++){
 	if(Genotypes[i].flGenes == genotype){
@@ -1494,8 +1495,8 @@ double evalMutator(const Genotype& fullge,
 		  const std::vector<int>& full2mutator,
 		  const fitnessEffectsAll& muEF,
 		  bool verbose = false,
-			const std::vector<Genotype>& Genotypes,
-			const std::vector<spParamsP>& popParams) {
+			std::vector<Genotype>& Genotypes,
+			std::vector<spParamsP>& popParams) {
   // In contrast to nr_fitness, that sets birth and death, this simply
   // returns the multiplication factor for the mutation rate. This is used
   // by mutationFromParent and mutationFromScratch
@@ -1551,8 +1552,8 @@ double evalRGenotype(Rcpp::IntegerVector rG,
 		     			 			 bool verbose,
 										 bool prodNeg,
 		     						 Rcpp::CharacterVector calledBy_,
-										 const std::vector<Genotype>& Genotypes,
-										 const std::vector<spParamsP>& popParams) {
+										 std::vector<Genotype>& Genotypes,
+										 std::vector<spParamsP>& popParams) {
   // Can evaluate both ONLY fitness or ONLY mutator. Not both at the same
   // time. Use evalRGenotypeAndMut for that.
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
@@ -1596,8 +1597,8 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 					Rcpp::IntegerVector full2mutator_,
 					bool verbose,
 					bool prodNeg,
-					const std::vector<Genotype>& Genotypes,
-					const std::vector<spParamsP>& popParams) {
+					std::vector<Genotype>& Genotypes,
+					std::vector<spParamsP>& popParams) {
   // Basically to test evalMutator. We repeat the conversion to genotype,
   // but that is unavoidable here.
 
