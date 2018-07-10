@@ -1297,7 +1297,8 @@ evalGenotypeORMut <- function(genotype,
     return(ff)
 }
 
-evalGenotype <- function(genotype, fitnessEffects,
+evalGenotype <- function(genotype,
+                         fitnessEffects,
                          verbose = FALSE,
                          echo = FALSE,
                          model = "") {
@@ -1365,8 +1366,10 @@ evalGenotypeFitAndMut <- function(genotype,
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
-    evalRGenotypeAndMut(genotype, fitnessEffects,
-                        mutatorEffects, full2mutator_,
+    evalRGenotypeAndMut(genotype,
+                        fitnessEffects,
+                        mutatorEffects,
+                        full2mutator_,
                         verbose = verbose,
                         prodNeg = prodNeg)
 }
@@ -1428,11 +1431,12 @@ evalGenotypeFitAndMut <- function(genotype,
 ## I am here: simplify this
 
 evalAllGenotypesORMut <- function(fmEffects,
-                                  order = FALSE, max = 256,
-                             addwt = FALSE,
-                             model = "",
-                             calledBy_ = "") {
-##                             minimal = FALSE) {
+                                  order = FALSE, +
+                                  max = 256,
+                                  addwt = FALSE,
+                                  model = "",
+                                  calledBy_ = "") {
+##                                minimal = FALSE) {
     if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
         stop("How did you call this function?. Bug.")
 
@@ -1449,7 +1453,8 @@ evalAllGenotypesORMut <- function(fmEffects,
 
     ## if(!minimal)
     allg <- generateAllGenotypes(fitnessEffects = fmEffects,
-                                 order = order, max = max)
+                                 order = order,
+                                 max = max)
     ## else
         ## allg <- generateAllGenotypes_minimal(fitnessEffects = fmEffects,
         ##                                      max = max)
@@ -1501,7 +1506,9 @@ evalAllGenotypesORMut <- function(fmEffects,
     else
         prodNeg <- FALSE
     allf <- vapply(allg$genotNums,
-                   function(x) evalRGenotype(x, fmEffects, FALSE,
+                   function(x) evalRGenotype(x,
+                                             fmEffects,
+                                             FALSE,
                                              prodNeg,
                                              calledBy_),
                    1.1)
@@ -1527,7 +1534,9 @@ evalAllGenotypesORMut <- function(fmEffects,
     return(df)
 }
 
-evalAllGenotypes <- function(fitnessEffects, order = FALSE, max = 256,
+evalAllGenotypes <- function(fitnessEffects,
+                             order = FALSE,
+                             max = 256,
                              addwt = FALSE,
                              model = "") {
     ## Must deal with objects from previous, pre flfast, modifications
