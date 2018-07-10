@@ -1,12 +1,14 @@
 C++:
 
-fichero exprtk.hpp en src (cabecera de exprtk. Parece que en src funciona)
+fichero exprtk.hpp en src (cabecera de exprtk, incluida en int/miscell)
+
+linea PKG_CXXFLAGS = -I../inst/miscell en Makevars y Makevars.win
 
 #include "exprtk.hpp" en new-restrict.cpp
 
 #include <sstream> en new-restrict.cpp
 
-estructura modificada fitnessLandscape_struct en new_restrict.h (Ahora tiene dos mapa más:flFDFmap, que mapea genotipos a ecuaciones y flfVarsmap, que papea genotipos a variables)
+estructura modificada fitnessLandscape_struct en new_restrict.h (Ahora tiene dos mapas más:flFDFmap, que mapea genotipos a ecuaciones y flfVarsmap, que papea genotipos a variables)
 
 estructura modificada fitnessEffectsAll en new_restrict.h (Ahora tiene un elemnto mas fVars, vector de strings que contiene las variables)
 
@@ -16,9 +18,11 @@ función modificada convertFitnessEffects en new_restrict.cpp (Hace lo mismo, pe
 
 función modificada convertFitnessLandscape en new_restrict.cpp (Hace lo mismo, salvo que pone a cero los mapas nuevos )
 
-función nueva convertFitnessLandscape_fdf en new_restrict.cpp (Hace lo propio el el caso fdf y pione a cero el mapa anterior)
+función nueva convertFitnessLandscape_fdf en new_restrict.cpp (Hace lo propio el el caso fdf y pone a cero el mapa anterior)
 
 función modificada evalGenotypeFitness en new_restrict.cpp(Hace lo mismo que antes, pero distinge entre la casuística anterior y la nueva, en cuyo caso ejecuta la siguiente función)
+
+funciones modificadas evalMutator, evalRGenotype y evalGenotypeAndMut en new_restrict.cpp para lidiar con los dos nuevos parámetros necesarios en evalGenotypeFitness (Genotypes y popParams)
 
 función nueva evalGenotypeFDFitnessEcuation en new_restrict.cpp (parsea y evalúa la ecuación de cada genotipo)
 
@@ -34,7 +38,7 @@ función nueva frequency en new_restrict.cpp (calcula la frecuencia de un genoti
 
 R:
 
-(Todas son bastante triviales. Pretenden hacer una lista de para enviar a C++, en la que hay un dataframe nuevo en donde en la columna Fitness hay ecuaciones (strings) y una nueva lista con las variables)
+(Todas son bastante triviales. Pretenden hacer una lista de para enviar a C++, en la que ahora hay un dataframe en donde en la columna Fitness hay ecuaciones (strings) y una nueva lista con las variables)
 
 nueva función from_letters_to_vector_genotype en from_genotype_utils.R
 
@@ -49,4 +53,4 @@ función modificada allFitnessORMutatorEffects en new-restrict.R
 función modificada allFitnessEffects en new-restrict.R
 
 Variables: 
-por ejemplo la frecuencia del genotipo 1,2 es f(1, 2)
+por ejemplo la frecuencia del genotipo 1,2 es f(1, 2) (como string)
