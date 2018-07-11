@@ -1409,7 +1409,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 
   if(F.fitnessLandscape.NumID.size()) {
 	std::string gs = concatIntsString(ge.flGenes);
-	if(F.fVars.size()){
+	if(F.fVars.size()){//possible also with Genotype.size()==0 and popParams.size==0 ?
 		if(F.fitnessLandscape.flFDFmap.find(gs) == F.fitnessLandscape.flFDFmap.end()) {
 	      		s.push_back(-1.0);
 		} else {
@@ -1552,12 +1552,12 @@ double evalRGenotype(Rcpp::IntegerVector rG,
 	Rcpp::List rFE,
 	bool verbose,
 	bool prodNeg,
-	Rcpp::CharacterVector calledBy_,
-	const std::vector<Genotype>& Genotypes,
-	const std::vector<spParamsP>& popParams) {
+	Rcpp::CharacterVector calledBy_) {
   // Can evaluate both ONLY fitness or ONLY mutator. Not both at the same
   // time. Use evalRGenotypeAndMut for that.
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
+	const std::vector<Genotype> Genotypes(0);
+	const std::vector<spParamsP> popParams(0);
 
   if(rG.size() == 0) {
     // Why don't we evaluate it?
@@ -1597,14 +1597,14 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 					Rcpp::List muEF,
 					Rcpp::IntegerVector full2mutator_,
 					bool verbose,
-					bool prodNeg,
-					const std::vector<Genotype>& Genotypes,
-					const std::vector<spParamsP>& popParams) {
+					bool prodNeg) {
   // Basically to test evalMutator. We repeat the conversion to genotype,
   // but that is unavoidable here.
 
 
   NumericVector out(2);
+	const std::vector<Genotype> Genotypes(0);
+	const std::vector<spParamsP> popParams(0);
 
   // For fitness. Except for "evalGenotypeFromR", all is done as in the
   // rest of the internal code for evaluating a genotype.
