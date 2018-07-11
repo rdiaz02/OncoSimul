@@ -1494,10 +1494,10 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 
 double evalMutator(const Genotype& fullge,
 		  const std::vector<int>& full2mutator,
-		  const fitnessEffectsAll& muEF,
-		  bool verbose = false,
+		  const fitnessEffectsAll& muEF,,
 			const std::vector<Genotype>& Genotypes,
-			const std::vector<spParamsP>& popParams) {
+			const std::vector<spParamsP>& popParams
+		  bool verbose = false) {
   // In contrast to nr_fitness, that sets birth and death, this simply
   // returns the multiplication factor for the mutation rate. This is used
   // by mutationFromParent and mutationFromScratch
@@ -1626,7 +1626,7 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   // Genotype fullge = convertGenotypeFromR(rG, F);
 
   const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
-  out[1] = evalMutator(g, full2mutator, muef, verbose, Genotypes, popParams);
+  out[1] = evalMutator(g, full2mutator, muef, Genotypes, popParams, verbose);
 
   return out;
 }
@@ -1643,10 +1643,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-		bool verbose = false;
-    mumult = evalMutator(g, full2mutator,
-			muEF, verbose,
-			Genotypes, popParams);
+    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
   } else mumult = 1.0;
 
   if(mu.size() == 1) {
