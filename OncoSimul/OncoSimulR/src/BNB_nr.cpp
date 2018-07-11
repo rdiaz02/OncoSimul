@@ -1316,7 +1316,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
   popParams[0].mutation = mutationFromScratch(mu, popParams[0], Genotypes[0],
 					      fitnessEffects, mutationPropGrowth,
-					      full2mutator, muEF);
+					      full2mutator, muEF,
+								Genotypes, popParams);
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
@@ -1674,7 +1675,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    tmpParam.mutation = mutationFromScratch(mu, tmpParam, newGenotype,
 					       fitnessEffects,
 					       mutationPropGrowth, full2mutator,
-						    muEF);
+						    muEF, Genotypes, popParams);
 	    // tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
 	    // 					   newMutations, mutationPropGrowth,
 	    // 					   newGenotype, full2mutator,
