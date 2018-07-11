@@ -1431,7 +1431,7 @@ evalGenotypeFitAndMut <- function(genotype,
 ## I am here: simplify this
 
 evalAllGenotypesORMut <- function(fmEffects,
-                                  order = FALSE, +
+                                  order = FALSE, 
                                   max = 256,
                                   addwt = FALSE,
                                   model = "",
