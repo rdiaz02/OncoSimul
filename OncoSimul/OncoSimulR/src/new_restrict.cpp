@@ -1631,8 +1631,6 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   return out;
 }
 
-
-
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
 			   const Genotype& g,
@@ -1642,9 +1640,12 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const fitnessEffectsAll& muEF,
 				 const std::vector<Genotype>& Genotypes,
 	 			 const std::vector<spParamsP>& popParams) {
+
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
+    mumult = evalMutator(g, full2mutator,
+			muEF, bool verbose = false,
+			Genotypes, popParams);
   } else mumult = 1.0;
 
   if(mu.size() == 1) {
