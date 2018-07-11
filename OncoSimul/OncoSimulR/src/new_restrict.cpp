@@ -1348,9 +1348,10 @@ evalFVars_struct evalFVars(fitnessEffectsAll& F,
 }
 
 double evalGenotypeFDFitnessEcuation(Genotype ge,
-				     												 fitnessEffectsAll F,
-				     									 			 std::vector<Genotype> Genotypes,
-			      	     			 						 std::vector<spParamsP> popParams){
+	fitnessEffectsAll F,
+	std::vector<Genotype> Genotypes,
+	std::vector<spParamsP> popParams){
+
   double f;
 
   evalFVars_struct symbol_table_struct = evalFVars(F, Genotypes, popParams);
@@ -1381,9 +1382,9 @@ double evalGenotypeFDFitnessEcuation(Genotype ge,
 }
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
-																				const fitnessEffectsAll& F,
-																				const std::vector<Genotype>& Genotypes,
-			      	     											const std::vector<spParamsP>& popParams){
+	const fitnessEffectsAll& F,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams){
 
   // check_disable_later
   checkLegitGenotype(ge, F);
@@ -1548,10 +1549,12 @@ double evalMutator(const Genotype& fullge,
 
 // [[Rcpp::export]]
 double evalRGenotype(Rcpp::IntegerVector rG,
-				 						 Rcpp::List rFE,
-		     			 			 bool verbose,
-										 bool prodNeg,
-		     						 Rcpp::CharacterVector calledBy_) {
+	Rcpp::List rFE,
+	bool verbose,
+	bool prodNeg,
+	Rcpp::CharacterVector calledBy_,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams) {
   // Can evaluate both ONLY fitness or ONLY mutator. Not both at the same
   // time. Use evalRGenotypeAndMut for that.
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
@@ -1565,7 +1568,7 @@ double evalRGenotype(Rcpp::IntegerVector rG,
   //const Rcpp::List rF(rFE);
   fitnessEffectsAll F = convertFitnessEffects(rFE);
   Genotype g = convertGenotypeFromR(rG, F);
-  vector<double> s = evalGenotypeFitness(g, F);
+  vector<double> s = evalGenotypeFitness(g, F, Genotypes, popParams);
   if(verbose) {
     std::string sprod;
     if(calledBy == "evalGenotype") {
@@ -1594,7 +1597,9 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 					Rcpp::List muEF,
 					Rcpp::IntegerVector full2mutator_,
 					bool verbose,
-					bool prodNeg) {
+					bool prodNeg,
+					const std::vector<Genotype>& Genotypes,
+					const std::vector<spParamsP>& popParams) {
   // Basically to test evalMutator. We repeat the conversion to genotype,
   // but that is unavoidable here.
 
@@ -1606,7 +1611,7 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   fitnessEffectsAll F = convertFitnessEffects(rFE);
   fitnessEffectsAll muef = convertFitnessEffects(muEF);
   Genotype g = convertGenotypeFromR(rG, F);
-  vector<double> s = evalGenotypeFitness(g, F);
+  vector<double> s = evalGenotypeFitness(g, F, Genotypes, popParams);
   if(!prodNeg)
     out[0] = prodFitness(s);
   else
@@ -1621,7 +1626,7 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   // Genotype fullge = convertGenotypeFromR(rG, F);
 
   const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
-  out[1] = evalMutator(g, full2mutator, muef, verbose);
+  out[1] = evalMutator(g, full2mutator, muef, verbose, Genotypes, popParams);
 
   return out;
 }
@@ -1634,10 +1639,12 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const fitnessEffectsAll& fe,
 			   const int mutationPropGrowth,
 			   const std::vector<int> full2mutator,
-			   const fitnessEffectsAll& muEF) {
+			   const fitnessEffectsAll& muEF,
+				 const std::vector<Genotype>& Genotypes,
+	 			 const std::vector<spParamsP>& popParams) {
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = evalMutator(g, full2mutator, muEF);
+    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
   } else mumult = 1.0;
 
   if(mu.size() == 1) {

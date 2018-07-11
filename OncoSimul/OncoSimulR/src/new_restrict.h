@@ -292,7 +292,9 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const fitnessEffectsAll& fe,
 			   const int mutationPropGrowth,
 			   const std::vector<int> full2mutator,
-			   const fitnessEffectsAll& muEF);
+			   const fitnessEffectsAll& muEF,
+         const std::vector<Genotype>& Genotypes,
+	 			 const std::vector<spParamsP>& popParams);
 
 // double mutationFromParent(const std::vector<double>& mu,
 // 			  const spParamsP& newP,
