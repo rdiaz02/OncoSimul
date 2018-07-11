@@ -1643,8 +1643,9 @@ double mutationFromScratch(const std::vector<double>& mu,
 
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
+		bool verbose = false;
     mumult = evalMutator(g, full2mutator,
-			muEF, bool verbose = false,
+			muEF, verbose,
 			Genotypes, popParams);
   } else mumult = 1.0;
 
