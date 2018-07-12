@@ -43,7 +43,7 @@ import(ggplot2)
 importFrom("ggrepel", geom_text_repel, geom_label_repel)
 importFrom("utils", "read.table", "write.table")
 importFrom("stats", "rnorm")
-importFrom("data.table", rbindlist, .rbind.data.table) 
+importFrom("data.table", rbindlist, .rbind.data.table)
 importFrom(Rcpp, evalCpp)
 importFrom("igraph", igraph.to.graphNEL, graph.data.frame, V, E,
            "V<-", "E<-", plot.igraph, layout.reingold.tilford,
@@ -64,8 +64,6 @@ importFrom("dplyr", "full_join", "left_join", "right_join", "%>%", "mutate",
 importFrom("smatr", "ma") ## for major axis regression in some tests
 importFrom("car", "linearHypothesis")
 importFrom("nem", "transitive.reduction")
+importFrom("utils", "combn")
 ## importFrom("slam", "simple_triplet_zero_matrix", ## "colapply_simple_triplet_matrix",
 ##            "col_sums")
-
-
-
