@@ -169,8 +169,7 @@ to_genotFitness_std <- function(x,
 
   ## } else  blabla:
 
-  if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
-    stop("Input must inherit from matrix or data.frame.")
+
 
   ## if((ncol(x) > 2) && !(inherits(x, "matrix"))
   ##     stop(paste0("Genotype fitness input either two-column data frame",
@@ -181,6 +180,10 @@ to_genotFitness_std <- function(x,
   ##                 " a data frame specification."))
 
   if (!frequencyDependentFitness){
+
+    if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
+      stop("Input must inherit from matrix or data.frame.")
+
     if(ncol(x) > 2) {
       if(inherits(x, "matrix")) {
         if(!is.numeric(x))
@@ -289,17 +292,13 @@ to_genotFitness_std <- function(x,
     } else {
       return(x)
     }
-  }
 
-  if (frequencyDependentFitness){
+  }else{
+    if (!inherits(x, "data.frame"))
+      stop(Input must inherit from data.frame.)
 
-    if(inherits(x, "matrix")) {
-      if(!is.numeric(x[-ncol(x)]))
-        stop("All columns except the last one must be numeric.")
-    } else if(inherits(x, "data.frame")) {
       if(!all(unlist(lapply(x[-ncol(x)], is.numeric))))
         stop("All columns except the last one must be numeric.")
-    }
 
     if(!all(unlist(lapply(x[ncol(x)], is.character))))
       stop("All elements in last column must be character.")

@@ -664,14 +664,13 @@ allFitnessORMutatorEffects <- function(rT = NULL,
     } else if(calledBy == "allMutatorEffects") {
       class(out) <- c("mutatorEffects")
     }
-  }
-
-  if(frequencyDependentFitness){
+  }else{
 
     if(is.null(genotFitness)) {
-      genotFitness <- matrix(NA, nrow = 0, ncol = 1)
-      fitnessLandscape_df <- data.frame()
-      fitnessLandscape_gene_id <- data.frame()
+      #genotFitness <- matrix(NA, nrow = 0, ncol = 1)
+      #fitnessLandscape_df <- data.frame()
+      #fitnessLandscape_gene_id <- data.frame()
+      stop("You have a null genotFitness in a frequency dependent fitness situation.")
     } else {
       cnn <- 1:(ncol(genotFitness) - 1)
       gfn <- apply(genotFitness[, -ncol(genotFitness), drop = FALSE], 1,
@@ -930,6 +929,7 @@ allFitnessEffects <- function(rT = NULL,
                               frequencyDependentFitness = FALSE) {
 
   if(!frequencyDependentFitness){
+
     if(!is.null(genotFitness)) {
       if(!is.null(rT) || !is.null(epistasis) ||
          !is.null(orderEffects) || !is.null(noIntGenes) ||
@@ -956,27 +956,28 @@ allFitnessEffects <- function(rT = NULL,
       drvNames = drvNames,
       keepInput = keepInput,
       genotFitness = genotFitness_std,
-      frequencyDependentFitness = FALSE,
-      calledBy = "allFitnessEffects")
-  }
+      calledBy = "allFitnessEffects",
+      frequencyDependentFitness = FALSE)
 
-  if(frequencyDependentFitness){
+  }else{
+
     if(is.null(genotFitness)) {
       stop("You have a null genotFitness in a frequency dependent fitness situation.")
     } else {
       genotFitness_std <- to_genotFitness_std(genotFitness,
-                                              frequencyDependentFitness = TRUE)
+                                              frequencyDependentFitness = TRUE,
+                                              simplify = TRUE)
       allFitnessORMutatorEffects(
-        rT = NULL,
-        epistasis = NULL,
-        orderEffects = NULL,
-        noIntGenes = NULL,
-        geneToModule = NULL,
-        drvNames = NULL,
-        keepInput = NULL,
+        rT = rT,
+        epistasis = epistasis,
+        orderEffects = orderEffects,
+        noIntGenes = noIntGenes,
+        geneToModule = geneToModule,
+        drvNames = drvNames,
+        keepInput = keepInput,
         genotFitness = genotFitness_std,
-        frequencyDependentFitness = TRUE,
-        calledBy = "allFitnessEffects")
+        calledBy = "allFitnessEffects",
+        frequencyDependentFitness = TRUE)
     }
   }
 }
