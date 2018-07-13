@@ -438,8 +438,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                        keepInput = TRUE,
                                        genotFitness = NULL,
                                        ## refFE = NULL,
-                                       frequencyDependentFitness = FALSE,
-                                       calledBy = NULL) {
+                                       calledBy = NULL,
+                                       frequencyDependentFitness = FALSE) {
   ## From allFitnessEffects. Generalized so we deal with Fitness
   ## and mutator.
 
@@ -472,6 +472,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       stop("allMutatorEffects called with forbidden arguments.",
            "Is this an attempt to subvert the function?")
   }
+
   if(!frequencyDependentFitness) {
     rtNames <- NULL
     epiNames <- NULL
@@ -656,7 +657,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape = genotFitness,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
-                fitnessLandscapeVariables = NULL
+                fitnessLandscapeVariables = list()
     )
     if(calledBy == "allFitnessEffects") {
       class(out) <- c("fitnessEffects")
@@ -690,19 +691,19 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       fitnessLandscapeVariables = fVariables(ncol(genotFitness) - 1)
 
     }
-    out <- list(long.rt = NULL,
-                long.epistasis = NULL,
-                long.orderEffects = NULL,
-                long.geneNoInt = NULL,
-                geneModule = c(Root = "Root"), ##Trick to pass countGenesFe>2,
-                gMOneToOne = NULL,
-                geneToModule = NULL,
-                graph = NULL,
-                drv = NULL,
-                rT = NULL,
-                epistasis = NULL,
-                orderEffects = NULL,
-                noIntGenes = NULL,
+    out <- list(long.rt = list(),
+                long.epistasis = list(),
+                long.orderEffects = list(),
+                long.geneNoInt = list(),
+                geneModule = data.frame(Root = "Root"), ##Trick to pass countGenesFe>2,
+                gMOneToOne = TRUE,
+                geneToModule = list(),
+                graph = list(),
+                drv = integer(0),
+                rT = list(),
+                epistasis = list(),
+                orderEffects = list(),
+                noIntGenes = list(),
                 fitnessLandscape = genotFitness,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
@@ -958,6 +959,7 @@ allFitnessEffects <- function(rT = NULL,
       frequencyDependentFitness = FALSE,
       calledBy = "allFitnessEffects")
   }
+
   if(frequencyDependentFitness){
     if(is.null(genotFitness)) {
       stop("You have a null genotFitness in a frequency dependent fitness situation.")
@@ -965,7 +967,6 @@ allFitnessEffects <- function(rT = NULL,
       genotFitness_std <- to_genotFitness_std(genotFitness,
                                               frequencyDependentFitness = TRUE)
       allFitnessORMutatorEffects(
-        genotFitness = genotFitness_std,
         rT = NULL,
         epistasis = NULL,
         orderEffects = NULL,
@@ -973,6 +974,7 @@ allFitnessEffects <- function(rT = NULL,
         geneToModule = NULL,
         drvNames = NULL,
         keepInput = NULL,
+        genotFitness = genotFitness_std,
         frequencyDependentFitness = TRUE,
         calledBy = "allFitnessEffects")
     }
