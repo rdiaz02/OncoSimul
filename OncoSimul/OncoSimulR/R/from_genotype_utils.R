@@ -155,10 +155,10 @@ replaceWithNumbers <- function(str){
 
 ##Modified
 to_genotFitness_std <- function(x,
-                                frequencyDependentFitness,
-                                simplify = TRUE,
-                                min_filter_fitness = 1e-9,
-                                sort_gene_names = TRUE) {
+  frequencyDependentFitness,
+  simplify = TRUE,
+  min_filter_fitness = 1e-9,
+  sort_gene_names = TRUE) {
   ## Would break with output from allFitnessEffects and
   ## output from allGenotypeAndMut
 

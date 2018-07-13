@@ -694,7 +694,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 long.epistasis = NULL,
                 long.orderEffects = NULL,
                 long.geneNoInt = NULL,
-                geneModule = NULL,
+                geneModule = c(Root = "Root"), ##Trick to pass countGenesFe>2,
                 gMOneToOne = NULL,
                 geneToModule = NULL,
                 graph = NULL,
@@ -960,20 +960,21 @@ allFitnessEffects <- function(rT = NULL,
   }
   if(frequencyDependentFitness){
     if(is.null(genotFitness)) {
-      stop("You have a null genotFitness.")
+      stop("You have a null genotFitness in a frequency dependent fitness situation.")
     } else {
       genotFitness_std <- to_genotFitness_std(genotFitness,
                                               frequencyDependentFitness = TRUE)
-      allFitnessORMutatorEffects(genotFitness = genotFitness_std,
-                                 rT = NULL,
-                                 epistasis = NULL,
-                                 orderEffects = NULL,
-                                 noIntGenes = NULL,
-                                 geneToModule = NULL,
-                                 drvNames = NULL,
-                                 keepInput = NULL,
-                                 frequencyDependentFitness = TRUE,
-                                 calledBy = "allFitnessEffects")
+      allFitnessORMutatorEffects(
+        genotFitness = genotFitness_std,
+        rT = NULL,
+        epistasis = NULL,
+        orderEffects = NULL,
+        noIntGenes = NULL,
+        geneToModule = NULL,
+        drvNames = NULL,
+        keepInput = NULL,
+        frequencyDependentFitness = TRUE,
+        calledBy = "allFitnessEffects")
     }
   }
 }
@@ -1431,7 +1432,7 @@ evalGenotypeFitAndMut <- function(genotype,
 ## I am here: simplify this
 
 evalAllGenotypesORMut <- function(fmEffects,
-                                  order = FALSE, 
+                                  order = FALSE,
                                   max = 256,
                                   addwt = FALSE,
                                   model = "",
