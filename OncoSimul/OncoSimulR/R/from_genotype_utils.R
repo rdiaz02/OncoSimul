@@ -127,8 +127,8 @@ from_letters_to_vector_genotype <- function(letters_genotype) {
     stop("All elements must be letters separated by ', '")
 
   letters_genotype <-
-    paste(sort(unlist(strsplit(toupper(letters_genotype), ',') ) ),
-          collapse = ',')
+    paste(sort(unlist(strsplit(toupper(letters_genotype), ', ') ) ),
+          collapse = ', ')
 
   if (letters_genotype == "") {
     vector_genotype <- c()

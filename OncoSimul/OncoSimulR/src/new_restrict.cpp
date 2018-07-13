@@ -1556,7 +1556,7 @@ double evalRGenotype(Rcpp::IntegerVector rG,
   // Can evaluate both ONLY fitness or ONLY mutator. Not both at the same
   // time. Use evalRGenotypeAndMut for that.
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
-	const std::vector<Genotype> Genotypes(0);
+	const std::vector<Genotype> Genotypes(0);//FIXME
 	const std::vector<spParamsP> popParams(0);
 
   if(rG.size() == 0) {
@@ -1603,7 +1603,7 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 
 
   NumericVector out(2);
-	const std::vector<Genotype> Genotypes(0);
+	const std::vector<Genotype> Genotypes(0);//FIXME
 	const std::vector<spParamsP> popParams(0);
 
   // For fitness. Except for "evalGenotypeFromR", all is done as in the
