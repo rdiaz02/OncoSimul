@@ -115,6 +115,7 @@ struct fitnessEffectsAll {
   genesWithoutInt genesNoInt;
   // zz:
   std::vector<std::string> fVars; //New line to store fVars
+  bool frequencyDependentFitness; //New line to discriminate true/false
   fitnessLandscape_struct fitnessLandscape;
 };
 

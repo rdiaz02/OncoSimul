@@ -562,8 +562,9 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List rgm = rFE["geneModule"];
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
-  //Rcpp::List fvars = rFE["fitnessLandscapeVariables"]; //new line
-	Rcpp::CharacterVector fvars = rFE["fitnessLandscapeVariables"];
+  //Rcpp::List fvars = rFE["fitnessLandscapeVariables"];
+	Rcpp::CharacterVector fvars = rFE["fitnessLandscapeVariables"];//new line
+	bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this
   // Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
@@ -576,7 +577,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
 
   // if(fl_df.nrows()) {
   if(fl_df.size()) {//New block to deal with fdf stuff
-		if(fvars.size()){
+		if(fdf){
 			fe.fitnessLandscape = convertFitnessLandscape_fdf(flg, fl_df, fvars);
 		}else{
     		fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
@@ -634,7 +635,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   // cannot trust R gives it sorted
   // check_disable_later
   fe.fVars = as<std::vector<std::string> > (fvars); //new line to insert fVars
-	//fe.fVars = fvars;
+	fe.frequencyDependentFitness = fdf;//new line to insert frequencyDependentFitness
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size(). Bug in R code.");
   }
@@ -1390,6 +1391,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   checkLegitGenotype(ge, F);
 
   std::vector<double> s;
+
   if( (ge.orderEff.size() + ge.epistRtEff.size() +
        ge.rest.size() + ge.flGenes.size()) == 0) {
     Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
@@ -1408,21 +1410,21 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // i.e., s = birth rate - 1;
 
   if(F.fitnessLandscape.NumID.size()) {
-	std::string gs = concatIntsString(ge.flGenes);
-	if(F.fVars.size()){//possible also with Genotype.size()==0 and popParams.size==0 ?
-		if(F.fitnessLandscape.flFDFmap.find(gs) == F.fitnessLandscape.flFDFmap.end()) {
-	      		s.push_back(-1.0);
-		} else {
-	      		s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams) - 1);
+		std::string gs = concatIntsString(ge.flGenes);
+		if(F.frequencyDependentFitness){//possible also with Genotype.size()==0 and popParams.size==0 ?
+			if(F.fitnessLandscape.flFDFmap.find(gs) == F.fitnessLandscape.flFDFmap.end()) {
+	    	s.push_back(-1.0);
+			} else {
+	      s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams) - 1);
 	    	}
-	}else{
-		if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
-	        	s.push_back(-1.0);
-	        } else {
-	      		s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
-	    	}
+		}else{
+			if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
+	   		s.push_back(-1.0);
+	    } else {
+	      s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
+	    }
+		}
 	}
-  }
 
   // Genes without any restriction or epistasis are just genes. No modules.
   // So simple we do it here.

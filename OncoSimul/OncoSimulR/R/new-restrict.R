@@ -657,7 +657,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape = genotFitness,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
-                fitnessLandscapeVariables = list()
+                fitnessLandscapeVariables = list(),
+                frequencyDependentFitness = frequencyDependentFitness
     )
     if(calledBy == "allFitnessEffects") {
       class(out) <- c("fitnessEffects")
@@ -699,7 +700,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 long.orderEffects = list(),
                 long.geneNoInt = data.frame(),
                 geneModule = defaultGeneModuleDF, ##Trick to pass countGenesFe>2,
-                gMOneToOne = TRUE,
+                gMOneToOne = NULL,##If pass FALSE, you get the same effect in C++
                 geneToModule = c(Root = "Root"),
                 graph = list(),
                 drv = integer(0),
@@ -710,7 +711,9 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape = genotFitness,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
-                fitnessLandscapeVariables = fitnessLandscapeVariables)
+                fitnessLandscapeVariables = fitnessLandscapeVariables,
+                frequencyDependentFitness = frequencyDependentFitness
+              )
 
     class(out) <- c("fitnessEffects")
   }
