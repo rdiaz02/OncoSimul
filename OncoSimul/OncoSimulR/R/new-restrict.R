@@ -921,7 +921,6 @@ allFitnessORMutatorEffects <- function(rT = NULL,
 ##     return(out)
 ## }
 
-
 allFitnessEffects <- function(rT = NULL,
                               epistasis = NULL,
                               orderEffects = NULL,
