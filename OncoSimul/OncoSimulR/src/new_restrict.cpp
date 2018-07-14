@@ -562,8 +562,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List rgm = rFE["geneModule"];
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
-  //Rcpp::List fvars = rFE["fitnessLandscapeVariables"];
-	Rcpp::CharacterVector fvars = rFE["fitnessLandscapeVariables"];//new line
+  Rcpp::List fvars = rFE["fitnessLandscapeVariables"];//new line
+	//Rcpp::CharacterVector fvars = rFE["fitnessLandscapeVariables"];//new line
 	bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this
@@ -574,11 +574,11 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   // we need is use the fitness landscape with an index smaller than those
   // of noInt. So we can use noInt with shift being those in fitnessLandscape.
   // BEWARE: will need to modify also createNewGenotype.
-
+	<std::vector<std::string> > fvariables = as<std::vector<std::string> > (fvars);
   // if(fl_df.nrows()) {
   if(fl_df.size()) {//New block to deal with fdf stuff
 		if(fdf){
-			fe.fitnessLandscape = convertFitnessLandscape_fdf(flg, fl_df, fvars);
+			fe.fitnessLandscape = convertFitnessLandscape_fdf(flg, fl_df, fvariables);
 		}else{
     		fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
 			}
@@ -634,7 +634,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   sort(fe.drv.begin(), fe.drv.end()); //should not be needed, but just in case
   // cannot trust R gives it sorted
   // check_disable_later
-  fe.fVars = as<std::vector<std::string> > (fvars); //new line to insert fVars
+  //fe.fVars = as<std::vector<std::string> > (fvars); //new line to insert fVars
+	fe.fVars = fvariables;
 	fe.frequencyDependentFitness = fdf;//new line to insert frequencyDependentFitness
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size(). Bug in R code.");
