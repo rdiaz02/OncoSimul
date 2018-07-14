@@ -456,7 +456,7 @@ fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
 
 fitnessLandscape_struct convertFitnessLandscape_fdf(Rcpp::List flg,
 						    																		Rcpp::List fl_df,
-						    																		Rcpp::List fvars) {
+						    																		Rcpp::StringVector fvars) {
 
   fitnessLandscape_struct flS;
 
@@ -562,8 +562,9 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List rgm = rFE["geneModule"];
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
-  Rcpp::List fvars = rFE["fitnessLandscapeVariables"];//new line
+  //Rcpp::List fvars = rFE["fitnessLandscapeVariables"];//new line
 	//Rcpp::CharacterVector fvars = rFE["fitnessLandscapeVariables"];//new line
+	Rcpp::StringVector fvars = rFE["fitnessLandscapeVariables"];//new line
 	bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this
