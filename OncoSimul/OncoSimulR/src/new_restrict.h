@@ -133,6 +133,7 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.allGenes.resize(0);
   f.drv.resize(0);
   f.fVars.resize(0);//new line to initialize fVars
+  f.frequencyDependentFitness = false;//I am not sure about that
   f.genesNoInt.shift = -99L;
   f.genesNoInt.NumID.resize(0);
   f.genesNoInt.names.resize(0);
