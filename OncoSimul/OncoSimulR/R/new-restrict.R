@@ -657,7 +657,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape = genotFitness,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
-                fitnessLandscapeVariables = list(),
+                fitnessLandscapeVariables = vector(mode = "character", length = 0L),
                 frequencyDependentFitness = frequencyDependentFitness
     )
     if(calledBy == "allFitnessEffects") {
@@ -703,7 +703,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 gMOneToOne = NULL,##If pass FALSE, you get the same effect in C++
                 geneToModule = c(Root = "Root"),
                 graph = list(),
-                drv = integer(0),
+                drv = vector(mode = "integer", length = 0L),
                 rT = NULL,
                 epistasis = NULL,
                 orderEffects = NULL,
