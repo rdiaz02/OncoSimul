@@ -51,24 +51,35 @@ catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 # Installation
 
 
-To use the most recent code that I regard as stable you first need to [use
-a development version of Bioconductor](http://www.bioconductor.org/developers/how-to/useDevel/). Most
-of the time, from R you only need to do:
-
+To use the most recent code in BioConductor, install the devel version.
 
 ```r
-    library(BiocInstaller) 
-    useDevel()
+if (!require("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install("OncoSimulR", version = "devel")
+
 ```
 
-Then the next code will install the development version of the package and
-its dependencies, if needed:
+
+<!-- <\!-- that I regard as stable you first need to [use -\-> -->
+<!-- <\!-- a development version of Bioconductor](http://www.bioconductor.org/developers/how-to/useDevel/). Most -\-> -->
+<!-- <\!-- of the time, from R you only need to do: -\-> -->
 
 
-```r
-    source("http://bioconductor.org/biocLite.R")
-    biocLite("OncoSimulR")
-```
+<!-- ```r -->
+<!--     library(BiocInstaller)  -->
+<!--     useDevel() -->
+
+<!-- ``` -->
+
+<!-- Then the next code will install the development version of the package and -->
+<!-- its dependencies, if needed: -->
+
+
+<!-- ```r -->
+<!--     source("http://bioconductor.org/biocLite.R") -->
+<!--     biocLite("OncoSimulR") -->
+<!-- ``` -->
 
 To start using it:
 
@@ -78,7 +89,8 @@ library(OncoSimulR)
 
 
 
-You can directly install from github:
+You can directly install from github (and this might be newer than the
+BioC code)
 
 ```r
 install.packages("devtools") ## if you don't have it already
