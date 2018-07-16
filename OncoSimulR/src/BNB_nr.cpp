@@ -864,6 +864,14 @@ void addToPhylog(PhylogName& phylog,
 // Use a map for LOD, and overwrite the parent:
 // we only add when the size of the child is 0
 // The key of the map is the child.
+
+// FIXME: we might want to store the time? Not really clear even if that
+// makes sense. We would be storing the last time the child (which had 0
+// size at that time) arose from the parent.
+// A simple kludge is to have two maps, the second with child and time.
+// Or do it properly as map<int, genot_time_struct>
+// genot_time_struct {string parent; double time}
+
 void addToLOD(std::map<std::string, std::string>& lod,
 	      const Genotype& parent,
 	      const Genotype& child,

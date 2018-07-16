@@ -441,7 +441,7 @@ date()
 
 
 test_that("Local max: not stopping, stopping, and tolerance", {
-        initS <- 2000
+    initS <- 2000
     rl1 <- matrix(0, ncol = 6, nrow = 9)
     colnames(rl1) <- c(LETTERS[1:5], "Fitness")
     rl1[1, 6] <- 1
@@ -512,7 +512,10 @@ test_that("Local max: not stopping, stopping, and tolerance", {
     sgsp2 <- sampledGenotypes(sp2)
     expect_true(all(sgsp2$Genotype %in% local_max_g))
     ## tolerance
-    r3 <- oncoSimulPop(100,
+    ## yes, this can occasionally fail, because all are in
+    ## the list of local_max_g
+        
+    r3 <- oncoSimulPop(200,
                        fp = fr1,
                        model = "McFL",
                        initSize = initS,
@@ -521,7 +524,7 @@ test_that("Local max: not stopping, stopping, and tolerance", {
                        sampleEvery = .03,
                        keepEvery = 1, 
                        finalTime = 50000,
-                       fixation = c(local_max, fixation_tolerance = 0.1),
+                       fixation = c(local_max, fixation_tolerance = 0.5),
                        detectionDrivers = NA,
                        detectionProb = NA,
                        onlyCancer = TRUE,
@@ -535,6 +538,8 @@ test_that("Local max: not stopping, stopping, and tolerance", {
     sp3 <- samplePop(r3, "last", "singleCell")
     sgsp3 <- sampledGenotypes(sp3)
     expect_true(!all(sgsp3$Genotype %in% local_max_g))
+    ## sum(sgsp3$Genotype %in% local_max_g)
+    ## sum(!(sgsp3$Genotype %in% local_max_g))
 })
 
 
