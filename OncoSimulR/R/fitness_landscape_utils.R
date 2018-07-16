@@ -17,7 +17,8 @@
 ##     plot.genotype_fitness_matrix <- plotFitnessLandscape 
 
 ## FIXME: show only accessible paths? 
-
+## FIXME: when show_labels = FALSE we still show the boxes
+##        and some of the labels.!!!
 ## FIXME: if using only_accessible, maybe we
 ## can try to use fast_peaks, and use the slower
 ## approach as fallback (if identical fitness)
