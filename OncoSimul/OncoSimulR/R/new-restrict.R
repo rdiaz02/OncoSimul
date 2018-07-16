@@ -700,7 +700,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 long.orderEffects = list(),
                 long.geneNoInt = data.frame(),
                 geneModule = defaultGeneModuleDF, ##Trick to pass countGenesFe>2,
-                gMOneToOne = NULL,##If pass FALSE, you get the same effect in C++
+                gMOneToOne = TRUE,##If pass FALSE, you get the same effect in C++?
                 geneToModule = c(Root = "Root"),
                 graph = list(),
                 drv = vector(mode = "integer", length = 0L),
