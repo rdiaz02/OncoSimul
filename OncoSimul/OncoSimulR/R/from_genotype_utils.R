@@ -155,7 +155,7 @@ replaceWithNumbers <- function(str){
 
 ##Modified
 to_genotFitness_std <- function(x,
-  frequencyDependentFitness,
+  frequencyDependentFitness = FALSE,
   simplify = TRUE,
   min_filter_fitness = 1e-9,
   sort_gene_names = TRUE) {
