@@ -294,13 +294,14 @@ to_genotFitness_std <- function(x,
     }
 
   }else{
+
     if (!inherits(x, "data.frame"))
       stop("Input must inherit from data.frame.")
 
-      if(!all(unlist(lapply(x[-ncol(x)], is.numeric))))
-        stop("All columns except the last one must be numeric.")
+    if(!all(unlist(lapply(x[, -ncol(x)], is.numeric))))
+      stop("All columns except the last one must be numeric.")
 
-    if(!all(unlist(lapply(x[ncol(x)], is.character))))
+    if(!all(unlist(lapply(x[, ncol(x)], is.character))))
       stop("All elements in last column must be character.")
 
     if(any(duplicated(colnames(x))))
@@ -341,48 +342,34 @@ to_genotFitness_std <- function(x,
     locsLetters <- gregexpr("f\\(([aA-zZ]?,? ?)*\\)", x[, ncol(x)])
     locsNumbers <- gregexpr("f\\(([0-9]?,? ?)*\\)", x[, ncol(x)])
     genesVectorLetters <-
-      unique(unlist(strsplit(unlist(sapply(regmatches(x[, ncol(x)], locsLetters),
-                                                               function(x){sub(".*\\((.*)\\).*",
-                                                                               "\\1",
-                                                                               x)})),
-                                                 ", ")))
+      unique(toupper(unlist(strsplit(unlist(sapply(regmatches(x[, ncol(x)], locsLetters),
+                                           function(x){sub(".*\\((.*)\\).*",
+                                                           "\\1",
+                                                           x)})),
+                             ", "))))
     genesVectorNumbers <-
       unique(unlist(strsplit(unlist(sapply(regmatches(x[, ncol(x)], locsNumbers),
-                                                               function(x){sub(".*\\((.*)\\).*"
-                                                                               ,"\\1",
-                                                                               x)})),
-                                                 ", ")))
-
-    if (is.null(genesVectorLetters) && is.null(genesVectorNumbers))
-      stop(paste0("Fitness column has a wrong formulation.",
-                  "No fitness variables found or uncorrectly specified"))
-
-    if(all(genesVectorLetters %in% c(LETTERS,  letters, ""))) {
-      genotypesBy = "letters"
-    }else if(is.numeric(locsNumbers)) {
-      genotypesBy = "numbers"
-    }else{
-      stop("All genotypes must be letters or integers separated by ', '.")
-    }
-
-    if(genotypesBy == "letters") {
-      locs <- gregexpr("f\\(([aA-zZ],? ?)*\\)", x[, ncol(x)])
-      lettersGenesVector <-
-        sort(unlist(strsplit(gsub(".*\\((.*)\\).*",
-                                  "\\1",
-                                  unlist(regmatches(x[, ncol(x)], locs))),
+                                           function(x){sub(".*\\((.*)\\).*"
+                                                           ,"\\1",
+                                                           x)})),
                              ", ")))
-      lastLetter <- tolower(lettersGenesVector[length(lettersGenesVector)])
-      n_max <- match(lastLetter, letters)
 
-      if(n_max > ncol(x) - 1)
-        stop("Gene's letters in fitness column must match with columns number")
-
-      fitnessColumn <- sapply(x[, ncol(x)], function(x) replaceWithNumbers(x))
-      x[, ncol(x)] <- fitnessColumn
+    if(any(strtoi(genesVectorNumbers) == 0)) {
+      stop("WT genotype must be empty character, never 0.")
     }
+
+    if ( (length(genesVectorNumbers) > ncol(x)-1) |
+         (length(genesVectorLetters) > ncol(x)-1) ){
+      stop(paste0("Gene's letters or numbers in fitness column ",
+                  "must match with columns number"))
+    }
+
+    fitnessColumn <- sapply(x[, ncol(x)], function(x) replaceWithNumbers(x))
+    x[, ncol(x)] <- fitnessColumn
+
     return(x)
   }
+
 }
 
 ## Deprecated after flfast
