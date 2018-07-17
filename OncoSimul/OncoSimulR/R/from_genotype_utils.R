@@ -356,7 +356,7 @@ to_genotFitness_std <- function(x,
     if (is.null(genesVectorLetters) && is.null(genesVectorNumbers))
       stop(paste0("Fitness column has a wrong formulation.",
                   "No fitness variables found or uncorrectly specified"))
-                  
+
     if(all(genesVectorLetters %in% c(LETTERS,  letters, ""))) {
       genotypesBy = "letters"
     }else if(is.numeric(locsNumbers)) {
