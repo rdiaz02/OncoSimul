@@ -2096,11 +2096,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   POM pom;
 
   // Mutator effects
-  fitnessEffectsAll muEF;
-  if( (full2mutator.size() != 0) )
-    muEF = convertFitnessEffects(MMUEF);
-  else
-    muEF = nullFitnessEffects();
+	fitnessEffectsAll muEF;
+  if( (full2mutator.size() != 0) ){
+		muEF = convertFitnessEffects(MMUEF);
+	}else{
+		muEF = nullFitnessEffects();
+		muEF.frequencyDependentFitness = fitnessEffects.frequencyDependentFitness;
+			}
   // Paranoia. We should never end up here.
   if( (full2mutator.size() != 0) && (muEF.genomeSize == 0))
     throw std::logic_error("full2mutator > 0 with mutatorEffects.genomesize 0");
