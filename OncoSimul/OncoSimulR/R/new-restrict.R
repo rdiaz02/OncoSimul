@@ -422,9 +422,9 @@ fVariables <- function (g) {
     combinationsList <- append(combinationsList,
                                combn(1:g, i, list, simplify = TRUE))
   }
-  fsVector <- paste0(sapply(sapply(combinationsList,
-                                   function(x) paste0(x, collapse = ", ")),
-                            function(x) paste0("f(", x)), ")")
+  fsVector <-sapply(sapply(combinationsList,
+                           function(x) paste0(x, collapse = "_")),
+                    function(x) paste0("f_", x))
 
   return (fsVector)
 }
@@ -700,7 +700,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 long.orderEffects = list(),
                 long.geneNoInt = data.frame(),
                 geneModule = defaultGeneModuleDF, ##Trick to pass countGenesFe>2,
-                gMOneToOne = TRUE,##If pass FALSE, you get the same effect in C++?
+                gMOneToOne = TRUE,
                 geneToModule = c(Root = "Root"),
                 graph = list(),
                 drv = vector(mode = "integer", length = 0L),

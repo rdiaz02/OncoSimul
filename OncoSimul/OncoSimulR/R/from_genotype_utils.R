@@ -339,33 +339,17 @@ to_genotFitness_std <- function(x,
     if(any(is.na(x)))
       stop("NAs in fitness matrix")
 
-    locsLetters <- gregexpr("f\\(([aA-zZ]?,? ?)*\\)", x[, ncol(x)])
-    locsNumbers <- gregexpr("f\\(([0-9]?,? ?)*\\)", x[, ncol(x)])
-    genesVectorLetters <-
-      unique(toupper(unlist(strsplit(unlist(sapply(regmatches(x[, ncol(x)], locsLetters),
-                                           function(x){sub(".*\\((.*)\\).*",
-                                                           "\\1",
-                                                           x)})),
-                             ", "))))
-    genesVectorNumbers <-
-      unique(unlist(strsplit(unlist(sapply(regmatches(x[, ncol(x)], locsNumbers),
-                                           function(x){sub(".*\\((.*)\\).*"
-                                                           ,"\\1",
-                                                           x)})),
-                             ", ")))
+    pattern <- regex("f_(\\d*_*)*")
 
-    if(any(strtoi(genesVectorNumbers) == 0)) {
-      stop("WT genotype must be empty character, never 0.")
+    regularExpressionVector <-
+      unique(unlist(lapply(x[, ncol(x)],
+                           function(z) {str_extract_all(string = z,
+                                                        pattern = pattern)})))
+
+    if((!all(regularExpressionVector %in% fVariables(ncol(x) - 1))) |
+       !(length(intersect(regularExpressionVector, fVariables(ncol(x) - 1)) >= 1) )){
+      stop("There are some errors in fitness column")
     }
-
-    if ( (length(genesVectorNumbers) > ncol(x)-1) |
-         (length(genesVectorLetters) > ncol(x)-1) ){
-      stop(paste0("Gene's letters or numbers in fitness column ",
-                  "must match with columns number"))
-    }
-
-    fitnessColumn <- sapply(x[, ncol(x)], function(x) replaceWithNumbers(x))
-    x[, ncol(x)] <- fitnessColumn
 
     return(x)
   }

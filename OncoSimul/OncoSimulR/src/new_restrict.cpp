@@ -1392,9 +1392,12 @@ double evalGenotypeFDFitnessEcuation(Genotype ge,
 	                error.diagnostic.c_str())
 					<< std::endl;
 	      }
-				throw std::invalid_argument("Wrong evalGenotypeFDFitnessEcuation evaluation");
+				std::string errorMessage1 = "Wrong evalGenotypeFDFitnessEcuation evaluation, ";
+				std::string errorMessage2 = "probably bad fitness columm especification.";
+				std::string errorMessage = errorMessage1 + errorMessage2;
+				throw std::invalid_argument(errorMessage);
 	  }
-		
+
   f = expression.value();
 
   return f;
