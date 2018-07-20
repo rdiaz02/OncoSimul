@@ -1376,9 +1376,25 @@ double evalGenotypeFDFitnessEcuation(Genotype ge,
   expression_t expression;
   expression.register_symbol_table(symbol_table);
 
-  parser_t parser;
-  parser.compile(expr_string, expression);
+	parser_t parser;
+	parser.compile(expr_string, expression);
 
+	if (!parser.compile(expr_string,expression)){
+				Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
+	      for (std::size_t i = 0; i < parser.error_count(); ++i){
+	         typedef exprtk::parser_error::type error_t;
+	         error_t error = parser.get_error(i);
+	         Rcpp::Rcout <<
+					 printf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s\n",
+	                i,
+	                error.token.position,
+	                exprtk::parser_error::to_str(error.mode).c_str(),
+	                error.diagnostic.c_str())
+					<< std::endl;
+	      }
+				throw std::invalid_argument("Wrong evalGenotypeFDFitnessEcuation evaluation");
+	  }
+		
   f = expression.value();
 
   return f;
@@ -1394,8 +1410,8 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 
   std::vector<double> s;
 
-  if( (ge.orderEff.size() + ge.epistRtEff.size() +
-       ge.rest.size() + ge.flGenes.size()) == 0) {
+	if( ((ge.orderEff.size() + ge.epistRtEff.size() +
+       ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
     Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
     // s.push_back(1.0); //Eh??!! 1? or 0? FIXME It should be empty! and have prodFitness
     // deal with it.
