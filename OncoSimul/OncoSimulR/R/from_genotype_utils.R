@@ -120,39 +120,6 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 ## but if we are passed a fitness landscapes as produced by
 ## rfitness, do nothing
 
-##New function
-from_letters_to_vector_genotype <- function(letters_genotype) {
-
-  if(!all(unlist(strsplit(letters_genotype, ', ' ) ) %in% c(LETTERS,  letters, "")))
-    stop("All elements must be letters separated by ', '")
-
-  letters_genotype <-
-    paste(sort(unlist(strsplit(toupper(letters_genotype), ', ') ) ),
-          collapse = ', ')
-
-  if (letters_genotype == "") {
-    vector_genotype <- c()
-  }else{
-    vector_genotype <- sapply(unlist(strsplit(letters_genotype, ', ') ),
-                              function(x) {which(x == LETTERS ) },
-                              USE.NAMES = FALSE  )
-  }
-  return (as.vector(vector_genotype))
-}
-
-##New function
-replaceWithNumbers <- function(str){
-  locs <- gregexpr("f\\(([aA-zZ],? ?)*\\)", str)
-  regmatches(str, locs) <- list(sapply(regmatches(str, locs)[[1]], function(x) {
-    paste0("f(",
-           toString(from_letters_to_vector_genotype(sub(".*\\((.*)\\).*",
-                                                        "\\1",
-                                                        x))),
-           ")")
-  }))
-  return(str)
-}
-
 ##Modified
 to_genotFitness_std <- function(x,
   frequencyDependentFitness = FALSE,
