@@ -306,11 +306,11 @@ to_genotFitness_std <- function(x,
     if(any(is.na(x)))
       stop("NAs in fitness matrix")
 
-    pattern <- regex("f_(\\d*_*)*")
+    pattern <- stringr::regex("f_(\\d*_*)*")
 
     regularExpressionVector <-
       unique(unlist(lapply(x[, ncol(x)],
-                           function(z) {str_extract_all(string = z,
+                           function(z) {stringr::str_extract_all(string = z,
                                                         pattern = pattern)})))
 
     if((!all(regularExpressionVector %in% fVariables(ncol(x) - 1))) |
