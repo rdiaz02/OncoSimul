@@ -1281,7 +1281,7 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
   return s;
 }
 
-double frequency(int pos, std::vector<spParamsP>& popParams){
+double frequency(const int& pos, const std::vector<spParamsP>& popParams){
 
   double fqc;
   double numerator = popParams[pos].popSize;
@@ -1296,21 +1296,33 @@ double frequency(int pos, std::vector<spParamsP>& popParams){
 }
 
 //This function returns 0 if genotype is not in Genotypes and position+1 otherwise
-int findPositionInGenotypes(std::vector<Genotype>& Genotypes,
-	std::vector<int> genotype){
-  int index;
-  for(size_t i = 0; i < Genotypes.size(); i++){
-	if(Genotypes[i].flGenes == genotype){
-      		index = i+1;
-    	}else{
-      		index = 0;
-    	}
-  }
+int findPositionInGenotypes(const std::vector<Genotype>& Genotypes,
+	const std::vector<int> genotype){
+
+		int index;
+
+		std::vector<std::vector<int> > flGenesInGenotypes;
+	for(size_t i = 0; i < Genotypes.size(); i++){
+		flGenesInGenotypes.push_back(Genotypes[i].flGenes);
+	}
+
+	int pos = std::find(flGenesInGenotypes.begin(),
+	  flGenesInGenotypes.end(), genotype) - flGenesInGenotypes.begin();
+
+	int unsigned size = flGenesInGenotypes.size();
+
+	if(pos < size)
+		index = pos + 1;
+	else
+		index = 0;
+
+	int index;
+
   return index;
 }
 
 //This function works oposite to concatIntsString #include <sstream>
-std::vector<int> stringVectorToIntVector(std::string str){
+std::vector<int> stringVectorToIntVector(const std::string str){
 
   std::vector<int> vector;
   std::stringstream ss(str);
@@ -1326,16 +1338,16 @@ std::vector<int> stringVectorToIntVector(std::string str){
 }
 
 //This function produce the map (structure) that link fVars (keys) to its frequencies (values)
-evalFVars_struct evalFVars(fitnessEffectsAll& F,
-			   									 std::vector<Genotype>& Genotypes,
-		           						 std::vector<spParamsP>& popParams){
+evalFVars_struct evalFVars(const fitnessEffectsAll& F,
+			   									 const std::vector<Genotype>& Genotypes,
+		           						 const std::vector<spParamsP>& popParams){
 
 	evalFVars_struct efvs;
 	std::map<std::string, std::string> fvarsmap = F.fitnessLandscape.flfVarsmap;
 
-	for(const auto& Pair : fvarsmap) {
-		std::vector<int> genotype = stringVectorToIntVector(Pair.first);//genotype (as int vector)
-		std::string var = Pair.second;//variable associated to genotype
+	for(const auto& iterator : fvarsmap) {
+		std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
+		std::string var = iterator.second;//variable associated to genotype
 		int position = findPositionInGenotypes(Genotypes, genotype);
 			if(position != 0){
 				int realPos = position - 1;
@@ -1350,14 +1362,16 @@ evalFVars_struct evalFVars(fitnessEffectsAll& F,
 	return efvs;
 }
 
-double evalGenotypeFDFitnessEcuation(Genotype ge,
-	fitnessEffectsAll F,
-	std::vector<Genotype> Genotypes,
-	std::vector<spParamsP> popParams){
+double evalGenotypeFDFitnessEcuation(const Genotype& ge,
+	const fitnessEffectsAll& F,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams){
 
   double f;
 
   evalFVars_struct symbol_table_struct = evalFVars(F, Genotypes, popParams);
+
+	std::map<std::string, double> EFVMap = symbol_table_struct.evalFVarsmap;
 
   std::string gs = concatIntsString(ge.flGenes);
 
@@ -1367,9 +1381,9 @@ double evalGenotypeFDFitnessEcuation(Genotype ge,
   typedef exprtk::expression<double> expression_t;
   typedef exprtk::parser<double> parser_t;
 
-  symbol_table_t symbol_table;
-  for(auto& Pair : symbol_table_struct.evalFVarsmap){
-  	symbol_table.add_variable(Pair.first, Pair.second);
+	symbol_table_t symbol_table;
+  for(auto& iterator : EFVMap){
+		symbol_table.add_variable(iterator.first, iterator.second);
   }
   symbol_table.add_constants();
 
@@ -1379,7 +1393,7 @@ double evalGenotypeFDFitnessEcuation(Genotype ge,
 	parser_t parser;
 	parser.compile(expr_string, expression);
 
-	if (!parser.compile(expr_string,expression)){
+	if (!parser.compile(expr_string, expression)){
 				Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
 	      for (std::size_t i = 0; i < parser.error_count(); ++i){
 	         typedef exprtk::parser_error::type error_t;

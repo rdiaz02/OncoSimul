@@ -54,8 +54,8 @@ void nr_fitness(spParamsP& tmpP,
 		const Genotype& ge,
 		const fitnessEffectsAll& F,
 		const TypeModel typeModel,
-		const std::vector<Genotype>& Genotypes,
-	  const std::vector<spParamsP>& popParams) {
+		std::vector<Genotype>& Genotypes,
+	  std::vector<spParamsP>& popParams) {
 		       // const double& genTime,
 		       // const double& adjust_fitness_B,
 		       // const double& adjust_fitness_MF) {
@@ -73,6 +73,11 @@ void nr_fitness(spParamsP& tmpP,
   // viability" (anything with death > 99)
 
   // The ones often used are bozic1, exp, mcfarlandlog
+
+	if(F.frequencyDependentFitness){
+		popParams.push_back(tmpP);
+		Genotypes.push_back(ge);
+	}
 
   if(typeModel == TypeModel::bozic1) {
     tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F, Genotypes, popParams));
@@ -106,6 +111,10 @@ void nr_fitness(spParamsP& tmpP,
       // }
     }
   }
+	if(F.frequencyDependentFitness){
+		popParams.pop_back();
+		Genotypes.pop_back();
+	}
   // Exp and McFarland and McFarlandlog are also like Datta et al., 2013
   // An additional driver gene mutation increases a cell’s fitness by a
   // factor of (1+sd), whereas an additional housekeeper gene mutation
@@ -1259,7 +1268,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
     addToPOM(pom, Genotypes[0], intName, genesInFitness);
-  } else { //no initMutant
+	} else { //no initMutant
     popParams[0].numMutablePos = numGenes;
 
     // if(typeModel == TypeModel::beerenwinkel) {
@@ -1286,26 +1295,42 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     //   // no need to call updateRates
     // } else if(typeModel == TypeModel::mcfarlandlog) {
     if(typeModel == TypeModel::mcfarlandlog) {
-      popParams[0].birth = 1.0;
+
+			if(fitnessEffects.frequencyDependentFitness){
+				popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+					fitnessEffects, Genotypes, popParams));
+			}else{
+				popParams[0].birth = 1.0;
+			}
       popParams[0].death = log1p(totPopSize/K);
       // no need to call updateRates
+
     } else if(typeModel == TypeModel::bozic1) {
-       popParams[0].birth = 1.0;
-       popParams[0].death = 1.0;
+
+			if(fitnessEffects.frequencyDependentFitness){
+ 				popParams[0].birth = prodDeathFitness(evalGenotypeFitness(Genotypes[0],
+ 					fitnessEffects, Genotypes, popParams));
+ 			}else{
+				popParams[0].birth = 1.0;
+
+			}
+      popParams[0].death = 1.0;
     // } else if (typeModel == TypeModel::bozic2) {
     //   popParams[0].birth = 0.5/genTime;
     //   popParams[0].death = 0.5/genTime;
     } else if (typeModel == TypeModel::exp) {
-      popParams[0].birth = 1.0;
+
+			if(fitnessEffects.frequencyDependentFitness){
+				popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+					fitnessEffects, Genotypes, popParams));
+			}else{
+				popParams[0].birth = 1.0;
+			}
       popParams[0].death = death;
     } else {
       throw std::invalid_argument("this ain't a valid typeModel");
     }
   }
-
-
-
-
 
   // // these lines (up to, and including, R_F_st)
   // // not needed with mcfarland0 or beerenwinkel
