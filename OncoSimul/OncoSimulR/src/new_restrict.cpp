@@ -1626,6 +1626,8 @@ double evalRGenotype(Rcpp::IntegerVector rG,
 		return 1;
 	}
 
+	std::vector<Genotype> Genotypes;
+  std::vector<spParamsP> popParams;
 	if(fdf){
 		//std::vector<int> spPopSizes;
 		//spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
@@ -1633,12 +1635,12 @@ double evalRGenotype(Rcpp::IntegerVector rG,
 		Rcpp::List fl_df = rFE["fitnessLandscape_df"];
 		std::vector<std::string> genotNames =
 	    Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
-		std::vector<Genotype> Genotypes = genotypesFromScratch(genotNames);
-		std::vector<spParamsP> popParams = popParamsFromScratch(spPopSizes);
-	}else{
-		const std::vector<Genotype> Genotypes(0);
-		const std::vector<spParamsP> popParams(0);
-	}
+		Genotypes = genotypesFromScratch(genotNames);
+		popParams = popParamsFromScratch(spPopSizes);
+	}//else{
+		//const std::vector<Genotype> Genotypes(0);
+		//const std::vector<spParamsP> popParams(0);
+	//}
 
   //const Rcpp::List rF(rFE);
   fitnessEffectsAll F = convertFitnessEffects(rFE);
@@ -1679,7 +1681,7 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 
 
   NumericVector out(2);
-	const std::vector<Genotype> Genotypes(0);//FIXME
+	const std::vector<Genotype> Genotypes(0);
 	const std::vector<spParamsP> popParams(0);
 
   // For fitness. Except for "evalGenotypeFromR", all is done as in the

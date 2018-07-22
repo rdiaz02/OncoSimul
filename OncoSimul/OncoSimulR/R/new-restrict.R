@@ -1325,7 +1325,7 @@ evalGenotype <- function(genotype,
              "You did not pass an object of class fitnessEffects.")
 
    if (fitnessEffects$frequencyDependentFitness) {
-     if (is.null(fitnessEffects$spPopSizes)))
+     if (is.null(fitnessEffects$spPopSizes))
       stop("You have a NULL spPopSizes")
     if (!(length(fitnessEffects$spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
       stop("spPopSizes must be as long as number of genotypes")
