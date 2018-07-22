@@ -1627,12 +1627,13 @@ double evalRGenotype(Rcpp::IntegerVector rG,
 	}
 
 	if(fdf){
-		std::vector<int> spPopSizes;
-		spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
+		//std::vector<int> spPopSizes;
+		//spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
+		std::vector<int> spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
 		Rcpp::List fl_df = rFE["fitnessLandscape_df"];
 		std::vector<std::string> genotNames =
 	    Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
-		std::vector<Genotype> Genotypes = genotypesFromScratch(genotNames);//FIXME
+		std::vector<Genotype> Genotypes = genotypesFromScratch(genotNames);
 		std::vector<spParamsP> popParams = popParamsFromScratch(spPopSizes);
 	}else{
 		const std::vector<Genotype> Genotypes(0);
