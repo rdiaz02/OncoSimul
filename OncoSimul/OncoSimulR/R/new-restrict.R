@@ -1475,10 +1475,10 @@ evalAllGenotypesORMut <- function(fmEffects,
         stop("You are trying to get the mutator effects of a fitness specification. ",
              "You did not pass an object of class mutatorEffects.")
 
-    if (fitnessEffects$frequencyDependentFitness) {
-        if (is.null(fitnessEffects$spPopSizes))
+    if (fmEffects$frequencyDependentFitness) {
+        if (is.null(fmEffects$spPopSizes))
          stop("You have a NULL spPopSizes")
-        if (!(length(fitnessEffects$spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
+        if (!(length(fmEffects$spPopSizes) == nrow(fmEffects$fitnessLandscape)))
           stop("spPopSizes must be as long as number of genotypes")
     }
 
@@ -1557,7 +1557,7 @@ evalAllGenotypesORMut <- function(fmEffects,
     }else{
       genotypes <- allg$genotNames
     }
-                 
+
     df <- data.frame(Genotype = genotypes,
                      Fitness = allf,
                      stringsAsFactors = FALSE)
@@ -1570,6 +1570,7 @@ evalAllGenotypesORMut <- function(fmEffects,
     if(addwt & !fmEffects$frequencyDependentFitness)
         df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
                                stringsAsFactors = FALSE), df)
+
     if(calledBy_ == "evalGenotype") {
         if(prodNeg)
             colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
@@ -1578,6 +1579,7 @@ evalAllGenotypesORMut <- function(fmEffects,
         colnames(df)[match("Fitness", colnames(df))] <- "MutatorFactor"
         class(df) <- c("evalAllGenotypesMut", class(df))
     }
+
     return(df)
 }
 
