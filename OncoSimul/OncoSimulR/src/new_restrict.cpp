@@ -1581,7 +1581,7 @@ double evalMutator(const Genotype& fullge,
   }
 }
 
-std::vector<Genotype> GenotypesFromScratch(const std::vector<std::string>& genotNames){
+std::vector<Genotype> genotypesFromScratch(const std::vector<std::string>& genotNames){
 
   std::vector<Genotype> genotypesVector;
 
