@@ -1475,12 +1475,17 @@ evalAllGenotypesORMut <- function(fmEffects,
         stop("You are trying to get the mutator effects of a fitness specification. ",
              "You did not pass an object of class mutatorEffects.")
 
+    if (fitnessEffects$frequencyDependentFitness) {
+        if (is.null(fitnessEffects$spPopSizes))
+         stop("You have a NULL spPopSizes")
+        if (!(length(fitnessEffects$spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
+          stop("spPopSizes must be as long as number of genotypes")
+    }
+
 
 
     ## if(!minimal)
-    allg <- generateAllGenotypes(fitnessEffects = fmEffects,
-                                 order = order,
-                                 max = max)
+
     ## else
         ## allg <- generateAllGenotypes_minimal(fitnessEffects = fmEffects,
         ##                                      max = max)
@@ -1531,6 +1536,10 @@ evalAllGenotypesORMut <- function(fmEffects,
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
+
+    allg <- generateAllGenotypes(fitnessEffects = fmEffects,
+                                 order = order,
+                                 max = max)
     allf <- vapply(allg$genotNums,
                    function(x) evalRGenotype(x,
                                              fmEffects,
@@ -1538,7 +1547,19 @@ evalAllGenotypesORMut <- function(fmEffects,
                                              prodNeg,
                                              calledBy_),
                    1.1)
-    df <- data.frame(Genotype = allg$genotNames, Fitness = allf,
+
+
+    if (fmEffects$frequencyDependentFitness){
+      evalWT <- evalRGenotype(vector(mode = "integer", length = 0L),
+                              fmEffects, FALSE, prodNeg, calledBy_)
+      allf <- c(evalWT, allf)
+      genotypes <- c("WT", allg$genotNames)
+    }else{
+      genotypes <- allg$genotNames
+    }
+                 
+    df <- data.frame(Genotype = genotypes,
+                     Fitness = allf,
                      stringsAsFactors = FALSE)
     ## Why am I doing this? I am not computing the genotype.  I test the
     ## evaluation of the empty genotype in the tests. But its evaluation
@@ -1546,7 +1567,7 @@ evalAllGenotypesORMut <- function(fmEffects,
     ## C++) this thing has a fitness of 1, a mutator effect of 1 since
     ## there are no terms.
 
-    if(addwt)
+    if(addwt & !fmEffects$frequencyDependentFitness)
         df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
                                stringsAsFactors = FALSE), df)
     if(calledBy_ == "evalGenotype") {
