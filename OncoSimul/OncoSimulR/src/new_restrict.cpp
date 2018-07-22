@@ -1316,8 +1316,6 @@ int findPositionInGenotypes(const std::vector<Genotype>& Genotypes,
 	else
 		index = 0;
 
-	int index;
-
   return index;
 }
 
