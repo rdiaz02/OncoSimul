@@ -439,7 +439,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                        genotFitness = NULL,
                                        ## refFE = NULL,
                                        calledBy = NULL,
-                                       frequencyDependentFitness = FALSE) {
+                                       frequencyDependentFitness = FALSE,
+                                       spPopSizes = NULL) {
   ## From allFitnessEffects. Generalized so we deal with Fitness
   ## and mutator.
 
@@ -658,7 +659,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
                 fitnessLandscapeVariables = vector(mode = "character", length = 0L),
-                frequencyDependentFitness = frequencyDependentFitness
+                frequencyDependentFitness = frequencyDependentFitness,
+                spPopSizes = vector(mode = "integer", length = 0L)
     )
     if(calledBy == "allFitnessEffects") {
       class(out) <- c("fitnessEffects")
@@ -691,6 +693,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       fitnessLandscapeVariables = fVariables(ncol(genotFitness) - 1)
 
     }
+
+
     defaultGeneModuleDF <- data.frame(Gene = "Root",
                                       Module = "Root",
                                       GeneNumID = 0,
@@ -712,7 +716,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
                 fitnessLandscapeVariables = fitnessLandscapeVariables,
-                frequencyDependentFitness = frequencyDependentFitness
+                frequencyDependentFitness = frequencyDependentFitness,
+                spPopSizes = spPopSizes
               )
 
     class(out) <- c("fitnessEffects")
@@ -932,7 +937,8 @@ allFitnessEffects <- function(rT = NULL,
                               drvNames = NULL,
                               genotFitness = NULL,
                               keepInput = TRUE,
-                              frequencyDependentFitness = FALSE) {
+                              frequencyDependentFitness = FALSE,
+                              spPopSizes = NULL) {
 
   if(!frequencyDependentFitness){
 
@@ -963,7 +969,8 @@ allFitnessEffects <- function(rT = NULL,
       keepInput = keepInput,
       genotFitness = genotFitness_std,
       calledBy = "allFitnessEffects",
-      frequencyDependentFitness = FALSE)
+      frequencyDependentFitness = FALSE,
+      spPopSizes = spPopSizes)
 
   }else{
 
@@ -983,7 +990,8 @@ allFitnessEffects <- function(rT = NULL,
         keepInput = keepInput,
         genotFitness = genotFitness_std,
         calledBy = "allFitnessEffects",
-        frequencyDependentFitness = TRUE)
+        frequencyDependentFitness = TRUE,
+        spPopSizes = spPopSizes)
     }
   }
 }
@@ -1315,6 +1323,14 @@ evalGenotype <- function(genotype,
     if(inherits(fitnessEffects, "mutatorEffects"))
          stop("You are trying to get the fitness of a mutator specification. ",
              "You did not pass an object of class fitnessEffects.")
+
+   if (fitnessEffects$frequencyDependentFitness) {
+     if (is.null(fitnessEffects$spPopSizes)))
+      stop("You have a NULL spPopSizes")
+    if (!(length(fitnessEffects$spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
+      stop("spPopSizes must be as long as number of genotypes")
+   }
+
 
     evalGenotypeORMut(genotype = genotype,
                        fmEffects = fitnessEffects,

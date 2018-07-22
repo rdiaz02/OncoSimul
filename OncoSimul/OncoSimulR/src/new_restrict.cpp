@@ -1581,6 +1581,32 @@ double evalMutator(const Genotype& fullge,
   }
 }
 
+std::vector<Genotype> GenotypesFromScratch(const std::vector<std::string>& genotNames){
+
+  std::vector<Genotype> genotypesVector;
+
+	for(size_t i = 0; i != genotNames.size(); ++i){
+		//Genotype genotype = wtGenotype();
+		Genotype genotype;
+		genotype.flGenes = stringVectorToIntVector(genotNames[i]);
+		genotypesVector.push_back(genotype);
+	}
+
+	return genotypesVector;
+}
+
+std::vector<spParamsP> popParamsFromScratch(const std::vector<int>& spPopSizes){
+
+	std::vector<spParamsP> popParamsVector;
+
+	for(size_t i = 0; i != spPopSizes.size(); ++i){
+		spParamsP spparams;
+		spparams.popSize = spPopSizes[i];
+		popParamsVector.push_back(spparams);
+	}
+
+  return popParamsVector;
+}
 
 // [[Rcpp::export]]
 double evalRGenotype(Rcpp::IntegerVector rG,
@@ -1590,20 +1616,34 @@ double evalRGenotype(Rcpp::IntegerVector rG,
 	Rcpp::CharacterVector calledBy_) {
   // Can evaluate both ONLY fitness or ONLY mutator. Not both at the same
   // time. Use evalRGenotypeAndMut for that.
-  const std::string calledBy = Rcpp::as<std::string>(calledBy_);
-	const std::vector<Genotype> Genotypes(0);//FIXME
-	const std::vector<spParamsP> popParams(0);
 
-  if(rG.size() == 0) {
-    // Why don't we evaluate it?
-    Rcpp::warning("WARNING: you have evaluated fitness/mutator status of a genotype of length zero.");
-    return 1;
-  }
+  const std::string calledBy = Rcpp::as<std::string>(calledBy_);
+	const bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+
+	if(rG.size() == 0 && fdf == false) {
+		// Why don't we evaluate it?
+		Rcpp::warning("WARNING: you have evaluated fitness/mutator status of a genotype of length zero.");
+		return 1;
+	}
+
+	if(fdf){
+		std::vector<int> spPopSizes;
+		spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
+		Rcpp::List fl_df = rFE["fitnessLandscape_df"];
+		std::vector<std::string> genotNames =
+	    Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
+		std::vector<Genotype> Genotypes = genotypesFromScratch(genotNames);//FIXME
+		std::vector<spParamsP> popParams = popParamsFromScratch(spPopSizes);
+	}else{
+		const std::vector<Genotype> Genotypes(0);
+		const std::vector<spParamsP> popParams(0);
+	}
 
   //const Rcpp::List rF(rFE);
   fitnessEffectsAll F = convertFitnessEffects(rFE);
   Genotype g = convertGenotypeFromR(rG, F);
   vector<double> s = evalGenotypeFitness(g, F, Genotypes, popParams);
+
   if(verbose) {
     std::string sprod;
     if(calledBy == "evalGenotype") {
