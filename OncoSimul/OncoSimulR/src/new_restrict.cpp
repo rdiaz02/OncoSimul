@@ -1388,7 +1388,7 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
   expression_t expression;
   expression.register_symbol_table(symbol_table);
 
-	parser_t parser;
+	//parser_t parser;
 	parser.compile(expr_string, expression);
 
 	if (!parser.compile(expr_string, expression)){
@@ -1397,11 +1397,12 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 	         typedef exprtk::parser_error::type error_t;
 	         error_t error = parser.get_error(i);
 	         Rcpp::Rcout <<
-					 printf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s\n",
-	                i,
-	                error.token.position,
-	                exprtk::parser_error::to_str(error.mode).c_str(),
-	                error.diagnostic.c_str())
+						 printf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s\n",
+		                i,
+		                error.token.position,
+		                exprtk::parser_error::to_str(error.mode).c_str(),
+		                error.diagnostic.c_str(),
+	                  expression_string.c_str())
 					<< std::endl;
 	      }
 				std::string errorMessage1 = "Wrong evalGenotypeFDFitnessEcuation evaluation, ";
