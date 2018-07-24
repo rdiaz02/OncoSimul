@@ -2000,10 +2000,29 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       // 	updateRatesMcFarland(popParams, adjust_fitness_MF,
       // 			     K, totPopSize);
       // } else if( (typeModel == TypeModel::mcfarlandlog) ) {
-      if( (typeModel == TypeModel::mcfarlandlog) ) {
-	updateRatesMcFarlandLog(popParams, adjust_fitness_MF,
-			     K, totPopSize);
-      }
+			if (typeModel == TypeModel::mcfarlandlog && !fitnessEffects.frequencyDependentFitness){
+
+				updateRatesMcFarlandLog(popParams, adjust_fitness_MF, K, totPopSize);
+
+			}else if (fitnessEffects.frequencyDependentFitness){
+
+				if( (typeModel == TypeModel::mcfarlandlog) ) {
+
+					updateRatesFDFMcFarlandLog(popParams, Genotypes, fitnessEffects,
+						adjust_fitness_MF, K, totPopSize);
+
+				}else if(typeModel == TypeModel::exp){
+
+					updateRatesFDFExp(popParams, Genotypes, fitnessEffects);
+
+				}else if(typeModel == TypeModel::bozic1){
+
+					updateRatesFDFBozic(popParams, Genotypes, fitnessEffects);
+
+				} else {
+		      throw std::invalid_argument("this ain't a valid typeModel");
+		    }
+			}
 
 #ifdef MIN_RATIO_MUTS_NR
       // could go inside sample_all_pop but here we are sure death, etc, current

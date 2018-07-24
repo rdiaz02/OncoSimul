@@ -1389,7 +1389,6 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
   expression.register_symbol_table(symbol_table);
 
 	parser_t parser;
-	//parser.compile(expr_string, expression);
 
 	if (!parser.compile(expr_string, expression)){
 				Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;

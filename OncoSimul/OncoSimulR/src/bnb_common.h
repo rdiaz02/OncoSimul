@@ -21,6 +21,7 @@
 #include<Rcpp.h>
 #include "common_classes.h"
 #include "debug_common.h"
+#include "new_restrict.h"
 // #include "new_restrict.h" // for the TypeModel enum
 
 // // Simple custom exception for exceptions that lead to re-runs.
@@ -37,7 +38,7 @@
 //   double death;
 //   double W;
 //   double R;
-//   double mutation; 
+//   double mutation;
 //   double timeLastUpdate;
 //   std::multimap<double, int>::iterator pv;
 //   double absfitness; //convenient for Beerenwinkel
@@ -50,8 +51,8 @@ inline void W_f_st(spParamsP& spP){
 }
 
 inline void R_f_st(spParamsP& spP) {
-  spP.R = sqrt( pow( spP.birth - spP.death, 2) + 
-		( 2.0 * (spP.birth + spP.death) + 
+  spP.R = sqrt( pow( spP.birth - spP.death, 2) +
+		( 2.0 * (spP.birth + spP.death) +
 		  spP.mutation) * spP.mutation );
 }
 
@@ -62,7 +63,7 @@ inline double pE_f_st(double& pM, const spParamsP& spP){
     DP2(spP.death);  DP2(spP.birth); DP2(pM); DP2(spP.W);
     DP2(spP.mutation);
     std::string error_message = R"(pE.f: pE not finite.
-      This is expected to happen when mutationPropGrowth = TRUE 
+      This is expected to happen when mutationPropGrowth = TRUE
       and you have have an initMutant with death >> birth,
       as that inevitably leads to net birth rate of 0
       and mutation rate of 0)";
@@ -73,7 +74,7 @@ inline double pE_f_st(double& pM, const spParamsP& spP){
 
 inline double pB_f_st(const double& pE,
 			     const spParamsP& spP) {
-  return (spP.birth * pE)/spP.death; 
+  return (spP.birth * pE)/spP.death;
 }
 
 void mapTimes_updateP(std::multimap<double, int>& mapTimes,
@@ -166,6 +167,20 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 				    const double& K,
 			     const double& totPopSize);
 
+void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
+  std::vector<Genotype>& Genotypes,
+  const fitnessEffectsAll& fitnessEffects,
+  double& adjust_fitness_MF,
+  const double& K,
+  const double& totPopSize);
+
+void updateRatesFDFExp(std::vector<spParamsP>& popParams,
+  std::vector<Genotype>& Genotypes,
+  const fitnessEffectsAll& fitnessEffects);
+
+void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
+  std::vector<Genotype>& Genotypes,
+  const fitnessEffectsAll& fitnessEffects);
 
 void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
 				  double& adjust_fitness_MF,
@@ -188,4 +203,3 @@ void detect_ti_duplicates(const std::multimap<double, int>& m,
 			  const int spcies);
 
 #endif
-
