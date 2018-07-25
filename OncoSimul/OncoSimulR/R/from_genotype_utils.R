@@ -265,6 +265,9 @@ to_genotFitness_std <- function(x,
     if (!inherits(x, "data.frame"))
       stop("Input must inherit from data.frame.")
 
+    if(nrow(x) == 0)
+      stop("You have an empty data.frame")
+
     if(!all(unlist(lapply(x[, -ncol(x)], is.numeric))))
       stop("All columns except the last one must be numeric.")
 
@@ -273,6 +276,9 @@ to_genotFitness_std <- function(x,
 
     if(any(duplicated(colnames(x))))
       stop("duplicated column names")
+
+    if((ncol(x) - 1) < 2)
+      stop("At least two genes are mandatory")
 
     cnfl <- which(colnames(x)[-ncol(x)] == "")
     if(length(cnfl)) {
