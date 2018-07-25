@@ -1035,12 +1035,15 @@ void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
 	const double& K,
 	const double& totPopSize) {
 
+  const std::vector<spParamsP>& lastPopParams = popParams;
+  const std::vector<Genotype>& lastGenotypes = Genotypes;
+
   adjust_fitness_MF = log1p(totPopSize/K);
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
-    popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
-              fitnessEffects, Genotypes, popParams));
+    popParams[i].birth = prodFitness(evalGenotypeFitness(lastGenotypes[i],
+              fitnessEffects, lastGenotypes, lastPopParams));
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
@@ -1051,10 +1054,13 @@ void updateRatesFDFExp(std::vector<spParamsP>& popParams,
   std::vector<Genotype>& Genotypes,
   const fitnessEffectsAll& fitnessEffects) {
 
+  const std::vector<spParamsP>& lastPopParams = popParams;
+  const std::vector<Genotype>& lastGenotypes = Genotypes;
+
   for(size_t i = 0; i < popParams.size(); ++i) {
 
-    popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
-                fitnessEffects, Genotypes, popParams));
+    popParams[i].birth = prodFitness(evalGenotypeFitness(lastGenotypes[i],
+                fitnessEffects, lastGenotypes, lastPopParams));
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
@@ -1064,9 +1070,12 @@ void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
   std::vector<Genotype>& Genotypes,
   const fitnessEffectsAll& fitnessEffects) {
 
+  const std::vector<spParamsP>& lastPopParams = popParams;
+  const std::vector<Genotype>& lastGenotypes = Genotypes;
+
   for(size_t i = 0; i < popParams.size(); ++i) {
-    popParams[i].death =  prodDeathFitness(evalGenotypeFitness(Genotypes[i],
-      fitnessEffects, Genotypes, popParams));
+    popParams[i].death =  prodDeathFitness(evalGenotypeFitness(lastGenotypes[i],
+      fitnessEffects, lastGenotypes, lastPopParams));
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
