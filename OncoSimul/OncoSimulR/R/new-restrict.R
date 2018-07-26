@@ -1288,13 +1288,16 @@ evalGenotypeORMut <- function(genotype,
                          fmEffects$fitnessLandscape_gene_id$Gene)
         genotype <- all.g.nums[match(genotype, all.g.names)]
     }
-    if(any(is.na(genotype)))
+    if( (any(is.na(genotype))) & !fmEffects$frequencyDependentFitness)
         stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
-    if(!length(genotype))
+    if((!length(genotype)) & !fmEffects$frequencyDependentFitness)
         stop("genotypes must have at least one mutated gene")
     if(any(genotype < 0)) {
         stop(paste("genotypes cannot contain negative values.",
                    "If you see this message, you found a bug."))
+    }
+    if(fmEffects$frequencyDependentFitness & (genotype == "WT" | genotype == integer(0)) ){
+      genotype <- vector(mode = "integer", length = 0L)
     }
     if(model %in% c("Bozic", "bozic1", "bozic2") )
         prodNeg <- TRUE
