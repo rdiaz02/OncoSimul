@@ -168,18 +168,18 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 			     const double& totPopSize);
 
 void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
-  std::vector<Genotype>& Genotypes,
+  const std::vector<Genotype>& Genotypes,
   const fitnessEffectsAll& fitnessEffects,
   double& adjust_fitness_MF,
   const double& K,
   const double& totPopSize);
 
 void updateRatesFDFExp(std::vector<spParamsP>& popParams,
-  std::vector<Genotype>& Genotypes,
+  const std::vector<Genotype>& Genotypes,
   const fitnessEffectsAll& fitnessEffects);
 
 void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
-  std::vector<Genotype>& Genotypes,
+  const std::vector<Genotype>& Genotypes,
   const fitnessEffectsAll& fitnessEffects);
 
 void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
