@@ -417,8 +417,8 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
 ##New function
 fVariables <- function (g) {
 
-  if (is.null(g) | !is.integer(g) | g == 0)
-    stop("g must be integer > 0")
+  if (is.null(g) | g == 0)
+    stop("Number of genes must be integer > 0")
 
 
   combinationsList <- list()
