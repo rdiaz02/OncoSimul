@@ -417,6 +417,10 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
 ##New function
 fVariables <- function (g) {
 
+  if (is.null(g) | !is.integer(g) | g == 0)
+    stop("g must be integer > 0")
+
+
   combinationsList <- list()
   for (i in 0:g) {
     combinationsList <- append(combinationsList,
@@ -485,6 +489,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       rT$typeDep <- as.character(rT$typeDep)
       rtNames <- unique(c(rT$parent, rT$child))
     }
+    if(!is.null(spPopSizes))
+      warning("spPopSizes will be considered NULL if frequencyDependentFitness = FALSE")
     if(!is.null(epistasis)) {
       long.epistasis <- to.long.epist.order(epistasis, ":")
       ## epiNames <- unique(unlist(lapply(long.epistasis, function(x) x$ids)))
