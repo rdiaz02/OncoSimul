@@ -1296,24 +1296,27 @@ evalGenotypeORMut <- function(genotype,
         stop(paste("genotypes cannot contain negative values.",
                    "If you see this message, you found a bug."))
     }
+    
     if(fmEffects$frequencyDependentFitness){
       if(is.null(genotype)){
         genotype <- vector(mode = "integer", length = 0L)
-      }
-      if(genotype == "WT" | genotype == "wt" | genotype == integer(0)){
+      }else if(length(genotype) == 0){
+        genotype <- vector(mode = "integer", length = 0L)
+      }else if(genotype == "WT" | genotype == "wt" | genotype == "" | genotype == 0){
         genotype <- vector(mode = "integer", length = 0L)
       }
     }
+
     if(model %in% c("Bozic", "bozic1", "bozic2") )
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
+
     ff <- evalRGenotype(rG = genotype,
                         rFE = fmEffects,
                         verbose = verbose,
                         prodNeg = prodNeg,
                         calledBy_ = calledBy_)
-
 
     if(echo) {
         if(calledBy_ == "evalGenotype") {
