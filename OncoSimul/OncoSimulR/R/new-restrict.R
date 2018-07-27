@@ -704,7 +704,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
     defaultGeneModuleDF <- data.frame(Gene = "Root",
                                       Module = "Root",
                                       GeneNumID = 0,
-                                      ModuleNumID = 0)
+                                      ModuleNumID = 0,
+                                      stringsAsFactors = FALSE)
     out <- list(long.rt = list(),
                 long.epistasis = list(),
                 long.orderEffects = list(),
@@ -1253,83 +1254,97 @@ evalGenotypeORMut <- function(genotype,
                               echo = FALSE,
                               model = "",
                               calledBy_= NULL) {
-    ## genotype can be a vector of integers, that are the exact same in
-    ## the table of fmEffects or a vector of strings, or a vector (a
-    ## string) with genes separated by "," or ">"
+  ## genotype can be a vector of integers, that are the exact same in
+  ## the table of fmEffects or a vector of strings, or a vector (a
+  ## string) with genes separated by "," or ">"
 
-    if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
-        stop("How did you call this function?. Bug.")
+  if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
+    stop("How did you call this function?. Bug.")
 
-    ## fmEffects could be a mutator effect
-    if(!exists("fitnessLandscape_gene_id", where = fmEffects)) {
-        fmEffects$fitnessLandscape_df <- data.frame()
-        fmEffects$fitnessLandscape_gene_id <- data.frame()
+  ## fmEffects could be a mutator effect
+  if(!exists("fitnessLandscape_gene_id", where = fmEffects)) {
+    fmEffects$fitnessLandscape_df <- data.frame()
+    fmEffects$fitnessLandscape_gene_id <- data.frame()
+  }
+
+  if( (model %in% c("Bozic", "bozic1", "bozic2")) &&
+      (nrow(fmEffects$fitnessLandscape_df) > 0)) {
+    warning("Bozic model passing a fitness landscape will not work",
+            " for now.")
+  }
+
+  if(echo)
+    cat(paste("Genotype: ", genotype))
+
+  if(is.character(genotype)) {
+    if(length(grep(">", genotype))) {
+      genotype <- nice.vector.eo(genotype, ">")
+    } else if(length(grep(",", genotype))) {
+      genotype <- nice.vector.eo(genotype, ",")
     }
+    all.g.nums <- c(fmEffects$geneModule$GeneNumID,
+                    fmEffects$long.geneNoInt$GeneNumID,
+                    fmEffects$fitnessLandscape_gene_id$GeneNumID)
+    all.g.names <- c(fmEffects$geneModule$Gene,
+                     fmEffects$long.geneNoInt$Gene,
+                     fmEffects$fitnessLandscape_gene_id$Gene)
+    genotype <- all.g.nums[match(genotype, all.g.names)]
+  }else{
+    all.g.nums <- c(fmEffects$geneModule$GeneNumID,
+                    fmEffects$long.geneNoInt$GeneNumID,
+                    fmEffects$fitnessLandscape_gene_id$GeneNumID)
 
-    if( (model %in% c("Bozic", "bozic1", "bozic2")) &&
-        (nrow(fmEffects$fitnessLandscape_df) > 0)) {
-        warning("Bozic model passing a fitness landscape will not work",
-                    " for now.")
+    if(!all(sapply(genotype,  function(x)x %in% all.g.nums))){
+      stop("Genotype as vector of numbers contains genes not in fitnessEffects/mutatorEffects.")
     }
+  }
 
-    if(echo)
-        cat(paste("Genotype: ", genotype))
-    if(!is.integer(genotype)) {
-        if(length(grep(">", genotype))) {
-            genotype <- nice.vector.eo(genotype, ">")
-        } else if(length(grep(",", genotype))) {
-            genotype <- nice.vector.eo(genotype, ",")
-        }
-        all.g.nums <- c(fmEffects$geneModule$GeneNumID,
-                        fmEffects$long.geneNoInt$GeneNumID,
-                        fmEffects$fitnessLandscape_gene_id$GeneNumID)
-        all.g.names <- c(fmEffects$geneModule$Gene,
-                         fmEffects$long.geneNoInt$Gene,
-                         fmEffects$fitnessLandscape_gene_id$Gene)
-        genotype <- all.g.nums[match(genotype, all.g.names)]
+  if( (any(is.na(genotype)))){
+    stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
+  }
+
+  if(!fmEffects$frequencyDependentFitness){
+
+    if((!length(genotype))){
+      stop("genotypes must have at least one mutated gene")
     }
-    if( (any(is.na(genotype))) & !fmEffects$frequencyDependentFitness)
-        stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
-    if((!length(genotype)) & !fmEffects$frequencyDependentFitness)
-        stop("genotypes must have at least one mutated gene")
     if(any(genotype < 0)) {
-        stop(paste("genotypes cannot contain negative values.",
-                   "If you see this message, you found a bug."))
+      stop(paste("genotypes cannot contain negative values.",
+                 "If you see this message, you found a bug."))
     }
-    
-    if(fmEffects$frequencyDependentFitness){
-      if(is.null(genotype)){
-        genotype <- vector(mode = "integer", length = 0L)
-      }else if(length(genotype) == 0){
-        genotype <- vector(mode = "integer", length = 0L)
-      }else if(genotype == "WT" | genotype == "wt" | genotype == "" | genotype == 0){
-        genotype <- vector(mode = "integer", length = 0L)
-      }
+    if(length(genotype) == 1 && genotype == 0){
+      stop("Genotype cannot be 0.")
+    }
+  }else{
+    if(length(genotype) == 1 && genotype == 0){
+      genotype <- vector(mode = "integer", length = 0L)
+    }
+  }
+
+  if(model %in% c("Bozic", "bozic1", "bozic2") )
+    prodNeg <- TRUE
+  else
+    prodNeg <- FALSE
+
+  ff <- evalRGenotype(rG = genotype,
+                      rFE = fmEffects,
+                      verbose = verbose,
+                      prodNeg = prodNeg,
+                      calledBy_ = calledBy_)
+
+  if(echo) {
+    if(calledBy_ == "evalGenotype") {
+      if(!prodNeg)
+        cat(" Fitness: ", ff, "\n")
+      else
+        cat(" Death rate: ", ff, "\n")
+    } else if(calledBy_ == "evalGenotypeMut") {
+      cat(" Mutation rate product :", ff, "\n")
     }
 
-    if(model %in% c("Bozic", "bozic1", "bozic2") )
-        prodNeg <- TRUE
-    else
-        prodNeg <- FALSE
+  }
 
-    ff <- evalRGenotype(rG = genotype,
-                        rFE = fmEffects,
-                        verbose = verbose,
-                        prodNeg = prodNeg,
-                        calledBy_ = calledBy_)
-
-    if(echo) {
-        if(calledBy_ == "evalGenotype") {
-            if(!prodNeg)
-                cat(" Fitness: ", ff, "\n")
-            else
-                cat(" Death rate: ", ff, "\n")
-        } else if(calledBy_ == "evalGenotypeMut") {
-            cat(" Mutation rate product :", ff, "\n")
-        }
-
-    }
-    return(ff)
+  return(ff)
 }
 
 evalGenotype <- function(genotype,
