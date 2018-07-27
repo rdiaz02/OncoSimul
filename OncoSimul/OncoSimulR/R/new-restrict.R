@@ -1297,7 +1297,7 @@ evalGenotypeORMut <- function(genotype,
                    "If you see this message, you found a bug."))
     }
     if(fmEffects$frequencyDependentFitness){
-      if(genotype == "WT" | genotype == integer(0)){
+      if(is.null(genotype) & (genotype == "WT" | genotype == integer(0))){
         genotype <- vector(mode = "integer", length = 0L)
       }
     }
