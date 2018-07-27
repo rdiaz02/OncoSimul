@@ -1,3 +1,7 @@
+Changes in version 2.10.1 (2018-09-07):
+	-added new implementations to deal with new functionalities
+	related to use a frequency dependent fitnness expecification.
+
 Changes in version 2.10.0 (for BioC 3.7):
 	- probDetect mechanism changed. This could be a BREAKING CHANGE.
 	  The expression divides by the baseline. For fixed initSize, this
