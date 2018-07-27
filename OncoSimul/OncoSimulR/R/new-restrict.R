@@ -1303,6 +1303,10 @@ evalGenotypeORMut <- function(genotype,
     stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
   }
 
+  if(any(genotype == 0)){
+    stop("Genotype cannot contain any 0.")
+  }
+
   if(!fmEffects$frequencyDependentFitness){
 
     if((!length(genotype))){
