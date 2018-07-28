@@ -104,17 +104,3 @@ test_that("testing all genes evaluation", {
 cat(paste("\n Ending test.evaluatingGenotypesFDF at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
-
-afe
-genotype = ""
-if( (any(is.na(genotype))) & !afe$frequencyDependentFitness)
-  stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
-length(genotype)
-evge
-OncoSimulR:::generateAllGenotypes(fitnessEffects = afe)$genotNums
-OncoSimulR:::evalRGenotype(vector(mode = "integer", length = 0L), 
-                           afe, 
-                           FALSE, 
-                           FALSE, 
-                           calledBy_ = "evalGenotype")
-integer(0)
