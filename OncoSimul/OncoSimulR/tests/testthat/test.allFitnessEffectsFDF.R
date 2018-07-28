@@ -48,6 +48,7 @@ test_that("Errors expectations", {
 test_that("testing output", {
   
   r1 <- data.frame(rfitness(3))
+  
   r1[, "Fitness"] <- c("max(1, f_)",
                       "max(1, f_1)", 
                       "max(1, f_2)", 
@@ -57,35 +58,50 @@ test_that("testing output", {
                       "100*f_2_3 + max(max(1, f_2), max(1, f_3))",
                       "200*f_1_2_3 + 500*(f_1_2 + f_1_3 + f_2_3)") 
   
-  afe <- allFitnessEffects(genotFitness = r1, 
+  r2 <- rfitness(2)
+  
+  afe1 <- allFitnessEffects(genotFitness = r1, 
                            frequencyDependentFitness = TRUE)
   
-  expect_true(afe$frequencyDependentFitness)
   
-  lapply(afe[c(1:3, 8)], function(x){
+  expect_true(afe1$frequencyDependentFitness)
+  
+  lapply(afe1[c(1:3, 8)], function(x){
     expect_equal(length(x), 0)
     
     expect_equal(class(x), "list")
   })
   
-  expect_true(afe$gMOneToOne)
+  expect_true(afe1$gMOneToOne)
   
-  lapply(afe[c(10:13, 19)],  function(x){
+  lapply(afe1[c(10:13, 19)],  function(x){
     expect_null(x)
   })
   
-  expect_equivalent(afe$geneToModule, "Root")
+  expect_equivalent(afe1$geneToModule, "Root")
   
-  expect_identical(afe$fitnessLandscapeVariables, 
-                   OncoSimulR:::fVariables(ncol(afe$fitnessLandscape) - 1))
+  expect_identical(afe1$fitnessLandscapeVariables, 
+                   OncoSimulR:::fVariables(ncol(afe1$fitnessLandscape) - 1))
   
-  lapply(afe[c(4, 5, 14:16)], function(x){
+  lapply(afe1[c(4, 5, 14:16)], function(x){
     expect_equal(class(x), "data.frame")
   })
   
-  expect_length(afe$drv, 0)
+  expect_length(afe1$drv, 0)
   
-  expect_equal(class(afe$drv), "integer")
+  expect_equal(class(afe1$drv), "integer")
+  
+  expect_warning(allFitnessEffects(genotFitness = r2, 
+                                   frequencyDependentFitness = FALSE, 
+                                   spPopSizes = c(500, 
+                                                  250, 
+                                                  250, 
+                                                  250, 
+                                                  300,
+                                                  300,
+                                                  300,
+                                                  450)) , 
+                 "spPopSizes will be considered NULL if frequencyDependentFitness = FALSE")
   
 })
 

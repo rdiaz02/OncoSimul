@@ -1303,14 +1303,14 @@ evalGenotypeORMut <- function(genotype,
   if(!fmEffects$frequencyDependentFitness){
 
     if( any(is.na(genotype)) ){
-      stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
+      stop("Genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
     }
 
     if((!length(genotype))){
-      stop("genotypes must have at least one mutated gene")
+      stop("Genotypes must have at least one mutated gene")
     }
     if(any(genotype < 0)) {
-      stop(paste("genotypes cannot contain negative values.",
+      stop(paste("Genotypes cannot contain negative values.",
                  "If you see this message, you found a bug."))
     }
     if(length(genotype) == 1 && genotype == 0){
