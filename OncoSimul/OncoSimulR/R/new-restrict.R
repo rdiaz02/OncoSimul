@@ -1299,13 +1299,15 @@ evalGenotypeORMut <- function(genotype,
     }
   }
 
-  if( (any(is.na(genotype)))){
-    stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
-  }
+
 
 
 
   if(!fmEffects$frequencyDependentFitness){
+
+    if( any(is.na(genotype)) ){
+      stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
+    }
 
     if((!length(genotype))){
       stop("genotypes must have at least one mutated gene")
@@ -1325,8 +1327,13 @@ evalGenotypeORMut <- function(genotype,
   }else{
     if(length(genotype) == 1 && genotype == 0){
       genotype <- vector(mode = "integer", length = 0L)
-    }else if(length(genotype) > 1 && any(genotype == 0)){
-      stop("Genotype cannot contain any 0 if its length > 1")
+    }else if(length(genotype) > 1){
+      if(any(genotype == 0)){
+        stop("Genotype cannot contain any 0 if its length > 1")
+      }
+      if( any(is.na(genotype)) ){
+        stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
+      }
     }
   }
 
