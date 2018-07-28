@@ -1325,6 +1325,8 @@ evalGenotypeORMut <- function(genotype,
   }else{
     if(length(genotype) == 1 && genotype == 0){
       genotype <- vector(mode = "integer", length = 0L)
+    }else if(length(genotype) > 1 && any(genotype == 0)){
+
     }
   }
 
