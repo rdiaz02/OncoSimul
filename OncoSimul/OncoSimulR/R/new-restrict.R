@@ -1323,15 +1323,15 @@ evalGenotypeORMut <- function(genotype,
 
   }else{
     if(length(genotype) == 1 && is.na(genotype)){
-      genotype <- vector(mode = "integer", length = 0L)
+      stop("Genotype contains NA or a gene not in fitnessEffects/mutatorEffects")
     }else if(length(genotype) == 1 && genotype == 0){
       genotype <- vector(mode = "integer", length = 0L)
     }else if(length(genotype) > 1){
+      if( any(is.na(genotype)) ){
+        stop("Genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
+      }
       if(any(genotype == 0)){
         stop("Genotype cannot contain any 0 if its length > 1")
-      }
-      if( any(is.na(genotype)) ){
-        stop("genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
       }
     }
   }
