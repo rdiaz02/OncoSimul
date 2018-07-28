@@ -1300,9 +1300,6 @@ evalGenotypeORMut <- function(genotype,
   }
 
 
-
-
-
   if(!fmEffects$frequencyDependentFitness){
 
     if( any(is.na(genotype)) ){
@@ -1327,7 +1324,7 @@ evalGenotypeORMut <- function(genotype,
   }else{
     if(length(genotype) == 1 && is.na(genotype)){
       genotype <- vector(mode = "integer", length = 0L)
-    }else if(length(genotype) == 1) && genotype == 0){
+    }else if(length(genotype) == 1 && genotype == 0){
       genotype <- vector(mode = "integer", length = 0L)
     }else if(length(genotype) > 1){
       if(any(genotype == 0)){
