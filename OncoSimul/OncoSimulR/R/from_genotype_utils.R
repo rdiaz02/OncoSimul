@@ -167,6 +167,8 @@ to_genotFitness_std <- function(x,
             stop("All columns except last one must be numeric.")
         if(!all(unlist(lapply(x[, ncol(x)], is.character))))
             stop("All elements in last column must be character.")
+        if(ncol(x) == 0)
+          stop("You have an empty data.frame")
         }
 
       ## We are expecting here a matrix of 0/1 where columns are genes
