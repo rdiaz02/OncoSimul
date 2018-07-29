@@ -295,6 +295,11 @@ is a summary of some of its key features:
 * You can obtain statistics of evolutionary predictability
   from the simulations.
   
+* From version 2.9.10, you can use simulations in a frequency dependent fitness 
+  way, that is, puting the fitness specifications as functions of the frequecies 
+  of the clones, and evaluating frequently the fitness across the simulation (see
+  section \@ref(FDF)).
+  
 
 
 The table below, modified from the table at the
@@ -397,7 +402,8 @@ OncoSimulR can help address involve combinations of:
 	         - Generated randomly (`simOGraph`)
         - Any mapping between genotypes and fitness where this mapping is:
             - User-specified
-            - Generated randomly from families of random fitness landscapes (`rfitness`)     
+            - Generated randomly from families of random fitness landscapes (`rfitness`)
+        - A function of clone's frequencies (see section \@ref(FDF) for more details).   
      - Mutation rates can:
           - Vary between genes
           - Be affected by other genes
@@ -989,7 +995,14 @@ reach cancer you could run simulations with `onlyCancer = TRUE` and
 look at the value of `FinalTime` as we did above (section
 \@ref(exmutantimut)).
 
-
+### Simulating trayectories employing the avalalaible models with frequency 
+    dependent fitness 
+    
+The new frequency dependent fitness funcionality allows users to run simulations 
+in a different way, defining the fitness effects as funntions of clone's frequencies.
+This point of view comes from frequency dependent selection contex in Evolutionary 
+Biology and in the framework of this package is employed using stochastic models.
+See section \@ref(FDF) for more details and examples.
 
 
 ## Trade-offs and what is OncoSimulR not well suited for {#whatnotfor}
@@ -3428,6 +3441,10 @@ fitness, we are actually referring to specifying effects on birth
 Exp and Bozic models, or depends on the population size). This is
 also shown in Table \@ref(tab:osrfeatures), in the rows for "Fitness
 components", under "Evolutionary Features".
+
+In the case of frequency dependent fitness simulations, the fitness effects are 
+reevaluated in each iteration of the algorithm, so that birth rate, death rate 
+or both, depending the model used, change and be maintained updated.
 
 
 
@@ -6628,7 +6645,8 @@ multiple simulations in \@ref(sample).
     to, or larger than, `detectionDrivers`; note that this allows you
     to stop the simulation as soon as a **specific genotype** is
     found, by using exactly and only the genes that make that genotype as
-    the drivers.
+    the drivers. This is not allowed by the moment in frequency dependent 
+    fitness simulations.
 	+ A gene or gene combination among those listed in `fixation`
     becomes fixed in the population (i.e., has a frequency is 1)
     (see details in (\@ref(fixation) and \@ref(fixationG)). 
@@ -9321,7 +9339,9 @@ more meaningful names.
 
 \clearpage
 
+# Frequency dependent fitness simulations {#FDF}
 
+\clearpage
 
 # Session info and packages used
 

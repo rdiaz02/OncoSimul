@@ -16,14 +16,15 @@
 \description{
   Simulate tumor progression including possible restrictions in the
   order of driver mutations. Optionally add passenger
-  mutations. Simulation is done using the BNB algorithm of Mather et
+  mutations. When used in frequency dependent fitness situation, only fitness
+  effects are allowed. Simulation is done using the BNB algorithm of Mather et
   al., 2012.
 }
 \usage{
- oncoSimulIndiv(fp, model = "Exp", 
+ oncoSimulIndiv(fp, model = "Exp",
                 numPassengers = 0, mu = 1e-6, muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
-                detectionProb = NA,                  
+                detectionProb = NA,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
@@ -47,7 +48,7 @@
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
-                detectionProb = NA,                  
+                detectionProb = NA,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
@@ -88,7 +89,7 @@ oncoSimulSample(Nindiv,
                                 } else {
                                     nd <- (2 : round(0.75 * max(fp)))
                                 }
-                                if (length(nd) == 1) 
+                                if (length(nd) == 1)
                                     nd <- c(nd, nd)
                                 sample(nd, Nindiv,
                                        replace = TRUE)
@@ -122,16 +123,17 @@ oncoSimulSample(Nindiv,
 }
 
 \arguments{
-  
+
   \item{Nindiv}{Number of individuals or number of different
     trajectories to simulate.}
 
   \item{fp}{
-    
+
     Either a poset that specifies the order restrictions (see
     \code{\link{poset}} if you want to use the specification as in
     v.1. Otherwise, a fitnessEffects object (see
-    \code{\link{allFitnessEffects}}).
+    \code{\link{allFitnessEffects}}). Always is a fitnessEffects object
+    when you are in a frequency dependent fitness simulation.
 
     Other arguments below (s, sh, numPassengers) make sense only if you
     use a poset, as they are included in the fitnessEffects object.
@@ -147,17 +149,19 @@ oncoSimulSample(Nindiv,
 \item{numPassengers}{
 
   This has no effect if you use the \code{\link{allFitnessEffects}}
-  specification.
-  
+  specification. This happends always when you are in a simulation that use
+  frequency dependent fitness.
+
   If you use the specification of v.1., the number of passenger
   genes. Note that using v.1 the total number of genes (drivers plus
   passengers) must be smaller than 64.
-  
+
   All driver genes should be included in the poset (even if they depend
   on no one and no one depends on them), and will be numbered from 1 to
   the total number of driver genes. Thus, passenger genes will be
   numbered from (number of driver genes + 1):(number of drivers + number
   of passengers).
+
 
 }
 
@@ -181,15 +185,18 @@ oncoSimulSample(Nindiv,
   this allows you to specify mutator phenotypes: models where mutation
   of one (or more) gene(s) leads to an increase in the mutation
   rate. This is only available for version 2 (and above) specifications.
-  
-  
+
+
   All the genes specified in \code{muEF} MUST be included in
   \code{fp}. If you want to have genes that have no direct effect on
   fitness, but that affect mutation rate, you MUST specify them in
   \code{fp}, for instance as \code{noIntGenes} with an effect of 0.
-  
+
   If you use mutator effects you must also use fitnessEffects in
   \code{fp}.
+
+  You are not allowed to use mutator effects is a frequency depedent
+  fitness simulation.
 
 }
 
@@ -199,7 +206,7 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 If set to NA, \code{detectionSize} plays no role in stopping the
 simulations.
 
-} 
+}
 
 \item{detectionDrivers}{ The minimal number of drivers (not modules,
 drivers, whether or not they are from the same module) present in any
@@ -214,7 +221,8 @@ total number of drivers. If there are no drivers (because you are using
 a fitnessEffects object without a \code{drvNames}, either because you
 specified it explicitly or because all of the genes are in the
 noIntGenes component) the simulations should not stop based on the
-number of drivers (and, thus, the default is set to 9e6).
+number of drivers (and, thus, the default is set to 9e6). This is the case
+when you run the simulation with frequency dependent fitness.
 
 If set to NA, \code{detectionDrivers} plays no role in stopping the
 simulations.
@@ -278,7 +286,7 @@ This option can not be used with v.1 objects.
 %%   depends on size, time between successive checks. See \sQuote{Details}.  }
 
 \item{sampleEvery}{
-  
+
   How often the whole population is sampled. This is not the same as the
   interval between successive samples that are kept or stored (for that,
   see \code{keepEvery}).
@@ -292,7 +300,6 @@ This option can not be used with v.1 objects.
 }
 \item{initSize}{
   Initial population size.
-
 }
 
 
@@ -365,7 +372,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   exiting at a time when one clone is increasing its size quickly (see
   \code{minDetectDrvCloneSz}). By setting an \code{extraTime} larger than 0,
   we can sample at points when we are at the plateau.
-  
+
 
 }
 
@@ -396,7 +403,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 
 \item{keepPhylog}{
   If TRUE, keep track of when and from which clone each clone is
-  created. See also \code{\link{plotClonePhylog}}. 
+  created. See also \code{\link{plotClonePhylog}}.
 }
 
 
@@ -506,7 +513,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
     on thresholdWhole: a gene is considered mutated if it is altered in at
     least thresholdWhole proportion of the cells in that individual. See \code{\link{samplePop}}.
   }
-  
+
 
 \item{mc.cores}{Number of cores to use when simulating more than one
   individual (i.e., when calling oncoSimulPop).}
@@ -534,7 +541,7 @@ of the individual done, and the number of attempts and time used.}
   with those gene combinations. In contrast, \code{fixation = c("_,A",
   "_,B, C" )} specifies stopping only on gentoypes "A" or "B, C". See
   the vignette for further examples.
-  
+
 
   In addition to the gene combinations or genotypes themeselves, you can
   add to the list or vector the named elements
@@ -563,7 +570,7 @@ of the individual done, and the number of attempts and time used.}
   old v.1 specification.}
 
 \item{s}{
-  Selection coefficient for drivers. 
+  Selection coefficient for drivers.
     Only relevant if using a poset as this is included in the
   fitnessEffects object. This will eventually be deprecated.
 }
@@ -669,7 +676,7 @@ of the individual done, and the number of attempts and time used.}
   (comparing the probability of detection for that size with a random
   uniform number). Probability of detection changes with population size
   according to the function
-  
+
   \deqn{ 1 - e^{-cPDetect ( (populationsize - PDBaseline)/PDBaseline )}}.
 
   You can pass \code{cPDetect} manually (you will need to set \code{n2}
@@ -694,14 +701,14 @@ of the individual done, and the number of attempts and time used.}
 
 }
 \value{
-  
+
   For \code{oncoSimulIndiv} a list, of class "oncosimul", with the
   following components:
-  
+
     \item{pops.by.time }{A matrix of the population sizes of the clones,
     with clones in columns and time in row. Not all clones are shown here,
     only those that were present in at least on of the keepEvery samples.}
-  
+
   \item{NumClones   }{Total number of clones in the above matrix. This
   is not the total number of distinct clones that have appeared over all
   simulations (which is likely to be larger or much larger).}
@@ -712,7 +719,7 @@ of the individual done, and the number of attempts and time used.}
     pops.by.time matrix, its genotype, with a 0 if the gene is not
     mutated and a 1 if it is mutated.}
 
-  
+
   \item{MaxNumDrivers}{The largest number of mutated driver genes ever
     seen in the simulation in any clone.}
 
@@ -749,7 +756,7 @@ of the individual done, and the number of attempts and time used.}
     largest clone, the ratio of the two, the largest number of drivers in
     any clone, and the number of drivers in the clone with the largest
     population size.}
-  
+
   \item{other}{A list that contains statistics for an estimate of the
     simulation error when using the McFarland model as well as other
     statistics. For the McFarland model, the relevant value is errorMF,
@@ -758,7 +765,7 @@ of the individual done, and the number of attempts and time used.}
     minDMratio and minBMratio are the smallest ratio, over all
     simulations, of death rate to mutation rate and birth rate to mutation
     rate, respectively. The BNB algorithm thrives when those are large.}
-  
+
 
   For \code{oncoSimulPop} a list of length \code{Nindiv}, and of class
   \code{"oncosimulpop"}, where each element of the list is itself a
@@ -778,8 +785,8 @@ of the individual done, and the number of attempts and time used.}
   5, 6 for which other interactions exist, any mutations in 1, 2, 7 are
   shown first, and in the order they occurred, before showing the rest
   of the mutations.  See details.}
-  
- 
+
+
 
 
   \item{GenotypesLabels}{The genotypes, as character vectors with the
@@ -802,7 +809,7 @@ of the individual done, and the number of attempts and time used.}
   mutations during tumor progression. \emph{ Proceedings of the National
   Academy of Sciences of the United States of America\/}, \bold{107},
   18545--18550.
-  
+
   Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
   accumulation of mutations during tumor progression: effects of
   passengers, evolutionary models, and sampling
@@ -810,7 +817,7 @@ of the individual done, and the number of attempts and time used.}
 
   Gerstung et al., 2011. The Temporal Order of Genetic and Pathway
   Alterations in Tumorigenesis. \emph{PLoS ONE}, 6.
-  
+
   McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National
   Academy of Sciences of the United States of America\/}, \bold{110}(8),
@@ -820,7 +827,7 @@ of the individual done, and the number of attempts and time used.}
   algorithm for simulating evolutionary population dynamics.
   \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
 
-  
+
 
 }
 
@@ -837,7 +844,7 @@ of the individual done, and the number of attempts and time used.}
 \seealso{
   \code{\link{plot.oncosimul}}, \code{\link{examplePosets}},
   \code{\link{samplePop}}, \code{\link{allFitnessEffects}}
-  
+
 
 }
 \examples{
@@ -908,17 +915,17 @@ p2 <- oncoSimulSample(4, p701)
 #### A model similar to the one in McFarland. We use 2070 genes.
 
 set.seed(456)
-nd <- 70  
-np <- 2000 
-s <- 0.1  
-sp <- 1e-3 
+nd <- 70
+np <- 2000
+s <- 0.1
+sp <- 1e-3
 spp <- -sp/(1 + sp)
 mcf1 <- allFitnessEffects(noIntGenes = c(rep(s, nd), rep(spp, np)),
                           drv = seq.int(nd))
 mcf1s <-  oncoSimulIndiv(mcf1,
-                         model = "McFL", 
+                         model = "McFL",
                          mu = 1e-7,
-                         detectionSize = 1e8, 
+                         detectionSize = 1e8,
                          detectionDrivers = 100,
                          sampleEvery = 0.02,
                          keepEvery = 2,
@@ -948,7 +955,7 @@ oiI1   ## note the order and separation by "_"
 oiP1 <- oncoSimulPop(2, oi,
                      keepEvery = 10,
                      mc.cores = 2)
-summary(oiP1) 
+summary(oiP1)
 
 
 ## Even if order exists, this cannot reflect it;
@@ -961,7 +968,7 @@ oiS1 <- oncoSimulSample(2, oi)
 
 ## The output contains only the summary of the runs AND
 ## the sample:
-oiS1 
+oiS1
 
 ## And their sizes do differ
 object.size(oiS1)
@@ -974,9 +981,9 @@ object.size(oiP1)
 ###       and names come from Gerstung et al.)
 
 
-pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A",
                                           "TP53", "TP53", "MLL3"),
-                                      child = c("KRAS","SMAD4", "CDNK2A", 
+                                      child = c("KRAS","SMAD4", "CDNK2A",
                                           "TP53", "MLL3",
                                           rep("PXDN", 3), rep("TGFBR2", 2)),
                                       s = 0.05,
@@ -994,9 +1001,10 @@ pancr1$GenotypesLabels
 
 
 ## Pop and Sample
-pancrPop <- oncoSimulPop(4, pancr,
-                        keepEvery = 10,
-                       mc.cores = 2)
+pancrPop <- oncoSimulPop(4,
+                         pancr,
+                         keepEvery = 10,
+                         mc.cores = 2)
 summary(pancrPop)
 pancrSPop <- samplePop(pancrPop)
 pancrSPop
@@ -1005,21 +1013,110 @@ pancrSamp <- oncoSimulSample(2, pancr)
 pancrSamp
 
 
-
 ## Using gene-specific mutation rates
 muv <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
 ni <- rep(0.01, 5)
 names(ni) <- names(muv)
 femuv <- allFitnessEffects(noIntGenes = ni)
 oncoSimulIndiv(femuv, mu = muv)
-                      
+
+
+#########Frequency dependent fitness examples
+
+##A example with cooperation. Presence of WT favours all clones
+genofit <- data.frame(A = c(0, 1, 0, 1),
+                      B = c(0, 0, 1, 1),
+                      Fitness = c("3 + 5*f_",
+                                  "3 + 5*(f_ + f_1)",
+                                  "3 + 5*(f_ + f_2)",
+                                  "5 + 6*(f_ + f_1_2)"))
+
+afe <- allFitnessEffects(genotFitness = r,
+                         frequencyDependentFitness = TRUE)
+
+osi <- oncoSimulIndiv(afe,
+                      model = "McFL",
+                      onlyCancer = FALSE,
+                      finalTime = 5000,
+                      mu = 1e-6,
+                      initSize = 5000,
+                      keepPhylog = FALSE,
+                      seed = NULL,
+                      errorHitMaxTries = FALSE,
+                      errorHitWallTime = FALSE)
+osi
+
+plot(osi, show = "genotypes", type = "line")
+
+osp <- oncoSimulPop(5,
+                    afe,
+                    model = "McFL",
+                    initSize = 5000,
+                    mu = 1e-6,
+                    keepEvery = 5,
+                    mc.cores = 2,
+                    finalTime = 5000)
+
+sp <- samplePop(osp)
+
+sp
+
+##A little bit more complex example situation. WT favours clones A and B. A and
+##B compete with each other. Presence of A and B favour clone A, B.
+genofit <- data.frame(A = c(0, 1, 0, 1),
+                      B = c(0, 0, 1, 1),
+                      Fitness = c("3 + 5*f_",
+                                  "3 + 5*(f_ + f_1 - f_2)",
+                                  "3 + 5*(f_ + f_2 - f_1)",
+                                  "5 + 6*(f_1 + f_2 + f_1_2)"))
+
+afe <- allFitnessEffects(genotFitness = r,
+                         frequencyDependentFitness = TRUE)
+
+osi <- oncoSimulIndiv(afe,
+                      model = "McFL",
+                      onlyCancer = FALSE,
+                      finalTime = 5000,
+                      mu = 1e-6,
+                      initSize = 5000,
+                      keepPhylog = FALSE,
+                      seed = NULL,
+                      errorHitMaxTries = FALSE,
+                      errorHitWallTime = FALSE)
+osi
+
+plot(osi, show = "genotypes", type = "line")
+
+osp <- oncoSimulPop(5,
+                    afe,
+                    model = "McFL",
+                    initSize = 5000,
+                    onlyCancer = FALSE,
+                    mu = 1e-6,
+                    keepEvery = 5,
+                    mc.cores = 2)
+
+summary(osp)
+
+sp <- samplePop(osp)
+
+sp
+
+oss <- oncoSimulSample(5,
+                       afe,
+                       model = "McFL",
+                       initSize = 5000,
+                       mu = 1e-6,
+                       finalTime = 5000,
+                       verbosity = 0)
+
+oss
+
+
 
 ## Reinitialize the RNG
-set.seed(NULL)                      
+set.seed(NULL)
 
 }
 \keyword{misc}
 \keyword{iteration}
-
-
-

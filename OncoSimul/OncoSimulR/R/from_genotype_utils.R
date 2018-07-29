@@ -146,19 +146,28 @@ to_genotFitness_std <- function(x,
   ##                 " of a single gene. For this degenerate cases use",
   ##                 " a data frame specification."))
 
-  if (!frequencyDependentFitness){
+  ##Aquí
 
     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
       stop("Input must inherit from matrix or data.frame.")
 
     if(ncol(x) > 2) {
-      if(inherits(x, "matrix")) {
-        if(!is.numeric(x))
-          stop("A genotype fitness matrix/data.frame must be numeric.")
-      } else if(inherits(x, "data.frame")) {
-        if(!all(unlist(lapply(x, is.numeric))))
-          stop("A genotype fitness matrix/data.frame must be numeric.")
-      }
+      if (!frequencyDependentFitnes){
+        if(inherits(x, "matrix")) {
+          if(!is.numeric(x))
+            stop("A genotype fitness matrix/data.frame must be numeric.")
+        } else if(inherits(x, "data.frame")) {
+          if(!all(unlist(lapply(x, is.numeric))))
+            stop("A genotype fitness matrix/data.frame must be numeric.")
+        }
+      }else{
+        if(!inherits(x, "data.frame"))
+           stop("Input must inherit from data.frame.")
+        if(!all(unlist(lapply(x[,-ncol(x)], is.numeric))))
+            stop("All columns except last one must be numeric.")
+        if(!all(unlist(lapply(x[, ncol(x)], is.character))))
+            stop("All elements in last column must be character.")
+        }
 
       ## We are expecting here a matrix of 0/1 where columns are genes
       ## except for the last column, that is Fitness
@@ -238,79 +247,39 @@ to_genotFitness_std <- function(x,
           message("All single-gene genotypes as input to to_genotFitness_std")
         }
         ## Yes, we need to do this to  scale the fitness and put the "-"
+        if{frequencyDependentFitness}{
+          anywt <- which(x[, 1] == "WT")
+          if (length(anywt) != 1)
+            stop("WT must appears once.")
+        }
+
         x <- allGenotypes_to_matrix(x)
       }
     }
     ## And, yes, scale all fitnesses by that of the WT
     whichroot <- which(rowSums(x[, -ncol(x), drop = FALSE]) == 0)
-    if(length(whichroot) == 0) {
-      warning("No wildtype in the fitness landscape!!! Adding it with fitness 1.")
-      x <- rbind(c(rep(0, ncol(x) - 1), 1), x)
-    } else if(x[whichroot, ncol(x)] != 1) {
-      warning("Fitness of wildtype != 1.",
-              " Dividing all fitnesses by fitness of wildtype.")
-      vwt <- x[whichroot, ncol(x)]
-      x[, ncol(x)] <- x[, ncol(x)]/vwt
+    if (!frequencyDependentFitnes){
+      if(length(whichroot) == 0) {
+        warning("No wildtype in the fitness landscape!!! Adding it with fitness 1.")
+        x <- rbind(c(rep(0, ncol(x) - 1), 1), x)
+      } else if(x[whichroot, ncol(x)] != 1) {
+        warning("Fitness of wildtype != 1.",
+                " Dividing all fitnesses by fitness of wildtype.")
+        vwt <- x[whichroot, ncol(x)]
+        x[, ncol(x)] <- x[, ncol(x)]/vwt
+      }
+    }else{
+      if(length(whichroot) == 0)
+        stop("No wildtype in the fitness landscape!!!")
     }
+
     if(any(is.na(x)))
       stop("NAs in fitness matrix")
     if(simplify) {
-      return(x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE])
-    } else {
-      return(x)
+      x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]
     }
 
-  }else{
-
-    if (!inherits(x, "data.frame"))
-      stop("Input must inherit from data.frame.")
-
-    if(nrow(x) == 0)
-      stop("You have an empty data.frame")
-
-    if(!all(unlist(lapply(x[, -ncol(x)], is.numeric))))
-      stop("All columns except the last one must be numeric.")
-
-    if(!all(unlist(lapply(x[, ncol(x)], is.character))))
-      stop("All elements in last column must be character.")
-
-    if(any(duplicated(colnames(x))))
-      stop("duplicated column names")
-
-    if((ncol(x) - 1) < 2)
-      stop("At least two genes are mandatory")
-
-    cnfl <- which(colnames(x)[-ncol(x)] == "")
-    if(length(cnfl)) {
-      freeletter <- setdiff(LETTERS, colnames(x))[1]
-      if(length(freeletter) == 0) stop("Renaiming failed")
-      warning("One column named ''. Renaming to ", freeletter)
-      colnames(x)[cnfl] <- freeletter
-    }
-
-    if(!is.null(colnames(x)) && sort_gene_names) {
-      ncx <- ncol(x)
-      cnx <- colnames(x)[-ncx]
-      ocnx <- gtools::mixedorder(cnx)
-      if(!(identical(cnx[ocnx], cnx))) {
-        message("Sorting gene column names alphabetically")
-        x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
-      }
-    }
-
-    if(is.null(colnames(x))) {
-      ncx <- (ncol(x) - 1)
-      message("No column names: assigning gene names from LETTERS")
-      if(ncx > length(LETTERS))
-        stop("More genes than LETTERS. Not supported by now.")
-      colnames(x) <- c(LETTERS[1:ncx], "Fitness")
-    }
-
-    if(!all(as.matrix(x[, -ncol(x)]) %in% c(0, 1) ))
-      stop("First ncol - 1 entries not in {0, 1}.")
-
-    if(any(is.na(x)))
-      stop("NAs in fitness matrix")
+  if (frequencyDependentFitness){
 
     pattern <- stringr::regex("f_(\\d*_*)*")
 
@@ -323,10 +292,8 @@ to_genotFitness_std <- function(x,
        !(length(intersect(regularExpressionVector, fVariables(ncol(x) - 1)) >= 1) )){
       stop("There are some errors in fitness column")
     }
-
-    return(x)
   }
-
+  return(x)
 }
 
 ## Deprecated after flfast

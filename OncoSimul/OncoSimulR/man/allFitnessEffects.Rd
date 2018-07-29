@@ -130,7 +130,8 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   mapping of genotypes to fitness. For now, we only allow epistasis-like
   relations between genes (so you cannot code order effects this way).
 
-  Genotypes can be specified in two ways:
+  Genotypes can be specified in next two ways when \code{\link{frequencyDependentFitness}}
+  is FALSE and just in the first if TRUE:
   \itemize{
 
     \item As a matrix (or data frame) with g + 1 columns (where g >
@@ -140,11 +141,16 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
     \code{\link{rfitness}}. If the matrix has all columns named, those
     will be used for the names of the genes. Of course, except for
     column or row names, all entries in this matrix or data frame must
-    be numeric.
+    be numeric, except when \code{\link{frequencyDependentFitness}} is TRUE.
+    In this case last column must be character and contains fitness ecuations.
+    REMEMBER that this is the one and only way allowed to specifie genotypes
+    in case of frequency dependent fitness situations.
 
     \item As a two column data frame. The second column is fitness, and
     the first column are genotypes, given as a character vector. For
     instance, a row "A, B" would mean the genotype with both A and B mutated.
+    REMEMBER that this way is not allowed by the moment if
+    \code{\link{frequencyDependentFitness}} is TRUE.
   }
   When \code{\link{frequencyDependentFitness}} is FALSE, fitness must be
   \code{>= 0}. If any possible genotype is missing, its fitness is assumed
@@ -473,6 +479,21 @@ plotFitnessLandscape(evalAllGenotypes(fe2, order = FALSE))
 ## same as
 plotFitnessLandscape(fe2)
 
+
+##Frequency Dependent Fitness
+genofit <- data.frame(A = c(0, 1, 0, 1),
+                      B = c(0, 0, 1, 1),
+                      Fitness = c("max(3, 2*f_)",
+                                  "max(1.5, 3*(f_ + f_1))",
+                                  "max(2, 3*(f_ + f_2))",
+                                  "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"),
+                      stringsAsFactors = FALSE)
+
+afe <- allFitnessEffects(genotFitness = genofit,
+                         frequencyDependentFitness = TRUE,
+                         spPopSizes = c(5000, 2500, 3000, 7500))
+##Ploting fitness landscape in case of spPopSizes = c(5000, 2500, 3000, 7500)
+plotFitnessLandscape(evalAllGenotypes(afe))
 
 ## Reinitialize the seed
 set.seed(NULL)
