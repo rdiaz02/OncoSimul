@@ -247,7 +247,7 @@ to_genotFitness_std <- function(x,
           message("All single-gene genotypes as input to to_genotFitness_std")
         }
         ## Yes, we need to do this to  scale the fitness and put the "-"
-        if{frequencyDependentFitness}{
+        if(frequencyDependentFitness){
           anywt <- which(x[, 1] == "WT")
           if (length(anywt) != 1)
             stop("WT must appears once.")
