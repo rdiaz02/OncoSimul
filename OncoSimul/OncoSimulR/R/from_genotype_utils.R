@@ -152,7 +152,7 @@ to_genotFitness_std <- function(x,
       stop("Input must inherit from matrix or data.frame.")
 
     if(ncol(x) > 2) {
-      if (!frequencyDependentFitnes){
+      if (!frequencyDependentFitness){
         if(inherits(x, "matrix")) {
           if(!is.numeric(x))
             stop("A genotype fitness matrix/data.frame must be numeric.")
@@ -258,7 +258,7 @@ to_genotFitness_std <- function(x,
     }
     ## And, yes, scale all fitnesses by that of the WT
     whichroot <- which(rowSums(x[, -ncol(x), drop = FALSE]) == 0)
-    if (!frequencyDependentFitnes){
+    if (!frequencyDependentFitness){
       if(length(whichroot) == 0) {
         warning("No wildtype in the fitness landscape!!! Adding it with fitness 1.")
         x <- rbind(c(rep(0, ncol(x) - 1), 1), x)

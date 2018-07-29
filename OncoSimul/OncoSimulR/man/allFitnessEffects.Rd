@@ -182,7 +182,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 \code{spPopSizes} is a numeric vector that contains the population sizes of the clones, in
 the same order of getotypes appear in the Genotype column of \code{\link{genotFitness}}.
 \code{spPopSizes} is only needed when \code{\link{frequencyDependentFitness} = TRUE} and
-you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{evalAllGenotypes}
+you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{evalAllGenotypes}}
 (see these functions for more info).
 
 }
