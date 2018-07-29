@@ -19,7 +19,7 @@
   This function can be used also to produce the fitness specification
   needed to run simulations in a frequency dependent fitness way. In that
   situation we presume that the effects must be considered as fitness effects
-  and never as mutator effects (see \code{\link{details}} for more info).
+  and never as mutator effects (see\code{\link{details}} for more info).
 
   The output of these functions is not intended for user consumption,
   but as a way of preparing data to be sent to the C++ code.
@@ -130,7 +130,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   mapping of genotypes to fitness. For now, we only allow epistasis-like
   relations between genes (so you cannot code order effects this way).
 
-  Genotypes can be specified in next two ways when \code{\link{frequencyDependentFitness}}
+  Genotypes can be specified in next two ways when\code{\link{frequencyDependentFitness}}
   is FALSE and just in the first if TRUE:
   \itemize{
 
@@ -175,14 +175,14 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   specifications are fixed, except death rate in case of McFarland model (see
   \code{\link{oncoSimulIndiv}} for more details). If TRUE, you are in a frequency
   dependent fitness situation, where fitness specification ecuations must be passed
-  as characters at \code{\link{genotFitness}}.
+  as characters at\code{\link{genotFitness}}.
 }
 
 \item{spPopSizes}{
 \code{spPopSizes} is a numeric vector that contains the population sizes of the clones, in
-the same order of getotypes appear in the Genotype column of \code{\link{genotFitness}}.
+the same order of getotypes appear in the Genotype column of\code{\link{genotFitness}}.
 \code{spPopSizes} is only needed when \code{\link{frequencyDependentFitness} = TRUE} and
-you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{evalAllGenotypes}}
+you want to evaluate fitness with\code{\link{evalGenotype}} or\code{\link{evalAllGenotypes}}
 (see these functions for more info).
 
 }
@@ -208,7 +208,7 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{eval
   no direct effect on fitness, but that affect mutation rate, you MUST
   specify them in the call to \code{allFitnessEffects}, for instance as
   \code{noIntGenes} with an effect of. When you run the simulations in
-  \code{\link{frequencyDependentFitness} = TRUE} only fitness effects are
+  \code{\link{frequencyDependentFitness}} = TRUE only fitness effects are
   allowed, and must be codified in \code{\link{genotFitness}}.
 
   If you use \code{genotFitness} then you cannot pass modules,
@@ -221,8 +221,8 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{eval
   Bozic's model (as you get a death rate of 0).
 
   If you use \code{genotFitness} note that we force the WT (wildtype) to
-  always be 1 so fitnesses are rescaled in case of \code{\link{frequencyDependentFitness} = FALSE}.
-  By the contrary when \code{\link{frequencyDependentFitness} = TRUE} you
+  always be 1 so fitnesses are rescaled in case of \code{\link{frequencyDependentFitness} = FALSE.
+  By the contrary when \code{\link{frequencyDependentFitness}} = TRUE you
   are totaly free to determine the fitness as a function of the frequencies
   of the genotypes (see \code{\link{genotFitness}} and the vignette).
 

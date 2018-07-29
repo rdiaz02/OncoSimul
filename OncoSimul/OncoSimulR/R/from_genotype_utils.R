@@ -275,7 +275,7 @@ to_genotFitness_std <- function(x,
 
     if(any(is.na(x)))
       stop("NAs in fitness matrix")
-    if(simplify) {
+    if(simplify && !frequencyDependentFitness) {
       x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]
     }
 
