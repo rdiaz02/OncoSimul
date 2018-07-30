@@ -37,9 +37,14 @@ progression: effects of passengers, evolutionary models, and
 sampling",
 [BMC Bioinformatics, 2015, 16:41](http://www.biomedcentral.com/1471-2105/16/41).
 OncoSimulR has also been used extensively in the simulations reported in
-the [bioRxiv](biorxiv.org/)
-preprint
-["Cancer Progression Models And Fitness Landscapes: A Many-To-Many Relationship"](https://doi.org/10.1101/141465).
+the Bioinformatics 
+paper
+["Cancer Progression Models And Fitness Landscapes: A Many-To-Many
+Relationship"](https://doi.org/10.1093/bioinformatics/btx663) and the
+bioRxiv preprint 
+["Every which way? On predicting tumor evolution using cancer progression models"](https://doi.org/10.1101/371039).
+
+
 
 
 You can also find
