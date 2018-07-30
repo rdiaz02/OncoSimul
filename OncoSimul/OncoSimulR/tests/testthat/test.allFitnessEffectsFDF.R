@@ -73,6 +73,19 @@ test_that("testing output", {
                                "max(2, 3*(f_ + f_2))",
                                "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"))
   
+  r5 <- data.frame(A = c(0, 1, 0, 1),
+                   B = c(0, 0, 1, 1),
+                   Fitness = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_A))",
+                               "max(2, 3*(f_ + f_B))",
+                               "max(2, 5*f_ - 0.5*( f_A + f_B) + 15*f_A_B)"))
+  
+  r6 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                   Fitness = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_A))",
+                               "max(2, 3*(f_ + f_B))",
+                               "max(2, 5*f_ - 0.5*( f_A + f_B) + 15*f_A_B)"))
+
   afe1 <- allFitnessEffects(genotFitness = r1, 
                            frequencyDependentFitness = TRUE)
   
@@ -124,6 +137,31 @@ test_that("testing output", {
                                  frequencyDependentFitness = TRUE), 
                allFitnessEffects(genotFitness = r4, 
                                  frequencyDependentFitness = TRUE))
+  
+  expect_identical(allFitnessEffects(genotFitness = r3, 
+                                     frequencyDependentFitness = TRUE), 
+                   allFitnessEffects(genotFitness = r5, 
+                                     frequencyDependentFitness = TRUE))
+  
+  expect_identical(allFitnessEffects(genotFitness = r3, 
+                                     frequencyDependentFitness = TRUE), 
+                   allFitnessEffects(genotFitness = r6, 
+                                     frequencyDependentFitness = TRUE))
+  
+  expect_identical(allFitnessEffects(genotFitness = r4, 
+                                     frequencyDependentFitness = TRUE), 
+                   allFitnessEffects(genotFitness = r5, 
+                                     frequencyDependentFitness = TRUE))
+  
+  expect_identical(allFitnessEffects(genotFitness = r4, 
+                                     frequencyDependentFitness = TRUE), 
+                   allFitnessEffects(genotFitness = r6, 
+                                     frequencyDependentFitness = TRUE))
+  
+  expect_identical(allFitnessEffects(genotFitness = r5, 
+                                     frequencyDependentFitness = TRUE), 
+                   allFitnessEffects(genotFitness = r6, 
+                                     frequencyDependentFitness = TRUE))
 })
 
 cat(paste("\n Ending test.allFitnessEffectsFDF at", date(), "\n"))
