@@ -299,6 +299,11 @@ to_genotFitness_std <- function(x,
 
   if (frequencyDependentFitness){
 
+    conversionTable <- conversionTable(ncol(x) - 1)
+
+    x[, ncol(x)] <- sapply(x[, ncol(x)],
+                           function(x){findAndReplace(x, conversionTable)})
+
     pattern <- stringr::regex("f_(\\d*_*)*")
 
     regularExpressionVector <-
@@ -306,8 +311,8 @@ to_genotFitness_std <- function(x,
                            function(z) {stringr::str_extract_all(string = z,
                                                         pattern = pattern)})))
 
-    if((!all(regularExpressionVector %in% fVariables(ncol(x) - 1))) |
-       !(length(intersect(regularExpressionVector, fVariables(ncol(x) - 1)) >= 1) )){
+    if((!all(regularExpressionVector %in% fVariablesN(ncol(x) - 1))) |
+       !(length(intersect(regularExpressionVector, fVariablesN(ncol(x) - 1)) >= 1) )){
       stop("There are some errors in fitness column")
     }
   }

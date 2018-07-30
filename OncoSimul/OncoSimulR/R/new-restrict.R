@@ -415,7 +415,7 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
 }
 
 ##New function
-fVariables <- function (g) {
+fVariablesN <- function (g) {
 
   if (is.null(g) | g == 0)
     stop("Number of genes must be integer > 0")
@@ -431,6 +431,44 @@ fVariables <- function (g) {
                     function(x) paste0("f_", x))
 
   return (fsVector)
+}
+
+fVariablesL <- function (g) {
+
+  if (is.null(g) | g == 0)
+    stop("Number of genes must be integer > 0")
+
+  if(g > length(LETTERS))
+    stop(paste0("Number of genes must be < length(LETTERS).",
+                " Please specify variables with numbers"))
+
+  combinationsList <- list()
+  for (i in 0:g) {
+    combinationsList <- append(combinationsList,
+                               combn(LETTERS[1:g], i, list, simplify = TRUE))
+  }
+  fsVector <-sapply(sapply(combinationsList,
+                           function(x) paste0(x, collapse = "_")),
+                    function(x) paste0("f_", x))
+
+  return (fsVector)
+}
+
+conversionTable <- function(g){
+  df <- data.frame(let = fVariablesL(g)[-1],
+                   num = fVariablesN(g)[-1],
+                   stringsAsFactors = FALSE)
+  return (df)
+}
+
+findAndReplace <- function(str, conversionTable){
+
+  pattern <- rev(setNames(as.character(conversionTable$num),
+                      conversionTable$let))
+
+  str <- stringr::str_replace_all(string = str,
+                                  pattern = pattern)
+  return(str)
 }
 
 allFitnessORMutatorEffects <- function(rT = NULL,
@@ -699,7 +737,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
         GeneNumID = cnn,
         stringsAsFactors = FALSE)
 
-      fitnessLandscapeVariables = fVariables(ncol(genotFitness) - 1)
+      fitnessLandscapeVariables = fVariablesN(ncol(genotFitness) - 1)
 
     }
 
@@ -723,7 +761,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 gMOneToOne = TRUE,
                 geneToModule = c(Root = "Root"),
                 graph = list(),
-                drv = vector(mode = "integer", length = 0L),
+                drv = drv,
                 rT = NULL,
                 epistasis = NULL,
                 orderEffects = NULL,
