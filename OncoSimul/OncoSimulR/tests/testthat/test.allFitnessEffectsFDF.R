@@ -60,6 +60,13 @@ test_that("testing output", {
   
   r2 <- rfitness(2)
   
+  r3 <- data.frame(A = c(0, 1, 0, 1),
+                   B = c(0, 0, 1, 1),
+                   Fitness = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_1))",
+                               "max(2, 3*(f_ + f_2))",
+                               "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"))
+  
   afe1 <- allFitnessEffects(genotFitness = r1, 
                            frequencyDependentFitness = TRUE)
   
@@ -103,6 +110,9 @@ test_that("testing output", {
                                                   450)) , 
                  "spPopSizes will be considered NULL if frequencyDependentFitness = FALSE")
   
+  expect_warning(allFitnessEffects(genotFitness = r3, 
+                                   frequencyDependentFitness = TRUE), 
+                 "Last column of genotype fitness is a factor. Converting to character.")
 })
 
 cat(paste("\n Ending test.allFitnessEffectsFDF at", date(), "\n"))

@@ -163,13 +163,21 @@ to_genotFitness_std <- function(x,
       }else{
         if(!inherits(x, "data.frame"))
            stop("Input must inherit from data.frame.")
-        if(!all(unlist(lapply(x[,-ncol(x)], is.numeric))))
-            stop("All columns except last one must be numeric.")
-        if(!all(unlist(lapply(x[, ncol(x)], is.character))))
-            stop("All elements in last column must be character.")
-        if(ncol(x) == 0)
+        if(ncol(x) == 0){
           stop("You have an empty data.frame")
         }
+        if(!all(unlist(lapply(x[,-ncol(x)], is.numeric)))){
+          stop("All columns except last one must be numeric.")
+        }
+        if(is.factor(x[, ncol(x)])) {
+          warning("Last column of genotype fitness is a factor. ",
+                  "Converting to character.")
+          x[, ncol(x)] <- as.character(x[, ncol(x)])
+        }
+        if(!all(unlist(lapply(x[, ncol(x)], is.character)))){
+          stop("All elements in last column must be character.")
+        }
+      }
 
       ## We are expecting here a matrix of 0/1 where columns are genes
       ## except for the last column, that is Fitness
@@ -209,6 +217,9 @@ to_genotFitness_std <- function(x,
     } else {
       if(!inherits(x, "data.frame"))
         stop("genotFitness: if two-column must be data frame")
+      if(ncol(x) == 0){
+        stop("You have an empty data.frame")
+      }
       ## Make sure no factors
       if(is.factor(x[, 1])) {
         warning("First column of genotype fitness is a factor. ",
@@ -251,8 +262,14 @@ to_genotFitness_std <- function(x,
         ## Yes, we need to do this to  scale the fitness and put the "-"
         if(frequencyDependentFitness){
           anywt <- which(x[, 1] == "WT")
-          if (length(anywt) != 1)
+          if (length(anywt) != 1){
             stop("WT must appears once.")
+          }
+          if(is.factor(x[, ncol(x)])) {
+            warning("Second column of genotype fitness is a factor. ",
+                    "Converting to character.")
+            x[, ncol(x)] <- as.character(x[, ncol(x)])
+          }
         }
 
         x <- allGenotypes_to_matrix(x)
