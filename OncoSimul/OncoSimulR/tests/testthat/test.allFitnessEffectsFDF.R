@@ -94,7 +94,7 @@ test_that("testing output", {
   expect_equivalent(afe1$geneToModule, "Root")
   
   expect_identical(afe1$fitnessLandscapeVariables, 
-                   OncoSimulR:::fVariables(ncol(afe1$fitnessLandscape) - 1))
+                   OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 1))
   
   lapply(afe1[c(4, 5, 14:16)], function(x){
     expect_equal(class(x), "data.frame")
