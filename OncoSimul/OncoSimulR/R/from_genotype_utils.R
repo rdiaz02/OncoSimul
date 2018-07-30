@@ -211,10 +211,11 @@ to_genotFitness_std <- function(x,
                " as you see fit.")
         colnames(x) <- c(LETTERS[1:ncx], "Fitness")
       }
-
       if(!all(as.matrix(x[, -ncol(x)]) %in% c(0, 1) ))
         stop("First ncol - 1 entries not in {0, 1}.")
+
     } else {
+
       if(!inherits(x, "data.frame"))
         stop("genotFitness: if two-column must be data frame")
       if(ncol(x) == 0){
@@ -500,7 +501,7 @@ allGenotypes_to_matrix <- function(x,
     }
   }
   splitted_genots <- lapply(x$Genotype,
-                            function(z) OncoSimulR:::nice.vector.eo(z, ","))
+                            function(z) nice.vector.eo(z, ","))
 
   all_genes <- sort(unique(unlist(splitted_genots)))
 
@@ -521,6 +522,7 @@ allGenotypes_to_matrix <- function(x,
                                       2,
                                       as.numeric)
     m[, ncol(m)] <- as.character(m[, ncol(m)])
+    row.names(m) <- as.character(row.names(m))
   }
   ## Ensure sorted
   ## m <- data.frame(m)
