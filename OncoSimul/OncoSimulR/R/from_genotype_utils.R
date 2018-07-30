@@ -522,7 +522,7 @@ allGenotypes_to_matrix <- function(x,
                                       2,
                                       as.numeric)
     m[, ncol(m)] <- as.character(m[, ncol(m)])
-    row.names(m) <- as.character(row.names(m))
+    attr(m,'row.names') <- as.integer(attr(m,'row.names'))
   }
   ## Ensure sorted
   ## m <- data.frame(m)
