@@ -691,6 +691,9 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                    Fitness = genotFitness[, ncol(genotFitness)],
                    stringsAsFactors = FALSE)
 
+      attr(fitnessLandscape_df,'row.names') <-
+        as.integer(attr(fitnessLandscape_df,'row.names'))
+
       fitnessLandscape_gene_id <- data.frame(
         Gene = colnames(genotFitness)[-ncol(genotFitness)],
         GeneNumID = cnn,
