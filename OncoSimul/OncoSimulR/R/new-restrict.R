@@ -703,6 +703,12 @@ allFitnessORMutatorEffects <- function(rT = NULL,
 
     }
 
+    if(!is.null(drvNames)) {
+      drv <- unique(getGeneIDNum(geneModule, geneNoInt, fitnessLandscape_gene_id,
+                                 drvNames))
+    } else {
+      drv <- vector(mode = "integer", length = 0L)
+    }
 
     defaultGeneModuleDF <- data.frame(Gene = "Root",
                                       Module = "Root",

@@ -76,18 +76,23 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
       three would have the same effects if a node that connects to root
       only connects to root).}
   }
+  This paramenter is not used if  \code{frequencyDependentFitness} is TRUE.
   }
   \item{epistasis}{
     A named numeric vector. The names identify the relationship, and the
     numeric value is the fitness (or mutator) effect. For the names, each of the
     genes or modules involved is separated by a ":". A negative sign
     denotes the absence of that term.
+
+    This paramenter is not used if  \code{frequencyDependentFitness} is TRUE.
   }
   \item{orderEffects}{
     A named numeric vector, as for \code{epistasis}. A ">" separates the
   names of the genes of modules of a relationship, so that "U > Z" means
   that the relationship is satisfied when mutation U has happened before
   mutation Z.
+
+  This paramenter is not used if  \code{frequencyDependentFitness} is TRUE.
 }
 \item{noIntGenes}{
   A numeric vector (optionally named) with the fitness coefficients (or
@@ -98,6 +103,8 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 
   Of course, avoid using potentially confusing characters in the
   names. In particular, "," and ">" are not allowed as gene names.
+
+  This paramenter is not used if  \code{frequencyDependentFitness} is TRUE.
 }
 
 \item{geneToModule}{
@@ -110,6 +117,8 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   argument, and you used a restriction table, the \code{geneToModule}
   must necessarily contain, in the first position, "Root" (since the
   restriction table contains a node named "Root"). See examples below.
+
+  This paramenter is not used if  \code{frequencyDependentFitness} is TRUE.
 }
 
 \item{drvNames}{The names of genes that are considered drivers. This is
@@ -130,8 +139,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   mapping of genotypes to fitness. For now, we only allow epistasis-like
   relations between genes (so you cannot code order effects this way).
 
-  Genotypes can be specified in next two ways when\code{frequencyDependentFitness}
-  is FALSE and just in the first if TRUE:
+  Genotypes can be specified in two ways:
   \itemize{
 
     \item As a matrix (or data frame) with g + 1 columns (where g >
@@ -143,14 +151,11 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
     column or row names, all entries in this matrix or data frame must
     be numeric, except when \code{frequencyDependentFitness} is TRUE.
     In this case last column must be character and contains fitness ecuations.
-    REMEMBER that this is the one and only way allowed to specifie genotypes
-    in case of frequency dependent fitness situations.
 
     \item As a two column data frame. The second column is fitness, and
     the first column are genotypes, given as a character vector. For
     instance, a row "A, B" would mean the genotype with both A and B mutated.
-    REMEMBER that this way is not allowed by the moment if
-    \code{frequencyDependentFitness} is TRUE.
+
   }
   When \code{frequencyDependentFitness} is FALSE, fitness must be
   \code{>= 0}. If any possible genotype is missing, its fitness is assumed
@@ -215,8 +220,9 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{eval
   noIntgenes, epistasis, or rT. This makes sense, because using
   \code{genotFitness} is saying
   "this is the mapping of genotypes to fitness. Period", so we should
-  not allow further modifications from other terms.
-
+  not allow further modifications from other terms. This is always the case
+  when \code{frequencyDependentFitness} = TRUE.
+  
   If you use \code{genotFitness} you need to be careful when you use
   Bozic's model (as you get a death rate of 0).
 

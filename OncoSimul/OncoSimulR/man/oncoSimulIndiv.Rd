@@ -133,7 +133,8 @@ oncoSimulSample(Nindiv,
     \code{\link{poset}} if you want to use the specification as in
     v.1. Otherwise, a fitnessEffects object (see
     \code{\link{allFitnessEffects}}). Always is a fitnessEffects object
-    when you are in a frequency dependent fitness simulation.
+    when you are in a frequency dependent fitness simulation and its presence is
+    mandatory. Of course in this case fp$frequencyDependentFitness must be TRUE.
 
     Other arguments below (s, sh, numPassengers) make sense only if you
     use a poset, as they are included in the fitnessEffects object.
@@ -195,7 +196,7 @@ oncoSimulSample(Nindiv,
   If you use mutator effects you must also use fitnessEffects in
   \code{fp}.
 
-  You are not allowed to use mutator effects is a frequency depedent
+  You are not allowed to use mutator effects object in a frequency depedent
   fitness simulation.
 
 }

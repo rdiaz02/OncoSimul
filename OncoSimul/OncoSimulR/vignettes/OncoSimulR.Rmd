@@ -224,10 +224,6 @@ of random fitness landscapes and the representation of fitness landscapes
 and provides statistics of evolutionary predictability.
 
 
-
-
-
-
 ## Key features of OncoSimulR {#key}
 
 As mentioned above, OncoSimulR is now a very general package for forward
@@ -296,9 +292,10 @@ is a summary of some of its key features:
   from the simulations.
   
 * From version 2.9.10, you can use simulations in a frequency dependent fitness 
-  way, that is, puting the fitness specifications as functions of the frequecies 
-  of the clones, and evaluating frequently the fitness across the simulation (see
-  section \@ref(FDF)).
+  way, that is, puting the fitness specifications not only as fixed values, but 
+  also as functions of the frequecies of the clones, and evaluating frequently the 
+  fitness across the simulation, you can obtein a totaly dynamic fitness landscape 
+  (see section \@ref(FDF)).
   
 
 
@@ -1002,7 +999,7 @@ The new frequency dependent fitness funcionality allows users to run simulations
 in a different way, defining the fitness effects as funntions of clone's frequencies.
 This point of view comes from frequency dependent selection contex in Evolutionary 
 Biology and in the framework of this package is employed using stochastic models.
-See section \@ref(FDF) for more details and examples.
+See section \@ref(FDF) for further details and examples.
 
 
 ## Trade-offs and what is OncoSimulR not well suited for {#whatnotfor}
@@ -9340,6 +9337,8 @@ more meaningful names.
 \clearpage
 
 # Frequency dependent fitness simulations {#FDF}
+
+
 
 \clearpage
 

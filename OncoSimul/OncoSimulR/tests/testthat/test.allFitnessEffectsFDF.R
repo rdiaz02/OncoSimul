@@ -67,6 +67,12 @@ test_that("testing output", {
                                "max(2, 3*(f_ + f_2))",
                                "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"))
   
+  r4 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                   Fitness = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_1))",
+                               "max(2, 3*(f_ + f_2))",
+                               "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"))
+  
   afe1 <- allFitnessEffects(genotFitness = r1, 
                            frequencyDependentFitness = TRUE)
   
@@ -113,6 +119,11 @@ test_that("testing output", {
   expect_warning(allFitnessEffects(genotFitness = r3, 
                                    frequencyDependentFitness = TRUE), 
                  "Last column of genotype fitness is a factor. Converting to character.")
+
+  expect_identical(allFitnessEffects(genotFitness = r3, 
+                                 frequencyDependentFitness = TRUE), 
+               allFitnessEffects(genotFitness = r4, 
+                                 frequencyDependentFitness = TRUE))
 })
 
 cat(paste("\n Ending test.allFitnessEffectsFDF at", date(), "\n"))
