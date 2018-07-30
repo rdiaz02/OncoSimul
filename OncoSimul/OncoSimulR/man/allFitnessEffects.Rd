@@ -19,7 +19,7 @@
   This function can be used also to produce the fitness specification
   needed to run simulations in a frequency dependent fitness way. In that
   situation we presume that the effects must be considered as fitness effects
-  and never as mutator effects (see \code{\link{details}} for more info).
+  and never as mutator effects (see \code{details} for more info).
 
   The output of these functions is not intended for user consumption,
   but as a way of preparing data to be sent to the C++ code.
@@ -71,7 +71,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 	  relationship to be satisfied. Specify it as "XOR" or "xmpn" or
 	  "XMPN".}
       }
-      In addition, for the nodes that de\code{\link{details}} pend only on the root node, you
+      In addition, for the nodes that de\code{details} pend only on the root node, you
       can use "--" or "-" if you want (though using any of the other
       three would have the same effects if a node that connects to root
       only connects to root).}

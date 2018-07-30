@@ -272,7 +272,7 @@ to_genotFitness_std <- function(x,
           }
         }
 
-        x <- allGenotypes_to_matrix(x)
+        x <- allGenotypes_to_matrix(x, frequencyDependentFitness)
       }
     }
     ## And, yes, scale all fitnesses by that of the WT
@@ -464,7 +464,8 @@ genot_fitness_to_epistasis <- function(x) {
 
 
 
-allGenotypes_to_matrix <- function(x) {
+allGenotypes_to_matrix <- function(x,
+  frequencyDependentFitness = FALSE) {
     ## Makes no sense to allow passing order: the matrix would have
     ## repeated rows. A > B and B > A both have exactly A and B
 
@@ -485,8 +486,12 @@ allGenotypes_to_matrix <- function(x) {
         x <- x[-anywt, ]
         ## Trivial case of passing just a WT?
     } else {
-        warning("No WT genotype. Setting its fitness to 1.")
-        fwt <- 1
+        if(!frequencyDependentFitness){
+          warning("No WT genotype. Setting its fitness to 1.")
+          fwt <- 1
+        }else{
+          stop("No WT genotype.")
+        }
     }
     splitted_genots <- lapply(x$Genotype,
                              function(z) nice.vector.eo(z, ","))
@@ -506,8 +511,10 @@ allGenotypes_to_matrix <- function(x) {
                m)
     ## Ensure sorted
     ## m <- data.frame(m)
-    rs <- rowSums(m[, -ncol(m), drop = FALSE])
-    m <- m[order(rs), , drop = FALSE]
+    if(!frequencyDependentFitness){
+      rs <- rowSums(m[, -ncol(m), drop = FALSE])
+      m <- m[order(rs), , drop = FALSE]
+    }
     ## m <- m[do.call(order, as.list(cbind(rs, m[, -ncol(m)]))), ]
     return(m)
 }
