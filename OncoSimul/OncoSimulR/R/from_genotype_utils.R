@@ -276,8 +276,9 @@ to_genotFitness_std <- function(x,
       }
     }
     ## And, yes, scale all fitnesses by that of the WT
-    whichroot <- which(rowSums(x[, -ncol(x), drop = FALSE]) == 0)
+
     if (!frequencyDependentFitness){
+      whichroot <- which(rowSums(x[, -ncol(x), drop = FALSE]) == 0)
       if(length(whichroot) == 0) {
         warning("No wildtype in the fitness landscape!!! Adding it with fitness 1.")
         x <- rbind(c(rep(0, ncol(x) - 1), 1), x)
@@ -287,9 +288,6 @@ to_genotFitness_std <- function(x,
         vwt <- x[whichroot, ncol(x)]
         x[, ncol(x)] <- x[, ncol(x)]/vwt
       }
-    }else{
-      if(length(whichroot) == 0)
-        stop("No wildtype in the fitness landscape!!!")
     }
 
     if(any(is.na(x)))
@@ -465,58 +463,71 @@ genot_fitness_to_epistasis <- function(x) {
 
 
 allGenotypes_to_matrix <- function(x,
-  frequencyDependentFitness = FALSE) {
-    ## Makes no sense to allow passing order: the matrix would have
-    ## repeated rows. A > B and B > A both have exactly A and B
+                                   frequencyDependentFitness = FALSE) {
+  ## Makes no sense to allow passing order: the matrix would have
+  ## repeated rows. A > B and B > A both have exactly A and B
 
-    ## Take output of evalAllGenotypes or identical data frame and return
-    ## a matrix with 0/1 in a column for each gene and a final column of
-    ## Fitness
+  ## Take output of evalAllGenotypes or identical data frame and return
+  ## a matrix with 0/1 in a column for each gene and a final column of
+  ## Fitness
 
-    if(is.factor(x[, 1])) {
-        warning("First column of genotype fitness is a factor. ",
-                "Converting to character.")
-        x[, 1] <- as.character(x[, 1])
+  if(is.factor(x[, 1])) {
+    warning("First column of genotype fitness is a factor. ",
+            "Converting to character.")
+    x[, 1] <- as.character(x[, 1])
+  }
+  if (frequencyDependentFitness){
+    if(is.factor(x[, ncol(x)])) {
+      warning("Second column of genotype fitness is a factor. ",
+              "Converting to character.")
+      x[, ncol(x)] <- as.character(x[, ncol(x)])
     }
-    ## A WT can be specified with string "WT"
-    anywt <- which(x[, 1] == "WT")
-    if(length(anywt) > 1) stop("More than 1 WT")
-    if(length(anywt) == 1) {
-        fwt <- x[anywt, 2]
-        x <- x[-anywt, ]
-        ## Trivial case of passing just a WT?
-    } else {
-        if(!frequencyDependentFitness){
-          warning("No WT genotype. Setting its fitness to 1.")
-          fwt <- 1
-        }else{
-          stop("No WT genotype.")
-        }
-    }
-    splitted_genots <- lapply(x$Genotype,
-                             function(z) nice.vector.eo(z, ","))
+  }
 
-    all_genes <- sort(unique(unlist(splitted_genots)))
-
-    m <- matrix(0, nrow = length(splitted_genots), ncol = length(all_genes))
-    the_match <- lapply(splitted_genots,
-                        function(z) match(z, all_genes))
-    ## A lot simpler with a loop
-    for(i in 1:nrow(m)) {
-        m[i, the_match[[i]]] <- 1
-    }
-    m <- cbind(m, x[, 2])
-    colnames(m) <- c(all_genes, "Fitness")
-    m <- rbind(c(rep(0, length(all_genes)), fwt),
-               m)
-    ## Ensure sorted
-    ## m <- data.frame(m)
+  ## A WT can be specified with string "WT"
+  anywt <- which(x[, 1] == "WT")
+  if(length(anywt) > 1) stop("More than 1 WT")
+  if(length(anywt) == 1) {
+    fwt <- x[anywt, 2]
+    x <- x[-anywt, ]
+    ## Trivial case of passing just a WT?
+  } else {
     if(!frequencyDependentFitness){
-      rs <- rowSums(m[, -ncol(m), drop = FALSE])
-      m <- m[order(rs), , drop = FALSE]
+      warning("No WT genotype. Setting its fitness to 1.")
+      fwt <- 1
+    }else{
+      stop("No WT genotype.")
     }
-    ## m <- m[do.call(order, as.list(cbind(rs, m[, -ncol(m)]))), ]
-    return(m)
+  }
+  splitted_genots <- lapply(x$Genotype,
+                            function(z) OncoSimulR:::nice.vector.eo(z, ","))
+
+  all_genes <- sort(unique(unlist(splitted_genots)))
+
+  m <- matrix(0, nrow = length(splitted_genots), ncol = length(all_genes))
+  the_match <- lapply(splitted_genots,
+                      function(z) match(z, all_genes))
+  ## A lot simpler with a loop
+  for(i in 1:nrow(m)) {
+    m[i, the_match[[i]]] <- 1
+  }
+  m <- cbind(m, x[, 2])
+  colnames(m) <- c(all_genes, "Fitness")
+  m <- rbind(c(rep(0, length(all_genes)), fwt), m)
+
+  if(frequencyDependentFitness){
+    m <- as.data.frame(m)
+    m[, 1:length(all_genes)] <- apply(m[, 1:length(all_genes)],
+                                      2,
+                                      as.numeric)
+    m[, ncol(m)] <- as.character(m[, ncol(m)])
+  }
+  ## Ensure sorted
+  ## m <- data.frame(m)
+  rs <- rowSums(m[, -ncol(m), drop = FALSE])
+  m <- m[order(rs), , drop = FALSE]
+  ## m <- m[do.call(order, as.list(cbind(rs, m[, -ncol(m)]))), ]
+  return(m)
 }
 
 
