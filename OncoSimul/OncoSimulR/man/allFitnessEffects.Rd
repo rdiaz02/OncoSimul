@@ -154,16 +154,22 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 
     \item As a two column data frame. The second column is fitness, and
     the first column are genotypes, given as a character vector. For
-    instance, a row "A, B" would mean the genotype with both A and B mutated.
+    instance, a row "A, B" would mean the genotype with both A and B mutated. If
+    \code{frequencyDependentFitness} is TRUE both columns must be character 
+    vectors.
 
-  }
+    }
+  
   When \code{frequencyDependentFitness} is FALSE, fitness must be
   \code{>= 0}. If any possible genotype is missing, its fitness is assumed
   to be 1. By the contrary, if \code{frequencyDependentFitness} is TRUE,
   the Fitness column must contain the fitness specification ecuations, like
   characters, using as variables the frequency of the all possible genotypes.
-  Frequency variables must be f_ for wild type, f_1 if first gene is mutated,
-  f_2 if is the case for the second one, f_1_2, if both are mutated, and so on.
+  Frequency variables must be f_ for wild type, f_1 or f_A if first gene is mutated,
+  f_2 or f_B if is the case for the second one, f_1_2 or f_A_B, if both are mutated,
+  and so on. Mathematical operations and symbols allowed are described in the 
+  documentation of C++ library ExprTkthat is used to parse an evaluate the fitness
+  ecuations (see references for more information).
 }
 
 
@@ -184,11 +190,11 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 }
 
 \item{spPopSizes}{
-\code{spPopSizes} is a numeric vector that contains the population sizes of the clones, in
-the same order of getotypes appear in the Genotype column of \code{genotFitness}.
+\code{spPopSizes} is a numeric vector that contains the population sizes of the clones,
+in the same order of getotypes appear in the Genotype column of \code{genotFitness}.
 \code{spPopSizes} is only needed when \code{frequencyDependentFitness} = TRUE and
-you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{evalAllGenotypes}}
-(see these functions for more info).
+you want to evaluate fitness with \code{\link{evalGenotype}} or 
+\code{\link{evalAllGenotypes}} (see these functions for more info).
 
 }
 
@@ -307,6 +313,9 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{eval
   mutations on cancer progression.  \emph{Proceedings of the National
   Academy of Sciences of the United States of America\/}, \bold{110}(8),
   2910--5.
+  
+    Partow, A. ExprTk: C++ Mathematical Expression Library. (Open Souce MIT License )
+  \url{<http://www.partow.net/programming/exprtk/>}
 
 
 }
@@ -331,7 +340,8 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or \code{\link{eval
   ecuations when you are in a frequency dependent fitness situation are fixed as
   we have explained in \code{genotFitness}. Using different and strange
   combinations of "f_" followed by letters and numbers perhaps you could confuse
-  the R parser, but never the C++ one. For a correct performance please be aware of this.
+  the R parser, but never the C++ one. For a correct performance please be aware of 
+  this.
   }
 
 
