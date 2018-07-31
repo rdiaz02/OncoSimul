@@ -5,11 +5,12 @@ Version: 2.10.1
 Date: 2018-09-07
 Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
 		     email = "rdiaz02@gmail.com"),
-	      person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"))
-	      person("Sergio", "Sánchez-Carrillo", role = "ctb", 
-	        email = "sergiosanchezcarrillo@gmail.com")
+	      person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
+	      person("Sergio", "Sanchez-Carrillo", role = "ctb", 
+	        email = "sergiosanchezcarrillo@gmail.com"))
 Author: Ramon Diaz-Uriarte [aut, cre],
-	Mark Taylor [ctb]
+	Mark Taylor [ctb], 
+	Sergio Sanchez-Carrillo [ctb]
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
