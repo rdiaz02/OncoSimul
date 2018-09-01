@@ -83,7 +83,7 @@ You can directly install from github:
 ```r
 install.packages("devtools") ## if you don't have it already
 library(devtools)
-install_github("rdiaz02/OncoSimul/OncoSimulR")
+install_github("/sersancar/oncosimul_fdf/OncoSimulR")
 ``` 
 
 But sometimes the latest additions in this repo could be broken (see [Software status](#software-status)). And you

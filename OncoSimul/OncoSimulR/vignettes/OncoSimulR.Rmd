@@ -13,12 +13,12 @@ author: "
 date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), suppressWarnings(ifelse(length(try(system('git rev-parse --short HEAD', ignore.stderr = TRUE, intern = TRUE))), paste0('. Revision: ', system('git rev-parse --short HEAD', intern = TRUE)), '')))`"
 header-includes:
     - \input{preamble.tex}
-output: 
-  bookdown::html_document2:
-    css: custom4.css
-    toc: yes
-    toc_float: true
-    fig_retina: null
+output: pdf_document
+  # bookdown::html_document2:
+  #   css: custom4.css
+  #   toc: yes
+  #   toc_float: true
+  #   fig_retina: null
 classoption: a4paper
 geometry: margin=3cm
 fontsize: 12pt
