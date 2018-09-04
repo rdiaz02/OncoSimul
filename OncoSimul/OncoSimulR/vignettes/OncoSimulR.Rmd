@@ -3439,9 +3439,11 @@ Exp and Bozic models, or depends on the population size). This is
 also shown in Table \@ref(tab:osrfeatures), in the rows for "Fitness
 components", under "Evolutionary Features".
 
-In the case of frequency dependent fitness simulations, the fitness effects are 
-reevaluated in each iteration of the algorithm, so that birth rate, death rate 
-or both, depending the model used, change and be maintained updated.
+In the case of frequency dependent fitness simulations, the fitness effects
+must be reevaluated frequently so that birth rate, death rate or both,
+depending the model used, must be maintained updated. To do this is
+mandatory to use a short step to reevaluate fitness, what is done using a
+small value for `sampleEvery` parameter in `oncoSimulindv` (see \@ref(whatgoodsampleevery) for more details), as is the case when using McFarland model.
 
 
 
