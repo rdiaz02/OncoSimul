@@ -14,7 +14,7 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
+#include <cfloat>
 #include "bnb_common.h"
 #include "new_restrict.h" // for the TypeModel enum
 #include <Rcpp.h>
