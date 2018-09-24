@@ -65,5 +65,5 @@ save(file = "../miscell-files/coverage-results-O0.RData", cov_O0)
 ## zero_coverage(cov4) 
 ## shine(cov_O0)
 
-shine(cov_O3)
+report(cov_O3)
 
