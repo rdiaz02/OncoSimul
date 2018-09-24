@@ -1,3 +1,6 @@
+Changes in version 2.11.2 (2018-09-24):
+	- works with STRICT_R_HEADERS
+	
 Changes in version 2.11.1:
 	- robustify test.fixation.R, Local max, tolerance
 	
