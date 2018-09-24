@@ -17,7 +17,7 @@
 #include "debug_common.h"
 #include "common_classes.h"
 #include "bnb_common.h"
-#include <cfloat>
+// #include <cfloat> //FIXME: uncomment; travis/covr issue
 #include <limits>
 #include <iostream>
 #include <random>
