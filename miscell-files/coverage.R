@@ -1,12 +1,14 @@
 ## Run the coverage script
 
+
+## library(shiny)
+## library(DT)
+## library(OncoSimulR)
+## ## library(help = OncoSimulR)
+
+
+
 library(covr)
-
-library(shiny)
-library(DT)
-library(OncoSimulR)
-## library(help = OncoSimulR)
-
 setwd("../OncoSimulR")
 
 ## cov3 <- package_coverage(type = "all", combine_types = FALSE, quiet = FALSE)
@@ -39,6 +41,8 @@ options(covr.flags = c(CPPFLAGS = "-O3 -g --coverage",
                        LDFLAGS = "--coverage"))
 
 cov_O3 <- package_coverage(type = "tests", quiet = FALSE)
+
+
 
 save(file = "../miscell-files/coverage-results-O3.RData", cov_O3)
 

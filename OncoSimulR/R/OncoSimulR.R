@@ -428,7 +428,10 @@ oncoSimulPop <- function(Nindiv,
                         detectionProb = detectionProb,
                         AND_DrvProbExit = AND_DrvProbExit,
                         fixation = fixation),
-                    mc.cores = mc.cores
+                    mc.cores = mc.cores,
+                    mc.allow.recursive = FALSE ## FIXME: remove?
+                    ## done for covr issue
+                    ## https://github.com/r-lib/covr/issues/335#issuecomment-424116766
                     )
     class(pop) <- "oncosimulpop"
     attributes(pop)$call <- match.call()
