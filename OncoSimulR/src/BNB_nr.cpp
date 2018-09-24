@@ -22,9 +22,9 @@
 #include "common_classes.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
-#include <Rcpp.h>
+#include <cfloat>
 #include <limits>
-// #include <cfloat>; //FIXME: Travis/covr. Move limits and cfloat  begore Rcpp
+#include <Rcpp.h>
 #include <iostream>
 #include <random>
 #include <set>
