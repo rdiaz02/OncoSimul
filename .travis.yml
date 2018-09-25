@@ -32,7 +32,7 @@ sudo: required
 cache: packages
 
 r_github_packages:
-  - jimhester/covr
+  - r-lib/covr
 
 ## Do I still need this?
 # https://github.com/travis-ci/travis-ci/issues/6587
@@ -44,7 +44,7 @@ r_github_packages:
 #######  x11
 ## try to use bioc devel with an R release
 install:
-  - Rscript -e 'source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite("BiocInstaller");library(BiocInstaller);try(useDevel());install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander",  "knitr"));biocLite(c("BiocStyle", "nem"));devtools::install_deps("OncoSimulR")'
+  - Rscript -e 'source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite("BiocInstaller");library(BiocInstaller);try(useDevel());install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "ggplot2", "ggrepel", "pander",  "knitr"));biocLite(c("BiocStyle", "nem"));devtools::install_deps("OncoSimulR");devtools::install_github("r-lib/covr")'
 
 #######  x22
 ## install:
