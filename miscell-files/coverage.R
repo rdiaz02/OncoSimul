@@ -40,7 +40,7 @@ options(covr.flags = c(CPPFLAGS = "-O3 -g --coverage",
                        CFLAGS = "-O3 -g --coverage",
                        LDFLAGS = "--coverage"))
 
-cov_O3 <- package_coverage(type = "tests", quiet = FALSE)
+system.time(cov_O3 <- package_coverage(type = "tests", quiet = FALSE))
 
 
 

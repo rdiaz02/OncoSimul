@@ -228,10 +228,10 @@ package, such as R not being downloaded correctly, etc. Look at the
 details of each failure. Similarly, some of the errors in BioConductor,
 specially in the development branch, can be caused, specially in Windows,
 by some required packages not being yet available, often "car" and
-_"igraph". Finally, some failures in Travis can be caused by timeouts in
-the coverage tests ---tests that run in about 5 minutes on my laptop, but
-can occasionally apparently take longer than the maximum time for jobs
-under Travis. Again, look at the details of each failure.)
+_"igraph". <!--            Finally, some failures in Travis can be caused by timeouts in -->
+<!-- the coverage tests ---tests that run in about 5 minutes on my laptop, but -->
+<!-- can occasionally apparently take longer than the maximum time for jobs -->
+<!-- under Travis. --> Again, look at the details of each failure.)
 
 <!-- Based on https://raw.githubusercontent.com/Bioconductor-mirror/illuminaio/master/README.md -->
 
