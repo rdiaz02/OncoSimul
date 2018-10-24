@@ -1,0 +1,9 @@
+## Copy the tar.gz from Linux and decompress. Then (change version
+##   numbers as needed)
+
+R.exe CMD build --keep-empty-dirs --no-resave-data OncoSimulR
+R.exe CMD check OncoSimulR_2.1.3.tar.gz
+
+
+## This is a longer one, from BioC, but testing is actually faster :-)
+rm -rf OncoSimulR.buildbin-libdir OncoSimulR.Rcheck && mkdir OncoSimulR.buildbin-libdir OncoSimulR.Rcheck && R.exe CMD INSTALL --build --merge-multiarch --library=OncoSimulR.buildbin-libdir OncoSimulR_2.1.3.tar.gz >OncoSimulR.Rcheck\00install.out 2>&1 && cp OncoSimulR.Rcheck\00install.out OncoSimulR-install.out && R.exe CMD check --library=OncoSimulR.buildbin-libdir --install="check:OncoSimulR-install.out" --force-multiarch --no-vignettes --timings OncoSimulR_2.1.3.tar.gz
