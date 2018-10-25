@@ -1033,7 +1033,8 @@ genofit <- data.frame(A = c(0, 1, 0, 1),
                                   "5 + 6*(f_ + f_1_2)"))
 
 afe <- allFitnessEffects(genotFitness = genofit,
-                         frequencyDependentFitness = TRUE)
+                         frequencyDependentFitness = TRUE, 
+                         frequencyType = "rel")
 
 osi <- oncoSimulIndiv(afe,
                       model = "McFL",

@@ -14,7 +14,7 @@ test_that("testing single gene evaluation", {
   
   afe1 <- allFitnessEffects(genotFitness = r1, 
                             frequencyDependentFitness = TRUE, 
-			    frequencyType = "rel"
+			                frequencyType = "rel",
                             spPopSizes = c(5000, 2500, 2500, 7500))
   
   afe2 <- allFitnessEffects(genotFitness = r2, 

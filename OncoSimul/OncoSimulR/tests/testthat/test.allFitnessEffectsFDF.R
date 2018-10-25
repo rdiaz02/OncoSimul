@@ -19,7 +19,8 @@ test_that("Errors expectations", {
                "Input must inherit from data.frame.")
   
   expect_error(allFitnessEffects(genotFitness = r2, 
-                                 frequencyDependentFitness = TRUE), 
+                                 frequencyDependentFitness = TRUE, 
+                                 frequencyType = "rel"), 
                "All elements in last column must be character.")
   
   expect_error(allFitnessEffects(genotFitness = r3, 
@@ -106,7 +107,7 @@ test_that("testing output", {
   
   expect_true(afe1$gMOneToOne)
   
-  lapply(afe1[c(10:13, 19)],  function(x){
+  lapply(afe1[c(10:13, 20)],  function(x){
     expect_null(x)
   })
   
