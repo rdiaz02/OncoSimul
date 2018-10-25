@@ -1,3 +1,0 @@
-## This is a C++11 package
-CXX_STD = CXX11
-PKG_CXXFLAGS = -I../inst/miscell
