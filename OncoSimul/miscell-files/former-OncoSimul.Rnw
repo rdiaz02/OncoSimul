@@ -1,0 +1,389 @@
+%\VignetteIndexEntry{OncoSimulR Overview}
+%\VignetteDepends{OncoSimulR}
+%\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
+%\VignettePackage{OncoSimulR}
+%\VignetteEngine{knitr::knitr}
+\documentclass[a4paper,11pt]{article}
+<<echo=FALSE,results='hide',error=FALSE>>=
+require(knitr, quietly = TRUE)
+opts_knit$set(concordance = TRUE)
+##opts_knit$set(stop_on_error = 2L)
+@ 
+\usepackage{amsmath}
+%% \usepackage[authoryear,round,sort]{natbib}
+\usepackage{threeparttable}
+\usepackage{array}
+%%\usepackage{hyperref} %% not if using BiocStyle
+%%ditto
+%\usepackage{geometry}
+%\geometry{verbose,a4paper,tmargin=23mm,bmargin=26mm,lmargin=28mm,rmargin=28mm}
+\usepackage{url}
+\usepackage{xcolor}
+%\definecolor{light-gray}{gray}{0.72}
+\newcommand{\cyan}[1]{{\textcolor {cyan} {#1}}}
+\newcommand{\blu}[1]{{\textcolor {blue} {#1}}}
+\newcommand{\Burl}[1]{\blu{\url{#1}}}
+
+
+%%\SweaveOpts{echo=TRUE}
+
+%\usepackage{tikz}
+%\usetikzlibrary{arrows,shapes,positioning}
+
+\usepackage[latin1]{inputenc}
+
+
+\usepackage{gitinfo}
+
+%Uncomment for BioC
+%\usepackage{datetime}
+%\newdateformat{mydate}{\THEDAY-\monthname[\THEMONTH]-\THEYEAR}
+
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
+BiocStyle::latex()
+@
+
+
+%%\title{Using OncoSimulR: a package for simulating cancer progression data,
+%%including drivers and passengers, and allowing for order restrictions.}
+
+%%\author{Ramon Diaz-Uriarte\\
+%%Dept. Biochemistry, Universidad Aut\'onoma de Madrid \\ 
+%%Instituto de Investigaciones Biom\'edicas ``Alberto Sols'' (UAM-CSIC)\\
+%%Madrid, Spain\\
+%%{\small \texttt{ramon.diaz@iib.uam.es}} \\
+%%{\small \texttt{rdiaz02@gmail.com}} \\
+%%{\small \Burl{http://ligarto.org/rdiaz}} \\
+%%}
+
+
+\bioctitle{Using OncoSimulR: a package for simulating cancer progression data,
+  including drivers and passengers, and allowing for order restrictions.}
+
+\author{Ramon Diaz-Uriarte\\
+  Dept. Biochemistry, Universidad Aut\'onoma de Madrid \\ 
+  Instituto de Investigaciones Biom\'edicas ``Alberto Sols'' (UAM-CSIC)\\
+  Madrid, Spain{\footnote{ramon.diaz@iib.uam.es, rdiaz02@gmail.com}} \\
+%% {\footnote{rdiaz02@gmail.com}} \\
+{\small \Burl{http://ligarto.org/rdiaz}} \\
+ }
+%% \date{\the\year-\the\month-\the\day}
+%% \date{\mydate\today}
+ \date{\gitAuthorDate\ {\footnotesize (Rev: \gitAbbrevHash)}}
+\begin{document}
+\maketitle
+
+%% Remember to add BiocStyle to Suggests
+%%
+%% I get lots of problems, so will try later.
+%% <<style, eval=TRUE, echo=FALSE, results=tex>>=
+%% BiocStyle::latex()
+%% @
+
+\tableofcontents
+
+
+
+\section{Introduction}
+
+This vignette presents the OncoSimulR package. OncoSimulR allows you to
+simulate tumor progression using several models of tumor progression. In
+these simulations you can restrict the order in which mutations can
+accumulate. For instance, you can restrict the allowed order as specified,
+for instance, in Oncogenetic Tree (OT; \cite{Desper1999JCB, Szabo2008}) or
+Conjunctive Bayesian Network (CBN; \cite{Beerenwinkel2007, Gerstung2009,
+  Gerstung2011}) models. Moreover, you can add passenger mutations to the
+simulations. The models so far implemented are all continuous time models,
+which are simulated using the BNB algorithm of Mather et
+al.\ \cite{Mather2012}. This is a summary of some of the key features:
+
+
+\begin{itemize}
+\item You can pass arbitrary restrictions as specified by OTs or CBNs.
+  
+\item You can add passenger mutations.
+  
+\item You can allow for deviations from the OT and CBN models, specifying
+  a penalty for such deviations (the $s_h$ parameter).
+  
+\item Right now, three different models are available, two that lead to
+  exponential growth, one of them loosely based on Bozic et al.\
+  \cite{Bozic2010}, and another that leads to logistic-like growth, based
+  on McFarland et al.\ \cite{McFarland2013}.
+\item Simulations are generally very fast as I use the BNB algorithm
+  implemented in C++.
+\end{itemize}
+
+
+Further details about the motivation for wanting to
+simulate data this way can be found in \cite{ot-biorxiv}, where additional
+comments about model parameters and caveats are discussed. The Java
+program by \cite{Reiter2013a} offers somewhat similar functionality, but
+they are restricted to at most four drivers, you cannot use arbitrary CBNs
+or OTs to specify order restrictions, there is no allowance for
+passengers, and a single type of model (a discrete time Galton-Watson
+process) is implemented.
+
+
+
+
+
+Using this package will often involve the following steps:
+
+\begin{enumerate}
+\item Specify the restrictions in the order of mutations: section \ref{poset}.
+\item Simulate cancer progression: section \ref{simul}. You can simulate
+  for a single subject or for a set of subjects. You will need to
+  \begin{itemize}
+  \item Decide on a model (e.g., Bozic or McFarland).
+  \item Specify the parameters of the model.
+  \end{itemize}
+  Of course, at least for initial playing around, you can use the defaults.
+  
+\item Sample from the simulated data: section \ref{sample}, and do
+  something with those simulated data (e.g., fit an OT model to
+  them). What you do with the data, however, is outside the scope of this
+  package.   
+\end{enumerate}
+
+
+Before anything else, let us load the package. We also explicitly load
+\Biocpkg{graph} for the vignette to work (you do not need that for your
+usual interactive work).
+
+<<>>=
+library(OncoSimulR)
+library(graph)
+@ 
+
+
+\section{Specifying restrictions: posets}\label{poset}
+
+How to specify the restrictions is shown in the help for
+\Rfunction{poset}. It is often useful, to make sure you did not make any
+mistakes, to plot the poset. This is from the examples (we use an ``L''
+after a number so that the numbers are integers, not doubles; we could
+alternatively have modified \texttt{storage.mode}).
+
+<<fig.height=3>>=
+## Node 2 and 3 depend on 1, and 4 depends on no one
+p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L))
+plotPoset(p1, addroot = TRUE)
+@ 
+
+<<fig.height=3>>=
+## A simple way to create a poset where no gene (in a set of 15) depends
+## on any other.
+p4 <- cbind(0L, 15L)
+plotPoset(p4, addroot = TRUE)
+@ 
+
+
+
+Specifying posets is actually straightforward. For instance, we can
+specify the pancreatic cancer poset in Gerstung et al.\
+\cite{Gerstung2011} (their figure 2B, left). We specify the poset using
+numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2,
+etc). This example is also in the help for \Rfunction{poset}:
+
+<<fig.height=3>>=
+pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
+                               c(2, 3, 4, 5, 6, 6, 6, 7, 7))
+storage.mode(pancreaticCancerPoset) <- "integer"
+plotPoset(pancreaticCancerPoset,
+          names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
+                    "MLL3","PXDN", "TGFBR2"))
+
+@
+\section{Simulating cancer progression}\label{simul}
+
+
+We can simulate the progression in a single subject. Using an example
+very similar to the one in the help:
+
+
+<<echo=FALSE,results='hide',error=FALSE>>=
+options(width=60)
+@ 
+
+<<>>=
+## use poset p1101
+data(examplePosets)
+p1101 <- examplePosets[["p1101"]]
+
+## Bozic Model
+b1 <- oncoSimulIndiv(p1101, keepEvery = 15)
+summary(b1)
+@ 
+
+
+The first thing we do is make it simpler (for future examples) to use a
+set of restrictions. In this case, those encoded in poset p1101. Then, we
+run the simulations and look at a simple summary and a plot. %% We explicitly
+%% set \texttt{silent = TRUE} to prevent the vignette from filling up with
+%% intermediate output.
+
+If you want to plot the trajectories, it is better to keep more frequent
+samples,  so you can see when clones appear:
+
+<<fig.height=5, fig.width=5>>=
+b2 <- oncoSimulIndiv(p1101, keepEvery = 1)
+                    
+summary(b2)
+plot(b2)
+@ 
+
+
+The following is an example where we do not care about passengers, but we
+want to use a different graph, and we want a few more drivers before
+considering cancer has been reached. And we allow it to run for longer.
+Note that in the McF model \texttt{detectionSize} really plays no
+role. Note also how we pass the poset: it is the same as before, but now
+we directly access the poset in the list of posets.
+
+<<>>=
+
+m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL", 
+                     numPassengers = 0, detectionDrivers = 8, 
+                     mu = 5e-7, initSize = 4000, 
+                     sampleEvery = 0.025,
+                     finalTime = 25000, keepEvery = 5, 
+                     detectionSize = 1e6) 
+plot(m2, addtot = TRUE, log = "")
+
+@ 
+
+
+The default is to simulate progression until a simulation reaches cancer
+(i.e., only simulations that satisfy the detectionDrivers or the
+detectionSize will be returned). If you use the McF model with large
+enough \texttt{initSize} this will often be the case but not if you use
+very small \texttt{initSize}. Likewise, most of the Bozic runs do not
+reach cancer. Lets try a few:
+
+<<>>=
+b3 <- oncoSimulIndiv(p1101, onlyCancer = FALSE)
+summary(b3)
+
+b4 <- oncoSimulIndiv(p1101, onlyCancer = FALSE)
+summary(b4)
+@ 
+
+Plot those runs:
+
+<<fig.width=8, fig.height=4>>=
+par(mfrow = c(1, 2))
+par(cex = 0.8) ## smaller font
+plot(b3)
+plot(b4)
+@ 
+
+
+\subsection{Simulating progression in several subjects}
+
+To simulate the progression in a bunch of subjects (we will use only
+four, so as not to fill the vignette with plots) we can do, with the same
+settings as above:
+
+<<>>=
+p1 <- oncoSimulPop(4, p1101)
+par(mfrow = c(2, 2))
+plot(p1)
+@ 
+
+
+\section{Sampling from a set of simulated subjects}\label{sample}
+\label{sec:sampling-from-set}
+
+You will often want to do something with the simulated data. For instance,
+sample the simulated data. Here we will obtain the trajectories for 100
+subjects in a scenario without passengers. Then we will sample with the
+default options and store that as a vector of genotypes (or a matrix of
+subjects by genes):
+
+
+<<>>=
+
+m1 <- oncoSimulPop(100, examplePosets[["p1101"]], 
+                   numPassengers = 0)
+
+@ 
+
+The function \Rfunction{samplePop} samples that object, and also gives you
+some information about the output:
+
+<<>>=
+genotypes <- samplePop(m1)
+@ 
+
+
+
+What can you do with it? That is up to you. As an example, let us try to
+infer an oncogenetic tree (and plot it) using the \CRANpkg{Oncotree}
+package \cite{Oncotree} after getting a quick look at the marginal
+frequencies of events:
+
+<<fig.width=4, fig.height=4>>=
+colSums(genotypes)/nrow(genotypes)
+
+require(Oncotree)
+ot1 <- oncotree.fit(genotypes)
+plot(ot1)
+@ 
+
+Your run will likely differ from mine, but with the defaults (detection
+size of $10^8$) it is likely that events down the tree will never
+appear. You can set \texttt{detectionSize = 1e9} and you will see that
+events down the tree are now found in the cross-sectional sample.
+
+
+Alternatively, you can use single cell sampling and that, sometimes,
+recovers one or a couple more events.
+
+<<fig.width=4, fig.height=4>>=
+genotypesSC <- samplePop(m1, typeSample = "single")
+colSums(genotypesSC)/nrow(genotypesSC)
+
+ot2 <- oncotree.fit(genotypesSC)
+plot(ot2)
+@ 
+
+You can of course rename the columns of the output matrix to something
+else if you want so the names of the nodes will reflect those potentially
+more meaningful names.
+
+
+\section{Session info and packages used}
+
+This is the information about the version of R and packages used:
+<<>>=
+sessionInfo()
+@ 
+
+%\newpage
+%%\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm
+%% does the URL without turning into note?
+
+%\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm
+\bibliography{OncoSimulR}
+
+\end{document}
+
+
+
+
+%% remember to use bibexport to keep just the minimal bib needed
+%% bibexport -o extracted.bib OncoSimulR.aux
+%% rm OncoSimulR.bib
+%% mv extracted.bib OncoSimulR.bib
+%% and then turn URL of packages into notes
+
+%%% Local Variables:
+%%% TeX-master: t
+%%% ispell-local-dictionary: "en_US"
+%%% coding: iso-8859-15
+%%% End:
+
+
+
+

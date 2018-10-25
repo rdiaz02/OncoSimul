@@ -1,0 +1,53 @@
+useDynLib(OncoSimulR, .registration=TRUE)
+
+export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
+       "plotPoset", "oncoSimulSample", "allFitnessEffects",
+       "evalGenotype", "evalAllGenotypes", "simOGraph",
+       "plotClonePhylog", "OncoSimulWide2Long",
+       "allMutatorEffects", "evalAllGenotypesMut",
+       "evalGenotypeMut", "evalGenotypeFitAndMut",
+       "evalAllGenotypesFitAndMut",
+       "rfitness",
+       "plotFitnessLandscape",
+       "to_Magellan"
+       )
+
+S3method(plot, oncosimul)
+S3method(print, oncosimul)
+S3method(summary, oncosimul)
+S3method(plot, oncosimulpop)
+S3method(summary, oncosimulpop)
+S3method(print, oncosimulpop)
+S3method(plot, fitnessEffects)
+S3method(plot, genotype_fitness_matrix)
+S3method(plot, evalAllGenotypes)
+S3method(plot, evalAllGenotypesMut)
+
+import(ggplot2)
+importFrom("ggrepel", geom_text_repel, geom_label_repel)
+importFrom("utils", "read.table", "write.table")
+importFrom("stats", "rnorm")
+importFrom("data.table", rbindlist, .rbind.data.table) 
+importFrom(Rcpp, evalCpp)
+importFrom("igraph", igraph.to.graphNEL, graph.data.frame, V, E,
+           "V<-", "E<-", plot.igraph, layout.reingold.tilford,
+           delete.vertices, neighborhood, get.adjacency)
+import(graph)
+import(Rgraphviz)
+importFrom("parallel", mclapply, detectCores, mcMap)
+importFrom("gtools", combinations, permutations)
+
+importFrom("graphics", "axis", "box", "legend", "matplot", "par", "polygon")
+importFrom("methods", "as")
+importFrom("stats", "na.omit", "runif", "smooth.spline")
+importFrom("utils", "type.convert")
+importFrom("RColorBrewer", "brewer.pal")
+importFrom("grDevices", "colorRampPalette", "hsv", "rainbow")
+importFrom("dplyr", "full_join", "left_join", "right_join", "%>%", "mutate",
+           "filter")
+importFrom("smatr", "ma") ## for major axis regression in some tests
+importFrom("car", "linearHypothesis")
+
+
+
+

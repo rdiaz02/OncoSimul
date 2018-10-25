@@ -1,0 +1,500 @@
+
+R Under development (unstable) (2016-11-03 r71622) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ### Benchmark runs. This produces "benchmark_1.RData"
+> 
+> 
+> rm(list = ls())
+> set.seed(NULL)
+> 
+> library(OncoSimulR)
+> 
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> system_summary <- function() {
++     return(list(versioninfo = version,
++                 memimfo = system("free", intern = TRUE),
++                 cpuinfo = system("cat /proc/cpuinfo | grep 'model name'", intern = TRUE),
++                 packageinfo = paste("OncoSimulR, ", packageVersion("OncoSimulR")),
++ ##                nodeinfo = Sys.info()$nodename,
++ ##                nodelinuxinfo = paste(Sys.info()$sysname, Sys.info()$release),
++                 dateinfo = date()))
++ }
+> 
+> stats_simuls <- function(sim) {
++     ## sim is an oncoSimulPop output
++     trf <- function(x) {
++         tt <- try(c(NumClones = x$NumClones,
++                     NumIter = x$NumIter,
++                     FinalTime = x$FinalTime,
++                     TotalPopSize = x$TotalPopSize,
++                     Attempts = x$other$attemptsUsed))
++         if(!inherits(tt, "try-error")) {
++             return(tt)
++         } else {
++             return(c(NumClones = NA,
++                     NumIter = NA,
++                     FinalTime = NA,
++                     TotalPopSize = NA,
++                     Attempts = NA))
++         }
++     }
++     tmp <- try(do.call("rbind", lapply(sim, trf)))
++     unlist(lapply(as.data.frame(tmp), summary))
++ }
+> 
+> all_sim_stats <- function(...) {
++     ## Returns a single data frame with all benchmark info
++     ## in ... pass the names of the objects
++     names <- as.character(as.list(match.call())[-c(1)])
++     m1 <- do.call("rbind", lapply(list(...), stats_simuls))
++     ## the function will break next if something failed in previous
++     rownames(m1) <- names
++     Numindiv <- unlist(lapply(list(...), length))
++     time <- unlist(lapply(paste0("t_", names), get))
++     size <- unlist(lapply(list(...), object.size))
++     df <- data.frame(m1, size, time, Numindiv)
++     df$time_per_simul <- df$time/df$Numindiv
++     df$size_mb_per_simul <- df$size/(df$Numindiv * 1024^2)
++     attributes(df)$system_summary <- system_summary()
++     return(df)
++ }
+> 
+> 
+> all_sim_stats_single <- function(sim, tsim, name) {
++     ## Like previous, but for a single simulation. We avoid the dangerous
++     ## dynGet that we would nedd to obtain the "t_"
++ 
++     ## Returns a single data
++     ## frame with all benchmark info in ... pass the names of the objects
++     ## names <- as.character(as.list(match.call())[-c(1)])
++     names <- name
++     m1 <- data.frame(as.list(stats_simuls(sim)))
++     ## the function will break next if something failed in previous
++     rownames(m1) <- names
++     Numindiv <- length(sim)
++     time <- tsim
++     size <- as.numeric(object.size(sim))
++     df <- data.frame(m1, size, time, Numindiv)
++     df$time_per_simul <- df$time/df$Numindiv
++     df$size_mb_per_simul <- df$size/(df$Numindiv * 1024^2)
++     df$name <- names
++     ## attributes(df)$system_summary <- system_summary()
++     return(df)
++ }
+> 
+> 
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> ####################                             #####################
+> ####################   Fitness specifications    #####################
+> ####################                             #####################
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> ######################################################################
+> 
+> 
+> pancr <- allFitnessEffects(
++     data.frame(parent = c("Root", rep("KRAS", 4), 
++                    "SMAD4", "CDNK2A", 
++                    "TP53", "TP53", "MLL3"),
++                child = c("KRAS","SMAD4", "CDNK2A", 
++                    "TP53", "MLL3",
++                    rep("PXDN", 3), rep("TGFBR2", 2)),
++                s = 0.1,
++                sh = -0.9,
++                typeDep = "MN"),
++     drvNames = c("KRAS", "SMAD4", "CDNK2A", "TP53", 
++ 	             "MLL3", "TGFBR2", "PXDN"))
+> 
+> 
+> ## Random fitness landscape with 6 genes 
+> rfl6 <- rfitness(6, min_accessible_genotypes = 50)
+> attributes(rfl6)$accessible_genotypes ## How many actually accessible
+[1] 55
+> rf6 <- allFitnessEffects(genotFitness = rfl6)
+> 
+> 
+> ## Random fitness landscape with 12 genes
+> rfl12 <- rfitness(12, min_accessible_genotypes = 200)
+> attributes(rfl12)$accessible_genotypes ## How many actually accessible
+[1] 921
+> rf12 <- allFitnessEffects(genotFitness = rfl12)
+> 
+> 
+> 
+> 
+> ## Independent genes; positive fitness from exponential distribution
+> ## mean around 0.1, and negative from exponential with mean around 0.02.
+> ## Half positive, half negative
+> ng <- 200
+> re_200 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+> 
+> ng <- 500
+> re_500 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+> 
+> ng <- 2000
+> re_2000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+> 
+> ng <- 4000
+> re_4000 <- allFitnessEffects(noIntGenes = c(rexp(ng/2, 10), -rexp(ng/2, 50)))
+> 
+> 
+> 
+> cases <- expand.grid(Model = c("Exp", "McFL"),
++                      fitness = c("pancr", "rf6", "rf12", 
++                                  "re_200", "re_500", "re_2000", "re_4000"),
++                      stringsAsFactors = FALSE)
+> 
+> 
+> 
+> sim_bench <- function(Model, fitness, Nindiv, ...) {
++     cat("\n\n\n")
++     cat("***  Doing ", Model, " ", fitness)
++     
++     t_tmp <- system.time({
++         if(Model == "Exp") {
++             tmp <- oncoSimulPop(Nindiv,
++                                 get(fitness),
++                                 detectionProb = NA, 
++                                 detectionSize = 1e6,
++                                 initSize = 500,
++                                 detectionDrivers = NA,
++                                 keepPhylog = TRUE,
++                                 model = "Exp",
++                                 errorHitWallTime = FALSE,
++                                 errorHitMaxTries = FALSE,
++                                 finalTime = 5000,
++                                 onlyCancer = FALSE,
++                                 mc.cores = 1,
++                                 sampleEvery = 0.5,
++                                 ...)
++         } else {
++             initSize <- 1000
++             tmp <- oncoSimulPop(Nindiv,
++                                 get(fitness),
++                                 detectionProb = c(
++                                     PDBaseline = 1.4 * initSize,
++                                     n2 = 2 * initSize,
++                                     p2 = 0.1,
++                                     checkSizePEvery = 4),
++                                 initSize = initSize,
++                                 detectionSize = NA,
++                                 detectionDrivers = NA,
++                                 keepPhylog = TRUE,
++                                 model = "McFL",
++                                 errorHitWallTime = FALSE,
++                                 errorHitMaxTries = FALSE,
++                                 finalTime = 5000,
++                                 max.wall.time = 10,
++                                 onlyCancer = FALSE,
++                                 mc.cores = 1,
++                                 ...)
++         }
++     })["elapsed"]
++ 
++     cat("\n\n\n t_tmp = ", t_tmp, "\n")
++     print(object.size(tmp)/(Nindiv * 1024^2))
++     cat("\n\n")
++     print(summary(unlist(lapply(tmp, "[[", "NumClones"))))
++     print(summary(unlist(lapply(tmp, "[[", "NumIter"))))
++     print(summary(unlist(lapply(tmp, "[[", "FinalTime"))))
++     print(summary(unlist(lapply(tmp, "[[", "TotalPopSize"))))
++     name <- paste(Model, fitness, sep = "_")
++     df <- all_sim_stats_single(tmp, t_tmp, name)
++     df$Model <- Model
++     df$fitness <- fitness
++     return(df)
++ }
+> 
+> 
+> 
+> Nindiv <- 100
+> 
+> benchmark_2 <- dplyr::bind_rows(Map(sim_bench,
++                              cases[, 1], cases[, 2], Nindiv,
++                              keepEvery = 1))
+
+
+
+***  Doing  Exp   pancr
+
+
+ t_tmp =  0.225 
+0.12334342956543 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1.00    1.00    3.00    4.22    7.00   15.00 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  213.0   861.8  1397.0  2278.4  2759.5 10152.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  106.5   430.2   696.8  1128.4  1375.8  5000.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0       0       0  164222       0 1053299 
+
+
+
+***  Doing  McFL   pancr
+
+
+ t_tmp =  12.32 
+0.562938537597656 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    5.0     8.0     8.0     9.2    11.0    16.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  79584  200029  200034  191518  200040  200059 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1989    5000    5000    4787    5000    5000 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  912.0   990.5  1037.0  1144.0  1303.8  1938.0 
+
+
+
+***  Doing  Exp   rf6
+
+
+ t_tmp =  0.166 
+0.0640248870849609 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1.00    1.00    6.00    4.79    8.00   12.00 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  107.0   473.5   783.0  1201.0  1477.8  5818.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   46.0   233.8   391.2   594.4   736.8  2905.5 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0       0 1014724  594899 1094094 1309497 
+
+
+
+***  Doing  McFL   rf6
+
+
+ t_tmp =  1.948 
+0.0705736541748047 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2.00    3.00    3.00    3.74    5.00    8.00 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1930   10376   23297   29381   40609  123737 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  48.23  259.34  582.35  734.41 1015.04 3093.07 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1466    1794    1884    1975    2120    4636 
+
+
+
+***  Doing  Exp   rf12
+
+
+ t_tmp =  1.042 
+0.128935852050781 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1.00    2.00    4.00    7.78   13.00   33.00 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  146.0   689.5  1177.5  1845.8  2627.0  9263.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   73.0   320.6   542.5   899.6  1216.4  4608.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0       0       0  287669 1005100 1059141 
+
+
+
+***  Doing  McFL   rf12
+
+
+ t_tmp =  13.511 
+0.824908218383789 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   8.00   15.00   18.00   18.38   21.00   30.00 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  25236  158745  200060  172767  200068  200082 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  630.6  3967.1  5000.0  4317.7  5000.0  5000.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    973    1144    1252    1295    1463    1695 
+
+
+
+***  Doing  Exp   re_200
+
+
+ t_tmp =  1.273 
+0.669097747802734 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    2.0   180.2   229.5   221.8   310.0   561.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  187.0   889.2  1185.0  1206.7  1576.2  2583.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   33.0   132.6   222.8   258.3   340.9   871.5 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0 1002222 1060944  859606 1127895 1536242 
+
+
+
+***  Doing  McFL   re_200
+
+
+ t_tmp =  1.807 
+0.220338516235352 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  10.00   30.75   47.00   51.28   68.25  126.00 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1783    6906    9679   11263   14359   31011 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   44.2   171.3   240.3   279.5   355.9   771.5 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1530    1864    2166    2973    2943   29301 
+
+
+
+***  Doing  Exp   re_500
+
+
+ t_tmp =  8.969 
+2.71058456420898 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    9.0   638.2   771.0   761.9   983.5  1728.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    228    2229    2732    2578    3165    4311 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   43.0   104.6   151.5   181.8   236.1   566.5 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0 1028590 1068732  959026 1107544 1285522 
+
+
+
+***  Doing  McFL   re_500
+
+
+ t_tmp =  2.367 
+0.436395874023437 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  23.00   68.00   91.00   99.91  122.00  221.00 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   2932    5390    7056    8082   10368   18875 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  72.33  132.32  172.32  198.11  253.32  465.62 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1407    1831    2148    2578    2864    8234 
+
+
+
+***  Doing  Exp   re_2000
+
+
+ t_tmp =  90.967 
+28.9347750091553 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+     28    2996    3376    3410    4012    5523 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    267    6594    7412    7078    7968   10041 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  27.00   53.75   70.00   78.53   93.25  241.50 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0 1050079 1163990 1143041 1254600 1741492 
+
+
+
+***  Doing  McFL   re_2000
+
+
+ t_tmp =  3.075 
+1.92032928466797 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   50.0   146.0   186.0   209.1   253.5   515.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1359    2788    3546    3688    4385    7466 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  32.12   64.33   80.33   83.82   97.33  172.32 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1419    2233    2870    3704    4181   13248 
+
+
+
+***  Doing  Exp   re_4000
+
+
+ t_tmp =  331.394 
+113.070772323608 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   3839    6032    7088    7083    8069   10664 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   7285   10991   12216   12389   13929   17053 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  24.00   39.88   51.50   54.42   67.62  107.50 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+1000260 1126930 1217568 1309185 1362651 2713200 
+
+
+
+***  Doing  McFL   re_4000
+
+
+ t_tmp =  6.3 
+6.51353446960449 bytes
+
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   77.0   200.8   326.0   392.4   437.8  5708.0 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    745    1950    2731    2873    3565   13265 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  16.02   40.17   52.25   55.24   72.33  112.33 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1651    2752    4592   13601    8806  729611 
+> 
+> attributes(benchmark_2)$system_summary <- system_summary()
+> 
+> save(file = "../../data/benchmark_2.RData", benchmark_2)
+> 
+> 
+> gc()
+          used  (Mb) gc trigger   (Mb)   max used    (Mb)
+Ncells 1991664 106.4    5684620  303.6    3634017   194.1
+Vcells 3627045  27.7 1118831146 8536.1 1477293682 11270.9
+> 

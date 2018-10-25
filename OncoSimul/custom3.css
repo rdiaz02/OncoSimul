@@ -1,0 +1,119 @@
+Head:     rmd custom css added
+Merge:    origin/rmd Working on Rmd vignette; almost there?
+Tag:      2.3.12 (8)
+
+Untracked files (6)
+OncoSimulR/vignettes/OncoSimulR.md
+OncoSimulR/vignettes/bioconductor.css
+OncoSimulR/vignettes/bioconductor2.css
+OncoSimulR/vignettes/custom2.css
+OncoSimulR/vignettes/o1.Rmd
+OncoSimulR/vignettes/or.html
+
+Unstaged changes (2)
+modified   OncoSimulR/vignettes/OncoSimulR.Rmd
+@@ -13,16 +13,16 @@ author: "\\
+ ##    <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>
+ ## date: "`r Sys.Date()`"
+ date: "`r paste0(Sys.Date(),'. ', pkg_ver('OncoSimulR'), '. Revision: ', system('git rev-parse --short HEAD', intern = TRUE))`"
+-## With BiocStyle no floating toc as I want
+-## But with default style, no package version
++
++## Bioc html_document no refs
++## Bioc html_document2 too wide margins
++## Simplest is to use bookdown and add BioC CSS
+ output: 
+-  BiocStyle::html_document2:
+-    toc: true	
+-##  BiocStyle::pdf_document:
+-##    toc: true	
+-##  html_document:
+-##    toc: true 
+-##    toc_float: true
++##  BiocStyle::html_document2:
++  bookdown::html_document2:  
++    toc: true
++    toc_float: true
++    css: custom2.css
+ ## package: "`r paste0(pkg_ver('OncoSimulR'), '. Rev.: ', system('git rev-parse --short HEAD', intern = TRUE))`"
+ bibliography: OncoSimulR.bib
+ link-citations: true
+@@ -171,7 +171,7 @@ different fitness specifications is also unique.
+ 
+ 
+ 
+-## Steps in using OncoSimulR}
++## Steps in using OncoSimulR
+ 
+ 
+ Using this package will often involve the following steps:
+@@ -524,7 +524,7 @@ models) and also had a larger number of clones returned (5 to 16 vs. 1 to
+ 
+ 
+ 
+-## Citing OncoSimulR and other documentation} {#citing}
++## Citing OncoSimulR and other documentation {#citing}
+ 
+ In R, you can do
+ ```{r}
+@@ -532,6 +532,8 @@ citation("OncoSimulR")
+ ``` 
+ which will tell you how to cite the package.
+ 
++FIXME!!!
++
+ % You can also take a look at the poster (presented at ECCB 2016), <zz>
+ % and included under docs.
+ 
+@@ -1012,7 +1014,7 @@ small positive ones (or for mildly deleterious effects, small negative
+ numbers), while the values of `s` are much larger positive numbers.
+ 
+ 
+-### Extended posets}
++### Extended posets
+ 
+ In version 1 of this package we used posets in the sense of
+ @Beerenwinkel2007; @Gerstung2009, as explained in section \@ref(poset)
+@@ -5378,7 +5380,7 @@ that function is optimized for other uses. This might change in the future.
+ 
+ 
+ 
+-# Generating fitness landscapes} {#gener-fit-land}
++# Generating fitness landscapes {#gener-fit-land}
+ 
+ 
+ It is possible to generate mappings of genotype to fitness using the
+@@ -5732,14 +5734,14 @@ computing fitness, however, should deal with all of this just fine.
+ 
+ 
+ 
+-# Session info and packages used}
++# Session info and packages used
+ 
+ This is the information about the version of R and packages used:
+ ```{r}
+ sessionInfo()
+ ``` 
+ 
+-# Funding}
++# Funding
+ 
+ Supported by BFU2015-67302-R (MINECO/FEDER, EU).
+ 
+modified   OncoSimulR/vignettes/custom.css
+@@ -11,3 +11,11 @@ table, td, th {
+ tbody tr:nth-child(odd) td {
+   background-color: #F8F8F8;
+ }
++
++@page :left {
++    margin: 2mm 2mm 2mm 2mm;
++}
++
++@page :right {
++    margin: 2mm 2mm 2mm 2mm;
++}
+
+Unmerged into origin/rmd (1)
+911c5dc rmd custom css added
+

@@ -1,0 +1,333 @@
+\documentclass[a4paper,12pt,twoside]{article}
+% \usepackage[paperwidth=227pt,paperheight=190pt]{geometry}
+% \special{papersize=227pt,190pt}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\definecolor{light-gray}{gray}{0.72}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{times}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,positioning,backgrounds,fit}
+
+\tikzset{
+  % Define standard arrow tip
+  >=stealth',
+  % Define style for boxes
+  elli/.style={
+    ellipse,
+    draw=black,
+    text centered
+  },
+  recti/.style={
+    rectangle,
+    draw=black,
+    text centered
+  },
+  punkt/.style={
+    rectangle,
+    rounded corners,
+    draw=black, very thick,
+    %maximum width=6em,
+    %text width=6.5em,
+    minimum height=2em,
+    text centered},
+  punkk/.style={
+    rectangle,
+    rounded corners=3mm,
+    draw=black, very thick,
+    %text width=6.5em,
+    minimum height=2em,
+    text centered},
+  punkr/.style={
+    rectangle,
+    draw=black, very thick,
+    %maximum width=6em,
+    %text width=6.5em,
+    minimum height=2em,
+    text centered},
+  punkr2/.style={
+    rectangle,
+    draw=black, very thick,
+    inner sep = 4pt,
+    %maximum width=6em,
+    %text width=6.5em,
+    %minimum height=2em,
+    text centered},
+ punkk2/.style={
+    rectangle,
+    rounded corners=3mm,
+    draw=black, very thick,
+    inner sep = 4pt,
+    %text width=6.5em,
+    %minimum height=2em,
+    text centered},
+  % Define arrow style
+  pil/.style={
+    ->,
+    thick,
+    shorten <=2pt,
+    shorten >=2pt,}
+}
+
+\pagestyle{empty}
+\begin{document}
+
+\usetikzlibrary{arrows,shapes,positioning,backgrounds,fit}
+
+\tikzset{
+  % Define standard arrow tip
+  >=stealth',
+  % Define style for boxes
+  elli/.style={
+    ellipse,
+    draw=black,
+    text centered
+  },
+  recti/.style={
+    rectangle,
+    draw=black,
+    text centered
+  },
+circ2/.style={
+    circle,
+    draw=black,
+    text centered,very thick
+  },
+  punkt/.style={
+    rectangle,
+    rounded corners,
+    draw=black, very thick,
+    %maximum width=6em,
+    %text width=6.5em,
+    minimum height=2em,
+    text centered},
+  punkk/.style={
+    rectangle,
+    rounded corners=3mm,
+    draw=black, very thick,
+    %text width=6.5em,
+    minimum height=2em,
+    text centered},
+  punkr/.style={
+    rectangle,
+    draw=black, very thick,
+    %maximum width=6em,
+    %text width=6.5em,
+    minimum height=2em,
+    text centered},
+  punkr2/.style={
+    rectangle,
+    draw=black, very thick,
+    inner sep = 4pt,
+    %maximum width=6em,
+    %text width=6.5em,
+    %minimum height=2em,
+    text centered},
+ punkk2/.style={
+    rectangle,
+    rounded corners=3mm,
+    draw=black, very thick,
+    inner sep = 4pt,
+    %text width=6.5em,
+    %minimum height=2em,
+    text centered},
+  % Define arrow style
+  pil/.style={
+    ->,
+    thick,
+    shorten <=2pt,
+    shorten >=2pt,}
+}
+
+\begin{tikzpicture}[node distance=1cm, auto,]
+\path[use as bounding box] (-6.5,.2);
+% \node (txt) {txt file};
+% \node[right=of txt, text width=3cm] (df) {data frame (RAM object)};
+% \node[right=of df] (rd) {RData};
+% \node[recti,left=of txt, yshift=-5mm] (cf) {\texttt{cutFile}};
+% \node[below=of cf] (dir) {directory};
+
+
+
+% \node (rd) {RData};
+% \node[right=of rd, text width=3cm, xshift=-2mm] (df) {data frame (RAM object)};
+% \node[right=of df,xshift=-3mm] (txt) {txt file};
+% \node[recti,right=of txt, yshift=-5mm] (cf) {\texttt{cutFile}};
+% \node[below=of cf] (dir) {directory};
+
+
+\node[recti] (afe) {\texttt{allFitnessEffects}};
+\node[below=of afe, text width=2.8cm] (afeo) {Effects of genes on fitness (\textit{list})};
+\node[recti, right=of afe] (ame) {\texttt{allMutatorEffects}};
+\node[below=of ame, text width=3.3cm] (ameo) {Effects of genes on mutation (\textit{list})};
+\draw[->] (afe) to (afeo);
+\draw[->] (ame) to (ameo);
+
+
+
+\node[above=of afe, text width=3.2 cm, yshift=3mm,xshift=7mm] (dag) {Order restrictions DAG
+  (\textit{data frame})};
+\node[above=of afe, text width=1.5 cm, xshift=-18mm] (oe) {Order effects (\textit{vector})};
+\node[above=of afe, text width=1.5 cm, yshift =4mm, xshift=35mm] (epi) {Epistasis (\textit{vector})};
+\node[above=of afe, text width=2.9 cm, yshift=4mm, xshift=65mm] (nig) {Non-interacting genes (\textit{vector})};
+\node[recti, above=of dag,yshift=0mm] (simo) {\texttt{simOGraph}};
+
+\draw[->] (oe) to (afe);
+\draw[->] (epi) to (afe);
+\draw[->] (nig) to (afe);
+\draw[->] (dag) to (afe);
+\draw[->] (simo) to (dag);
+
+\draw[->] (epi) to (ame);
+\draw[->] (nig) to (ame);
+\node[above=of afe, text width=1.7 cm, yshift=-5mm,xshift=-39mm] (rfl) {Random fitness landscape (\textit{matrix})};
+\node[recti,above=of rfl, text width=2.0 cm,yshift=-1.2mm] (rfi) {\texttt{rfitness}};
+\draw[->] (rfi) to (rfl);
+\draw[->] (rfl) to (afe);
+
+% \node[recti,below=of afe, xshift=-5mm] (pfe) {\texttt{plot (plot.fitnessEffects}};
+% \node[below=of pfl] (ppfe) {\textit{DAGPlot of fitness landscape}};
+
+\node[recti,below= of afeo, text width = 3.9cm, yshift = 1mm, xshift=15mm] (oii)
+{
+  \texttt{oncoSimulIndiv}
+  \texttt{oncoSimulPop}
+  \texttt{oncoSimulSample}
+};
+
+\draw[->] (afeo) to (oii);
+\draw[->] (ameo) to (oii);
+
+
+\node[circ2,below=of oii, text width=2.9cm] (str) {Simulated trajectories (\textit{lists})};
+\node[recti,left=of str, xshift=-5mm] (ppio) {
+ \texttt{plot}};
+
+\node[recti,left=of str, text width=3.94cm, yshift = -30mm, xshift=5mm]
+(sampp) {
+  \texttt{samplePop}
+  \texttt{sampledGenotypes}
+};
+\node[below=of sampp, text width=3.9cm] (samppout) {Genotypes, genotype
+  frequencies, diversity (\textit{matrix, data frame})};
+
+\draw[->] (oii) to (str);
+\draw[->] (str) to (ppio);
+\draw[->] (str) to (sampp);
+\draw[->] (sampp) to (samppout);
+
+
+\node[recti,below=of str, xshift=0.5mm, yshift=-0mm,text width=3.99cm] (lod) {
+  \texttt{LOD},
+  \texttt{POM}
+  \texttt{diversityLOD/POM}
+%  \texttt{diversityPOM}
+};
+\node[below=of lod, text width=3.99cm] (lodout) {
+  Evolut.\ predictability (\textit{vector, scalars})};
+
+\node[recti,right=of str, xshift=0mm, yshift = -20mm, text width=3.7cm] (pphyl) {  %% (pphyl)
+  \texttt{plotClonePhylog}
+};
+
+\draw[->] (str) to (lod);
+\draw[->] (lod) to (lodout);
+\draw[->] (str) to (pphyl);
+
+
+
+
+
+
+\node[recti,below=of rfl, yshift = -1mm, xshift=0mm] (pfl) {\texttt{plot}};
+
+\draw[->] (rfl) to (pfl);
+% %%% To remove for Bioinfo
+% %\node[recti,below=of rfl, yshift = -9mm, xshift=-12mm] (pfl) {\texttt{plotFitnessLandscape}};
+% 
+\node[below=of pfl, xshift=-15mm,yshift=5mm] (ppfl) {(\textit{Plot of fitness landscape})};
+\draw[->] (pfl) to (ppfl);
+\node[recti,left=of rfl] (tom) {\texttt{to\_Magellan}};
+\node[below=of tom] (tfm) {(\textit{text file})};
+\draw[->] (tom) to (tfm);
+\draw[->] (rfl) to (tom);
+
+\node[recti,below= of afeo, text width = 5.2cm, yshift = -1mm, xshift=75mm] (eafe)
+{
+  \texttt{evalAllFitnessEffects}
+  \texttt{evalAllMutatorEffects}
+};
+
+\node[below=of eafe, text width=4.5cm, yshift=2mm] (eafeout) {
+  Fitness/mutation of all genotypes (\textit{data frame})};
+
+\draw[->] (afeo) to (eafe);
+\draw[->] (ameo) to (eafe);
+\draw[->] (eafe) to (eafeout);
+
+\node[below=of pphyl, xshift=0mm, text width=3cm] (pphylout) {
+(\textit{Plot of  genealogies/phylogenies})};
+\draw[->] (pphyl) to (pphylout);
+
+\node[recti,below=of eafeout, yshift = 6mm, xshift=0mm] (eafeoutpl) {\texttt{plot}};
+\node[below=of eafeoutpl, xshift=0mm,yshift=6mm] (pleafeout) {(\textit{Plot of fitness landscape})};
+\draw[->] (eafeout) to (eafeoutpl);
+\draw[->] (eafeoutpl) to (pleafeout);
+
+
+\node[left=of ppio, xshift=2mm,yshift=0mm,  text width=4.2cm] (outppio) {(\textit{Plot of
+    genotypes abundances over time})};
+\draw[->] (ppio) to (outppio);
+
+% \node[left=of simo, xshift = 4mm] (hidden) {};
+% \draw[->] (simo) to (hidden);
+
+\end{tikzpicture}
+
+
+
+%%% Overlay a couple of figures
+
+
+% \begin{textblock*}{40mm}(137mm,74mm)
+% \includegraphics[%
+%   width=4.3cm,
+%   keepaspectratio]{overlay-f1.pdf}
+% \end{textblock*}
+
+
+
+% %% pdfcrop overlay-f2.pdf
+% \begin{textblock*}{70mm}(132mm,155mm)
+% \includegraphics[%
+%   width=4.3cm,
+%   keepaspectratio]{overlay-f2-crop.pdf}
+% \end{textblock*}
+
+
+% \begin{textblock*}{70mm}(43mm,65mm)
+% \includegraphics[%
+%   width=3.1cm,
+%   keepaspectratio]{overlay-f3-crop.pdf}
+% \end{textblock*}
+
+
+% \begin{textblock*}{70mm}(73mm,3mm)
+% \includegraphics[%
+%   width=1.3cm,
+%   keepaspectratio]{overlay-f4-crop.pdf}
+% \end{textblock*}
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "figure1"
+%%% End:
+
+
+
+%% I create a png. Either via convert or from ktikz. Similar final result.
+%% If using convert do something like:
+%% convert -density 200 -trim figure1-crop.pdf -quality 100 -sharpen 0x1.0 -flatten figure1.png
