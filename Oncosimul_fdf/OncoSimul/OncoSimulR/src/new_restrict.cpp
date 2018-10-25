@@ -564,7 +564,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::IntegerVector drv = rFE["drv"];
 	Rcpp::StringVector fvars = rFE["fitnessLandscapeVariables"];//new line
 	bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
-	Rcpp::String fType =  rFE["frequencyType"];//new line
+	//Rcpp::String fType =  rFE["frequencyType"];//new line
+	std::string fType = as<std::string>(rFE["frequencyType"]);
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this
   // Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
@@ -637,7 +638,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   fe.fVars = as<std::vector<std::string> > (fvars); //new line to insert fVars
 	//fe.fVars = fvariables;
 	fe.frequencyDependentFitness = fdf;//new line to insert frequencyDependentFitness
-	fe.frequencyType = as<std::string> (fType);
+	//fe.frequencyType = as<std::string> (fType);
+	fe.frequencyType = fType;
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size(). Bug in R code.");
   }
@@ -1367,7 +1369,7 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 	return efvs;
 }
 
-double totalPop(const popParams&){//as double to avoid problems
+double totalPop(const std::vector<spParamsP>& popParams){//as double to avoid problems
 	int sum;
 	for(size_t i = 0; i < popParams.size(); i++){
       sum += popParams[i].popSize;
@@ -1400,7 +1402,8 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
   for(auto& iterator : EFVMap){
 		symbol_table.add_variable(iterator.first, iterator.second);
   }
-  symbol_table.add_constants("N", N); //We reserve N to total population size
+	symbol_table.add_constant("N", N);//We reserve N to total population size
+  symbol_table.add_constants();
 
   expression_t expression;
   expression.register_symbol_table(symbol_table);

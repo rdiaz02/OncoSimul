@@ -495,7 +495,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                        ## refFE = NULL,
                                        calledBy = NULL,
                                        frequencyDependentFitness = FALSE,
-                                       frequencyType = "unemployed"
+                                       frequencyType = "unemployed",
                                        spPopSizes = NULL) {
   ## From allFitnessEffects. Generalized so we deal with Fitness
   ## and mutator.
@@ -1018,8 +1018,6 @@ allFitnessEffects <- function(rT = NULL,
       warning("frequencyType set to 'unemployed' ")
       frequencyType = "unemployed"
   }
-
-    }
 
     if(!is.null(genotFitness)) {
       if(!is.null(rT) || !is.null(epistasis) ||
