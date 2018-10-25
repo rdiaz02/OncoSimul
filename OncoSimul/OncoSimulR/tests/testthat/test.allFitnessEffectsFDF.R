@@ -14,7 +14,8 @@ test_that("Errors expectations", {
   r7 <- data.frame()
   
   expect_error(allFitnessEffects(genotFitness = r1, 
-                                   frequencyDependentFitness = TRUE), 
+                                 frequencyDependentFitness = TRUE, 
+                                 frequencyType = "rel"), 
                "Input must inherit from data.frame.")
   
   expect_error(allFitnessEffects(genotFitness = r2, 
@@ -22,11 +23,13 @@ test_that("Errors expectations", {
                "All elements in last column must be character.")
   
   expect_error(allFitnessEffects(genotFitness = r3, 
-                                 frequencyDependentFitness = TRUE), 
+                                 frequencyDependentFitness = TRUE, 
+                                 frequencyType = "rel"), 
                "There are some errors in fitness column")
   
   expect_error(allFitnessEffects(genotFitness = r4, 
-                                 frequencyDependentFitness = TRUE), 
+                                 frequencyDependentFitness = TRUE, 
+                                 frequencyType = "rel"), 
                "There are some errors in fitness column")
   
   expect_error(allFitnessEffects(genotFitness = r5, 
@@ -35,11 +38,13 @@ test_that("Errors expectations", {
   
   
   expect_error(allFitnessEffects(genotFitness = r6, 
-                                 frequencyDependentFitness = TRUE), 
+                                 frequencyDependentFitness = TRUE,
+                                 frequencyType = "rel"),  
                "You have a null genotFitness in a frequency dependent fitness situation.")
   
   expect_error(allFitnessEffects(genotFitness = r7, 
-                                 frequencyDependentFitness = TRUE), 
+                                 frequencyDependentFitness = TRUE,
+                                 frequencyType = "rel"),  
                "You have an empty data.frame")
   
   
@@ -87,7 +92,8 @@ test_that("testing output", {
                                "max(2, 5*f_ - 0.5*( f_A + f_B) + 15*f_A_B)"))
 
   afe1 <- allFitnessEffects(genotFitness = r1, 
-                           frequencyDependentFitness = TRUE)
+                            frequencyDependentFitness = TRUE,
+                            frequencyType = "rel")
   
   
   expect_true(afe1$frequencyDependentFitness)
@@ -107,7 +113,8 @@ test_that("testing output", {
   expect_equivalent(afe1$geneToModule, "Root")
   
   expect_identical(afe1$fitnessLandscapeVariables, 
-                   OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 1))
+                   OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 1, 
+                                            frequencyType = "rel"))
   
   lapply(afe1[c(4, 5, 14:16)], function(x){
     expect_equal(class(x), "data.frame")
@@ -119,6 +126,7 @@ test_that("testing output", {
   
   expect_warning(allFitnessEffects(genotFitness = r2, 
                                    frequencyDependentFitness = FALSE, 
+                                   frequencyType = "rel",
                                    spPopSizes = c(500, 
                                                   250, 
                                                   250, 
@@ -130,38 +138,51 @@ test_that("testing output", {
                  "spPopSizes will be considered NULL if frequencyDependentFitness = FALSE")
   
   expect_warning(allFitnessEffects(genotFitness = r3, 
-                                   frequencyDependentFitness = TRUE), 
+                                   frequencyDependentFitness = TRUE, 
+                                   frequencyType = "rel"), 
                  "Last column of genotype fitness is a factor. Converting to character.")
 
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                 frequencyDependentFitness = TRUE), 
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"), 
                allFitnessEffects(genotFitness = r4, 
-                                 frequencyDependentFitness = TRUE))
+                                 frequencyDependentFitness = TRUE, 
+                                 frequencyType = "rel"))
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE), 
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"), 
                    allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"))
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE), 
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"), 
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"))
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE), 
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"), 
                    allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"))
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE), 
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"), 
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"))
   
   expect_identical(allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE), 
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"), 
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE, 
+                                     frequencyType = "rel"))
 })
 
 cat(paste("\n Ending test.allFitnessEffectsFDF at", date(), "\n"))

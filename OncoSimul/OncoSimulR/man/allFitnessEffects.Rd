@@ -507,6 +507,7 @@ genofit <- data.frame(A = c(0, 1, 0, 1),
 
 afe <- allFitnessEffects(genotFitness = genofit,
                          frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
                          spPopSizes = c(5000, 2500, 3000, 7500))
 ##Ploting fitness landscape in case of spPopSizes = c(5000, 2500, 3000, 7500)
 plotFitnessLandscape(evalAllGenotypes(afe))

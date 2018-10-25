@@ -13,15 +13,17 @@ test_that("testing single gene evaluation", {
   r2 <- rfitness(2)
   
   afe1 <- allFitnessEffects(genotFitness = r1, 
-                           frequencyDependentFitness = TRUE, 
-                           spPopSizes = c(5000, 2500, 2500, 7500))
+                            frequencyDependentFitness = TRUE, 
+			    frequencyType = "rel"
+                            spPopSizes = c(5000, 2500, 2500, 7500))
   
   afe2 <- allFitnessEffects(genotFitness = r2, 
                             frequencyDependentFitness = FALSE, 
                             spPopSizes = c(5000, 2500, 2500, 7500))
   
   afe3 <- allFitnessEffects(genotFitness = r1, 
-                            frequencyDependentFitness = TRUE)
+                            frequencyDependentFitness = TRUE, 
+			    frequencyType = "rel")
   
   evge1 <- evalGenotype(genotype = "Root", fitnessEffects = afe1)
   
@@ -79,15 +81,16 @@ test_that("testing all genes evaluation", {
                       "max(5, (1 + f_1_2 + f_2_3 + f_1_3)^2)")
   
   afe <- allFitnessEffects(genotFitness = r, 
-                            frequencyDependentFitness = TRUE, 
-                            spPopSizes = c(500, 
-                                           250, 
-                                           250, 
-                                           250, 
-                                           300,
-                                           300,
-                                           300,
-                                           450))
+                           frequencyDependentFitness = TRUE, 
+			   frequencyType = "rel",
+                           spPopSizes = c(500, 
+                                          250, 
+                                          250, 
+                                          250, 
+                                          300,
+                                          300,
+                                          300,
+                                          450))
   
   genotypes <- c(0, OncoSimulR:::generateAllGenotypes(fitnessEffects = afe, 
                                                       order = FALSE, 

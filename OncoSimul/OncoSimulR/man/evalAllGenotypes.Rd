@@ -303,6 +303,7 @@ r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
 
 afe <- allFitnessEffects(genotFitness = r, 
                          frequencyDependentFitness = TRUE, 
+                         frequencyType = "rel",
                          spPopSizes = c(5000, 2500, 2500, 500))
 
 evalAllGenotypes(afe)
