@@ -123,6 +123,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 ##Modified
 to_genotFitness_std <- function(x,
   frequencyDependentFitness = FALSE,
+  frequencyType = "unemployed",
   simplify = TRUE,
   min_filter_fitness = 1e-9,
   sort_gene_names = TRUE) {
@@ -297,22 +298,27 @@ to_genotFitness_std <- function(x,
       x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]
     }
 
-  if (frequencyDependentFitness){
+  if(frequencyDependentFitness){
 
-    conversionTable <- conversionTable(ncol(x) - 1)
+    conversionTable <- conversionTable(ncol(x) - 1, frequencyType)
 
     x[, ncol(x)] <- sapply(x[, ncol(x)],
                            function(x){findAndReplace(x, conversionTable)})
 
-    pattern <- stringr::regex("f_(\\d*_*)*")
+    if(frequencyType == "abs"){
+      pattern <- stringr::regex("n_(\\d*_*)*")
+    }else{
+      pattern <- stringr::regex("f_(\\d*_*)*")
+    }
 
     regularExpressionVector <-
       unique(unlist(lapply(x[, ncol(x)],
                            function(z) {stringr::str_extract_all(string = z,
                                                         pattern = pattern)})))
 
-    if((!all(regularExpressionVector %in% fVariablesN(ncol(x) - 1))) |
-       !(length(intersect(regularExpressionVector, fVariablesN(ncol(x) - 1)) >= 1) )){
+    if((!all(regularExpressionVector %in% fVariablesN(ncol(x) - 1, frequencyType))) |
+       !(length(intersect(regularExpressionVector,
+                          fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
       stop("There are some errors in fitness column")
     }
   }

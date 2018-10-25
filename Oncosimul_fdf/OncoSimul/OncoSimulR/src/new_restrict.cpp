@@ -464,7 +464,7 @@ fitnessLandscape_struct convertFitnessLandscape_fdf(Rcpp::List flg,
   flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
   flS.flmap.clear();//Set to 0 flmap
 
-  std::vector<std::string> fvarsvect = //Movidón
+  std::vector<std::string> fvarsvect =
 	  Rcpp::as<std::vector<std::string> > (fvars);
 
   std::vector<std::string> genotNames =
@@ -562,10 +562,9 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List rgm = rFE["geneModule"];
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
-  //Rcpp::List fvars = rFE["fitnessLandscapeVariables"];//new line
-	//Rcpp::CharacterVector fvars = rFE["fitnessLandscapeVariables"];//new line
 	Rcpp::StringVector fvars = rFE["fitnessLandscapeVariables"];//new line
 	bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+	Rcpp::String fType =  rFE["frequencyType"];//new line
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this
   // Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
@@ -638,6 +637,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   fe.fVars = as<std::vector<std::string> > (fvars); //new line to insert fVars
 	//fe.fVars = fvariables;
 	fe.frequencyDependentFitness = fdf;//new line to insert frequencyDependentFitness
+	fe.frequencyType = as<std::string> (fType);
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size(). Bug in R code.");
   }
@@ -1335,13 +1335,14 @@ std::vector<int> stringVectorToIntVector(const std::string str){
   return vector;
 }
 
-//This function produce the map (structure) that link fVars (keys) to its frequencies (values)
+//This function produce the map (structure) that links fVars (keys) to its frequencies (values)
 evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 			   									 const std::vector<Genotype>& Genotypes,
 		           						 const std::vector<spParamsP>& popParams){
 
 	evalFVars_struct efvs;
 	std::map<std::string, std::string> fvarsmap = F.fitnessLandscape.flfVarsmap;
+	std::string freqType = F.frequencyType;
 
 	for(const auto& iterator : fvarsmap) {
 		std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
@@ -1349,8 +1350,14 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 		int position = findPositionInGenotypes(Genotypes, genotype);
 			if(position != 0){
 				int realPos = position - 1;
-				double freq = frequency(realPos, popParams);
-				efvs.evalFVarsmap.insert({var, freq});
+				if(freqType == "abs"){
+					double freqAbs = static_cast<double>(popParams[realPos].popSize);
+					efvs.evalFVarsmap.insert({var, freqAbs});
+				}else{
+					double freqRel = frequency(realPos, popParams);
+					efvs.evalFVarsmap.insert({var, freqRel});
+				}
+
 			}else{
 				double freq = 0.0;
 				efvs.evalFVarsmap.insert({var, freq});
@@ -1358,6 +1365,14 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 	}
 
 	return efvs;
+}
+
+double totalPop(const popParams&){//as double to avoid problems
+	int sum;
+	for(size_t i = 0; i < popParams.size(); i++){
+      sum += popParams[i].popSize;
+  }
+	return static_cast<double>(sum);
 }
 
 double evalGenotypeFDFitnessEcuation(const Genotype& ge,
@@ -1375,6 +1390,8 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 
   std::string expr_string = F.fitnessLandscape.flFDFmap.at(gs);
 
+	double N = totalPop(popParams);
+
   typedef exprtk::symbol_table<double> symbol_table_t;
   typedef exprtk::expression<double> expression_t;
   typedef exprtk::parser<double> parser_t;
@@ -1383,7 +1400,7 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
   for(auto& iterator : EFVMap){
 		symbol_table.add_variable(iterator.first, iterator.second);
   }
-  symbol_table.add_constants();
+  symbol_table.add_constants("N", N); //We reserve N to total population size
 
   expression_t expression;
   expression.register_symbol_table(symbol_table);

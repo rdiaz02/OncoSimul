@@ -415,25 +415,31 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
 }
 
 ##New function
-fVariablesN <- function (g) {
+fVariablesN <- function (g, frequencyType) {
 
   if (is.null(g) | g == 0)
     stop("Number of genes must be integer > 0")
 
-
   combinationsList <- list()
   for (i in 0:g) {
     combinationsList <- append(combinationsList,
-                               combn(1:g, i, list, simplify = TRUE))
+                                 combn(1:g, i, list, simplify = TRUE))
   }
-  fsVector <-sapply(sapply(combinationsList,
-                           function(x) paste0(x, collapse = "_")),
-                    function(x) paste0("f_", x))
+
+  if (frequencyType == "abs"){
+    fsVector <-sapply(sapply(combinationsList,
+                             function(x) paste0(x, collapse = "_")),
+                      function(x) paste0("n_", x))
+  }else{
+    fsVector <-sapply(sapply(combinationsList,
+                             function(x) paste0(x, collapse = "_")),
+                      function(x) paste0("f_", x))
+  }
 
   return (fsVector)
 }
 
-fVariablesL <- function (g) {
+fVariablesL <- function (g, frequencyType) {
 
   if (is.null(g) | g == 0)
     stop("Number of genes must be integer > 0")
@@ -447,16 +453,23 @@ fVariablesL <- function (g) {
     combinationsList <- append(combinationsList,
                                combn(LETTERS[1:g], i, list, simplify = TRUE))
   }
-  fsVector <-sapply(sapply(combinationsList,
-                           function(x) paste0(x, collapse = "_")),
-                    function(x) paste0("f_", x))
+
+  if (frequencyType == "abs"){
+    fsVector <-sapply(sapply(combinationsList,
+                             function(x) paste0(x, collapse = "_")),
+                      function(x) paste0("n_", x))
+  }else{
+    fsVector <-sapply(sapply(combinationsList,
+                             function(x) paste0(x, collapse = "_")),
+                      function(x) paste0("f_", x))
+  }
 
   return (fsVector)
 }
 
-conversionTable <- function(g){
-  df <- data.frame(let = fVariablesL(g)[-1],
-                   num = fVariablesN(g)[-1],
+conversionTable <- function(g, frequencyType){
+  df <- data.frame(let = fVariablesL(g, frequencyType)[-1],
+                   num = fVariablesN(g, frequencyType)[-1],
                    stringsAsFactors = FALSE)
   return (df)
 }
@@ -482,6 +495,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                        ## refFE = NULL,
                                        calledBy = NULL,
                                        frequencyDependentFitness = FALSE,
+                                       frequencyType = "unemployed"
                                        spPopSizes = NULL) {
   ## From allFitnessEffects. Generalized so we deal with Fitness
   ## and mutator.
@@ -704,6 +718,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
                 fitnessLandscapeVariables = vector(mode = "character", length = 0L),
                 frequencyDependentFitness = frequencyDependentFitness,
+                frequencyType = frequencyType,
                 spPopSizes = vector(mode = "integer", length = 0L)
     )
     if(calledBy == "allFitnessEffects") {
@@ -737,7 +752,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
         GeneNumID = cnn,
         stringsAsFactors = FALSE)
 
-      fitnessLandscapeVariables = fVariablesN(ncol(genotFitness) - 1)
+      fitnessLandscapeVariables = fVariablesN(ncol(genotFitness) - 1,
+                                              frequencyType)
 
     }
 
@@ -771,6 +787,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
                 fitnessLandscapeVariables = fitnessLandscapeVariables,
                 frequencyDependentFitness = frequencyDependentFitness,
+                frequencyType = frequencyType,
                 spPopSizes = spPopSizes
               )
 
@@ -992,9 +1009,17 @@ allFitnessEffects <- function(rT = NULL,
                               genotFitness = NULL,
                               keepInput = TRUE,
                               frequencyDependentFitness = FALSE,
+                              frequencyType = "unemployed",
                               spPopSizes = NULL) {
 
   if(!frequencyDependentFitness){
+
+    if(frequencyType != "unemployed"){
+      warning("frequencyType set to 'unemployed' ")
+      frequencyType = "unemployed"
+  }
+
+    }
 
     if(!is.null(genotFitness)) {
       if(!is.null(rT) || !is.null(epistasis) ||
@@ -1024,9 +1049,14 @@ allFitnessEffects <- function(rT = NULL,
       genotFitness = genotFitness_std,
       calledBy = "allFitnessEffects",
       frequencyDependentFitness = FALSE,
+      frequencyType = frequencyType,
       spPopSizes = spPopSizes)
 
   }else{
+
+    if(!(frequencyType %in% c('abs', 'rel'))){
+      stop("frequencyType must be 'abs'(absolute) or 'rel' (relative)")
+    }
 
     if(is.null(genotFitness)) {
       stop("You have a null genotFitness in a frequency dependent fitness situation.")
@@ -1045,6 +1075,7 @@ allFitnessEffects <- function(rT = NULL,
         genotFitness = genotFitness_std,
         calledBy = "allFitnessEffects",
         frequencyDependentFitness = TRUE,
+        frequencyType = frequencyType,
         spPopSizes = spPopSizes)
     }
   }

@@ -116,6 +116,7 @@ struct fitnessEffectsAll {
   // zz:
   std::vector<std::string> fVars; //New line to store fVars
   bool frequencyDependentFitness; //New line to discriminate true/false
+  std::string frequencyType; // New line to store the type of frequency
   fitnessLandscape_struct fitnessLandscape;
 };
 
@@ -133,7 +134,8 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.allGenes.resize(0);
   f.drv.resize(0);
   f.fVars.resize(0);//new line to initialize fVars
-  f.frequencyDependentFitness = false;//I am not sure about that
+  f.frequencyDependentFitness = false;
+  f.frequencyType.clear();
   f.genesNoInt.shift = -99L;
   f.genesNoInt.NumID.resize(0);
   f.genesNoInt.names.resize(0);
