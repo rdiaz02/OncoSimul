@@ -1031,6 +1031,7 @@ allFitnessEffects <- function(rT = NULL,
 
       genotFitness_std <- to_genotFitness_std(genotFitness,
                                               frequencyDependentFitness = FALSE,
+                                              frequencyType = frequencyType,
                                               simplify = TRUE)
       ## epistasis <- from_genotype_fitness(genotFitness)
     } else {
@@ -1061,6 +1062,7 @@ allFitnessEffects <- function(rT = NULL,
     } else {
       genotFitness_std <- to_genotFitness_std(genotFitness,
                                               frequencyDependentFitness = TRUE,
+                                              frequencyType = frequencyType,
                                               simplify = TRUE)
       allFitnessORMutatorEffects(
         rT = rT,
