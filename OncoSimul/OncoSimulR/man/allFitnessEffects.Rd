@@ -30,11 +30,11 @@
 
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
-  genotFitness = NULL,  keepInput = TRUE, frequencyDependentFitness = FALSE,
-  spPopSizes = NULL)
+  genotFitness = NULL,  keepInput = TRUE, frequencyDependentFitness =
+  FALSE, frequencyType = "unemployed", spPopSizes = NULL)
 
 allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
-                   geneToModule = NULL,
+                  geneToModule = NULL,
                   keepInput =  TRUE)
 }
 
