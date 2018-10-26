@@ -1353,7 +1353,7 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 			if(position != 0){
 				int realPos = position - 1;
 				if(freqType == "abs"){
-					double freqAbs = static_cast<double>(popParams[realPos].popSize);
+					double freqAbs = popParams[realPos].popSize;
 					efvs.evalFVarsmap.insert({var, freqAbs});
 				}else{
 					double freqRel = frequency(realPos, popParams);
@@ -1369,12 +1369,12 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 	return efvs;
 }
 
-double totalPop(const std::vector<spParamsP>& popParams){//as double to avoid problems
-	int sum;
+double totalPop(const std::vector<spParamsP>& popParams){
+	double sum;
 	for(size_t i = 0; i < popParams.size(); i++){
       sum += popParams[i].popSize;
   }
-	return static_cast<double>(sum);
+	return sum;
 }
 
 double evalGenotypeFDFitnessEcuation(const Genotype& ge,

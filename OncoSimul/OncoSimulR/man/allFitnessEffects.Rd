@@ -150,26 +150,33 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
     will be used for the names of the genes. Of course, except for
     column or row names, all entries in this matrix or data frame must
     be numeric, except when \code{frequencyDependentFitness} is TRUE.
-    In this case last column must be character and contains fitness ecuations.
+    In this case, last column must be character and contains fitness
+    ecuations.
 
     \item As a two column data frame. The second column is fitness, and
     the first column are genotypes, given as a character vector. For
-    instance, a row "A, B" would mean the genotype with both A and B mutated. If
-    \code{frequencyDependentFitness} is TRUE both columns must be character 
-    vectors.
-
+    instance, a row "A, B" would mean the genotype with both A and B
+    mutated. If \code{frequencyDependentFitness} is TRUE both columns 
+    must be character vectors.
     }
   
   When \code{frequencyDependentFitness} is FALSE, fitness must be
   \code{>= 0}. If any possible genotype is missing, its fitness is assumed
   to be 1. By the contrary, if \code{frequencyDependentFitness} is TRUE,
-  the Fitness column must contain the fitness specification ecuations, like
-  characters, using as variables the frequency of the all possible genotypes.
-  Frequency variables must be f_ for wild type, f_1 or f_A if first gene is mutated,
-  f_2 or f_B if is the case for the second one, f_1_2 or f_A_B, if both are mutated,
-  and so on. Mathematical operations and symbols allowed are described in the 
-  documentation of C++ library ExprTkthat is used to parse an evaluate the fitness
-  ecuations (see references for more information).
+  the Fitness column must contain the fitness specification ecuations,
+  like characters, using as variables the frequencies (absolute or
+  relative)  of the all possible genotypes. We use "f" to denote relative
+  frecuencies and "n" for absolute. Letter "N" (UPPER CASE) is reserved to
+  denote total population size, thus f=n/N for each possible genotype.
+  Relative frequency variables must be f_ for wild type, f_1 or f_A if
+  first gene is mutated, f_2 or f_B if is the case for the second one,
+  f_1_2 or f_A_B, if both are mutated, and so on. If we want to use
+  absolute frequencies, just subtitute "f" for "n". Please remember that
+  the election between relative or absolute frequencies must be specify
+  also in \code{frequencyType}. Mathematical operations and symbols
+  allowed are described in the documentation of C++'s library ExprTk that
+  is used to parse an evaluate the fitness ecuations (see references for
+  more information). 
 }
 
 
@@ -181,13 +188,22 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   the object will be a little bit smaller.}
 
   \item{frequencyDependentFitness}{
-  If FALSE, the default value, all downstream work will be realised in a way not
-  related to frequency depedent fitness situations. That implies that fitness
-  specifications are fixed, except death rate in case of McFarland model (see
-  \code{\link{oncoSimulIndiv}} for more details). If TRUE, you are in a frequency
-  dependent fitness situation, where fitness specification ecuations must be passed
-  as characters at \code{genotFitness}.
+  If FALSE, the default value, all downstream work will be realised in a
+  way not related to frequency depedent fitness situations. That implies
+  that fitness specifications are fixed, except death rate in case of
+  McFarland model (see \code{\link{oncoSimulIndiv}} for more details). If
+  TRUE, you are in a frequency dependent fitness situation, where fitness
+  specification ecuations must be passed as characters at 
+  \code{genotFitness}.
 }
+
+  \item{frequencyType}{frequencyType is a character that specify wether 
+    we are using absolute or relatives frequecies and can take tree values
+    depending on \code{frequencyDependentFitness}. When FALSE is 
+    "unemployed" and for TRUE we can use "abs", for absolute frequencies,
+    or "rel", for relative ones. Remember that you must to use "f" for
+    relative frequency and "n" for absolute in \code{genoFitness}.
+    }
 
 \item{spPopSizes}{
 \code{spPopSizes} is a numeric vector that contains the population sizes of the clones,
@@ -226,17 +242,18 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or
   noIntgenes, epistasis, or rT. This makes sense, because using
   \code{genotFitness} is saying
   "this is the mapping of genotypes to fitness. Period", so we should
-  not allow further modifications from other terms. This is always the case
-  when \code{frequencyDependentFitness} = TRUE.
+  not allow further modifications from other terms. This is always the
+  case when \code{frequencyDependentFitness} = TRUE.
   
   If you use \code{genotFitness} you need to be careful when you use
   Bozic's model (as you get a death rate of 0).
 
   If you use \code{genotFitness} note that we force the WT (wildtype) to
-  always be 1 so fitnesses are rescaled in case of \code{frequencyDependentFitness} = FALSE.
-  By the contrary when \code{frequencyDependentFitness} = TRUE you
-  are totaly free to determine the fitness as a function of the frequencies
-  of the genotypes (see \code{genotFitness} and the vignette).
+  always be 1 so fitnesses are rescaled in case of 
+  \code{frequencyDependentFitness} = FALSE. By the contrary when 
+  \code{frequencyDependentFitness} = TRUE you are totaly free to 
+  determine the fitness as a function of the frequencies of the genotypes
+  (see \code{genotFitness} and the vignette).
 
 }
 
@@ -290,32 +307,38 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or
   that map by rows genes as letters (Gene) with genes as numbers (GeneNumID).
   }
 
-  \item{fitnessLandscapeVariables}{A character vector that contains the frequency
-  variables necessary to C++ code.
+  \item{fitnessLandscapeVariables}{A character vector that contains the
+  frequency variables necessary to C++ code.
   }
 
-  \item{frequencyDependentFitness}{TRUE or FALSE as we have explained before.
+  \item{frequencyDependentFitness}{TRUE or FALSE as we have explained
+  before.
+  }
+  
+  \item{frequencyType}{A character string "unemployed", "abs" or "rel".
   }
 
-  \item{spPopSizes}{A numeric vector of population sizes as it had been passsed
-  in the input, if \code{frequencyDependentFitness} is TRUE, or NULL, if
-  \code{frequencyDependentFitness} is FALSE.
+  \item{spPopSizes}{A numeric vector of population sizes as it had been
+  passsed in the input, if \code{frequencyDependentFitness} is TRUE, or
+  NULL, if \code{frequencyDependentFitness} is FALSE.
   }
 
 }
+
 \references{
     Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
   accumulation of mutations during tumor progression: effects of
   passengers, evolutionary models, and sampling
-  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
+  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}.
 
     McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National
   Academy of Sciences of the United States of America\/}, \bold{110}(8),
   2910--5.
   
-    Partow, A. ExprTk: C++ Mathematical Expression Library. (Open Souce MIT License )
-  \url{<http://www.partow.net/programming/exprtk/>}
+    Partow, A. ExprTk: C++ Mathematical Expression Library(MIT Open
+    Souce License).
+  \url{<http://www.partow.net/programming/exprtk/>}.
 
 
 }
@@ -336,12 +359,12 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or
   now, using those characters as names is caught (and result in
   stopping) if passed as names for noIntGenes.
 
-  By the moment the variables you need to specify the frequencies in the fitness
-  ecuations when you are in a frequency dependent fitness situation are fixed as
-  we have explained in \code{genotFitness}. Using different and strange
-  combinations of "f_" followed by letters and numbers perhaps you could confuse
-  the R parser, but never the C++ one. For a correct performance please be aware of 
-  this.
+  By the moment, the variables you need to specify the in the fitness
+  ecuations when you are in a frequency dependent fitness situation are
+  fixed as we have explained in \code{genotFitness}. Perhaps using
+  different and strange combinations of "f_" or "n_" followed by letters
+  and numbers you could confuse the R parser, but never the C++ one. For
+  a correct performance please be aware of this.
   }
 
 
