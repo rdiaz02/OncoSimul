@@ -1287,7 +1287,7 @@ double frequency(const int& pos, const std::vector<spParamsP>& popParams){
 
   double fqc;
   double numerator = popParams[pos].popSize;
-  double denominator;
+  double denominator = 0.0;
 
   for(size_t i = 0; i < popParams.size(); i++){
       denominator += popParams[i].popSize;
@@ -1359,7 +1359,6 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 					double freqRel = frequency(realPos, popParams);
 					efvs.evalFVarsmap.insert({var, freqRel});
 				}
-
 			}else{
 				double freq = 0.0;
 				efvs.evalFVarsmap.insert({var, freq});
@@ -1370,7 +1369,7 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
 }
 
 double totalPop(const std::vector<spParamsP>& popParams){
-	double sum;
+	double sum = 0.0;
 	for(size_t i = 0; i < popParams.size(); i++){
       sum += popParams[i].popSize;
   }
