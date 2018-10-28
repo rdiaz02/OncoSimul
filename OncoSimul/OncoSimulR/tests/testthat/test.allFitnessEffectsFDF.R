@@ -57,7 +57,7 @@ test_that("Errors expectations", {
   
   expect_error(allFitnessEffects(genotFitness = r8, 
                                  frequencyDependentFitness = TRUE),  
-               "frequencyType must be 'abs' (absolute) or 'rel' (relative).")
+               "frequencyType must be abs (absolute) or rel (relative).")
   
   
 })
