@@ -155,7 +155,7 @@ test_that("testing output", {
                                             frequencyType = "rel"))
   
   expect_identical(afe2$fitnessLandscapeVariables, 
-                   OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 1, 
+                   OncoSimulR:::fVariablesN(ncol(afe2$fitnessLandscape) - 1, 
                                             frequencyType = "abs"))
   
   lapply(afe1[c(4, 5, 14:16)], function(x){

@@ -123,7 +123,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 ##Modified
 to_genotFitness_std <- function(x,
   frequencyDependentFitness = FALSE,
-  frequencyType = "unemployed",
+  frequencyType = frequencyType,
   simplify = TRUE,
   min_filter_fitness = 1e-9,
   sort_gene_names = TRUE) {
