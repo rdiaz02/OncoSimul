@@ -1054,7 +1054,7 @@ allFitnessEffects <- function(rT = NULL,
   }else{
 
     if(!(frequencyType %in% c('abs', 'rel'))){
-      stop("frequencyType must be abs (absolute) or rel (relative).")
+      stop("frequencyType must be 'abs' (absolute) or 'rel' (relative).")
     }
 
     if(is.null(genotFitness)) {
