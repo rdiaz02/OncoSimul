@@ -1043,9 +1043,9 @@ plot.oncosimul <- function(x,
                            ) {
 
 
-    if(!(type %in% c("stacked", "stream", "line")))
+    if(!(type %in% c("stacked", "stream", "line", "fish")))
         stop("Type of plot unknown: it must be one of",
-             "stacked, stream or line")
+             "stacked, stream, line or fish")
 
     if(!(show %in% c("genotypes", "drivers")))
         stop("show must be one of ",
