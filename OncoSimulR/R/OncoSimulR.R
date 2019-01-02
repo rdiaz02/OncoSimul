@@ -1006,6 +1006,45 @@ plot.oncosimulpop <- function(x, ask = TRUE,
     
 ## }
 
+plot_muller <- function(onco_simul_obj, 
+                        add_legend = TRUE, 
+                        wild_type_legend = "wt", 
+                        xlab = "Time", 
+                        ylab = "Frequency") {
+    library(ggmuller)
+    
+    LOD <- data.frame(onco_simul_obj$other$LOD_DF)
+    levels(LOD$parent)[1] <- wild_type_legend
+    
+    pob1 <- as.data.frame(onco_simul_obj$pops.by.time)
+    
+    onco_simul_obj$GenotypesLabels[1] <- wild_type_legend
+    genot1 <- c("Time", onco_simul_obj$GenotypesLabels)
+    colnames(pob1) <- genot1
+    
+    ##Creamos un vector con los datos que van en la columna Generation
+    Generation <- as.integer(rep(pob1[ ,1], length(colnames(pob1))-1))
+
+    #Creamos un vector con los datos que van en la columna Population
+    Population <- c()
+    for(i in 2:length(colnames(pob1))){
+      Population <- c(Population, pob1[ ,i])
+    }
+    Population <- as.numeric(Population)
+    
+    #Creamos un vector con los datos que van en la columna Identity
+    Identity <- c()
+    for(i in 2:length(colnames(pob1))){
+      Identity <- c(Identity, rep(colnames(pob1)[i], length(rownames(pob1))))
+    }
+    
+    #Creamos el data frame a partir de los vectores
+    pop1 <- data.frame(Identity, Population, Generation)
+    
+    muller_df <- get_Muller_df(LOD, pop1)
+    Muller_plot(muller_df, add_legend = add_legend, xlab = xlab, ylab = ylab)
+    #Muller_plot(muller_df, add_legend = add_legend)
+}
 
 plot.oncosimul <- function(x,
                            show = "drivers", 
@@ -1039,6 +1078,8 @@ plot.oncosimul <- function(x,
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
                            legend.ncols = "auto",
+                           fish_legend = TRUE,
+                           fish_wild_type_legend = "wt",
                            ...
                            ) {
 
@@ -1046,126 +1087,133 @@ plot.oncosimul <- function(x,
     if(!(type %in% c("stacked", "stream", "line", "fish")))
         stop("Type of plot unknown: it must be one of ",
              "stacked, stream, line or fish")
-
-    if(!(show %in% c("genotypes", "drivers")))
-        stop("show must be one of ",
-             "genotypes or drivers")
-
-    if(!(breakSortColors %in% c("oe", "distave", "random")))
-        stop("breakSortColors must be one of ",
-             "oe, distave, or random")
-
+  
+    if(type == "fish") {
+        plot_muller(x, 
+                    add_legend = fish_legend, 
+                    wild_type_legend = fish_wild_type_legend, 
+                    xlab = xlab, 
+                    ylab = ylab)
+    } else {
+        if(!(show %in% c("genotypes", "drivers")))
+            stop("show must be one of ",
+                 "genotypes or drivers")
     
-
-    colauto <- FALSE
-    if(col == "auto" && (type == "line") && (show == "drivers"))
-        col <- c(8, "orange", 6:1)
-    if(col == "auto" && (show == "genotypes")) {
-        ## For categorical data, I find Dark2, Paired, or Set1 to work best.
-        col <- colorRampPalette(brewer.pal(8, "Dark2"))(ncol(x$pops.by.time) - 1)
-        colauto <- TRUE
-    }
+        if(!(breakSortColors %in% c("oe", "distave", "random")))
+            stop("breakSortColors must be one of ",
+                 "oe, distave, or random")
     
-    if(show == "genotypes") {
-        plotDrivers <- FALSE
-        plotClones <- TRUE
-    }
     
-    if(thinData)
-        x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
-
-    if(!is.null(xlim))
-        x <- xlim.pop.data(x, xlim)
-    
-    ## For genotypes, ndr is now the genotypes.  Actually, ndr is now just
-    ## a sequence 1:(ncol(y) - 1)
-
-    ## The user will want to change the colors, like a colorRamp, etc. Or
-    ## rainbow.
-
-    ## genotypes and line, always call plotDrivers0
-    if(show == "drivers") {
-        if(!inherits(x, "oncosimul2"))
-            ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
-        else {
-            ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+        colauto <- FALSE
+        if(col == "auto" && (type == "line") && (show == "drivers"))
+            col <- c(8, "orange", 6:1)
+        if(col == "auto" && (show == "genotypes")) {
+            ## For categorical data, I find Dark2, Paired, or Set1 to work best.
+            col <- colorRampPalette(brewer.pal(8, "Dark2"))(ncol(x$pops.by.time) - 1)
+            colauto <- TRUE
         }
-    } else { ## show we are showing genotypes
-        ndr <- 1:(ncol(x$pops.by.time) - 1)
-    }
+        
+        if(show == "genotypes") {
+            plotDrivers <- FALSE
+            plotClones <- TRUE
+        }
+        
+        if(thinData)
+            x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
     
-    if((type == "line") && is.null(ylim)) {
-        if(log %in% c("y", "xy", "yx") )
-            ylim <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
-        else
-            ylim <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
-    }
-    if(plotDiversity) {
-        oppd <- par(fig = c(0, 1, 0.8, 1))
-        m1 <- par()$mar
-        m <- m1
-        m[c(1, 3)] <- c(0, 0.7)
-        op <- par(mar = m )
-        plotShannon(x)
-        par(op)
-        m1[c(3)] <- 0.2
-        op <- par(mar = m1)
-        par(fig = c(0, 1, 0, 0.8), new = TRUE)  
-    }
-
-    ## Shows its history: plotClones makes plotDrivers0 unneeded with
-    ## stacked and stream plots. But now so with line plot.
-    ## When showing genotypes, plotDrivers0 with line only used for
-    ## showing the legend.
-    if(plotClones) {
-        plotClonesSt(x,
-                     ndr = ndr,
-                     show = show,
-                     na.subs = TRUE,
-                     log = log,
-                     lwd = lwdClone,
-                     lty = ifelse(show == "drivers", ltyClone, ltyDrivers),
-                     col = col, 
-                     order.method = order.method,
-                     stream.center = stream.center,
-                     stream.frac.rand = stream.frac.rand,
-                     stream.spar = stream.spar,
-                     border = border,
-                     srange = srange,
-                     vrange = vrange,
-                     type = type,
-                     breakSortColors = breakSortColors,
-                     colauto = colauto,
-                     legend.ncols = legend.ncols,
-                     lwdStackedStream = lwdStackedStream,
-                     xlab = xlab,
-                     ylab = ylab,
-                     ylim = ylim,
-                     xlim = xlim,
-                     ...)
-    }
-
-    if(plotClones && plotDrivers && (type == "line"))
-        par(new = TRUE)
+        if(!is.null(xlim))
+            x <- xlim.pop.data(x, xlim)
+        
+        ## For genotypes, ndr is now the genotypes.  Actually, ndr is now just
+        ## a sequence 1:(ncol(y) - 1)
     
-    if( plotDrivers && (type == "line") ) {
-        plotDrivers0(x,
-                     ndr,
-                     timescale = 1,
-                     trim.no.drivers = FALSE,
-                     xlab = "", ylab = "",
-                     lwd = lwdDrivers,
-                     lty = ltyDrivers,
-                     col = col, 
-                     addtot = addtot,
-                     addtotlwd = addtotlwd,
-                     log = log, ylim = ylim,
-                     xlim = xlim,
-                     legend.ncols = legend.ncols,
-                     ...)
-    }
-    if(plotDiversity) {
-        par(oppd)
+        ## The user will want to change the colors, like a colorRamp, etc. Or
+        ## rainbow.
+    
+        ## genotypes and line, always call plotDrivers0
+        if(show == "drivers") {
+            if(!inherits(x, "oncosimul2"))
+                ndr <- colSums(x$Genotypes[1:x$NumDrivers, , drop = FALSE])
+            else {
+                ndr <- colSums(x$Genotypes[x$Drivers, , drop = FALSE])
+            }
+        } else { ## show we are showing genotypes
+            ndr <- 1:(ncol(x$pops.by.time) - 1)
+        }
+        
+        if((type == "line") && is.null(ylim)) {
+            if(log %in% c("y", "xy", "yx") )
+                ylim <- c(1, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+            else
+                ylim <- c(0, max(apply(x$pops.by.time[, -1, drop = FALSE], 1, sum)))
+        }
+        if(plotDiversity) {
+            oppd <- par(fig = c(0, 1, 0.8, 1))
+            m1 <- par()$mar
+            m <- m1
+            m[c(1, 3)] <- c(0, 0.7)
+            op <- par(mar = m )
+            plotShannon(x)
+            par(op)
+            m1[c(3)] <- 0.2
+            op <- par(mar = m1)
+            par(fig = c(0, 1, 0, 0.8), new = TRUE)  
+        }
+    
+        ## Shows its history: plotClones makes plotDrivers0 unneeded with
+        ## stacked and stream plots. But now so with line plot.
+        ## When showing genotypes, plotDrivers0 with line only used for
+        ## showing the legend.
+        if(plotClones) {
+            plotClonesSt(x,
+                         ndr = ndr,
+                         show = show,
+                         na.subs = TRUE,
+                         log = log,
+                         lwd = lwdClone,
+                         lty = ifelse(show == "drivers", ltyClone, ltyDrivers),
+                         col = col, 
+                         order.method = order.method,
+                         stream.center = stream.center,
+                         stream.frac.rand = stream.frac.rand,
+                         stream.spar = stream.spar,
+                         border = border,
+                         srange = srange,
+                         vrange = vrange,
+                         type = type,
+                         breakSortColors = breakSortColors,
+                         colauto = colauto,
+                         legend.ncols = legend.ncols,
+                         lwdStackedStream = lwdStackedStream,
+                         xlab = xlab,
+                         ylab = ylab,
+                         ylim = ylim,
+                         xlim = xlim,
+                         ...)
+        }
+    
+        if(plotClones && plotDrivers && (type == "line"))
+            par(new = TRUE)
+        
+        if( plotDrivers && (type == "line") ) {
+            plotDrivers0(x,
+                         ndr,
+                         timescale = 1,
+                         trim.no.drivers = FALSE,
+                         xlab = "", ylab = "",
+                         lwd = lwdDrivers,
+                         lty = ltyDrivers,
+                         col = col, 
+                         addtot = addtot,
+                         addtotlwd = addtotlwd,
+                         log = log, ylim = ylim,
+                         xlim = xlim,
+                         legend.ncols = legend.ncols,
+                         ...)
+        }
+        if(plotDiversity) {
+            par(oppd)
+        }
     }
     
 }
