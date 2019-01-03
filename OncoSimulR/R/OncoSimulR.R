@@ -1007,43 +1007,45 @@ plot.oncosimulpop <- function(x, ask = TRUE,
 ## }
 
 plot_muller <- function(onco_simul_obj, 
-                        add_legend = TRUE, 
                         wild_type_legend = "wt", 
+                        cutoff = 0.0,
                         xlab = "Time", 
-                        ylab = "Frequency") {
-    library(ggmuller)
+                        ylab = "Frequency",
+                        ...) {
     
-    LOD <- data.frame(onco_simul_obj$other$LOD_DF)
-    levels(LOD$parent)[1] <- wild_type_legend
     
-    pob1 <- as.data.frame(onco_simul_obj$pops.by.time)
+    # Fill adjacency matrix
+    adjacency_matrix <- data.frame(onco_simul_obj$other$LOD_DF)
+    levels(adjacency_matrix$parent)[1] <- wild_type_legend
+    
+    population_evolution <- as.data.frame(onco_simul_obj$pops.by.time)
     
     onco_simul_obj$GenotypesLabels[1] <- wild_type_legend
-    genot1 <- c("Time", onco_simul_obj$GenotypesLabels)
-    colnames(pob1) <- genot1
+    genotypes_labels <- c("Time", onco_simul_obj$GenotypesLabels)
+    colnames(population_evolution) <- genotypes_labels
     
-    ##Creamos un vector con los datos que van en la columna Generation
-    Generation <- as.integer(rep(pob1[ ,1], length(colnames(pob1))-1))
+    # Fill generation vector
+    Generation <- as.integer(rep(population_evolution[ ,1], 
+                            length(colnames(population_evolution))-1))
 
-    #Creamos un vector con los datos que van en la columna Population
+    # Fill population vector
     Population <- c()
-    for(i in 2:length(colnames(pob1))){
-      Population <- c(Population, pob1[ ,i])
+    for(i in 2:length(colnames(population_evolution))) {
+      Population <- c(Population, population_evolution[ ,i])
     }
     Population <- as.numeric(Population)
     
-    #Creamos un vector con los datos que van en la columna Identity
+    # Fill identity vector
     Identity <- c()
-    for(i in 2:length(colnames(pob1))){
-      Identity <- c(Identity, rep(colnames(pob1)[i], length(rownames(pob1))))
+    for(i in 2:length(colnames(population_evolution))) {
+      Identity <- c(Identity, rep(colnames(population_evolution)[i], 
+                    length(rownames(population_evolution))))
     }
     
-    #Creamos el data frame a partir de los vectores
-    pop1 <- data.frame(Identity, Population, Generation)
-    
-    muller_df <- get_Muller_df(LOD, pop1)
-    Muller_plot(muller_df, add_legend = add_legend, xlab = xlab, ylab = ylab)
-    #Muller_plot(muller_df, add_legend = add_legend)
+    muller_df <- get_Muller_df(adjacency_matrix, 
+                               data.frame(Identity, Population, Generation),
+                               cutoff)
+    Muller_plot(muller_df, xlab = xlab, ylab = ylab, ...)
 }
 
 plot.oncosimul <- function(x,
@@ -1078,8 +1080,8 @@ plot.oncosimul <- function(x,
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
                            legend.ncols = "auto",
-                           fish_legend = TRUE,
                            fish_wild_type_legend = "wt",
+                           fish_cutoff = 0.0,
                            ...
                            ) {
 
@@ -1089,11 +1091,18 @@ plot.oncosimul <- function(x,
              "stacked, stream, line or fish")
   
     if(type == "fish") {
-        plot_muller(x, 
-                    add_legend = fish_legend, 
+        if(thinData)
+            x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
+      
+        if(!is.null(xlim))
+            x <- xlim.pop.data(x, xlim)
+        
+        plot_muller(x,
                     wild_type_legend = fish_wild_type_legend, 
+                    cutoff = fish_cutoff,
                     xlab = xlab, 
-                    ylab = ylab)
+                    ylab = ylab,
+                    ...)
     } else {
         if(!(show %in% c("genotypes", "drivers")))
             stop("show must be one of ",
