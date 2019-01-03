@@ -1014,6 +1014,7 @@ plot_muller <- function(onco_simul_obj,
                         ...) {
     
     print("Welcome to plot_muller 2")
+    print("Otro print")
     # Fill adjacency matrix
     adjacency_matrix <- data.frame(onco_simul_obj$other$LOD_DF)
     levels(adjacency_matrix$parent)[1] <- wild_type_legend
