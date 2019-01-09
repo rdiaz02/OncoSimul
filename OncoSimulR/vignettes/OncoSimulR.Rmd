@@ -7218,6 +7218,125 @@ explicitly show parent-descendant relationships, which would hardly be
 realistically possible in these plots (although the plots of phylogenies
 in section \@ref(phylog) could be of help).
 
+### Bauer's example with ggmuller plots {#muller}
+
+Using Bauer's example, we may define another type of plot to represent the evolution of tumor population, using the package **ggmuller**, which can be downloaded from CRAN repository. This type of plot is specified by "fish" option upon calling to plot.oncosimul method. In a similar way to the code in \@ref({r prbaux001}), an oncoSimulIndiv object (b1) is created. Once the ggmuller package is already installed, the function plot_muller must be called on the b1 object, as it is depicted in \@ref{r_muller_code}, just below. 
+
+```{r_muller_code}
+
+library(ggmuller)
+plot_muller <- function(onco_simul_obj) {
+  
+  #First, the adjacency matrix is created.
+  print("Adjacency matrix")
+  LOD <- data.frame(onco_simul_obj$other$LOD_DF)
+  levels(LOD$parent)[1] <- "wt"
+  
+  pob1 <- as.data.frame(onco_simul_obj$pops.by.time)
+  
+  onco_simul_obj$GenotypesLabels[1] <- "wt"
+  genot1 <- c("Time", onco_simul_obj$GenotypesLabels)
+  colnames(pob1) <- genot1
+  
+  print("Pops by time")
+  print(head(pob1))
+  
+  ##Creamos un vector con los datos que van en la columna Generation
+  Generation <- as.integer(rep(pob1[ ,1], length(colnames(pob1))-1))
+  head(Generation)
+  
+  #Creamos un vector con los datos que van en la columna Population
+  Population <- c()
+  for(i in 2:length(colnames(pob1))){
+    Population <- c(Population, pob1[ ,i])
+  }
+  Population <- as.numeric(Population)
+  
+  #Creamos un vector con los datos que van en la columna Identity
+  Identity <- c()
+  for(i in 2:length(colnames(pob1))){
+    Identity <- c(Identity, rep(colnames(pob1)[i], length(rownames(pob1))))
+  }
+  print("Identity")
+  print(head(Identity))
+  
+  #Creamos el data frame a partir de los vectores
+  pop1 <- data.frame(Identity, Population, Generation)
+  
+  print(levels(pop1$Identity))
+  
+  muller_df <- get_Muller_df(LOD, pop1)
+  
+  Muller_plot( muller_df, add_legend = TRUE)
+}
+
+``` 
+The main utility of this function is to construct step by step the data frames which serve as inputs for the *get_Muller_df* function, this is, the one which plot the muller graph format. Briefly, the LOD data frame is the adjacency matrix generated from the phylogeny data from the oncosimul object b1, i.e. from *onco_simul_obj$other$LOD_DF*. Thus, the phylogenetic relationships between the different genotypes or "Identities" and their respective parents are summarized in this data frame, containing two columns: "Parents" and "Identities", stored in turn in the so-called LOD object (one of the inputs of the muller function.)
+
+The other input is *pop1*, which is a data frame as well, composed of three columns, namely "Generation", "Population" and "Identity". The three of them arise from three different vectors, each of which is obtained from the pops.by.time matrix (*onco_simul_obj$pops.by.time*). Generation is referred to the times at which one species diverge into two new emergent genotypes or "Identities". Moreover, the "Population" column reflects the amount of members of a given identity at every single generation time.
+
+All in all, we have defined a new option for the plot of any oncosimul object. In the plot.oncosimul method shown in \@ref({method_plo_oncosimul}), another type of plot is added: **fish**, which allow us to call the plot_muller function explained above, to obtain the new type of plot, as seen with the if/else command: *if(type == "fish")*. 
+
+```{method_plo_oncosimul}
+
+plot.oncosimul <- function(x,
+                           show = "drivers", 
+                           type = ifelse(show == "genotypes",
+                                         "stacked", "line"),
+                           col = "auto",
+                           log = ifelse(type == "line", "y", ""),
+                           ltyClone = 2:6,
+                           lwdClone = 0.9,
+                           ltyDrivers = 1,
+                           lwdDrivers = 3,
+                           xlab = "Time units",
+                           ylab = "Number of cells",
+                           plotClones = TRUE,
+                           plotDrivers = TRUE,
+                           addtot = FALSE,
+                           addtotlwd = 0.5,
+                           ylim = NULL,
+                           xlim = NULL,
+                           thinData = FALSE,
+                           thinData.keep = 0.1,
+                           thinData.min = 2,
+                           plotDiversity = FALSE,
+                           order.method = "as.is",
+                           stream.center = TRUE,
+                           stream.frac.rand = 0.01,
+                           stream.spar = 0.2,
+                           border = NULL,
+                           lwdStackedStream = 1,
+                           srange = c(0.4, 1),
+                           vrange = c(0.8, 1),
+                           breakSortColors = "oe",
+                           legend.ncols = "auto",
+                           fish_wild_type_legend = "wt",
+                           fish_cutoff = 0.0,
+                           ...
+                           ) {
+
+
+    if(!(type %in% c("stacked", "stream", "line", "fish")))
+        stop("Type of plot unknown: it must be one of ",
+             "stacked, stream, line or fish")
+  
+    if(type == "fish") {
+        if(thinData)
+            x <- thin.pop.data(x, keep = thinData.keep, min.keep = thinData.min)
+      
+        if(!is.null(xlim))
+            x <- xlim.pop.data(x, xlim)
+        
+        plot_muller(x,
+                    wild_type_legend = fish_wild_type_legend, 
+                    cutoff = fish_cutoff,
+                    xlab = xlab, 
+                    ylab = ylab,
+                    ...)
+    }
+```
+
 ### McFarland model with 5000 passengers and 70 drivers {#mcf5070}
 
 ```{r, fig.width=6}
