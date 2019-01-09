@@ -1111,8 +1111,8 @@ plot.oncosimul <- function(x,
         plot_muller(x,
                     wild_type_legend = fish_wild_type_legend, 
                     cutoff = fish_cutoff,
-                    xlab = xlab, 
-                    ylab = ylab,
+                    xlab = "Generation", 
+                    ylab = "Genotype frequency",
                     ...)
     } else {
         if(!(show %in% c("genotypes", "drivers")))
