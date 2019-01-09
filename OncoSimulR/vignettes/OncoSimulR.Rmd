@@ -7220,52 +7220,13 @@ in section \@ref(phylog) could be of help).
 
 ### Bauer's example with ggmuller plots {#muller}
 
-Using Bauer's example, we may define another type of plot to represent the evolution of tumor population, using the package **ggmuller**, which can be downloaded from CRAN repository. This type of plot is specified by "fish" option upon calling to plot.oncosimul function. In a similar way to the code in Bauer's example section (\@ref(bauer2)), an oncoSimulIndiv object (b1) is created. Once the ggmuller package is already installed, the function plot_muller must be called on the b1 object, as it is depicted in the code just below. 
+Using Bauer's example, we may define another type of plot to represent the evolution of tumor population, using the package **ggmuller**, which can be downloaded from CRAN repository. This type of plot is specified by "fish" option upon calling to plot.oncosimul function. In a similar way to the code in Bauer's example section (\@ref(bauer2)), an oncoSimulIndiv object (b1) is created. Once the ggmuller package is already installed, the function plot_muller must be called on the b1 object, as it is depicted in the code just above.
 
-```{r_muller_code}
+```{r muller_plot}
 
-library(ggmuller)
+ plot(b1, type="fish", 
+            add_legend = TRUE, fish_wild_type_legend = "WT")
 
-plot_muller <- function(onco_simul_obj, 
-                        wild_type_legend = "wt", 
-                        cutoff = 0.0,
-                        xlab = "Generation", 
-                        ylab = "Genotype frequency",
-                        ...) {
-    
-    # Fill adjacency matrix
-    adjacency_matrix <- data.frame(onco_simul_obj$other$LOD_DF)
-    levels(adjacency_matrix$parent)[1] <- wild_type_legend
-    
-    population_evolution <- as.data.frame(onco_simul_obj$pops.by.time)
-    
-    onco_simul_obj$GenotypesLabels[1] <- wild_type_legend
-    genotypes_labels <- c("Time", onco_simul_obj$GenotypesLabels)
-    colnames(population_evolution) <- genotypes_labels
-    
-    # Fill generation vector
-    Generation <- as.integer(rep(population_evolution[ ,1], 
-                            length(colnames(population_evolution))-1))
-
-    # Fill population vector
-    Population <- c()
-    for(i in 2:length(colnames(population_evolution))) {
-      Population <- c(Population, population_evolution[ ,i])
-    }
-    Population <- as.numeric(Population)
-    
-    # Fill identity vector
-    Identity <- c()
-    for(i in 2:length(colnames(population_evolution))) {
-      Identity <- c(Identity, rep(colnames(population_evolution)[i], 
-                    length(rownames(population_evolution))))
-    }
-    
-    muller_df <- get_Muller_df(adjacency_matrix, 
-                               data.frame(Identity, Population, Generation),
-                               cutoff)
-    Muller_plot(muller_df, xlab = xlab, ylab = ylab, ...)
-}
 
 ``` 
 The main utility of this function is to construct step by step the data frames which serve as inputs for the *get_Muller_df* function, this is, the one which plot the muller graph format. Briefly, the LOD data frame is the adjacency matrix generated from the phylogeny data from the oncosimul object b1, i.e. from *onco_simul_obj\$other\$LOD_DF*. Thus, the phylogenetic relationships between the different genotypes or "Identities" and their respective parents are summarized in this data frame, containing two columns: "Parents" and "Identities", stored in turn in the so-called LOD object (one of the inputs of the muller function.)
