@@ -189,11 +189,11 @@
   }
   \item{xlab}{
     Same as \code{xlab} in \code{\link{plot.default}}.
-    
+    When \code{type = "fish"} it should be changed to "Generation".
   }
   \item{ylab}{
     Same as \code{ylab} in \code{\link{plot.default}}. 
-    When \code{type = "fish"} it should be changed to "Frequency".
+    When \code{type = "fish"} it should be changed to "Genotype frequency"
     
   }
   \item{plotClones}{
@@ -408,12 +408,12 @@ plot(e1, show = "genotypes", col = rainbow(8))
 plot(e1, show = "genotypes", type = "line")
 
 ## A fish plot with the frequency of genotypes over tipe
-plot(e1, type = "fish", add_legend = TRUE, ylab = "Frequency")
+plot(e1, type = "fish", add_legend = TRUE, ylab = "Relative frequency")
 
 ## Another fish plot with a different palette.
 plot(e1, type = "fish", 
       palette = rainbow(length(e1$other$LOD_DF$parent)),
-      add_legend = TRUE, ylab = "Frequency")
+      add_legend = TRUE, ylab = "Relative frequency")
 }
 
 
