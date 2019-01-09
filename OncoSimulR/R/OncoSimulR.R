@@ -1014,9 +1014,6 @@ plot_muller <- function(onco_simul_obj,
                         ...) {
     
   # Testing input:
-    if(!(class(onco_simul_obj) %in% c("oncosimul", "oncosimul2"))){
-      stop("Input must be an oncosimul object")
-    }
     if(class(wild_type_legend) != "character"){
       stop("wild_type_legend must be a character")
     }
@@ -1032,8 +1029,7 @@ plot_muller <- function(onco_simul_obj,
     colnames(population_evolution) <- genotypes_labels
     
     # Fill generation vector
-    Generation <- as.integer(rep(population_evolution[ ,1], 
-                            length(colnames(population_evolution))-1))
+    Generation <- rep(population_evolution[ ,1], length(colnames(population_evolution))-1)
 
     # Fill population vector
     Population <- c()
