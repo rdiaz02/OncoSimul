@@ -1012,7 +1012,19 @@ plot_muller <- function(onco_simul_obj,
                         xlab = "Time", 
                         ylab = "Frequency",
                         ...) {
+    # Testing input:
+    # library("testthat")
+    expect_that(onco_simul_obj, is_a("oncosimul"))
+    expect_that(wild_type_legend, is_a("character"))
     
+    # Alternative:
+    # if(class(onco_simul_obj) != "oncosimul"){
+    #     stop("Input must be an oncosimul object")
+    # }
+    # if(class(wild_type_legend) != "character"){
+    #   stop("wild_type_legend must be a character")
+    # }
+  
     # Fill adjacency matrix
     adjacency_matrix <- data.frame(onco_simul_obj$other$LOD_DF)
     levels(adjacency_matrix$parent)[1] <- wild_type_legend
