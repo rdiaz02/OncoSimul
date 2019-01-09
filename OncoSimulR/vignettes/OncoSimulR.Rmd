@@ -7223,11 +7223,17 @@ in section \@ref(phylog) could be of help).
 Using Bauer's example, we may define another type of plot to represent the evolution of tumor population, using the package **ggmuller**, which can be downloaded from CRAN repository. This type of plot is specified by "fish" option upon calling to plot.oncosimul function. In a similar way to the code in Bauer's example section (\@ref(bauer2)), an oncoSimulIndiv object (b1) is created. Once the ggmuller package is already installed, the function plot_muller must be called on the b1 object, as it is depicted in the code just above.
 
 ```{r muller_plot}
-
- plot(b1, type="fish", 
-            add_legend = TRUE, fish_wild_type_legend = "WT")
-
-
+ plot(b1, type="fish", add_legend = TRUE, fish_wild_type_legend = "WT")
+``` 
+Another example:
+```{r muller_plot_2}
+ plot(b1, thinData = TRUE, thinData.keep = 2.0, xlim = c(50, 200), 
+            colour_by = "Identity",
+            pop_plot = FALSE,
+            fish_cutoff = 0.1,
+            xlab = "Time",
+            type="fish", add_legend = TRUE, 
+            fish_wild_type_legend = "wt")
 ``` 
 The main utility of this function is to construct step by step the data frames which serve as inputs for the *get_Muller_df* function, this is, the one which plot the muller graph format. Briefly, the LOD data frame is the adjacency matrix generated from the phylogeny data from the oncosimul object b1, i.e. from *onco_simul_obj\$other\$LOD_DF*. Thus, the phylogenetic relationships between the different genotypes or "Identities" and their respective parents are summarized in this data frame, containing two columns: "Parents" and "Identities", stored in turn in the so-called LOD object (one of the inputs of the muller function.)
 
@@ -7235,7 +7241,7 @@ The other input is *pop1*, which is a data frame as well, composed of three colu
 
 All in all, we have defined a new option for the plot of any oncosimul object. In the plot.oncosimul function shown below, another type of plot is added: **fish**, which allow us to call the plot_muller function explained above, to obtain the new type of plot, as seen with the if/else command: *if(type == "fish")*. In particular, only the following parameters in the code below are required for the fish plot, whereas the rest of the default parameters specified in the original plot.oncosimul are not needed.
 
-```{method_plo_oncosimul}
+```{r, eval=FALSE}
 
 plot.oncosimul <- function(x,
                            ylab = "Genotype frequency",
@@ -7265,8 +7271,8 @@ plot.oncosimul <- function(x,
         plot_muller(x,
                     wild_type_legend = fish_wild_type_legend, 
                     cutoff = fish_cutoff,
-                    xlab = "Generation", 
-                    ylab = "Genotype frequency",
+                    xlab = xlab, 
+                    ylab = ylab,
                     ...)
     }
 ```
