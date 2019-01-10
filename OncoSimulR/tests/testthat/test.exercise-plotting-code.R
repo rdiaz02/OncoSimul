@@ -355,7 +355,9 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     plot(p1, type = "stacked", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
     plot(p1, type = "stream", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
     plot(p1, type = "line", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
-    plot(p1, type = "fish", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
+    expect_error(plot(p1, type = "fish", show = "genotypes", 
+                      thinData = TRUE, thinData.keep = 0.5),
+                 "Input must be an oncosimul2 object", fixed = TRUE)
 })
 
 
