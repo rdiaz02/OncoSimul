@@ -2097,10 +2097,10 @@ plotMuller <- function(simulation, muller.type) {
 
   Muller_df <- get_Muller_df(edges, pop)
 
-  if(muller.type == "frequency") {
-    Muller_plot(Muller_df, add_legend = TRUE)
-  } else {
+  if(muller.type == "population") {
     Muller_pop_plot(Muller_df, add_legend = TRUE)
+  } else {
+    Muller_plot(Muller_df, add_legend = TRUE)
   }
 }
 
