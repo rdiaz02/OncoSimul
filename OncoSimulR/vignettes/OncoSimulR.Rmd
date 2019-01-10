@@ -13,7 +13,7 @@ author: "
 date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), suppressWarnings(ifelse(length(try(system('git rev-parse --short HEAD', ignore.stderr = TRUE, intern = TRUE))), paste0('. Revision: ', system('git rev-parse --short HEAD', intern = TRUE)), '')))`"
 header-includes:
     - \input{preamble.tex}
-output: 
+output:
   bookdown::html_document2:
     css: custom4.css
     toc: yes
@@ -112,7 +112,7 @@ vignette: >
 <!-- After the fix in BiocStyle 2.3.24 can use this too, which gives the  -->
 <!-- BiocStyle output, but it is not the same as the one for Rnw and -->
 <!-- breaks refs, etc. I do not really like it-->
-<!-- ## PDF as: render("OncoSimulR.Rmd", output_format = BiocStyle::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE)) -->
+render("OncoSimulR.Rmd", output_format = BiocStyle::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))
 
 
 
@@ -7142,7 +7142,9 @@ What types of plots are available?
 
 - stacked plots;
 
-- stream plots.
+- stream plots;
+
+- Muller plots.
 
 All those three are shown in both of Figure \@ref(fig:baux1) and
 Figure \@ref(fig:baux2).
@@ -7174,6 +7176,7 @@ set.seed(1)
 b1 <- oncoSimulIndiv(fbauer, mu = 5e-5, initSize = 1000,
                      finalTime = NA,
                      onlyCancer = TRUE,
+                     keepPhylog = TRUE,
                      detectionProb = "default")
 
 ``` 
@@ -7187,14 +7190,16 @@ par(mfrow = c(3, 1))
 plot(b1, type = "line", addtot = TRUE)
 plot(b1, type = "stacked")
 plot(b1, type = "stream")
+
 ``` 
 
 ```{r baux2,fig.width=6.5, fig.height=10, fig.cap="Three genotypes' plots of a simulation of Bauer's model"}
-par(mfrow = c(3, 1))
+par(mfrow = c(4, 1))
 ## Next, genotypes
 plot(b1, show = "genotypes", type = "line")
 plot(b1, show = "genotypes", type = "stacked")
 plot(b1, show = "genotypes", type = "stream")
+plot(b1, show = "genotypes", type = "muller")
 ``` 
 
 
@@ -7211,12 +7216,13 @@ plot(b1, show = "genotypes", type = "stream")
 
 <!-- % @  -->
 
-In this case, probably the stream plots are most helpful. Note, however,
-that (in contrast to some figures in the literature showing models of
-clonal expansion) the stream plot (or the stacked plot) does not try to
-explicitly show parent-descendant relationships, which would hardly be
-realistically possible in these plots (although the plots of phylogenies
-in section \@ref(phylog) could be of help).
+In this case, the stream plots and Muller plots are the most helpful.
+Note, however, that (in contrast to some figures in the literature
+showing models of clonal expansion) the stream plot (or the stacked 
+plot or Muller plot) does not try to explicitly show parent-descendant 
+relationships, which would hardly be realistically possible in these 
+plots (although the plots of phylogenies in section \@ref(phylog) could 
+be of help).
 
 ### McFarland model with 5000 passengers and 70 drivers {#mcf5070}
 
@@ -7389,14 +7395,15 @@ set.seed(1234)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
                  model = "Bozic")[1:10, ]
 sb <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
-                       model = "Bozic", 
-                       mu = 5e-6,
+                      model = "Bozic", 
+                      mu = 5e-6,
                       detectionProb = "default",
-                       detectionSize = 1e8, 
-                       detectionDrivers = 4,
-                       sampleEvery = 2,
-                       initSize = 2000,
-                       onlyCancer = TRUE)
+                      detectionSize = 1e8, 
+                      detectionDrivers = 4,
+                      sampleEvery = 2,
+                      initSize = 2000,
+                      onlyCancer = TRUE,
+                      keepPhylog = TRUE)
 summary(sb)
 ``` 
 
@@ -7435,11 +7442,16 @@ plot(sb,show = "genotypes", type = "stacked", plotDiversity = TRUE)
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stream", plotDiversity = TRUE)
 ``` 
+```{r sbx7,fig.width=6.5, fig.height=3.3}
+## Genotypes, Muller
+par(cex = 0.75, las = 1)
+plot(sb,show = "genotypes", type = "muller", plotDiversity = TRUE)
+``` 
 
 The above illustrates again that different types of plots can be useful to
 reveal different patterns in the data. For instance, here, because of the
-huge relative frequency of one of the clones/genotypes, the stacked and
-stream plots do not reveal the other clones/genotypes as we cannot use a
+huge relative frequency of one of the clones/genotypes, the stacked,
+stream and Muller plots do not reveal the other clones/genotypes as we cannot use a
 log-transformed y-axis, even if there are other clones/genotypes present.
 
 
@@ -7569,6 +7581,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        initSize = 2000,
                        finalTime = 20000,
                        onlyCancer = FALSE,
+                       keepPhylog = TRUE,
                        extraTime = 1500)
 tmp
 ``` 
@@ -7648,8 +7661,12 @@ point of detection, here specified as three drivers. Instead of specifying
 number larger than the number of existing possible drivers, and the
 simulation will run until `finalTime` if `onlyCancer = FALSE`.)
 
-
-
+```{r tmpmdx8,fig.width=6.5, fig.height=5.3}
+par(las = 1, cex = 0.85)
+plot(tmp, show = "genotypes", type = "muller")
+```
+Using Muller plots it is also easy to appreciate the huge change between 
+the clones 1 and 6; and how percentage ot the clone 7 grows later.
 
 
 <!-- \clearpage -->
@@ -9257,6 +9274,7 @@ plot(p1, type = "stream", ask = FALSE)
 par(mfrow = c(2, 2))
 plot(p1, type = "stacked", ask = FALSE)
 ```
+
 
 
 ## Sampling from a set of simulated subjects {#sample-1}
