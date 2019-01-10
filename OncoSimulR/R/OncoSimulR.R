@@ -1014,6 +1014,10 @@ plot_muller <- function(onco_simul_obj,
                         ...) {
     
   # Testing input:
+    if(!(class(onco_simul_obj) %in% c("oncosimul2"))){
+      stop("Input must be an oncosimul2 object")
+    }
+  
     if(class(wild_type_legend) != "character"){
       stop("wild_type_legend must be a character")
     }
