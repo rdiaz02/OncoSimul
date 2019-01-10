@@ -1013,8 +1013,8 @@ plot_muller <- function(onco_simul_obj,
                         ylab = "Frequency",
                         ...) {
     
-  # Testing input:
-    if(!(class(onco_simul_obj) %in% c("oncosimul2"))){
+    # Testing input:
+    if(!("oncosimul2" %in% class(onco_simul_obj))) {
       stop("Input must be an oncosimul2 object")
     }
   
