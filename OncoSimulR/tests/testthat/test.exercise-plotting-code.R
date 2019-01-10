@@ -211,10 +211,6 @@ test_that("stacked, stream, fish, genotypes and some colors", {
          fish_cutoff = 0.1,
          xlab = "Time", ylab = "Frequency", 
          add_legend = TRUE, fish_wild_type_legend = "WildType")
-    
-    plot(tmp, type = "fish", 
-         palette = rainbow(length(tmp$other$LOD_DF$parent)),
-         add_legend = TRUE, ylab = "Frequency")
 })
 
 
