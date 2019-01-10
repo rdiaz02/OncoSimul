@@ -411,8 +411,9 @@ plot(e1, show = "genotypes", type = "line")
 plot(e1, type = "fish", add_legend = TRUE, ylab = "Relative frequency")
 
 ## Another fish plot with a different palette.
+## It's necessary to sum one for take into account the wild type genotype
 plot(e1, type = "fish", 
-      palette = rainbow(length(e1$other$LOD_DF$parent)),
+      palette = rainbow(length(e1$other$LOD_DF$child) + 1),
       add_legend = TRUE, ylab = "Relative frequency")
 }
 
