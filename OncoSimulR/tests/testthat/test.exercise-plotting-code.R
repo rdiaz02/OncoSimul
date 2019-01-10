@@ -199,7 +199,6 @@ test_that("stacked, stream, fish, genotypes and some colors", {
     
     plot(tmp, type = "fish", add_legend = TRUE, ylab = "Frequency")
     plot(tmp, type = "fish", thinData = TRUE, thinData.keep = 2.0, 
-         xlim = c(1000, 2000), 
          colour_by = "Identity",
          pop_plot = FALSE,
          fish_cutoff = 0.1,
@@ -207,7 +206,6 @@ test_that("stacked, stream, fish, genotypes and some colors", {
          fish_wild_type_legend = "wt")
     
     plot(tmp, type = "fish", thinData = TRUE, thinData.keep = 2.0, 
-         xlim = c(1000, 2000), 
          colour_by = "Identity",
          pop_plot = FALSE,
          fish_cutoff = 0.1,
