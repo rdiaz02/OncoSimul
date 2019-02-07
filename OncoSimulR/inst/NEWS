@@ -1,3 +1,6 @@
+Changes in version 2.13.1 (2019-02-07):
+	- bumped to one over the BioC-3.9 version
+
 Changes in version 2.11.2 (2018-09-24):
 	- works with STRICT_R_HEADERS
 	
