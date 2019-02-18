@@ -336,9 +336,8 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or
   Academy of Sciences of the United States of America\/}, \bold{110}(8),
   2910--5.
 
-    Partow, A. ExprTk: C++ Mathematical Expression Library(MIT Open
-    Souce License).
-  \url{<http://www.partow.net/programming/exprtk/>}.
+    Partow, A. ExprTk: C++ Mathematical Expression Library (MIT Open
+    Souce License). \url{http://www.partow.net/programming/exprtk/}.
 
 
 }
