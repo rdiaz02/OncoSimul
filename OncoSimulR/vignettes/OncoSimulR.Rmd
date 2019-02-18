@@ -35,85 +35,6 @@ vignette: >
   %\VignetteDepends{OncoSimulR}
 ---
 
-<!-- html_book seems to ignore the toc_float -->
-
-  <!-- bookdown::gitbook: -->
-  <!--   self_contained: false -->
-  <!--   split_by: rmd -->
-  <!--   css: custom4.css -->
-  <!--   github-repo: "rdiaz02/OncoSimul" -->
-  <!--   config: -->
-  <!--     toc: -->
-  <!--       collapse: subsection -->
-  <!--     download: null -->
-  <!--     sharing: null -->
-
-
-<!-- A great one? Well... Slow, and no subsubsection and strange scrolling-->
-<!-- render("OncoSimulR.Rmd", bookdown::gitbook(self_contained = FALSE, split_by = "none")) -->
-<!-- Slow rendering, and the clicking on TOC to get expanded entries does -->
-<!-- not work. -->
-<!-- And it creates a libs dir that takes 5 MB. -->
-<!-- What I like is the possibility to hide the TOC, change rendering -->
-<!-- (color, font size and type) and download.  -->
-
-<!-- This did not work well either.  -->
-  <!-- bookdown::gitbook: -->
-  <!--   toc-depth: 4  -->
-  <!--   self_contained: false -->
-  <!--   split_by: none -->
-  <!--   css: custom4.css -->
-  <!--   github-repo: "rdiaz02/OncoSimul" -->
-  <!--   config: -->
-  <!--     toc: -->
-  <!--       collapse: section -->
-  <!--       scroll_highlight: true -->
-  <!--       after: null -->
-  <!--       before: null -->
-  <!--       toc-depth: 4		 -->
-  <!--     toolbar: -->
-  <!--       position: fixed -->
-  <!--     edit: -->
-  <!--       link: null -->
-  <!--       text: null -->
-  <!--     download: null -->
-  <!--     search: no -->
-  <!--     fontsettings: -->
-  <!--       theme: white -->
-  <!--       family: sans -->
-  <!--       size: 2 -->
-  <!--     sharing: null -->
-
-<!-- download, only on my web site -->
-<!-- EPUB and MOBI and PDF -->
-<!-- url: "https\://" -->
-
-<!-- output:  -->
-<!--   bookdown::html_document2:  -->
-<!--     toc: yes -->
-<!--     toc_float: true -->
-<!--     css: custom4.css -->
-
-
-<!-- ##    <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz> -->
-<!-- ## date: "`r Sys.Date()`" -->
-
-<!-- ## Bioc html_document no refs -->
-<!-- ## Bioc html_document2 too wide margins and really ugly -->
-<!-- ## Simplest is to use bookdown and add BioC CSS -->
-<!-- ## Rmdformats is really neat, but no support for \@ref -->
-<!-- ## PDF as: 
-
-<!-- render("OncoSimulR.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE)  -->
-
-<!-- -->
-
-
-<!-- After the fix in BiocStyle 2.3.24 can use this too, which gives the  -->
-<!-- BiocStyle output, but it is not the same as the one for Rnw and -->
-<!-- breaks refs, etc. I do not really like it-->
-<!-- ## PDF as: render("OncoSimulR.Rmd", output_format = BiocStyle::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE)) -->
-
 
 
 
@@ -134,18 +55,6 @@ options(width = 70)
 require(BiocStyle)
 require(pander)
 ```
-
-<!-- bookdown::pdf_document2 seems to produce the tex even if failures -->
-
-
-<!-- This did not work -->
-<!--     bookdown::pdf_document2: -->
-<!--       template: template2.tex	 -->
-<!--       keep_tex: true -->
-<!--       toc: true -->
-
-<!-- I convert Rfunction to italics on typewriter -->
-<!-- sed -i 's/\\Rfunction{\([^}]\+\)}/*`\1`*/g' p22.md -->
 
 
 \clearpage
@@ -777,42 +686,6 @@ exception if you accidentally specify a huge mutation rate when all
 mutator genes are mutated: see section \@ref(tomlinexcept).)
 
 
-<!-- More complex example where we look at accumulation of deleterious -->
-
-<!-- ```{r r ex-tomlin3} -->
-<!-- set.seed(2) ## for reproducibility -->
-<!-- RNGkind("L'Ecuyer-CMRG") -->
-
-<!-- sd <- 0.1 ## fitness effect of drivers -->
-<!-- sp <- -0.01 ## fitness effect of mildly deleterious passengers -->
-<!-- sm <- 0 ## fitness effect of mutator -->
-<!-- nd <- 20 ## number of drivers -->
-<!-- nm <- 5  ## number of mutators -->
-<!-- np <- 50 -->
-<!-- mut <- 5 ## mutator effect -->
-
-<!-- fitnessGenesVector <- c(rep(sd, nd), rep(sm, nm), rep(sp, np)) -->
-<!-- names(fitnessGenesVector) <- 1:(nd + nm + np) -->
-<!-- mutatorGenesVector <- rep(mut, nm) -->
-<!-- names(mutatorGenesVector) <- (nd + np + 1):(nd + np + nm) -->
-
-<!-- ft <- allFitnessEffects(noIntGenes = fitnessGenesVector, -->
-<!--                         drvNames = 1:nd) -->
-<!-- mt <- allMutatorEffects(noIntGenes = mutatorGenesVector) -->
-
-<!-- ddr <- 4 -->
-<!-- st <- oncoSimulPop(4, ft, muEF = mt, -->
-<!--                    detectionDrivers = ddr, -->
-<!--                    finalTime = NA, -->
-<!--                    detectionSize = NA, -->
-<!--                    detectionProb = NA, -->
-<!--                    onlyCancer = FALSE, -->
-<!--                    keepEvery = NA,  -->
-<!--                    mc.cores = 2, ## adapt to your hardware -->
-<!--                    seed = NULL) ## for reproducibility -->
-<!-- colSums(samplePop(st, timeSample = "last", typeSample = "single"), na.rm = TRUE) -->
-<!-- ``` -->
-
 
 
 
@@ -1151,49 +1024,6 @@ ep1 <- oncoSimulIndiv(sv2, model = "McFL",
 
 
 
-<!-- % set.seed(9) -->
-<!-- % ep1 <- oncoSimulIndiv(sv2, model = "McFL", -->
-<!-- %                      mu = 5e-6, -->
-<!-- %                      sampleEvery = 0.02, -->
-<!-- %                      keepEvery = 0.5, -->
-<!-- %                      initSize = 2000, -->
-<!-- %                      finalTime = 3000, -->
-<!-- %                      onlyCancer = FALSE) -->
-
-<!-- %% <<fig.width=6.5, fig.height=10>>= -->
-<!-- %%  ## 1. Fitness effects: here we specify a  -->
-<!-- %%  ##    epistatic model with modules. -->
-<!-- %%  sa <- 0.1 -->
-<!-- %%  sb <- -0.2 -->
-<!-- %%  sab <- 0.25 -->
-<!-- %%  sac <- -0.1 -->
-<!-- %%  sbc <- 0.25 -->
-<!-- %%  sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb, -->
-<!-- %%                                         "A : -B" = sa, -->
-<!-- %%                                         "A : C" = sac, -->
-<!-- %%                                         "A:B" = sab, -->
-<!-- %%                                         "-A:B:C" = sbc), -->
-<!-- %%                           geneToModule = c( -->
-<!-- %%                               "Root" = "Root", -->
-<!-- %%                               "A" = "a1, a2", -->
-<!-- %%                               "B" = "b", -->
-<!-- %%                               "C" = "c")) -->
-<!-- %%  evalAllGenotypes(sv2, order = FALSE, addwt = TRUE) -->
-
-<!-- %%  ## 2. Simulate the data. Here we use the "McFL" model and set explicitly -->
-<!-- %%  ##    parameters for mutation rate, final and initial sizes, etc. -->
-<!-- %%  RNGkind("Mersenne-Twister") -->
-<!-- %%  set.seed(983) -->
-<!-- %%  ep1 <- oncoSimulIndiv(sv2, model = "McFL", -->
-<!-- %%                       mu = 5e-6, -->
-<!-- %%                       sampleEvery = 0.02, -->
-<!-- %%                       keepEvery = 0.5, -->
-<!-- %%                       initSize = 2000, -->
-<!-- %%                       finalTime = 3000, -->
-<!-- %%                       onlyCancer = FALSE) -->
-<!-- %% @  -->
-
-
 ```{r iep1x1,fig.width=6.5, fig.height=4.5, fig.cap="Plot of drivers of an epistasis simulation."}
 ## 3. We will not analyze those data any further. We will only plot
 ## them.  For the sake of a small plot, we thin the data.
@@ -1201,12 +1031,6 @@ plot(ep1, show = "drivers", xlim = c(0, 1500),
      thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
-<!-- ## Increase ylim and legend.ncols to avoid overlap of  -->
-<!-- ## legend with rest of figure -->
-<!-- plot(ep1, show = "genotypes", ylim = c(0, 4500),  -->
-<!--      legend.ncols = 4, -->
-<!--      xlim = c(0, 1500), -->
-<!--      thinData = TRUE, thinData.keep = 0.5) -->
 
 
 
@@ -1251,15 +1075,7 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      onlyCancer = FALSE)
 ``` 
 
-<!-- % set.seed(6) ## Fix the seed, so we can repeat it -->
-<!-- % ep2 <- oncoSimulIndiv(pancr, model = "McFL", -->
-<!-- %                      mu = 1e-6, -->
-<!-- %                      sampleEvery = 0.02, -->
-<!-- %                      keepEvery = 1, -->
-<!-- %                      initSize = 2000, -->
-<!-- %                      finalTime = 10000, -->
-<!-- %                      onlyCancer = FALSE)
--->
+
 ```{r iep2x2, fig.width=6.5, fig.height=5, fig.cap= "Plot of genotypes of a simulation from a DAG."}
 ## 3. What genotypes and drivers we get? And play with limits
 ##    to show only parts of the data. We also aggressively thin
@@ -1289,11 +1105,6 @@ This is the URL for the Bioinformatics paper: [https://doi.org/10.1093/bioinform
 at [bioRxiv](http://biorxiv.org/content/early/2016/08/14/069500),
 but it should now point to the Bioinformatics paper). 
 
-<!-- This no longer helps that much with the many changes -->
-<!-- You -->
-<!-- can also take a look at this -->
-<!-- poster, [http://dx.doi.org/10.7490/f1000research.1112860.1](http://dx.doi.org/10.7490/f1000research.1112860.1), -->
-<!-- presented at ECCB 2016. -->
 
 
 ### HTML and PDF versions of the vignette {#pdfvignette}
@@ -3204,9 +3015,8 @@ simulation. This is much smaller than the `pops.by.time` or
 launch, say, 1000 simulations via `oncoSimulPop`. That is why the
 default is `keepPhylog = FALSE` as this information is not needed as
 often as that in the other two matrices (`pops.by.time` and
-`Genotypes`). <!-- However, if you plan to measure evolutionary predictability -->
-<!-- using Lines of Descent, or LOD (section \@ref(evolpredszend)) you should -->
-<!-- run simulations with `keepPhylog = TRUE`. -->
+`Genotypes`). 
+
 
 
 
@@ -3592,9 +3402,7 @@ That's it. You can try to plot that fitnessEffects object
 try(plot(fem4))
 ``` 
 
-In this case, you probably want to plot the fitness landscape. <!--  that plot is not very interesting (compare with the -->
-<!-- `plot(pancr)` we saw in \@ref(quickexample) or the plots in -->
-<!-- \@ref(posetslong)). --> 
+In this case, you probably want to plot the fitness landscape. 
 
 
 ```{r, fig.width=6.5, fig.height = 6.5}
@@ -3677,7 +3485,8 @@ r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
                              "200*(f_1 + f_2) + 50*f_1_2"))
 
 afe <- allFitnessEffects(genotFitness = r, 
-                         frequencyDependentFitness = TRUE, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
                          spPopSizes = c(2500, 2000, 5500, 700))
 
 plotFitnessLandscape(evalAllGenotypes(afe))
@@ -3685,57 +3494,12 @@ plotFitnessLandscape(evalAllGenotypes(afe))
 
 
 
-<!-- How to simulate Big Bang: start from some initMutant, say S, so that -->
-<!-- S A B C ...  Fitness -->
-<!-- 1 0 0 0 0    >1 -->
-
-<!-- and add that column of S with 1 to all genotypes from fitness -->
-
-<!-- * What happens with mutator?   -->
-<!--   - the fl specification? now tested-->
-<!--   - do we have modules? nope in fitness yes in mutator -->
-
-
-<!-- Bozic and fitness landscape specification -->
-<!-- if(nrow(rFE$fitnessLandscape_df) > 0) -->
-<!--             warning("Bozic model passing a fitness landscape will not work", -->
-<!--                     " for now.") -->
-<!--         ## FIXME: bozic and fitness landscape -->
-<!--         ## the issue is that in the C++ code we directly do -->
-<!--         ## s = birth rate - 1 -->
-<!--         ## but we would need something different -->
-<!--         ## Can be done going through epistasis, etc -->
-
-<!-- We will see an example of this way of passing fitness again in -->
-<!-- \@ref(bauer), where we will compare it with the lego system. -->
-
-
-<!-- % Please see the documentation of `allFitnessEffects` for further -->
-<!-- % details and examples. -->
-
-
-<!-- % This can be done with OncoSimulR (e.g., see sections \@ref(e2), \@ref(e3) -->
-<!-- % and \@ref(theminus) or the example in \@ref(weis1b)), but this only makes -->
-<!-- % sense for subsets of the genes or for very small genotypes, as you -->
-<!-- % probably do not want to be explicit about the mapping of $2^k$ genotypes -->
-<!-- % to fitness when $k$ is larger than, say, four or five, and definitely not -->
-<!-- % when $k$ is 10. -->
-
-
-<!-- Not for self: actually, what I really do is mapping -->
-<!-- the genotypes to epistasis effects. -->
-
-<!-- So we either use a succint description, or we map all -->
-<!-- to epistasis. -->
 
 
 
 
 ### How to specify fitness effects with the lego system {#howfit}
 
-<!-- % A guiding design principle of OncoSimulR is to try to make the -->
-<!-- % specification of those effects as simple as possible but also as flexible -->
-<!-- % as possible.  -->
 
 
 An alternative general approach followed in many genetic simulators is to
@@ -3770,13 +3534,6 @@ different ways.
 Most of the rest of this section is devoted to explaining how to combine
 those pieces. Before that, however, we need to discuss the fitness model
 we use.
-
-<!-- % As we will see in the examples (e.g., see sections \@ref(e2), \@ref(e3), -->
-<!-- % \@ref(exlong)) OncoSimulR makes it simple to be explicit about the mapping -->
-<!-- % of specific genotypes, while also using the ``how this specific effects -->
-<!-- % modifies previous effects" logic, leading to a flexible -->
-<!-- % specification. This also means that in many cases the same fitness -->
-<!-- % effects can be specified in several different ways. -->
 
 
 ## Numeric values of fitness effects {#numfit}
@@ -4181,17 +3938,6 @@ cbn2 <- allFitnessEffects(c1)
 
 ``` 
 
-<!-- %% We can get a graphical representation using the default "graphNEL" -->
-<!-- %% <<fig.height=3>>= -->
-<!-- %% plot(cbn2) -->
-<!-- %% @  -->
-
-<!-- %% or one using "igraph": -->
-<!-- %% <<fig.height=5>>= -->
-<!-- %%plot(cbn2, "igraph", layout = layout.reingold.tilford) -->
-<!-- %% @  -->
-
-<!-- %% (since this is a tree, the reingold.tilford layout is probably the best here). -->
 
 We could get graphical representations but the figures would
 be the same as in the example in section \@ref(cbn1), since the structure
@@ -4339,9 +4085,6 @@ considering the presence of "c", you can specify that using general
 epistatic effects (section
 \@ref(epi)).
 
-<!-- %% ; XOR relationships of these kind are, actually, -->
-<!-- %% examples of synthetic lethality, which are shown in section \@ref(sl). -->
-
 
 We also see a very different pattern compared to CBN (section \@ref(cbn2))
 here:
@@ -4481,46 +4224,6 @@ This captures the ideas directly. The typing savings here are small, but
 they can be large with modules with many genes.
 
 
-<!-- %% %% \begin{tabular} {c c c} -->
-<!-- %% %%   A & B & Fitness \\ -->
-<!-- %% %%   \hline -->
-<!-- %% %%   wt&wt& 1 \\ -->
-<!-- %% %%   wt&M& sb \\ -->
-<!-- %% %%   M&wt& sa\\ -->
-<!-- %% %%   M&M& sab)\\ -->
-<!-- %% %%   \hline -->
-<!-- %% %% \end{tabular} -->
-
-<!-- %% with A being 1, 2, and B 3, 4. -->
-
-<!-- %% and having in a tree A depends on Root and B depends on A -->
-
-
-
-<!-- %% \begin{tabular} {c c c} -->
-<!-- %%   model & Fitness satisfied & fitness not satisf\\ -->
-<!-- %%   \hline -->
-<!-- %%   0 , 1 & s \\ -->
-<!-- %%   0 , 2 & s \\ -->
-
-<!-- %%   1 , 3 & s3 & sm \\ -->
-<!-- %%   2 , 3 & s3 & sm \\ -->
-
-<!-- %%   1 , 4 & s3 & sm \\ -->
-<!-- %%   2 , 4 & s3 & sm \\ -->
-  
-<!-- %%   1 : 2 & s12 \\ -->
-<!-- %%   3:  4 & s34 \\ -->
-  
-
-<!-- %%   \hline -->
-<!-- %% \end{tabular} -->
-
-<!-- %% just give the specification, the full one. -->
-
-
-<!-- %% and write equivalendes of s12 as a function of Sa, S34 as a function of -->
-<!-- %% Sb, etc. -->
 
 ### Specifying modules {#modules}
 
@@ -4691,21 +4394,6 @@ o3 <- allFitnessEffects(orderEffects = c(
 (ag <- evalAllGenotypes(o3, addwt = TRUE, order = TRUE))
 ``` 
 
-
-<!-- %% <<>>= -->
-<!-- %% o3 <- allFitnessEffects(orderEffects = c( -->
-<!-- %%                             "F > D > M" = -0.3, -->
-<!-- %%                             "D > F > M" = 0.4, -->
-<!-- %%                             "D > M > F" = 0.2, -->
-<!-- %%                             "D > M"     = 0.1, -->
-<!-- %%                             "M > D"     = 0.5), -->
-<!-- %%                         geneToModule = -->
-<!-- %%                             c("Root" = "Root", -->
-<!-- %%                               "M" = "m", -->
-<!-- %%                               "F" = "f", -->
-<!-- %%                               "D" = "d") ) -->
-<!-- %% (ag <- evalAllGenotypes(o3, addwt = TRUE)) -->
-<!-- %% @  -->
 
 (The meaning of the notation in the output table is as follows: "WT"
 denotes the wild-type, or non-mutated clone. The notation $x > y$ means
@@ -5289,12 +4977,6 @@ And if we look at order, of course it makes no difference:
 evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
 ``` 
 
-<!-- %% And it looks like: -->
-<!-- %% <<>>= -->
-<!-- %% plot(sv2) -->
-<!-- %% @  -->
-<!-- %% a fairly simple plot. -->
-
 
 ## Synthetic mortality or synthetic lethality {#sl}
 
@@ -5359,6 +5041,7 @@ svB <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
                                       "A:B" = s))
 evalAllGenotypes(svB, order = FALSE, addwt = TRUE, model = "Bozic")
 ```
+
 
 
 Likewise, values of $s$ larger than one have no effect beyond setting $s =
@@ -5864,7 +5547,7 @@ wb <- allFitnessEffects(
         "A:B:C" = s3))
 ``` 
 
-<!-- \clearpage -->
+
 
 ```{r, fig.width=6.5, fig.height=5}
 plotFitnessLandscape(wb, use_ggrepel = TRUE) 
@@ -5872,7 +5555,7 @@ plotFitnessLandscape(wb, use_ggrepel = TRUE)
 
 We have set `use_ggrepel = TRUE` to avoid overlap of labels.
 
-<!-- \clearpage -->
+
 
 \clearpage
 
@@ -5906,7 +5589,7 @@ plot(evalAllGenotypes(pancr, order = FALSE), use_ggrepel = TRUE)
 ``` 
 
 
-<!-- \clearpage -->
+
 
 \clearpage
 
@@ -6026,67 +5709,16 @@ evalAllGenotypes(bauer2, order = FALSE, addwt = TRUE)
 
 
 
-<!-- % If the primary driver is -->
-<!-- % mutated, then the expression is $\frac{1+S_D^+}{1+S_D^-} (1 + S_{DP})^k$. -->
-<!-- % They set apoptosis as $1 - proliferation$.  So, ignoring constants such as -->
-<!-- % $1/2$, and setting $ P = \frac{1+S_D^+}{1+S_D^-}$ we can prepare a table -->
-<!-- % as (for a largest $k$ of 5 in this example, but can make it arbitrarily -->
-<!-- % large): -->
-
-<!-- % <<>>= -->
-
-<!-- % K <- 5 -->
-<!-- % sd <- 0.1 -->
-<!-- % sdp <- 0.15 -->
-<!-- % sp <- 0.05 -->
-<!-- % bauer <- data.frame(parent = c("Root", rep("p", K)), -->
-<!-- %                     child = c("p", paste0("s", 1:K)), -->
-<!-- %                     s = c(sd, rep(sdp, K)), -->
-<!-- %                     sh = c(0, rep(sp, K)), -->
-<!-- %                     typeDep = "MN") -->
-<!-- % fbauer <- allFitnessEffects(bauer) -->
-
-
-<!-- % @  -->
-
-
-
-
-<!-- % <<>>= -->
-<!-- % (b1 <- evalAllGenotypes(fbauer, order = FALSE))[1:10, ] -->
-<!-- % @  -->
-
-<!-- % Order makes no difference -->
-
-<!-- % <<>>= -->
-<!-- % (b2 <- evalAllGenotypes(fbauer, order = TRUE, max = 2000))[1:15, ] -->
-<!-- % @  -->
-
-<!-- % And the number of levels is the right one: 11 -->
-<!-- % <<>>= -->
-<!-- % length(table(b1$Fitness)) -->
-<!-- % length(table(b2$Fitness)) -->
-<!-- % @  -->
-
-
-<!-- %% ### Bauer et al.\ specified only via epistatic interactions} -->
-<!-- %% Yes, do it: as -p,s1, and -p,s2, etc. But much more of a mess. -->
-
-<!-- %% ### Adding modules to Bauer et al.} -->
-
 Can we use modules in this example, if we use the "lego system"? Sure,
 as in any other case.
 
-<!-- \clearpage -->
+
 
 ## Misra et al., 2014 {#misra}
 
 Figure 1 of @Misra2014 presents three scenarios which
 are different types of epistasis. 
 
-<!-- %% (I show the fitness scenarios without -->
-<!-- %% axis, to replicate as close as possible what they show in their -->
-<!-- paper) -->
 
 
 ### Example 1.a {#misra1a}
@@ -6243,7 +5875,7 @@ We could also use a tree and modify the "sab" for the epistasis, as
 before (\@ref(misra1a)).
 
 
-<!-- \clearpage -->
+
 ## Ochs and Desai, 2015 {#ochsdesai}
 
 In @Ochs2015 the authors present a model shown graphically as (the
@@ -6513,7 +6145,7 @@ We have used the (experimental) `autofit` option to fit the labels to the
 edges. Note how we can use the same name for genes and modules, but we
 need to specify all the modules. 
 
-<!-- \clearpage -->
+
 Their Figure 5b is
 
 ```{r, fig.height=6}
@@ -6533,11 +6165,6 @@ rv2 <- allFitnessEffects(
 plot(rv2, expandModules = TRUE,   autofit = TRUE)
 ``` 
 
-<!-- %%very poor rendering in the PDF, in separate page, et c. -->
-<!-- %% plot(rv2, "igraph", expandModules = TRUE,  -->
-<!-- %%       layout = layout.reingold.tilford, -->
-<!-- %%       autofit = TRUE, -->
-<!-- %%       scale_char = 8) -->
 
 \clearpage
 
@@ -6571,22 +6198,6 @@ relationships ---discussed in section \@ref(phylog)--- of the clones so that
 you can see which clones appear, and from which, and check that we are not
 making mistakes).
 
-<!-- %% o3init <- allFitnessEffects(orderEffects = c( -->
-<!-- %%                             "M > D > F" = 0.99, -->
-<!-- %%                             "D > M > F" = 0.2, -->
-<!-- %%                             "D > M"     = 0.1, -->
-<!-- %%                             "M > D"     = 0.9), -->
-<!-- %%                         noIntGenes = c("u" = 0.01,  -->
-<!-- %%                                        "v" = 0.01, -->
-<!-- %%                                        "w" = 0.001, -->
-<!-- %%                                        "x" = 0.0001, -->
-<!-- %%                                        "y" = -0.0001, -->
-<!-- %%                                        "z" = -0.001), -->
-<!-- %%                         geneToModule = -->
-<!-- %%                             c("Root" = "Root", -->
-<!-- %%                               "M" = "m", -->
-<!-- %%                               "F" = "f", -->
-<!-- %%                               "D" = "d") ) -->
 
 ```{r prbau003, fig.height=6}
 
@@ -6750,10 +6361,6 @@ with the total population size. This is biologically a reasonable
 assumption: the larger the tumor, the more likely it is it will be
 detected.
 
-<!-- % The third mechanism for stopping the simulation assumes that the -->
-<!-- % probability of tumor detection increases with the total population -->
-<!-- % size. This is biologically a reasonable assumption: the larger the tumor, -->
-<!-- % the more likely it is it will be detected.  -->
 
 At regularly spaced times during the simulation, we compute the
 probability of detection as a function of size and determine (by comparing
@@ -6761,15 +6368,6 @@ against a random uniform number) if the simulation should finish. For
 simplicity, and to make sure the probability is bounded between 0 and 1,
 we use the function
 
-
- <!-- \begin{equation} -->
- <!--   P(N) =  -->
- <!--   \begin{cases} -->
- <!--   1 - e^{ -cPDetect (N - PDBaseline)} & \text{if } N > PDBaseline \\ -->
- <!--   0 & \text{if } N \leq PDBaseline -->
- <!--   \end{cases} -->
- <!--   \label{eq:2} -->
- <!-- \end{equation} -->
 
 
 
@@ -7246,19 +6844,6 @@ plot(b1, show = "genotypes", type = "stream")
 ``` 
 
 
-<!-- % %% For poster -->
-<!-- % <<>>= -->
-
-<!-- % pdf(file = "b1-traj.pdf", width = 8, height = 8) -->
-<!-- % par(cex = 1.55) -->
-<!-- % par(cex.axis= 0.9) -->
-<!-- % par(las = 1) -->
-<!-- % plot(b1, show = "genotypes", type = "stacked",  -->
-<!-- %      plotDiversity = TRUE, legend.ncols = 3) -->
-<!-- % dev.off() -->
-
-<!-- % @  -->
-
 In this case, probably the stream plots are most helpful. Note, however,
 that (in contrast to some figures in the literature showing models of
 clonal expansion) the stream plot (or the stacked plot) does not try to
@@ -7449,7 +7034,7 @@ summary(sb)
 ``` 
 
 As usual, we will use several plots here.
-<!-- \clearpage -->
+
 
 ```{r sbx1,fig.width=6.5, fig.height=3.3}
 ## Show drivers, line plot
@@ -7467,7 +7052,7 @@ plot(sb,show = "drivers", type = "stacked", plotDiversity = TRUE)
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stream", plotDiversity = TRUE)
 ``` 
-<!-- \clearpage -->
+
 ```{r sbx4,fig.width=6.5, fig.height=3.3}
 ## Genotypes, line plot
 par(cex = 0.75, las = 1)
@@ -7495,39 +7080,6 @@ log-transformed y-axis, even if there are other clones/genotypes present.
 
 ### Simulation with order effects and McFL model {#clonalint}
 
-<!-- %% Interesting to show effects of order: o3 -->
-
-<!-- %% Increase mutation rate, so does not take forever -->
-<!-- %% <<>>= -->
-
-<!-- %% tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]], -->
-<!-- %%                        model = "McFL",  -->
-<!-- %%                        mu = 5e-5, -->
-<!-- %%                        detectionSize = 1e8,  -->
-<!-- %%                        detectionDrivers = 3, -->
-<!-- %%                        sampleEvery = 0.025, -->
-<!-- %%                        max.num.tries = 10, -->
-<!-- %%                        keepEvery = -9, -->
-<!-- %%                        initSize = 2000, -->
-<!-- %%                        finalTime = 8000, -->
-<!-- %%                        onlyCancer = TRUE);  -->
-
-<!-- %% tmp -->
-
-<!-- %% tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]], -->
-<!-- %%                        model = "Bozic",  -->
-<!-- %%                        mu = 5e-5, -->
-<!-- %%                        detectionSize = 1e6,  -->
-<!-- %%                        detectionDrivers = 4, -->
-<!-- %%                        sampleEvery = 2, -->
-<!-- %%                        max.num.tries = 100, -->
-<!-- %%                        keepEvery = -9, -->
-<!-- %%                        initSize = 2000, -->
-<!-- %%                        onlyCancer = TRUE) -->
-<!-- %% tmp -->
-
-<!-- %% @  -->
-
 (We use a somewhat large mutation rate than usual, so that the simulation
 runs quickly.)
 
@@ -7550,7 +7102,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
 
 We show a stacked and a line plot of the drivers:
 
-<!-- \clearpage -->
+
 
 ```{r tmpmx1,fig.width=6.5, fig.height=4.1}
 par(las = 1, cex = 0.85)
@@ -7598,11 +7150,6 @@ really grow to a large population size, so we basically go from a
 population with clones with zero drivers to a population made of clones
 with two or three drivers:
 
-<!-- %%<<fig.width=6} -->
-
-
-<!-- Setting sampleEvery to 0.015, we get really nice figures too, smooth -->
-<!-- and nice colors between 500 and 1500 time units. -->
 
 ```{r}
 set.seed(15)
@@ -7621,7 +7168,7 @@ tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
 tmp
 ``` 
 
-<!-- \clearpage -->
+
 
 use a drivers plot:
 ```{r tmpmdx5,fig.width=6.5, fig.height=4}
@@ -7636,7 +7183,7 @@ plot(tmp, type = "stacked", plotDiversity = TRUE,
      thinData = TRUE, thinData.keep = 0.5)
 ``` 
 
-<!-- \clearpage -->
+
 
 Now show the genotypes explicitly:
 ```{r tmpmdx7,fig.width=6.5, fig.height=5.3}
@@ -7663,33 +7210,6 @@ modeling here a scenario with very few genes, and correspondingly very few
 possible genotypes, and thus it is not strange that we observe very little
 diversity.
 
-<!-- %% These patterns, however, are not always present -->
-
-<!-- %% <<fig.width=6>>= -->
-
-<!-- %% set.seed(7654)  -->
-<!-- %% tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]], -->
-<!-- %%                        model = "McFL",  -->
-<!-- %%                        mu = 5e-5, -->
-<!-- %%                        detectionSize = 1e8,  -->
-<!-- %%                        detectionDrivers = 3, -->
-<!-- %%                        sampleEvery = 0.015, -->
-<!-- %%                        max.num.tries = 10, -->
-<!-- %%                        keepEvery = 5, -->
-<!-- %%                        initSize = 2000, -->
-<!-- %%                        finalTime = 10000, -->
-<!-- %%                        onlyCancer = FALSE, -->
-<!-- %%                        extraTime = 10) -->
-<!-- %% tmp -->
-<!-- %% plot(tmp, addtot = TRUE, log = "") -->
-
-<!-- %% @  -->
-
-
-<!-- %% Although in other runs we do not reach the three gene mutant and continue -->
-<!-- %% with clone competition for a long time: -->
-
-
 (We have used `extraTime` to continue the simulation well past the
 point of detection, here specified as three drivers. Instead of specifying
 `extraTime` we can set the `detectionDrivers` value to a
@@ -7700,7 +7220,7 @@ simulation will run until `finalTime` if `onlyCancer = FALSE`.)
 
 
 
-<!-- \clearpage -->
+
 
 
 
@@ -7745,6 +7265,7 @@ streamgraph(lb1, Genotype, Y, Time, scale = "continuous",
 ``` 
 
 
+
 <!-- %% (Note: the idiomatic way of doing the above with `r CRANpkg("tidyr")` is using  -->
 <!-- %% \verb= %>% =, the pipe operator. Something like  -->
 <!-- %% \begin{verbatim} -->
@@ -7753,6 +7274,7 @@ streamgraph(lb1, Genotype, Y, Time, scale = "continuous",
 <!-- %% \end{verbatim} -->
 
 <!-- %% but it gives me problems with knitr, etc). -->
+
 
 
 \clearpage
@@ -7820,13 +7342,7 @@ want to use the second route? If we are only interested in the final
 matrix of individuals by mutations, keeping the complete history
 above is wasteful because we store fully all of the simulations (for
 example in the call to `oncoSimulPop`) and then sample (in the call
-to `samplePop`). <!-- Other reasons for choosing one over the other
---> <!-- might have to do with flexibility (e.g., if you use -->
-<!-- `oncoSimulPop` the arguments for `detectionSize`, --> <!--
-`detectionDrivers` must be the same for all simulations but this is
---> <!-- not the case for `oncoSimulSample`) and parallelized -->
-<!-- execution.  --> 
-
+to `samplePop`). 
 Further criteria to use when choosing between sampling procedures is
 whether you need `detectionSize` and `detectionDrivers` do differ
 between simulations: if you use `oncoSimulPop` the arguments for
@@ -8001,11 +7517,6 @@ mean with "uniformly sampled over the course of the disease" if that
 course is measured in terms of drivers or size of tumor.
 
 
-<!-- % As an example, if you look at the output above, the object "pancrSamp" -->
-<!-- % contains some simulations that have only a few drivers because those -->
-<!-- % simulations were set to run only until they had just a small number of -->
-<!-- % cells. -->
-
 An advantage of `oncoSimulSample` is that we can specify
 arbitrary sampling schemes, just by passing the appropriate vector
 `detectionSize` and `detectionDrivers`. A disadvantage
@@ -8037,145 +7548,6 @@ are examining a large number of different scenarios.
 
 
 
-<!-- % ### `popSizeSample` and `oncoSimulPop`} -->
-<!-- % \label{popss-osp} -->
-
-
-<!-- % Suppose you run a set of simulations with a large `finalTime` with -->
-<!-- % `oncoSimulPop`. Since you can pass to `samplePop` a -->
-<!-- % vector for `popSizeSample` this might seem to resemble a -->
-<!-- % deterministic version of the stochastic detection mechanism -->
-<!-- % (\@ref(detectprob)): for each simulation, you would take a sample at the -->
-<!-- % first time a given population size is reached. You should notice, however, -->
-<!-- % that for any simulation you are not sampling with a probability of -->
-<!-- % detection that increases with size. Moreover, you can end up with "NA" -->
-<!-- % in your sample. Suppose you have a set of fitness such that a given -->
-<!-- % simulation, say number 1, never went beyond total population size -->
-<!-- % 1000. Now, if you pass a vector of `popSizeSample` that has a value -->
-<!-- % larger than a 1000 for the first position, you will get an "NA": there -->
-<!-- % never is a value where for population size where that size is reached.  -->
-
-
-<!-- %% in an attempt to explain it, this just makes it too confusing. The -->
-<!-- %% above is enough. -->
-<!-- %% ## What if there is order? {#sim-order} -->
-
-<!-- %% Consider the following example (I fix the seed and use a single core, so -->
-<!-- %% no parallelization, to make sure we can reproduce the results) -->
-
-<!-- %% <<>>= -->
-
-<!-- %% oe8 <- allFitnessEffects(orderEffects = c( -->
-<!-- %%                              "M > F > M" = 0, -->
-<!-- %%                              "D > F > M" = 0.1, -->
-<!-- %%                              "F > D > M" = 0.2 -->
-<!-- %% ), -->
-<!-- %%                       epistasis = c("D" = 0.02, "M" = 0.02, "F" = 0.02), -->
-<!-- %%                         geneToModule = -->
-<!-- %%                             c("Root" = "Root", -->
-<!-- %%                               "M" = "m", -->
-<!-- %%                               "F" = "f", -->
-<!-- %%                               "D" = "d") ) -->
-
-<!-- %% evalAllGenotypes(oe8) -->
-
-<!-- %% set.seed(678)  -->
-<!-- %% oe8P1 <- oncoSimulPop(8, oe8, -->
-<!-- %%                      model = "Exp",  -->
-<!-- %%                       detectionSize = 1e8, keepEvery = 10, mc.cores = 1) -->
-<!-- %% lapply(oe8P1, print) -->
-
-
-
-
-<!-- %% set.seed(678)  -->
-<!-- %% oe8P1 <- oncoSimulPop(1, oe8, -->
-<!-- %%                      model = "McFL",  -->
-<!-- %%                       detectionDrivers = 2,  -->
-<!-- %%                       keepEvery = 10, mc.cores = 1) -->
-<!-- %% lapply(oe8P1, print) -->
-
-<!-- %% @  -->
-
-
-
-
-<!-- %% <<>>= -->
-
-<!-- %% o8 <- allFitnessEffects(orderEffects = c( -->
-<!-- %%                             "F > D" = 0, -->
-<!-- %%                             "D > F" = 0.14, -->
-<!-- %%                             "D > M" = 0.13, -->
-<!-- %%                             "F > M" = 0.12, -->
-<!-- %%                             "M > D" = 0.15), -->
-<!-- %%                       epistasis = c("D" = 0.01, "M" = 0.01, "F" = 0.02), -->
-<!-- %%                         geneToModule = -->
-<!-- %%                             c("Root" = "Root", -->
-<!-- %%                               "M" = "m", -->
-<!-- %%                               "F" = "f", -->
-<!-- %%                               "D" = "d") ) -->
-
-<!-- %% evalAllGenotypes(o8) -->
-
-<!-- %% set.seed(678)  -->
-<!-- %% o8P1 <- oncoSimulPop(8, o8, -->
-<!-- %%                      model = "Exp", keepEvery = 10, mc.cores = 1) -->
-<!-- %% ## lapply(o8P1, print) -->
-<!-- %% @  -->
-
-<!-- %% Now, if we look at the sixth population we see -->
-
-<!-- %% <<>>= -->
-<!-- %% o8P1[[6]] -->
-<!-- %% @  -->
-
-<!-- %% Obviously, in terms of the genes that are mutated, both "d, f, m" and -->
-<!-- %% "d, m, f" have the same genes mutated so if we sample, for instance doing -->
-
-<!-- %% <<>>= -->
-
-<!-- %% @  -->
-
-
-
-
-
-<!-- %% o9 <- allFitnessEffects(orderEffects = c( -->
-<!-- %%                             "F > D > M" = 0, -->
-<!-- %%                             "D > F > M" = 0.14, -->
-<!-- %%                             "D > M > F" = 0.13, -->
-<!-- %%                             "D > M"     = 0.12, -->
-<!-- %%                             "M > D"     = 0.15), -->
-<!-- %%                       epistasis = c("D:-M" = 0.05, "M:-D" = 0.04), -->
-<!-- %%                         geneToModule = -->
-<!-- %%                             c("Root" = "Root", -->
-<!-- %%                               "M" = "m", -->
-<!-- %%                               "F" = "f", -->
-<!-- %%                               "D" = "d") ) -->
-
-
-<!-- %% set.seed(11) -->
-<!-- %% o9P1 <- oncoSimulPop(8, o9, -->
-<!-- %%                      model = "Exp", keepEvery = 10, mc.cores = 1) -->
-<!-- %% lapply(o9P1, print) -->
-
-
-<!-- %% @  -->
-
-
-
-<!-- %% ## Testing of mappings} -->
-
-<!-- %% The mapping of restriction tables, epistasis, and order effects to -->
-<!-- %% fitness, especially when there are modules, is a delicate part of the -->
-<!-- %% code: reasonable cases are straightforward to deal with, but there are -->
-<!-- %% many ways to shoot oneself in the foot. That is why we have placed lots of -->
-<!-- %% pre- and post-condition checks in the code (both R and C++), and we have a -->
-<!-- %% comprehensive set of tests in file zz. You are welcome to suggest more -->
-<!-- %% tricky scenarios (and tests for them). -->
-
-
-
 \clearpage
 
 # Showing the genealogical relationships of clones {#phylog}
@@ -8183,10 +7555,6 @@ are examining a large number of different scenarios.
 If you run simulations with `keepPhylog = TRUE`, the simulations keep track
 of when every clone is generated, and that will allow us to see the
 parent-child relationships between clones. (This is disabled by default).
-
-<!-- In an abuse of terminology, we will use functions with the "phylog" -->
-<!-- term, but note these are not proper phylogenies. (Though you could -->
-<!-- construct proper phylogenies from the information kept). -->
 
 
 Let us re-run a previous example:
@@ -8306,16 +7674,6 @@ par(cex = 0.7)
 plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
 ``` 
 
-<!-- % % %% For poster -->
-
-<!-- % <<>>= -->
-
-<!-- % pdf("phylog-clone1.pdf", width = 4, height = 3.4) -->
-<!-- % par(cex = 0.4); plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE) -->
-<!-- % dev.off() -->
-
-<!-- % @  -->
-
 
 (By playing with `t`, it should be possible to obtain animations of
 the phylogeny. We will not pursue it here.)
@@ -8420,10 +7778,6 @@ a pure House of Cards model to a purely additive model. I have
 followed @szendro_quantitative_2013 and @franke_evolutionary_2011 and
 model fitness as
 
-<!-- $$ -->
-<!--   f_i = -c d(i, reference) + x_i -->
-<!-- $$ {#eq:1} -->
-
 
 \begin{equation}
   f_i = -c\ d(i, reference) + x_i
@@ -8492,9 +7846,7 @@ In @szendro_predictability_2013 "(...) paths defined as the time
 ordered sets of genotypes that at some time contain the largest
 subpopulation" are called "Path of the Maximum" (POM) (see their
 p. 572). In our case, POM are obtained by finding the clone with
-largest population size whenever we sample and, thus, <!-- from the
-`pops.by.time` --> <!-- returned object (i.e., from the genotypes at
-each of the sampling --> <!-- times) and, thus, --> the POMs will be
+largest population size whenever we sample and, thus, the POMs will be
 affected by how often we sample (argument `sampleEvery`), since we
 are running a continuous time process.
 
@@ -8507,68 +7859,10 @@ version 2.9.2 of OncoSimulR I only provide an implementation where a
 single LOD per simulation is returned, with the same meaning as in
 @szendro_predictability_2013.
 
-<!-- I provide two -->
-<!-- implementations, one where a single LOD per simulation is returned, -->
-<!-- with the same meaning as in @szendro_predictability_2013, and -->
-<!-- another where I keep all the paths that "(...) arrive at the most -->
-<!-- populated genotype at the final time" (first paragraph in p. 572 of -->
-<!-- Szendro et al.). We can also obtain a single LOD that is the first -->
-<!-- path to arrive at the genotype that eventually becomes the most -->
-<!-- populated genotype at the final time (and, in this sense, agrees -->
-<!-- with the LOD of Szendro et al.). See the help file for details. -->
-<!-- Obtaining LOD requires that the simulations be run with `keepPhylog -->
-<!-- = TRUE` (we need the genealogy of clones). -->
-
-
-<!-- My implementation is not exactly identical to --> <!-- the
-definition given in p. 572 of Szendro et al. First, in case this
-might --> <!-- be useful, for each simulation I keep all the paths
-that "(...) arrive at --> <!-- the most populated genotype at the
-final time" (first paragraph in p. 572 --> <!-- of Szendro et al.),
-whereas they only keep one (see second column of --> <!--
-p. 572). However, I do provide a single LOD for each run, too. This
-is the --> <!-- first path to arrive at the genotype that eventually
-becomes the most --> <!-- populated genotype at the final time (and,
-in this sense, agrees with the --> <!-- LOD of Szendro et
-al.). However, in contrast to what is apparently done in --> <!--
-Szendro ("A given genotype may undergo several episodes of
-colonization --> <!-- and extinction that are stored by the
-algorithm, and the last episode --> <!-- before the colonization of
-the final state is used to construct the --> <!-- step."), I do not
-check that this genotype (which is the one that will --> <!-- become
-the most populated at final time) does not become extinct before -->
-<!-- the final colonization. So there could be other paths (all in
-`all_paths`) --> <!-- that are actually the one(s) that are
-colonizers of the most populated --> <!-- genotype (with no
-extinction before the final --> <!-- colonization). -->
-
-
-<!-- My implementation is not exactly identical to their -->
-<!-- definition. My `lod_single` is the first path to arrive at the genotype that -->
-<!-- eventually becomes the most populated genotype at the final time (and, in -->
-<!-- this sense, agrees with the LOD of Szendro et al.). However, in contrast to -->
-<!-- what is apparently done in Szendro et al. ("A given genotype may undergo -->
-<!-- several episodes of colonization and extinction that are stored by the -->
-<!-- algorithm, and the last episode before the colinization of the final state -->
-<!-- is used to construct the step."), I do not check that this genotype (which -->
-<!-- is the one that will become the most populated at final time) does not -->
-<!-- become extinct before the final colonization. So there could be other paths -->
-<!-- that are actually the one(s) that are colonizers of the most populated -->
-<!-- genotype (with no extinction before the final colonization). Nevertheless, -->
-<!-- all the paths that "(...) arrive at the most populated genotype at the final -->
-<!-- time" (first paragraph in p. 572 of Szendro et al.), are stored (in the -->
-<!-- `all_paths` list returned). (This differs from Szendro et al., as they only -->
-<!-- keep one ---see second column of p. 572). -->
-
-<!-- As just said, in case this might be useful, for each simulation I keep all -->
-<!-- the paths that "(...) arrive at the most populated genotype at the final -->
-<!-- time" (first paragraph in p. 572 of Szendro et al.), whereas they only . -->
 
 
 To briefly show some output, we will use again the \@ref(pancreas)
-example. <!-- Note that using LOD requires running the simulations with -->
-<!-- `keepPhylog = TRUE`. -->
-
+example. 
 
 ```{r lod_pom_ex}
 pancr <- allFitnessEffects(
@@ -8649,8 +7943,7 @@ assume that the relationships encoded in the DAG are fully respected
 allow for deviations from the monotonicity, specially if we only
 check for the satisfaction of the presence of the immediate
 ancestors. And things get even trickier if we combine XOR with
-AND. <!-- The code for computing fitness, however, should deal with all -->
-<!-- of this just fine. --> Thus, I strongly suggest you leave the
+AND.  Thus, I strongly suggest you leave the
 default `removeDirectIndirect = TRUE`. If you change it, you should
 double check that the fitnesses of the possible genotypes are what
 you expect. In fact, I would suggest that, to be sure you get what
@@ -8775,40 +8068,6 @@ increase the computational burden by many orders of magnitude.
 
 
 
-
-<!-- As we are interested in examining the effects of selection, mutation, -->
-<!-- keeping track of the parent-child relationships between clones, etc, and -->
-<!-- thus we must keep track of the complete set of clones. -->
-
-
-
-<!-- (or haplotype if -->
-<!-- you want, as that is the term used in the reference below ---but see -->
-<!-- \@(meaningclone)) -->
-
-
-
-<!-- What we have explained is an obvious "trick" that has been used for -->
-<!-- a long time.  For instance, John H. Gillespie in his classical 1993 -->
-<!-- paper @Gillespie1993 writes in p. 972: -->
-
-
-
-<!-- > Allelic genealogies are represented in the computer by a rooted -->
-<!-- > tree, each node of which is a unique haplotype.  A haplotype node is -->
-<!-- > a data structure with pointers to parent and sibling nodes and with -->
-<!-- > values of the current abundance and selection coefficient of the -->
-<!-- > haplotype.  Each node also records the generation at which the -->
-<!-- > haplotype first appeared in the population with its mutant site -->
-<!-- > (the origination time of the site) and, should the mutation become -->
-<!-- > fixed-the node becomes the root node for all alleles in the -->
-<!-- > population-the fixation time of the site.  When haplotypes without -->
-<!-- > descendents are lost from the population, the allelic genealogy is -->
-<!-- > pruned to free computer memory.  When the simulation is completed, -->
-<!-- > the properties of the origination and fixation point processes may -->
-<!-- > be studied by 'climbing' the tree and recording the origination and -->
-<!-- > fixation times of sites." -->
-
 ### `sampleEvery`, `keepPhylog`, and pruning {#prune}
 
 At each sampling time (where `sampleEvery` determines the time units
@@ -8839,11 +8098,6 @@ of mutated genes), as we have seen, for instance, in section
 of mutated genes or of drivers, not individual clones, can of course
 achieve better speed.
 
-<!-- Again, e that we never prune any -->
-<!-- clone that had a population size larger than zero at any sampling -->
-<!-- period (so they are reflected in the `pops.by.time` matrix in the -->
-<!-- output).  -->
-
 What about the genealogy? If you ask OncoSimulR to keep track of the
 complete parent-child relationships (`keepPhylog = TRUE`), you might
 see in the genealogy clones that are not present in `pops.by.time`
@@ -8867,12 +8121,6 @@ sizes at different times, you can prevent being shown B, but its
 existence is there should you need it (see also
 \@ref(histlargegenes)).
 
-
-
-<!-- Keeping track of clones (not individuals) and erasing clones that have no -->
-<!-- descendants from the `pops.by.time` matrix (and other internal structures -->
-<!-- in the C++ code) therefore leads to important memory and time -->
-<!-- savings.  -->
 
 
 
@@ -9111,18 +8359,6 @@ section \@ref(whatfor) we go over a varied set of scientific
 questions where OncoSimulR could help.
 
 
-<!-- %% As an example, we can try to infer an oncogenetic tree -->
-<!-- %% (and plot it) using the `r CRANpkg("Oncotree")` package @Oncotree after -->
-<!-- %% getting a quick look at the marginal frequencies of events: -->
-
-<!-- %% <<fig.width=4, fig.height=4>>= -->
-<!-- %% colSums(pancrSamp)/nrow(pancrSamp) -->
-
-<!-- %% require(Oncotree) -->
-<!-- %% otp <- oncotree.fit(pancrSamp) -->
-<!-- %% plot(otp) -->
-<!-- %% @  -->
-
 \clearpage
 
 # Using v.1 posets and simulations {#v1}
@@ -9199,9 +8435,6 @@ The first thing we do is make it simpler (for future examples) to use a
 set of restrictions. In this case, those encoded in poset p1101. Then, we
 run the simulations and look at a simple summary and a plot. 
 
-<!-- %% We explicitly -->
-<!-- %% set `silent = TRUE` to prevent the vignette from filling up with -->
-<!-- %% intermediate output. -->
 
 If you want to plot the trajectories, it is better to keep more frequent
 samples,  so you can see when clones appear:
@@ -9384,7 +8617,8 @@ r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
                              "7 + 5*(f_A + f_B + f_A_B)"))
 
 afe <- allFitnessEffects(genotFitness = r, 
-                        frequencyDependentFitness = TRUE)
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
 ## For reproducibility
 set.seed(10)
 osi <- oncoSimulIndiv(afe, 
@@ -9462,12 +8696,6 @@ Supported by BFU2015-67302-R (MINECO/FEDER, EU).
 set.seed(NULL)
 ``` 
 
-<!-- %\newpage -->
-<!-- %%\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm -->
-<!-- %% does the URL without turning into note? -->
-<!-- %\bibliographystyle{apalike} %% or agsm or natbib? or apalike; maybe agsm -->
-
-<!-- \bibliography{OncoSimulR} -->
 
 # References
 
@@ -9485,5 +8713,5 @@ set.seed(NULL)
 <!-- fill-column: 68 -->
 <!-- End: -->
 
-<!--  LocalWords:  genotype Genotyping
- -->
+<!--  LocalWords:  genotype Genotyping -->
+
