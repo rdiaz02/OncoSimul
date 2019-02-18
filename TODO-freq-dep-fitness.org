@@ -1,9 +1,9 @@
 * Miscell to-do in freq-dep-fitness branch
 
-  - [ ] binary files were changed: explain:
-    - OncoSimulR/data/examplesFitnessEffects.RData
-    - OncoSimulR/inst/testdata_fee.RData
-    - miscell-files/fee.RData
+  - [-] binary files were changed: explain:
+    - [X] OncoSimulR/data/examplesFitnessEffects.RData
+    - [X] OncoSimulR/inst/testdata_fee.RData
+    - [ ] miscell-files/fee.RData
 
   - [ ] update to latest version of exprTk: 
     - http://www.partow.net/programming/exprtk/index.html
@@ -15,7 +15,7 @@
   - [ ] stopping conditions: allow with detectionDrivers?
   - [ ] explain in vignette why this was possible without touching OncoSimulR_init.c, RcppExports.cpp
   - [ ] double check from_genot_utils.R (why?)
-  - [ ] test_mutator.R:
+  - [X] test_mutator.R:
     - line 208: is it "genotype" or "Genotype"
   - [ ] check under Windows
   - [ ] check size of package with included exprTk
