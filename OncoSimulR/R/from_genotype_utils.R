@@ -147,7 +147,7 @@ to_genotFitness_std <- function(x,
   ##                 " of a single gene. For this degenerate cases use",
   ##                 " a data frame specification."))
 
-  ##Aquí
+
 
     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
       stop("Input must inherit from matrix or data.frame.")
