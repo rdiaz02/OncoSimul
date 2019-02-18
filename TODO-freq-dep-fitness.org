@@ -12,7 +12,7 @@
   - [X] is combn needed? (see NAMESPACE). Leave it, as it is from utils.
 
 
-  - [ ] update to latest version of exprTk: 
+  - [X] update to latest version of exprTk: 
     - http://www.partow.net/programming/exprtk/index.html
     - https://github.com/ArashPartow/exprtk
 
