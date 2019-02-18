@@ -23,10 +23,3 @@ auto getenv_func = hash(&getenv);
 
 to keep R from complaining about using the Exit function (it is not using
 it, just getting its address).
-
-
-The code in inst/miscell/exprtk.hpp is copyright Arash Partow, and is
-licensed under "The MIT License (MIT)" (http://www.opensource.org/licenses/MIT)
-and is compatible with GPL (http://directory.fsf.org/wiki/License:Expat). The file
-was downloaded from http://www.partow.net/programming/exprtk/index.html on 2017-05-15.
-
