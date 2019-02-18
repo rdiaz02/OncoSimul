@@ -308,7 +308,7 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or
   }
 
   \item{fitnessLandscapeVariables}{A character vector that contains the
-  frequency variables necessary to C++ code.
+  frequency variables necessary for the C++ code.
 }
 
   \item{frequencyDependentFitness}{TRUE or FALSE as we have explained

@@ -7,7 +7,7 @@ Examples of fitness effects
 
 \description{
 
-  Some examples fitnessEffects objects. This is a collection, in a list,
+  Some examples of fitnessEffects objects. This is a collection, in a list,
   of most of the fitnessEffects created (using
   \code{\link{allFitnessEffects}}) for the vignette. See the vignette
   for descriptions and references.
