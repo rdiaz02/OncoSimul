@@ -16,7 +16,7 @@
 
 #include <cfloat> 
 #include "bnb_common.h"
-#include "new_restrict.h" // for the TypeModel enum
+// #include "new_restrict.h" // for the TypeModel enum
 #include <Rcpp.h>
 
 

@@ -21,7 +21,7 @@
 #include<Rcpp.h>
 #include "common_classes.h"
 #include "debug_common.h"
-// #include "new_restrict.h" // for the TypeModel enum
+#include "new_restrict.h" // for the TypeModel enum
 
 // // Simple custom exception for exceptions that lead to re-runs.
 // class rerunExcept: public std::runtime_error {
