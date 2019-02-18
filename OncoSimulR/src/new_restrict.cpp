@@ -1414,14 +1414,15 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 	      for (std::size_t i = 0; i < parser.error_count(); ++i){
 	         typedef exprtk::parser_error::type error_t;
 	         error_t error = parser.get_error(i);
-	         Rcpp::Rcout <<
-						 printf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
-		                i,
-		                error.token.position,
-		                exprtk::parser_error::to_str(error.mode).c_str(),
-		                error.diagnostic.c_str(),
-	                  expr_string.c_str())
-					<< std::endl;
+		 // RDU: FIXME?
+	         // Rcpp::Rcout <<
+		 REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
+			 i,
+			 error.token.position,
+			 exprtk::parser_error::to_str(error.mode).c_str(),
+			 error.diagnostic.c_str(),
+			 expr_string.c_str());
+		 // << std::endl;
 	      }
 				std::string errorMessage1 = "Wrong evalGenotypeFDFitnessEcuation evaluation, ";
 				std::string errorMessage2 = "probably bad fitness columm especification.";
