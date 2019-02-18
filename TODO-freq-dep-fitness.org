@@ -1,21 +1,32 @@
 * Miscell to-do in freq-dep-fitness branch
 
-  - [-] binary files were changed: explain:
+  - [X] binary files were changed: explain:
     - [X] OncoSimulR/data/examplesFitnessEffects.RData
     - [X] OncoSimulR/inst/testdata_fee.RData
-    - [ ] miscell-files/fee.RData
+    - [X] miscell-files/fee.RData
+
+  - [X] test_mutator.R:
+    - line 208: is it "genotype" or "Genotype"
+
+  - [X] is stringr really needed? Leave it for now.
+  - [X] is combn needed? (see NAMESPACE). Leave it, as it is from utils.
+
 
   - [ ] update to latest version of exprTk: 
     - http://www.partow.net/programming/exprtk/index.html
     - https://github.com/ArashPartow/exprtk
+
   - [ ] why can't mutator effects be used?
     - this is said in the vignette (I think) and in oncoSimulIndiv.Rd
-  - [ ] is stringr really needed?
-  - [ ] is combn needed? (see NAMESPACE)
+
+
   - [ ] stopping conditions: allow with detectionDrivers?
+
   - [ ] explain in vignette why this was possible without touching OncoSimulR_init.c, RcppExports.cpp
+
   - [ ] double check from_genot_utils.R (why?)
-  - [X] test_mutator.R:
-    - line 208: is it "genotype" or "Genotype"
+
   - [ ] check under Windows
+
   - [ ] check size of package with included exprTk
+
