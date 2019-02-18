@@ -441,7 +441,7 @@ date()
 
 
 test_that("Local max: not stopping, stopping, and tolerance", {
-    initS <- 2000
+        initS <- 2000
     rl1 <- matrix(0, ncol = 6, nrow = 9)
     colnames(rl1) <- c(LETTERS[1:5], "Fitness")
     rl1[1, 6] <- 1

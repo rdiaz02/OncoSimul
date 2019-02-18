@@ -21,7 +21,7 @@
 
 
 void print_spP(const spParamsP& spP) {
-  Rcpp::Rcout <<"\n this is spP\n" 
+  Rcpp::Rcout <<"\n this is spP\n"
 	    <<"\n popSize = " << spP.popSize
 	    <<"\n birth = " << spP.birth
 	    <<"\n death = " << spP.death
@@ -30,29 +30,29 @@ void print_spP(const spParamsP& spP) {
 	    <<"\n mutation = " << spP.mutation
 	    <<"\n timeLastUpdate = " << spP.timeLastUpdate
 	    <<"\n absfitness = " << spP.absfitness
-	    <<"\n numMutablePos =" << spP.numMutablePos    
+	    <<"\n numMutablePos =" << spP.numMutablePos
 	    <<"\n";
 }
 
-double pM_f_st(const double& t, 
+double pM_f_st(const double& t,
 	       const spParamsP& spP){
   // For interpretation, recall, from suppl. mat. of their paper, p.2 that
   // p M (t)^n0 = G(0, t) is the probability that a mutation has not yet occurred.
-  
+
   long double Ct = cosh(spP.R * t/2.0);
   long double St = sinh(spP.R * t/2.0);
   long double lpM = -99.99;
-    
+
   if( (!std::isfinite(Ct) ) || (!std::isfinite(St)) ) {
     throw std::range_error("pM.f: Ct or St too big");
   }
-    
-  // my expression, which I think is better       
+
+  // my expression, which I think is better
   //  lpM = (R * Ct + St * (2.0 * death - W ))/(R * Ct + St * (W - 2.0 * growth));
   // theirs, in paper and code
   lpM = (spP.R * Ct + 2.0 * spP.death * St - spP.W * St)/
-    (spP.R * Ct - 2.0 * spP.birth * St + spP.W * St);    
-  
+    (spP.R * Ct - 2.0 * spP.birth * St + spP.W * St);
+
   double pM = static_cast<double>(lpM);
 
   if( !std::isfinite(pM) ) {
@@ -78,7 +78,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
   // max length of the period (tSample)
 
   // I also change names rr, r, to match those in Mather r1, r.
-  
+
   // However, I pass mutation, and split computation to avoid numerical problems
   // I was getting ti == 0 and ti < 0 in the other versions with large N.
   using namespace Rcpp ;
@@ -89,13 +89,13 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 
   // FIXME: should never happen
   if(spP.popSize <= 0.0) {
-    
-#ifdef _WIN32     
+
+#ifdef _WIN32
     throw std::range_error("ti: popSize <= 0. spP.popSize = "
 			   + SSTR(spP.popSize));
 #endif
-    
-#ifndef _WIN32 
+
+#ifndef _WIN32
         throw std::range_error("ti: popSize <= 0. spP.popSize = "
 			   + std::to_string(spP.popSize));
 #endif
@@ -135,7 +135,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
       // Expand numerator and denominatior, the term for W and simplify.
       // Then, express as (1- r) (which is, inclussively, between 0 and 1)
       // and then multiply by -1 to take the log of each
-      
+
       // long double tmp2 =  2.0L * spP.mutation;
       // long double tmp = (spP.birth - spP.death) - spP.mutation;
       // long double oneminusr = 1.0L - r;
@@ -148,9 +148,9 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
       double numerator =  oneminusr * (tmp + spP.R) + tmp2;
       double denominator = oneminusr * (tmp - spP.R ) + tmp2;
 
-      // numerator =  (1.0 - r) * (spP.R + spP.birth - spP.death - spP.mutation) 
+      // numerator =  (1.0 - r) * (spP.R + spP.birth - spP.death - spP.mutation)
       // 	+ 2.0 * spP.mutation;
-      // denominator = (1.0 - r) * (spP.birth - spP.death - spP.mutation - spP.R ) 
+      // denominator = (1.0 - r) * (spP.birth - spP.death - spP.mutation - spP.R )
       // 	+ 2.0 * spP.mutation;
 
       // FIXME? is it really necessary to use log(-a) - log(-b) or could
@@ -163,7 +163,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 
 
       //ti = (1.0/spP.R) * (log(numerator) - log(denominator));
-	
+
       //eq. 11
       // ti = (1.0/R) * (log( -1 * (r * (R - W + 2.0 * growth) - W - R + 2.0 * death )) -
       //  		      log( -1 * (r * (-R -W + 2.0 * growth) - W + R + 2.0 * death )));
@@ -172,7 +172,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
       //               (r * (-R -W + 2.0 * growth) - W + R + 2.0 * death));
       // Rcpp::Rcout << "\n this is ti = " << ti << "\n";
       if(ti < 0.0) {
-	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) / 
+	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) /
 			   (spP.R + spP.W - 2.0 * spP.birth) , spP.popSize);
 
 	Rcpp::Rcout << "\n ERROR: ti: eq.11 < 0 \n";
@@ -190,13 +190,13 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	Rcpp::Rcout << "\n is r < 0? " << (r < 0.0) << "\n";
 	Rcpp::Rcout << "\n is eq12 < r? " << (eq12 < r) << "\n";
 	throw std::range_error("ti: eq.11 < 0");
-      } 
+      }
       if( !std::isfinite(ti) ) {
-	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) / 
+	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) /
 			   (spP.R + spP.W - 2.0 * spP.birth) , spP.popSize);
-	double numerator2 = r * (spP.R - spP.W + 2.0 * spP.birth) - 
+	double numerator2 = r * (spP.R - spP.W + 2.0 * spP.birth) -
 	  spP.W - spP.R + 2.0 * spP.death;
-	double denominator2 = r * (-spP.R - spP.W + 2.0 * spP.birth) - 
+	double denominator2 = r * (-spP.R - spP.W + 2.0 * spP.birth) -
 	  spP.W + spP.R + 2.0 * spP.death;
 	double ti2 = invspr * log(numerator2/denominator2);
 
@@ -255,12 +255,12 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 // 	}
 // 	DP2(ti_dbl_comp);
 // #endif
-#ifdef DEBUGV	
+#ifdef DEBUGV
 	// FIXME: pass verbosity as argument, and return the warning
 	// if set to more than 0?
 	Rcpp::Rcout << "\n\n\n WARNING: ti == 0. Setting it to DBL_MIN \n";
 
-	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) / 
+	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) /
 			   (spP.R + spP.W - 2.0 * spP.birth) , spP.popSize);
 
 	Rcpp::Rcout << "\n tmp2 = " << tmp2;
@@ -276,7 +276,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// Rcpp::Rcout << "\n death = " << death << "\n";
 	Rcpp::Rcout << "\n numerator = " << numerator;
 	Rcpp::Rcout << "\n denominator = " << denominator;
-	Rcpp::Rcout << "\n numerator == denominator? " << 
+	Rcpp::Rcout << "\n numerator == denominator? " <<
 	  (numerator == denominator);
 	Rcpp::Rcout << "\n is r > 1? " << (r > 1.0);
 	Rcpp::Rcout << "\n is r < 0? " << (r < 0.0);
@@ -292,13 +292,13 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	ti = DBL_MIN;
 	// Beware of this!!  throw std::range_error("ti set to DBL_MIN");
 	// Do not exit. Record it. We check for it now in R code. Maybe
-	// abort simulation and go to a new one?  
+	// abort simulation and go to a new one?
 	// Rcpp::Rcout << "ti set to DBL_MIN\n";
 	// Yes, abort because o.w. we can repeat it many, manu times
 	// throw std::range_error("ti set to DBL_MIN");
 	// Even just touching DBL_MIN is enough to want a rerunExcept;
 	// no need for it to be 0.0.
-	
+
 	// Trying to understand what happens
 	Rcpp::Rcout << "         ti set to DBL_MIN: spP.popSize = " << spP.popSize << "\n";
 	// It seems poSize over 1e8, and even 3.5 e7 can trigger this exception (depending
@@ -313,7 +313,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 	// Rcpp::Rcout << "\n (ti <= currentTime): expect problems\n";
 	throw rerunExcept("ti <= currentTime");
       }
-    } 
+    }
   }
   return ti;
 }
@@ -329,7 +329,7 @@ double Algo2_st(const spParamsP& spP,
 
   using namespace Rcpp ;
   double t = ti - spP.timeLastUpdate;
-  
+
   // if (t == 0 ) {
   //   Rcpp::Rcout << "\n Entered Algo2 with t = 0\n" <<
   //     "    Is this a forced sampling case?\n";
@@ -347,7 +347,7 @@ double Algo2_st(const spParamsP& spP,
   if( (spP.mutation == 0.0) &&
       !(spP.birth <= 0 && mutationPropGrowth) ) {
     Rcpp::Rcout << "\n Entered Algo2 with mutation rate = 0\n";
-    if( spP.numMutablePos != 0 ) 
+    if( spP.numMutablePos != 0 )
       throw std::range_error("mutation = 0 with numMutable != 0?");
   }
 
@@ -377,40 +377,40 @@ double Algo2_st(const spParamsP& spP,
   // }
 
   double rnb; // holder for neg. bino. So we can check.
-  double retval; //So we can check 
+  double retval; //So we can check
 
     if( (1.0 - pe/pm) > 1.0) {
-      Rcpp::Rcout << "\n ERROR: Algo 2: (1.0 - pe/pm) > 1.0\n"; 
-		// << " t = " << t << "; R = " << R  
-		// <<  "; W = " << W << ";\n death = " << death 
-		// <<  "; growth = " << growth << ";\n pm = " << pm 
+      Rcpp::Rcout << "\n ERROR: Algo 2: (1.0 - pe/pm) > 1.0\n";
+		// << " t = " << t << "; R = " << R
+		// <<  "; W = " << W << ";\n death = " << death
+		// <<  "; growth = " << growth << ";\n pm = " << pm
 		// << "; pe = " << pe << "; pb = " << pb << std::endl;
       throw std::range_error("Algo 2:  1 - pe/pm > 1");
     }
 
     if( (1.0 - pe/pm) < 0.0 ) {
       Rcpp::Rcout << "\n ERROR: Algo 2, (1.0 - pe/pm) < 0.0 \n"
-		  << " t = " << t << "; R = " << spP.R  
-		  <<  "; W = " << spP.W << ";\n death = " << spP.death 
-		  <<  "; growth = " << spP.birth << ";\n pm = " << pm 
+		  << " t = " << t << "; R = " << spP.R
+		  <<  "; W = " << spP.W << ";\n death = " << spP.death
+		  <<  "; growth = " << spP.birth << ";\n pm = " << pm
 		  << "; pe = " << pe << "; pb = " << pb << std::endl;
       throw std::range_error("Algo 2: 1 - pe/pm < 0");
     }
 
     if( pb > 1.0 ) {
-      // Rcpp::Rcout << "\n WARNING: Algo 2, pb > 1.0 \n"; 
-		// << " t = " << t << "; R = " << R  
-		// <<  "; W = " << W << ";\n death = " << death 
-		// <<  "; growth = " << growth << ";\n pm = " << pm 
+      // Rcpp::Rcout << "\n WARNING: Algo 2, pb > 1.0 \n";
+		// << " t = " << t << "; R = " << R
+		// <<  "; W = " << W << ";\n death = " << death
+		// <<  "; growth = " << growth << ";\n pm = " << pm
 		// << "; pe = " << pe << "; pb = " << pb << std::endl;
       throw std::range_error("Algo 2: pb > 1 ");
     }
 
     if( pb < 0.0 ) {
-      // Rcpp::Rcout << "\n WARNING: Algo 2, pb < 0.0 \n"; 
-		// << " t = " << t << "; R = " << R  
-		// <<  "; W = " << W << ";\n death = " << death 
-		// <<  "; growth = " << growth << ";\n pm = " << pm 
+      // Rcpp::Rcout << "\n WARNING: Algo 2, pb < 0.0 \n";
+		// << " t = " << t << "; R = " << R
+		// <<  "; W = " << W << ";\n death = " << death
+		// <<  "; growth = " << growth << ";\n pm = " << pm
 		// << "; pe = " << pe << "; pb = " << pb << std::endl;
       throw std::range_error("Algo 2: pb < 0");
     }
@@ -420,16 +420,16 @@ double Algo2_st(const spParamsP& spP,
   if( pe == pm ) {
     // Should never happen. Exact identity??
     Rcpp::Rcout << "\n WARNING: Algo 2: pe == pm \n" ;
-	      // << "; pm = " << pm  << "; pe = " 
+	      // << "; pm = " << pm  << "; pe = "
 	      // << pe << " pe == 0? " << (pe == 0) << "\n";
-      // t << "; R = " << R 
-      // << "; W = " << W << "; death = " << death 
-      // << "; growth = " << growth << "; pm = " << pm 
+      // t << "; R = " << R
+      // << "; W = " << W << "; death = " << death
+      // << "; growth = " << growth << "; pm = " << pm
       // << "; pe = " << pe << std::endl;
     return 0.0;
   }
 
-  
+
   RNGScope scope;
   m = ::Rf_rbinom(spP.popSize, 1.0 - (pe/pm));
   // this is dangerous. I'd rather throw an exception and bail out soon
@@ -442,9 +442,9 @@ double Algo2_st(const spParamsP& spP,
   // }
   if(m <= 0.5) { // they are integers, so 0 or 1.
     #ifdef DEBUGW // just checking
-      if(m != 0.0) 
+      if(m != 0.0)
 	Rcpp::Rcout << "\n WARNING: Algo 2: 0.0 < m < 0.5" <<std::endl;
-    #endif    
+    #endif
     retval = 0.0;
   } else {
     rnb = ::Rf_rnbinom(m, 1.0 - pb); // this is the correct ONE
@@ -455,7 +455,7 @@ double Algo2_st(const spParamsP& spP,
     retval = m + rnb;
   }
 
-  
+
   if( !std::isfinite(retval) )  {
     DP2(rnb); DP2(m); DP2(pe); DP2(pm);
     print_spP(spP);
@@ -470,7 +470,7 @@ double Algo2_st(const spParamsP& spP,
 }
 
 double Algo3_st(const spParamsP& spP, const double& t){
-  
+
   using namespace Rcpp ;
 
   // double pm = pM_f(t, spP.R, spP.W, spP.death, spP.birth);
@@ -486,50 +486,50 @@ double Algo3_st(const spParamsP& spP, const double& t){
   double rnb;
 
   if( (1.0 - pe/pm) > 1.0) {
-    // Rcpp::Rcout << "\n ERROR: Algo 3: (1.0 - pe/pm) > 1.0\n"; 
-	      // << " t = " << t << "; R = " << R  
-	      // <<  "; W = " << W << ";\n death = " << death 
-	      // <<  "; growth = " << growth << ";\n pm = " << pm 
+    // Rcpp::Rcout << "\n ERROR: Algo 3: (1.0 - pe/pm) > 1.0\n";
+	      // << " t = " << t << "; R = " << R
+	      // <<  "; W = " << W << ";\n death = " << death
+	      // <<  "; growth = " << growth << ";\n pm = " << pm
 	      // << "; pe = " << pe << "; pb = " << pb << std::endl;
     throw std::range_error("Algo 3:  1 - pe/pm > 1");
   }
-  
+
   if( (1.0 - pe/pm) < 0.0 ) {
     // Rcpp::Rcout << "\n ERROR: Algo 3, (1.0 - pe/pm) < 0.0\n ";
-	      // << " t = " << t << "; R = " << R  
-	      // <<  "; W = " << W << ";\n death = " << death 
-	      // <<  "; growth = " << growth << ";\n pm = " << pm 
+	      // << " t = " << t << "; R = " << R
+	      // <<  "; W = " << W << ";\n death = " << death
+	      // <<  "; growth = " << growth << ";\n pm = " << pm
 	      // << "; pe = " << pe << "; pb = " << pb << std::endl;
     throw std::range_error("Algo 3: 1 - pe/pm < 0");
   }
-  
+
   if( pb > 1.0 ) {
-    // Rcpp::Rcout << "\n WARNING: Algo 3, pb > 1.0\n "; 
-	      // << " t = " << t << "; R = " << R  
-	      // <<  "; W = " << W << ";\n death = " << death 
-	      // <<  "; growth = " << growth << ";\n pm = " << pm 
+    // Rcpp::Rcout << "\n WARNING: Algo 3, pb > 1.0\n ";
+	      // << " t = " << t << "; R = " << R
+	      // <<  "; W = " << W << ";\n death = " << death
+	      // <<  "; growth = " << growth << ";\n pm = " << pm
 	      // << "; pe = " << pe << "; pb = " << pb << std::endl;
     throw std::range_error("Algo 3: pb > 1 ");
   }
-  
+
   if( pb < 0.0 ) {
-    // Rcpp::Rcout << "\n WARNING: Algo 3, pb < 0.0\n "; 
-	      // << " t = " << t << "; R = " << R  
-	      // <<  "; W = " << W << ";\n death = " << death 
-	      // <<  "; growth = " << growth << ";\n pm = " << pm 
+    // Rcpp::Rcout << "\n WARNING: Algo 3, pb < 0.0\n ";
+	      // << " t = " << t << "; R = " << R
+	      // <<  "; W = " << W << ";\n death = " << death
+	      // <<  "; growth = " << growth << ";\n pm = " << pm
 	      // << "; pe = " << pe << "; pb = " << pb << std::endl;
     throw std::range_error("Algo 3: pb < 0");
   }
-  
+
   if( pe == pm ) {
     // Should never happen. Exact identity??
-    Rcpp::Rcout << "\n WARNING: Algo 3: pm == pe\n"; 
-    // << "; t = " << 
-    // 	 t << "; R = " << R 
-    // 	      << "; W = " << W << "; death = " << death 
-    // 	      << "; growth = " << growth << "; pm = " << pm 
+    Rcpp::Rcout << "\n WARNING: Algo 3: pm == pe\n";
+    // << "; t = " <<
+    // 	 t << "; R = " << R
+    // 	      << "; W = " << W << "; death = " << death
+    // 	      << "; growth = " << growth << "; pm = " << pm
     // 	      << "; pb = " << pb << std::endl;
-    
+
     return 0.0;
   }
 
@@ -543,8 +543,8 @@ double Algo3_st(const spParamsP& spP, const double& t){
   //   Rcpp::Rcout << "\n\nWARNING: Using hack around rbinom NaN problem in Algo3\n";
   //   m = ::Rf_rbinom(spP.popSize, 1.0 - (pe/pm));
   // }
-  rnb = ::Rf_rnbinom(m + 2.0, 1.0 - pb); 
-  
+  rnb = ::Rf_rnbinom(m + 2.0, 1.0 - pb);
+
   // if(std::isnan(rnb)) {
   //   Rcpp::Rcout << "\n\nWARNING: Using hack around rnbinom NaN problem in Algo3\n";
   //   rnb = ::Rf_rnbinom(m + 1.0, 1.0 - pb);
@@ -555,10 +555,10 @@ double Algo3_st(const spParamsP& spP, const double& t){
     DP2(rnb); DP2(m); DP2(pe); DP2(pm);
     print_spP(spP);
     // Rcpp::Rcout << "\n ERROR: Algo 3, retval not finite\n ";
-	      // << " t = " << t << "; R = " << R  
-	      // <<  "; W = " << W << ";\n death = " << death 
-	      // <<  "; growth = " << growth << ";\n pm = " << pm 
-	      // << "; pe = " << pe << "; pb = " << pb 
+	      // << " t = " << t << "; R = " << R
+	      // <<  "; W = " << W << ";\n death = " << death
+	      // <<  "; growth = " << growth << ";\n pm = " << pm
+	      // << "; pe = " << pe << "; pb = " << pb
 	      // << "; m = " << m << " ; rnb = " << rnb << std::endl;
     throw std::range_error("Algo 3: retval not finite");
   }
@@ -585,7 +585,7 @@ void precissionLoss(){
   // We warn about that if totPopSize > 4e15
   double a, b, c, d;
   int e, f;
-  a = pow(2, 52) + 1.0;	
+  a = pow(2, 52) + 1.0;
   b = pow(2, 52); // 2^53 a little over 9*1e15
   c = (9.0 * 1e15) + 1.0;
   d = (9.0 * 1e15);
@@ -697,15 +697,15 @@ double returnMFE_new(double& en1,
 //   // static double tps_1 = 0.0;
 
 //   if( (typeFitness == "mcfarland0") ||
-//       (typeFitness == "mcfarland") || 
+//       (typeFitness == "mcfarland") ||
 //       (typeFitness == "mcfarlandlog") ) {
-    
+
 //     double etmp;
 //     tps_1 = totPopSize;
 //     if(typeFitness == "mcfarland")
 //       etmp = std::abs( tps_1 - (tps_0 + 1) );
 //     else {
-//       if( (tps_0 + 1.0) > tps_1 ) 
+//       if( (tps_0 + 1.0) > tps_1 )
 // 	etmp = (K + tps_0 + 1.0)/(K + tps_1);
 //       else
 // 	etmp = (K + tps_1)/(K + tps_0 + 1);
@@ -734,7 +734,7 @@ double returnMFE_new(double& en1,
 //   if(typeFitness == "mcfarlandlog")  {
 //     double etmp;
 //     tps_1 = totPopSize;
-//     if( (tps_0 + 1.0) > tps_1 ) 
+//     if( (tps_0 + 1.0) > tps_1 )
 //       etmp = (K + tps_0 + 1.0)/(K + tps_1);
 //     else
 //       etmp = (K + tps_1)/(K + tps_0 + 1);
@@ -772,7 +772,7 @@ double returnMFE_new(double& en1,
 //   }
 // }
 
-// // The logic 
+// // The logic
 // // Death is log( 1 + N/K) so log( (K + N)/K )
 
 // // We go from size at A (tps_0) to size at C (tps_1)
@@ -784,7 +784,7 @@ double returnMFE_new(double& en1,
 // // Suppose DC > DA:
 // // DC - DA = log( (K + tps_1)/K ) - log( (K + tps_0 + 1)/N  ) =
 // //         = log( (K + tps_1)/(K + tps_0 + 1) )
-// // To avoid logs, we store the ratio. 
+// // To avoid logs, we store the ratio.
 
 
 
@@ -827,8 +827,8 @@ void computeMcFarlandError_new(double& em1,
   // Simple logic:
   // Really, simple thing: compute difference between successive death
   // rates, and also scale. Period.
-  
-  if( typeModel == TypeModel::mcfarlandlog ) { 
+
+  if( typeModel == TypeModel::mcfarlandlog ) {
     double etmp, etmpsc;
     etmp = 0.0;
     etmpsc = 0.0;
@@ -856,7 +856,7 @@ void computeMcFarlandError_new(double& em1,
   // Simple logic:
   // Really, simple thing: compute difference between successive death
   // rates, and also scale. Period.
-  if(typeFitness == "mcfarlandlog")  {    
+  if(typeFitness == "mcfarlandlog")  {
     double etmp, etmpsc;
     etmp = 0.0;
     etmpsc = 0.0;
@@ -893,7 +893,7 @@ void computeMcFarlandError_new(double& em1,
 //   //   DB = log1p((totPopSize_previous + 1)/K)
 //   // Death of 1:
 //   //   DB = log1p((totPopSize_previous - 1)/K)
-  
+
 
 //   // But we actually have C, not B with:
 //   //   DC = log1p(totPopSize/K)
@@ -901,12 +901,12 @@ void computeMcFarlandError_new(double& em1,
 //   // So we compute: abs(DC - DB)/DA
 
 //   // We can store DA. And yes, DA is generally almost identical to DB.
-  
-//   if( typeModel == TypeModel::mcfarlandlog ) { 
+
+//   if( typeModel == TypeModel::mcfarlandlog ) {
 //     double etmp;
 //     double DC = log1p(totPopSize/K);
-    
-    
+
+
 //     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
 //       etmp = 0.0;
 //     } else {
@@ -919,7 +919,7 @@ void computeMcFarlandError_new(double& em1,
 //       etmp = std::abs(DC - DB)/DA_previous;
 //     }
 //     if(etmp > en1) en1 = etmp;
-    
+
 //     DA_previous = DC;
 //     totPopSize_previous = totPopSize;
 //   }
@@ -939,8 +939,8 @@ void computeMcFarlandError_new(double& em1,
 
 //     double etmp;
 //     double DC = log1p(totPopSize/K);
-    
-    
+
+
 //     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
 //       etmp = 0.0;
 //     } else {
@@ -953,12 +953,12 @@ void computeMcFarlandError_new(double& em1,
 //       etmp = std::abs(DC - DB)/DA_previous;
 //     }
 //     if(etmp > en1) en1 = etmp;
-    
+
 //     DA_previous = DC;
 //     totPopSize_previous = totPopSize;
 //   }
 // }
-  
+
 
 
 
@@ -976,14 +976,14 @@ void computeMcFarlandError_new(double& em1,
 //   // static double tps_1 = 0.0;
 
 //   if( (typeModel == TypeModel::mcfarland0) ||
-//       (typeModel == TypeModel::mcfarland) || 
+//       (typeModel == TypeModel::mcfarland) ||
 //       (typeModel == TypeModel::mcfarlandlog) ) {
 //     double etmp;
 //     tps_1 = totPopSize;
 //     if(typeModel == TypeModel::mcfarland)
 //       etmp = std::abs( tps_1 - (tps_0 + 1) );
 //     else {
-//       if( (tps_0 + 1.0) > tps_1 ) 
+//       if( (tps_0 + 1.0) > tps_1 )
 // 	etmp = (K + tps_0 + 1.0)/(K + tps_1);
 //       else
 // 	etmp = (K + tps_1)/(K + tps_0 + 1);
@@ -1020,12 +1020,66 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 
   // from original log(1 + totPopSize/K)
   adjust_fitness_MF = log1p(totPopSize/K);
-  
+
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
+}
+
+void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
+  const std::vector<Genotype>& Genotypes,
+  const fitnessEffectsAll& fitnessEffects,
+  double& adjust_fitness_MF,
+	const double& K,
+	const double& totPopSize) {
+
+  const std::vector<spParamsP>& lastPopParams = popParams;
+  //const std::vector<Genotype>& lastGenotypes = Genotypes;
+
+  adjust_fitness_MF = log1p(totPopSize/K);
+
+  for(size_t i = 0; i < popParams.size(); ++i) {
+    popParams[i].death = adjust_fitness_MF;
+    popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
+              fitnessEffects, Genotypes, lastPopParams));
+    W_f_st(popParams[i]);
+    R_f_st(popParams[i]);
+  }
+
+}
+
+void updateRatesFDFExp(std::vector<spParamsP>& popParams,
+  const std::vector<Genotype>& Genotypes,
+  const fitnessEffectsAll& fitnessEffects) {
+
+  const std::vector<spParamsP>& lastPopParams = popParams;
+  //const std::vector<Genotype>& lastGenotypes = Genotypes;
+
+  for(size_t i = 0; i < popParams.size(); ++i) {
+
+    popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
+                fitnessEffects, Genotypes, lastPopParams));
+    W_f_st(popParams[i]);
+    R_f_st(popParams[i]);
+  }
+}
+
+void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
+  const std::vector<Genotype>& Genotypes,
+  const fitnessEffectsAll& fitnessEffects) {
+
+  const std::vector<spParamsP>& lastPopParams = popParams;
+  //const std::vector<Genotype>& lastGenotypes = Genotypes;
+
+  for(size_t i = 0; i < popParams.size(); ++i) {
+    popParams[i].death =  prodDeathFitness(evalGenotypeFitness(Genotypes[i],
+      fitnessEffects, Genotypes, lastPopParams));
+    W_f_st(popParams[i]);
+    R_f_st(popParams[i]);
+  }
+
 }
 
 
@@ -1037,17 +1091,17 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 // 				  const double& totPopSize,
 // 				  const int& mutationPropGrowth,
 // 				  const double& mu){
-  
+
 //   adjust_fitness_MF = 1.0 / log1p(totPopSize/K);
 
 //   for(size_t i = 0; i < popParams.size(); ++i) {
 //     popParams[i].birth = adjust_fitness_MF * popParams[i].absfitness;
 //     if(mutationPropGrowth) {
-//       popParams[i].mutation = mu * popParams[i].birth * 
+//       popParams[i].mutation = mu * popParams[i].birth *
 // 	popParams[i].numMutablePos;
 //     } else if(popParams[i].birth / popParams[i].mutation < 20) {
 //       Rcpp::Rcout << "\n WARNING: birth/mutation < 20";
-//       Rcpp::Rcout << "\n Birth = " << popParams[i].birth 
+//       Rcpp::Rcout << "\n Birth = " << popParams[i].birth
 // 		<< ";  mutation = " << popParams[i].mutation << "\n";
 //     }
 //     W_f_st(popParams[i]);
@@ -1067,27 +1121,27 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 //   double average_fitness = 0.0; // average_fitness in Zhu
 //   double weighted_sum_fitness = 0.0;
 //   double N_tilde;
-  
+
 //   for(size_t i = 0; i < popParams.size(); ++i) {
 //     weighted_sum_fitness += (popParams[i].absfitness * popParams[i].popSize);
 //   }
-  
+
 //   average_fitness = (1.0/totPopSize) * weighted_sum_fitness;
 //   N_tilde =  initSize * exp(alpha * average_fitness * currentTime);
-//   adjust_fitness_B = N_tilde/weighted_sum_fitness; 
+//   adjust_fitness_B = N_tilde/weighted_sum_fitness;
 
 //   if(adjust_fitness_B < 0) {
 //     throw std::range_error("adjust_fitness_B < 0");
 //   }
-  
+
 //   for(size_t i = 0; i < popParams.size(); ++i) {
 //     popParams[i].birth = adjust_fitness_B * popParams[i].absfitness;
 //     if(mutationPropGrowth) {
-//       popParams[i].mutation = mu * popParams[i].birth * 
+//       popParams[i].mutation = mu * popParams[i].birth *
 // 	popParams[i].numMutablePos;
 //     } else if(popParams[i].birth / popParams[i].mutation < 20) {
 //       Rcpp::Rcout << "\n WARNING: birth/mutation < 20";
-//       Rcpp::Rcout << "\n Birth = " << popParams[i].birth 
+//       Rcpp::Rcout << "\n Birth = " << popParams[i].birth
 // 		<< ";  mutation = " << popParams[i].mutation << "\n";
 //     }
 //     W_f_st(popParams[i]);
@@ -1157,5 +1211,3 @@ void detect_ti_duplicates(const std::multimap<double, int>& m,
     Rcpp::Rcout << "\n\n\n";
   }
 }
-
-

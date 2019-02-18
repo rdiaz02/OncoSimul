@@ -18,17 +18,18 @@
 #include "debug_common.h"
 #include "common_classes.h"
 #include "new_restrict.h"
+#include "exprtk.hpp"
 #include <Rcpp.h>
-#include <iomanip> 
+#include <iomanip>
 #include <algorithm>
 #include <random>
 #include <string>
+#include <sstream>
 
 
 using namespace Rcpp;
 using std::vector;
 using std::back_inserter;
-
 
 std::string concatIntsString(const std::vector<int>& ints,
 			     const std::string sep = ", ") {
@@ -73,8 +74,6 @@ double prodMuts(const std::vector<double>& s) {
   return accumulate(s.begin(), s.end(), 1.0,
 		    std::multiplies<double>());
 }
-
-
 
 // new cPDetect
 double set_cPDetect(const double n2, const double p2,
@@ -175,7 +174,7 @@ TypeModel stringToModel(const std::string& mod) {
   //   return TypeModel::mcfarland0;
   // else if(mod == "bozic2")
   //   return TypeModel::bozic2;
-  else 
+  else
     throw std::out_of_range("Not a valid TypeModel");
 }
 
@@ -189,7 +188,7 @@ Dependency stringToDep(const std::string& dep) {
     return Dependency::xmpn;
   else if(dep == "--") // for root, for example
     return Dependency::single;
-  else 
+  else
     throw std::out_of_range("Not a valid typeDep");
   // We never create the NA from entry data. NA is reserved for Root.
 }
@@ -262,7 +261,7 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
   }
   sort(g0.begin(), g0.end());
 
-  
+
   // Can we assume the fitness IDs go from 0 to n? Nope: because of
   // muEF. But we assume in several places that there are no repeated
   // elements in the output from this function.
@@ -289,7 +288,7 @@ vector<int> allGenesinGenotype(const Genotype& ge){
     allgG.push_back(g3);
   for(auto const &g4 : ge.flGenes)
     allgG.push_back(g4);
-  
+
   sort(allgG.begin(), allgG.end());
   // Remove duplicates see speed comparisons here:
   // http://stackoverflow.com/questions/1041620/whats-the-most-efficient-way-to-erase-duplicates-and-sort-a-vector
@@ -307,7 +306,7 @@ vector<int> allGenesinGenotype(const Genotype& ge){
 
 // For users: if something depends on 0, that is it. No further deps.
 // And do not touch the 0 in Gene_Module_table.
-std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) { 
+std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) {
 
   // The restriction table, or Poset, has a first element
   // with nothing, so that all references by mutated gene
@@ -315,7 +314,7 @@ std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) {
   // having to remember to add 1, etc.
 
   std::vector<Poset_struct> Poset;
-  
+
   Poset.resize(rt.size() + 1);
   Poset[0].child = "0"; //should this be Root?? I don't think so.
   Poset[0].childNumID = 0;
@@ -365,12 +364,12 @@ std::vector<Poset_struct> rTable_to_Poset(Rcpp::List rt) {
     // Should not be needed if R always does what is should. Disable later?
     if(! is_sorted(Poset[i].parentsNumID.begin(), Poset[i].parentsNumID.end()) )
       throw std::logic_error("ParentsNumID not sorted. Bug in R code.");
-    
+
     if(std::isinf(Poset[i].s))
-      Rcpp::Rcout << "WARNING: at least one s is infinite" 
+      Rcpp::Rcout << "WARNING: at least one s is infinite"
 		  << std::endl;
     if(std::isinf(Poset[i].sh) && (Poset[i].sh > 0))
-      Rcpp::Rcout << "WARNING: at least one sh is positive infinite" 
+      Rcpp::Rcout << "WARNING: at least one sh is positive infinite"
 		  << std::endl;
   }
   return Poset;
@@ -399,18 +398,18 @@ std::vector<Gene_Module_struct> R_GeneModuleToGeneModule(Rcpp::List rGM) {
     geneModule[i].GeneName = GeneName[i];
     geneModule[i].ModuleName = ModuleName[i];
   }
- 
+
   return geneModule;
 }
 
 
 std::vector<int> GeneToModule(const std::vector<int>& Drv,
-			     const 
+			     const
 			      std::vector<Gene_Module_struct>& Gene_Module_tabl,
 			      const bool sortout, const bool uniqueout) {
-  
+
   std::vector<int>  mutatedModules;
-  
+
   for(auto it = Drv.begin(); it != Drv.end(); ++it) {
     mutatedModules.push_back(Gene_Module_tabl[(*it)].ModuleNumID);
   }
@@ -422,8 +421,8 @@ std::vector<int> GeneToModule(const std::vector<int>& Drv,
     sort( mutatedModules.begin(), mutatedModules.end() );
   }
   if(uniqueout) {
-    mutatedModules.erase( unique( mutatedModules.begin(), 
-				  mutatedModules.end() ), 
+    mutatedModules.erase( unique( mutatedModules.begin(),
+				  mutatedModules.end() ),
 			  mutatedModules.end() );
   }
   return mutatedModules;
@@ -438,16 +437,49 @@ fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
   fitnessLandscape_struct flS;
   flS.names = Rcpp::as<std::vector<std::string> >(flg["Gene"]);
   flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
+  flS.flFDFmap.clear();//Set to 0 flFDFmap
+  flS.flfVarsmap.clear();//Set to 0 flfVarsmap
 
   std::vector<std::string> genotNames =
     Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
   // Rcpp::CharacterVector genotNames = fl_df["Genotype"];
   Rcpp::NumericVector fitness = fl_df["Fitness"];
-  
+
   // Fill up the map genotypes(as string) to fitness
   //for(size_t i = 0; i != fl_df.nrows(); ++i) {
   for(size_t i = 0; i != genotNames.size(); ++i) {
     flS.flmap.insert({genotNames[i], fitness[i]});
+  }
+
+  return flS;
+}
+
+fitnessLandscape_struct convertFitnessLandscape_fdf(Rcpp::List flg,
+						    																		Rcpp::List fl_df,
+						    																		Rcpp::StringVector fvars) {
+
+  fitnessLandscape_struct flS;
+
+  flS.names = Rcpp::as<std::vector<std::string> >(flg["Gene"]);
+  flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
+  flS.flmap.clear();//Set to 0 flmap
+
+  std::vector<std::string> fvarsvect =
+	  Rcpp::as<std::vector<std::string> > (fvars);
+
+  std::vector<std::string> genotNames =
+    Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
+
+  std::vector<std::string> fitness =
+    Rcpp::as<std::vector<std::string> > (fl_df["Fitness"]);
+
+  // Fill up the map genotypes (as string) to fitness (as string)
+  for(size_t i = 0; i != genotNames.size(); ++i) {
+    flS.flFDFmap.insert({genotNames[i], fitness[i]});
+  }
+  // Fill up the map genotypes (as string) to fVars (as string)
+  for(size_t i = 0; i != genotNames.size(); ++i) {
+    flS.flfVarsmap.insert({genotNames[i], fvarsvect[i]});
   }
 
   return flS;
@@ -461,7 +493,7 @@ genesWithoutInt convertNoInts(Rcpp::List nI) {
   // Rcpp::CharacterVector names = nI["Gene"];
   // Rcpp::IntegerVector id = nI["GeneNumID"];
   // Rcpp::NumericVector s1 = nI["s"];
-  
+
   // genesNoInt.names = Rcpp::as<std::vector<std::string> >(names);
   genesNoInt.names = Rcpp::as<std::vector<std::string> >(nI["Gene"]);
   genesNoInt.NumID = Rcpp::as<std::vector<int> >(nI["GeneNumID"]);
@@ -476,7 +508,7 @@ genesWithoutInt convertNoInts(Rcpp::List nI) {
 std::vector<epistasis> convertEpiOrderEff(Rcpp::List ep) {
 
   std::vector<epistasis> Epistasis;
-  
+
   Rcpp::List element;
   // For epistasis, the numID must be sorted, but never with order effects.
   // Things come sorted (or not) from R.
@@ -491,7 +523,7 @@ std::vector<epistasis> convertEpiOrderEff(Rcpp::List ep) {
 }
 
 std::vector<int> sortedAllOrder(const std::vector<epistasis>& E) {
-  
+
   std::vector<int> allG;
   for(auto const &ec : E) {
     for(auto const &g : ec.NumID) {
@@ -506,7 +538,7 @@ std::vector<int> sortedAllOrder(const std::vector<epistasis>& E) {
 
 std::vector<int> sortedAllPoset(const std::vector<Poset_struct>& Poset) {
   // Yes, this could be done inside rTable_to_Poset but this is cleaner
-  // and will only add very little time. 
+  // and will only add very little time.
   std::vector<int> allG;
   for(auto const &p : Poset) {
     allG.push_back(p.childNumID);
@@ -514,7 +546,7 @@ std::vector<int> sortedAllPoset(const std::vector<Poset_struct>& Poset) {
   sort(allG.begin(), allG.end());
   allG.erase( unique( allG.begin(), allG.end()),
 		      allG.end());
-  return allG; 
+  return allG;
 }
 
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
@@ -522,7 +554,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   // us that is used just as a list.
 
   fitnessEffectsAll fe;
-  
+
   Rcpp::List rrt = rFE["long.rt"];
   Rcpp::List re = rFE["long.epistasis"];
   Rcpp::List ro = rFE["long.orderEffects"];
@@ -530,34 +562,38 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List rgm = rFE["geneModule"];
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
-
+	Rcpp::StringVector fvars = rFE["fitnessLandscapeVariables"];//new line
+	bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+	//Rcpp::String fType =  rFE["frequencyType"];//new line
+	std::string fType = as<std::string>(rFE["frequencyType"]);
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this
   // Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
   Rcpp::List fl_df = rFE["fitnessLandscape_df"];
-  
-  
- 
 
   // In the future, if we want noInt and fitnessLandscape, all
   // we need is use the fitness landscape with an index smaller than those
   // of noInt. So we can use noInt with shift being those in fitnessLandscape.
   // BEWARE: will need to modify also createNewGenotype.
-  
+	//<std::vector<std::string> > fvariables = as<std::vector<std::string> > (fvars);
   // if(fl_df.nrows()) {
-  if(fl_df.size()) {
-    fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
+  if(fl_df.size()) {//New block to deal with fdf stuff
+		if(fdf){
+			fe.fitnessLandscape = convertFitnessLandscape_fdf(flg, fl_df, fvars);
+		} else {
+    		fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
+			}
   }
-  
+
   if(rrt.size()) {
     fe.Poset = rTable_to_Poset(rrt);
-  } 
+  }
   if(re.size()) {
     fe.Epistasis = convertEpiOrderEff(re);
-  } 
+  }
   if(ro.size()) {
     fe.orderE = convertEpiOrderEff(ro);
-  } 
+  }
   if(rgi.size()) {
     fe.genesNoInt = convertNoInts(rgi);
   } else {
@@ -565,13 +601,13 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   }
   // If this is null, use the nullFitnessEffects function; never
   // end up here.
-  
+
   //   if( (rrt.size() + re.size() + ro.size() + rgi.size() + fl_df.nrows()) == 0) {
   if( (rrt.size() + re.size() + ro.size() + rgi.size() + fl_df.size()) == 0) {
       throw std::logic_error("\n Nothing inside this fitnessEffects; why are you here?"
 			     "  Bug in R code.");
   }
-  
+
   // At least for now, if fitness landscape nothing else allowed
   // if(fl_df.nrows() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0)) {
   if(fl_df.size() && ((rrt.size() + re.size() + ro.size() + rgi.size()) > 0)) {
@@ -586,7 +622,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   // 			   " Cannot use modules. "
   // 			   " Bug in R code");
   // }
-  
+
+
   fe.Gene_Module_tabl = R_GeneModuleToGeneModule(rgm);
   fe.allOrderG = sortedAllOrder(fe.orderE);
   fe.allPosetG = sortedAllPoset(fe.Poset);
@@ -598,6 +635,11 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   sort(fe.drv.begin(), fe.drv.end()); //should not be needed, but just in case
   // cannot trust R gives it sorted
   // check_disable_later
+  fe.fVars = as<std::vector<std::string> > (fvars); //new line to insert fVars
+	//fe.fVars = fvariables;
+	fe.frequencyDependentFitness = fdf;//new line to insert frequencyDependentFitness
+	//fe.frequencyType = as<std::string> (fType);
+	fe.frequencyType = fType;
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size(). Bug in R code.");
   }
@@ -608,7 +650,6 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
 			     "Bug in R code.");
     }
   }
-  
   return fe;
 }
 
@@ -633,7 +674,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
 // and createNewGenotype.
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
-		     int& numMutablePosParent, 
+		     int& numMutablePosParent,
 		     std::vector<int>& newMutations,
 		     //randutils::mt19937_rng& ran_gen
 		     std::mt19937& ran_gen,
@@ -686,13 +727,13 @@ void obtainMutations(const Genotype& parent,
 //     }
 
 //   }
-//   return genes;  
+//   return genes;
 // }
 
 
 fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   // Give the fitnessEffects in terms of genes, not modules.
-  
+
   // Extract the noInt. Then those in order effects by creating a multimap
   // to go from map to genes. Then all remaining genes are those only in
   // poset. By set_difference.
@@ -712,13 +753,13 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   // for(auto const &o : fe.genesNoInt.names) {
   //   DP2(o);
   // }
-  // // 
+  // //
   std::multimap<int, int> MG;
   for( auto const &mt : fe.Gene_Module_tabl) {
     MG.insert({mt.ModuleNumID, mt.GeneNumID});
   }
   for (auto const &o : fe.allOrderG) {
-    for(auto pos = MG.lower_bound(o); pos != MG.upper_bound(o); ++pos) 
+    for(auto pos = MG.lower_bound(o); pos != MG.upper_bound(o); ++pos)
       fg.orderG.push_back(pos->second);
   }
   sort(fg.orderG.begin(), fg.orderG.end());
@@ -726,7 +767,7 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   std::vector<int> tmpv = fg.orderG;
   tmpv.insert(tmpv.end(),fg.noInt.begin(), fg.noInt.end());
   sort(tmpv.begin(), tmpv.end()); // should not be needed
-  
+
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 tmpv.begin(), tmpv.end(),
 		 back_inserter(fg.posetEpistG));
@@ -751,7 +792,7 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   //   DP2(o);
   // }
 
-  
+
   return fg;
 }
 
@@ -765,7 +806,7 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
   for(auto const &mt : fe.Gene_Module_tabl) {
     gg.insert({mt.GeneNumID, mt.GeneName});
   }
-  // this is pedantic, as what is the size_type of NumID and of names? 
+  // this is pedantic, as what is the size_type of NumID and of names?
   // for(decltype(fe.genesNoInt.s.size()) i = 0;
   //     i != fe.genesNoInt.s.size(); ++i)
 
@@ -780,7 +821,7 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
     gg.insert({fe.fitnessLandscape.NumID[i], fe.fitnessLandscape.names[i]});
   }
 
-  
+
   return gg;
 }
 
@@ -795,7 +836,7 @@ Genotype createNewGenotype(const Genotype& parent,
   // random: if multiple mutations, randomly shuffle the ordered ones?
   // This is the way to go if chromothripsis, but not if we give an
   // initial mutant
-  
+
   Genotype newGenot = parent;
   std::vector<int> tempOrder; // holder for multiple muts if order.
   bool sort_rest = false;
@@ -827,9 +868,9 @@ Genotype createNewGenotype(const Genotype& parent,
     } else {
       if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
 	// We can be dealing with modules
-	int m; 
+	int m;
 	if(fe.gMOneToOne) {
-	  m = g; 
+	  m = g;
 	} else {
 	  m = fe.Gene_Module_tabl[g].ModuleNumID;
 	}
@@ -844,9 +885,9 @@ Genotype createNewGenotype(const Genotype& parent,
 	newGenot.rest.push_back(g);
 	sort_rest = true;
       }
-    }    
+    }
   }
-  
+
   // If there is order but multiple simultaneous mutations
   // (chromothripsis), we randomly insert them
 
@@ -857,7 +898,7 @@ Genotype createNewGenotype(const Genotype& parent,
   // if(tempOrder.size() > 1)
   //   ran_gen.shuffle(tempOrder.begin(), tempOrder.end());
 
-  
+
   for(auto const &g : tempOrder)
     newGenot.orderEff.push_back(g);
 
@@ -871,7 +912,7 @@ Genotype createNewGenotype(const Genotype& parent,
   return newGenot;
 }
 
-// FIXME: Prepare specialized functions: 
+// FIXME: Prepare specialized functions:
 // Specialized functions:
 // Never interactions: push into rest and sort. Identify by shift == 1.
 // Never no interactions: remove the if. shift == -9.
@@ -900,7 +941,7 @@ void breakingGeneDiff(const vector<int>& genotype,
     Rcpp::Rcout << "\n ";
     throw std::logic_error("\n At least one gene in the genotype not in fitness effects."
 			   " Bug in R code.");
-    
+
   }
 }
 
@@ -945,8 +986,8 @@ Genotype convertGenotypeFromInts(const std::vector<int>& gg,
   // A genotype is of one kind or another depending on what genes are of
   // what type.
   Genotype newGenot;
-  
-  if(gg.size() != 0) { 
+
+  if(gg.size() != 0) {
     // check_disable_later
     checkLegitGenotype(gg, fe);
 
@@ -958,9 +999,9 @@ Genotype convertGenotypeFromInts(const std::vector<int>& gg,
       } else {
 	if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
 	  // We can be dealing with modules
-	  int m; 
+	  int m;
 	  if(fe.gMOneToOne) {
-	    m = g; 
+	    m = g;
 	  } else {
 	    m = fe.Gene_Module_tabl[g].ModuleNumID;
 	  }
@@ -974,7 +1015,7 @@ Genotype convertGenotypeFromInts(const std::vector<int>& gg,
 	  newGenot.rest.push_back(g);
 	}
       }
-    }    
+    }
 
     sort(newGenot.flGenes.begin(), newGenot.flGenes.end());
     sort(newGenot.rest.begin(), newGenot.rest.end());
@@ -1011,9 +1052,9 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
 //   for(auto const &g : gg) {
 //     if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
 //       // We can be dealing with modules
-//       int m; 
+//       int m;
 //       if(fe.gMOneToOne) {
-// 	m = g; 
+// 	m = g;
 //       } else {
 // 	m = fe.Gene_Module_tabl[g].ModuleNumID;
 //       }
@@ -1026,11 +1067,11 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
 //       // No interaction genes so no module stuff
 //       newGenot.rest.push_back(g);
 //     }
-//   }    
+//   }
 
 //   sort(newGenot.rest.begin(), newGenot.rest.end());
 //   sort(newGenot.epistRtEff.begin(), newGenot.epistRtEff.end());
-  
+
 //   return newGenot;
 // }
 
@@ -1038,7 +1079,7 @@ Genotype convertGenotypeFromR(Rcpp::IntegerVector rG,
 // Genotype convertGenotypeFromR(Rcpp::List rGE) {
 
 //   Genotype g;
-			
+
 //   Rcpp::IntegerVector oe = rGE["orderEffGenes"];
 //   Rcpp::IntegerVector ert = rGE["epistRTGenes"];
 //   Rcpp::IntegerVector rest = rGE["noInteractionGenes"];
@@ -1059,12 +1100,12 @@ bool match_order_effects(const std::vector<int>& O,
 			 const std::vector<int>& G) {
   //As the name says: we check if the order effect is matched
   if(G.size() < O.size()) return false;
-  
+
   std::vector<int>::const_iterator p;
   std::vector<size_t> vdist;
-  
+
   auto itb = G.begin();
-  
+
   for(auto const &o : O) {
     p = find(G.begin(), G.end(), o);
     if( p == G.end() ) {
@@ -1103,7 +1144,7 @@ bool match_negative_epist(const std::vector<int>& E,
   // and G the sorted genotype.
 
   if(G.size() < 1) return false;
-   
+
   for(auto const &e : E) {
     if(e < 0) {
       if(binary_search(G.begin(), G.end(), -e))
@@ -1125,7 +1166,7 @@ std::vector<double> evalEpistasis(const std::vector<int>& mutatedModules,
   if(! is_sorted(mutatedModules.begin(), mutatedModules.end()))
     throw std::logic_error("mutatedModules not sorted in evalEpistasis."
 			   " Bug in R code.");
-  
+
   for(auto const &p : Epistasis ) {
     if(p.NumID[0] > 0 ) {
       if(includes(mutatedModules.begin(), mutatedModules.end(),
@@ -1158,7 +1199,7 @@ std::vector<double> evalEpistasis(const std::vector<int>& mutatedModules,
 
 // int getPosetByChild(const int child,
 // 		    const std::vector<Poset_struct>& Poset) {
-  
+
 // }
 
 std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
@@ -1184,14 +1225,14 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
   // Since the genotype can contain genes not in the poset, first find
   // those that are mutated in the genotype AND are in the poset. Then
   // check if the mutated have restrictions satisfied.
-  
+
   std::vector<int> MPintersect;
 
-  
+
   std::set_intersection(allPosetG.begin(), allPosetG.end(),
 			mutatedModules.begin(), mutatedModules.end(),
 			std::back_inserter(MPintersect));
-    
+
   // We know MPintersect is sorted, so we can avoid an O(n*n) loop
   size_t i = 0;
   for(auto const &m : MPintersect) {
@@ -1224,7 +1265,7 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
     }
   }
       // for(auto const &parent : Poset[i].parentsNumID ) {
-      // 	parent_module_mutated = binary_search(mutatedModules.begin(), 
+      // 	parent_module_mutated = binary_search(mutatedModules.begin(),
       // 					      mutatedModules.end(),
       // 					      parent);
       // 	if(parent_module_mutated) {
@@ -1242,18 +1283,169 @@ std::vector<double> evalPosetConstraints(const std::vector<int>& mutatedModules,
   return s;
 }
 
+double frequency(const int& pos, const std::vector<spParamsP>& popParams){
 
+  double fqc;
+  double numerator = popParams[pos].popSize;
+  double denominator = 0.0;
 
+  for(size_t i = 0; i < popParams.size(); i++){
+      denominator += popParams[i].popSize;
+  }
+
+  fqc = numerator / denominator;
+  return fqc;
+}
+
+//This function returns 0 if genotype is not in Genotypes and position+1 otherwise
+int findPositionInGenotypes(const std::vector<Genotype>& Genotypes,
+	const std::vector<int> genotype){
+
+		int index;
+
+		std::vector<std::vector<int> > flGenesInGenotypes;
+	for(size_t i = 0; i < Genotypes.size(); i++){
+		flGenesInGenotypes.push_back(Genotypes[i].flGenes);
+	}
+
+	int pos = std::find(flGenesInGenotypes.begin(),
+	  flGenesInGenotypes.end(), genotype) - flGenesInGenotypes.begin();
+
+	int unsigned size = flGenesInGenotypes.size();
+
+	if(pos < size)
+		index = pos + 1;
+	else
+		index = 0;
+
+  return index;
+}
+
+//This function works oposite to concatIntsString #include <sstream>
+std::vector<int> stringVectorToIntVector(const std::string str){
+
+  std::vector<int> vector;
+  std::stringstream ss(str);
+
+  int i;
+  while (ss >> i) {
+        vector.push_back(i);
+        if(ss.peek() == ','|| ss.peek() == ' '){
+            ss.ignore();
+        }
+  }
+  return vector;
+}
+
+//This function produce the map (structure) that links fVars (keys) to its frequencies (values)
+evalFVars_struct evalFVars(const fitnessEffectsAll& F,
+			   									 const std::vector<Genotype>& Genotypes,
+		           						 const std::vector<spParamsP>& popParams){
+
+	evalFVars_struct efvs;
+	std::map<std::string, std::string> fvarsmap = F.fitnessLandscape.flfVarsmap;
+	std::string freqType = F.frequencyType;
+
+	for(const auto& iterator : fvarsmap) {
+		std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
+		std::string var = iterator.second;//variable associated to genotype
+		int position = findPositionInGenotypes(Genotypes, genotype);
+			if(position != 0){
+				int realPos = position - 1;
+				if(freqType == "abs"){
+					double freqAbs = popParams[realPos].popSize;
+					efvs.evalFVarsmap.insert({var, freqAbs});
+				}else{
+					double freqRel = frequency(realPos, popParams);
+					efvs.evalFVarsmap.insert({var, freqRel});
+				}
+			}else{
+				double freq = 0.0;
+				efvs.evalFVarsmap.insert({var, freq});
+			}
+	}
+
+	return efvs;
+}
+
+double totalPop(const std::vector<spParamsP>& popParams){
+	double sum = 0.0;
+	for(size_t i = 0; i < popParams.size(); i++){
+      sum += popParams[i].popSize;
+  }
+	return sum;
+}
+
+double evalGenotypeFDFitnessEcuation(const Genotype& ge,
+	const fitnessEffectsAll& F,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams){
+
+  double f;
+
+  evalFVars_struct symbol_table_struct = evalFVars(F, Genotypes, popParams);
+
+	std::map<std::string, double> EFVMap = symbol_table_struct.evalFVarsmap;
+
+  std::string gs = concatIntsString(ge.flGenes);
+
+  std::string expr_string = F.fitnessLandscape.flFDFmap.at(gs);
+
+	double N = totalPop(popParams);
+
+  typedef exprtk::symbol_table<double> symbol_table_t;
+  typedef exprtk::expression<double> expression_t;
+  typedef exprtk::parser<double> parser_t;
+
+	symbol_table_t symbol_table;
+  for(auto& iterator : EFVMap){
+		symbol_table.add_variable(iterator.first, iterator.second);
+  }
+	symbol_table.add_constant("N", N);//We reserve N to total population size
+  symbol_table.add_constants();
+
+  expression_t expression;
+  expression.register_symbol_table(symbol_table);
+
+	parser_t parser;
+
+	if (!parser.compile(expr_string, expression)){
+				Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
+	      for (std::size_t i = 0; i < parser.error_count(); ++i){
+	         typedef exprtk::parser_error::type error_t;
+	         error_t error = parser.get_error(i);
+	         Rcpp::Rcout <<
+						 printf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
+		                i,
+		                error.token.position,
+		                exprtk::parser_error::to_str(error.mode).c_str(),
+		                error.diagnostic.c_str(),
+	                  expr_string.c_str())
+					<< std::endl;
+	      }
+				std::string errorMessage1 = "Wrong evalGenotypeFDFitnessEcuation evaluation, ";
+				std::string errorMessage2 = "probably bad fitness columm especification.";
+				std::string errorMessage = errorMessage1 + errorMessage2;
+				throw std::invalid_argument(errorMessage);
+	  }
+
+  f = expression.value();
+
+  return f;
+}
 
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
-					const fitnessEffectsAll& F){
-  
+	const fitnessEffectsAll& F,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams){
+
   // check_disable_later
   checkLegitGenotype(ge, F);
-  
+
   std::vector<double> s;
-  if( (ge.orderEff.size() + ge.epistRtEff.size() +
-       ge.rest.size() + ge.flGenes.size()) == 0) {
+
+	if( ((ge.orderEff.size() + ge.epistRtEff.size() +
+       ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
     Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
     // s.push_back(1.0); //Eh??!! 1? or 0? FIXME It should be empty! and have prodFitness
     // deal with it.
@@ -1265,20 +1457,27 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // But this can be easily fixed in the future; do not return
   // s below, but keep adding, maybe the noIntGenes.
   // Recall also  prodFitness uses, well, the prod of 1 + s
-  // so we want an s s.t. 1 + s = birth rate passed, 
+  // so we want an s s.t. 1 + s = birth rate passed,
   // which is the value in the fitness landscape as interpreted now.
   // i.e., s = birth rate - 1;
+
   if(F.fitnessLandscape.NumID.size()) {
-    std::string gs = concatIntsString(ge.flGenes);
-    if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
-      s.push_back(-1.0);
-    } else {
-      s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
-    }
-    return s;
-  }
-   
-  
+		std::string gs = concatIntsString(ge.flGenes);
+		if(F.frequencyDependentFitness){//possible also with Genotype.size()==0 and popParams.size==0 ?
+			if(F.fitnessLandscape.flFDFmap.find(gs) == F.fitnessLandscape.flFDFmap.end()) {
+	    	s.push_back(-1.0);
+			} else {
+	      s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams) - 1);
+	    	}
+		}else{
+			if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
+	   		s.push_back(-1.0);
+	    } else {
+	      s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
+	    }
+		}
+	}
+
   // Genes without any restriction or epistasis are just genes. No modules.
   // So simple we do it here.
   if(F.genesNoInt.shift > 0) {
@@ -1290,10 +1489,10 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 
   // For the rest, there might be modules. Three different effects on
   // fitness possible: as encoded in Poset, general epistasis, order effects.
-  
+
   // Epistatis and poset are checked against all mutations. Create single
   // sorted vector with all mutations and map to modules, if needed. Then
-  // eval. 
+  // eval.
 
   // Why not use a modified genotypeSingleVector without the no ints? We
   // could, but not necessary. And you can place genes in any order you
@@ -1307,7 +1506,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   mutG.insert( mutG.end(), ge.orderEff.begin(), ge.orderEff.end());
   std::vector<int> mutatedModules;
   if(F.gMOneToOne) {
-    sort(mutG.begin(), mutG.end()); 
+    sort(mutG.begin(), mutG.end());
     mutatedModules = mutG;
   } else {
     mutatedModules = GeneToModule(mutG, F.Gene_Module_tabl, true, true);
@@ -1323,7 +1522,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   } else {
     mutatedModules = GeneToModule(ge.orderEff, F.Gene_Module_tabl, false, true);
   }
-  
+
   std::vector<double> so =
     evalOrderEffects(mutatedModules, F.orderE);
 
@@ -1331,14 +1530,9 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   s.insert(s.end(), srt.begin(), srt.end());
   s.insert(s.end(), se.begin(), se.end());
   s.insert(s.end(), so.begin(), so.end());
-  
+
   return s;
 }
-
-
-
-
-
 
 vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
   // Returns the actual mutated drivers in a genotype.
@@ -1352,10 +1546,11 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
   return presentDrv;
 }
 
-
 double evalMutator(const Genotype& fullge,
 		  const std::vector<int>& full2mutator,
 		  const fitnessEffectsAll& muEF,
+			const std::vector<Genotype>& Genotypes,
+			const std::vector<spParamsP>& popParams,
 		  bool verbose = false) {
   // In contrast to nr_fitness, that sets birth and death, this simply
   // returns the multiplication factor for the mutation rate. This is used
@@ -1392,8 +1587,8 @@ double evalMutator(const Genotype& fullge,
     return 1.0;
   } else {
     Genotype newg = convertGenotypeFromInts(g2, muEF);
-    vector<double> s = evalGenotypeFitness(newg, muEF);
-    
+    vector<double> s = evalGenotypeFitness(newg, muEF, Genotypes, popParams);
+
     // just for checking
     if(verbose) {
       std::string sprod = "mutator product";
@@ -1405,25 +1600,72 @@ double evalMutator(const Genotype& fullge,
   }
 }
 
+std::vector<Genotype> genotypesFromScratch(const std::vector<std::string>& genotNames){
+
+  std::vector<Genotype> genotypesVector;
+
+	for(size_t i = 0; i != genotNames.size(); ++i){
+		//Genotype genotype = wtGenotype();
+		Genotype genotype;
+		genotype.flGenes = stringVectorToIntVector(genotNames[i]);
+		genotypesVector.push_back(genotype);
+	}
+
+	return genotypesVector;
+}
+
+std::vector<spParamsP> popParamsFromScratch(const std::vector<int>& spPopSizes){
+
+	std::vector<spParamsP> popParamsVector;
+
+	for(size_t i = 0; i != spPopSizes.size(); ++i){
+		spParamsP spparams;
+		spparams.popSize = spPopSizes[i];
+		popParamsVector.push_back(spparams);
+	}
+
+  return popParamsVector;
+}
 
 // [[Rcpp::export]]
-double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
-		     bool verbose, bool prodNeg,
-		     Rcpp::CharacterVector calledBy_) {
+double evalRGenotype(Rcpp::IntegerVector rG,
+	Rcpp::List rFE,
+	bool verbose,
+	bool prodNeg,
+	Rcpp::CharacterVector calledBy_) {
   // Can evaluate both ONLY fitness or ONLY mutator. Not both at the same
   // time. Use evalRGenotypeAndMut for that.
+
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
-  
-  if(rG.size() == 0) {
-    // Why don't we evaluate it?
-    Rcpp::warning("WARNING: you have evaluated fitness/mutator status of a genotype of length zero.");
-    return 1;
-  }
+	const bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+
+	if(rG.size() == 0 && fdf == false) {
+		// Why don't we evaluate it?
+		Rcpp::warning("WARNING: you have evaluated fitness/mutator status of a genotype of length zero.");
+		return 1;
+	}
+
+	std::vector<Genotype> Genotypes;
+  std::vector<spParamsP> popParams;
+	if(fdf){
+		//std::vector<int> spPopSizes;
+		//spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
+		std::vector<int> spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
+		Rcpp::List fl_df = rFE["fitnessLandscape_df"];
+		std::vector<std::string> genotNames =
+	    Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
+		Genotypes = genotypesFromScratch(genotNames);
+		popParams = popParamsFromScratch(spPopSizes);
+	}//else{
+		//const std::vector<Genotype> Genotypes(0);
+		//const std::vector<spParamsP> popParams(0);
+	//}
 
   //const Rcpp::List rF(rFE);
   fitnessEffectsAll F = convertFitnessEffects(rFE);
   Genotype g = convertGenotypeFromR(rG, F);
-  vector<double> s = evalGenotypeFitness(g, F);
+  vector<double> s = evalGenotypeFitness(g, F, Genotypes, popParams);
+
   if(verbose) {
     std::string sprod;
     if(calledBy == "evalGenotype") {
@@ -1438,7 +1680,7 @@ double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE,
   if(calledBy == "evalGenotype") {
     if(!prodNeg)
       return prodFitness(s);
-    else 
+    else
       return prodDeathFitness(s);
   } else { //if (calledBy == "evalGenotypeMut") {
     return prodMuts(s);
@@ -1451,22 +1693,25 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 					Rcpp::List rFE,
 					Rcpp::List muEF,
 					Rcpp::IntegerVector full2mutator_,
-					bool verbose, bool prodNeg) {
+					bool verbose,
+					bool prodNeg) {
   // Basically to test evalMutator. We repeat the conversion to genotype,
   // but that is unavoidable here.
 
 
   NumericVector out(2);
+	const std::vector<Genotype> Genotypes(0);
+	const std::vector<spParamsP> popParams(0);
 
   // For fitness. Except for "evalGenotypeFromR", all is done as in the
   // rest of the internal code for evaluating a genotype.
   fitnessEffectsAll F = convertFitnessEffects(rFE);
   fitnessEffectsAll muef = convertFitnessEffects(muEF);
   Genotype g = convertGenotypeFromR(rG, F);
-  vector<double> s = evalGenotypeFitness(g, F);
+  vector<double> s = evalGenotypeFitness(g, F, Genotypes, popParams);
   if(!prodNeg)
     out[0] = prodFitness(s);
-  else 
+  else
     out[0] = prodDeathFitness(s);
   if(verbose) {
     std::string sprod = "s";
@@ -1476,14 +1721,12 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   }
   // out[0] = evalRGenotype(rG, rFE, verbose, prodNeg, "evalGenotype");
   // Genotype fullge = convertGenotypeFromR(rG, F);
-  
+
   const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
-  out[1] = evalMutator(g, full2mutator, muef, verbose);
-  
+  out[1] = evalMutator(g, full2mutator, muef, Genotypes, popParams, verbose);
+
   return out;
 }
-
-
 
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
@@ -1491,10 +1734,13 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const fitnessEffectsAll& fe,
 			   const int mutationPropGrowth,
 			   const std::vector<int> full2mutator,
-			   const fitnessEffectsAll& muEF) {
+			   const fitnessEffectsAll& muEF,
+				 const std::vector<Genotype>& Genotypes,
+	 			 const std::vector<spParamsP>& popParams) {
+
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = evalMutator(g, full2mutator, muEF);
+    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
   } else mumult = 1.0;
 
   if(mu.size() == 1) {
@@ -1570,7 +1816,7 @@ std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist)
 //   if(full2mutator.size() > 0) { // so there are mutator effects
 //     mumult = evalMutator(fullge, full2mutator, muEF);
 //   } else mumult = 1.0;
-  
+
 //   if(mu.size() == 1) {
 //     if(mutationPropGrowth)
 //       return(mumult * mu[0] * newP.numMutablePos * newP.birth);
@@ -1588,7 +1834,7 @@ std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist)
 // }
 
 
-  
+
 // About order of genes and their names, etc
 
 // We first read the R gene module. The $geneModule. The function is

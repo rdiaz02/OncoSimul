@@ -76,6 +76,8 @@ evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
 }
 \item{addwt}{
   (For \code{evalAllGenotypes}). Add the wildtype (no mutations) explicitly?
+  In case of \code{frequencyDependentFitness} = TRUE the fitness of WT is always 
+  shown.
 }
   \item{model}{
     Either nothing (the default) or "Bozic". If "Bozic" then the fitness
@@ -110,8 +112,6 @@ for which order does not matter. In all cases, a "WT" denotes the
 wild-type (or, actually, the genotype without any mutations).
 
 
-
-
 If you use both \code{fitnessEffects} and \code{mutatorEffects} in a
 call,  all the genes specified in
   \code{mutatorEffects} MUST be included in the
@@ -120,6 +120,10 @@ call,  all the genes specified in
   specify them in the call to \code{fitnessEffects}, for instance as
   \code{noIntGenes} with an effect of 0.  
 
+When you are in a frequency dependent fitness situation only \code{fitnessEffects}
+are allowed; you must set \code{frequencydependentFitness = TRUE} and 
+\code{spPopSizes} must not be NULL and its length must be equal to the number of possible
+genotypes. Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
 
 }
 
@@ -289,6 +293,20 @@ try(evalGenotype("a1, c2", fm2, verbose = TRUE))
 ## Not what you want either
 try(evalGenotypeMut("a1, c2", fe2, verbose = TRUE))
 
+##Frequency dependent fitness example
+r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                Fitness = c("1 + 1.5*f_",
+                            "5 + 3*(f_A + f_B + f_A_B)",
+                            "5 + 3*(f_A + f_B + f_A_B)",
+                            "7 + 5*(f_A + f_B + f_A_B)"), 
+                stringsAsFactors = FALSE)
+
+afe <- allFitnessEffects(genotFitness = r, 
+                         frequencyDependentFitness = TRUE, 
+                         frequencyType = "rel",
+                         spPopSizes = c(5000, 2500, 2500, 500))
+
+evalAllGenotypes(afe)
 
 }
 

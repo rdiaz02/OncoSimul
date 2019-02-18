@@ -55,8 +55,8 @@ importFrom("gtools", combinations, permutations, mixedorder)
 ## importFrom("compare", compare)
 importFrom("graphics", "axis", "box", "legend", "matplot", "par", "polygon")
 importFrom("methods", "as")
-importFrom("stats", "na.omit", "runif", "smooth.spline")
-importFrom("utils", "type.convert")
+importFrom("stats", "na.omit", "runif", "smooth.spline", "setNames")
+importFrom("utils", "type.convert", "combn")
 importFrom("RColorBrewer", "brewer.pal")
 importFrom("grDevices", "colorRampPalette", "hsv", "rainbow")
 importFrom("dplyr", "full_join", "left_join", "right_join", "%>%", "mutate",
@@ -64,6 +64,8 @@ importFrom("dplyr", "full_join", "left_join", "right_join", "%>%", "mutate",
 importFrom("smatr", "ma") ## for major axis regression in some tests
 importFrom("car", "linearHypothesis")
 importFrom("nem", "transitive.reduction")
+importFrom("stringr", "regex", "str_extract_all", "str_replace_all")
+
 ## importFrom("slam", "simple_triplet_zero_matrix", ## "colapply_simple_triplet_matrix",
 ##            "col_sums")
 

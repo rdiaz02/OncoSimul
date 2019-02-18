@@ -2,7 +2,7 @@
 title: "OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression."
 author: "
 
-         Ramon Diaz-Uriarte\\
+         Ramon Diaz-Uriarte, Sergio Sanchez-Carrillo\\
 
          Dept. Biochemistry, Universidad Autónoma de Madrid, Instituto de
          Investigaciones Biomédicas 'Alberto Sols' (UAM-CSIC), Madrid,
@@ -295,6 +295,12 @@ is a summary of some of its key features:
 * You can obtain statistics of evolutionary predictability
   from the simulations.
   
+* From version 2.13.2, you can use simulations with frequency dependent fitness:
+  fitness (birth rate) is not fixed for a genotype, but 
+  can be a function of the frequecies of the clones. Evaluating frequently the 
+  fitness across the simulation, you can obtain a dynamic fitness landscape 
+  (see section \@ref(FDF)).
+  
 
 
 The table below, modified from the table at the
@@ -397,7 +403,8 @@ OncoSimulR can help address involve combinations of:
 	         - Generated randomly (`simOGraph`)
         - Any mapping between genotypes and fitness where this mapping is:
             - User-specified
-            - Generated randomly from families of random fitness landscapes (`rfitness`)     
+            - Generated randomly from families of random fitness landscapes (`rfitness`)
+        - A function of clone's frequencies (see section \@ref(FDF) for more details).   
      - Mutation rates can:
           - Vary between genes
           - Be affected by other genes
@@ -989,7 +996,12 @@ reach cancer you could run simulations with `onlyCancer = TRUE` and
 look at the value of `FinalTime` as we did above (section
 \@ref(exmutantimut)).
 
-
+### Simulating trayectories employing the avalalaible models with frequency dependent fitness 
+    
+The new frequency dependent fitness funcionality allows users to run simulations 
+in a different way, defining fitness (birth rates) as functions of clone's frequencies.
+We can thus model frequency dependent selection.
+See section \@ref(FDF) for further details and examples.
 
 
 ## Trade-offs and what is OncoSimulR not well suited for {#whatnotfor}
@@ -3429,6 +3441,12 @@ Exp and Bozic models, or depends on the population size). This is
 also shown in Table \@ref(tab:osrfeatures), in the rows for "Fitness
 components", under "Evolutionary Features".
 
+In the case of frequency dependent fitness simulations, the fitness effects
+must be reevaluated frequently so that birth rate, death rate or both,
+depending the model used, are updated. To do this it is
+necessary to use a short step to reevaluate fitness; this is done using a
+small value for `sampleEvery` parameter in `oncoSimulindv` (see \@ref(whatgoodsampleevery) for more details), as is the case when using McFarland model.
+
 
 
 
@@ -3636,6 +3654,35 @@ specification with all possible epistatic interactions; you can take
 a look at the test file `test.genot_fitness_to_epistasis.R` that
 uses the `fem6` object. We no longer do that but instead pass
 directly the fitness landscape.
+
+In the case of frequency dependent fitness situations, the only way to specify
+fitness effects is using `genoFitnes` as we have shown before, but now you need
+to set `frequencyDependentFitness = TRUE` in `allFitnessEffects`. The fundamental
+difference is the Fitness column in `genoFitnes`. Now this column must be a character
+vector and each element (character also) is a function whose variables are the
+relative frequencies of the clones in the population. You must specify the variables
+like f_, for frequency of wild type, f_1 or f_A for frequency of mutant A or position
+1, f_1_2 or f_A_B for double mutant, and so on. Mathematical operations and symbols
+allowed are described in the documentation of C++ library ExprTk
+(<http://www.partow.net/programming/exprtk/>). ExprTk is the library used to parse and evaluate the
+fitness equations. The numeric vector `spPopSizes` is only necesary to evaluate
+genotypes through `evalGenotype` or `evalAllGenotypes` functions because population
+sizes are needed to calculate the clone's frequencies.
+
+```{r}
+r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                 Fitness = c("10*f_", 
+                             "10*f_1", 
+                             "50*f_2", 
+                             "200*(f_1 + f_2) + 50*f_1_2"))
+
+afe <- allFitnessEffects(genotFitness = r, 
+                         frequencyDependentFitness = TRUE, 
+                         spPopSizes = c(2500, 2000, 5500, 700))
+
+plotFitnessLandscape(evalAllGenotypes(afe))
+```
+
 
 
 <!-- How to simulate Big Bang: start from some initMutant, say S, so that -->
@@ -6628,7 +6675,8 @@ multiple simulations in \@ref(sample).
     to, or larger than, `detectionDrivers`; note that this allows you
     to stop the simulation as soon as a **specific genotype** is
     found, by using exactly and only the genes that make that genotype as
-    the drivers.
+    the drivers. This is not allowed by the moment in frequency dependent 
+    fitness simulations.
 	+ A gene or gene combination among those listed in `fixation`
     becomes fixed in the population (i.e., has a frequency is 1)
     (see details in (\@ref(fixation) and \@ref(fixationG)). 
@@ -9321,7 +9369,82 @@ more meaningful names.
 
 \clearpage
 
+# Frequency dependent fitness simulations {#FDF}
 
+In this kind of simulations fitness effects of clones are expressed by functions,
+where the variables are the relative frequencies of the clones in the tumour population.
+We need to build an `allFitnessEffects` object,
+passing a `genoFitnes` as we can see bellow (see \@ref(explicitmap) for more details).
+
+```{r}
+r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                 Fitness = c("1 + 1.5*f_",
+                             "5 + 3*(f_A + f_B + f_A_B)",
+                             "5 + 3*(f_A + f_B + f_A_B)",
+                             "7 + 5*(f_A + f_B + f_A_B)"))
+
+afe <- allFitnessEffects(genotFitness = r, 
+                        frequencyDependentFitness = TRUE)
+## For reproducibility
+set.seed(10)
+osi <- oncoSimulIndiv(afe, 
+               model = "McFL", 
+               onlyCancer = FALSE, 
+               finalTime = 4000,
+               mu = 1e-6,
+               initSize = 5000, 
+               keepPhylog = FALSE,
+               seed = NULL, 
+               errorHitMaxTries = FALSE, 
+               errorHitWallTime = FALSE)
+
+set.seed(NULL)
+
+osi
+
+plot(osi, show = "genotypes", type = "line")
+```
+
+In this example, we can see how the Fitness column of r is passed as character
+vector, in which each element must be passed as character in the same way. In R, if
+you do that, Genotype and Fitness would be considered as factors in the data frame
+r, but `allFitnessEffects` transform both columns to character, showing the
+corresponding warnings that alert you of the transformation. If you dont want to
+see this sometimes ugly messages, just use `stringsAsFactors = FALSE` in the data frame
+definition (or change the corresponding global option). Setting the paramenter `frequencyDependentFitness` to TRUE, you are
+fixing that all downstream work is going to be done in a frequency Dependent
+Fitness mode.
+
+The case of the example above is inspired by @Axelrod2006, where all clones
+cooperate with each other in terms of the release of diffusion products, like
+growth factors, that stimulate the growth of all mutated genotypes. Here we set all
+fitness effects as linear functions, where fitness increases with the number of
+mutations acquired. We have set the cooperation adding the frequencies of all
+mutated clones in the fitness ecuations. We have used McFL model, so in this case
+the fitness effects are density dependent in terms of death rate and frequency
+dependent in terms of birth rate (see section \@ref(specfit)).
+
+The plot above shows that WT dominates when mutants are less frequent, but if one
+gets a high frequency, WT decreases fast because its frequency falls down and
+consequently its fitness decreasses as well. When a single mutant appears and it
+frequency is high enough, then the probability of the arisen of double mutant
+increases. Thanks to the large fitness of the double mutant it grows fast and
+dominates the entire population quickly. If we think of this double mutant as the
+cause of the malignancy of the tumor when it dominates, we can say that under this
+conditions and in this particular run the system has reached the state of cancer.
+Will we see this if the simulation is repeated a bunch
+of times (i.e., is this a common result under this conditions?) 
+To answer this question we need to run the simulation a high number of times, of
+course without setting the seed in the same place in each iteration, and capture de
+final population result. Using this data we can plot a boxplot, like the one shown
+below in Figure \@ref(fig:boxplot). In this case we run the simulation 1000 times 
+and we can appreciate that the final population composition under this situation is really stable and produces the same results with little variability.
+
+```{r boxplot, eval=TRUE, echo=FALSE, fig.cap="Final population results box plot. 1000 simulations"}
+knitr::include_graphics("simulationsBoxPlot.png")
+```
+
+\clearpage
 
 # Session info and packages used
 

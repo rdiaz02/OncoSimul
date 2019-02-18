@@ -1,3 +1,6 @@
+Changes in version 2.13.2 (2019-02-18):
+	- frequency dependent fitness. This is a MAJOR addition.
+
 Changes in version 2.13.1 (2019-02-07):
 	- bumped to one over the BioC-3.9 version
 
