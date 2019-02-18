@@ -1,5 +1,5 @@
 citHeader("If you use OncoSimulR, please cite the OncoSimulR Bioinformatics paper.",
-          " OncoSimulR has been used in two large",
+          " OncoSimulR has been used in three large",
           " comparative studies of methods to infer restrictions in",
           " the order of accumulation of mutations (cancer progression models)",
           " published in Bioinformatics and BMC Bioinformatics; you might want to cite those too,",
@@ -25,7 +25,7 @@ citEntry(entry="Article",
 
 
 
-## citHeader("A former version of OncoSimulR has been used in this paper:")
+
 
 
 citEntry(entry="Article",
@@ -34,9 +34,10 @@ citEntry(entry="Article",
          journal = "Bioinformatics",
          year = "2017",
          doi = "10.1093/bioinformatics/btx663",
-         url = "https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btx663/",
-##         volume = "zz",
-##         number = "zz",
+         url = "https://academic.oup.com/bioinformatics/article/34/5/836/4557185",
+         volume = "34",
+         number = "5",
+         pages = "836--844",
          textVersion = paste("R Diaz-Uriarte.",
                              "Cancer progression models and fitness landscapes: a many-to-many relationship",
                              "2017", "Bioinformatics.",
@@ -55,5 +56,20 @@ citEntry(entry="Article",
          number = "41",
          textVersion = paste("R Diaz-Uriarte.",
              "Identifying restrictions in the order of accumulation of mutations during tumor progression: effects of passengers, evolutionary models, and sampling",
-             "BMC Bioinformatics, 16(41), 2015.")
+             "2015. BMC Bioinformatics, 16(41).")
 )
+
+
+citEntry(entry = "Article",
+	author = "R Diaz-Uriarte and C Vasallo",
+	title = "Every which way? On predicting tumor evolution using cancer progression models",
+	journal = "bioRxiv",
+	year = "2018",
+	doi = "10.1101/371039",
+	URL = "https://www.biorxiv.org/content/early/2018/11/20/371039",
+        textVersion = paste("R Diaz-Uriarte and C. Vasallo.",
+                            "Every which way? On predicting tumor evolution using cancer progression models",
+                            "2018",
+                            "bioRxiv",
+                            "https://www.biorxiv.org/content/early/2018/11/20/371039")
+}
