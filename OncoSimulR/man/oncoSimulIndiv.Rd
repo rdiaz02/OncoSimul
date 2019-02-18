@@ -1024,7 +1024,7 @@ oncoSimulIndiv(femuv, mu = muv)
 
 #########Frequency dependent fitness examples
 
-##A example with cooperation. Presence of WT favours all clones
+## An example with cooperation. Presence of WT favours all clones
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
                       Fitness = c("3 + 5*f_",
@@ -1050,6 +1050,8 @@ osi
 
 plot(osi, show = "genotypes", type = "line")
 
+\dontrun{
+## This can be slow
 osp <- oncoSimulPop(5,
                     afe,
                     model = "McFL",
@@ -1062,9 +1064,11 @@ osp <- oncoSimulPop(5,
 sp <- samplePop(osp)
 
 sp
+}
 
-##A little bit more complex example situation. WT favours clones A and B. A and
-##B compete with each other. Presence of A and B favour clone A, B.
+## A little bit more complex example situation. WT favours clones A and B. A and
+## B compete with each other. Presence of A and B favour clone A, B.
+
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
                       Fitness = c("3 + 5*f_",
@@ -1090,6 +1094,8 @@ osi
 
 plot(osi, show = "genotypes", type = "line")
 
+\dontrun{
+## This can be slow
 osp <- oncoSimulPop(5,
                     afe,
                     model = "McFL",
@@ -1105,6 +1111,7 @@ sp <- samplePop(osp)
 
 sp
 
+
 oss <- oncoSimulSample(5,
                        afe,
                        model = "McFL",
@@ -1114,7 +1121,7 @@ oss <- oncoSimulSample(5,
                        verbosity = 0)
 
 oss
-
+}
 
 
 ## Reinitialize the RNG
