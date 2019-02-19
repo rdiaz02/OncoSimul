@@ -159,10 +159,10 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
     must be character vectors.
   }
   
-  When \code{frequencyDependentFitness} is FALSE, fitness must be
+  When \code{frequencyDependentFitness = FALSE}, fitness must be
   \code{>= 0}. If any possible genotype is missing, its fitness is assumed
-  to be 1. By the contrary, if \code{frequencyDependentFitness} is TRUE,
-  the Fitness column must contain the fitness specification ecuations,
+  to be 0. In contrast, if \code{frequencyDependentFitness = TRUE},
+  the Fitness column must contain the fitness specification equations,
   like characters, using as variables the frequencies (absolute or
   relative)  of the all possible genotypes. We use "f" to denote relative
   frecuencies and "n" for absolute. Letter "N" (UPPER CASE) is reserved to
@@ -171,10 +171,10 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   first gene is mutated, f_2 or f_B if is the case for the second one,
   f_1_2 or f_A_B, if both are mutated, and so on. If we want to use
   absolute frequencies, just subtitute "f" for "n". Please remember that
-  the election between relative or absolute frequencies must be specify
+  the election between relative or absolute frequencies must be specified
   also in \code{frequencyType}. Mathematical operations and symbols
   allowed are described in the documentation of C++'s library ExprTk that
-  is used to parse an evaluate the fitness ecuations (see references for
+  is used to parse and evaluate the fitness equations (see references for
   more information). 
 }
 
