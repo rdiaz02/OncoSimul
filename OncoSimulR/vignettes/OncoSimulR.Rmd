@@ -4631,7 +4631,7 @@ But we can also use a specification where we do not use the "-". That
 requires a different numerical value of the interaction, because now, as
 we are rewriting the interaction term as genotype "A is mutant, B is
 mutant" the double mutant will incorporate the effects of "A mutant",
-``B mutant" and "both A and B mutants". We can define a new $s_2$ that
+"B mutant" and "both A and B mutants". We can define a new $s_2$ that
 satisfies $(1 + s_{ab}) = (1 + s_a) (1 + s_b) (1 + s_2)$ so
 $(1 + s_2) = (1 + s_{ab})/((1 + s_a) (1 + s_b))$ and therefore specify as:
 
@@ -4713,7 +4713,7 @@ evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
 We needed to pass the $s_{ac}$ coefficient explicitly, even if it that
 term was just the product. We can try to avoid using the "-", however
 (but we will need to do other calculations). For simplicity, I use capital
-``S" in what follows where the letters differ from the previous
+"S" in what follows where the letters differ from the previous
 specification:
 
 
@@ -4836,7 +4836,7 @@ depicted above (several genes in module A, for example) actually is one of
 interaction: the members of "A" are combined using an "OR" operator
 (i.e., the fitness consequences of having one or more genes of A mutated
 are the same), not just simply multiplying their fitness; similarly for
-``B". This is why no interaction genes also mean no modules allowed.
+"B". This is why no interaction genes also mean no modules allowed.
 
 So how do you get what you want in this case?  Enter the names of
 the modules in the `epistasis` component but have no term for ":"
@@ -5028,7 +5028,7 @@ evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic")
 ```
 
 What gives here? The simulation code would alert you of this (see section
-\@ref(ex-0-death)) in this particular case because there are ``-1",
+\@ref(ex-0-death)) in this particular case because there are "-1",
 which might indicate that this is not what you want. The problem is that
 you probably want the Death rate to be infinity (the birth rate was 0, so
 no clone viability, when we used birth rates ---section \@ref(noviab)).
@@ -6191,14 +6191,14 @@ you need to decide:
 
 ## Can I start the simulation from a specific mutant? {#initmut}
 
-You bet. <!-- In v.1 you can only give the initial mutant as one with a single -->
-<!-- mutated gene. --> In version 2 you can specify the genotype for the
+You bet. In version 2 you can specify the genotype for the
 initial mutant with the same flexibility as in `evalGenotype`. Here we show
 a couple of examples (we use the representation of the parent-child
 relationships ---discussed in section \@ref(phylog)--- of the clones so that
 you can see which clones appear, and from which, and check that we are not
 making mistakes).
-
+ <!-- In v.1 you can only give the initial mutant as one with a single -->
+<!-- mutated gene. --> 
 
 ```{r prbau003, fig.height=6}
 
@@ -6320,7 +6320,7 @@ drivers, whichever comes first (if any of these happen before
 
 In the `onlyCancer = TRUE` case, what happens if we reach
 `finalTime` (or the population size becomes zero) before any of the
-``reach cancer" conditions have been fulfilled?  The simulation will be
+"reach cancer" conditions have been fulfilled?  The simulation will be
 repeated again, within the following limits:
 
 
@@ -6686,7 +6686,7 @@ fixation. These must be successive sampling periods without interruptions
 (i.e., a single period when the condition is not fulfilled will set the
 counter to 0). This can help to exclude short, transitional, local maxima
 that are quickly replaced by other genotypes. (The default is 50, but this
-is probably too small for ``real life'' usage).
+is probably too small for "real life" usage).
 
 `fixation_min_size`: you might only want to consider fixation to have
 happened if a minimal size has been reached (this can help weed out local
@@ -7719,7 +7719,7 @@ par(op)
 ## Parent-child relationships from multiple runs {#phylogmult}
 
 If you use `oncoSimulPop` you can store and plot the
-``phylogenies" of the different runs:
+"phylogenies" of the different runs:
 
 ```{r}
 
