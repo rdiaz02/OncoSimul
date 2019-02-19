@@ -3603,7 +3603,8 @@ To specify the mapping you can also use a matrix (or data frame) with
 $g + 1$ columns; each of the first $g$ columns contains a 1 or a 0
 indicating that the gene of that column is mutated or not. Column $g+ 1$
 contains the fitness values. And you do not even need to specify all the
-genotypes (we will assume that the missing genotypes have fitness 1):
+genotypes: the missing genotypes are assigned a fitness 0 ---except
+for the WT genotype which, if missing, is assigned a fitness of 1:
 
 ```{r}
 m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))

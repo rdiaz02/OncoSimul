@@ -107,6 +107,44 @@ test_that("genotFitness not combined with others", {
 })
 
 
+test_that("Missing genotypes defaults: WT 1, others 0", {
+    (m8 <- data.frame(G = c("A, B, C", "B"), F = c(3, 2)))
+    exp_m8 <- data.frame(
+        Genotype = c("WT", "A", "B", "C", "A, B", "A, C",
+                     "B, C", "A, B, C"),
+        Fitness = c(1, 0, 2, rep(0, 4), 3),
+        stringsAsFactors = FALSE)
+    
+    o_m8 <- evalAllGenotypes(allFitnessEffects(genotFitness = m8),
+                     addwt = TRUE)
+    ## as exp_m8 does not have the evalAllGenotypes attribute
+    expect_equivalent(o_m8, exp_m8)
+
+    
+
+    (m9 <- rbind(
+         c(0, 1, 1, 0, 2),
+         c(1, 1, 0, 0, 4),
+         c(1, 0, 1, 0, 1.5)
+     ))
+    
+    exp_m9 <- data.frame(
+        Genotype = c("WT", "A", "B", "C", "D",
+                     "A, B", "A, C", "A, D", 
+                     "B, C", "B, D", "C, D",
+                     "A, B, C", "A, B, D", "A, C, D", "B, C, D",
+                     "A, B, C, D"),
+        Fitness = c(1, rep(0, 4),
+                    4, 1.5, 0, 2,
+                    rep(0, 7)),
+        stringsAsFactors = FALSE)
+
+    o_m9 <- evalAllGenotypes(allFitnessEffects(genotFitness = m9), addwt = TRUE)
+
+    expect_equivalent(o_m9, exp_m9)
+    
+})
+
 cat(paste("\n Ending genotFitness at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

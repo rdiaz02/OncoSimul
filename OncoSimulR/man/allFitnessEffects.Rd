@@ -141,7 +141,8 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
     instance, a row "A, B" would mean the genotype with both A and B mutated.
   }
   In all cases, fitness must be \code{>= 0}. If any possible genotype is
-  missing, its fitness is assumed to be 1.
+  missing, its fitness is assumed to be 0, except for WT (if WT is
+    missing, its fitness is assumed to be 1 ---see examples).
 }
 
 
@@ -404,6 +405,19 @@ plotFitnessLandscape(evalAllGenotypes(fe2, order = FALSE))
 
 ## same as
 plotFitnessLandscape(fe2)
+
+
+###### Defaults for missing genotypes
+
+## As a two-column data frame
+
+(m8 <- data.frame(G = c("A, B, C", "B"), F = c(3, 2)))
+evalAllGenotypes(allFitnessEffects(genotFitness = m8), addwt = TRUE)
+
+## As a matrix 
+
+(m9 <- rbind(c(0, 1, 0, 1, 4), c(1, 0, 1, 0, 1.5)))
+evalAllGenotypes(allFitnessEffects(genotFitness = m9), addwt = TRUE)
 
 
 ## Reinitialize the seed
