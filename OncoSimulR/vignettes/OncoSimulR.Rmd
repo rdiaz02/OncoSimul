@@ -3598,7 +3598,6 @@ And you can plot the fitness landscape:
 plotFitnessLandscape(evalAllGenotypes(fem4))
 ``` 
 
-
 To specify the mapping you can also use a matrix (or data frame) with
 $g + 1$ columns; each of the first $g$ columns contains a 1 or a 0
 indicating that the gene of that column is mutated or not. Column $g+ 1$
@@ -9363,5 +9362,5 @@ set.seed(NULL)
 <!-- fill-column: 68 -->
 <!-- End: -->
 
-<!--  LocalWords:  genotype Genotyping
- -->
+<!--  LocalWords:  genotype Genotyping -->
+
