@@ -1,5 +1,6 @@
 * Miscell to-do in freq-dep-fitness branch
 
+** first
   - [X] binary files were changed: explain:
     - [X] OncoSimulR/data/examplesFitnessEffects.RData
     - [X] OncoSimulR/inst/testdata_fee.RData
@@ -30,3 +31,8 @@
 
   - [ ] check size of package with included exprTk
 
+** second
+  - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or "n"?
+  - [ ] can we mix freq. with absolute? I guess so, because any frequency
+    can be expressed as a ratio of numbers.
+  - [ ] change frequencyType = unemployed by NULL.
