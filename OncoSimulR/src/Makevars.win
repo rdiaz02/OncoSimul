@@ -1,3 +1,5 @@
 ## This is a C++11 package
 CXX_STD = CXX11
-PKG_CXXFLAGS = -I../inst/miscell
+PKG_CXXFLAGS = -I../inst/miscell -O3
+## Do we need the -O3 to prevent mingw failure of too many sections?
+##  https://discourse.mc-stan.org/t/too-many-sections/6261 
