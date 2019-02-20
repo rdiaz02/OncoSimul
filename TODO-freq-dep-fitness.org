@@ -42,6 +42,8 @@
 
   - [ ] check size of package with included exprTk
   - [ ] compilation warnings for comparisons between ints, etc.
+  - [ ] why is the library under inst/miscell?
+    - Also: https://stackoverflow.com/questions/51571906/which-is-the-best-way-to-develop-an-r-package-that-needs-a-heavy-c-library
 
 ** second
   - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or "n"?
