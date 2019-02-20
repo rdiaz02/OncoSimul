@@ -38,6 +38,7 @@
       - Not possible to force -O3?
 	- https://stackoverflow.com/questions/23414448/r-makevars-file-to-overwrite-r-cmds-default-g-options
       - https://discourse.mc-stan.org/t/too-many-sections/6261   [R specific?]
+      - ExprTk: this has been reported: https://stackoverflow.com/questions/31890021/mingw-too-many-sections-bug-while-compiling-huge-header-file-in-qt
 
   - [ ] check size of package with included exprTk
 
