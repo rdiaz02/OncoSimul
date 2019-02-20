@@ -201,13 +201,14 @@ the official Rtools for Windows now support C++-11, so I might change
 this in the near future).
 
 
-The code under `OncoSimulR/inst/miscell/exprtk.hpp` is copyright Arash
-Partow, and is licensed under "The MIT License (MIT)"
+The code under `OncoSimulR/src/exprtk.h` is copyright Arash Partow, and is
+licensed under "The MIT License (MIT)"
 (http://www.opensource.org/licenses/MIT) and is compatible with GPL
 (http://directory.fsf.org/wiki/License:Expat). The file was originally
 downloaded from http://www.partow.net/programming/exprtk/index.html on
 2017-05-15. (The most recent version was downloaded again in 2019-02-18).
-
+The file was originally named `exprtk.hpp`; to conform to R's
+requirements, it was renamed as `exprt.h`
 
 
 

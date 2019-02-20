@@ -18,7 +18,7 @@
 #include "debug_common.h"
 #include "common_classes.h"
 #include "new_restrict.h"
-#include "exprtk.hpp"
+#include "exprtk.h"
 #include <Rcpp.h>
 #include <iomanip>
 #include <algorithm>
