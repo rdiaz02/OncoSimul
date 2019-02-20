@@ -41,6 +41,7 @@
       - ExprTk: this has been reported: https://stackoverflow.com/questions/31890021/mingw-too-many-sections-bug-while-compiling-huge-header-file-in-qt
 
   - [ ] check size of package with included exprTk
+  - [ ] compilation warnings for comparisons between ints, etc.
 
 ** second
   - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or "n"?
