@@ -39,11 +39,74 @@
 	- https://stackoverflow.com/questions/23414448/r-makevars-file-to-overwrite-r-cmds-default-g-options
       - https://discourse.mc-stan.org/t/too-many-sections/6261   [R specific?]
       - ExprTk: this has been reported: https://stackoverflow.com/questions/31890021/mingw-too-many-sections-bug-while-compiling-huge-header-file-in-qt
-
+	- https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/
+	- https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
+          [see lines
+	  - // exprtk requires -Wa,-mbig-obj on mingw, but there is a bug that prevents linking if not using -O3
+          - // see:
+          - // - https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/
+          - // - https://github.com/assimp/assimp/issues/177#issuecomment-217605051
+          - // - http://discourse.chaiscript.com/t/compiled-in-std-lib-with-mingw/66/2
+          ]
+      - affects other libraries too (see above last two links)
   - [ ] check size of package with included exprTk
   - [ ] compilation warnings for comparisons between ints, etc.
   - [ ] why is the library under inst/miscell?
     - Also: https://stackoverflow.com/questions/51571906/which-is-the-best-way-to-develop-an-r-package-that-needs-a-heavy-c-library
+    - yes, definitely, down the road, leave under /inst/include: https://stackoverflow.com/questions/36927141/syncing-rcpp-with-external-headers-and-libraries-to-build-a-batch-geocoding-pack
+
+  - Not unlike this reported issue:
+    - https://stat.ethz.ch/pipermail/r-devel/2017-March/073846.html
+    -
+      http://r.789695.n4.nabble.com/Seeking-advice-regarding-compilation-of-large-libraries-using-RTools-Windows-td4729418.html
+      [same thing, easier to read]
+
+*** mingw issue: using Rtools35.exe
+    - The file to use in Windoze is, for system-wide packages,
+      C:/Users/ramon/.R/Makevars.win [nope, do not go to users/whatever/Documents]
+    - The variable is: CXX11FLAGS [using only CXXFLAGS was not overwriding
+      the -O2]
+    - Still, with only -O3 or with both -Wa,-mbig-obj -O3 I still get the
+      same problems of too many sections
+    - I try with "--no-multiarch" (R CMD INSTALL --no-multiarch) so it only tries to build the 64-bit version:
+      - Only with "-O3": fails with "too many section (52845)"
+      - Only with "-Wa,-mbig-obj":
+      - With both "-Wa,-mbig-obj -O3 -":
+	- takes more than 40 when building the dll. (empieza a las 13:25): uses
+          1 core at 99%, and uses about 140 MB RAM. Killed after 40
+          minutes.
+	- all of this has happened before fopr other packages (see above)
+	       - http://r.789695.n4.nabble.com/Seeking-advice-regarding-compilation-of-large-libraries-using-RTools-Windows-td4729418.html
+
+*** Rtools40:
+    - Several dependencies of OncoSimulR fail: igraph, new, lme4 ,
+      pbkrtest (for car), etc.
+    - I give up after install one of the dependencies of igraph.
+    - After all, this is still using gcc from mingw32
+
+*** LLVM/clang?
+    - It should work, but I do not see how to use clang in windowze.
+    - The report from ExpTrk's autho indictes he can get ExprTk to work
+      under Windowze with clang.
+      - Using clang with R: these three would seem to suggest one can use clag:
+	- http://r-pkgs.had.co.nz/src.html
+	- https://r-pkgs.org/
+	- https://teuder.github.io/rcpp4everyone_en/020_install.html
+	- But then, this says clang cannot be used:
+	  - https://groups.google.com/d/msg/stan-users/QeQaEqFqyow/5wksPBacBQAJ
+	- And I cerntainly do not seem to be able to make it work with Rtools.
+	- Of course it cannot work with clang in windoze: see, e.g.,
+          question 2.9 and 1.3 in the Rcpp-FAQ.pdf: the toolchain just
+          does not suppor it: https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-FAQ.pdf
+	  - and this: https://stackoverflow.com/a/10723987
+	  - and this:
+            https://github.com/RcppCore/Rcpp/issues/728#issuecomment-313019053
+            [yes, it is MSVC, but says gcc only]
+      
+
+**** virtualbox notes
+     - the screen size, etc: do "view full screeen mode" and then "auto
+       resize". Seems to work (?)
 
 ** second
   - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or "n"?
