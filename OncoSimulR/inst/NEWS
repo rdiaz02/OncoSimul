@@ -1,5 +1,9 @@
-Changes in version 2.13.2 (2019-02-18):
+Changes in version 2.13.zz (2019-zz-zz):
 	- frequency dependent fitness. This is a MAJOR addition.
+
+Changes in version 2.13.2 (2019-03-18):
+	- changes in behavior of sample
+	  (see NEWS and https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17494) were
 
 Changes in version 2.13.1 (2019-02-07):
 	- bumped to one over the BioC-3.9 version
