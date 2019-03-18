@@ -1,3 +1,8 @@
+Changes in version 2.13.2 (2019-03-18):
+	- changes in behavior of sample
+	  (see NEWS and https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17494) were
+	  leading to failures of some tests. Using RNGversion in some tests.
+
 Changes in version 2.13.1 (2019-02-07):
 	- bumped to one over the BioC-3.9 version
 
