@@ -81,6 +81,9 @@ test_that("fit. mut. eff. values, long ex",  {
     ## Fitness and mutator effects are evaluated OK when modules, epist, etc,
     ## are made differently in mutator and fitness and modules even share names 
     RNGkind("Mersenne-Twister")
+    ## in 3.6.0 change in sample: see https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17494
+    suppressWarnings(RNGversion("3.5.1"))
+
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                      child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),

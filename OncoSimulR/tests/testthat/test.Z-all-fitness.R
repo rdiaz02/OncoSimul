@@ -2,6 +2,8 @@ inittime <- Sys.time()
 cat(paste("\n Starting test.Z-all-fitness at", date(), "\n"))
 
 RNGkind("Mersenne-Twister")
+## in 3.6.0 change in sample: see https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17494
+suppressWarnings(RNGversion("3.5.1"))
 
 test_that("catches identical gene names in different modules", {
     ## long, because it uses a complex and easy to miss problem
