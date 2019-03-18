@@ -76,7 +76,7 @@ test_that("all genes must be in geneToModule even if present in fitness", {
 })
 
 
-test_that("fitness and mutator effects evaluation of actual values, long example",  {
+test_that("fit. mut. eff. values, long ex",  {
     ## Based on "long example OK" in "test.all-fitness.R"
     ## Fitness and mutator effects are evaluated OK when modules, epist, etc,
     ## are made differently in mutator and fitness and modules even share names 
