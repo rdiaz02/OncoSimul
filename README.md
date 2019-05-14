@@ -6,7 +6,8 @@
 
 # OncoSimul
 
-
+**This README contains comments specific to the
+frequency-dependent-fitness branch**
 
 Code for forward population genetic simulation in asexual populations,
 with special focus on cancer progression.  Fitness can be an arbitrary
@@ -23,6 +24,8 @@ including single-cell sampling; plotting the parent-child relationships of
 the clones; generating random fitness landscapes (Rough Mount Fuji, House
 of Cards, and additive models) and plotting them.
 
+New functionality to allow for **frequency-dependent fitness has been
+added**.
 
 
 The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
@@ -92,15 +95,16 @@ To start using it:
 library(OncoSimulR)
 ```
 
+The above, however, **will not install the version with frequency
+dependent fitness**.
 
-
-You can directly install from github (and this might be newer than the
-BioC code)
+**To use the frequency dependent fitness** you should install from github
+<!-- (and this might be newer than the BioC code) -->
 
 ```r
 install.packages("devtools") ## if you don't have it already
 library(devtools)
-install_github("rdiaz02/OncoSimul/OncoSimulR")
+install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness")
 ``` 
 
 But sometimes the latest additions in this repo could be broken (see [Software status](#software-status)). And you
@@ -177,12 +181,27 @@ If you use the package in publications **please cite the Bioinformatics paper**.
 
 
 The R/BioConductor OncoSimulR package is licensed under the GPLv3
-license. All of the code for the OncoSimulR BioConductor package, except
-for functions `plot.stream` and `plot.stacked`, is Copyright 2012-2016 by
-Ramon Diaz-Uriarte. `plot.stream` and `plot.stacked` are Copyright
-2013-2016 by Marc Taylor (see also https://github.com/marchtaylor/sinkr
-and
+license. The code for the OncoSimulR BioConductor package, except for
+functions `plot.stream` and `plot.stacked`, is Copyright 2012-2019 by
+Ramon Diaz-Uriarte; the code for frequency dependent fitness is Copyright
+2017-2019 Sergio Sanchez Carrillo. `plot.stream` and `plot.stacked` are
+Copyright 2013-2016 by Marc Taylor (see also
+https://github.com/marchtaylor/sinkr and
 http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html).
+
+
+The code under `OncoSimulR/src/exprtk.h` is copyright Arash Partow, and is
+licensed under "The MIT License (MIT)"
+(http://www.opensource.org/licenses/MIT) and is compatible with GPL
+(http://directory.fsf.org/wiki/License:Expat). The file was originally
+downloaded from http://www.partow.net/programming/exprtk/index.html on
+2017-05-15. The most recent version was downloaded again in 2019-05-14
+(and corresponds to the [exprTk
+repo](https://github.com/ArashPartow/exprtk) at commit
+https://github.com/ArashPartow/exprtk/commit/9fad72832c70348725c073e369a3321781001766). The
+file was originally named `exprtk.hpp`; to conform to R's requirements, it
+was renamed as `exprt.h`
+
 
 
 The code in `miscell-files/randutils.h` is copyright Melissa E. O'Neill,
@@ -199,16 +218,6 @@ Exit function). I had to disable usage of randutils for now, since I could
 not get it to compile with gcc-4.6 (since version 3.3 of R, 
 the official Rtools for Windows now support C++-11, so I might change 
 this in the near future).
-
-
-The code under `OncoSimulR/src/exprtk.h` is copyright Arash Partow, and is
-licensed under "The MIT License (MIT)"
-(http://www.opensource.org/licenses/MIT) and is compatible with GPL
-(http://directory.fsf.org/wiki/License:Expat). The file was originally
-downloaded from http://www.partow.net/programming/exprtk/index.html on
-2017-05-15. (The most recent version was downloaded again in 2019-02-18).
-The file was originally named `exprtk.hpp`; to conform to R's
-requirements, it was renamed as `exprt.h`
 
 
 
