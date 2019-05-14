@@ -1,5 +1,9 @@
+Changes in version 2.15.99 (2019-05-14):
+	- Bumped version to match current Biocdevel.
+
 Changes in version 2.13.99 (1970-01-01):
 	- frequency dependent fitness. This is a MAJOR addition.
+	- (the date is bogus, of course)
 
 Changes in version 2.13.2 (2019-03-18):
 	- changes in behavior of sample
