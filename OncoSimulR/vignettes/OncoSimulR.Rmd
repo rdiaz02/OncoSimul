@@ -204,7 +204,7 @@ is a summary of some of its key features:
 * You can obtain statistics of evolutionary predictability
   from the simulations.
   
-* From version 2.13.2, you can use simulations with frequency dependent fitness:
+* From version 2.13.2, you can use simulations with frequency-dependent fitness:
   fitness (birth rate) is not fixed for a genotype, but 
   can be a function of the frequecies of the clones. Evaluating frequently the 
   fitness across the simulation, you can obtain a dynamic fitness landscape 
@@ -8603,7 +8603,10 @@ more meaningful names.
 
 \clearpage
 
-# Frequency dependent fitness simulations {#FDF}
+# Frequency-dependent fitnessn {#FDF}
+
+**This functionality is only available in the freq-dep-fitness
+branch** See https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
 
 In this kind of simulations fitness effects of clones are expressed by functions,
 where the variables are the relative frequencies of the clones in the tumour population.

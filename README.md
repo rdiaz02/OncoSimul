@@ -98,7 +98,8 @@ library(OncoSimulR)
 The above, however, **will not install the version with frequency
 dependent fitness**.
 
-**To use the frequency dependent fitness** you should install from github
+**To use the frequency-dependent fitness version** you should install from github
+as follows:
 <!-- (and this might be newer than the BioC code) -->
 
 ```r
@@ -107,8 +108,21 @@ library(devtools)
 install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness")
 ``` 
 
-But sometimes the latest additions in this repo could be broken (see [Software status](#software-status)). And you
-can of course clone this repo, and install from there.
+**The frequency-dependent fitness version will not install in Windows.**
+This is a known problem with ExprTk and MinGW
+(https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/). If
+you really want to, you might try [Rtools
+40](https://cran.r-project.org/bin/windows/testing/rtools40.html) (we run
+into issues with a few dependencies, and gave up, but it might be solved
+by now). Eventually, Rtools 40 should become the default, and the problem
+will get solved.
+
+
+
+Note that sometimes the latest additions in this repo could be broken (see
+[Software status](#software-status)). And you can of course clone this
+repo, and install from there.
+
 
 ## BioConductor github repository
 
