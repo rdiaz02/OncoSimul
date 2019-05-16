@@ -164,22 +164,22 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   to be 0, except for WT (if WT is missing, its fitness is assumed to be
   1 ---see examples).
 
-  In contrast, if \code{frequencyDependentFitness = TRUE},
-  the Fitness column must contain the fitness specification equations,
-  like characters, using as variables the frequencies (absolute or
-  relative)  of the all possible genotypes. We use "f" to denote relative
-  frecuencies and "n" for absolute. Letter "N" (UPPER CASE) is reserved to
-  denote total population size, thus f=n/N for each possible genotype.
-  Relative frequency variables must be f_ for wild type, f_1 or f_A if
-  first gene is mutated, f_2 or f_B if is the case for the second one,
-  f_1_2 or f_A_B, if both are mutated, and so on. If we want to use
-  absolute frequencies, just subtitute "f" for "n". Please remember that
-  the election between relative or absolute frequencies must be specified
-  also in \code{frequencyType}. Mathematical operations and symbols
-  allowed are described in the documentation of C++'s library ExprTk that
-  is used to parse and evaluate the fitness equations (see references for
-  more information). 
-}
+  In contrast, if \code{frequencyDependentFitness = TRUE}, the Fitness
+  column must contain the fitness specification equations, like
+  characters, using as variables the frequencies (absolute or relative)
+  of the all possible genotypes. We use "f" to denote relative
+  frecuencies and "n" for absolute. Letter "N" (UPPER CASE) is reserved
+  to denote total population size, thus f=n/N for each possible
+  genotype.  Relative frequency variables must be f_ for wild type, f_1
+  or f_A if first gene is mutated, f_2 or f_B if is the case for the
+  second one, f_1_2 or f_A_B, if both the first and second genes are
+  mutated, and so on. If we want to use absolute frequencies, just
+  subtitute "f" for "n". Please remember that the election between
+  relative or absolute frequencies must be specified also in
+  \code{frequencyType}. Mathematical operations and symbols allowed are
+  described in the documentation of C++'s library ExprTk that is used to
+  parse and evaluate the fitness equations (see references for more
+  information).  }
 
 
 \item{keepInput}{

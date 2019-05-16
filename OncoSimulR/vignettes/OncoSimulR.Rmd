@@ -8605,7 +8605,7 @@ more meaningful names.
 
 # Frequency-dependent fitnessn {#FDF}
 
-**This functionality is only available in the freq-dep-fitness
+**this functionality is only available in the freq-dep-fitness
 branch** See https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
 
 In this kind of simulations fitness effects of clones are expressed by functions,
