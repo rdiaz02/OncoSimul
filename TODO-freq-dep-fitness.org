@@ -1,6 +1,7 @@
 * Miscell to-do in freq-dep-fitness branch
 
 ** first
+   
   - [X] binary files were changed: explain:
     - [X] OncoSimulR/data/examplesFitnessEffects.RData
     - [X] OncoSimulR/inst/testdata_fee.RData
@@ -20,6 +21,8 @@
   - [ ] why can't mutator effects be used?
     - this is said in the vignette (I think) and in oncoSimulIndiv.Rd
 
+  - [ ] clarify in both vignette and help that non-specified genotypes
+    have fitness 0    
 
   - [ ] stopping conditions: allow with detectionDrivers?
 
@@ -109,7 +112,8 @@
        resize". Seems to work (?)
 
 ** second
-  - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or "n"?
+  - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or
+    "n"? So no need for "frequencyType = 'rel'"
   - [ ] can we mix freq. with absolute? I guess so, because any frequency
     can be expressed as a ratio of numbers.
   - [ ] change frequencyType = unemployed by NULL.
