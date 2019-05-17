@@ -8603,10 +8603,37 @@ more meaningful names.
 
 \clearpage
 
-# Frequency-dependent fitnessn {#FDF}
+# Frequency-dependent fitness {#FDF}
 
-**this functionality is only available in the freq-dep-fitness
+**This functionality is only available in the freq-dep-fitness
 branch** See https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
+
+
+With frequency-dependence fitness we can make fitness (actually,
+birth rate) depend on the frequency of other genotypes.  We specify
+how the fitness (birth rate) of each genotype depends (or not) on
+other genotypes.  Thus, this is similar to the explicit mapping of
+genotypes to fitness (see \@ref(explicitmap)), but fitness can be a
+function of the abundance (relative or absolute) of other genotypes.
+
+The procedure is to first create a two-column data frame, where the
+first column are the genotypes and the second column contains, as
+strings, the expressions for the function that relate fitness to
+frequencies of other genotypes. We use library
+[ExprTk](https://github.com/ArashPartow/exprtk) so those are the
+functions you can use.
+
+
+
+
+We create an 
+`allFitnessEffects` object, passing a `genoFitnes`
+
+
+We first
+need to build an `allFitnessEffects` object, passing a `genoFitnes`
+as we can see bellow (see \@ref(explicitmap) for more details).
+
 
 In this kind of simulations fitness effects of clones are expressed by functions,
 where the variables are the relative frequencies of the clones in the tumour population.
