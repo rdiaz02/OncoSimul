@@ -195,8 +195,8 @@ oncoSimulSample(Nindiv,
   If you use mutator effects you must also use fitnessEffects in
   \code{fp}.
 
-  You are not allowed to use mutator effects object in a frequency depedent
-  fitness simulation.
+  %% You are not allowed to use mutator effects object in a frequency depedent
+  %% fitness simulation.
 
 }
 
