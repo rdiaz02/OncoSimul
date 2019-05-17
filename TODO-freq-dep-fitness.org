@@ -22,7 +22,8 @@
     - this is said in the vignette (I think) and in oncoSimulIndiv.Rd
 
   - [ ] clarify in both vignette and help that non-specified genotypes
-    have fitness 0    
+    have fitness 0
+    - a simple example in freq-depn-non-specified.R 
 
   - [ ] stopping conditions: allow with detectionDrivers?
 
@@ -60,9 +61,9 @@
 
   - Not unlike this reported issue:
     - https://stat.ethz.ch/pipermail/r-devel/2017-March/073846.html
-    -
-      http://r.789695.n4.nabble.com/Seeking-advice-regarding-compilation-of-large-libraries-using-RTools-Windows-td4729418.html
-      [same thing, easier to read]
+    - 
+       http://r.789695.n4.nabble.com/Seeking-advice-regarding-compilation-of-large-libraries-using-RTools-Windows-td4729418.html
+       [same thing, easier to read]
 
 *** mingw issue: using Rtools35.exe
     - The file to use in Windoze is, for system-wide packages,
@@ -117,3 +118,8 @@
   - [ ] can we mix freq. with absolute? I guess so, because any frequency
     can be expressed as a ratio of numbers.
   - [ ] change frequencyType = unemployed by NULL.
+  - [ ] death rate: cannot become smaller than initial. That would be the
+    default, basely one. Otherwise, it is not possible to get a collapse
+    here, because death rate always adjusted.
+    - In bnb_common.cpp, updateRatesFDFMcFarlandLog
+
