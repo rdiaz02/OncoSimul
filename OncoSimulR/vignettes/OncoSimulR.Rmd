@@ -8684,7 +8684,7 @@ sfd <- oncoSimulIndiv(afd,
 plot(sfd, show = "genotypes")
 ```
 
-## Frequency-dependent fitness: an example with numbers and population collapse {#fdfabs}
+## Frequency-dependent fitness: an example with absolute numbers and population collapse {#fdfabs}
 
 
 In the following example we use absolute numbers (thus the `n_1`,
