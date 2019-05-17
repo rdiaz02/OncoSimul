@@ -143,20 +143,20 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
 plot(s_3_a, show = "genotypes",
      xlim = c(40, 200))
 
-## sp_3_a <- oncoSimulPop(10,
-##                    afe_3_a,
-##                    model = "McFL", 
-##                    onlyCancer = FALSE, 
-##                    finalTime = 200,
-##                    mu = 1e-4,
-##                    initSize = 5000, 
-##                    keepPhylog = TRUE,
-##                    seed = NULL, 
-##                    errorHitMaxTries = FALSE, 
-##                    errorHitWallTime = FALSE,
-##                    mc.cores = 4)
+sp_3_a <- oncoSimulPop(10,
+                   afe_3_a,
+                   model = "McFL", 
+                   onlyCancer = FALSE, 
+                   finalTime = 200,
+                   mu = 1e-4,
+                   initSize = 10000, 
+                   keepPhylog = TRUE,
+                   seed = NULL, 
+                   errorHitMaxTries = FALSE, 
+                   errorHitWallTime = FALSE,
+                   mc.cores = 4)
 
-## plot(sp_3_a, show = "genotypes")
+plot(sp_3_a, show = "genotypes")
 
 
 

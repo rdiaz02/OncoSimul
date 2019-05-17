@@ -144,13 +144,11 @@ gffd <- data.frame(Genotype = c("WT", "A", "B", "C", "A, B"),
 afd <- allFitnessEffects(genotFitness = gffd, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel")
-set.seed(1)
-
-
+set.seed(2)
 sfd <- oncoSimulIndiv(afd, 
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 100,
+                     finalTime = 50,
                      mu = 1e-4,
                      initSize = 10000, 
                      keepPhylog = FALSE,
