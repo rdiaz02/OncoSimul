@@ -1020,13 +1020,49 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 
   // from original log(1 + totPopSize/K)
   adjust_fitness_MF = log1p(totPopSize/K);
-
+  // FIXME: death rate should never go below 1.0.
+  // adjust_fitness_MF = std::max(1.0,log1p(totPopSize/K));
+  // But that breaks a few things. Think this through
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
 }
+
+
+// Things that break
+// In plotClonePhylog
+// > data(examplesFitnessEffects)
+// > tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+// +                        model = "McFL", 
+// +                        mu = 5e-5,
+// +                        detectionSize = 1e8, 
+// +                        detectionDrivers = 3,
+// +                        sampleEvery = 0.025,
+// +                        max.num.tries = 10,
+// +                        keepEvery = 5,
+// +                        initSize = 2000,
+// +                        finalTime = 3000,
+// +                        onlyCancer = FALSE,
+// +                        keepPhylog = TRUE)
+// > 
+// > ## Show only those with N > 10 at end
+// > plotClonePhylog(tmp, N = 10)
+
+
+  // Starting Z-total-present-drivers tests Fri May 17 18:49:38 2019 
+  
+  //  Ending Z-total-present-drivers tests Fri May 17 18:49:39 2019 
+  //   Took  0.72 
+  
+  // ══ testthat results  ═══════════════════════════════════════════════════════════
+  // OK: 3053 SKIPPED: 9 WARNINGS: 305 FAILED: 4
+  // 1. Error: exercising plotClonePhylog (@test.exercise-plotting-code.R#89) 
+  // 2. Failure: Three cases with fixation of genotypes (@test.Z-fixation.R#38) 
+  // 3. Failure: Three cases with fixation of genotypes (@test.Z-fixation.R#95) 
+  // 4. Failure: using old poset format, hitting wall time (@test.Z-oncoSimulIndiv.R#71)
+  
 
 void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
   const std::vector<Genotype>& Genotypes,
@@ -1038,8 +1074,9 @@ void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
   const std::vector<spParamsP>& lastPopParams = popParams;
   //const std::vector<Genotype>& lastGenotypes = Genotypes;
 
-  adjust_fitness_MF = log1p(totPopSize/K);
-
+  // adjust_fitness_MF = log1p(totPopSize/K);
+  // Min death rate is 1.0
+  adjust_fitness_MF = std::max(1.0,log1p(totPopSize/K));
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
     popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
