@@ -130,3 +130,145 @@ plot(s2, show = "genotypes")
 
 plotClonePhylog(s1, keepEvents = TRUE)
 plotClonePhylog(s2, keepEvents = TRUE)
+
+
+##########3
+
+
+gffd <- data.frame(Genotype = c("WT", "A", "B", "C", "A, B"), 
+                   Fitness = c("1",
+                               "1.2 + 0.5 * f_1_2",
+                               "1.4 - 0.5 * f_3",
+                               "2.6 + 0.7*(log(f_1 + f_2)) + f_1_2",
+                               "1.2 + sqrt(f_1 + f_3 + f_2)"))
+afd <- allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+set.seed(1)
+
+
+sfd <- oncoSimulIndiv(afd, 
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 100,
+                     mu = 1e-4,
+                     initSize = 10000, 
+                     keepPhylog = FALSE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(sfd, show = "genotypes")
+
+
+## 
+gffd2 <- data.frame(Genotype = c("WT", "A", "B", "C"), 
+                   Fitness = c("1",
+                               "0.9 + 0.3 * f_2 + 0.3 * f_",
+                               "0.9 + 0.3 * f_1 + 0.3 * f_",
+                               "0.2 + 2 * (f_1 + f_2)"
+                               ## "0.4 + 5 * f_1 + 5 * f_1"
+                               ))
+afd2 <- allFitnessEffects(genotFitness = gffd2, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+sfd2 <- oncoSimulIndiv(afd2, 
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 100,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = FALSE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(sfd2, show = "genotypes")
+
+
+## Can produce funny oscillations
+gffd3 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                   Fitness = c("1",
+                               "1 + 0.2 * (n_2 > 10)",
+                               ".9 + 1 * (n_1 > 10)",
+                               "0"# "0.02 + "
+                               ## "0.4 + 5 * f_1 + 5 * f_1"
+                               ))
+afd3 <- allFitnessEffects(genotFitness = gffd3, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs")
+set.seed(1)
+sfd3 <- oncoSimulIndiv(afd3,
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 200,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+plot(sfd3, show = "genotypes", type = "line")
+plot(sfd3, show = "genotypes")
+sfd3
+
+## we cannot get collapse, because death rate never larger than birth rate.
+## Need to incorporate the changes from Diego's TFG
+
+
+
+set.seed(15)
+sfd3 <- oncoSimulIndiv(afd3,
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 500,
+                       mu = 5e-3,
+                       initSize = 1000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+plot(sfd3, show = "genotypes")
+sfd3
+
+
+
+### 
+data(examplesFitnessEffects)
+set.seed(1)
+tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.025,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 2000,
+                       finalTime = 3000,
+                       seed = NULL,
+                       onlyCancer = FALSE,
+                       keepPhylog = TRUE)
+tmp
+
+
+##
+r4 <- rfitness(4)
+r4[, 5] <- c(2, rep(2, 15))
+af11 <- allFitnessEffects(genotFitness = r4)
+## all fitness 1
+
+tmp2 <- oncoSimulIndiv(af11,
+                       model = "McFL", 
+                       mu = 5e-5,
+                       detectionSize = 1e8, 
+                       detectionDrivers = 3,
+                       sampleEvery = 0.025,
+                       max.num.tries = 10,
+                       keepEvery = 5,
+                       initSize = 10000,
+                       finalTime = 3000,
+                       K = 100, ## 5820
+                       seed = NULL,
+                       onlyCancer = FALSE,
+                       keepPhylog = TRUE)
+tmp2
