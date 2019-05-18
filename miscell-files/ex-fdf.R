@@ -270,3 +270,47 @@ tmp2 <- oncoSimulIndiv(af11,
                        onlyCancer = FALSE,
                        keepPhylog = TRUE)
 tmp2
+
+
+
+###############
+
+## Define fitness of the different genotypes
+gffd <- data.frame(Genotype = c("WT", "A", "B", "C", "A, B"), 
+                   Fitness = c("1 + 1.5 * f_1_2",
+                               "1.3 + 1.5 * f_1_2",
+                               "1.4",
+                               "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
+                               "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
+                   stringsAsFactors = FALSE)
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 20, 20, 30, 0)))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 30, 40, 0, 10)))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 30, 40, 0, 100)))
+
+afd <- allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+set.seed(1) ## for reproducibility
+sfd <- oncoSimulIndiv(afd, 
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 100,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = FALSE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(sfd, show = "genotypes")

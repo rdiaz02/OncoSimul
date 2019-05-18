@@ -26,7 +26,10 @@
     have fitness 0
     - a simple example in freq-depn-non-specified.R 
 
+
   - [ ] stopping conditions: allow with detectionDrivers?
+    - [ ] in general, verify stopping
+    - [ ] stop based on "stable results"?
 
   - [ ] explain in vignette why this was possible without touching OncoSimulR_init.c, RcppExports.cpp
 
