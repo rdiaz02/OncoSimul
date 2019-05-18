@@ -7581,25 +7581,25 @@ some genotypes as a function of the relative frequencies of other
 genotypes (that is why we use `f_1`, for example, to denote relative
 frequency of genotype with the first gene mutated, `f_1_2` to denote
 relative frequency of the genotype with the first and second genes
-mutated, etc). In the example below, the birth rate of genotype "A"
-$= 1.2 + 0.5* f\_1\_2$. See the documentation of `allFitnessEffects`
-for further details. Genotypes not defined explicitly have a fitness
-of 0. (In the data frame creation, we use `stringsAsFactors = FALSE`
-to avoid messages about conversions between factors and characters).
+mutated, etc). 
 
-
-
-Note that when calling `allFitnessEffects` we have to set the
-paramenter `frequencyDependentFitness` to TRUE. Since we are using
-relative frequencies, we also specify `freqType = "rel"` (the need
-to do this might be removed in the future). We will see below
-(\@ref(fdfabs))an example with absolute numbers.
-
-
-We will use McFL model, so in addition to the frequency dependence in
-the birth rates, there is also  density dependence
-in the death rate (see section \@ref(specfit)).
-
+In the example below, the birth rate of genotype "A" $= 1.2 + 1.5*
+f\_1\_2$ and that of the wildtype $= 1 + 1.5* f\_1\_2$.  Genotype
+"A, B", thus, could be a genotype whose presence leads to an
+increase in the other genotypes (maybe via diffusible factors,
+inducing angiogenesis, etc), but genotype "B" does not show
+frequency-dependence.  The birth rate of genotype "C" increases with
+the frequency of `f_1_2` and increases (adding 0.7) with the
+frequency of genotypes "A" and "B", but only if the sum of the
+frequencies of genotypes "A" and "B" is larger than 0.3.  For
+genotype "A, B" its fitness increases with the square root of the
+sum of the frequencies of genotypes "A", "B", and "C", but it
+decreases (i.e., shows increased intra-clone competition) if its own
+frequency is larger than 0.5. Genotypes not defined explicitly have
+a fitness of 0. See the documentation of `allFitnessEffects` for
+further details. Since we can use all of the functionality from
+ExprTk, we can make fitness and arbitrarily complex function of the
+frequencies of genotypes.
 
 
 ```{r fdf1}
@@ -7607,24 +7607,69 @@ in the death rate (see section \@ref(specfit)).
 
 ## Define fitness of the different genotypes
 gffd <- data.frame(Genotype = c("WT", "A", "B", "C", "A, B"), 
-                   Fitness = c("1",
-                               "1.2 + 0.5 * f_1_2",
-                               "1.4 - 0.5 * f_3",
-                               "2.6 + 0.7*(log(f_1 + f_2)) + f_1_2",
-                               "1.2 + sqrt(f_1 + f_3 + f_2)"),
+                   Fitness = c("1 + 1.5 * f_1_2",
+                               "1.3 + 1.5 * f_1_2",
+                               "1.4",
+                               "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
+                               "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
                    stringsAsFactors = FALSE)
+```
+(In the data frame creation, we use `stringsAsFactors = FALSE`
+to avoid messages about conversions between factors and characters).
 
+
+Let us verify that we have specified what we think we have specified
+using `evalAllGenotypes` (we have done this repeatedly in this
+vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or
+\@ref{quickexample}). Because of the way the code works, we need to
+pass the populations sizes at which we want fitness evaluated in
+`evalAllGenotypes` (this we do now in `allFitnessEffects`, but this
+might be moved to `evalAllGenotypes` in the future).
+
+
+Note that when calling `allFitnessEffects` we have to set the
+paramenter `frequencyDependentFitness` to TRUE. Since we are using
+relative frequencies, we also specify `freqType = "rel"` (the need
+to do this might be removed in the future). We will see below
+(\@ref(fdfabs)) an example with absolute numbers.
+
+
+```{r fdf1b}
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 20, 20, 30, 0)))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 30, 40, 0, 10)))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 30, 40, 0, 100)))
+
+```
+
+Let us create the `allFitnessEffects` object and simulate.
+We will use McFL model, so in addition to the frequency dependence in
+the birth rates, there is also  density dependence
+in the death rate (see section \@ref(specfit)).
+
+
+```{r fdf1c}
 afd <- allFitnessEffects(genotFitness = gffd, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel")
 
-set.seed(2) ## for reproducibility
+set.seed(1) ## for reproducibility
 sfd <- oncoSimulIndiv(afd, 
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 50,
+                     finalTime = 100,
                      mu = 1e-4,
-                     initSize = 10000, 
+                     initSize = 5000, 
                      keepPhylog = FALSE,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
@@ -7656,12 +7701,12 @@ afd3 <- allFitnessEffects(genotFitness = gffd3,
 ```
 
 Let us verify that we have specified what we think we have specified
-using `evalAllGenotypes` (we have done this repeatedly in this
-vignetted, for example in \@ref(ex-ochs) or \@ref(bauer) or
-\@ref{quickexample}). Because of the way the code works, we need to
-pass the populations sizes at which we want fitness evaluated in
-`evalAllGenotypes` (this we do now in `allFitnessEffects`, but this
-might be moved to `evalAllGenotypes` in the future):
+using `evalAllGenotypes`:<!--  (we have done this repeatedly in this -->
+<!-- vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or -->
+<!-- \@ref{quickexample}). Because of the way the code works, we need to -->
+<!-- pass the populations sizes at which we want fitness evaluated in -->
+<!-- `evalAllGenotypes` (this we do now in `allFitnessEffects`, but this -->
+<!-- might be moved to `evalAllGenotypes` in the future): -->
 
 ```{r fdf2b}
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
