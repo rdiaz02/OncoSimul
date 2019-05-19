@@ -166,6 +166,8 @@ TypeModel stringToModel(const std::string& mod) {
     return TypeModel::bozic1;
   else if(mod == "mcfarlandlog")
     return TypeModel::mcfarlandlog;
+  else if(mod == "mcfarlandlogd")
+    return TypeModel::mcfarlandlog_d;
   // else if(mod == "mcfarland")
   //   return TypeModel::mcfarland;
   // else if(mod == "beerenwinkel")

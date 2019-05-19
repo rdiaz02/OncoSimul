@@ -1246,6 +1246,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       popParams[0].death = log1p(totPopSize/K);
       popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
 								fitnessEffects, Genotypes, popParams));
+    } else if(typeModel == TypeModel::mcfarlandlog_d) {
+      popParams[0].death = std::max(1.0, log1p(totPopSize/K));
+      popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+								fitnessEffects, Genotypes, popParams));
     } else if(typeModel == TypeModel::bozic1) {
       tmpParam.birth =  1.0;
       tmpParam.death = -99.9;
@@ -1266,7 +1270,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // 		 fitnessEffects,
     // 		 typeModel, genTime,
     // 		 adjust_fitness_B, adjust_fitness_MF);
-    if( (typeModel != TypeModel::mcfarlandlog)) // wouldn't matter
+    if( (typeModel != TypeModel::mcfarlandlog) &&
+	(typeModel != TypeModel::mcfarlandlog_d) ) // wouldn't matter
       nr_fitness(popParams[0], tmpParam,
 		 Genotypes[0],
 		 fitnessEffects,
@@ -1304,16 +1309,23 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     //   // no need to call updateRates
     // } else if(typeModel == TypeModel::mcfarlandlog) {
     if(typeModel == TypeModel::mcfarlandlog) {
-
-			if(fitnessEffects.frequencyDependentFitness){
-				popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-					fitnessEffects, Genotypes, popParams));
-			}else{
-				popParams[0].birth = 1.0;
-			}
+      if(fitnessEffects.frequencyDependentFitness){
+	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+							     fitnessEffects, Genotypes, popParams));
+      } else {
+	popParams[0].birth = 1.0;
+      }
       popParams[0].death = log1p(totPopSize/K);
       // no need to call updateRates
-
+    } else if(typeModel == TypeModel::mcfarlandlog_d) {
+      if(fitnessEffects.frequencyDependentFitness){
+	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+							     fitnessEffects, Genotypes, popParams));
+      }else{
+	popParams[0].birth = 1.0;
+      }
+      popParams[0].death = std::max(1.0, log1p(totPopSize/K));
+      
     } else if(typeModel == TypeModel::bozic1) {
 
 			if(fitnessEffects.frequencyDependentFitness){
@@ -2012,15 +2024,24 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       if (typeModel == TypeModel::mcfarlandlog && !fitnessEffects.frequencyDependentFitness){
 	
 	updateRatesMcFarlandLog(popParams, adjust_fitness_MF, K, totPopSize);
-	
-      }else if (fitnessEffects.frequencyDependentFitness){
+
+      } else if(typeModel == TypeModel::mcfarlandlog_d && !fitnessEffects.frequencyDependentFitness ) {
+
+	updateRatesMcFarlandLog_D(popParams, adjust_fitness_MF, K, totPopSize);
+
+      } else if (fitnessEffects.frequencyDependentFitness){
 	
 	if( (typeModel == TypeModel::mcfarlandlog) ) {
 	  
 	  updateRatesFDFMcFarlandLog(popParams, Genotypes, fitnessEffects,
 				     adjust_fitness_MF, K, totPopSize);
 	  
-	}else if(typeModel == TypeModel::exp){
+	} else if( (typeModel == TypeModel::mcfarlandlog_d) ) {
+	  
+	  updateRatesFDFMcFarlandLog_D(popParams, Genotypes, fitnessEffects,
+				     adjust_fitness_MF, K, totPopSize);
+	  
+	} else if(typeModel == TypeModel::exp){
 	  
 	  updateRatesFDFExp(popParams, Genotypes, fitnessEffects);
 	  
@@ -2137,8 +2158,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       Rcpp::Rcout << "  cPDetect set at " << cPDetect << "\n";
   }
 
-  if( (K < 1 ) && ( typeModel ==   TypeModel::mcfarlandlog) )
+  if( (K < 1 ) && ( (typeModel ==   TypeModel::mcfarlandlog) ||
+		    (typeModel ==   TypeModel::mcfarlandlog) ))
     throw std::range_error("K < 1.");
+  
   fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
   //Used at least twice
   std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);

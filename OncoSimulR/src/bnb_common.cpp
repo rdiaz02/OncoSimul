@@ -662,7 +662,8 @@ void init_tmpP(spParamsP& tmpParam) {
 // Get a -99 where there should be no error because of model
 double returnMFE_new(double& en1,
 		     const std::string& typeFitness) {
-  if(typeFitness == "mcfarlandlog")
+  if( (typeFitness == "mcfarlandlog") ||
+      (typeFitness == "mcfarlandlog_d"))
     return en1;
   else
     return -99;
@@ -670,7 +671,8 @@ double returnMFE_new(double& en1,
 
 double returnMFE_new(double& en1,
 		     const TypeModel typeModel) {
-  if(typeModel == TypeModel::mcfarlandlog)
+  if((typeModel == TypeModel::mcfarlandlog) ||
+     (typeModel == TypeModel::mcfarlandlog_d) )
     return en1;
   else
     return -99;
@@ -828,11 +830,16 @@ void computeMcFarlandError_new(double& em1,
   // Really, simple thing: compute difference between successive death
   // rates, and also scale. Period.
 
-  if( typeModel == TypeModel::mcfarlandlog ) {
-    double etmp, etmpsc;
+  if( (typeModel == TypeModel::mcfarlandlog) ||
+      (typeModel == TypeModel::mcfarlandlog_d)) {
+    double etmp, etmpsc, DC;
     etmp = 0.0;
     etmpsc = 0.0;
-    double DC = log1p(totPopSize/K);
+    if(typeModel == TypeModel::mcfarlandlog) {
+      DC = log1p(totPopSize/K);
+    } else if (typeModel == TypeModel::mcfarlandlog_d) {
+      DC = std::max(1.0, log1p(totPopSize/K));
+    }
     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
     } else {
@@ -856,11 +863,16 @@ void computeMcFarlandError_new(double& em1,
   // Simple logic:
   // Really, simple thing: compute difference between successive death
   // rates, and also scale. Period.
-  if(typeFitness == "mcfarlandlog")  {
-    double etmp, etmpsc;
+  if((typeFitness == "mcfarlandlog")  ||
+     (typeFitness == "mcfarlandlog_d")) {
+    double etmp, etmpsc, DC;
     etmp = 0.0;
     etmpsc = 0.0;
-    double DC = log1p(totPopSize/K);
+    if(typeFitness == "mcfarlandlog") {
+      DC = log1p(totPopSize/K);
+    } else if (typeFitness == "mcfarlandlog_d") {
+      DC = std::max(1.0, log1p(totPopSize/K));
+    }
     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
     } else {
@@ -1031,7 +1043,28 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 }
 
 
-// Things that break
+// Yes, identical to previous one, but with death rate a minimal value of 1
+void updateRatesMcFarlandLog_D(std::vector<spParamsP>& popParams,
+			     double& adjust_fitness_MF,
+			     const double& K,
+			     const double& totPopSize){
+
+  // from original log(1 + totPopSize/K)
+  // adjust_fitness_MF = log1p(totPopSize/K);
+  // FIXME: death rate should never go below 1.0.
+  adjust_fitness_MF = std::max(1.0,log1p(totPopSize/K));
+  // But that breaks a few things. Think this through
+  for(size_t i = 0; i < popParams.size(); ++i) {
+    popParams[i].death = adjust_fitness_MF;
+    W_f_st(popParams[i]);
+    R_f_st(popParams[i]);
+  }
+}
+
+
+
+
+// Things that break if we always use the "D" version
 // In plotClonePhylog
 // > data(examplesFitnessEffects)
 // > tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -1074,6 +1107,28 @@ void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
   const std::vector<spParamsP>& lastPopParams = popParams;
   //const std::vector<Genotype>& lastGenotypes = Genotypes;
 
+  adjust_fitness_MF = log1p(totPopSize/K);
+  for(size_t i = 0; i < popParams.size(); ++i) {
+    popParams[i].death = adjust_fitness_MF;
+    popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
+              fitnessEffects, Genotypes, lastPopParams));
+    W_f_st(popParams[i]);
+    R_f_st(popParams[i]);
+  }
+
+}
+
+// Yes, identical to previous one, but with death rate a minimal value of 1
+void updateRatesFDFMcFarlandLog_D(std::vector<spParamsP>& popParams,
+  const std::vector<Genotype>& Genotypes,
+  const fitnessEffectsAll& fitnessEffects,
+  double& adjust_fitness_MF,
+	const double& K,
+	const double& totPopSize) {
+
+  const std::vector<spParamsP>& lastPopParams = popParams;
+  //const std::vector<Genotype>& lastGenotypes = Genotypes;
+
   // adjust_fitness_MF = log1p(totPopSize/K);
   // Min death rate is 1.0
   adjust_fitness_MF = std::max(1.0,log1p(totPopSize/K));
@@ -1086,6 +1141,7 @@ void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
   }
 
 }
+
 
 void updateRatesFDFExp(std::vector<spParamsP>& popParams,
   const std::vector<Genotype>& Genotypes,

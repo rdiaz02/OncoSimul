@@ -506,12 +506,15 @@ oncoSimulIndiv <- function(fp,
                           "Exp" = "exp",
                           "McFarlandLog" = "mcfarlandlog",
                           "McFL" = "mcfarlandlog",
+                          "McFarlandLogD" = "mcfarlandlogd",
+                          "McFLD" = "mcfarlandlogd",
                           stop("No valid value for model")
                           )
     if(initSize < 1)
         stop("initSize < 1")
     
-    if( (K < 1) && (model %in% c("McFL", "McFarlandLog") )) {
+    if( (K < 1) && (model %in% c("McFL", "McFarlandLog",
+                                 "McFLD", "McFarlandLogD") )) {
         stop("Using McFarland's model: K cannot be < 1")
     }       ##  if ( !(model %in% c("McFL", "McFarlandLog") )) {
             ## K <- 1 ## K is ONLY used for McFarland; set it to 1, to avoid
@@ -526,7 +529,7 @@ oncoSimulIndiv <- function(fp,
     }
     birth <- -99
 
-    if( (typeFitness == "mcfarlandlog") &&
+    if( (typeFitness %in% c("mcfarlandlog", "mcfarlandlogd")) &&
        (sampleEvery > 0.05)) {
         warning("With the McFarland model you often want smaller sampleEvery")
     }
@@ -534,7 +537,8 @@ oncoSimulIndiv <- function(fp,
     if(minDetectDrvCloneSz == "auto") {
         if(model %in% c("Bozic", "Exp") )
             minDetectDrvCloneSz <- 0
-        else if (model %in% c("McFL", "McFarlandLog"))
+        else if (model %in% c("McFL", "McFarlandLog",
+                              "McFLD", "McFarlandLogD"))
             minDetectDrvCloneSz <- initSize
         ## minDetectDrvCloneSz <- eFinalMf(initSize, s, detectionDrivers)
         else
