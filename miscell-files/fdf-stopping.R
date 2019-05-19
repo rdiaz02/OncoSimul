@@ -43,13 +43,13 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                      errorHitWallTime = FALSE)
 
 set.seed(2)
-s_3_b <- oncoSimulIndiv(afe_3_a,
+s_3_a_s <- oncoSimulIndiv(afe_3_a,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     detectionProb = c(p2 = 0.1, 
-                                     n2 = 2000, 
-                                     PDBaseline = 1000,
-                                     checkSizePEvery = 2),
+                     detectionProb = c(p2 = 0.2, 
+                                       n2 = 5000, 
+                                       PDBaseline = 2000,
+                                       checkSizePEvery = 2),
                      ## finalTime = 200,
                      mu = 1e-4,
                      initSize = 5000, 
@@ -58,3 +58,120 @@ s_3_b <- oncoSimulIndiv(afe_3_a,
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
 
+set.seed(2)
+s_3_a_s_2 <- oncoSimulIndiv(afe_3_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     detectionProb = c(p2 = 0.05, 
+                                       n2 = 5000, 
+                                       PDBaseline = 2000,
+                                       checkSizePEvery = 2),
+                     ## finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+
+set.seed(2)
+s_3_a_s_3 <- oncoSimulIndiv(afe_3_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     detectionProb = c(p2 = 0.2, 
+                                       n2 = 5000, 
+                                       PDBaseline = 4950,
+                                       checkSizePEvery = 2),
+                     ## finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+set.seed(2)
+s_3_a_s_4 <- oncoSimulIndiv(afe_3_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     detectionProb = c(p2 = 0.1, 
+                                       n2 = 5000, 
+                                       PDBaseline = 4950,
+                                       checkSizePEvery = 2),
+                     ## finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+s_3_a_s
+s_3_a_s_2
+s_3_a_s_3
+s_3_a_s_4
+
+
+## 2a
+
+a <- b <- c <- d <- e <- f <- g <- 0.1
+
+afe_2_a <- allFitnessEffects(genotFitness = create_fe(a, b, c, d, e, f, g),
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+set.seed(1)
+s_2_a <- oncoSimulIndiv(afe_2_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 80,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+set.seed(1)
+s_2_a_2 <- oncoSimulIndiv(afe_2_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+set.seed(1)
+s_2_a_3 <- oncoSimulIndiv(afe_2_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 2000,
+                     fixation= "P",
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+set.seed(1)
+s_2_a_4 <- oncoSimulIndiv(afe_2_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 2000,
+                     fixation= c("P", fixation_tolerance = 0.2),
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+s_2_a
+s_2_a_2
+s_2_a_3
+s_2_a_4
