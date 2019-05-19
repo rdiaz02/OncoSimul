@@ -30,7 +30,7 @@
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
   genotFitness = NULL,  keepInput = TRUE, frequencyDependentFitness =
-  FALSE, frequencyType = "unemployed", spPopSizes = NULL)
+  FALSE, frequencyType = NULL, spPopSizes = NULL)
 
 allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
                    geneToModule = NULL,
@@ -200,13 +200,18 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   \code{genotFitness}.
 }
 
-  \item{frequencyType}{frequencyType is a character that specify wether 
-    we are using absolute or relatives frequecies and can take tree values
-    depending on \code{frequencyDependentFitness}. When FALSE is 
-    "unemployed" and for TRUE we can use "abs", for absolute frequencies,
-    or "rel", for relative ones. Remember that you must to use "f" for
-    relative frequency and "n" for absolute in \code{genoFitness}.
-}
+  %% \item{frequencyType}{frequencyType is a character that specify wether 
+  %%   we are using absolute or relatives frequecies and can take tree values
+  %%   depending on \code{frequencyDependentFitness}. When FALSE is 
+  %%   "unemployed" and for TRUE we can use "abs", for absolute frequencies,
+  %%   or "rel", for relative ones. Remember that you must to use "f" for
+  %% relative frequency and "n" for absolute in \code{genoFitness}.
+  \item{frequencyType}{frequencyType is a character that specify whether
+  we are using absolute or relatives frequecies and can take tree values
+  depending on \code{frequencyDependentFitness}. Use "abs", for absolute
+  frequencies, or "rel", for relative ones. Remember that you must to
+  use "f" for relative frequency and "n" for absolute in
+  \code{genoFitness}. Set to NULL for non-frequency-dependent fitness. }
 
 \item{spPopSizes}{
 \code{spPopSizes} is a numeric vector that contains the population sizes of the clones,
@@ -319,7 +324,7 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or
   before.
   }
   
-  \item{frequencyType}{A character string "unemployed", "abs" or "rel".
+  \item{frequencyType}{A character string "abs" or "rel" (or NULL).
   }
 
   \item{spPopSizes}{A numeric vector of population sizes as it had been

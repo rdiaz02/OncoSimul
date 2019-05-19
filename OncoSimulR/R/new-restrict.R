@@ -495,7 +495,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                        ## refFE = NULL,
                                        calledBy = NULL,
                                        frequencyDependentFitness = FALSE,
-                                       frequencyType = "unemployed",
+                                       frequencyType = NULL,
                                        spPopSizes = NULL) {
   ## From allFitnessEffects. Generalized so we deal with Fitness
   ## and mutator.
@@ -1009,14 +1009,14 @@ allFitnessEffects <- function(rT = NULL,
                               genotFitness = NULL,
                               keepInput = TRUE,
                               frequencyDependentFitness = FALSE,
-                              frequencyType = "unemployed",
+                              frequencyType = NULL,
                               spPopSizes = NULL) {
 
   if(!frequencyDependentFitness){
 
-    if(frequencyType != "unemployed"){
-      warning("frequencyType set to 'unemployed' ")
-      frequencyType = "unemployed"
+    if(!is.null(frequencyType)){
+      warning("frequencyType set to NULL")
+      frequencyType = NULL
   }
 
     if(!is.null(genotFitness)) {
