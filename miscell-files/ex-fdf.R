@@ -319,3 +319,80 @@ plot(sfd, show = "genotypes")
 
 
 
+############
+
+
+rar <- data.frame(Genotype = c("WT", "A", "B", "C"), 
+                 Fitness = c("1",
+                             "1.1 + .3*f_2",
+                             "1.2 + .4*f_1",
+                             "1.0 + .5 * (f_1 + f_2)"))
+afear <- allFitnessEffects(genotFitness = rar, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 200, 300, 400))
+evalAllGenotypes(afear)
+
+
+rar2 <- data.frame(Genotype = c("WT", "A", "B", "C"), 
+                 Fitness = c("1",
+                             "1.1 + .3*(n_2/N)",
+                             "1.2 + .4*(n_1/N)",
+                             "1.0 + .5 * ((n_1 + n_2)/N)"))
+afear2 <- allFitnessEffects(genotFitness = rar2, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs",
+                         spPopSizes = c(100, 200, 300, 400))
+evalAllGenotypes(afear2)
+
+
+set.seed(1)
+tmp1 <- oncoSimulIndiv(afear, 
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 30,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+
+set.seed(1)
+tmp2 <- oncoSimulIndiv(afear2, 
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 30,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+identical(print(tmp1), print(tmp2))
+
+
+rar3 <- data.frame(Genotype = c("WT", "A", "B", "C"), 
+                 Fitness = c("1",
+                             "1.1 + .3*(n_2/N)",
+                             "1.2 + .4*(n_1/N)",
+                             "1.0 + .5 * ( n_1 > 20)"))
+afear3 <- allFitnessEffects(genotFitness = rar3, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs",
+                         spPopSizes = c(100, 200, 300, 400))
+evalAllGenotypes(afear3)
+
+
+set.seed(1)
+tmp3 <- oncoSimulIndiv(afear3, 
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 100,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+plot(tmp3, show = "genotypes")

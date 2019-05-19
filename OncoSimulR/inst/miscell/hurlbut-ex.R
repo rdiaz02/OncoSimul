@@ -362,4 +362,4 @@ plot(sp_3_c_2, show = "genotypes")
 
 
 
-## For vignette, just show 3a and 3b and ?? 3b2
+## For vignette, just show 3a and 3b and 3b2
