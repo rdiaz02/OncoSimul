@@ -7880,9 +7880,9 @@ between genotypes and their (frequency-dependent) fitness, similar
 to section \@ref(explicitmap). For example, a two-column data frame,
 where the first column are the genotypes and the second column
 contains, as strings, the expressions for the function that relate
-fitness to frequencies of other genotypes. (We also use a data frame
-with $g + 1$ columns; each of the first $g$ columns contains a 1 or
-a 0 indicating that the gene of that column is mutated or
+fitness to frequencies of other genotypes. (We can also use a data
+frame with $g + 1$ columns; each of the first $g$ columns contains a
+1 or a 0 indicating that the gene of that column is mutated or
 not. Column $g+ 1$ contains the fitness specifications; see
 `oncoSimulIndiv` for examples).
 
@@ -8025,7 +8025,7 @@ They provide, in p. 4, the payoff matrix reproduced in Table
 \@ref(fig:hurlbutpay): 
 
 
-```{r hurlbutpay, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from Table 2 of Hurlbut et al., 2018, 'Game Theoretical Model of Cancer Dynamics withFour Cell Phenotypes', *Games*, 9, 61; doi:10.3390/g9030061."}
+```{r hurlbutpay, out.width=6cm, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from Table 2 of Hurlbut et al., 2018, 'Game Theoretical Model of Cancer Dynamics withFour Cell Phenotypes', *Games*, 9, 61; doi:10.3390/g9030061."}
 knitr::include_graphics("hurlbut.png")
 ```
 
@@ -8057,7 +8057,8 @@ create_fe <- function(a, b, c, d, e, f, g,
                  paste0("1 + ",
                        as.character(d), " * f_1 ",
                        "- ", as.character(c), " * f_3"),
-                 paste0("1 - ", as.character(a), " + ", as.character(d), " + ",
+                 paste0("1 - ", as.character(a), 
+				     " + ", as.character(d), " + ",
                        as.character(f), " * f_1 ",
                       "- ", as.character(c), " * f_3"),
                  paste0("1 + ", as.character(g), " + ",
@@ -8066,7 +8067,8 @@ create_fe <- function(a, b, c, d, e, f, g,
                        as.character(g), ") * f_3"),
                  paste0("1 - ", as.character(b), " + ",
                        as.character(e), " * f_ + ",
-                       "(", as.character(d), " + ", as.character(e), ") * f_1 + ",
+                       "(", as.character(d), " + ", 
+					   as.character(e), ") * f_1 + ",
                        as.character(e) , " * f_2")),
              stringsAsFactors = FALSE)
 }
@@ -8097,13 +8099,15 @@ create_fe2 <- function(a, b, c, d, e, f, g,
                        "- ", as.character(c), " * (1 + ",
                        as.character(g), ") * f_2_3"),
                  "0",
-                 paste0("1 - ", as.character(a), " + ", as.character(d), " + ",
+                 paste0("1 - ", as.character(a), " + ", 
+				 as.character(d), " + ",
                        as.character(f), " * f_1_2 ",
                        "- ", as.character(c), " * f_2_3"),
                  "0",
                  paste0("1 - ", as.character(b), " + ",
                        as.character(e), " * f_ + ",
-                       "(", as.character(d), " + ", as.character(e), ") * f_1_2 + ",
+                       "(", as.character(d), " + ", 
+					   as.character(e), ") * f_1_2 + ",
                        as.character(e) , " * f_2")),
              stringsAsFactors = FALSE)
 }
