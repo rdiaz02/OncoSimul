@@ -215,7 +215,8 @@ sfd3
 
 
 set.seed(15)
-sfd3 <- oncoSimulIndiv(afd3,
+sfd3 <- oncoSi
+mulIndiv(afd3,
                        model = "McFL", 
                        onlyCancer = FALSE, 
                        finalTime = 500,
@@ -314,3 +315,7 @@ sfd <- oncoSimulIndiv(afd,
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
 plot(sfd, show = "genotypes")
+
+
+
+

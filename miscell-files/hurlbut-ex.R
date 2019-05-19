@@ -54,6 +54,12 @@ create_fe("a", "b", "c", "d", "e", "f", "g")
 create_fe2("a", "b", "c", "d", "e", "f", "g")
 
 
+
+
+
+
+
+
 ## Figure 2a in paper.
 a <- b <- c <- d <- e <- f <- g <- 0.1
 
@@ -129,20 +135,24 @@ afe_3_a <- allFitnessEffects(genotFitness =
                                            0.15, 0.1, 0.06),
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel")
-
+set.seed(2)
 s_3_a <- oncoSimulIndiv(afe_3_a,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 400,
+                     finalTime = 200,
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = TRUE,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
-plot(s_3_a, show = "genotypes",
-     xlim = c(40, 200))
+## plot(s_3_a, show = "genotypes",
+##      xlim = c(40, 200))
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
 
+
+set.seed(3)
 sp_3_a <- oncoSimulPop(10,
                    afe_3_a,
                    model = "McFL", 
@@ -155,6 +165,8 @@ sp_3_a <- oncoSimulPop(10,
                    errorHitMaxTries = FALSE, 
                    errorHitWallTime = FALSE,
                    mc.cores = 4)
+plot(sp_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
 
 plot(sp_3_a, show = "genotypes")
 
@@ -166,7 +178,7 @@ afe_3_b <- allFitnessEffects(genotFitness =
                                            0.15, 0.1, 0.05),
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel")
-
+set.seed(2)
 s_3_b <- oncoSimulIndiv(afe_3_b,
                      model = "McFL", 
                      onlyCancer = FALSE, 
@@ -177,14 +189,16 @@ s_3_b <- oncoSimulIndiv(afe_3_b,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
-plot(s_3_b, show = "genotypes",
-     xlim = c(40, 200))
+## plot(s_3_b, show = "genotypes", col = c("black", "green", "red", "blue"))
+plot(s_3_b, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
+
 
 sp_3_b <- oncoSimulPop(10,
                    afe_3_b,
                    model = "McFL", 
                    onlyCancer = FALSE, 
-                   finalTime = 400,
+                   finalTime = 200,
                    mu = 1e-4,
                    initSize = 5000, 
                    keepPhylog = TRUE,
@@ -192,6 +206,8 @@ sp_3_b <- oncoSimulPop(10,
                    errorHitMaxTries = FALSE, 
                    errorHitWallTime = FALSE,
                    mc.cores = 8)
+plot(sp_3_b, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
 
 plot(sp_3_b, show = "genotypes")
 
@@ -286,12 +302,25 @@ afe_3_b_2 <- allFitnessEffects(genotFitness =
                                            0.15, 0.1, 0.05),
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel")
+set.seed(2)
+s_3_b_2 <- oncoSimulIndiv(afe_3_b_2,
+                   model = "McFL", 
+                   onlyCancer = FALSE, 
+                   finalTime = 300,
+                   mu = 1e-4,
+                   initSize = 5000, 
+                   keepPhylog = TRUE,
+                   seed = NULL, 
+                   errorHitMaxTries = FALSE, 
+                   errorHitWallTime = FALSE)
+plot(s_3_b_2, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
 
 sp_3_b_2 <- oncoSimulPop(10,
                    afe_3_b_2,
                    model = "McFL", 
                    onlyCancer = FALSE, 
-                   finalTime = 400,
+                   finalTime = 500,
                    mu = 1e-4,
                    initSize = 5000, 
                    keepPhylog = TRUE,
@@ -299,6 +328,9 @@ sp_3_b_2 <- oncoSimulPop(10,
                    errorHitMaxTries = FALSE, 
                    errorHitWallTime = FALSE,
                    mc.cores = 8)
+
+plot(sp_3_b_2, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
 
 plot(sp_3_b_2, show = "genotypes")
 
@@ -327,3 +359,7 @@ sp_3_c_2 <- oncoSimulPop(10,
                    mc.cores = 8)
 
 plot(sp_3_c_2, show = "genotypes")
+
+
+
+## For vignette, just show 3a and 3b and ?? 3b2

@@ -3617,16 +3617,40 @@ $\frac{(1 + s)^d}{(1 - s_p)^p}$).
 <!-- using a different value of $s_p$, that we will call $s_{pp} = -->
 <!-- -s_p/(1 + s_p)$ (see @McFarland2014-phd, his eq. 2.1 in p.9).  -->
 
+
+#### Death rate under the McFarland model {#mcfldeath}
 For death rate, we use the expression that @McFarland2013 (see their
 p. 2911) use "(...) for large cancers (grown to $10^6$ cells)": $D(N) =
 \log(1 + N/K)$ where $K$ is the initial equilibrium population size. As
 the authors explain, for large N/K the above expression "(...)
 recapitulates Gompertzian dynamics observed experimentally for large
-tumors"; see also \@ref(fdfdeath) for the setting with the
-frequency-dependent fitness models.
+tumors".
 
-By default, OncoSimulR uses a value of $K=initSize/(e^{1} - 1)$ so that
-the starting population is at equilibrium. 
+By default, OncoSimulR uses a value of $K=initSize/(e^{1} - 1)$ so
+that the starting population is at equilibrium.
+
+
+
+A consequence of the above expression for death rate is that if the
+population size decreases the death rate decreases. This is not
+relevant in most cases (as mutations, or some mutations, will
+inexorably lead to population size increases). And this prevents the
+McFL model from resulting in extinction even with very small
+population sizes as long as birth rate $\ge$ death rate. (For small
+population sizes, it is likely that the population will become
+extinct if birth rate = death rate; you can try this with the
+exponential model).
+
+But this is not what we want in some other models, such as
+frequency-dependent ones, where modeling population collapse (which
+will happen if birth rate < death rate) can be important (as in the
+example in \@ref(fdfabs)). Here, it makes sense to set $D(N) =
+\max(1, \log(1 + N/K))$ so that the death rate never decreases
+below 1. (Using 1 is reasonable if we consider the equilibrium birth
+rate in the absence of any mutants to be 1).  You can specify this
+behaviour using model `McFLD` (a shorthand for `McFarlandLogD`).
+
+
 
 
 ### No viability of clones and types of models {#noviab}
@@ -7693,7 +7717,7 @@ options(stringsAsFactors = FALSE) ## get rid of the messages
 gffd3 <- data.frame(Genotype = c("WT", "A", "B"), 
                    Fitness = c("1",
                                "1 + 0.2 * (n_2 > 10)",
-                               ".9 + 1 * (n_1 > 10)"
+                               ".9 + 0.4 * (n_1 > 10)"
                                ))
 afd3 <- allFitnessEffects(genotFitness = gffd3, 
                          frequencyDependentFitness = TRUE,
@@ -7723,13 +7747,14 @@ evalAllGenotypes(allFitnessEffects(genotFitness = gffd3,
 In this simulation, the population collapses: genotype B is able to
 invade the population when there are some A's around. But as soon as
 A disappears due to competition from B, B collapses as its birth
-rate becomes 0.9, less than the death rate; see \@ref(fdfdeath).
-
+rate becomes 0.9, less than the death rate; we are using the "McFLD"
+model (where death rate $D(N) = \max(1, \log(1 + N/K))$); see
+details in \@ref(mcfldeath).
 
 ```{r fdf2c}
 set.seed(1)
 sfd3 <- oncoSimulIndiv(afd3,
-                       model = "McFL", 
+                       model = "McFLD", 
                        onlyCancer = FALSE, 
                        finalTime = 200,
                        mu = 1e-4,
@@ -7743,20 +7768,20 @@ plot(sfd3, show = "genotypes")
 sfd3
 ```
 
-### Death rates in the frequency dependent model {#fdfdeath}
+<!-- ### Death rates in the frequency dependent model {#fdfdeath} -->
 
-As explained in \@ref(mcfl), in the McFarland model we use death
-rate at population size N, $D(N) = \log(1 + N/K)$ where $K$ is the
-initial equilibrium population size. This, however, does not allow
-to properly model population collpases, since the death rate can be
-come less than 1.
+<!-- As explained in \@ref(mcfl), in the McFarland model we use death -->
+<!-- rate at population size N, $D(N) = \log(1 + N/K)$ where $K$ is the -->
+<!-- initial equilibrium population size. This, however, does not allow -->
+<!-- to properly model population collpases, since the death rate can be -->
+<!-- come less than 1. -->
 
-In the frequency-dependent models, the death rate for the McFarland
-model is set as $D(N) = \max(1, \log(1 + N/K))$. This is reasonable
-if we consider the equilibrium birth rate in the absence of any
-mutants to be 1. (We will probably make this change to the rest of
-the code, but since it could break some existing code, special
-provisions will need to be taken).
+<!-- In the frequency-dependent models, the death rate for the McFarland -->
+<!-- model is set as $D(N) = \max(1, \log(1 + N/K))$. This is reasonable -->
+<!-- if we consider the equilibrium birth rate in the absence of any -->
+<!-- mutants to be 1. (We will probably make this change to the rest of -->
+<!-- the code, but since it could break some existing code, special -->
+<!-- provisions will need to be taken). -->
 
 
 
