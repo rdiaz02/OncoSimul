@@ -160,9 +160,10 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   }
   
   When \code{frequencyDependentFitness = FALSE}, fitness must be
-  \code{>= 0}. If any possible genotype is missing, its fitness is assumed
-  to be 0, except for WT (if WT is missing, its fitness is assumed to be
-  1 ---see examples).
+  \code{>= 0}. If any possible genotype is missing, its fitness is
+  assumed to be 0, except for WT (if WT is missing, its fitness is
+  assumed to be 1 ---see examples); this also applies to
+  frequency-dependent fitness.
 
   In contrast, if \code{frequencyDependentFitness = TRUE}, the Fitness
   column must contain the fitness specification equations, like

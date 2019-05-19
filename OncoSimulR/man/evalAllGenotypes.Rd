@@ -125,6 +125,9 @@ are allowed; you must set \code{frequencydependentFitness = TRUE} and
 \code{spPopSizes} must not be NULL and its length must be equal to the number of possible
 genotypes. Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
 
+
+\strong{evalAllGenotypesFitAndMut does not (yet) work with frequency-dependent
+  fitness specifications.} (The value returned for fitness is incorrect.)
 }
 
 \author{
@@ -308,6 +311,8 @@ afe <- allFitnessEffects(genotFitness = r,
 
 evalAllGenotypes(afe)
 
+## Recall that evalAllGenotypesFitAndMut does not (yet) work with
+## frequency-dependent fitness specifications.
 }
 
 \keyword{ misc }
