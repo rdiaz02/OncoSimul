@@ -1030,6 +1030,7 @@ oncoSimulIndiv(femuv, mu = muv)
 #########Frequency dependent fitness examples
 
 ## An example with cooperation. Presence of WT favours all clones
+## and all clones have a positive effect on themselves
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
                       Fitness = c("3 + 5*f_",
@@ -1072,7 +1073,7 @@ sp
 }
 
 ## A little bit more complex example situation. WT favours clones A and B. A and
-## B compete with each other. Presence of A and B favour clone A, B.
+## B compete with each other. Presence of A and B favours clone A, B.
 
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
