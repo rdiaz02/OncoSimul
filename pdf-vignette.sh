@@ -20,6 +20,7 @@ sed -i 's/## panderOptions("table.split.cells", 15)/panderOptions("table.split.c
 
 
 sed -i 's/relfunct.png/relfunct.pdf/' OncoSimulR-tex.Rmd
+sed -i 's/hurlbut.png/hurlbut.pdf/' OncoSimulR-tex.Rmd
 
 Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR-tex.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))'
 
