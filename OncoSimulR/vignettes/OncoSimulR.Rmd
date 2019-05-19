@@ -8021,7 +8021,7 @@ nutrient enrichment produced by vascularization when A+ cells are
 present; however, it does place the proliferative cell at a greater
 vulnerability to cytotoxins."
 
-They provide, in p. 4, the payoff matrix reproduced in Table
+They provide, in p. 4, the payoff matrix reproduced in Figure
 \@ref(fig:hurlbutpay): 
 
 
@@ -8034,11 +8034,11 @@ four types as **f**=G**u**, where **f** and **u** are the vectors
 with the four fitnesses and frequencies (where each element of **u**
 corresponds to the relative frequencies of stromal, angiogenic,
 proliferativa, and cytotoxic cells), and G is the payoff matrix in
-Table \@ref(fig:hurlbutpay).
+Figure \@ref(fig:hurlbutpay).
 
 
 To allow modelling scenarios with different values for the
-parameters in Table \@ref(fig:hurlbutpay) we will define a function
+parameters in Figure \@ref(fig:hurlbutpay) we will define a function
 to create the data frame of frequency-dependent fitness. First, we
 will assume that each one of types A+, P, and C, are all derived
 from WT by a single mutation in one of three genes, say, A, P, C,
@@ -8074,7 +8074,7 @@ create_fe <- function(a, b, c, d, e, f, g,
 }
 ```
 
-We can check we recover Table \@ref(fig:hurlbutpay):
+We can check we recover Figure \@ref(fig:hurlbutpay):
 ```{r hbf1check}
 create_fe("a", "b", "c", "d", "e", "f", "g")
 ```
