@@ -692,7 +692,7 @@ mutator genes are mutated: see section \@ref(tomlinexcept).)
 
 ### Epistatic interactions between drivers and passengers in cancer and the consequences of order effects {#exbauer}
 
-#### Epistatic interactions between drivers and passengers {#bauer}
+#### Epistatic interactions between drivers and passengers {#bauer0}
 
 @Bauer2014 have examined the effects of epistatic relationships
 between drivers and passengers in cancer initiation. We could use
@@ -2873,7 +2873,7 @@ $10^6$ starting from an equilibrium population of 500 we need about
 
 
 [^mcnum]: Given the dependence of death rates on population size in
-    McFarland's model (section \@ref(mcfl) and \@ref(fdfdeath)), if all mutations have
+    McFarland's model (section \@ref(mcfl) and \@ref(mcfldeath)), if all mutations have
     the same fitness effects we can calculate the equilibrium
     population size (where birth and death rates are equal) for a
     given number of mutated genes as: $K * (e^{(1 + s)^p} - 1)$,
@@ -7865,7 +7865,7 @@ fitness landscapes; with frequency-dependent fitness, as in section
 # Frequency-dependent fitness {#fdf}
 
 **This functionality is only available in the freq-dep-fitness
-branch** See https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
+branch** See: https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
 
 
 With frequency-dependence fitness we can make fitness (actually,
@@ -7875,13 +7875,20 @@ other genotypes.  Thus, this is similar to the explicit mapping of
 genotypes to fitness (see \@ref(explicitmap)), but fitness can be a
 function of the abundance (relative or absolute) of other genotypes.
 
-So the procedure is to first create a two-column data frame, where
-the first column are the genotypes and the second column contains,
-as strings, the expressions for the function that relate fitness to
-frequencies of other genotypes. We use library
-[ExprTk](https://github.com/ArashPartow/exprtk) so the range is
-functions you can use is very large
-(http://www.partow.net/programming/exprtk/). 
+So the procedure is to first create a data frame with the mapping
+between genotypes and their (frequency-dependent) fitness, similar
+to section \@ref(explicitmap). For example, a two-column data frame,
+where the first column are the genotypes and the second column
+contains, as strings, the expressions for the function that relate
+fitness to frequencies of other genotypes. (We also use a data frame
+with $g + 1$ columns; each of the first $g$ columns contains a 1 or
+a 0 indicating that the gene of that column is mutated or
+not. Column $g+ 1$ contains the fitness specifications; see
+`oncoSimulIndiv` for examples).
+
+We use library [ExprTk](https://github.com/ArashPartow/exprtk) for
+the fitness specifications so the range is functions you can use is
+very large (http://www.partow.net/programming/exprtk/).
 
 Once this data frame is created, we can pass it to
 `allFitnessEffects`. From there, simulation proceeds as usual.
@@ -7992,10 +7999,10 @@ sfd <- oncoSimulIndiv(afd,
 plot(sfd, show = "genotypes")
 ```
 
-## Hurlbut et al., 2018: a four-cell example with angiogenesis and cytotoxicity {hurlbut}
+## Hurlbut et al., 2018: a four-cell example with angiogenesis and cytotoxicity {#hurlbut}
 
 The following example is based on @hurlbut2018. As explained in
-p. 3 of that paper, "Stromal cancer cells (A−) [WT in the code
+p. 3 of that paper, "Stromal cancer cells (A-) [WT in the code
 below] have no particular benefit or cost unique to themselves, and
 they are considered a baseline neutral cell within the context of
 the model. In contrast, angiogenesis-factor producing cells (A+) [A
@@ -8018,9 +8025,7 @@ They provide, in p. 4, the payoff matrix reproduced in Table
 \@ref(fig:hurlbutpay): 
 
 
-```{r hurlbutpay, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from
-Table 2 of Hurlbut et al., 2018, 'Game Theoretical Model of Cancer Dynamics with
-Four Cell Phenotypes', *Games*, 9, 61; doi:10.3390/g9030061."}
+```{r hurlbutpay, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from Table 2 of Hurlbut et al., 2018, 'Game Theoretical Model of Cancer Dynamics withFour Cell Phenotypes', *Games*, 9, 61; doi:10.3390/g9030061."}
 knitr::include_graphics("hurlbut.png")
 ```
 
@@ -8285,7 +8290,7 @@ sfd4 <- oncoSimulIndiv(afd3,
                        errorHitMaxTries = FALSE, 
                        errorHitWallTime = FALSE)
 op <- par(mfrow = c(1, 2))
-plot(sfd4 show = "genotypes", type = "line")
+plot(sfd4, show = "genotypes", type = "line")
 plot(sfd4, show = "genotypes")
 par(op)
 sfd4
@@ -8293,13 +8298,11 @@ sfd4
 ## Check final pop size corresponds to birth = death 
 K <- 5000/(exp(1) - 1) 
 K
-[1] 2910
 log1p(4290/K)
-[1] 0.906
 ```
  
 
-## Frequency-dependent fitness: can I mix relative and aboslute frequencies? {#fdfrelabs}
+## Frequency-dependent fitness: can I mix relative and absolute frequencies? {#fdfrelabs}
 
 Of course, since you can always use an absolute specification with
 the appropriate quotient. For example, the following two
@@ -8356,8 +8359,6 @@ tmp2 <- oncoSimulIndiv(afear2,
                        seed = NULL, 
                        errorHitMaxTries = FALSE, 
                        errorHitWallTime = FALSE)
-identical(print(tmp1), print(tmp2))
-
 stopifnot(identical(print(tmp1), print(tmp2)))
 ```
 
@@ -8420,7 +8421,7 @@ s1fd <- oncoSimulIndiv(afe4,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
-plot(s1, show = "genotypes")
+plot(s1fd, show = "genotypes")
 
 
 mtfd <- allMutatorEffects(epistasis = c("A" = 0.1,
@@ -8437,11 +8438,11 @@ s2fd <- oncoSimulIndiv(afe4,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
-plot(s2, show = "genotypes")
+plot(s2fd, show = "genotypes")
 
 op <- par(mfrow = c(1, 2))
-plotClonePhylog(s1, keepEvents = TRUE)
-plotClonePhylog(s2, keepEvents = TRUE)
+plotClonePhylog(s1fd, keepEvents = TRUE)
+plotClonePhylog(s2fd, keepEvents = TRUE)
 par(op)
 
 ```
