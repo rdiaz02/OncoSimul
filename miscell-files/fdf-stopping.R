@@ -1,0 +1,60 @@
+## Hurlbut et al., 2018, example
+
+options(stringsAsFactors = FALSE) ## Get rid of the messages
+
+create_fe <- function(a, b, c, d, e, f, g,
+                        gt = c("WT", "A", "P", "C")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+                 paste0("1 + ",
+                       as.character(d), " * f_1 ",
+                       "- ", as.character(c), " * f_3"),
+                 paste0("1 - ", as.character(a), " + ", as.character(d), " + ",
+                       as.character(f), " * f_1 ",
+                      "- ", as.character(c), " * f_3"),
+                 paste0("1 + ", as.character(g), " + ",
+                       as.character(d), " * f_1 ",
+                       "- ", as.character(c), " * (1 + ",
+                       as.character(g), ") * f_3"),
+                 paste0("1 - ", as.character(b), " + ",
+                       as.character(e), " * f_ + ",
+                       "(", as.character(d), " + ", as.character(e), ") * f_1 + ",
+                       as.character(e) , " * f_2")),
+             stringsAsFactors = FALSE)
+}
+
+
+afe_3_a <- allFitnessEffects(genotFitness =
+                                 create_fe(0.02, 0.04, 0.08, 0.06,
+                                           0.15, 0.1, 0.06),
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+set.seed(2)
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
+set.seed(2)
+s_3_b <- oncoSimulIndiv(afe_3_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     detectionProb = c(p2 = 0.1, 
+                                     n2 = 2000, 
+                                     PDBaseline = 1000,
+                                     checkSizePEvery = 2),
+                     ## finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+
