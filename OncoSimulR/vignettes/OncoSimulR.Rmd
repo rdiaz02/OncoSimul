@@ -7571,309 +7571,6 @@ are examining a large number of different scenarios.
 
 
 
-
-
-
-\clearpage
-
-# Frequency-dependent fitness {#fdf}
-
-**This functionality is only available in the freq-dep-fitness
-branch** See https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
-
-
-With frequency-dependence fitness we can make fitness (actually,
-birth rate) depend on the frequency of other genotypes.  We specify
-how the fitness (birth rate) of each genotype depends (or not) on
-other genotypes.  Thus, this is similar to the explicit mapping of
-genotypes to fitness (see \@ref(explicitmap)), but fitness can be a
-function of the abundance (relative or absolute) of other genotypes.
-
-So the procedure is to first create a two-column data frame, where
-the first column are the genotypes and the second column contains,
-as strings, the expressions for the function that relate fitness to
-frequencies of other genotypes. We use library
-[ExprTk](https://github.com/ArashPartow/exprtk) so the range is
-functions you can use is very large
-(http://www.partow.net/programming/exprtk/). 
-
-Once this data frame is created, we can pass it to
-`allFitnessEffects`. From there, simulation proceeds as usual.
-
-The following is an arbitrary example. We will model birth rate of
-some genotypes as a function of the relative frequencies of other
-genotypes (that is why we use `f_1`, for example, to denote relative
-frequency of genotype with the first gene mutated, `f_1_2` to denote
-relative frequency of the genotype with the first and second genes
-mutated, etc). 
-
-In the example below, the birth rate of genotype "A" $= 1.2 + 1.5*
-f\_1\_2$ and that of the wildtype $= 1 + 1.5* f\_1\_2$.  Genotype
-"A, B", thus, could be a genotype whose presence leads to an
-increase in the other genotypes (maybe via diffusible factors,
-inducing angiogenesis, etc), but genotype "B" does not show
-frequency-dependence.  The birth rate of genotype "C" increases with
-the frequency of `f_1_2` and increases (adding 0.7) with the
-frequency of genotypes "A" and "B", but only if the sum of the
-frequencies of genotypes "A" and "B" is larger than 0.3.  For
-genotype "A, B" its fitness increases with the square root of the
-sum of the frequencies of genotypes "A", "B", and "C", but it
-decreases (i.e., shows increased intra-clone competition) if its own
-frequency is larger than 0.5. Genotypes not defined explicitly have
-a fitness of 0. See the documentation of `allFitnessEffects` for
-further details. Since we can use all of the functionality from
-ExprTk, we can make fitness and arbitrarily complex function of the
-frequencies of genotypes.
-
-
-```{r fdf1}
-
-
-## Define fitness of the different genotypes
-gffd <- data.frame(Genotype = c("WT", "A", "B", "C", "A, B"), 
-                   Fitness = c("1 + 1.5 * f_1_2",
-                               "1.3 + 1.5 * f_1_2",
-                               "1.4",
-                               "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
-                               "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
-                   stringsAsFactors = FALSE)
-```
-(In the data frame creation, we use `stringsAsFactors = FALSE`
-to avoid messages about conversions between factors and characters).
-
-
-Let us verify that we have specified what we think we have specified
-using `evalAllGenotypes` (we have done this repeatedly in this
-vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or
-\@ref{quickexample}). Because of the way the code works, we need to
-pass the populations sizes at which we want fitness evaluated in
-`evalAllGenotypes` (this we do now in `allFitnessEffects`, but this
-might be moved to `evalAllGenotypes` in the future).
-
-
-Note that when calling `allFitnessEffects` we have to set the
-paramenter `frequencyDependentFitness` to TRUE. Since we are using
-relative frequencies, we also specify `freqType = "rel"` (the need
-to do this might be removed in the future). We will see below
-(\@ref(fdfabs)) an example with absolute numbers.
-
-
-```{r fdf1b}
-evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(100, 20, 20, 30, 0)))
-
-evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(100, 30, 40, 0, 10)))
-
-evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(100, 30, 40, 0, 100)))
-
-```
-
-Let us create the `allFitnessEffects` object and simulate.
-We will use McFL model, so in addition to the frequency dependence in
-the birth rates, there is also  density dependence
-in the death rate (see section \@ref(specfit)).
-
-
-```{r fdf1c}
-afd <- allFitnessEffects(genotFitness = gffd, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "rel")
-
-set.seed(1) ## for reproducibility
-sfd <- oncoSimulIndiv(afd, 
-                     model = "McFL", 
-                     onlyCancer = FALSE, 
-                     finalTime = 100,
-                     mu = 1e-4,
-                     initSize = 5000, 
-                     keepPhylog = FALSE,
-                     seed = NULL, 
-                     errorHitMaxTries = FALSE, 
-                     errorHitWallTime = FALSE)
-plot(sfd, show = "genotypes")
-```
-
-## Frequency-dependent fitness: an example with absolute numbers and population collapse {#fdfabs}
-
-
-In the following example we use absolute numbers (thus the `n_1`,
-etc). This is a toy model where there is a change in fitness in two
-of the genotypes if the other is above a specified threshold (this
-also shows the usage of a logical inequality). The genotype with
-gene B mutated has birth rate less than 1, unless there are at least
-more than 10 cells with genotype A mutated.
-
-
-```{r fdf2}
-options(stringsAsFactors = FALSE) ## get rid of the messages
-gffd3 <- data.frame(Genotype = c("WT", "A", "B"), 
-                   Fitness = c("1",
-                               "1 + 0.2 * (n_2 > 10)",
-                               ".9 + 0.4 * (n_1 > 10)"
-                               ))
-afd3 <- allFitnessEffects(genotFitness = gffd3, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "abs")
-```
-
-Let us verify that we have specified what we think we have specified
-using `evalAllGenotypes`:<!--  (we have done this repeatedly in this -->
-<!-- vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or -->
-<!-- \@ref{quickexample}). Because of the way the code works, we need to -->
-<!-- pass the populations sizes at which we want fitness evaluated in -->
-<!-- `evalAllGenotypes` (this we do now in `allFitnessEffects`, but this -->
-<!-- might be moved to `evalAllGenotypes` in the future): -->
-
-```{r fdf2b}
-evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "abs",
-                         spPopSizes = c(100, 1, 11)))
-
-evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "abs",
-                         spPopSizes = c(100, 11, 1)))
-```
-
-In this simulation, the population collapses: genotype B is able to
-invade the population when there are some A's around. But as soon as
-A disappears due to competition from B, B collapses as its birth
-rate becomes 0.9, less than the death rate; we are using the "McFLD"
-model (where death rate $D(N) = \max(1, \log(1 + N/K))$); see
-details in \@ref(mcfldeath).
-
-```{r fdf2c}
-set.seed(1)
-sfd3 <- oncoSimulIndiv(afd3,
-                       model = "McFLD", 
-                       onlyCancer = FALSE, 
-                       finalTime = 200,
-                       mu = 1e-4,
-                       initSize = 5000, 
-                       keepPhylog = FALSE,
-                       seed = NULL, 
-                       errorHitMaxTries = FALSE, 
-                       errorHitWallTime = FALSE)
-plot(sfd3, show = "genotypes", type = "line")
-plot(sfd3, show = "genotypes")
-sfd3
-```
-
-<!-- ### Death rates in the frequency dependent model {#fdfdeath} -->
-
-<!-- As explained in \@ref(mcfl), in the McFarland model we use death -->
-<!-- rate at population size N, $D(N) = \log(1 + N/K)$ where $K$ is the -->
-<!-- initial equilibrium population size. This, however, does not allow -->
-<!-- to properly model population collpases, since the death rate can be -->
-<!-- come less than 1. -->
-
-<!-- In the frequency-dependent models, the death rate for the McFarland -->
-<!-- model is set as $D(N) = \max(1, \log(1 + N/K))$. This is reasonable -->
-<!-- if we consider the equilibrium birth rate in the absence of any -->
-<!-- mutants to be 1. (We will probably make this change to the rest of -->
-<!-- the code, but since it could break some existing code, special -->
-<!-- provisions will need to be taken). -->
-
-
-
-
-
-<!-- We create an  -->
-<!-- `allFitnessEffects` object, passing a `genoFitnes` -->
-
-
-<!-- We first -->
-<!-- need to build an `allFitnessEffects` object, passing a `genoFitnes` -->
-<!-- as we can see bellow (see \@ref(explicitmap) for more details). -->
-
-
-<!-- In this kind of simulations fitness effects of clones are expressed by functions, -->
-<!-- where the variables are the relative frequencies of the clones in the tumour population. -->
-<!-- We need to build an `allFitnessEffects` object, -->
-<!-- passing a `genoFitnes` as we can see bellow (see \@ref(explicitmap) for more details). -->
-
-
-<!-- ```{r} -->
-<!-- r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),  -->
-<!--                  Fitness = c("1 + 1.5*f_", -->
-<!--                              "5 + 3*(f_A + f_B + f_A_B)", -->
-<!--                              "5 + 3*(f_A + f_B + f_A_B)", -->
-<!--                              "7 + 5*(f_A + f_B + f_A_B)")) -->
-
-<!-- afe <- allFitnessEffects(genotFitness = r,  -->
-<!--                          frequencyDependentFitness = TRUE, -->
-<!--                          frequencyType = "rel") -->
-<!-- ## For reproducibility -->
-<!-- set.seed(10) -->
-<!-- osi <- oncoSimulIndiv(afe,  -->
-<!--                model = "McFL",  -->
-<!--                onlyCancer = FALSE,  -->
-<!--                finalTime = 4000, -->
-<!--                mu = 1e-6, -->
-<!--                initSize = 5000,  -->
-<!--                keepPhylog = FALSE, -->
-<!--                seed = NULL,  -->
-<!--                errorHitMaxTries = FALSE,  -->
-<!--                errorHitWallTime = FALSE) -->
-
-<!-- set.seed(NULL) -->
-
-<!-- osi -->
-
-<!-- plot(osi, show = "genotypes", type = "line") -->
-<!-- ``` -->
-
-<!-- In this example, we can see how the Fitness column of r is passed as character -->
-<!-- vector, in which each element must be passed as character in the same way. In R, if -->
-<!-- you do that, Genotype and Fitness would be considered as factors in the data frame -->
-<!-- r, but `allFitnessEffects` transform both columns to character, showing the -->
-<!-- corresponding warnings that alert you of the transformation. If you dont want to -->
-<!-- see this sometimes ugly messages, just use `stringsAsFactors = FALSE` in the data frame -->
-<!-- definition (or change the corresponding global option). Setting the paramenter `frequencyDependentFitness` to TRUE, you are -->
-<!-- fixing that all downstream work is going to be done in a frequency Dependent -->
-<!-- Fitness mode. -->
-
-<!-- The case of the example above is inspired by @Axelrod2006, where all clones -->
-<!-- cooperate with each other in terms of the release of diffusion products, like -->
-<!-- growth factors, that stimulate the growth of all mutated genotypes. Here we set all -->
-<!-- fitness effects as linear functions, where fitness increases with the number of -->
-<!-- mutations acquired. We have set the cooperation adding the frequencies of all -->
-<!-- mutated clones in the fitness ecuations. We have used McFL model, so in this case -->
-<!-- the fitness effects are density dependent in terms of death rate and frequency -->
-<!-- dependent in terms of birth rate (see section \@ref(specfit)). -->
-
-<!-- The plot above shows that WT dominates when mutants are less frequent, but if one -->
-<!-- gets a high frequency, WT decreases fast because its frequency falls down and -->
-<!-- consequently its fitness decreasses as well. When a single mutant appears and it -->
-<!-- frequency is high enough, then the probability of the arisen of double mutant -->
-<!-- increases. Thanks to the large fitness of the double mutant it grows fast and -->
-<!-- dominates the entire population quickly. If we think of this double mutant as the -->
-<!-- cause of the malignancy of the tumor when it dominates, we can say that under this -->
-<!-- conditions and in this particular run the system has reached the state of cancer. -->
-<!-- Will we see this if the simulation is repeated a bunch -->
-<!-- of times (i.e., is this a common result under this conditions?)  -->
-<!-- To answer this question we need to run the simulation a high number of times, of -->
-<!-- course without setting the seed in the same place in each iteration, and capture de -->
-<!-- final population result. Using this data we can plot a boxplot, like the one shown -->
-<!-- below in Figure \@ref(fig:boxplot). In this case we run the simulation 1000 times  -->
-<!-- and we can appreciate that the final population composition under this situation is really stable and produces the same results with little variability. -->
-
-<!-- ```{r boxplot, eval=TRUE, echo=FALSE, fig.cap="Final population results box plot. 1000 simulations"} -->
-<!-- knitr::include_graphics("simulationsBoxPlot.png") -->
-<!-- ``` -->
-
-
-
-
 \clearpage
 # Showing the genealogical relationships of clones {#phylog}
 
@@ -8078,6 +7775,7 @@ that function is optimized for other uses. This might change in the future.
 
 \clearpage
 
+
 # Generating random fitness landscapes {#gener-fit-land}
 
 In most of the examples seen above, we have fully specified the
@@ -8157,7 +7855,773 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 
 <!-- % @  -->
 
+(These fitness landscapes are, of course, frequency-independent
+fitness landscapes; with frequency-dependent fitness, as in section
+\@ref{fdf} fitness landscapes as such are not defined.)
+
 \clearpage
+
+
+# Frequency-dependent fitness {#fdf}
+
+**This functionality is only available in the freq-dep-fitness
+branch** See https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
+
+
+With frequency-dependence fitness we can make fitness (actually,
+birth rate) depend on the frequency of other genotypes.  We specify
+how the fitness (birth rate) of each genotype depends (or not) on
+other genotypes.  Thus, this is similar to the explicit mapping of
+genotypes to fitness (see \@ref(explicitmap)), but fitness can be a
+function of the abundance (relative or absolute) of other genotypes.
+
+So the procedure is to first create a two-column data frame, where
+the first column are the genotypes and the second column contains,
+as strings, the expressions for the function that relate fitness to
+frequencies of other genotypes. We use library
+[ExprTk](https://github.com/ArashPartow/exprtk) so the range is
+functions you can use is very large
+(http://www.partow.net/programming/exprtk/). 
+
+Once this data frame is created, we can pass it to
+`allFitnessEffects`. From there, simulation proceeds as usual.
+
+The following is an arbitrary example. We will model birth rate of
+some genotypes as a function of the relative frequencies of other
+genotypes (that is why we use `f_1`, for example, to denote relative
+frequency of genotype with the first gene mutated, `f_1_2` to denote
+relative frequency of the genotype with the first and second genes
+mutated, etc). 
+
+*Note: except for the example of \@ref(hurlbut) (based on
+@hurlbut2018), the examples below are not used because of their
+biological realism, but rather to show some key features of the software*
+
+
+In the example below, the birth rate of genotype "A" $= 1.2 + 1.5*
+f\_1\_2$ and that of the wildtype $= 1 + 1.5* f\_1\_2$.  Genotype
+"A, B", thus, could be a genotype whose presence leads to an
+increase in the other genotypes (maybe via diffusible factors,
+inducing angiogenesis, etc), but genotype "B" does not show
+frequency-dependence.  The birth rate of genotype "C" increases with
+the frequency of `f_1_2` and increases (adding 0.7) with the
+frequency of genotypes "A" and "B", but only if the sum of the
+frequencies of genotypes "A" and "B" is larger than 0.3.  For
+genotype "A, B" its fitness increases with the square root of the
+sum of the frequencies of genotypes "A", "B", and "C", but it
+decreases (i.e., shows increased intra-clone competition) if its own
+frequency is larger than 0.5. Genotypes not defined explicitly have
+a fitness of 0. See the documentation of `allFitnessEffects` for
+further details. Since we can use all of the functionality from
+ExprTk, we can make fitness and arbitrarily complex function of the
+frequencies of genotypes.
+
+
+```{r fdf1}
+
+
+## Define fitness of the different genotypes
+gffd <- data.frame(Genotype = c("WT", "A", "B", "C", "A, B"), 
+                   Fitness = c("1 + 1.5 * f_1_2",
+                               "1.3 + 1.5 * f_1_2",
+                               "1.4",
+                               "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
+                               "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
+                   stringsAsFactors = FALSE)
+```
+(In the data frame creation, we use `stringsAsFactors = FALSE`
+to avoid messages about conversions between factors and characters).
+
+
+Let us verify that we have specified what we think we have specified
+using `evalAllGenotypes` (we have done this repeatedly in this
+vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or
+\@ref{quickexample}). Because of the way the code works, we need to
+pass the populations sizes at which we want fitness evaluated in
+`evalAllGenotypes` (this we do now in `allFitnessEffects`, but this
+might be moved to `evalAllGenotypes` in the future).
+
+
+Note that when calling `allFitnessEffects` we have to set the
+paramenter `frequencyDependentFitness` to TRUE. Since we are using
+relative frequencies, we also specify `freqType = "rel"` (the need
+to do this might be removed in the future). We will see below
+(\@ref(fdfabs)) an example with absolute numbers.
+
+
+```{r fdf1b}
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 20, 20, 30, 0)))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 30, 40, 0, 10)))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 30, 40, 0, 100)))
+
+```
+
+Let us create the `allFitnessEffects` object and simulate.
+We will use McFL model, so in addition to the frequency dependence in
+the birth rates, there is also  density dependence
+in the death rate (see section \@ref(specfit)).
+
+
+```{r fdf1c}
+afd <- allFitnessEffects(genotFitness = gffd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+set.seed(1) ## for reproducibility
+sfd <- oncoSimulIndiv(afd, 
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 100,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = FALSE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(sfd, show = "genotypes")
+```
+
+## Hurlbut et al., 2018: a four-cell example with angiogenesis and cytotoxicity {hurlbut}
+
+The following example is based on @hurlbut2018. As explained in
+p. 3 of that paper, "Stromal cancer cells (A−) [WT in the code
+below] have no particular benefit or cost unique to themselves, and
+they are considered a baseline neutral cell within the context of
+the model. In contrast, angiogenesis-factor producing cells (A+) [A
+in the code below] vascularize the local tumor area which
+consequently introduces a nutrient rich blood to the benefit of all
+interacting cells. Nutrient recruitment expands when A+ cells
+interact with one another. Cytotoxic cells (C) release a chemical
+compound which harms heterospecific cells and increases their rate
+of cell death. The cytotoxic cells benefit from the resulting
+disruption in competition caused by the interaction. For simplicity,
+our model presumes that cytotoxic cells are themselves immune to
+this class of agent. Finally, proliferative cells (P) possess a
+reproductive or metabolic advantage relative to the other cell
+types. In our model this advantage does not compound with the
+nutrient enrichment produced by vascularization when A+ cells are
+present; however, it does place the proliferative cell at a greater
+vulnerability to cytotoxins."
+
+They provide, in p. 4, the payoff matrix reproduced in Table
+\@ref(fig:hurlbutpay): 
+
+
+```{r hurlbutpay, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from
+Table 2 of Hurlbut et al., 2018, 'Game Theoretical Model of Cancer Dynamics with
+Four Cell Phenotypes', *Games*, 9, 61; doi:10.3390/g9030061."}
+knitr::include_graphics("hurlbut.png")
+```
+
+As explained in p. 6 (equation 1), we can write the fitness of the
+four types as **f**=G**u**, where **f** and **u** are the vectors
+with the four fitnesses and frequencies (where each element of **u**
+corresponds to the relative frequencies of stromal, angiogenic,
+proliferativa, and cytotoxic cells), and G is the payoff matrix in
+Table \@ref(fig:hurlbutpay).
+
+
+To allow modelling scenarios with different values for the
+parameters in Table \@ref(fig:hurlbutpay) we will define a function
+to create the data frame of frequency-dependent fitness. First, we
+will assume that each one of types A+, P, and C, are all derived
+from WT by a single mutation in one of three genes, say, A, P, C,
+respectively. 
+
+
+
+```{r hurlbutfit1}
+
+options(stringsAsFactors = FALSE) ## Get rid of the messages
+
+create_fe <- function(a, b, c, d, e, f, g,
+                        gt = c("WT", "A", "P", "C")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+                 paste0("1 + ",
+                       as.character(d), " * f_1 ",
+                       "- ", as.character(c), " * f_3"),
+                 paste0("1 - ", as.character(a), " + ", as.character(d), " + ",
+                       as.character(f), " * f_1 ",
+                      "- ", as.character(c), " * f_3"),
+                 paste0("1 + ", as.character(g), " + ",
+                       as.character(d), " * f_1 ",
+                       "- ", as.character(c), " * (1 + ",
+                       as.character(g), ") * f_3"),
+                 paste0("1 - ", as.character(b), " + ",
+                       as.character(e), " * f_ + ",
+                       "(", as.character(d), " + ", as.character(e), ") * f_1 + ",
+                       as.character(e) , " * f_2")),
+             stringsAsFactors = FALSE)
+}
+```
+
+We can check we recover Table \@ref(fig:hurlbutpay):
+```{r hbf1check}
+create_fe("a", "b", "c", "d", "e", "f", "g")
+```
+
+
+We could model a different set of ancestor-dependent relationships:
+
+```{r hurlbutfit2}
+## Different assumption about origins from mutation:
+## WT -> P; P -> A,P; P -> C,P
+
+create_fe2 <- function(a, b, c, d, e, f, g,
+                        gt = c("WT", "A", "P", "C", "A, P", "A, C", "P, C")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+                 paste0("1 + ",
+                       as.character(d), " * f_1_2 ",
+                       "- ", as.character(c), " * f_2_3"),
+                 "0",
+                 paste0("1 + ", as.character(g), " + ",
+                       as.character(d), " * f_1_2 ",
+                       "- ", as.character(c), " * (1 + ",
+                       as.character(g), ") * f_2_3"),
+                 "0",
+                 paste0("1 - ", as.character(a), " + ", as.character(d), " + ",
+                       as.character(f), " * f_1_2 ",
+                       "- ", as.character(c), " * f_2_3"),
+                 "0",
+                 paste0("1 - ", as.character(b), " + ",
+                       as.character(e), " * f_ + ",
+                       "(", as.character(d), " + ", as.character(e), ") * f_1_2 + ",
+                       as.character(e) , " * f_2")),
+             stringsAsFactors = FALSE)
+}
+
+## And check:
+create_fe2("a", "b", "c", "d", "e", "f", "g")
+```
+
+
+
+To show two examples, we will run the analyses they use for figures
+3a and 3b (p.8 of their paper):
+
+
+```{r hurl3a}
+## Figure 3a
+afe_3_a <- allFitnessEffects(genotFitness =
+                                 create_fe(0.02, 0.04, 0.08, 0.06,
+                                           0.15, 0.1, 0.06),
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+set.seed(2)
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+## plot(s_3_a, show = "genotypes",
+##      xlim = c(40, 200),
+##      col = c("black", "green", "red", "blue"))
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
+```
+
+
+```{r hurl3b}
+## Figure 3b
+afe_3_b <- allFitnessEffects(genotFitness =
+                                 create_fe(0.02, 0.04, 0.08, 0.1,
+                                           0.15, 0.1, 0.05),
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+set.seed(2)
+s_3_b <- oncoSimulIndiv(afe_3_b,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+## plot(s_3_b, show = "genotypes", 
+##      col = c("black", "green", "red", "blue"))
+plot(s_3_b, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
+```
+
+Of course, if we assume that the mutations leading to the different
+cell types are different, the results can change:
+
+```{r hurl3b2}
+## Figure 3b. Now with WT -> P; P -> A,P; P -> C,P
+afe_3_b_2 <- allFitnessEffects(genotFitness =
+                                 create_fe2(0.02, 0.04, 0.08, 0.1,
+                                           0.15, 0.1, 0.05),
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+set.seed(2)
+s_3_b_2 <- oncoSimulIndiv(afe_3_b_2,
+                   model = "McFL", 
+                   onlyCancer = FALSE, 
+                   finalTime = 300,
+                   mu = 1e-4,
+                   initSize = 5000, 
+                   keepPhylog = TRUE,
+                   seed = NULL, 
+                   errorHitMaxTries = FALSE, 
+                   errorHitWallTime = FALSE)
+plot(s_3_b_2, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue"))
+
+```
+
+
+
+
+(Examples for the remaining Figures 2 and 3 are provided, using also
+`oncoSimulPop`, in file 'inst/miscell/hurlbut-ex.R')
+
+## An example with absolute numbers and population collapse {#fdfabs}
+
+
+In the following example we use absolute numbers (thus the `n_1`,
+etc, instead of the `f_1` in the fitness definition). This is a toy
+model where there is a change in fitness in two of the genotypes if
+the other is above a specified threshold (this also shows again the
+usage of a logical inequality). The genotype with gene B mutated has
+birth rate less than 1, unless there are at least more than 10 cells
+with genotype A mutated.
+
+
+
+
+```{r fdf2}
+options(stringsAsFactors = FALSE) ## get rid of the messages
+gffd3 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("1",
+                               "1 + 0.2 * (n_2 > 10)",
+                               ".9 + 0.4 * (n_1 > 10)"
+                               ))
+afd3 <- allFitnessEffects(genotFitness = gffd3, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs")
+```
+
+Let us verify that we have specified what we think we have specified
+using `evalAllGenotypes`:<!--  (we have done this repeatedly in this -->
+<!-- vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or -->
+<!-- \@ref{quickexample}). Because of the way the code works, we need to -->
+<!-- pass the populations sizes at which we want fitness evaluated in -->
+<!-- `evalAllGenotypes` (this we do now in `allFitnessEffects`, but this -->
+<!-- might be moved to `evalAllGenotypes` in the future): -->
+
+```{r fdf2b}
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs",
+                         spPopSizes = c(100, 1, 11)))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs",
+                         spPopSizes = c(100, 11, 1)))
+```
+
+In this simulation, the population collapses: genotype B is able to
+invade the population when there are some A's around. But as soon as
+A disappears due to competition from B, B collapses as its birth
+rate becomes 0.9, less than the death rate; we are using the "McFLD"
+model (where death rate $D(N) = \max(1, \log(1 + N/K))$); see
+details in \@ref(mcfldeath).
+
+```{r fdf2c}
+set.seed(1)
+sfd3 <- oncoSimulIndiv(afd3,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 200,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+op <- par(mfrow = c(1, 2))
+plot(sfd3, show = "genotypes", type = "line")
+plot(sfd3, show = "genotypes")
+par(op)
+sfd3
+```
+
+Had we used the "usual" death rate expression, that can lead to
+death rates below 1 (see \@ref(mcfldeath)), we would have obtained a
+population that stabilizes around a final value slightly below the
+initial one (the one that corresponds to a death rate equal to 0.9):
+
+```{r fdf2d}
+set.seed(1)
+sfd4 <- oncoSimulIndiv(afd3,
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 200,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+op <- par(mfrow = c(1, 2))
+plot(sfd4 show = "genotypes", type = "line")
+plot(sfd4, show = "genotypes")
+par(op)
+sfd4
+
+## Check final pop size corresponds to birth = death 
+K <- 5000/(exp(1) - 1) 
+K
+[1] 2910
+log1p(4290/K)
+[1] 0.906
+```
+ 
+
+## Frequency-dependent fitness: can I mix relative and aboslute frequencies? {#fdfrelabs}
+
+Of course, since you can always use an absolute specification with
+the appropriate quotient. For example, the following two
+specifications are identical:
+
+```{r fdfar}
+rar <- data.frame(Genotype = c("WT", "A", "B", "C"), 
+                 Fitness = c("1",
+                             "1.1 + .3*f_2",
+                             "1.2 + .4*f_1",
+                             "1.0 + .5 * (f_1 + f_2)"))
+afear <- allFitnessEffects(genotFitness = rar, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(100, 200, 300, 400))
+evalAllGenotypes(afear)
+
+
+rar2 <- data.frame(Genotype = c("WT", "A", "B", "C"), 
+                 Fitness = c("1",
+                             "1.1 + .3*(n_2/N)",
+                             "1.2 + .4*(n_1/N)",
+                             "1.0 + .5 * ((n_1 + n_2)/N)"))
+afear2 <- allFitnessEffects(genotFitness = rar2, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs",
+                         spPopSizes = c(100, 200, 300, 400))
+evalAllGenotypes(afear2)
+```
+
+and simulating with them leads to identical results
+
+```{r relarres}
+set.seed(1)
+tmp1 <- oncoSimulIndiv(afear, 
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 30,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+
+set.seed(1)
+tmp2 <- oncoSimulIndiv(afear2, 
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 30,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+identical(print(tmp1), print(tmp2))
+
+stopifnot(identical(print(tmp1), print(tmp2)))
+```
+
+So you can always mix relative and absolute; here fitness of two
+genotypes depends on the relative frequencies of others, whereas
+fitness of the third on the absolute frequencies (number of cells):
+
+```{r relar3a}
+rar3 <- data.frame(Genotype = c("WT", "A", "B", "C"), 
+                 Fitness = c("1",
+                             "1.1 + .3*(n_2/N)",
+                             "1.2 + .4*(n_1/N)",
+                             "1.0 + .5 * ( n_1 > 20)"))
+afear3 <- allFitnessEffects(genotFitness = rar3, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs",
+                         spPopSizes = c(100, 200, 300, 400))
+evalAllGenotypes(afear3)
+
+
+set.seed(1)
+tmp3 <- oncoSimulIndiv(afear3, 
+                       model = "McFL", 
+                       onlyCancer = FALSE, 
+                       finalTime = 100,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE)
+plot(tmp3, show = "genotypes")
+```
+
+
+## Frequency-dependent fitness: can I use genes with mutator effects? {#fdfmutator}
+
+Yes. The following examples show it:
+
+```{r fdfmutex}
+## Relative
+r1fd <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                 Fitness = c("1",
+                             "1.4 + 1*(f_2)",
+                             "1.4 + 1*(f_1)",
+                             "1.6 + f_1 + f_2"))
+afe4 <- allFitnessEffects(genotFitness = r1fd, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+
+set.seed(1)
+s1fd <- oncoSimulIndiv(afe4, 
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 50,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(s1, show = "genotypes")
+
+
+mtfd <- allMutatorEffects(epistasis = c("A" = 0.1,
+                                      "B" = 10))
+set.seed(1)
+s2fd <- oncoSimulIndiv(afe4,
+                     muEF = mtfd,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 50,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(s2, show = "genotypes")
+
+op <- par(mfrow = c(1, 2))
+plotClonePhylog(s1, keepEvents = TRUE)
+plotClonePhylog(s2, keepEvents = TRUE)
+par(op)
+
+```
+
+
+Of course, it also works with absolute frequencies (code not
+executed for the sake of speed):
+
+
+```{r exmutfdf2, eval=FALSE}
+
+## Absolute
+r5 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                 Fitness = c("1",
+                             "1.25 - .0025*(n_2)",
+                             "1.25 - .0025*(n_1)",
+                             "1.4"))
+afe5 <- allFitnessEffects(genotFitness = r5, 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "abs")
+set.seed(8)
+s5 <- oncoSimulIndiv(afe5, 
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 100,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(s5, show = "genotypes")
+plot(s5, show = "genotypes", log = "y", type = "line")
+
+mt <- allMutatorEffects(epistasis = c("A" = 0.1,
+                                      "B" = 10))
+set.seed(8)
+s6 <- oncoSimulIndiv(afe5,
+                     muEF = mt,
+                     model = "McFL", 
+                     onlyCancer = FALSE, 
+                     finalTime = 100,
+                     mu = 1e-4,
+                     initSize = 5000, 
+                     keepPhylog = TRUE,
+                     seed = NULL, 
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+plot(s6, show = "genotypes")
+plot(s6, show = "genotypes", log = "y", type = "line")
+
+plotClonePhylog(s5, keepEvents = TRUE)
+plotClonePhylog(s6, keepEvents = TRUE)
+
+```
+
+Note, though, that **evalAllGenotypesFitAndMut** does not currently
+work with frequency-dependent fitnes:
+
+```{r noworkeval}
+
+evalAllGenotypes(allFitnessEffects(genotFitness = r1fd, 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(10, 20, 30, 40)))
+
+## Fitness is wrong
+evalAllGenotypesFitAndMut(allFitnessEffects(genotFitness = r1fd, 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(10, 20, 30, 40)),
+                    mtfd)
+```
+
+
+<!-- ### Death rates in the frequency dependent model {#fdfdeath} -->
+
+<!-- As explained in \@ref(mcfl), in the McFarland model we use death -->
+<!-- rate at population size N, $D(N) = \log(1 + N/K)$ where $K$ is the -->
+<!-- initial equilibrium population size. This, however, does not allow -->
+<!-- to properly model population collpases, since the death rate can be -->
+<!-- come less than 1. -->
+
+<!-- In the frequency-dependent models, the death rate for the McFarland -->
+<!-- model is set as $D(N) = \max(1, \log(1 + N/K))$. This is reasonable -->
+<!-- if we consider the equilibrium birth rate in the absence of any -->
+<!-- mutants to be 1. (We will probably make this change to the rest of -->
+<!-- the code, but since it could break some existing code, special -->
+<!-- provisions will need to be taken). -->
+
+
+
+
+
+<!-- We create an  -->
+<!-- `allFitnessEffects` object, passing a `genoFitnes` -->
+
+
+<!-- We first -->
+<!-- need to build an `allFitnessEffects` object, passing a `genoFitnes` -->
+<!-- as we can see bellow (see \@ref(explicitmap) for more details). -->
+
+
+<!-- In this kind of simulations fitness effects of clones are expressed by functions, -->
+<!-- where the variables are the relative frequencies of the clones in the tumour population. -->
+<!-- We need to build an `allFitnessEffects` object, -->
+<!-- passing a `genoFitnes` as we can see bellow (see \@ref(explicitmap) for more details). -->
+
+
+<!-- ```{r} -->
+<!-- r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),  -->
+<!--                  Fitness = c("1 + 1.5*f_", -->
+<!--                              "5 + 3*(f_A + f_B + f_A_B)", -->
+<!--                              "5 + 3*(f_A + f_B + f_A_B)", -->
+<!--                              "7 + 5*(f_A + f_B + f_A_B)")) -->
+
+<!-- afe <- allFitnessEffects(genotFitness = r,  -->
+<!--                          frequencyDependentFitness = TRUE, -->
+<!--                          frequencyType = "rel") -->
+<!-- ## For reproducibility -->
+<!-- set.seed(10) -->
+<!-- osi <- oncoSimulIndiv(afe,  -->
+<!--                model = "McFL",  -->
+<!--                onlyCancer = FALSE,  -->
+<!--                finalTime = 4000, -->
+<!--                mu = 1e-6, -->
+<!--                initSize = 5000,  -->
+<!--                keepPhylog = FALSE, -->
+<!--                seed = NULL,  -->
+<!--                errorHitMaxTries = FALSE,  -->
+<!--                errorHitWallTime = FALSE) -->
+
+<!-- set.seed(NULL) -->
+
+<!-- osi -->
+
+<!-- plot(osi, show = "genotypes", type = "line") -->
+<!-- ``` -->
+
+<!-- In this example, we can see how the Fitness column of r is passed as character -->
+<!-- vector, in which each element must be passed as character in the same way. In R, if -->
+<!-- you do that, Genotype and Fitness would be considered as factors in the data frame -->
+<!-- r, but `allFitnessEffects` transform both columns to character, showing the -->
+<!-- corresponding warnings that alert you of the transformation. If you dont want to -->
+<!-- see this sometimes ugly messages, just use `stringsAsFactors = FALSE` in the data frame -->
+<!-- definition (or change the corresponding global option). Setting the paramenter `frequencyDependentFitness` to TRUE, you are -->
+<!-- fixing that all downstream work is going to be done in a frequency Dependent -->
+<!-- Fitness mode. -->
+
+<!-- The case of the example above is inspired by @Axelrod2006, where all clones -->
+<!-- cooperate with each other in terms of the release of diffusion products, like -->
+<!-- growth factors, that stimulate the growth of all mutated genotypes. Here we set all -->
+<!-- fitness effects as linear functions, where fitness increases with the number of -->
+<!-- mutations acquired. We have set the cooperation adding the frequencies of all -->
+<!-- mutated clones in the fitness ecuations. We have used McFL model, so in this case -->
+<!-- the fitness effects are density dependent in terms of death rate and frequency -->
+<!-- dependent in terms of birth rate (see section \@ref(specfit)). -->
+
+<!-- The plot above shows that WT dominates when mutants are less frequent, but if one -->
+<!-- gets a high frequency, WT decreases fast because its frequency falls down and -->
+<!-- consequently its fitness decreasses as well. When a single mutant appears and it -->
+<!-- frequency is high enough, then the probability of the arisen of double mutant -->
+<!-- increases. Thanks to the large fitness of the double mutant it grows fast and -->
+<!-- dominates the entire population quickly. If we think of this double mutant as the -->
+<!-- cause of the malignancy of the tumor when it dominates, we can say that under this -->
+<!-- conditions and in this particular run the system has reached the state of cancer. -->
+<!-- Will we see this if the simulation is repeated a bunch -->
+<!-- of times (i.e., is this a common result under this conditions?)  -->
+<!-- To answer this question we need to run the simulation a high number of times, of -->
+<!-- course without setting the seed in the same place in each iteration, and capture de -->
+<!-- final population result. Using this data we can plot a boxplot, like the one shown -->
+<!-- below in Figure \@ref(fig:boxplot). In this case we run the simulation 1000 times  -->
+<!-- and we can appreciate that the final population composition under this situation is really stable and produces the same results with little variability. -->
+
+<!-- ```{r boxplot, eval=TRUE, echo=FALSE, fig.cap="Final population results box plot. 1000 simulations"} -->
+<!-- knitr::include_graphics("simulationsBoxPlot.png") -->
+<!-- ``` -->
+
+\clearpage
+
 
 # Measures of evolutionary predictability and genotype diversity {#evolpredszend}
 
