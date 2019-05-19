@@ -17,12 +17,11 @@
   - [X] update to latest version of exprTk: 
     - http://www.partow.net/programming/exprtk/index.html
     - https://github.com/ArashPartow/exprtk
-  - [ ] is allMutator Effects working?
  
-  - [ ] why can't mutator effects be used?
+  - [X] why can't mutator effects be used?
     - this is said in the vignette (I think) and in oncoSimulIndiv.Rd
 
-  - [ ] clarify in both vignette and help that non-specified genotypes
+  - [X] clarify in both vignette and help that non-specified genotypes
     have fitness 0
     - a simple example in freq-depn-non-specified.R 
 
@@ -117,13 +116,18 @@
        resize". Seems to work (?)
 
 ** second
-  - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or
-    "n"? So no need for "frequencyType = 'rel'"
-  - [ ] can we mix freq. with absolute? I guess so, because any frequency
+  - [X] change frequencyType = unemployed by NULL.
+  - [X] can we mix freq. with absolute? Yes, because any frequency
     can be expressed as a ratio of numbers.
-  - [ ] change frequencyType = unemployed by NULL.
-  - [ ] death rate: cannot become smaller than initial. That would be the
+  - [X] death rate: cannot become smaller than initial. That would be the
     default, basely one. Otherwise, it is not possible to get a collapse
     here, because death rate always adjusted.
     - In bnb_common.cpp, updateRatesFDFMcFarlandLog
+    - fixed: McFLD as another model
+  - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or
+    "n"? So no need for "frequencyType = 'rel'"
 
+
+
+** to fix
+  - [ ] is allMutator Effects working? Nope. It doesn't
