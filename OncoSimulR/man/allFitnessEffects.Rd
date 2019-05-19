@@ -30,7 +30,7 @@
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
   genotFitness = NULL,  keepInput = TRUE, frequencyDependentFitness =
-  FALSE, frequencyType = NULL, spPopSizes = NULL)
+  FALSE, frequencyType = NA, spPopSizes = NULL)
 
 allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
                    geneToModule = NULL,
@@ -211,7 +211,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   depending on \code{frequencyDependentFitness}. Use "abs", for absolute
   frequencies, or "rel", for relative ones. Remember that you must to
   use "f" for relative frequency and "n" for absolute in
-  \code{genoFitness}. Set to NULL for non-frequency-dependent fitness. }
+  \code{genoFitness}. Set to NA for non-frequency-dependent fitness. }
 
 \item{spPopSizes}{
 \code{spPopSizes} is a numeric vector that contains the population sizes of the clones,

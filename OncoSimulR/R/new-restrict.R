@@ -495,7 +495,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                        ## refFE = NULL,
                                        calledBy = NULL,
                                        frequencyDependentFitness = FALSE,
-                                       frequencyType = NULL,
+                                       frequencyType = "freq_dep_not_used",
                                        spPopSizes = NULL) {
   ## From allFitnessEffects. Generalized so we deal with Fitness
   ## and mutator.
@@ -1009,15 +1009,17 @@ allFitnessEffects <- function(rT = NULL,
                               genotFitness = NULL,
                               keepInput = TRUE,
                               frequencyDependentFitness = FALSE,
-                              frequencyType = NULL,
+                              frequencyType = NA,
                               spPopSizes = NULL) {
 
-  if(!frequencyDependentFitness){
-
-    if(!is.null(frequencyType)){
-      warning("frequencyType set to NULL")
-      frequencyType = NULL
-  }
+    if(!frequencyDependentFitness){
+        
+        if(!is.na(frequencyType)){
+            warning("frequencyType set to NA")
+        }
+        ## this is a kludge, but we must pass something not NA and not NULL
+        ## to the C++ code
+        frequencyType = "freq_dep_not_used"
 
     if(!is.null(genotFitness)) {
       if(!is.null(rT) || !is.null(epistasis) ||
