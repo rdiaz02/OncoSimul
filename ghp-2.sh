@@ -1,14 +1,18 @@
 #!/bin/bash
 ## Create html and pdf vignettes and place in github pages directory.
 
-## launch in parallel
+## launch in parallel and from the directory once entered in it. Simpler for manual runs
 
 ## cd ./OncoSimulR/vignettes
 ## Rscript -e 'library(rmarkdown); library(BiocStyle); render("OncoSimulR.Rmd")'
-./html-vignette.sh &
-./pdf-vignette.sh 
+
 
 cd ./OncoSimulR/vignettes
+
+../../html-vignette-here.sh &
+../../pdf-vignette-here.sh 
+
+
 
 mv OncoSimulR.html ../../../oncosimul-gh-pages/.
 mv OncoSimulR.pdf ../../../oncosimul-gh-pages/pdfs/.
