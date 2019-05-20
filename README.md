@@ -190,6 +190,8 @@ gives a quick overview of OncoSimulR (a former version is available as a
 If you use the package in publications **please cite the Bioinformatics paper**.
 
 
+The frequency-dependent fitness functionality is based on [Sergio
+Sanchez-Carrilo's Master's thesis](https://repositorio.uam.es/handle/10486/685417).
 
 # Licenses and copyright
 
@@ -198,7 +200,7 @@ The R/BioConductor OncoSimulR package is licensed under the GPLv3
 license. The code for the OncoSimulR BioConductor package, except for
 functions `plot.stream` and `plot.stacked`, is Copyright 2012-2019 by
 Ramon Diaz-Uriarte; the code for frequency dependent fitness is Copyright
-2017-2019 Sergio Sanchez Carrillo. `plot.stream` and `plot.stacked` are
+2017-2019 Sergio Sanchez-Carrillo. `plot.stream` and `plot.stacked` are
 Copyright 2013-2016 by Marc Taylor (see also
 https://github.com/marchtaylor/sinkr and
 http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html).
