@@ -8413,7 +8413,7 @@ We will use below the usual consumer-resource model with
 Lotka-Volterra equations. To model it, we use the "Exp" model, which
 has a constant death rate of 1, and directly translate the usual
 expressions (e.g., expressions 3.15a and 3.15b in p. 73 of
-@Otto2017) for rates of change into the birth rate.  Of course, you
+@Otto2007) for rates of change into the birth rate.  Of course, you
 can use any other function for how rates of change of each "species"
 depend on the numbers of the different species, including constant
 inflow and outflow, Type I, Type II, and Type III functional
