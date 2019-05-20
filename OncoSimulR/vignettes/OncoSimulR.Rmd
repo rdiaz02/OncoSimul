@@ -7896,19 +7896,22 @@ fitness landscapes; with frequency-dependent fitness, as in section
 **NOTE: This functionality is only available in the freq-dep-fitness
 branch** See:
 https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.  (*Note
-also that except for the example of \@ref(hurlbut) (based on
-@hurlbut2018), the examples below are not used because of their
+also that except for the example of \@ref(hurlbut), based on
+@hurlbut2018, the examples below are not used because of their
 biological realism, but rather to show some key features of the
 software*)
 
-With frequency-dependence fitness we can make fitness (actually,
-birth rate) depend on the frequency of other genotypes.  We specify
-how the fitness (birth rate) of each genotype depends (or not) on
-other genotypes.  Thus, this is similar to the explicit mapping of
-genotypes to fitness (see \@ref(explicitmap)), but fitness can be a
-function of the abundance (relative or absolute) of other
-genotypes. Frequency-dependent fitness allows you to examine models
-from **game theory** and **adaptive dynamics**.
+With frequency-dependence fitness we can make fitness (actually, birth
+rate) depend on the frequency of other genotypes.  We specify how the
+fitness (birth rate) of each genotype depends (or not) on other genotypes.
+Thus, this is similar to the explicit mapping of genotypes to fitness (see
+\@ref(explicitmap)), but fitness can be a function of the abundance
+(relative or absolute) of other genotypes. Frequency-dependent fitness
+allows you to examine models from **game theory** and **adaptive
+dynamics**. Game theory has long tradition in evolutionary biology
+[@maynardsmith1982] and has been widely used in cancer [e.g.,
+@tomlinson1997a; @basanta2008; @archetti2019; for examples of classical
+papers that cover from early uses to a very recent review].
 
 Since birth rate can be an arbitrary function of the frequencies of
 other clones, we can model competition, cooperation and mutualism,
@@ -7938,14 +7941,14 @@ $g+ 1$ contains the expressions for the fitness specifications; see
 data frame is created, we pass it to `allFitnessEffects`. From
 there, simulation proceeds as usual.
 
-How complex can the functions that specify fitness be? We use
-library [ExprTk](https://github.com/ArashPartow/exprtk) for the
-fitness specifications so the range of functions you can use is very
-large (http://www.partow.net/programming/exprtk/), including of
-course the usual arithmetic expressions, logical expressions (so you
-can model thresholds or jumps and use step functions), and a wide
-range of mathematical functions (so linear, non-linear, convex,
-concave, etc, functions can be used).
+How complex can the functions that specify fitness be? We use library
+[ExprTk](https://github.com/ArashPartow/exprtk) for the fitness
+specifications so the range of functions you can use is very large
+(http://www.partow.net/programming/exprtk/), including of course the usual
+arithmetic expressions, logical expressions (so you can model thresholds
+or jumps and use step functions), and a wide range of mathematical
+functions [so linear, non-linear, convex, concave, etc, functions can be
+used, including of course affine fitness functions as in @gerstung2011].
 
 
 ## A first example with frequency-dependent fitness {#fdfex1}
@@ -8392,8 +8395,8 @@ log1p(4290/K)
 Since birth rate can be made arbitrary functions of frequencies of
 other clones, we can easily model classical ecological models, such
 as predator-prey, commensalism and, more generally,
-consumer-resource models (see, for example, section 3.4 in
-@Otto2007).
+consumer-resource models [see, for example, section 3.4 in
+@Otto2007].
 
 OncoSimulR was originally designed as a forward-time genetic
 simulator; thus, we need to use a simple trick to get the system
@@ -8410,8 +8413,8 @@ negligible relative to their birth/death rates.
 We will use below the usual consumer-resource model with
 Lotka-Volterra equations. To model it, we use the "Exp" model, which
 has a constant death rate of 1, and directly translate the usual
-expressions (e.g., expressions 3.15a and 3.15b in p. 73 of
-@Otto2007) for rates of change into the birth rate.  Of course, you
+expressions [e.g., expressions 3.15a and 3.15b in p. 73 of
+@Otto2007] for rates of change into the birth rate.  Of course, you
 can use any other function for how rates of change of each "species"
 depend on the numbers of the different species, including constant
 inflow and outflow, Type I, Type II, and Type III functional
