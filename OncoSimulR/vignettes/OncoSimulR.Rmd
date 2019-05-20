@@ -104,6 +104,18 @@ of genes in a module. In addition, arbitrary numbers of genes without
 interactions (and with fitness effects coming from any distribution you
 might want) are also possible.
 
+You can also directly specify the mapping between genotypes and
+fitness and, thus, you can simulate on fitness landscapes of
+arbitrary complexity. 
+
+It is now (released initially in this repo as the freq-dep-fitness
+branch on February 2019) also possible to simulate scenarios with
+frequency-dependent fitness, where the fitness of one or more
+genotypes depends on the relative or absolute frequencies of other
+genotypes, as in game theory and adaptive dynamics.
+
+
+
 Mutator/antimutator genes, genes that alter the mutation rate of
 other genes [@gerrish_complete_2007; @tomlinson_mutation_1996], can
 also be simulated with OncoSimulR and specified with most of the
@@ -204,11 +216,16 @@ is a summary of some of its key features:
 * You can obtain statistics of evolutionary predictability
   from the simulations.
   
-* From version 2.13.2, you can use simulations with frequency-dependent fitness:
-  fitness (birth rate) is not fixed for a genotype, but 
-  can be a function of the frequecies of the clones. Evaluating frequently the 
-  fitness across the simulation, you can obtain a dynamic fitness landscape 
-  (see section \@ref(fdf)).
+* From version 2.13.2, you can use simulations with
+  frequency-dependent fitness: fitness (birth rate) is not fixed for
+  a genotype, but can be a function of the frequecies of the clones
+  (see section \@ref(fdf)). We can therefore use OncoSimulR to
+  examine, via simulations, results from game theory and adaptive
+  dynamics and study complex scenarios that are not amenable to
+  analytical solutions.
+  
+  <!-- Evaluating frequently the fitness across -->
+  <!-- the simulation, you can obtain a dynamic fitness landscape . -->
   
 
 
@@ -240,11 +257,17 @@ by moving the mouse over each term).
 |&nbsp; Demographic                   ||	
 |&nbsp; &nbsp; Population Size Changes|	Exponential (two models), Logistic (McFarland et al., 2013)|
 |&nbsp; Fitness Components||	
-|&nbsp; &nbsp; Birth Rate|	Individually Determined from Genotype (models "Exp" and "McFL")|
-|&nbsp; &nbsp; Death Rate|	Individually Determined from Genotype (model "Bozic"), Influenced by Environment ---population size (model "McFL")|
+|&nbsp; &nbsp; Birth Rate|	Individually Determined from Genotype
+(models "Exp", "McFL", "McFLD"). Frequency-Dependently Determined from Genotype
+(models "Exp", "McFL", "McFLD")|
+|&nbsp; &nbsp; Death Rate|	Individually Determined from Genotype
+(model "Bozic"), Influenced by Environment ---population size
+(models "McFL" and "McFLD")|
 |&nbsp;Natural Selection||	
-|&nbsp; &nbsp; Determinant|	Single and Multi-locus, Fitness of Offspring,  Environmental Factors (population size)|
-|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects|
+|&nbsp; &nbsp; Determinant|	Single and Multi-locus, Fitness of
+Offspring,  Environmental Factors (population size, genotype frequencies)|
+|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models,
+Epistasis, Random Fitness Effects, Frequency-Dependent|
 |&nbsp; Mutation Models|	Two-allele Mutation Model (wildtype, mutant), without back mutation|
 |&nbsp; Events Allowed|	Varying Genetic Features: change of individual mutation rates (mutator/antimutator genes)|
 |&nbsp; Spatial Structure| No Spatial Structure (perfectly mixed and no migration)|
@@ -313,7 +336,12 @@ OncoSimulR can help address involve combinations of:
         - Any mapping between genotypes and fitness where this mapping is:
             - User-specified
             - Generated randomly from families of random fitness landscapes (`rfitness`)
-        - A function of clone's frequencies (see section \@ref(fdf) for more details).   
+        - A function of the frequency of other genotypes (i.e.,
+          frequency-dependent fitness), such as in adaptive dynamics
+          (see section \@ref(fdf) for more details). This also
+          allows you to model competition, cooperation and
+          mutualism, parasitism and predation, and commensalism
+          between clones.
      - Mutation rates can:
           - Vary between genes
           - Be affected by other genes
@@ -869,11 +897,11 @@ reach cancer you could run simulations with `onlyCancer = TRUE` and
 look at the value of `FinalTime` as we did above (section
 \@ref(exmutantimut)).
 
-### Simulating trayectories employing the avalalaible models with frequency dependent fitness 
+### Simulating evolution with frequency-dependent fitness 
     
-The new frequency dependent fitness funcionality allows users to run simulations 
+The new frequency-dependent fitness funcionality allows users to run simulations 
 in a different way, defining fitness (birth rates) as functions of clone's frequencies.
-We can thus model frequency dependent selection.
+We can thus model frequency-dependent selection.
 See section \@ref(fdf) for further details and examples.
 
 
@@ -3251,7 +3279,7 @@ Exp and Bozic models, or depends on the population size). This is
 also shown in Table \@ref(tab:osrfeatures), in the rows for "Fitness
 components", under "Evolutionary Features".
 
-In the case of frequency dependent fitness simulations, the fitness effects
+In the case of frequency-dependent fitness simulations, the fitness effects
 must be reevaluated frequently so that birth rate, death rate or both,
 depending the model used, are updated. To do this it is
 necessary to use a short step to reevaluate fitness; this is done using a
@@ -3464,7 +3492,7 @@ a look at the test file `test.genot_fitness_to_epistasis.R` that
 uses the `fem6` object. We no longer do that but instead pass
 directly the fitness landscape.
 
-In the case of frequency dependent fitness situations, the only way to specify
+In the case of frequency-dependent fitness situations, the only way to specify
 fitness effects is using `genoFitnes` as we have shown before, but now you need
 to set `frequencyDependentFitness = TRUE` in `allFitnessEffects`. The fundamental
 difference is the Fitness column in `genoFitnes`. Now this column must be a character
@@ -6312,7 +6340,7 @@ multiple simulations in \@ref(sample).
     to, or larger than, `detectionDrivers`; note that this allows you
     to stop the simulation as soon as a **specific genotype** is
     found, by using exactly and only the genes that make that genotype as
-    the drivers. This is not allowed by the moment in frequency dependent 
+    the drivers. This is not allowed by the moment in frequency-dependent 
     fitness simulations.
 	+ A gene or gene combination among those listed in `fixation`
     becomes fixed in the population (i.e., has a frequency is 1)
@@ -7864,52 +7892,77 @@ fitness landscapes; with frequency-dependent fitness, as in section
 
 # Frequency-dependent fitness {#fdf}
 
-**This functionality is only available in the freq-dep-fitness
-branch** See: https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
-
+**NOTE: This functionality is only available in the freq-dep-fitness
+branch** See:
+https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.  (*Note
+also that except for the example of \@ref(hurlbut) (based on
+@hurlbut2018), the examples below are not used because of their
+biological realism, but rather to show some key features of the
+software*)
 
 With frequency-dependence fitness we can make fitness (actually,
 birth rate) depend on the frequency of other genotypes.  We specify
 how the fitness (birth rate) of each genotype depends (or not) on
 other genotypes.  Thus, this is similar to the explicit mapping of
 genotypes to fitness (see \@ref(explicitmap)), but fitness can be a
-function of the abundance (relative or absolute) of other genotypes.
+function of the abundance (relative or absolute) of other
+genotypes. Frequency-dependent fitness allows you to examine models
+from **game theory** and **adaptive dynamics**.
 
-So the procedure is to first create a data frame with the mapping
-between genotypes and their (frequency-dependent) fitness, similar
-to section \@ref(explicitmap). For example, a two-column data frame,
-where the first column are the genotypes and the second column
-contains, as strings, the expressions for the function that relate
-fitness to frequencies of other genotypes. (We can also use a data
-frame with $g + 1$ columns; each of the first $g$ columns contains a
-1 or a 0 indicating that the gene of that column is mutated or
-not. Column $g+ 1$ contains the fitness specifications; see
-`oncoSimulIndiv` for examples).
+Since birth rate can be an arbitrary function of the frequencies of
+other clones, you can model competition, cooperation and mutualism,
+parasitism and predation, and commensalism. (Recall that in the
+"Exp" model death rate is constant and fixed to 1. In the "McFL" and
+"McFLD" models, death rate is density-dependent ---but not
+frequency-dependent. You can thus model all those phenomena by, for
+example, making the effects of clones $i$, $j$ on each other and on
+their own be asymmetric on their birth rates).
 
-We use library [ExprTk](https://github.com/ArashPartow/exprtk) for
-the fitness specifications so the range is functions you can use is
-very large (http://www.partow.net/programming/exprtk/).
 
-Once this data frame is created, we can pass it to
-`allFitnessEffects`. From there, simulation proceeds as usual.
+The procedure for working with the frequency-dependent functionality
+is the general one with OncoSimulR. <!-- Specify the mapping between
+--> <!-- genotypes and fitness (here, fitness as a function of the
+frequency --> <!-- of different genotypes), and then simulate. Thus,
+--> We first create a data frame with the mapping between genotypes
+and their (frequency-dependent) fitness, similar to section
+\@ref(explicitmap). For example, a two-column data frame, where the
+first column are the genotypes and the second column contains, as
+strings, the expressions for the function that relate fitness to
+frequencies of other genotypes. (We can also use a data frame with
+$g + 1$ columns; each of the first $g$ columns contains a 1 or a 0
+indicating that the gene of that column is mutated or not. Column
+$g+ 1$ contains the expressions for the fitness specifications; see
+`oncoSimulIndiv` for examples). Once this data frame is created, we
+can pass it to `allFitnessEffects`. From there, simulation proceeds
+as usual.
+
+How complex can the functions that specify fitness be? We use
+library [ExprTk](https://github.com/ArashPartow/exprtk) for the
+fitness specifications so the range of functions you can use is
+very large (http://www.partow.net/programming/exprtk/),
+including of course the usual arithmetic expressions, logical
+expressions (so you can model thresholds or jumps), and a wide range
+of mathematical functions (so linear, non-linear, convex, concave,
+etc, functions can be used).
+
+
+## A first example with frequency-dependent fitness {#fdfex1}
 
 The following is an arbitrary example. We will model birth rate of
 some genotypes as a function of the relative frequencies of other
-genotypes (that is why we use `f_1`, for example, to denote relative
-frequency of genotype with the first gene mutated, `f_1_2` to denote
-relative frequency of the genotype with the first and second genes
-mutated, etc). 
-
-*Note: except for the example of \@ref(hurlbut) (based on
-@hurlbut2018), the examples below are not used because of their
-biological realism, but rather to show some key features of the software*
+genotypes; we use `f_1`, for example, to denote the relative
+frequency of the genotype with the first gene mutated, `f_1_2` to
+denote the relative frequency of the genotype with the first and
+second genes mutated, etc ---below, in sections \@ref(fdfabs) and
+\@ref{fdfrelabs} we will use absolute number of cells instead of
+relative frequencies).
 
 
-In the example below, the birth rate of genotype "A" $= 1.2 + 1.5*
+As you can see below, the birth rate of genotype "A" $= 1.2 + 1.5*
 f\_1\_2$ and that of the wildtype $= 1 + 1.5* f\_1\_2$.  Genotype
-"A, B", thus, could be a genotype whose presence leads to an
-increase in the other genotypes (maybe via diffusible factors,
-inducing angiogenesis, etc), but genotype "B" does not show
+"A, B" in this example could be a genotype whose presence leads to
+an increase in the growth of other genotypes (maybe via diffusible
+factors, induction of angiogenesis, etc). Genotype "B" does not show
 frequency-dependence.  The birth rate of genotype "C" increases with
 the frequency of `f_1_2` and increases (adding 0.7) with the
 frequency of genotypes "A" and "B", but only if the sum of the
@@ -7919,9 +7972,9 @@ sum of the frequencies of genotypes "A", "B", and "C", but it
 decreases (i.e., shows increased intra-clone competition) if its own
 frequency is larger than 0.5. Genotypes not defined explicitly have
 a fitness of 0. See the documentation of `allFitnessEffects` for
-further details. Since we can use all of the functionality from
-ExprTk, we can make fitness and arbitrarily complex function of the
-frequencies of genotypes.
+further details. As we said above, since we can use all of the
+functionality from ExprTk, we can make fitness and arbitrarily
+complex function of the frequencies of genotypes.
 
 
 ```{r fdf1}
@@ -7943,7 +7996,7 @@ to avoid messages about conversions between factors and characters).
 Let us verify that we have specified what we think we have specified
 using `evalAllGenotypes` (we have done this repeatedly in this
 vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or
-\@ref{quickexample}). Because of the way the code works, we need to
+\@ref(quickexample). Because of the way the code works, we need to
 pass the populations sizes at which we want fitness evaluated in
 `evalAllGenotypes` (this we do now in `allFitnessEffects`, but this
 might be moved to `evalAllGenotypes` in the future).
@@ -7975,7 +8028,7 @@ evalAllGenotypes(allFitnessEffects(genotFitness = gffd,
 ```
 
 Let us create the `allFitnessEffects` object and simulate.
-We will use McFL model, so in addition to the frequency dependence in
+We will use the McFL model, so in addition to the frequency dependence in
 the birth rates, there is also  density dependence
 in the death rate (see section \@ref(specfit)).
 
@@ -8087,7 +8140,8 @@ We could model a different set of ancestor-dependent relationships:
 ## WT -> P; P -> A,P; P -> C,P
 
 create_fe2 <- function(a, b, c, d, e, f, g,
-                        gt = c("WT", "A", "P", "C", "A, P", "A, C", "P, C")) {
+                        gt = c("WT", "A", "P", "C", "A, P", "A, C",
+                                "C, P")) {
   data.frame(Genotype = gt,
              Fitness = c(
                  paste0("1 + ",
@@ -8522,7 +8576,7 @@ evalAllGenotypesFitAndMut(allFitnessEffects(genotFitness = r1fd,
 ```
 
 
-<!-- ### Death rates in the frequency dependent model {#fdfdeath} -->
+<!-- ### Death rates in the frequency-dependent model {#fdfdeath} -->
 
 <!-- As explained in \@ref(mcfl), in the McFarland model we use death -->
 <!-- rate at population size N, $D(N) = \log(1 + N/K)$ where $K$ is the -->
@@ -8593,7 +8647,7 @@ evalAllGenotypesFitAndMut(allFitnessEffects(genotFitness = r1fd,
 <!-- corresponding warnings that alert you of the transformation. If you dont want to -->
 <!-- see this sometimes ugly messages, just use `stringsAsFactors = FALSE` in the data frame -->
 <!-- definition (or change the corresponding global option). Setting the paramenter `frequencyDependentFitness` to TRUE, you are -->
-<!-- fixing that all downstream work is going to be done in a frequency Dependent -->
+<!-- fixing that all downstream work is going to be done in a frequency-dependent -->
 <!-- Fitness mode. -->
 
 <!-- The case of the example above is inspired by @Axelrod2006, where all clones -->
