@@ -7909,8 +7909,8 @@ Thus, this is similar to the explicit mapping of genotypes to fitness (see
 (relative or absolute) of other genotypes. Frequency-dependent fitness
 allows you to examine models from **game theory** and **adaptive
 dynamics**. Game theory has long tradition in evolutionary biology
-[@maynardsmith1982] and has been widely used in cancer [e.g.,
-@tomlinson1997a; @basanta2008; @archetti2019; for examples of classical
+[@maynardsmith1982] and has been widely used in cancer [see, for example,
+@tomlinson1997a; @basanta2008; @archetti2019, for classical
 papers that cover from early uses to a very recent review].
 
 Since birth rate can be an arbitrary function of the frequencies of
