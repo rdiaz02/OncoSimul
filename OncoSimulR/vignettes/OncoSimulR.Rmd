@@ -216,13 +216,14 @@ is a summary of some of its key features:
 * You can obtain statistics of evolutionary predictability
   from the simulations.
   
-* From version 2.13.2, you can use simulations with
-  frequency-dependent fitness: fitness (birth rate) is not fixed for
-  a genotype, but can be a function of the frequecies of the clones
-  (see section \@ref(fdf)). We can therefore use OncoSimulR to
-  examine, via simulations, results from game theory and adaptive
-  dynamics and study complex scenarios that are not amenable to
-  analytical solutions.
+* You can now also use simulations with frequency-dependent fitness:
+  fitness (birth rate) is not fixed for a genotype, but can be a
+  function of the frequecies of the clones (see section
+  \@ref(fdf)). We can therefore use OncoSimulR to examine, via
+  simulations, results from game theory and adaptive dynamics and
+  study complex scenarios that are not amenable to analytical
+  solutions. More generally, we can model predation and parasitism,
+  cooperation and mutualism, and commensalism.
   
   <!-- Evaluating frequently the fitness across -->
   <!-- the simulation, you can obtain a dynamic fitness landscape . -->
@@ -899,10 +900,12 @@ look at the value of `FinalTime` as we did above (section
 
 ### Simulating evolution with frequency-dependent fitness 
     
-The new frequency-dependent fitness funcionality allows users to run simulations 
-in a different way, defining fitness (birth rates) as functions of clone's frequencies.
-We can thus model frequency-dependent selection.
-See section \@ref(fdf) for further details and examples.
+The new frequency-dependent fitness funcionality allows users to run
+simulations in a different way, defining fitness (birth rates) as
+functions of clone's frequencies.  We can thus model
+frequency-dependent selection, as well as predation and parasitism,
+cooperation and mutualism, and commensalism. See section \@ref(fdf)
+for further details and examples.
 
 
 ## Trade-offs and what is OncoSimulR not well suited for {#whatnotfor}
@@ -7910,7 +7913,7 @@ genotypes. Frequency-dependent fitness allows you to examine models
 from **game theory** and **adaptive dynamics**.
 
 Since birth rate can be an arbitrary function of the frequencies of
-other clones, you can model competition, cooperation and mutualism,
+other clones, we can model competition, cooperation and mutualism,
 parasitism and predation, and commensalism. (Recall that in the
 "Exp" model death rate is constant and fixed to 1. In the "McFL" and
 "McFLD" models, death rate is density-dependent ---but not
@@ -7933,30 +7936,30 @@ frequencies of other genotypes. (We can also use a data frame with
 $g + 1$ columns; each of the first $g$ columns contains a 1 or a 0
 indicating that the gene of that column is mutated or not. Column
 $g+ 1$ contains the expressions for the fitness specifications; see
-`oncoSimulIndiv` for examples). Once this data frame is created, we
-can pass it to `allFitnessEffects`. From there, simulation proceeds
-as usual.
+`oncoSimulIndiv` and `allFitnessEffects` for examples). Once this
+data frame is created, we pass it to `allFitnessEffects`. From
+there, simulation proceeds as usual.
 
 How complex can the functions that specify fitness be? We use
 library [ExprTk](https://github.com/ArashPartow/exprtk) for the
-fitness specifications so the range of functions you can use is
-very large (http://www.partow.net/programming/exprtk/),
-including of course the usual arithmetic expressions, logical
-expressions (so you can model thresholds or jumps), and a wide range
-of mathematical functions (so linear, non-linear, convex, concave,
-etc, functions can be used).
+fitness specifications so the range of functions you can use is very
+large (http://www.partow.net/programming/exprtk/), including of
+course the usual arithmetic expressions, logical expressions (so you
+can model thresholds or jumps and use step functions), and a wide
+range of mathematical functions (so linear, non-linear, convex,
+concave, etc, functions can be used).
 
 
 ## A first example with frequency-dependent fitness {#fdfex1}
 
 The following is an arbitrary example. We will model birth rate of
 some genotypes as a function of the relative frequencies of other
-genotypes; we use `f_1`, for example, to denote the relative
-frequency of the genotype with the first gene mutated, `f_1_2` to
-denote the relative frequency of the genotype with the first and
-second genes mutated, etc ---below, in sections \@ref(fdfabs) and
-\@ref{fdfrelabs} we will use absolute number of cells instead of
-relative frequencies).
+genotypes; we use `f_1` to denote the relative frequency of the
+genotype with the first gene mutated, `f_1_2` to denote the relative
+frequency of the genotype with the first and second genes mutated,
+etc, and `f_` to denote the frequency of the WT genotype ---below,
+in sections \@ref(fdfabs), \@ref(fdfrelabs), and \@ref(predprey), we
+will use absolute number of cells instead of relative frequencies).
 
 
 As you can see below, the birth rate of genotype "A" $= 1.2 + 1.5*
@@ -7972,23 +7975,22 @@ genotype "A, B" its fitness increases with the square root of the
 sum of the frequencies of genotypes "A", "B", and "C", but it
 decreases (i.e., shows increased intra-clone competition) if its own
 frequency is larger than 0.5. Genotypes not defined explicitly have
-a fitness of 0. See the documentation of `allFitnessEffects` for
-further details. As we said above, since we can use all of the
-functionality from ExprTk, we can make fitness and arbitrarily
-complex function of the frequencies of genotypes.
+a fitness of 0. <!-- See the documentation of `allFitnessEffects` for -->
+<!-- further details. As we said above, since we can use all of the -->
+<!-- functionality from ExprTk, we can make fitness and arbitrarily -->
+<!-- complex function of the frequencies of genotypes. -->
 
 
 ```{r fdf1}
-
-
 ## Define fitness of the different genotypes
-gffd <- data.frame(Genotype = c("WT", "A", "B", "C", "A, B"), 
-                   Fitness = c("1 + 1.5 * f_1_2",
-                               "1.3 + 1.5 * f_1_2",
-                               "1.4",
-                               "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
-                               "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
-                   stringsAsFactors = FALSE)
+gffd <- data.frame(
+    Genotype = c("WT", "A", "B", "C", "A, B"), 
+    Fitness = c("1 + 1.5 * f_1_2",
+                "1.3 + 1.5 * f_1_2",
+                "1.4",
+                "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
+                "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
+    stringsAsFactors = FALSE)
 ```
 (In the data frame creation, we use `stringsAsFactors = FALSE`
 to avoid messages about conversions between factors and characters).
@@ -7996,9 +7998,9 @@ to avoid messages about conversions between factors and characters).
 
 Let us verify that we have specified what we think we have specified
 using `evalAllGenotypes` (we have done this repeatedly in this
-vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or
-\@ref(quickexample). Because of the way the code works, we need to
-pass the populations sizes at which we want fitness evaluated in
+vignette, for example in \@ref(ex-ochs) or \@ref(quickexample) or
+\@ref(bauer). Because of the way the code works, we need to pass the
+populations sizes at which we want fitness evaluated in
 `evalAllGenotypes` (this we do now in `allFitnessEffects`, but this
 might be moved to `evalAllGenotypes` in the future).
 
@@ -8007,7 +8009,8 @@ Note that when calling `allFitnessEffects` we have to set the
 paramenter `frequencyDependentFitness` to TRUE. Since we are using
 relative frequencies, we also specify `freqType = "rel"` (the need
 to do this might be removed in the future). We will see below
-(\@ref(fdfabs)) an example with absolute numbers.
+(\@ref(fdfabs), \@ref(fdfrelabs), and \@ref(predprey)) several examples
+with absolute numbers.
 
 
 ```{r fdf1b}
@@ -8026,12 +8029,13 @@ evalAllGenotypes(allFitnessEffects(genotFitness = gffd,
                          frequencyType = "rel",
                          spPopSizes = c(100, 30, 40, 0, 100)))
 
-```
+``` 
 
-Let us create the `allFitnessEffects` object and simulate.
-We will use the McFL model, so in addition to the frequency dependence in
-the birth rates, there is also  density dependence
-in the death rate (see section \@ref(specfit)).
+The fitness specification is correct. Let us now create the
+`allFitnessEffects` object and simulate.  We will use the McFL
+model, so in addition to the frequency dependence in the birth
+rates, there is also density dependence in the death rate (see
+section \@ref(specfit)).
 
 
 ```{r fdf1c}
@@ -8083,17 +8087,17 @@ They provide, in p. 4, the payoff matrix reproduced in Figure
 knitr::include_graphics("hurlbut.png")
 ```
 
-As explained in p. 6 (equation 1), we can write the fitness of the
-four types as **f**=G**u**, where **f** and **u** are the vectors
-with the four fitnesses and frequencies (where each element of **u**
-corresponds to the relative frequencies of stromal, angiogenic,
-proliferativa, and cytotoxic cells), and G is the payoff matrix in
-Figure \@ref(fig:hurlbutpay).
+As explained in p. 6 (equation 1) of @hurlbut2018, we can write the
+fitness of the four types as **f**=G**u**, where **f** and **u** are
+the vectors with the four fitnesses and frequencies (where each
+element of **u** corresponds to the relative frequencies of stromal,
+angiogenic, proliferative, and cytotoxic cells), and G is the payoff
+matrix in Figure \@ref(fig:hurlbutpay).
 
 
 To allow modelling scenarios with different values for the
 parameters in Figure \@ref(fig:hurlbutpay) we will define a function
-to create the data frame of frequency-dependent fitness. First, we
+to create the data frame of frequency-dependent fitnesses. First, we
 will assume that each one of types A+, P, and C, are all derived
 from WT by a single mutation in one of three genes, say, A, P, C,
 respectively. 
@@ -8101,7 +8105,6 @@ respectively.
 
 
 ```{r hurlbutfit1}
-
 options(stringsAsFactors = FALSE) ## Get rid of the messages
 
 create_fe <- function(a, b, c, d, e, f, g,
@@ -8173,17 +8176,18 @@ create_fe2("a", "b", "c", "d", "e", "f", "g")
 
 
 
-To show two examples, we will run the analyses they use for figures
-3a and 3b (p.8 of their paper):
+To show two examples, we will run the analyses @hurlbut2018 use for
+Figures 3a and 3b (p.8 of their paper):
 
 
-```{r hurl3a}
+```{r hurl3a, message=FALSE}
 ## Figure 3a
-afe_3_a <- allFitnessEffects(genotFitness =
-                                 create_fe(0.02, 0.04, 0.08, 0.06,
-                                           0.15, 0.1, 0.06),
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "rel")
+afe_3_a <- allFitnessEffects(
+		        genotFitness =
+                       create_fe(0.02, 0.04, 0.08, 0.06,
+                                 0.15, 0.1, 0.06),
+                frequencyDependentFitness = TRUE,
+                frequencyType = "rel")
 set.seed(2)
 s_3_a <- oncoSimulIndiv(afe_3_a,
                      model = "McFL", 
@@ -8203,13 +8207,14 @@ plot(s_3_a, show = "genotypes", type = "line",
 ```
 
 
-```{r hurl3b}
+```{r hurl3b, message=FALSE}
 ## Figure 3b
-afe_3_b <- allFitnessEffects(genotFitness =
-                                 create_fe(0.02, 0.04, 0.08, 0.1,
-                                           0.15, 0.1, 0.05),
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "rel")
+afe_3_b <- allFitnessEffects(
+                genotFitness =
+                       create_fe(0.02, 0.04, 0.08, 0.1,
+                                 0.15, 0.1, 0.05),
+                frequencyDependentFitness = TRUE,
+                frequencyType = "rel")
 set.seed(2)
 s_3_b <- oncoSimulIndiv(afe_3_b,
                      model = "McFL", 
@@ -8232,11 +8237,12 @@ cell types are different, the results can change:
 
 ```{r hurl3b2}
 ## Figure 3b. Now with WT -> P; P -> A,P; P -> C,P
-afe_3_b_2 <- allFitnessEffects(genotFitness =
-                                 create_fe2(0.02, 0.04, 0.08, 0.1,
-                                           0.15, 0.1, 0.05),
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "rel")
+afe_3_b_2 <- allFitnessEffects(
+                  genotFitness =
+                      create_fe2(0.02, 0.04, 0.08, 0.1,
+                                 0.15, 0.1, 0.05),
+                  frequencyDependentFitness = TRUE,
+                  frequencyType = "rel")
 set.seed(2)
 s_3_b_2 <- oncoSimulIndiv(afe_3_b_2,
                    model = "McFL", 
@@ -8273,7 +8279,7 @@ with genotype A mutated.
 
 
 
-```{r fdf2}
+```{r fdf2, message=FALSE}
 options(stringsAsFactors = FALSE) ## get rid of the messages
 gffd3 <- data.frame(Genotype = c("WT", "A", "B"), 
                    Fitness = c("1",
@@ -8285,13 +8291,14 @@ afd3 <- allFitnessEffects(genotFitness = gffd3,
                          frequencyType = "abs")
 ```
 
-Let us verify that we have specified what we think we have specified
-using `evalAllGenotypes`:<!--  (we have done this repeatedly in this -->
-<!-- vignette, for example in \@ref(ex-ochs) or \@ref(bauer) or -->
-<!-- \@ref{quickexample}). Because of the way the code works, we need to -->
-<!-- pass the populations sizes at which we want fitness evaluated in -->
-<!-- `evalAllGenotypes` (this we do now in `allFitnessEffects`, but this -->
-<!-- might be moved to `evalAllGenotypes` in the future): -->
+As usual, let us verify that we have specified what we think we have
+specified using `evalAllGenotypes`:<!-- (we have done this
+repeatedly in this --> <!-- vignette, for example in \@ref(ex-ochs)
+or \@ref(bauer) or --> <!-- \@ref{quickexample}). Because of the way
+the code works, we need to --> <!-- pass the populations sizes at
+which we want fitness evaluated in --> <!-- `evalAllGenotypes` (this
+we do now in `allFitnessEffects`, but this --> <!-- might be moved
+to `evalAllGenotypes` in the future): -->
 
 ```{r fdf2b}
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
@@ -8324,11 +8331,21 @@ sfd3 <- oncoSimulIndiv(afd3,
                        seed = NULL, 
                        errorHitMaxTries = FALSE, 
                        errorHitWallTime = FALSE)
+```	
+
+```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
+```
+
+```{r }
 plot(sfd3, show = "genotypes", type = "line")
 plot(sfd3, show = "genotypes")
-par(op)
 sfd3
+```
+
+```{r echo=FALSE}
+par(op)
+
 ```
 
 Had we used the "usual" death rate expression, that can lead to
@@ -8348,12 +8365,23 @@ sfd4 <- oncoSimulIndiv(afd3,
                        seed = NULL, 
                        errorHitMaxTries = FALSE, 
                        errorHitWallTime = FALSE)
+```					 
+
+```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
+```					 
+
+```{r polotfdfv6}
 plot(sfd4, show = "genotypes", type = "line")
 plot(sfd4, show = "genotypes")
-par(op)
 sfd4
+```
 
+```{r echo=FALSE}
+par(op)
+```
+
+```{r fdfpopfinal}
 ## Check final pop size corresponds to birth = death 
 K <- 5000/(exp(1) - 1) 
 K
@@ -8361,13 +8389,202 @@ log1p(4290/K)
 ```
  
 
+## Predator-prey, commensalism, and consumer-resource models {#predprey}
+
+Since birth rate can be made arbitrary functions of frequencies of
+other clones, we can easily model classical ecological models, such
+as predator-prey, commensalism and, more generally,
+consumer-resource models (see, for example, section 3.4 in
+@Otto2007).
+
+OncoSimulR was originally designed as a forward-time genetic
+simulator; thus, we need to use a simple trick to get the system
+going. For example, suppose we want to model a predator-prey system;
+we can do this having a WT that can mutate into either preys or
+predators. (This will not be necessary once we can specify starting
+the simulation from populations with arbitrary numbers of different
+clones.) There is, in fact, a small leakage in the system because
+both preys and predators are "leaking" a small number of children,
+via mutation to a non-viable predator-and-prey genotype, but this is
+negligible relative to their birth/death rates.
+
+
+We will use below the usual consumer-resource model with
+Lotka-Volterra equations. To model it, we use the "Exp" model, which
+has a constant death rate of 1, and directly translate the usual
+expressions (e.g., expressions 3.15a and 3.15b in p. 73 of
+@Otto2017) for rates of change into the birth rate.  Of course, you
+can use any other function for how rates of change of each "species"
+depend on the numbers of the different species, including constant
+inflow and outflow, Type I, Type II, and Type III functional
+responses, etc. And you can model systems that involve multiple
+different types of preys, predators, commensals, etc (see the
+example in \@ref(hurlbut) for a four-type example).
+
+Since the WT genotype is just a trick used to get the system going,
+we will make sure it disappears from the system soon after we get it
+to have both preys and predators. Finally, note that we can make
+this much more sophisticated; for example, we could get the system
+going differently by having different mutations from WT to prey and
+predator. 
+
+
+### Predator-prey {#predprey1}
+First, create a function that will generate the usual Lotka-Volterra
+expressions for consumer-resource models: 
+
+```{r lotka1}
+fe_consumer_resource <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-5,
+                                 gt = c("WT", "S1", "S2")) {
+    data.frame(Genotype = gt,
+               Fitness = c(
+                  paste0("max(0, 1 - ", awt, " * N)"),
+                  paste0("1 + ", r1,
+                         " * ( 1 - (n_1 + ", a_12, " * n_2)/", K1,
+                         ")"),
+                  paste0("1 + ", r2,
+                         " * ( 1 - (n_2 + ", a_21, " * n_1)/", K2,
+                         ")")
+                  ))
+}
+
+## Show expressions for fitness
+fe_consumer_resource("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
+
+```
+
+
+Now, run a predator-prey model by setting appropriate parameters;
+the key is that $a_12 > 0$ and $a_21 < 0$.
+
+```{r pred-prey1, message=FALSE}
+fe_pred_prey <-
+    allFitnessEffects(
+        genotFitness =
+            fe_consumer_resource(1.51, 1.41, 10000, 2000,
+                                 0.3, -0.15,
+                                 gt = c("WT","prey", "Predator")),
+        frequencyDependentFitness = TRUE,
+        frequencyType = "abs")
+
+pred_prey <- oncoSimulIndiv(fe_pred_prey,
+                            model = "Exp",
+                            onlyCancer = FALSE, 
+                            finalTime = 100,
+                            mu = 1e-4,
+                            initSize = 40000, 
+                            keepPhylog = TRUE,
+                            seed = NULL, 
+                            errorHitMaxTries = FALSE, 
+                            errorHitWallTime = FALSE)
+```
+
+If we plot the whole simulation, we of course see the WT:
+```{r pp1wt}
+plot(pred_prey, show = "genotypes")
+```
+
+but we can avoid that by showing the plot after the WT are long
+gone:
+
+```{r echo=FALSE}
+op <- par(mfrow = c(1, 2))
+```
+
+```{r pp1nowt}
+plot(pred_prey, show = "genotypes",
+     xlim = c(80, 100))
+plot(pred_prey, show = "genotypes", type = "line",
+     xlim = c(80, 100), ylim = c(1500, 12000))
+```
+
+```{r echo=FALSE}
+par(op)	 
+```
+
+You can easily play with a range of parameters, say the carrying
+capacity of predators and prey, to see how they affect the
+stochasticity of the system:
+
+```{r ppsmallk, message=FALSE}
+fe_pred_prey <-
+    allFitnessEffects(
+        genotFitness =
+            fe_consumer_resource(1.51, 1.41, 100, 70,
+                                 0.3, -0.15,
+                                 gt = c("WT","prey", "Predator")),
+        frequencyDependentFitness = TRUE,
+        frequencyType = "abs")
+pred_prey <- oncoSimulIndiv(fe_pred_prey,
+                            model = "Exp",
+                            onlyCancer = FALSE, 
+                            finalTime = 1000,
+                            mu = 1e-3,
+                            initSize = 10000, 
+                            keepPhylog = TRUE,
+                            seed = NULL, 
+                            errorHitMaxTries = FALSE, 
+                            errorHitWallTime = FALSE)
+```
+```{r echo=FALSE}
+op <- par(mfrow = c(1, 2))
+
+```
+```{r fpredprey7}
+plot(pred_prey, show = "genotypes")
+
+plot(pred_prey, show = "genotypes",
+     xlim = c(900, 1000))
+```
+
+```{r echo=FALSE}
+par(op)	 
+```
+
+### Commensalims {#commens}
+Modelling commensalim simply requires changing the values of the
+$\alpha$, the `a_12` and `a_21`. This could do it (not run, as this
+is just repetitive):
+
+```{r commens, eval=FALSE}
+fe_commens <-
+    allFitnessEffects(
+        genotFitness =
+            fe_consumer_resource(1.2, 1.3, 5000, 20000,
+                                 0, -0.2,
+                                 gt = c("WT","A", "Commensal")),
+        frequencyDependentFitness = TRUE,
+        frequencyType = "abs")
+
+commens <- oncoSimulIndiv(fe_commens,
+                            model = "Exp",
+                            onlyCancer = FALSE, 
+                            finalTime = 100,
+                            mu = 1e-4,
+                            initSize = 40000, 
+                            keepPhylog = TRUE,
+                            seed = NULL, 
+                            errorHitMaxTries = FALSE, 
+                            errorHitWallTime = FALSE)
+
+plot(commens, show = "genotypes")
+
+plot(commens, show = "genotypes",
+     xlim = c(80, 100))
+
+plot(commens, show = "genotypes", type = "line",
+     xlim = c(80, 100), ylim = c(2000, 22000))
+
+```
+
+
 ## Frequency-dependent fitness: can I mix relative and absolute frequencies? {#fdfrelabs}
 
-Of course, since you can always use an absolute specification with
+Yes, of course, since you can always use an absolute specification with
 the appropriate quotient. For example, the following two
 specifications are identical:
 
-```{r fdfar}
+```{r fdfar, message=FALSE}
 rar <- data.frame(Genotype = c("WT", "A", "B", "C"), 
                  Fitness = c("1",
                              "1.1 + .3*f_2",
@@ -8394,7 +8611,7 @@ evalAllGenotypes(afear2)
 
 and simulating with them leads to identical results
 
-```{r relarres}
+```{r relarres, message=FALSE}
 set.seed(1)
 tmp1 <- oncoSimulIndiv(afear, 
                        model = "McFL", 
@@ -8498,14 +8715,19 @@ s2fd <- oncoSimulIndiv(afe4,
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
 plot(s2fd, show = "genotypes")
-
-op <- par(mfrow = c(1, 2))
-plotClonePhylog(s1fd, keepEvents = TRUE)
-plotClonePhylog(s2fd, keepEvents = TRUE)
-par(op)
-
 ```
 
+```{r echo=FALSE}
+op <- par(mfrow = c(1, 2))
+
+```{r figmutfdf}
+plotClonePhylog(s1fd, keepEvents = TRUE)
+plotClonePhylog(s2fd, keepEvents = TRUE)
+```
+
+```{r echo=FALSE}
+par(op)
+```
 
 Of course, it also works with absolute frequencies (code not
 executed for the sake of speed):
@@ -8576,182 +8798,7 @@ evalAllGenotypesFitAndMut(allFitnessEffects(genotFitness = r1fd,
                     mtfd)
 ```
 
-## Predator-prey, commensalism, and consumer-resource models {#predprey}
-
-Since birth rate can be made arbitrary functions of frequencies of
-other clones, we can easily model classical ecological models, such
-as predator-prey, commensalism and, more generally,
-consumer-resource models (see, for example, section 3.4 in
-@Otto2007).
-
-OncoSimulR was originally designed as a forward-time genetic
-simulator; thus, we need to use a simple trick to get the system
-going. For example, suppose we want to model a predator-prey system;
-we can do this having a WT that can mutate into either preys or
-predators. (This will not be necessary once we can specify starting
-the simulation from populations with arbitrary numbers of different
-clones.) There is, in fact, a small leakage in the system because
-both preys and predators are "leaking" a small number of children,
-via mutation to a non-viable predator-and-prey genotype, but this is
-negligible relative to their birth/death rates.
-
-
-We will use below the usual consumer-resource model with
-Lotka-Volterra equations. To model it, we use the "Exp" model, which
-has a constant death rate of 1, and directly translate the usual
-expressions (e.g., expressions 3.15a and 3.15b in p. 73 of
-@Otto2017) for rates of change into the birth rate.  Of course, you
-can use any other function for how rates of change of each "species"
-depend on the numbers of the different species, including constant
-inflow and outflow, Type I, Type II, and Type III functional
-responses, etc. And you can model systems that involve multiple
-different types of preys, predators, commensals, etc (see the
-example in \@ref(hurlbut) for a four-type example).
-
-Since the WT genotype is just a trick used to get the system going,
-we will make sure it disappears from the system soon after we get it
-to have both preys and predators. Finally, note that we can make
-this much more sophisticated; for example, we could get the system
-going differently by having different mutations from WT to prey and
-predator. 
-
-
-### Predator-prey {#predprey1}
-First, create a function that will generate the usual Lotka-Volterra
-expressions for consumer-resource models: 
-
-```{r lotka1}
-fe_consumer_resource <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-5,
-                                 gt = c("WT", "S1", "S2")) {
-    data.frame(Genotype = gt,
-               Fitness = c(
-                  paste0("max(0, 1 - ", awt, " * N)"),
-                  paste0("1 + ", r1,
-                         " * ( 1 - (n_1 + ", a_12, " * n_2)/", K1,
-                         ")"),
-                  paste0("1 + ", r2,
-                         " * ( 1 - (n_2 + ", a_21, " * n_1)/", K2,
-                         ")")
-                  ))
-}
-
-## Show expressions for fitness
-fe_consumer_resource("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
-
-```
-
-
-Now, run a predator-prey model by setting appropriate parameters;
-the key is that $a_12 > 0$ and $a_21 < 0$.
-
-```{r pred-prey1}
-fe_pred_prey <-
-    allFitnessEffects(
-        genotFitness =
-            fe_consumer_resource(1.51, 1.41, 10000, 2000,
-                                 0.3, -0.15,
-                                 gt = c("WT","prey", "Predator")),
-        frequencyDependentFitness = TRUE,
-        frequencyType = "abs")
-
-pred_prey <- oncoSimulIndiv(fe_pred_prey,
-                            model = "Exp",
-                            onlyCancer = FALSE, 
-                            finalTime = 100,
-                            mu = 1e-4,
-                            initSize = 40000, 
-                            keepPhylog = TRUE,
-                            seed = NULL, 
-                            errorHitMaxTries = FALSE, 
-                            errorHitWallTime = FALSE)
-```
-
-If we plot the whole simulation, we of course see the WT:
-```{r pp1wt}
-plot(pred_prey, show = "genotypes")
-```
-
-but we can avoid that by showing the plot after the WT are long
-gone:
-
-```{r pp1nowt}
-op <- par(mfrow = c(1, 2))
-plot(pred_prey, show = "genotypes",
-     xlim = c(80, 100))
-
-plot(pred_prey, show = "genotypes", type = "line",
-     xlim = c(80, 100), ylim = c(1500, 12000))
-par(op)	 
-```
-
-You can easily play with a range of parameters, say the carrying
-capacity of predators and prey, to see how they affect the
-stochasticity of the system:
-
-```{r ppsmallk}
-fe_pred_prey <-
-    allFitnessEffects(
-        genotFitness =
-            fe_consumer_resource(1.51, 1.41, 100, 70,
-                                 0.3, -0.15,
-                                 gt = c("WT","prey", "Predator")),
-        frequencyDependentFitness = TRUE,
-        frequencyType = "abs")
-pred_prey <- oncoSimulIndiv(fe_pred_prey,
-                            model = "Exp",
-                            onlyCancer = FALSE, 
-                            finalTime = 1000,
-                            mu = 1e-3,
-                            initSize = 10000, 
-                            keepPhylog = TRUE,
-                            seed = NULL, 
-                            errorHitMaxTries = FALSE, 
-                            errorHitWallTime = FALSE)
-op <- par(mfrow = c(1, 2))
-plot(pred_prey, show = "genotypes")
-
-plot(pred_prey, show = "genotypes",
-     xlim = c(900, 1000))
-par(op)	 
-```
-
-### Commensalims {#commens}
-Modelling commensalim simply requires changing the values of the
-$\alpha$, the `a_12` and `a_21`. This could do it (not run, as this
-is just repetitive):
-
-```{r commens, eval=FALSE}
-fe_commens <-
-    allFitnessEffects(
-        genotFitness =
-            fe_consumer_resource(1.2, 1.3, 5000, 20000,
-                                 0, -0.2,
-                                 gt = c("WT","A", "Commensal")),
-        frequencyDependentFitness = TRUE,
-        frequencyType = "abs")
-
-commens <- oncoSimulIndiv(fe_commens,
-                            model = "Exp",
-                            onlyCancer = FALSE, 
-                            finalTime = 100,
-                            mu = 1e-4,
-                            initSize = 40000, 
-                            keepPhylog = TRUE,
-                            seed = NULL, 
-                            errorHitMaxTries = FALSE, 
-                            errorHitWallTime = FALSE)
-
-plot(commens, show = "genotypes")
-
-plot(commens, show = "genotypes",
-     xlim = c(80, 100))
-
-plot(commens, show = "genotypes", type = "line",
-     xlim = c(80, 100), ylim = c(2000, 22000))
-
-```
-
-## Can use the BNB algorithm to model frequency-dependent fitness? {#bnbfdf}
+## Can we use the BNB algorithm to model frequency-dependent fitness? {#bnbfdf}
 
 This question is similar to the one we address in
 \@ref(bnbdensdep). Briefly, the answer is yes. You can think of this
