@@ -12,8 +12,6 @@ cd ./OncoSimulR/vignettes
 ../../html-vignette-here.sh &
 ../../pdf-vignette-here.sh 
 
-
-
 mv OncoSimulR.html ../../../oncosimul-gh-pages/.
 mv OncoSimulR.pdf ../../../oncosimul-gh-pages/pdfs/.
 

@@ -112,7 +112,9 @@ It is now (released initially in this repo as the freq-dep-fitness
 branch on February 2019) also possible to simulate scenarios with
 frequency-dependent fitness, where the fitness of one or more
 genotypes depends on the relative or absolute frequencies of other
-genotypes, as in game theory and adaptive dynamics.
+genotypes, as in game theory and adaptive dynamics. This makes it
+possible to model predation and parasitism, cooperation and
+mutualism, and commensalism.
 
 
 
@@ -196,7 +198,7 @@ is a summary of some of its key features:
 <!--       using several other models, including the one from @Beerenwinkel2007b. -->
       
 * You can use large numbers of genes (e.g., see an example of
-      50000 in section \@ref(mcf50070) ).
+      50000 in section \@ref(mcf50070)).
       
 * Simulations are generally very fast: I use C++ to implement the BNB
       algorithm (see sections \@ref(bnbmutation) and \@ref(bnbdensdep) for
@@ -258,20 +260,16 @@ by moving the mouse over each term).
 |&nbsp; Demographic                   ||	
 |&nbsp; &nbsp; Population Size Changes|	Exponential (two models), Logistic (McFarland et al., 2013)|
 |&nbsp; Fitness Components||	
-|&nbsp; &nbsp; Birth Rate|	Individually Determined from Genotype
-(models "Exp", "McFL", "McFLD"). Frequency-Dependently Determined from Genotype
-(models "Exp", "McFL", "McFLD")|
-|&nbsp; &nbsp; Death Rate|	Individually Determined from Genotype
-(model "Bozic"), Influenced by Environment ---population size
-(models "McFL" and "McFLD")|
+|&nbsp; &nbsp; Birth Rate|	Individually Determined from Genotype (models "Exp", "McFL", "McFLD"). Frequency-Dependently Determined from Genotype (models "Exp", "McFL", "McFLD")|
+|&nbsp; &nbsp; Death Rate|	Individually Determined from Genotype (model "Bozic"), Influenced by Environment ---population size (models "McFL" and "McFLD")|
 |&nbsp;Natural Selection||	
 |&nbsp; &nbsp; Determinant|	Single and Multi-locus, Fitness of
 Offspring,  Environmental Factors (population size, genotype frequencies)|
-|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models,
-Epistasis, Random Fitness Effects, Frequency-Dependent|
+|&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects, Frequency-Dependent|
 |&nbsp; Mutation Models|	Two-allele Mutation Model (wildtype, mutant), without back mutation|
 |&nbsp; Events Allowed|	Varying Genetic Features: change of individual mutation rates (mutator/antimutator genes)|
 |&nbsp; Spatial Structure| No Spatial Structure (perfectly mixed and no migration)|
+
 Table:(\#tab:osrfeatures) Key features of OncoSimulR. Modified from
 the original table from
 https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/#detailed
@@ -8300,7 +8298,7 @@ which we want fitness evaluated in --> <!-- `evalAllGenotypes` (this
 we do now in `allFitnessEffects`, but this --> <!-- might be moved
 to `evalAllGenotypes` in the future): -->
 
-```{r fdf2b}
+```{r fdf2b, message=FALSE}
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "abs",
@@ -8455,7 +8453,7 @@ fe_consumer_resource("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
 
 
 Now, run a predator-prey model by setting appropriate parameters;
-the key is that $a_12 > 0$ and $a_21 < 0$.
+the key is that $a\_12 > 0$ and $a\_21 < 0$.
 
 ```{r pred-prey1, message=FALSE}
 fe_pred_prey <-
@@ -8504,7 +8502,9 @@ par(op)
 
 You can easily play with a range of parameters, say the carrying
 capacity of predators and prey, to see how they affect the
-stochasticity of the system:
+stochasticity of the system. Here we also start from a large number
+of WT (to generate preys and predators quickly) but we can set
+carrying capacity to much smaller numbers:
 
 ```{r ppsmallk, message=FALSE}
 fe_pred_prey <-
@@ -8528,8 +8528,12 @@ pred_prey <- oncoSimulIndiv(fe_pred_prey,
 ```
 ```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
-
 ```
+
+Plotting the complete range shows the drop from the initial WT population
+size to the final carrying capacities (and the second plot zooms in after
+there are no WTs):
+
 ```{r fpredprey7}
 plot(pred_prey, show = "genotypes")
 
@@ -8541,10 +8545,10 @@ plot(pred_prey, show = "genotypes",
 par(op)	 
 ```
 
-### Commensalims {#commens}
-Modelling commensalim simply requires changing the values of the
-$\alpha$, the `a_12` and `a_21`. This could do it (not run, as this
-is just repetitive):
+### Commensalism {#commens}
+Modelling commensalism simply requires changing the values of the
+$\alpha$, the `a_12` and `a_21`. This could do it (not run, as this is
+just repetitive):
 
 ```{r commens, eval=FALSE}
 fe_commens <-
@@ -8642,7 +8646,7 @@ So you can always mix relative and absolute; here fitness of two
 genotypes depends on the relative frequencies of others, whereas
 fitness of the third on the absolute frequencies (number of cells):
 
-```{r relar3a}
+```{r relar3a, message=FALSE}
 rar3 <- data.frame(Genotype = c("WT", "A", "B", "C"), 
                  Fitness = c("1",
                              "1.1 + .3*(n_2/N)",
