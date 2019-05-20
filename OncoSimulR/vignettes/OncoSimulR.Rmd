@@ -263,8 +263,7 @@ by moving the mouse over each term).
 |&nbsp; &nbsp; Birth Rate|	Individually Determined from Genotype (models "Exp", "McFL", "McFLD"). Frequency-Dependently Determined from Genotype (models "Exp", "McFL", "McFLD")|
 |&nbsp; &nbsp; Death Rate|	Individually Determined from Genotype (model "Bozic"), Influenced by Environment ---population size (models "McFL" and "McFLD")|
 |&nbsp;Natural Selection||	
-|&nbsp; &nbsp; Determinant|	Single and Multi-locus, Fitness of
-Offspring,  Environmental Factors (population size, genotype frequencies)|
+|&nbsp; &nbsp; Determinant|	Single and Multi-locus, Fitness of Offspring,  Environmental Factors (population size, genotype frequencies)|
 |&nbsp; &nbsp; Models|	Directional Selection, Multi-locus models, Epistasis, Random Fitness Effects, Frequency-Dependent|
 |&nbsp; Mutation Models|	Two-allele Mutation Model (wildtype, mutant), without back mutation|
 |&nbsp; Events Allowed|	Varying Genetic Features: change of individual mutation rates (mutator/antimutator genes)|
