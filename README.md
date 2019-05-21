@@ -191,7 +191,10 @@ If you use the package in publications **please cite the Bioinformatics paper**.
 
 
 The frequency-dependent fitness functionality is based on [Sergio
-Sanchez-Carrilo's Master's thesis](https://repositorio.uam.es/handle/10486/685417).
+Sanchez-Carrilo's Master's
+thesis](https://repositorio.uam.es/handle/10486/685417) (see also file
+['miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf'](miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf)
+for additional features that were not described in the original thesis).
 
 # Licenses and copyright
 
