@@ -3292,8 +3292,8 @@ Incidentally, notice that with OncoSimulR we do not directly specify
 fitness itself (even if, for the sake of simplicity, we often refer to
 fitness in the documentation) as fitness is, arguably, a derived quantity
 [@doebeli2017]. Rather, we specify how birth and/or death rates, which are
-the actual mechanistic determinants of evolutionary dynamics, are related
-to genotypes (or to the frequencies of the different genotypes).
+the actual mechanistic drivers of evolutionary dynamics, are related to
+genotypes (or to the frequencies of the different genotypes).
 
 
 
