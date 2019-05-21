@@ -3279,11 +3279,21 @@ Exp and Bozic models, or depends on the population size). This is
 also shown in Table \@ref(tab:osrfeatures), in the rows for "Fitness
 components", under "Evolutionary Features".
 
-In the case of frequency-dependent fitness simulations, the fitness effects
-must be reevaluated frequently so that birth rate, death rate or both,
-depending the model used, are updated. To do this it is
+In the case of frequency-dependent fitness simulations (\@ref(fdf)), the
+fitness effects must be reevaluated frequently so that birth rate, death
+rate, or both, depending the model used, are updated. To do this it is
 necessary to use a short step to reevaluate fitness; this is done using a
-small value for `sampleEvery` parameter in `oncoSimulindv` (see \@ref(whatgoodsampleevery) for more details), as is the case when using McFarland model.
+small value for `sampleEvery` parameter in `oncoSimulindv` (see
+\@ref(whatgoodsampleevery) for more details), as is the case when using
+McFarland model.
+
+
+Incidentally, notice that with OncoSimulR we do not directly specify
+fitness itself (even if, for the sake of simplicity, we often refer to
+fitness in the documentation) as fitness is, arguably, a derived quantity
+[@doebeli2017]. Rather, we specify how birth and/or death rates, which are
+the actual mechanistic determinants of evolutionary dynamics, are related
+to genotypes (or to the frequencies of the different genotypes).
 
 
 
