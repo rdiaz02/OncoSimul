@@ -7912,15 +7912,15 @@ dynamics**. Game theory has long tradition in evolutionary biology
 @tomlinson1997a; @basanta2008; @archetti2019, for classical
 papers that cover from early uses to a very recent review].
 
-Since birth rate can be an arbitrary function of the frequencies of
-other clones, we can model competition, cooperation and mutualism,
-parasitism and predation, and commensalism. (Recall that in the
-"Exp" model death rate is constant and fixed to 1. In the "McFL" and
-"McFLD" models, death rate is density-dependent ---but not
-frequency-dependent. You can thus model all those phenomena by, for
-example, making the effects of clones $i$, $j$ on each other and on
-their own be asymmetric on their birth rates). See examples
-\@ref(predprey).
+Since birth rate can be an arbitrary function of the frequencies of other
+clones, we can model competition, cooperation and mutualism, parasitism
+and predation, and commensalism. (Recall that in the "Exp" model death
+rate is constant and fixed to 1. In the "McFL" and "McFLD" models, death
+rate is density-dependent ---but not frequency-dependent. You can thus
+model all those phenomena by, for example, making the effects of clones
+$i$, $j$ on each other and on their own be asymmetric on their birth
+rates). See examples \@ref(predprey); as explained there, if you use the
+"Exp" model, you might want to decrease the value of `sampleEvery`.
 
 
 The procedure for working with the frequency-dependent functionality
@@ -8421,12 +8421,29 @@ responses, etc. And you can model systems that involve multiple
 different types of preys, predators, commensals, etc (see the
 example in \@ref(hurlbut) for a four-type example).
 
-Since the WT genotype is just a trick used to get the system going,
-we will make sure it disappears from the system soon after we get it
-to have both preys and predators. Finally, note that we can make
-this much more sophisticated; for example, we could get the system
-going differently by having different mutations from WT to prey and
-predator. 
+What about `sampleEvery`? In "for real" work, and specially with complex
+models, you might want to decrease it, or at least examine how much
+results are affected by changes in `sampleEvery`. Decreasing `sampleEvery`
+will result in birth rates being updated more frequently, and we use the
+BNB algorithm, which updates all rates only when the whole population is
+sampled. (Recall that by default, in the `McFL` and `McFLD` models the
+setting for `sampleEvery` is smaller than in the `Exp` model). Further
+discussion of these issues is provided in sections \@ref(bnbfdf) and
+\@ref(bnbdensdep).
+
+
+Since the WT genotype is just a trick used to get the system going, we
+will make sure it disappears from the system soon after we get it to have
+both preys and predators (and we use the max function to prevent birth
+rate from ever becoming negative or identically 0). Finally, note that we
+can make this much more sophisticated; for example, we could get the
+system going differently by having different mutations from WT to prey and
+predator.
+
+
+
+
+
 
 
 ### Predator-prey {#predprey1}
@@ -8438,7 +8455,7 @@ fe_consumer_resource <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-5,
                                  gt = c("WT", "S1", "S2")) {
     data.frame(Genotype = gt,
                Fitness = c(
-                  paste0("max(0, 1 - ", awt, " * N)"),
+                  paste0("max(0.1, 1 - ", awt, " * (n_2 + n_1))"),
                   paste0("1 + ", r1,
                          " * ( 1 - (n_1 + ", a_12, " * n_2)/", K1,
                          ")"),
