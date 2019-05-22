@@ -8480,6 +8480,10 @@ fe_consumer_resource("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
 
 ```
 
+Note that if you subtract 1 from the expressions for predators and
+prey you get the standard expressions for Lotka-Volterra
+predator-prey equations.
+
 
 Now, run a predator-prey model by setting appropriate parameters;
 see how we have $a\_12 > 0$ and $a\_21 < 0$.
