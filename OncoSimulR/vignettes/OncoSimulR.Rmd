@@ -8542,7 +8542,7 @@ plot(competition, show = "genotypes", type = "line",
 par(op)	 
 ```
 
-
+<!-- Fine, the op, etc do not seem to work. -->
 
 
 ### Predator-prey, first example {#predprey1}
