@@ -8403,7 +8403,7 @@ log1p(4290/K)
 
 Since birth rate can be made arbitrary functions of frequencies of
 other clones, we can easily model classical ecological models, such
-as predator-prey, commensalism and, more generally,
+as predator-prey, competition, commensalism and, more generally,
 consumer-resource models [see, for example, section 3.4 in
 @Otto2007].
 
@@ -8475,14 +8475,14 @@ fe_consumer_resource <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-5,
                   ))
 }
 
-## Show expressions for fitness
+## Show expressions for birth rates
 fe_consumer_resource("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
 
 ```
 
 
 Now, run a predator-prey model by setting appropriate parameters;
-the key is that $a\_12 > 0$ and $a\_21 < 0$.
+see how we have $a\_12 > 0$ and $a\_21 < 0$.
 
 ```{r pred-prey1, message=FALSE}
 fe_pred_prey <-
@@ -8576,7 +8576,7 @@ par(op)
 
 ### Commensalism {#commens}
 Modelling commensalism simply requires changing the values of the
-$\alpha$, the `a_12` and `a_21`. This could do it (not run, as this is
+$\alpha$, the `a_12` and `a_21`. For example (not run, as this is
 just repetitive):
 
 ```{r commens, eval=FALSE}
