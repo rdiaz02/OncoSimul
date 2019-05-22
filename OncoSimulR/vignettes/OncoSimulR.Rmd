@@ -7922,15 +7922,16 @@ dynamics**. Game theory has long tradition in evolutionary biology
 @tomlinson1997a; @basanta2008; @archetti2019, for classical
 papers that cover from early uses to a very recent review].
 
-Since birth rate can be an arbitrary function of the frequencies of other
-clones, we can model competition, cooperation and mutualism, parasitism
-and predation, and commensalism. (Recall that in the "Exp" model death
-rate is constant and fixed to 1. In the "McFL" and "McFLD" models, death
-rate is density-dependent ---but not frequency-dependent. You can thus
-model all those phenomena by, for example, making the effects of clones
-$i$, $j$ on each other and on their own be asymmetric on their birth
-rates). See examples \@ref(predprey); as explained there, if you use the
-"Exp" model, you might want to decrease the value of `sampleEvery`.
+Since birth rate can be an arbitrary function of the frequencies of
+other clones, we can model competition, cooperation and mutualism,
+parasitism and predation, and commensalism. (Recall that in the
+"Exp" model death rate is constant and fixed to 1. In the "McFL" and
+"McFLD" models, death rate is density-dependent ---but not
+frequency-dependent. You can thus model all those phenomena by, for
+example, making the effects of clones $i$, $j$ on each other and on
+their own be asymmetric on their birth rates). See examples in
+section \@ref(predprey); as explained there, if you use the "Exp"
+model, you might want to decrease the value of `sampleEvery`.
 
 
 The procedure for working with the frequency-dependent functionality
@@ -8484,7 +8485,7 @@ Remember the above are the birth rates for a model with death rate =
 1 (the "Exp" model). That is why we added a 1 to the birth rate. If
 you subtract 1 from the expressions for the birth rates of predators
 and prey above you get the standard expressions for the differential
-equations for Lotka-Volterra model of competition: $\frac{dn_1}{dt}
+equations for Lotka-Volterra model of competition: $\frac{\mathrm{d}n_1}{\mathrm{d}t}
 = r_1 (1 - \frac{n_1 + \alpha_{12} n_2}{K_1})$.
 
 
@@ -8551,7 +8552,7 @@ and set one of the `a_` to be negative [see, for example, @Otto2007,
 p. 73]. Let's turn former "S2" and thus `a_21 < 0` (to make the
 effects more salient, we also increase that value in magnitude).
 
-```{r, echo = FALSE}
+```{r echo = FALSE}
 set.seed(1)
 ```
 
@@ -8560,7 +8561,7 @@ set.seed(1)
 fe_pred_prey <-
     allFitnessEffects(
         genotFitness =
-            G_fe_LV(1.5, 1.4, 10000, 4000, 0.6, -0.5,
+            G_fe_LV(1.5, 1.4, 10000, 4000, 0.6, -0.5, awt = 1,
                   gt = c("WT","prey", "Predator")),
         frequencyDependentFitness = TRUE,
         frequencyType = "abs")
@@ -8577,17 +8578,17 @@ pred_prey <- oncoSimulIndiv(fe_pred_prey,
                             errorHitWallTime = FALSE)
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
 ```
 
 ```{r prepreylv2}
 plot(pred_prey, show = "genotypes")
 plot(pred_prey, show = "genotypes",
-     xlim = c(50, 200))
+     xlim = c(50, 100))
 
 ```
-```{r, echo=FALSE}
+```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
 ```
 
@@ -8598,7 +8599,7 @@ stochasticity of the system. Here we also start from a large number
 of WT (to generate preys and predators quickly) but we can set
 carrying capacity to much smaller numbers:
 
-```{r, echo=FALSE }
+```{r echo=FALSE }
 set.seed(2)
 ```
 
@@ -8606,7 +8607,7 @@ set.seed(2)
 fe_pred_prey <-
     allFitnessEffects(
         genotFitness =
-            G_fe_LV(1.5, 1.4, 100, 40, 0.6, -0.5,
+            G_fe_LV(1.5, 1.4, 100, 40, 0.6, -0.5, awt = 1,
                   gt = c("WT","prey", "Predator")),
         frequencyDependentFitness = TRUE,
         frequencyType = "abs")
@@ -8624,7 +8625,7 @@ pred_prey <- oncoSimulIndiv(fe_pred_prey,
                             errorHitWallTime = FALSE)
 ```
 
-```{r, echo=FALSE}
+```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
 ```
 
@@ -8681,9 +8682,9 @@ We use now the model in p. 76 of @Otto2007, where prey grow
 exponentially in the absence of predators (and predators will
 eventually go extinct in the absence of prey):
 
-$$\dv{n_1}{t} = r n_1 - a c n_1 n_2$$
-$$\dv{n_2}{t} = \epsilon a c n_1 n_2 - \delta n2$$
 
+$$\frac{\mathrm{d}n_1}{\mathrm{d}t} = r\ n_1 - a\ c\ n_1\ n_2$$
+$$\frac{\mathrm{d}n_2}{\mathrm{d}t} = \epsilon\ a\ c\ n_1\ n_2 - \delta\ n2$$
 
 ```{r predprey2a}
 ## Use e for epsilon and d for delta
@@ -8702,7 +8703,7 @@ C_fe_pred_prey <- function(r, a, c, e, d, awt = 0.1,
 
 C_fe_pred_prey("r", "a", "c", "e", "d")
 ```
-```{r, echo=FALSE }
+```{r echo=FALSE }
 set.seed(2)
 ```
 ```{r predprey2b}
@@ -8714,7 +8715,18 @@ fe_pred_prey2 <-
                            gt = c("WT","prey", "Predator")),
         frequencyDependentFitness = TRUE,
         frequencyType = "abs")
-plot(pred_prey, show = "genotypes")
+pred_prey2 <- oncoSimulIndiv(fe_pred_prey2,
+                            model = "Exp",
+                            sampleEvery = 0.01,
+                            mu = 1e-3,
+                            onlyCancer = FALSE, 
+                            finalTime = 80,
+                            initSize = 1e4, 
+                            keepPhylog = TRUE,
+                            seed = NULL, 
+                            errorHitMaxTries = FALSE, 
+                            errorHitWallTime = FALSE)		
+plot(pred_prey2, show = "genotypes")
 ```
 
 If you run that model repeatedly, sometimes the system will go
