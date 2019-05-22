@@ -8478,11 +8478,14 @@ fe_consumer_resource <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-5,
 ## Show expressions for birth rates
 fe_consumer_resource("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
 
-```
+``` 
 
-Note that if you subtract 1 from the expressions for predators and
-prey you get the standard expressions for Lotka-Volterra
-predator-prey equations.
+Remember the above are the birth rates for a model with death rate =
+1 (the "Exp" model). That is why we added a 1 to the birth rate. If
+you subtract 1 from the expressions for the birth rates of predators
+and prey above you get the standard expressions for the differential
+equations for Lotka-Volterra predator-prey systems: $dn_1/dt = r_1
+(1 - \frac{n_1 + \alpha_{12} n_2}{K_1}))$.
 
 
 Now, run a predator-prey model by setting appropriate parameters;
