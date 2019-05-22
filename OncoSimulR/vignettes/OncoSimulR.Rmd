@@ -8484,8 +8484,8 @@ Remember the above are the birth rates for a model with death rate =
 1 (the "Exp" model). That is why we added a 1 to the birth rate. If
 you subtract 1 from the expressions for the birth rates of predators
 and prey above you get the standard expressions for the differential
-equations for Lotka-Volterra predator-prey systems: $dn_1/dt = r_1
-(1 - \frac{n_1 + \alpha_{12} n_2}{K_1}))$.
+equations for Lotka-Volterra predator-prey systems: $\frac{dn_1}{dt} = r_1
+(1 - \frac{n_1 + \alpha_{12} n_2}{K_1})$.
 
 
 Now, run a predator-prey model by setting appropriate parameters;
