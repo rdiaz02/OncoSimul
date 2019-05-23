@@ -527,7 +527,20 @@ plotFitnessLandscape(evalAllGenotypes(fe2, order = FALSE))
 plotFitnessLandscape(fe2)
 
 
-##Frequency Dependent Fitness
+
+###### Defaults for missing genotypes
+## As a two-column data frame
+(m8 <- data.frame(G = c("A, B, C", "B"), F = c(3, 2)))
+evalAllGenotypes(allFitnessEffects(genotFitness = m8),
+                 addwt = TRUE)
+
+## As a matrix 
+(m9 <- rbind(c(0, 1, 0, 1, 4), c(1, 0, 1, 0, 1.5)))
+evalAllGenotypes(allFitnessEffects(genotFitness = m9),
+                 addwt = TRUE)
+
+
+#########  Frequency Dependent Fitness
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
                       Fitness = c("max(3, 2*f_)",
