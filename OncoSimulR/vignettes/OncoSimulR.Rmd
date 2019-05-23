@@ -4060,7 +4060,7 @@ all.equal(gcbn2[56, "Fitness"], 1.03 * 1.04 * 1.2 * 0.10)
 ``` 
 
 where "g" is taken as if its dependencies are satisfied (as "c",
-``d", and "e" are present) even when the dependencies of "c" are not
+"d", and "e" are present) even when the dependencies of "c" are not
 satisfied (and that is why the term for "c" is 0.9).
 
 
@@ -4134,7 +4134,7 @@ gxor1 <- evalAllGenotypes(xor1, order = FALSE)
 
 Whenever "c" is present with both "a" and "b", the fitness component
 for "c" will be $(1 - 0.1)$. Similarly for "g" (if more than one of
-``d", "e", or "c" is present, it will show as $(1 - 0.05)$). For example:
+"d", "e", or "c" is present, it will show as $(1 - 0.05)$). For example:
 
 ```{r}
 gxor1[c(22, 41), ] 
@@ -6260,7 +6260,7 @@ a couple of examples (we use the representation of the parent-child
 relationships ---discussed in section \@ref(phylog)--- of the clones so that
 you can see which clones appear, and from which, and check that we are not
 making mistakes).
- <!-- In v.1 you can only give the initial mutant as one with a single -->
+<!-- In v.1 you can only give the initial mutant as one with a single -->
 <!-- mutated gene. --> 
 
 ```{r prbau003, fig.height=6}
@@ -6642,7 +6642,7 @@ example, suppose we have a five loci genotype and suppose that you want to
 stop the simulations only if genotypes "A", "B, E", or "A, B, C, D, E"
 reach fixation. You do not want to stop it if, say, genotype "A, B, E"
 reaches fixation. To specify genotypes, you prepend the genotype
-combinations with a ``_,'', and that tells OncoSimulR that you want
+combinations with a "_,", and that tells OncoSimulR that you want
 fixation of **genotypes**, not just gene combinations.
 
 An example of the differences between the mechanisms can be seen from
@@ -8402,7 +8402,7 @@ log1p(4290/K)
 
 ## Predator-prey, commensalism, and consumer-resource models {#predprey}
 
-Since birth rate can be made arbitrary functions of frequencies of
+Since birth rates can be arbitrary functions of frequencies of
 other clones, we can easily model classical ecological models, such
 as predator-prey, competition, commensalism and, more generally,
 consumer-resource models [see, for example, section 3.4 in
