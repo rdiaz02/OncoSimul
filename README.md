@@ -53,6 +53,11 @@ on the [Genetic Simulation Resources
 catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 <a href="http://popmodels.cancercontrol.cancer.gov/gsr/"><img src="http://popmodels.cancercontrol.cancer.gov/gsr/static/img/gsr_tile.jpg" alt="Catalogued on GSR" width="180" height="60" /></a>
 
+
+
+New functionality to allow for **frequency-dependent fitness has been
+added**. See the freq-dep-fitness branch: https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness
+
 # Installation
 
 
