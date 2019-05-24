@@ -52,3 +52,9 @@ CXX_STD = CXX11
 ## CXXFLAGS = -O3 ## Ignored
 ## CFLAGS =  -Wa,-mbig-obj -O3 ## ignored
 
+
+MYCXXFLAGS = -Wa,-mbig-obj -O3
+
+%.o: %.cpp
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
+
