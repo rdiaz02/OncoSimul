@@ -26,12 +26,13 @@
     - a simple example in freq-depn-non-specified.R 
 
 
-  - [-] stopping conditions: allow with detectionDrivers?
-    - [X] in general, verify stopping: but then, no reason it shouldn't as
+  - [ ] stopping conditions: allow with detectionDrivers?
+    - [ ] in general, verify stopping: but then, no reason it shouldn't as
       that has not been touched.
       - Some code in fdf-stopping.
       - [ ] add to formal tests.
     - [ ] stop based on "stable results"?
+  - [ ] all compilation warnings: fix.
 
   - [ ] explain in vignette why this was possible without touching OncoSimulR_init.c, RcppExports.cpp
 
