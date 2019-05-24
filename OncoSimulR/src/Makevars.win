@@ -1,9 +1,18 @@
 ## This is a C++11 package
 CXX_STD = CXX11
 PKG_CXXFLAGS = -O3
+CXX11FLAGS += -Wa,-mbig-obj -O3 
 ## PKG_CXXFLAGS = -I../inst/miscell -O3 
 ## Do we need the -O3 to prevent mingw failure of too many sections?
+##  https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
 ##  https://discourse.mc-stan.org/t/too-many-sections/6261
 ## But -O3 not placed after the default -O2:
 ## https://stackoverflow.com/questions/23414448/r-makevars-file-to-overwrite-r-cmds-default-g-options
 ## tested: -Wa,-mbig-obj does not solve it
+
+# ## Other things to try
+# CXX14 = g++ -m$(WIN) -std=c++1y
+# CXX14FLAGS = Wa, -mbig-obj -O3
+# CXX11FLAGS = Wa, -mbig-obj -O3
+# CXX14FLAGS += Wa, -mbig-obj -O3
+# CXX11FLAGS += Wa, -mbig-obj -O3
