@@ -1,7 +1,7 @@
 ## This is a C++11 package
-CXX_STD = CXX11
-PKG_CXXFLAGS = -O3
-CXX11FLAGS += -Wa,-mbig-obj -O3 
+# CXX_STD = CXX14
+# PKG_CXXFLAGS = -O3
+# CXX11FLAGS += -Wa,-mbig-obj -O3 
 ## PKG_CXXFLAGS = -I../inst/miscell -O3 
 ## Do we need the -O3 to prevent mingw failure of too many sections?
 ##  https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
@@ -11,8 +11,44 @@ CXX11FLAGS += -Wa,-mbig-obj -O3
 ## tested: -Wa,-mbig-obj does not solve it
 
 # ## Other things to try
-# CXX14 = g++ -m$(WIN) -std=c++1y
-# CXX14FLAGS = Wa, -mbig-obj -O3
-# CXX11FLAGS = Wa, -mbig-obj -O3
-# CXX14FLAGS += Wa, -mbig-obj -O3
-# CXX11FLAGS += Wa, -mbig-obj -O3
+
+
+## CXX14 = g++ -std=c++1y
+CXX_STD = CXX11
+## To the left of -O2, so useless
+## PKG_CXXFLAGS = -Wa,-mbig-obj -O3
+
+## To the left of -O2, so useless
+## PKG_CXXFLAGS += -Wa,-mbig-obj -O3  
+
+
+## Also to the left of -O2
+## PKG_CPPFLAGS = -Wa,-mbig-obj -O3
+
+## Also to the left of -O2
+## PKG_CPPFLAGS += -Wa,-mbig-obj -O3
+
+## Ignored
+## PKG_CXX11FLAGS = -Wa,-mbig-obj -O3  
+## Ignored
+## PKG_CXX11FLAGS += -Wa,-mbig-obj -O3  
+
+
+## Ignored for the individual c++ files, of course
+# PKG_CFLAGS = -Wa,-mbig-obj -O3
+# PKG_CFLAGS += -Wa,-mbig-obj -O3
+
+
+
+## -mbig-obj fails, because gcc does not recognize it. gcc version too old?
+## https://github.com/assimp/assimp/issues/2315
+## You have to give them together -Wa,-mbig-obj
+
+
+## All of these are, of course, ignored
+## CXX11FLAGS = Wa, -mbig-obj -O3 ## Ignored
+## CXX11FLAGS += Wa, -mbig-obj -O3 ## Ignored
+## CXX11PICFLAGS= -O3 ## Ignored
+## CXXFLAGS = -O3 ## Ignored
+## CFLAGS =  -Wa,-mbig-obj -O3 ## ignored
+
