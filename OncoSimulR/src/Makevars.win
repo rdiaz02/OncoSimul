@@ -52,9 +52,57 @@ CXX_STD = CXX11
 ## CXXFLAGS = -O3 ## Ignored
 ## CFLAGS =  -Wa,-mbig-obj -O3 ## ignored
 
+## Just in case, pass to the linker too
+## PKG_LIBS = -Wa,-mbig-obj -O3
+## PKG_LIBS = -O3
 
+## Trick below from affxparser
+## as suggested by K. D. Hansen
+## on bioc-devel list on 2019-05-24
 MYCXXFLAGS = -Wa,-mbig-obj -O3
+## MYCXXFLAGS = -O3
 
 %.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
 
+
+## With 32 bits, it fails with the too many sections
+
+
+## Tried installing only the 64-bit version
+## https://stackoverflow.com/a/11298086
+## R CMD INSTALL --no-multiarch
+## The linker stays there forever, as originally reported
+## https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/
+## Comments in file 
+## https://github.com/MrKepzie/Natron/blob/master/global.pri
+## suggest that Natron not using -Wa,-mbig.obj, as linker never returns
+
+## Maybe Rtools 40, with MSYS2 will solve it?
+## https://stackoverflow.com/a/31907912
+
+
+
+##### 64 bits: Rtools/mingw_64
+
+## Compiler: -03. Linker:  nothing.                 too many sections error
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:    linker stays there forever 
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:        linker stays there forever
+
+
+
+
+##### 32 bits Rtools/mingw_32
+
+## Here it always breaks compiling new_restrict.cpp
+## Compiler: -03. Linker:  nothing.                          too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   too many sections error            
+
+
+## I try, with c:/Rtools/mingw_64/bin/g++
+## compiling ExprTk directly.
+## The makefile has -O1.
+## Without the -Wa,-mibg-obj I get the too many sections error
+## With it, it seems to stay there forever.
