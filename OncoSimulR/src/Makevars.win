@@ -12,9 +12,55 @@
 
 # ## Other things to try
 
-
-## CXX14 = g++ -std=c++1y
 CXX_STD = CXX11
+
+## PKG_CXXFLAGS += -I../inst/miscell
+
+
+
+
+#############################################
+
+
+## Trick below from affxparser
+## as suggested by K. D. Hansen
+## on bioc-devel list on 2019-05-24
+
+## MYCXXFLAGS = -Wa,-mbig-obj -O3
+MYCXXFLAGS = -O2
+
+%.o: %.cpp
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
+
+## Just in case, pass to the linker too
+## PKG_LIBS = -Wa,-mbig-obj -O3
+## PKG_LIBS = -O3
+
+
+
+
+
+##### 64 bits: Rtools/mingw_64
+
+## Compiler: -03. Linker:  nothing.                 too many sections error
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:    linker stays there forever 
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:        linker stays there forever
+
+
+
+
+##### 32 bits Rtools/mingw_32
+
+## Here it always breaks compiling new_restrict.cpp
+## Compiler: -03. Linker:  nothing.                          too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   too many sections error            
+
+
+
+
+
 ## To the left of -O2, so useless
 ## PKG_CXXFLAGS = -Wa,-mbig-obj -O3
 
@@ -52,18 +98,7 @@ CXX_STD = CXX11
 ## CXXFLAGS = -O3 ## Ignored
 ## CFLAGS =  -Wa,-mbig-obj -O3 ## ignored
 
-## Just in case, pass to the linker too
-## PKG_LIBS = -Wa,-mbig-obj -O3
-## PKG_LIBS = -O3
 
-## Trick below from affxparser
-## as suggested by K. D. Hansen
-## on bioc-devel list on 2019-05-24
-MYCXXFLAGS = -Wa,-mbig-obj -O3
-## MYCXXFLAGS = -O3
-
-%.o: %.cpp
-	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
 
 
 ## With 32 bits, it fails with the too many sections
@@ -83,22 +118,6 @@ MYCXXFLAGS = -Wa,-mbig-obj -O3
 
 
 
-##### 64 bits: Rtools/mingw_64
-
-## Compiler: -03. Linker:  nothing.                 too many sections error
-## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:    linker stays there forever 
-## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:        linker stays there forever
-
-
-
-
-##### 32 bits Rtools/mingw_32
-
-## Here it always breaks compiling new_restrict.cpp
-## Compiler: -03. Linker:  nothing.                          too many sections error            
-## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             too many sections error            
-## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 too many sections error            
-## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   too many sections error            
 
 
 ## I try, with c:/Rtools/mingw_64/bin/g++
