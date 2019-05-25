@@ -128,7 +128,7 @@ you have two options:
 #### Install from a zip file:
 
 Download the [OncoSimulR_2.15.xyz.zip file we
- provide](miscell-files/OncoSimulR_2.15.994.zip); for example, from your
+ provide](https://rdiaz02.github.io/OncoSimul/OncoSimulR_2.15.994.zip); for example, from your
  web browser, place the mouse on the link, and right click to select "Save
  link as", or similar incantation.
  
