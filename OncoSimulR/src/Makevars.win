@@ -1,26 +1,7 @@
-## This is a C++11 package
-# CXX_STD = CXX14
-# PKG_CXXFLAGS = -O3
-# CXX11FLAGS += -Wa,-mbig-obj -O3 
-## PKG_CXXFLAGS = -I../inst/miscell -O3 
-## Do we need the -O3 to prevent mingw failure of too many sections?
-##  https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
-##  https://discourse.mc-stan.org/t/too-many-sections/6261
-## But -O3 not placed after the default -O2:
-## https://stackoverflow.com/questions/23414448/r-makevars-file-to-overwrite-r-cmds-default-g-options
-## tested: -Wa,-mbig-obj does not solve it
-
-# ## Other things to try
-
 CXX_STD = CXX11
-
 ## PKG_CXXFLAGS += -I../inst/miscell
 
-
-
-
-#############################################
-
+## We have issues under Windoze because of ExprTk, MINGW, etc.
 
 ## Trick below from affxparser
 ## as suggested by K. D. Hansen
@@ -32,9 +13,9 @@ MYCXXFLAGS = -Wa,-mbig-obj -O3
 %.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
 
-## Just in case, pass to the linker too
-## PKG_LIBS = -Wa,-mbig-obj -O3
-PKG_LIBS = -O3
+## Just in case, pass to the linker too. No effect?. See below.
+PKG_LIBS = -Wa,-mbig-obj -O3
+## PKG_LIBS = -O3
 
 
 
@@ -67,18 +48,25 @@ PKG_LIBS = -O3
 
 ##### 64 bits: Rtools/mingw_64
 
-## Compiler: -03. Linker:  nothing.                 too many sections error
-## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:    linker stays there forever 
-## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:        linker stays there forever
+## From a MINGW64 shell do:  /c/R/R-testing/bin/x64/R CMD INSTALL --no-multiarch OncoSimulR
+
+## Compiler: -03. Linker:  nothing.                           linker stays there forever
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:              OK
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                  ??
+## Compiler: -Wa,-mbig-obj -O3; Linker: -Wa,-mbig-obj -O3:    ??
+
 
 
 ##### 32 bits Rtools/mingw_32
 
-## Here it always breaks compiling new_restrict.cpp
-## Compiler: -03. Linker:  nothing.                          too many sections error            
-## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             too many sections error            
-## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 too many sections error            
-## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   too many sections error            
+## From a MINGW32 shell do:  /c/R/R-testing/bin/i386/R CMD INSTALL --no-multiarch OncoSimulR
+
+## Compiler: -03. Linker:  nothing.                          OK
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             OK
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 ??
+## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   OK
+
+
 
 
 
@@ -189,3 +177,15 @@ PKG_LIBS = -O3
 
 ## Maybe Rtools 40, with MSYS2 will solve it?
 ## https://stackoverflow.com/a/31907912
+
+
+## This is a C++11 package
+# PKG_CXXFLAGS = -O3
+# CXX11FLAGS += -Wa,-mbig-obj -O3 
+## PKG_CXXFLAGS = -I../inst/miscell -O3 
+## Do we need the -O3 to prevent mingw failure of too many sections?
+##  https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
+##  https://discourse.mc-stan.org/t/too-many-sections/6261
+## But -O3 not placed after the default -O2:
+## https://stackoverflow.com/questions/23414448/r-makevars-file-to-overwrite-r-cmds-default-g-options
+## tested: -Wa,-mbig-obj does not solve it
