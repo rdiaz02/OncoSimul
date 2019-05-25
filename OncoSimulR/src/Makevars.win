@@ -26,27 +26,29 @@ CXX_STD = CXX11
 ## as suggested by K. D. Hansen
 ## on bioc-devel list on 2019-05-24
 
-## MYCXXFLAGS = -Wa,-mbig-obj -O3
-MYCXXFLAGS = -O2
+MYCXXFLAGS = -Wa,-mbig-obj -O3
+## MYCXXFLAGS = -O0
 
 %.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
 
 ## Just in case, pass to the linker too
 ## PKG_LIBS = -Wa,-mbig-obj -O3
-## PKG_LIBS = -O3
+PKG_LIBS = -O3
 
 
 
 
+
+
+####### OncoSimulR and ExprTk, Rtools35 (current as of 2019-05-24)
+##      gcc-4.9.3
 
 ##### 64 bits: Rtools/mingw_64
 
 ## Compiler: -03. Linker:  nothing.                 too many sections error
 ## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:    linker stays there forever 
 ## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:        linker stays there forever
-
-
 
 
 ##### 32 bits Rtools/mingw_32
@@ -56,6 +58,78 @@ MYCXXFLAGS = -O2
 ## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             too many sections error            
 ## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 too many sections error            
 ## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   too many sections error            
+
+
+
+####### OncoSimulR and ExprTk, Rtools40 (current as of 2019-05-24)
+##      gcc-8.3.0
+
+
+##### 64 bits: Rtools/mingw_64
+
+## Compiler: -03. Linker:  nothing.                 too many sections error
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:    linker stays there forever 
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:        linker stays there forever
+
+
+##### 32 bits Rtools/mingw_32
+
+## Here it always breaks compiling new_restrict.cpp
+## Compiler: -03. Linker:  nothing.                          too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   too many sections error            
+
+
+
+####### Compiling ExprTk directly.
+
+## Download ExprTk and do
+## make exprtk_test
+## (this is in the bug report https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/)
+
+
+## I try, with c:/Rtools/mingw_64/bin/g++
+## compiling ExprTk directly.
+## The makefile has -O1.
+## Without the -Wa,-mibg-obj I get the too many sections error
+## With it, it seems to stay there forever.
+
+
+## Using MSYS2 and gcc version 8.3.0 as provided by Rtools 40 (2019-05-24):
+
+## MINGW32 shell: -O1                          OK
+## MINGW32 shell: -O3, -Wa,-mbig-obj           OK
+## MINGW32 shell: -O1, -Wa,-mbig-obj           ??
+
+## MINGW64 shell: -O1                          nope: eternal
+## MINGW64 shell: -O3, -Wa,-mbig-obj           OK
+## MINGW64 shell: -O1, -Wa,-mbig-obj           OK 
+
+
+
+###### Route not taken (not needed): Check Natron: https://github.com/MrKepzie/Natron
+## as they use ExprTk (see refs above).
+## https://github.com/MrKepzie/Natron/blob/master/global.pri
+## suggests that Natron not using -Wa,-mbig.obj, as linker never returns
+## But
+##  https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
+##  in the text, suggests otherwise.
+## The global.pri file suggests they are usin win32, which as per my table above
+## indicates that with gcc-8 and MSYS2 both would work.
+
+
+
+
+
+
+
+
+
+
+
+#### Older stuff
+
 
 
 
@@ -115,13 +189,3 @@ MYCXXFLAGS = -O2
 
 ## Maybe Rtools 40, with MSYS2 will solve it?
 ## https://stackoverflow.com/a/31907912
-
-
-
-
-
-## I try, with c:/Rtools/mingw_64/bin/g++
-## compiling ExprTk directly.
-## The makefile has -O1.
-## Without the -Wa,-mibg-obj I get the too many sections error
-## With it, it seems to stay there forever.
