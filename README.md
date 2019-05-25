@@ -127,7 +127,7 @@ you have two options:
 
 #### Install from a zip file:
 
-Download the [zip file we provide]('OncoSimulR_2.15.994.zip') and install
+Download the [OncoSimulR_2.15.xyz.zip file we provide](miscell-files/OncoSimulR_2.15.994.zip) and install
 it from R (e.g., from the menu, go to "Packages", "Install package(s) from
 local file(s)", and select the file). This works with R-3.6.0.
 
