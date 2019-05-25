@@ -1,3 +1,8 @@
+Changes in version 2.15.994 (2019-05-25):
+	- Windoze: giving up on current Rtools35, but working with Rtools40
+	  (see Makevars.win)
+	- Cleaned up a few compiler warnings.  
+
 Changes in version 2.15.99 (2019-05-14):
 	- Bumped version to match current Biocdevel.
 
