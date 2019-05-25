@@ -54,7 +54,7 @@ on the [Genetic Simulation Resources
 catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 <a href="http://popmodels.cancercontrol.cancer.gov/gsr/"><img src="http://popmodels.cancercontrol.cancer.gov/gsr/static/img/gsr_tile.jpg" alt="Catalogued on GSR" width="180" height="60" /></a>
 
-# Installation
+# Installation 
 
 
 To use the most recent code in BioConductor, install the devel version.
@@ -126,6 +126,10 @@ you have two options:
 
 
 #### Install from a zip file:
+
+(First, install the current OncoSimulR from BioConductor, to resolve all the
+dependencies; see above or go to http://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html).
+
 
 Download the [OncoSimulR_2.15.xyz.zip file we
  provide](https://rdiaz02.github.io/OncoSimul/OncoSimulR_2.15.994.zip); for example, from your
