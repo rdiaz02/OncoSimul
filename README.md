@@ -136,8 +136,11 @@ Download the [OncoSimulR_2.15.xyz.zip file we
  web browser, place the mouse on the link, and right click to select "Save
  link as", or similar incantation.
  
-Now install that zip file from R (e.g., from the menu, go to "Packages", "Install package(s) from
-local file(s)", and select the file). This works with R-3.6.0.
+Now install that zip file from R (e.g., from the menu, go to "Packages",
+"Install package(s) from local file(s)", and select the file). This works
+with [R-3.6.0](https://cran.r-project.org/bin/windows/base/) (and
+[R-3.6.0,
+patched](https://cran.r-project.org/bin/windows/base/rtest.html))
 
 That zip file, for the sake of being small and fast to build and
 install does not contain the vignette. Use the links to the [HTML
