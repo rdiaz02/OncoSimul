@@ -1313,7 +1313,7 @@ int findPositionInGenotypes(const std::vector<Genotype>& Genotypes,
 	int pos = std::find(flGenesInGenotypes.begin(),
 	  flGenesInGenotypes.end(), genotype) - flGenesInGenotypes.begin();
 
-	int unsigned size = flGenesInGenotypes.size();
+	int size = flGenesInGenotypes.size();
 
 	if(pos < size)
 		index = pos + 1;

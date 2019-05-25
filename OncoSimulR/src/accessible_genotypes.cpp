@@ -221,7 +221,7 @@ Rcpp::IntegerVector accessibleGenotypesPeaksLandscape(Rcpp::IntegerMatrix y,
 
   adm = integerAdjMat(y, f, numMut, th);
   
-  int numMutdiff = 0;
+  // int numMutdiff = 0;
 
   // Slightly different logic from R: Do not resize object; set the row to
   // 0.

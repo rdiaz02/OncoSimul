@@ -868,11 +868,15 @@ void computeMcFarlandError_new(double& em1,
     double etmp, etmpsc, DC;
     etmp = 0.0;
     etmpsc = 0.0;
+    DC = -999999999; // o.w., we get a warning for possible uninitialized usage
     if(typeFitness == "mcfarlandlog") {
       DC = log1p(totPopSize/K);
     } else if (typeFitness == "mcfarlandlog_d") {
       DC = std::max(1.0, log1p(totPopSize/K));
     }
+    //  else {
+    //   throw std::out_of_range("Not a valid typeFitness in computeMcFarlandError_new");
+    // }
     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
     } else {
