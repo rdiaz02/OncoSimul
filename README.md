@@ -6,8 +6,7 @@
 
 # OncoSimul
 
-**This README contains comments specific to the
-frequency-dependent-fitness branch**
+**This README contains comments specific to the frequency-dependent-fitness branch**
 
 Code for forward population genetic simulation in asexual populations,
 with special focus on cancer progression.  Fitness can be an arbitrary
@@ -24,8 +23,7 @@ including single-cell sampling; plotting the parent-child relationships of
 the clones; generating random fitness landscapes (Rough Mount Fuji, House
 of Cards, and additive models) and plotting them.
 
-New functionality to allow for **frequency-dependent fitness has been
-added**.
+New functionality to allow for **frequency-dependent fitness has been added**.
 
 
 The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
@@ -96,32 +94,88 @@ library(OncoSimulR)
 ```
 
 The above, however, **will not install the version with frequency
-dependent fitness**.
+dependent fitness**. 
+**To use the frequency-dependent fitness version** read the following.
 
-**To use the frequency-dependent fitness version** you should install from github
-as follows:
-<!-- (and this might be newer than the BioC code) -->
+
+## Installing the frequency-dependent fitness branch
+
+### If you use Linux and other Unixes (Macs)
+
+You should install from github as follows: <!-- (and this might be newer
+than the BioC code) -->
 
 ```r
-install.packages("devtools") ## if you don't have it already
+if (!require("devtools"))
+    install.packages("devtools") ## if you don't have it already
 library(devtools)
 install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness")
 ``` 
 
-**The frequency-dependent fitness version will not install in Windows.**
-This is a known problem with ExprTk and MinGW
-(https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/). If
-you really want to, you might try [Rtools
-40](https://cran.r-project.org/bin/windows/testing/rtools40.html) (we run
-into issues with a few dependencies, and gave up, but it might be solved
-by now). Eventually, Rtools 40 should become the default, and the problem
-will get solved.
+
+### If you use Windows
+
+We have not uploaded the changes in the freq-dep-fitness branch to
+BioConductor because there are known problems compiling ExprTk with MinGW
+(e.g.,
+https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/).
+
+Things work with other toolchains, and eventually, Rtools 40 should become
+the default toolchain, and the problem will get solved. In the meantime,
+you have two options:
+
+
+#### Install from a zip file:
+
+Download the [zip file we provide]('OncoSimulR_2.15.994.zip') and install
+it from R (e.g., from the menu, go to "Packages", "Install package(s) from
+local file(s)", and select the file). This works with R-3.6.0.
+
+That zip file, for the sake of being small and fast to build and
+install does not contain the vignette. Use the links to the [HTML
+vignette](https://rdiaz02.github.io/OncoSimul/OncoSimulR.html) or the [PDF
+vignette](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf).
+
+
+#### Install using Rtools40
+
+(This is a more work and takes more much more time)
+
+<!-- **The frequency-dependent fitness version will not install from source in -->
+<!-- Windows unless you use Rtools40.** This is a known problem with ExprTk and -->
+<!-- MinGW -->
+
+We have verified that OncoSimulR (at least as of 2019-05-24) does install
+with [Rtools40](https://cran.r-project.org/bin/windows/testing/rtools40.html).
+
+How to do it:
+ 1. Install Rtools40 and its associated R-testing as explained in
+    https://cran.r-project.org/bin/windows/testing/rtools40.html.
+ 2. Install igraph following these notes:
+       https://github.com/r-windows/checks/issues/2
+ 3. Now, install OncoSimulR from BioConductor (to solve all
+    dependencies in one go): https://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html
+	This will take more than one hour.
+ 4. Clone the git repo and move to that directory.
+ 5. Go to a MINGW shell console, and install. For example, if you have
+    installed R-testing under 'C:\R', you can do
+```
+/c/R/R-testing/bin/x64/R CMD INSTALL --no-multiarch OncoSimulR
+```
+
+   Alternatively, install from a local file, but you need to specify the
+   tar.gz (the zip file will not work, of course, since the R-testing that
+   ships for/with Rtools40 will not install from zip files)
+  
+   Installing from source takes a while (more than 5 minutes). 
 
 
 
-Note that sometimes the latest additions in this repo could be broken (see
-[Software status](#software-status)). And you can of course clone this
-repo, and install from there.
+
+
+<!-- Note that sometimes the latest additions in this repo could be broken (see -->
+<!-- [Software status](#software-status)). And you can of course clone this -->
+<!-- repo, and install from there. -->
 
 
 ## BioConductor github repository
