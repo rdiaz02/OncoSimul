@@ -120,7 +120,7 @@ BioConductor because there are known problems compiling ExprTk with MinGW
 (e.g.,
 https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/).
 
-Things work with other toolchains, and eventually, Rtools 40 should become
+Things work with other toolchains and, eventually, Rtools 40 should become
 the default toolchain, and the problem will get solved. In the meantime,
 you have two options:
 
@@ -140,17 +140,19 @@ Now install that zip file from R (e.g., from the menu, go to "Packages",
 "Install package(s) from local file(s)", and select the file). This works
 with [R-3.6.0](https://cran.r-project.org/bin/windows/base/) (and
 [R-3.6.0,
-patched](https://cran.r-project.org/bin/windows/base/rtest.html))
+patched](https://cran.r-project.org/bin/windows/base/rtest.html) and
+[R-devel, future R-3.7.0](https://cran.r-project.org/bin/windows/base/rdevel.html))
 
 That zip file, for the sake of being small and fast to build and
-install does not contain the vignette. Use the links to the [HTML
+install, does not contain the vignette. Use the links to the [HTML
 vignette](https://rdiaz02.github.io/OncoSimul/OncoSimulR.html) or the [PDF
-vignette](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf).
+vignette](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf). (The
+standard help is of course included).
 
 
 #### Install using Rtools40
 
-(This is a more work and takes more much more time)
+(This is more work and takes more much more time)
 
 <!-- **The frequency-dependent fitness version will not install from source in -->
 <!-- Windows unless you use Rtools40.** This is a known problem with ExprTk and -->
@@ -164,7 +166,7 @@ How to do it:
     https://cran.r-project.org/bin/windows/testing/rtools40.html.
  2. Install igraph following these notes:
        https://github.com/r-windows/checks/issues/2
- 3. Now, install OncoSimulR from BioConductor (to solve all
+ 3. Now, install OncoSimulR from BioConductor (to resolve all
     dependencies in one go): https://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html
 	This will take more than one hour.
  4. Clone the git repo and move to that directory.
