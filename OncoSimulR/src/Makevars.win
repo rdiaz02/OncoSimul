@@ -19,9 +19,6 @@ PKG_LIBS = -Wa,-mbig-obj -O3
 
 
 
-
-
-
 ####### OncoSimulR and ExprTk, Rtools35 (current as of 2019-05-24)
 ##      gcc-4.9.3
 
@@ -189,3 +186,25 @@ PKG_LIBS = -Wa,-mbig-obj -O3
 ## But -O3 not placed after the default -O2:
 ## https://stackoverflow.com/questions/23414448/r-makevars-file-to-overwrite-r-cmds-default-g-options
 ## tested: -Wa,-mbig-obj does not solve it
+
+
+
+##################### Building the binary package
+##                    here, so I can just copy and paste in a MINGW64 shell
+## https://www.biostat.wisc.edu/~kbroman/Rintro/Rwinpack.html ande BioConductor
+## http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/tokay1-buildsrc.html
+## http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/tokay1-buildbin.html
+
+##    - obtain the tar.gz for Linux or build with Rtools40
+##    - /c/R/R-testing/bin/x64/R CMD INSTALL --build --compile-both  OncoSimulRxyz.tar.gz
+##    - might want to pass other options
+##          /c/R/R-testing/bin/x64/R CMD INSTALL --build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulRxyz.tar.gz
+
+
+#####    Full, BioC-like
+##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data  OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build OncoSimulR_xyz0.tar.gz
+
+#####    Faster, shorter
+##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data  OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build --no-build-vignettes --no-manual OncoSimulR_xyz0.tar.gz
