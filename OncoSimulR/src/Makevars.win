@@ -201,10 +201,20 @@ PKG_LIBS = -Wa,-mbig-obj -O3
 ##          /c/R/R-testing/bin/x64/R CMD INSTALL --build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulRxyz.tar.gz
 
 
+## Recall I need pandoc and git
+## Install pandoc at C:/pandoc
+## Git is at C:\Program Files
+## Add them to the path
+## export PATH=$PATH:/c/Pandoc:/c/Program\ Files/git/bin
+
+
 #####    Full, BioC-like
 ##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data  OncoSimulR
 ##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build OncoSimulR_xyz0.tar.gz
 
 #####    Faster, shorter
-##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data  OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data --no-build-vignettes OncoSimulR
+## this is failing now, as it does not find git
 ##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build --no-build-vignettes --no-manual OncoSimulR_xyz0.tar.gz
+
+
