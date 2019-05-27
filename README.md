@@ -143,11 +143,11 @@ with [R-3.6.0](https://cran.r-project.org/bin/windows/base/) (and
 patched](https://cran.r-project.org/bin/windows/base/rtest.html) and
 [R-devel, future R-3.7.0](https://cran.r-project.org/bin/windows/base/rdevel.html))
 
-That zip file, for the sake of being small and fast to build and
-install, does not contain the vignette. Use the links to the [HTML
-vignette](https://rdiaz02.github.io/OncoSimul/OncoSimulR.html) or the [PDF
-vignette](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf). (The
-standard help is of course included).
+<!-- That zip file, for the sake of being small and fast to build and -->
+<!-- install, does not contain the vignette. Use the links to the [HTML -->
+<!-- vignette](https://rdiaz02.github.io/OncoSimul/OncoSimulR.html) or the [PDF -->
+<!-- vignette](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf). (The -->
+<!-- standard help is of course included). -->
 
 
 #### Install using Rtools40
