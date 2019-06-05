@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+    <title>MAGELLAN</title>
+    <meta content="landscape manipulation" name="keywords" />
+	<style type="text/css" media="all">
+	  @import "magellan.css";
+ table { 
+ color: #333;
+ font-family: Helvetica, Arial, sans-serif;
+
+ border-collapse: 
+ collapse; border-spacing: 0; 
+}
+ 
+ 
+th {
+ border: 1px solid transparent; /* No more visible border */
+ height: 30px; 
+ transition: all 0.3s;  /* Simple transition for hover effect */
+ background: #DFDFDF;  /* Darken header a bit */
+ font-weight: bold;
+}
+ 
+td {
+ border: 1px solid transparent; /* No more visible border */
+
+ transition: all 0.3s;  /* Simple transition for hover effect */
+
+ background: #FAFAFA;
+ text-align: center;
+}
+
+/* Cells in even rows (2,4,6...) are one color */ 
+/*tr:nth-child(even) td { background: #F1F1F1; }   */
+tr:nth-child(even) td { background: #CCCCCC; }   
+
+/* Cells in odd rows (1,3,5...) are another (excludes header cells)   */
+tr:nth-child(odd) td { background: #FEFEFE; }  
+
+
+ a:link { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: #6A6A6A;
+        }
+	a:visited { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: #6A6A6A;
+        }
+	a:hover, a:active { 
+        text-decoration: none; 
+        color: #dddddd;
+        }
+
+
+ </style>
+<script type="text/javascript">
+function myclick()
+{
+  	document.body.className = 'wait';
+	land_form.submit();
+  }
+
+</script>
+  </head> 
+  
+  <body>
+  <div id="haut">
+ 	<div id="col1">
+		<A href="Magellan.main.mac.html">
+<!--		<A href="Magellan.main.html"> -->
+			<h1>Magellan</H1>
+			<H2> Maps of Genetic Landscapes</h2> 
+		</A>
+	</div>	
+	 <div id="col2">
+	
+	</div>
+	 <div id="bas">
+	</div>
+	 
+	</div>
+	
+<UL id="menu">
+
+<LI ><h3><A href="#" >Experimental Published Landscapes</a></h3></LI>
+<LI ><h3><A href="Magellan.main.mac.html">Home</a></h3></LI>
+</UL>
+<br><br>
+
+	
+Click <A Href="knownlands/all_land.zip">here</A> to download all known landscapes files or right click on the X to save the selected file
+<br><br><br>
+<table summary="LAND_KNOWN" >
+
+
+<thead><tr><th>System</th><th>Description of landscape</th><th>Reference </th><th>Magellan landscape </th><th>&nbsp;&nbsp;&nbsp;File </th></tr>
+
+<tr ><td>Avian lysozyme (melting temperature)</td>
+<td>No selectively neutral pathway links the only two extant alleles </td>
+<td>Malcolm BA, Wilson KP, Matthews BW, Kirsch JF, Wilson AC: Ancestral lysozymes reconstructed, neutrality tested, and thermostability linked to hydrocarbon packing. Nature 1990, 345:86-89. <A href="http://www.ncbi.nlm.nih.gov/pubmed/2330057"> Pubmed </A></td>
+<TD><form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi"><input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Malcolm.fl" name="LAND_FILE"><input type="submit" value="draw" onclick="myclick();"></form></td>
+<td><A Href="knownlands/Malcolm.fl">X</A></td>
+</tr>
+<tr ><td>D. melanogaster visible mutant (productivity and male mating success)</td>
+<td>Epistasis and sexual selection may attenuate genetic load in natural populations. Higher-order epistasis observed.</td>
+<td>Whitlock MC, Bourguet D: Factors affecting the genetic load in Drosophila: synergistic epistasis and correlations among fitness components. Evolution 2000, 54:1654-1660.<A HREF="http://www.ncbi.nlm.nih.gov/pubmed/11108592"> Pubmed </A></td>
+<TD><form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi"><input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Whitlock_P.fl" name="LAND_FILE"><input type="submit" value="draw (P)" onclick="myclick();"></form><p><form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi"><input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Whitlock_M.fl" name="LAND_FILE"><input type="submit" value="draw (M)" onclick="myclick();"></form></td>
+<td><A Href="knownlands/Whitlock_P.fl">X</A><P><A Href="knownlands/Whitlock_M.fl">X</A></td>
+</TR>
+
+<tr ><td>E. coli dihydrofolate reductase mutants (in vitro enzymatic activity)</td>
+<td>Fitness landscape smoother than random; first study to offer quantitative definition of roughness</td>
+<td>Aita T, Husimi Y: Fitness spectrum among random mutants on Mt. Fuji-type fitness landscapes. J Theor Biol 1996, 182:469-485<A href="http://www.ncbi.nlm.nih.gov/pubmed/8944894"> Pubmed </A></td>
+<TD>View Landscape</td>
+<td>O</td>
+</tr>
+
+<tr ><td>E. coli isopropyl malate dehydrogenase mutants (growth rate)</td>
+<td>Essentially all epistasis for fitness arises in mapping from biochemistry to fitness</td>
+<td>Lunzer M, Miller SP, Felsheim R, Dean AM: The biochemical architecture of an ancient adaptive landscape. Science 2005, 310:499-501.<A href="http://www.ncbi.nlm.nih.gov/pubmed/16239478"> Pubmed </A> Miller SP, Lunzer M, Dean AM: Direct demonstration of an adaptive constraint. Science 2006, 314:458-461.<A href="http://www.ncbi.nlm.nih.gov/pubmed/17053145"> Pubmed </A></td>
+<td>
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Lunzer.fl" name="LAND_FILE"> <input type="submit" value="draw" onclick="myclick();">
+</form>
+</td>
+ <td><A Href="knownlands/Lunzer.fl">X</A></td>
+</tr>
+
+
+<tr ><td>E. coli b-lactamase mutants (resistance against two antibiotics)</td>
+<td>Sign epistasis constrains the number of selectively accessible mutational trajectories to highest-fitness allele; adaptive trajectories are rarely reversed when environment changes </td>
+<td>Weinreich DM, Delaney NF, DePristo MA, Hartl DL: Darwinian evolution can follow only very few mutational paths to fitter proteins. Science 2006, 312:111-114.<A href="http://www.ncbi.nlm.nih.gov/pubmed/16601193"> Pubmed </A></td>
+<TD> <form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Weinreich.fl" name="LAND_FILE"> <input type="submit" value="draw" onclick="myclick();"></form></td>
+<td><A Href="knownlands/Weinreich.fl">X</A></td>
+ </tr>
+<tr ><td>E. coli b-lactamase mutants (resistance against two antibiotics)</td>
+<td>Sign epistasis constrains the number of selectively accessible mutational trajectories to highest-fitness allele; adaptive trajectories are rarely reversed when environment changes </td>
+<td>Tan L, Serene S, Chao HX, Gore J: Hidden randomness between fitness landscapes limits reverse evolution. Phys Rev Lett 2011,106:198102<A href="http://www.ncbi.nlm.nih.gov/pubmed/21668204"> Pubmed </A></td>
+<TD> 
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Tan.C.fl" name="LAND_FILE"><input type="submit" value="draw (C)" onclick="myclick();"> 
+</form><p>
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Tan.PI.fl" name="LAND_FILE"><input type="submit" value="draw (PI)" onclick="myclick();">
+</form></TD><td><A Href="knownlands/Tan.C.fl">X</A><p><A Href="knownlands/Tan.PI.fl.fl">X</A></td>
+</TR>
+<tr ><td>Solinaceae sequiterpine mutants (5-EA synthesis)</td>
+<td>Rugged landscape in which alternate catalytic specificities are often mutationally nearby </td>
+<td>Costanzo M, Baryshnikova A, Bellay J, Kim Y, Spear ED, Sevier CS, Ding H, Koh JLY, Toufighi K, Mostafavi S et al.: The genetic landscape of a cell. Science 2010, 327:425-431.<A href="http://www.ncbi.nlm.nih.gov/pubmed/20093466"> Pubmed </A></td>
+<TD>
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Costanzo.fl" name="LAND_FILE"><input type="submit" value="draw" onclick="myclick();">
+</form>
+</td>
+<td><A Href="knownlands/Costanzo.fl">X</A></td>
+</TR>
+<tr ><td>A. niger visible mutations (growth rate)</td>
+<td>Genetic recombination does little to speed adaptation; fitness landscapes have intermediate ruggedness</td>
+<td>Franke J, Klozer A, de Visser JAGM, Krug J: Evolutionary accessibility of mutational pathways. PLOS Comput Biol 2011,7:e1002134.<A href="http://www.ncbi.nlm.nih.gov/pubmed/21876664"> Pubmed </A> de Visser JAGM, Park S-C, Krug J: Exploring the effect of sex on empirical fitness landscapes. Am Nat 2009, 174:S15-S30.<A href="http://www.ncbi.nlm.nih.gov/pubmed/19456267"> Pubmed </A></td>
+<td> 
+
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="deVisser.csI.fl" name="LAND_FILE"><input type="submit" value="draw (csI)" onclick="myclick();">
+</form>
+<p>
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="deVisser.csII.fl" name="LAND_FILE"><input type="submit" value="draw (csII)" onclick="myclick();">
+</form>
+
+</td>
+<td><A Href="knownlands/deVisser.csI.fl">X</A><P><A Href="knownlands/deVisser.csII.fl">X</A></td>
+ </tr>
+
+<tr ><td>P. falciparum dihydrofolate reductase mutants in E. coli (resistance against an antimalarial drug)</td>
+<td>Clinical data consistent with evolutionary trajectory predicted from in vitro results</td>
+<td>Lozovsky ER, Chookajorn T, Brown KM, Imwong M, Shaw PJ, Kamchonwongpaisan S, Neafsey DE, Weinreich DM, Hartl DL: Stepwise acquisition of pyrimethamine resistance in the malaria parasite. Proc Natl Acad Sci U S A 2009, 106:12025-12030.<A href="http://www.ncbi.nlm.nih.gov/pubmed/19587242"> Pubmed </A></td>
+<TD>
+
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Lozovsky.fl" name="LAND_FILE"><input type="submit" value="draw" onclick="myclick();">
+</form>
+
+</td>
+<td><A Href="knownlands/Lozovsky.fl">X</A></td>
+</TR>
+
+<tr ><td>Mammalian glucocorticoid receptor mutants (cortisol binding)</td>
+<td>Epistasis renders evolutionary trajectories selectively irreversible</td>
+<td>Bridgham JT, Carroll SM, Thornton JW: Evolution of hormone- receptor complexity by molecular exploitation. Science 2007, 312:97-100.<A href="http://www.ncbi.nlm.nih.gov/pubmed/16601189"> Pubmed </A></td>
+<TD>View Landscape</td>
+<td>O</td>
+</tr>
+
+<tr ><td>P. falciparum dihydrofolate reductase mutants in S. cervisiae (resistance against two antimalarial drugs)</td>
+<td>Landscapes not well correlated across environments</td>
+<td>Brown KM, Costanzo MS, Xu W, Roy S, Lozovsky ER, Hartl DL: Compensatory mutations restore fitness during the evolution of dihydrofolate reductase. Mol Biol Evol 2010, 27:2682-2690.<A href="http://www.ncbi.nlm.nih.gov/pubmed/20576759"> Pubmed </A>Costanzo MS, Brown KM, Hartl DL: Fitness trade-offs in the evolution of dihydrofolate reductase and drug resistance in Plasmodium falciparum. PLoS One 2011, 6:e19636.<A href="http://www.ncbi.nlm.nih.gov/pubmed/21625425"> Pubmed </A></td>
+<TD>View Landscape</td>
+<td>O</td>
+</TR>
+
+<tr ><td>S. cerevisiae visible mutations (growth rate)</td>
+<td>Epistasis is variable and genetic recombination does little to speed adaptation</td>
+<td>Hall DW, Agan M, Pope SC: Fitness epistasis among 6 biosynthtic loci in the budding yeast Saccharomyces cervisiae. J Hered 2010, 1010:S75-S84.<A href="http://www.ncbi.nlm.nih.gov/pubmed/20194517"> Pubmed </A></td>
+<TD>View Landscape</td>
+<td>O</td>
+</tr>
+
+<tr ><td>HIV glycoprotein mutants (in vitro infectivity)</td>
+<td>Common, strong epistasis. Higher-order effects noted </td>
+<td>da Silva J, Coetzer M, Nedellec R, Pastore C, Mosier DE: Fitness Epistasis and Constraints on Adaptation in a Human Immunodeficiency Virus Type 1 Protein Region. Genetics 2010, 185:293-303.<A href="http://www.ncbi.nlm.nih.gov/pubmed/20194517"> Pubmed </A></td>
+<td>
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="daSilva.cxcr4.fl" name="LAND_FILE"><input type="submit" value="draw (cxcr4)" onclick="myclick();">
+</form>
+<p>
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="daSilva.ccr5.fl" name="LAND_FILE"><input type="submit" value="draw (ccr5)" onclick="myclick();">
+</form></td>
+<td><A Href="knownlands/daSilva.cxcr4.fl">X</A><p><A Href="knownlands/daSilva.ccr5.fl">X</A></td>
+ </tr>
+<tr ><td>Metholobacterium extorquens beneficial mutations in novel metabolic pathway (growth rate)</td>
+<td>Negative pairwise epistasis among beneficial mutations</td>
+<td>Chou H-H, Chiu H-C, Delaney NF, Segre D, Marx CJ: Diminishing returns epistasis among beneficial mutations decelarates adaptation. Science 2011, 322:1190-1192.<A href="http://www.ncbi.nlm.nih.gov/pubmed/21636771"> Pubmed </A></td>
+<td>
+
+
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Chou.fl" name="LAND_FILE"><input type="submit" value="draw" onclick="myclick();">
+</form>
+
+
+</td>
+ <td><A Href="knownlands/Chou.fl">X</A></td>
+</tr>
+<tr ><td>E. coli beneficial mutations (growth rate).</td>
+<td>Negative pairwise epistasis among beneficial mutations</td>
+<td>Khan AI, Dinh DM, Schneider D, Lenski RE, Cooper TF: Negative epistasis between beneficial mutations in an evolving bacterial population. Science 2011, 332:1193-1196.<A href="http://www.ncbi.nlm.nih.gov/pubmed/21636772"> Pubmed </A></td>
+<td>
+<form method="get" action="http://localhost:8888/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Khan.fl" name="LAND_FILE"><input type="submit" value="draw" onclick="myclick();">
+</form>
+
+</td>
+<td><A Href="knownlands/Khan.fl">X</A></td>
+</tr>
+</Table>
+<br>
+<br>
+
+<tr ><td>S. cerevisiae engineered mutations (growth rate).</td>
+<td>Strong, localised epistastis</td>
+<td>Bank C, Matuszewski S, Hietpas RT, Jensen JD: On the (un)predictability of a large intragenic fitness landscape. PNAS 2016, 113:14085-14090.<A href="https://www.ncbi.nlm.nih.gov/pubmed/27864516"> Pubmed </A></td>
+<td>
+<form method="get" action="http://wwwabi.snv.jussieu.fr/cgi-bin/fl_drawfile.cgi">
+<input type= "hidden" value="0" name="LAND_LOG"> <input type= "hidden" value="Bank.fl" name="LAND_FILE"><input type="submit" value="draw" onclick="myclick();">
+</form>
+</td>
+<td><A Href="knownlands/Bank.fl">X</A></td>
+</tr>
+
+
+
+</body>
+
+
+</html>
