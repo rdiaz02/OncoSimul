@@ -1,3 +1,9 @@
+Changes in version 2.15.1 (2019-06-06):
+	- Added MAGELLAN's sources.
+	
+Changes in version 2.15.0 (2019-06-06):
+	- Bumped version to match current Biocdevel.
+	
 Changes in version 2.13.2 (2019-03-18):
 	- changes in behavior of sample
 	  (see NEWS and https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17494) were
