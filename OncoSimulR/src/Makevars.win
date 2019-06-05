@@ -1,3 +1,49 @@
 ## This is a C++11 package
 CXX_STD = CXX11
   
+all: liblandscape.a fl_statistics fl_generate $(SHLIB)
+
+
+MAGELLAN_SRC = FitnessLandscape/gamma.c\
+        FitnessLandscape/landscape.c \
+        FitnessLandscape/random.c\
+        FitnessLandscape/sort.c\
+        FitnessLandscape/chain.c\
+        FitnessLandscape/input.c\
+        FitnessLandscape/common_drawings.c\
+        FitnessLandscape/genotypes.c\
+        FitnessLandscape/ordered_pairs.c\
+        FitnessLandscape/calculus.c\
+        FitnessLandscape/vector.c\
+        FitnessLandscape/generalized_chain.c\
+        FitnessLandscape/LinearAlgebra.c\
+        FitnessLandscape/summary_statistics.c\
+        FitnessLandscape/epistasis_type.c\
+        FitnessLandscape/decomposition.c\
+        FitnessLandscape/models.c
+MAGELLAN_OBJECTS = $(MAGELLAN_SRC:.c=.o)
+
+liblandscape.a: $(MAGELLAN_OBJECTS)
+	$(AR) -r $@ $+ ;
+	$(RANLIB) $@;
+
+
+
+MAGELLAN_LIBS = liblandscape.a
+MAGELLAN_LIBS_DIR = -L.
+MAGELLAN_LFLAGS = -llandscape
+## MAGELLAN_INCLUDE_DIR = -I. -I/FitnessLandscape/.
+MAGELLAN_INCLUDE_DIR = -I/FitnessLandscape/.
+MAGELLAN_ALLCFLAGS= -O -Wall
+
+fl_statistics: FitnessLandscape/main_fl_statistics.c $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+# I don't think I need this
+# fl_genchains: FitnessLandscape/main_generalizedchains_test.c $(MAGELLAN_LIBS)
+# 	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(LFLAGS) -lm #-g
+
+

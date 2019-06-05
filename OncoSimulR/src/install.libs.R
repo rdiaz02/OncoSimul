@@ -6,27 +6,25 @@
 
 
 binaries <- c("fl_statistics", "fl_generate") ## , "fl_genchains")
+oncosimul_lib <- "OncoSimulR.so"
 
 if (WINDOWS) {
     binaries <- paste0(binaries, ".exe")
-    execarch <- "exec"
-    libsarch <- "libs"
     oncosimul_lib <- "OncoSimulR.dll"
-    ## zz: FIXME
-} else {
-    ## Default installation (from R extensions doc)
-    print(R_ARCH)
-    execarch <- if (nzchar(R_ARCH)) paste('exec', R_ARCH, sep='') else 'exec'
-    libsarch <- if (nzchar(R_ARCH)) paste('libs', R_ARCH, sep='') else 'libs'
-    oncosimul_lib <- "OncoSimulR.so"
 }
 
-dest <- file.path(R_PACKAGE_DIR, execarch)
-dest_lib <- file.path(R_PACKAGE_DIR, libsarch)
+print(R_ARCH)
+if(nzchar(R_ARCH)) {
+    dest_exec <- file.path(R_PACKAGE_DIR,  paste0('exec', R_ARCH))
+    dest_lib  <- file.path(R_PACKAGE_DIR,  paste0('libs', R_ARCH))
+} else {
+    dest_exec <- file.path(R_PACKAGE_DIR, 'exec')
+    dest_lib  <- file.path(R_PACKAGE_DIR, 'libs')
+}
 
-message("Installing ", paste(binaries, collapse = " "), " to ", dest)
-dir.create(dest, recursive = TRUE, showWarnings = FALSE)
-file.copy(binaries, dest, overwrite = TRUE)
+message("Installing ", paste(binaries, collapse = " "), " to ", dest_exec)
+dir.create(dest_exec, recursive = TRUE, showWarnings = FALSE)
+file.copy(binaries, dest_exec, overwrite = TRUE)
 
 message("Installing library ", oncosimul_lib, " to ", dest_lib)
 dir.create(dest_lib, recursive = TRUE, showWarnings = FALSE)
@@ -35,3 +33,5 @@ file.copy(oncosimul_lib, dest_lib, overwrite = TRUE)
 ## Now, run file by locating it as
 ## system.file(package = "OncoSimulR", "exec", "fl_generate")
 ## or with exe under windoze
+
+try(file.remove(binaries))
