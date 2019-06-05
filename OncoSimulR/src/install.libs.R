@@ -24,13 +24,14 @@ if (WINDOWS) {
 dest <- file.path(R_PACKAGE_DIR, execarch)
 dest_lib <- file.path(R_PACKAGE_DIR, libsarch)
 
-message("Installing ", binaries, " to ", dest)
+message("Installing ", paste(binaries, collapse = " "), " to ", dest)
 dir.create(dest, recursive = TRUE, showWarnings = FALSE)
 file.copy(binaries, dest, overwrite = TRUE)
 
-message("Installing library", oncosimul_lib, " to ", dest_lib)
+message("Installing library ", oncosimul_lib, " to ", dest_lib)
 dir.create(dest_lib, recursive = TRUE, showWarnings = FALSE)
 file.copy(oncosimul_lib, dest_lib, overwrite = TRUE)
 
-
-
+## Now, run file by locating it as
+## system.file(package = "OncoSimulR", "exec", "fl_generate")
+## or with exe under windoze
