@@ -31,6 +31,8 @@ cp OncoSimulR/vignettes/OncoSimulR.bib ../BioConductor-git/OncoSimulR/vignettes/
 cp OncoSimulR/vignettes/gitsetinfo.sty ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitinfo.sty ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitHeadInfo.gin ../BioConductor-git/OncoSimulR/vignettes/.
+## FIXME: remember new tex/png/pdfs for freq-dep-fitness vignette
+
 
 cp OncoSimulR/src/*.c ../BioConductor-git/OncoSimulR/src/.
 cp OncoSimulR/src/*.cpp ../BioConductor-git/OncoSimulR/src/.
@@ -58,6 +60,14 @@ cp OncoSimulR/data/*.RData ../BioConductor-git/OncoSimulR/data/.
 cp OncoSimulR/NAMESPACE ../BioConductor-git/OncoSimulR/.
 
 cp OncoSimulR/DESCRIPTION ../BioConductor-git/OncoSimulR/.
+
+
+
+cp OncoSimulR/src/install.libs.R ../BioConductor-git/OncoSimulR/src/.
+rm ../BioConductor-git/OncoSimulR/src/FitnessLandscape/*
+rm ../BioConductor-git/OncoSimulR/src/FitnessLandscape/web/*
+cp -a OncoSimulR/src/FitnessLandscape ../BioConductor-git/OncoSimulR/src/.
+make -C ../BioConductor-git/OncoSimulR/src/FitnessLandscape clean
 
 
 ## should we run the tests?
