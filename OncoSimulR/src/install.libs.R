@@ -34,4 +34,10 @@ file.copy(oncosimul_lib, dest_lib, overwrite = TRUE)
 ## system.file(package = "OncoSimulR", "exec", "fl_generate")
 ## or with exe under windoze
 
+
+## Clean up. Otherwise, R CMD check complaints about object files
+## and executables under src
 try(file.remove(binaries))
+try(file.remove("liblandscape.a"))
+try(file.remove(list.files(file.path(getwd(), "FitnessLandscape"),
+                           pattern = glob2rx("*.o"), full.names = TRUE)))
