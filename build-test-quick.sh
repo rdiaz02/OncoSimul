@@ -68,6 +68,8 @@ rm ./OncoSimulR/src/FitnessLandscape/*.o
 rm ./OncoSimulR/src/FitnessLandscape/*~
 make -C ./OncoSimulR/src/FitnessLandscape clean
 
+## We always do this, though it should not be necessary
+sed -i 's/^};$/}/' ./OncoSimulR/src/FitnessLandscape/generalized_chain.c 
 
 
 echo " ************************************** "
