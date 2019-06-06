@@ -10,7 +10,6 @@ MAGELLAN_SRC = FitnessLandscape/gamma.c\
         FitnessLandscape/sort.c\
         FitnessLandscape/chain.c\
         FitnessLandscape/input.c\
-        FitnessLandscape/common_drawings.c\
         FitnessLandscape/genotypes.c\
         FitnessLandscape/ordered_pairs.c\
         FitnessLandscape/calculus.c\
@@ -21,6 +20,7 @@ MAGELLAN_SRC = FitnessLandscape/gamma.c\
         FitnessLandscape/epistasis_type.c\
         FitnessLandscape/decomposition.c\
         FitnessLandscape/models.c
+#        FitnessLandscape/common_drawings.c\ ## I do not use it and gives a warning
 MAGELLAN_OBJECTS = $(MAGELLAN_SRC:.c=.o)
 
 liblandscape.a: $(MAGELLAN_OBJECTS)
