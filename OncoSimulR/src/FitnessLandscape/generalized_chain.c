@@ -16,7 +16,7 @@ int2index(struct landscape h, int i, int *k)
 	int             l = h.ngenotypes;
 	k[0] = i / l;
 	k[1] = i % l;
-};
+}
 
 int
 index2int(struct landscape h, int *k)
@@ -25,7 +25,7 @@ index2int(struct landscape h, int *k)
 	int             l = h.ngenotypes;
 	i = (k[0]) * l + k[1];
 	return i;
-};
+}
 
 int
 compare_genotypes(struct landscape h, int *genotype1, int *genotype2)
@@ -40,7 +40,7 @@ compare_genotypes(struct landscape h, int *genotype1, int *genotype2)
 		};
 	};
 	return j;
-};
+}
 
 void
 adjacency_matrix(struct landscape h, int *m)
@@ -68,7 +68,7 @@ adjacency_matrix(struct landscape h, int *m)
 			printf("m= %u %u %u\n", g, j, m[i]);
 		};
 	};
-};
+}
 
 
 void
@@ -83,7 +83,7 @@ initialize_flux(struct landscape h, double *flux)
 			flux[i] = -2.0;
 		};
 	};
-};
+}
 
 
 double
@@ -127,7 +127,7 @@ get_flux(struct landscape h, int *m, int gi, int gf, double *flux)
 	} else {
 		return flux[index2int(h, k)];
 	};
-};
+}
 
 void
 assign_fluxes(struct landscape h, int *m, double *flux)
@@ -151,7 +151,7 @@ assign_fluxes(struct landscape h, int *m, double *flux)
 			};
 		};
 	};
-};
+}
 
 
 void
@@ -179,7 +179,7 @@ print_chain_pairs(struct landscape h, double *flux, double tol)
 			};
 		};
 	};
-};
+}
 
 
 
@@ -232,7 +232,7 @@ get_stats(struct landscape h, int g, int *m, int *np, int *nl, double *sigma, do
 			np[g] = 1;
 		};
 	};
-};
+}
 
 
 void
@@ -306,4 +306,4 @@ get_node_constraints(struct landscape h, int *m, double *ha0, double *ha1)
 	free(np);
 	free(sigma);
 	free(he);
-};
+}
