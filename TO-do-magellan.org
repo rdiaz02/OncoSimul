@@ -1,0 +1,3 @@
+- [ ] Add refs to Ferreti et al. in README.md
+- [ ] rfitness: calls to the different fitness landscapes
+- [ ] fl_statistics: think which, how, and call from R
