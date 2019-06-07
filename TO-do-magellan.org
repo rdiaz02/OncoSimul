@@ -1,3 +1,10 @@
 - [ ] Add refs to Ferreti et al. in README.md
 - [ ] rfitness: calls to the different fitness landscapes
 - [ ] fl_statistics: think which, how, and call from R
+
+
+--- Windows and ExprTk:
+
+- Seems to work; just add the MAGELLAN's branch Makevars.win in the
+  Makevars.win in freq-dep-fitness (ditto for Makevars) and copy
+  FitnessLandscape and install.libs.R
