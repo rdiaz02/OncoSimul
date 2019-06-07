@@ -44,6 +44,6 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 
 # Do we really need this?
 fl_genchains: FitnessLandscape/main_generalizedchains_test.c $(MAGELLAN_LIBS)
-	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(LFLAGS) -lm #-g
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm #-g
 
 
