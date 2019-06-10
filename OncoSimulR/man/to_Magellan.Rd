@@ -1,16 +1,24 @@
 \name{to_Magellan}
 \alias{to_Magellan}
+\alias{Magellan_stats}
 
-\title{ Create output for MAGELLAN.  }
+\title{ Create output for MAGELLAN and obtain MAGELLAN statistics.  }
 
-\description{ Create a fitness landscape in a format that is understood
-  by MAGELLAN \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}. 
+\description{ Export a fitness landscape in a format that is understood
+  by MAGELLAN \url{http://wwwabi.snv.jussieu.fr/public/Magellan/} and
+  obtain fitness landscape statistics from MAGELLAN. 
 
 }
 
 \usage{
 to_Magellan(x, file,
             max_num_genotypes = 2000)
+
+Magellan_stats(x, max_num_genotypes = 2000,
+               verbose = FALSE,
+               use_log = TRUE,
+               short = TRUE,
+               replace_missing = FALSE)
 }
 
 \arguments{
@@ -49,8 +57,12 @@ to_Magellan(x, file,
   created using \code{\link{tempfile}}.}
 
   \item{max_num_genotypes}{Maximum allowed number of genotypes. For some
-  types of input, we make a call to \code{\link{evalAllGenotypes}}, and
-  use this as the maximum.}
+    types of input, we make a call to \code{\link{evalAllGenotypes}}, and
+    use this as the maximum.}
+  
+  \item{verbose}{If TRUE provide additional information about names of
+    intermediate files.}
+  \item{use_log}{}
 
 }
 

@@ -10,6 +10,7 @@ export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "rfitness",
        "plotFitnessLandscape",
        "to_Magellan",
+       "Magellan_stats",
        "sampledGenotypes"
        , "POM", "LOD"
        , "diversityPOM", "diversityLOD"
