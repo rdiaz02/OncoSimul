@@ -285,10 +285,10 @@ is a summary of some of its key features:
       relationships between clones (see section \@ref(meaningclone)
       for the details of what we mean by "clone").
     
-* You can generate random fitness landscapes (under the House of
-      Cards, Rough Mount Fuji, or additive models, or combinations of the
-      former) and use those landscapes as input to the simulation
-      functions.
+* You can generate random fitness landscapes (under the House of Cards,
+      Rough Mount Fuji, or additive models, or combinations of the former
+      and under the NK model) and use those landscapes as input to the
+      simulation functions.
       
 * You can plot fitness landscapes.
       
@@ -648,13 +648,13 @@ rl <- rfitness(g, c = c, min_accessible_genotypes = g)
 
 ## plot(rl)
 
-## Obtain landscape measures from Magellan. Export to Magellan
+## Obtain landscape measures from MAGELLAN. Export to MAGELLAN and
+## call your own copy of MAGELLAN's binary
 to_Magellan(rl, file = "rl1.txt")
 
-## (Getting the statistics from Magellan requires either 
-## calling the web app (http://wwwabi.snv.jussieu.fr/public/Magellan/) 
-## or asking Magellan's authors for the software. This is of course
-## beyond the scope of the example and the package.)
+## or use the binary copy provided with OncoSimulR
+## see also below.
+Magellan_stats(rl)
 
 ## Simulate evolution in that landscape many times (here just 10)
 simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),
@@ -673,6 +673,12 @@ sampledGenotypes(samplePop(simulrl, typeSample = "whole"))
 set.seed(NULL)
 ```
 
+
+
+<!-- ## (Getting the statistics from MAGELLAN requires either  -->
+<!-- ## calling the web app (http://wwwabi.snv.jussieu.fr/public/MAGELLAN/)  -->
+<!-- ## or asking MAGELLAN's authors for the software. This is of course -->
+<!-- ## beyond the scope of the example and the package.) -->
 
 
 ### Mutator and antimutator genes {#exmutantimut}
@@ -8351,6 +8357,7 @@ that function is optimized for other uses. This might change in the future.
 
 # Generating random fitness landscapes {#gener-fit-land}
 
+## Random fitness landscapes from a Rough Mount Fuji model {#rmfmodel}
 In most of the examples seen above, we have fully specified the
 fitness of the different genotypes (either by providing directly the
 full mapping genotypes to fitness, or by providing that mapping by
@@ -8368,10 +8375,10 @@ landscapes [e.g., @brouillet_magellan:_2015].
 
 
 
-With OncoSimulR it is possible to generate mappings of genotype to
-fitness using the function `rfitness` that allows you to use from
-a pure House of Cards model to a purely additive model. I have
-followed @szendro_quantitative_2013 and @franke_evolutionary_2011 and
+With OncoSimulR it is possible to generate mappings of genotype to fitness
+using the function `rfitness` that allows you to use from a pure House of
+Cards model to a purely additive model (see \@ref(nkmodel) for NK model). I
+have followed @szendro_quantitative_2013 and @franke_evolutionary_2011 and
 model fitness as
 
 <!-- $$ -->
@@ -8431,6 +8438,35 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 <!-- % dev.off() -->
 
 <!-- % @  -->
+
+
+## Random fitness landscapes from Kauffman's NK model {#nkmodel}
+
+You can also use Kauffman's NK model [e.g., @ferretti_measuring_2016;
+@brouillet_magellan:_2015]. We call the function `fl_generate` from
+MAGELLAN [@brouillet_magellan:_2015].
+
+
+```{r nkex1}
+rnk <- rfitness(5, K = 3, model = "NK")
+plot(rnk)
+oncoSimulIndiv(allFitnessEffects(genotFitness = rnk))
+```
+
+## Epistasis and fitness landscape statistics {#epistats}
+
+We can call MAGELLAN's [@brouillet_magellan:_2015] `fl_statistics` to
+obtain fitness landscape statistics, including measures of sign and
+reciprocal sign epistasis. See the help of `Magellan_stats` for further
+details on output format. For example:
+
+```{r magstats1}
+rnk1 <- rfitness(6, K = 1, model = "NK")
+Magellan_stats(rnk1)
+
+rnk2 <- rfitness(6, K = 4, model = "NK")
+Magellan_stats(rnk2)
+```
 
 \clearpage
 
