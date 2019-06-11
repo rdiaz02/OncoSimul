@@ -78,7 +78,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
         ## Might not be needed with the proper gfm object (so gmf <- x)
         ## but is needed if arbitrary matrices.
-        gfm <- allGenotypes_to_matrix(afe) 
+        gfm <- allGenotypes_to_matrix(afe)
     } else if(inherits(x, "fitnessEffects")) {
         if(!is.null(x$orderEffects) )
             stop("We cannot yet deal with order effects")
@@ -105,16 +105,16 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         ## Assume a two-column data frame of genotypes as character
         ## vectors and fitness
         if(colnames(x)[2] != "Fitness")
-            stop("We cannot guess what you are passing here") 
+            stop("We cannot guess what you are passing here")
         afe <- evalAllGenotypes(allFitnessEffects(genotFitness = x),
                                 order = FALSE, addwt = TRUE,
                                 max = max_num_genotypes)
         gfm <- allGenotypes_to_matrix(afe)
     } else {
-        stop("We cannot guess what you are passing here") 
+        stop("We cannot guess what you are passing here")
     }
     return(list(gfm = gfm, afe = afe))
-}   
+}
 
 ## Based on from_genotype_fitness
 ## but if we are passed a fitness landscapes as produced by
@@ -125,17 +125,17 @@ to_genotFitness_std <- function(x, simplify = TRUE,
                                 sort_gene_names = TRUE) {
     ## Would break with output from allFitnessEffects and
     ## output from allGenotypeAndMut
-    
+
     ## For the very special and weird case of
     ## a matrix but only a single gene so with a 0 and 1
     ## No, this is a silly and meaningless case.
     ## if( ( ncol(x) == 2 ) && (nrow(x) == 1) && (x[1, 1] == 1) ) {
-    
-    ## } else  blabla: 
-    
+
+    ## } else  blabla:
+
     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
         stop("Input must inherit from matrix or data.frame.")
-    
+
     ## if((ncol(x) > 2) && !(inherits(x, "matrix"))
     ##     stop(paste0("Genotype fitness input either two-column data frame",
     ##          " or a numeric matrix with > 2 columns."))
@@ -143,7 +143,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
     ##     stop(paste0("It looks like you have a matrix for a single genotype",
     ##                 " of a single gene. For this degenerate cases use",
     ##                 " a data frame specification."))
-    
+
     if(ncol(x) > 2) {
         if(inherits(x, "matrix")) {
             if(!is.numeric(x))
@@ -152,14 +152,14 @@ to_genotFitness_std <- function(x, simplify = TRUE,
             if(!all(unlist(lapply(x, is.numeric))))
                 stop("A genotype fitness matrix/data.frame must be numeric.")
         }
-        
+
         ## We are expecting here a matrix of 0/1 where columns are genes
         ## except for the last column, that is Fitness
         ## Of course, can ONLY work with epistastis, NOT order
         ## return(genot_fitness_to_epistasis(x))
         if(any(duplicated(colnames(x))))
             stop("duplicated column names")
-        
+
         cnfl <- which(colnames(x)[-ncol(x)] == "")
         if(length(cnfl)) {
             freeletter <- setdiff(LETTERS, colnames(x))[1]
@@ -176,7 +176,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
                 x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
             }
         }
-        
+
         if(is.null(colnames(x))) {
             ncx <- (ncol(x) - 1)
             message("No column names: assigning gene names from LETTERS")
@@ -185,7 +185,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
                      " as you see fit.")
             colnames(x) <- c(LETTERS[1:ncx], "Fitness")
         }
-        
+
         if(!all(as.matrix(x[, -ncol(x)]) %in% c(0, 1) ))
             stop("First ncol - 1 entries not in {0, 1}.")
     } else {
@@ -202,7 +202,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
             stop(paste0("genotFitness: first column of data frame is numeric.",
                         " Ambiguous and suggests possible error. If sure,",
                         " enter that column as character"))
-        
+
         omarker <- any(grepl(">", x[, 1], fixed = TRUE))
         emarker <- any(grepl(",", x[, 1], fixed = TRUE))
         nogoodepi <- any(grepl(":", x[, 1], fixed = TRUE))
@@ -262,17 +262,17 @@ to_genotFitness_std <- function(x, simplify = TRUE,
 ## from_genotype_fitness <- function(x) {
 ##     ## Would break with output from allFitnessEffects and
 ##     ## output from allGenotypeAndMut
-    
+
 ##     ## For the very special and weird case of
 ##     ## a matrix but only a single gene so with a 0 and 1
 ##     ## No, this is a silly and meaningless case.
 ##     ## if( ( ncol(x) == 2 ) && (nrow(x) == 1) && (x[1, 1] == 1) ) {
-    
-##     ## } else  blabla: 
-    
+
+##     ## } else  blabla:
+
 ##     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
 ##         stop("Input must inherit from matrix or data.frame.")
-    
+
 ##     ## if((ncol(x) > 2) && !(inherits(x, "matrix"))
 ##     ##     stop(paste0("Genotype fitness input either two-column data frame",
 ##     ##          " or a numeric matrix with > 2 columns."))
@@ -280,7 +280,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
 ##     ##     stop(paste0("It looks like you have a matrix for a single genotype",
 ##     ##                 " of a single gene. For this degenerate cases use",
 ##     ##                 " a data frame specification."))
-    
+
 ##     if(ncol(x) > 2) {
 ##         if(inherits(x, "matrix")) {
 ##             if(!is.numeric(x))
@@ -289,7 +289,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
 ##             if(!all(unlist(lapply(x, is.numeric))))
 ##                 stop("A genotype fitness matrix/data.frame must be numeric.")
 ##         }
-        
+
 ##         ## We are expecting here a matrix of 0/1 where columns are genes
 ##         ## except for the last column, that is Fitness
 ##         ## Of course, can ONLY work with epistastis, NOT order
@@ -304,7 +304,7 @@ to_genotFitness_std <- function(x, simplify = TRUE,
 ##             stop(paste0("genotFitness: first column of data frame is numeric.",
 ##                         " Ambiguous and suggests possible error. If sure,",
 ##                         " enter that column as character"))
-        
+
 ##         omarker <- any(grepl(">", x[, 1], fixed = TRUE))
 ##         emarker <- any(grepl(",", x[, 1], fixed = TRUE))
 ##         nogoodepi <- any(grepl(":", x[, 1], fixed = TRUE))
@@ -356,7 +356,7 @@ genot_fitness_to_epistasis <- function(x) {
     ## you use this is because you say "this is the mapping genotype ->
     ## fitness. Period." so we should not combine other terms (or other
     ## terms that involve these genes)
-    
+
     nr <- nrow(x)
     if(nr < (2^(ncol(x) - 1)))
         message("Number of genotypes less than 2^L.",
@@ -379,7 +379,7 @@ genot_fitness_to_epistasis <- function(x) {
                 "Dividing all fitnesses by fitness of wildtype.")
         f <- f/fwt
     }
-    
+
     if(is.null(colnames(x)) || any(grepl("^$", colnames(x))) ) {
         message("Setting/resetting gene names because one or more are missing.",
                 " If this is not what you want, pass a matrix",
@@ -403,10 +403,10 @@ genot_fitness_to_epistasis <- function(x) {
 
 
 
-allGenotypes_to_matrix <- function(x) { 
+allGenotypes_to_matrix <- function(x) {
     ## Makes no sense to allow passing order: the matrix would have
     ## repeated rows. A > B and B > A both have exactly A and B
-    
+
     ## Take output of evalAllGenotypes or identical data frame and return
     ## a matrix with 0/1 in a column for each gene and a final column of
     ## Fitness
@@ -458,7 +458,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
                            use_log = TRUE,
                            short = TRUE,
                            replace_missing = FALSE) {
-    ## I always use 
+    ## I always use
     ## if(!is.null(x) && is.null(file))
     ##     stop("one of object or file name")
     ## if(is.null(file))
@@ -466,7 +466,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
     fnret <- tempfile()
     if(verbose)
         cat("\n Using input file", fn, " and output file ", fnret, "\n")
-    
+
     if(use_log) {
         logarg <- "-l"
     } else {
@@ -477,7 +477,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
     } else {
         shortarg <- NULL
     }
-    
+
     if(replace_missing) {
         zarg <- "-z"
     } else {
@@ -487,11 +487,11 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
     to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
     ## newer versions of Magellan provide some extra values to standard output
     call_M <- system2(fl_statistics_binary(),
-                      args = paste(fn, shortarg, logarg, zarg, "-o", fnret),
+                      args = paste(shortarg, logarg, zarg, "-o", fnret, fn),
                       stdout = NULL)
     if(short) {
         ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
-        
+
         tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
         ## ## Make names more explicit, but check we have what we think we have
         ## ## New versions of Magellan produce different output apparently of variable length
@@ -520,7 +520,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
         tmp <- readLines(fnret)
     }
     return(tmp)
-} 
+}
 
 
 ## Former version, that always tries to give a vector
@@ -533,7 +533,7 @@ Magellan_stats_former <- function(x, max_num_genotypes = 2000,
                            short = TRUE,
                            fl_statistics = "fl_statistics",
                            replace_missing = FALSE) { # nocov start
-    ## I always use 
+    ## I always use
     ## if(!is.null(x) && is.null(file))
     ##     stop("one of object or file name")
     ## if(is.null(file))
@@ -541,7 +541,7 @@ Magellan_stats_former <- function(x, max_num_genotypes = 2000,
     fnret <- tempfile()
     if(verbose)
         cat("\n Using input file", fn, " and output file ", fnret, "\n")
-    
+
     if(use_log) {
         logarg <- "-l"
     } else {
@@ -552,7 +552,7 @@ Magellan_stats_former <- function(x, max_num_genotypes = 2000,
     } else {
         shortarg <- NULL
     }
-    
+
     if(replace_missing) {
         zarg <- "-z"
     } else {
@@ -566,7 +566,7 @@ Magellan_stats_former <- function(x, max_num_genotypes = 2000,
                       stdout = NULL)
     if(short) {
         ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
-        
+
         tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
         ## Make names more explicit, but check we have what we think we have
         ## New versions of Magellan produce different output apparently of variable length
@@ -611,14 +611,14 @@ Magellan_draw <- function(x, max_num_genotypes = 2000,
     fn_out <- paste0(fn, ".svg")
     if(verbose)
         cat("\n Using input file", fn, " and output file ", fn_out, "\n")
-       
+
     to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
     call_M <- system2(fl_draw, args = paste(fn, args), wait = FALSE)
     call_view <- system2(svg_open, args = fn_out, wait = FALSE,
                          stdout = ifelse(verbose, "", FALSE),
                          stderr = ifelse(verbose, "", FALSE))
-    
-    invisible() 
+
+    invisible()
 } # nocov end
 
 

@@ -30,6 +30,9 @@ get_magellan_binaries <-
     function(names_binaries = c("fl_statistics", "fl_generate", "fl_genchains"))
 {
     rarch <- Sys.getenv('R_ARCH')
+    nn_names_binaries <- names_binaries
+    if(.Platform$OS.type == "windows")
+        names_binaries <- paste0(names_binaries, ".exe")
     if(nzchar(rarch)) {
         rarch <- sub("^/", "", rarch)
         magellan_binaries <-  system.file(package = "OncoSimulR", "exec",
@@ -38,10 +41,10 @@ get_magellan_binaries <-
         magellan_binaries <-  system.file(package = "OncoSimulR", "exec",
                                           names_binaries)
     }
-    names(magellan_binaries) <- names_binaries
+    names(magellan_binaries) <- nn_names_binaries
     return(magellan_binaries)
 }
-        
+
 ## pkg.env <- new.env()
 ## ## The next will not install with error
 ## ## ERROR: hard-coded installation path:
@@ -49,7 +52,7 @@ get_magellan_binaries <-
 ## pkg.env <- c(pkg.env, get_magellan_binaries())
 
 
-    
+
 fl_statistics_binary <- function() get_magellan_binaries("fl_statistics")
 fl_generate_binary <- function() get_magellan_binaries("fl_generate")
 
@@ -117,7 +120,7 @@ rfitness <- function(g, c= 0.5,
             fi <- fl1[, g + 1]
 
             ## For scaling, etc, all that matters, if anything, is the wildtype
-            
+
             ## We could order by doing this
             ## But I am not 100% sure this will always be the same as
             ## generate_matrix_genotypes
@@ -135,7 +138,7 @@ rfitness <- function(g, c= 0.5,
             fi <- fi[oo]
             ## make sure no left overs
             rm(gtstring, gtstring2, oo, fl1, m1)
-            
+
             ## Had we not ordered, do this!!!
             ## Which one is WT?
             ## muts <- rowSums(m1)
@@ -150,7 +153,7 @@ rfitness <- function(g, c= 0.5,
             ## rm(m1)
             ## rm(fl1)
         }
-        
+
         if(!is.null(scale)) {
             fi <- (fi - min(fi))/(max(fi) - min(fi))
             fi <- scale[1] + fi * (scale[2] - scale[1])
@@ -262,7 +265,7 @@ rfitness <- function(g, c= 0.5,
 ##         f_det <- -c * d_reference
 ##         ## f_det <- rowSums(m) * slope/nrow(m) ## this is Greene and Krona
 ##         fi <- f_r + f_det
-        
+
 ##         if(!is.null(scale)) {
 ##             fi <- (fi - min(fi))/(max(fi) - min(fi))
 ##             fi <- scale[1] + fi * (scale[2] - scale[1])
