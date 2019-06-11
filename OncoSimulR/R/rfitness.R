@@ -105,7 +105,7 @@ rfitness <- function(g, c= 0.5,
             ## f_det <- rowSums(m) * slope/nrow(m) ## this is Greene and Krona
             fi <- f_r + f_det
         } else if(model == "NK") {
-            if(K > g) stop("It makes no sense to have K > g")
+            if(K >= g) stop("It makes no sense to have K >= g")
             argsnk <- paste0("-K ", K,
                              ifelse(r, " -r ", " "),
                              g, " 2")
