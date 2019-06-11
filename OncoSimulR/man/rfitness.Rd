@@ -5,7 +5,7 @@
 \title{Generate random fitness.}
 
 \description{ Generate random fitness landscapes under a House of Cards,
-  Rough Mount Fuji, or additive model.  }
+  Rough Mount Fuji, additive model, and Kauffman's NK model.  }
 
 
 \usage{
