@@ -31,7 +31,9 @@ cp OncoSimulR/vignettes/OncoSimulR.bib ../BioConductor-git/OncoSimulR/vignettes/
 cp OncoSimulR/vignettes/gitsetinfo.sty ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitinfo.sty ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitHeadInfo.gin ../BioConductor-git/OncoSimulR/vignettes/.
-## FIXME: remember new tex/png/pdfs for freq-dep-fitness vignette
+cp OncoSimulR/vignettes/hurlbut.png ../BioConductor-git/OncoSimulR/vignettes/.
+
+
 
 
 cp OncoSimulR/src/*.c ../BioConductor-git/OncoSimulR/src/.
