@@ -62,14 +62,26 @@ Magellan_stats(x, max_num_genotypes = 2000,
   
   \item{verbose}{If TRUE provide additional information about names of
     intermediate files.}
-  \item{use_log}{}
+  \item{use_log}{Use log fitness when computing statistics.}
+  \item{short}{Give short output when computing statistics.}
 
+  \item{replace_missing}{From MAGELLAN's \code{fl_statistics}: replace
+  missing fitness values with 0 (otherwise check that all values are
+  specified).}
 }
 
 \value{
 
-  A file is written to disk. You can then plot and/or show summary
+  \code{to_Magellan}: A file is written to disk. You can then plot and/or show summary
   statistics using MAGELLAN.
+
+  \code{Magellan_stats}: MAGELLAN's statistics for fitness
+  landscapes. If you use \code{short = TRUE} a vector of statistics is
+  returned. If \code{short = FALSE}, MAGELLAN returns a file with
+  detailed statistics that cannot be turned into a simple vector of
+  statistics. The returned object uses \code{readLines} and, as a
+  message, you are also shown the path of the file, in case you want to
+  process it yourself.
 }
 
 \note{
@@ -112,6 +124,21 @@ cs <-  data.frame(parent = c(rep("Root", 3), "a", "d", "c"),
                       typeDep = "MN")
 
 to_Magellan(allFitnessEffects(cs), NULL)
+
+## Default, short output
+Magellan_stats(allFitnessEffects(cs))
+
+## Long output; since it is a > 200 lines file,
+## place in an object. Name of output file is given as message
+statslong <- Magellan_stats(allFitnessEffects(cs), short = FALSE)
+
+
+## Default, short output of two NK fitness landscapes
+rnk1 <- rfitness(6, K = 1, model = "NK")
+Magellan_stats(rnk1)
+
+rnk2 <- rfitness(6, K = 4, model = "NK")
+Magellan_stats(rnk2)
 
 }
 

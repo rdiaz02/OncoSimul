@@ -523,7 +523,8 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
 } 
 
 
-
+## Former version, that always tries to give a vector
+## and that uses an external executable.
 ## Magellan_stats and Magellan_draw cannot be tested
 ## routinely, as they depend on external software
 Magellan_stats_former <- function(x, max_num_genotypes = 2000,
