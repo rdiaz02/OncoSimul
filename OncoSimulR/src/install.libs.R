@@ -5,7 +5,8 @@
 ## We do not compile fl_draw or any of the *cgi
 
 
-binaries <- c("fl_statistics", "fl_generate", "fl_genchains")
+## binaries <- c("fl_statistics", "fl_generate", "fl_genchains")
+binaries <- c("fl_statistics", "fl_generate")
 oncosimul_lib <- "OncoSimulR.so"
 
 if (WINDOWS) {
