@@ -10,4 +10,4 @@ R.exe CMD check --force-multiarch --no-vignettes --timings OncoSimulR_2.zzz.tar.
 
 R.exe CMD INSTALL --merge-multiarch --build OncoSimulR_2.zz.tar.gz
 
-R.exe CMD INSTALL OncoSimulR_2.zz.tar.gz
+R.exe CMD INSTALL OncoSimulR_2.zz.zip
