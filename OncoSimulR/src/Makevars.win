@@ -17,6 +17,65 @@ MYCXXFLAGS = -Wa,-mbig-obj -O3
 PKG_LIBS = -Wa,-mbig-obj -O3
 ## PKG_LIBS = -O3
 
+#####################  MAGELLAN   ####################
+
+all: liblandscape.a fl_statistics fl_generate $(SHLIB)
+## all: liblandscape.a fl_statistics fl_generate fl_genchains $(SHLIB)
+
+
+MAGELLAN_SRC = FitnessLandscape/gamma.c\
+        FitnessLandscape/landscape.c \
+        FitnessLandscape/random.c\
+        FitnessLandscape/sort.c\
+        FitnessLandscape/chain.c\
+        FitnessLandscape/input.c\
+        FitnessLandscape/genotypes.c\
+        FitnessLandscape/ordered_pairs.c\
+        FitnessLandscape/calculus.c\
+        FitnessLandscape/vector.c\
+        FitnessLandscape/generalized_chain.c\
+        FitnessLandscape/LinearAlgebra.c\
+        FitnessLandscape/summary_statistics.c\
+        FitnessLandscape/epistasis_type.c\
+        FitnessLandscape/decomposition.c\
+        FitnessLandscape/models.c
+#        FitnessLandscape/common_drawings.c\ ## I do not use it and gives a warning
+MAGELLAN_OBJECTS = $(MAGELLAN_SRC:.c=.o)
+
+liblandscape.a: $(MAGELLAN_OBJECTS)
+	$(AR) -r $@ $+ ;
+	$(RANLIB) $@;
+
+
+
+MAGELLAN_LIBS = liblandscape.a
+MAGELLAN_LIBS_DIR = -L.
+MAGELLAN_LFLAGS = -llandscape
+## MAGELLAN_INCLUDE_DIR = -I. -I/FitnessLandscape/.
+MAGELLAN_INCLUDE_DIR = -I/FitnessLandscape/.
+MAGELLAN_ALLCFLAGS= -O -Wall
+
+fl_statistics: FitnessLandscape/main_fl_statistics.c $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+# # Do we really need this?
+# fl_genchains: FitnessLandscape/main_generalizedchains_test.c $(MAGELLAN_LIBS)
+# 	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm #-g
+
+
+#################### /MAGELLAN ##########################
+
+
+
+
+#########################################################
+#########################################################
+#########################################################
+
+
 
 
 ####### OncoSimulR and ExprTk, Rtools35 (current as of 2019-05-24)
@@ -214,7 +273,6 @@ PKG_LIBS = -Wa,-mbig-obj -O3
 
 #####    Faster, shorter
 ##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data --no-build-vignettes OncoSimulR
-## this is failing now, as it does not find git
 ##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build --no-build-vignettes --no-manual OncoSimulR_xyz0.tar.gz
 
 
