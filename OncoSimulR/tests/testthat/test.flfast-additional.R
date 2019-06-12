@@ -8,7 +8,7 @@ test_that("Issue warnings and messages", {
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df1),
                    "No WT genotype. Setting its fitness to 1.", fixed = TRUE)
-    
+
     df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df2),
                    "First column of genotype fitness is a factor.",
@@ -18,8 +18,8 @@ test_that("Issue warnings and messages", {
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::to_genotFitness_std(df1),
                    "No WT genotype. Setting its fitness to 1.", fixed = TRUE)
-    
-    
+
+
     df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::to_genotFitness_std(df2),
                    "First column of genotype fitness is a factor.",
@@ -30,7 +30,7 @@ test_that("Equality of fitness including allFitnessEffects", {
 
     df3 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(1, 2, 0),
                       stringsAsFactors = FALSE)
-    
+
     m3 <- rbind(c(0, 0, 0, 1), c(1, 0, 0, 2.0))
     colnames(m3) <- c("A", "B", "C", "Fitness")
     m4 <- rbind(c(0, 0, 0, 1), c(1, 0, 0, 2.0), c(0, 1, 1, 0))
@@ -42,21 +42,21 @@ test_that("Equality of fitness including allFitnessEffects", {
     df3 <- data.frame(Genotype = c("WT", "A", "B, C"),
                       Fitness = c(1.3, 2, 0),
                       stringsAsFactors = FALSE)
-    
+
     m3 <- rbind(c(0, 0, 0, 1.3), c(1, 0, 0, 2.0))
     colnames(m3) <- c("A", "B", "C", "Fitness")
     m3[, "Fitness"] <- m3[, "Fitness"]/1.3
-    
+
     m4 <- rbind(c(0, 0, 0, 1.3), c(1, 0, 0, 2.0), c(0, 1, 1, 0))
     colnames(m4) <- c("A", "B", "C", "Fitness")
     m4[, "Fitness"] <- m4[, "Fitness"]/1.3
 
-    
+
     expect_equal(OncoSimulR:::to_genotFitness_std(df3), m3)
     expect_equal(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
 
 
-    
+
     for(i in 1:10) {
         rxx <- rfitness(7)
         expect_equal(
@@ -141,7 +141,7 @@ test_that("rt and fl specifications are the same", {
 
     ## This subsumes taking an rT, converting to fitness landscape, and
     ## verifying we get same fitnesses
-    
+
     ## n: number of genes
     dag_fitness <- function(n) {
     s1min <- 0.1
@@ -153,12 +153,12 @@ test_that("rt and fl specifications are the same", {
     ## nparents = sample(2:5, 1),
     ##                h = sample(2:5, 1))
 
-    ## Make sure we get variation 
+    ## Make sure we get variation
     uc <- unique(rt$child)
     s1v <- runif(uc, s1min, s1max)
     names(s1v) <- uc
     rt$s <- s1v[rt$child]
-    
+
     rtf <- evalAllGenotypes(allFitnessEffects(rt), addwt = TRUE)
     fl <- OncoSimulR:::allGenotypes_to_matrix(rtf)
     fl[fl[, "Fitness"] == 0, "Fitness"] <- 1e-9
@@ -167,7 +167,7 @@ test_that("rt and fl specifications are the same", {
 
 
 
-    
+
     tests <- 10
     ng <- 7
     for(i in 1:tests) {
@@ -177,9 +177,17 @@ test_that("rt and fl specifications are the same", {
         s1 <- oncoSimulIndiv(allFitnessEffects(rtfl$rt))
         set.seed(is)
         s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rtfl$fl))
-        expect_identical(s1$pops.by.time, s2$pops.by.time)
+        expect_equal(s1$pops.by.time, s2$pops.by.time)
         print(summary(s1))
-        expect_identical(s1[1:length(s1)], s2[1:length(s2)])
+        ##  expect_identical(s1[1:length(s1)], s2[1:length(s2)])
+        ## in WIndoze, i386, can fail identical test by factors order e-11
+        if( (.Platform$OS.type == "windows") &&
+            (Sys.getenv('R_ARCH') == "/i386")) {
+            expect_equal(s1[1:length(s1)], s2[1:length(s2)],
+                         tolerance =  10 * .Machine$double.eps^0.5)
+        } else {
+            expect_identical(s1[1:length(s1)], s2[1:length(s2)])
+        }
         ## they differ in the call attribute, of course
         ## adding a package for this is an overkill
         ## expect_true(compare::compare(s1, s2, ignoreAttrs = TRUE)$result)
