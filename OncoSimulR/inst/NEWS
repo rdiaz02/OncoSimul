@@ -1,3 +1,6 @@
+Changes in version 2.15.996 (2019-06-12):
+	- Numerical issues in one test in i386 (Windows)
+	
 Changes in version 2.15.995 (2019-06-12):
 	- Added MAGELLAN's sources and functionality from MAGELLAN.
 
