@@ -276,6 +276,23 @@ https://github.com/marchtaylor/sinkr and
 http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html).
 
 
+The code under `src/FitnessLandascape` is from [MAGELLAN, Maps of
+Genetical
+Landscapes](http://wwwabi.snv.jussieu.fr/public/magellan/Magellan.help.html).
+The authors are S. Brouillet, G. Achaz, S. Matuszewski, H. Annoni, and
+L. Ferreti. I downloaded the sources on 2019-06-05 from
+http://wwwabi.snv.jussieu.fr/public/magellan/latest.tgz. The code is under
+the GPLv3. MAGELLAN is "an integrated tool to visualize and analyze
+fitness landscapes of small dimension (up to 7-8 loci)". In OncoSimulR we
+use only a very limited subset of the functionality of MAGELLAN (mostly to
+generate different types of random fitness landscapes and to compute
+statistics of epistasis); the `Makevars` file we use only compiles two of
+the executables (`fl_statistics` and `fl_generate`) ---the directory
+`src/FitnessLandascape` contains, however, the complete sources. Note also
+that the plots of fitness landscapes used in OncoSimulR are actually
+blatantly copied in looks from MAGELLAN's plots. 
+
+
 The code under `OncoSimulR/src/exprtk.h` is copyright Arash Partow, and is
 licensed under "The MIT License (MIT)"
 (http://www.opensource.org/licenses/MIT) and is compatible with GPL

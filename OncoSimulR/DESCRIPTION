@@ -1,8 +1,8 @@
 Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
-Version: 2.15.994
-Date: 2019-05-25
+Version: 2.15.995
+Date: 2019-06-12
 Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
  	     email = "rdiaz02@gmail.com"),
 	      person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
@@ -26,7 +26,7 @@ Description: Functions for forward population genetic simulation in
     single or multiple realizations of the simulations, including
     single-cell sampling; plotting the parent-child relationships of the
     clones; generating random fitness landscapes (Rough Mount Fuji, House
-    of Cards, and additive models) and plotting them.
+    of Cards, and additive models, and NK) and plotting them.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
