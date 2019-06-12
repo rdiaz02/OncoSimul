@@ -203,7 +203,8 @@ statistics of epistasis); the `Makevars` file we use only compiles two of
 the executables (`fl_statistics` and `fl_generate`) ---the directory
 `src/FitnessLandascape` contains, however, the complete sources. Note also
 that the plots of fitness landscapes used in OncoSimulR are actually
-inspired by MAGELLAN. 
+blatantly copied in looks from MAGELLAN's plots. 
+
 
 
 
