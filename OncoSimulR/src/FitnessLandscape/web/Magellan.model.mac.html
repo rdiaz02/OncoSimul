@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+    <title>MAGELLAN</title>
+    <meta content="landscape manipulation" name="keywords" />
+		<style type="text/css" media="all">
+   @import "magellan.css";
+	 
+   </style>
+
+
+<script type="text/javascript" src="js/landmodel_js.js">
+
+</script>
+  </head> 
+  <body>
+
+ <div id="haut">
+	<table>
+	<tr>
+	<td>
+	<!--	<A href="Magellan.main.html"> -->
+<A href="Magellan.main.mac.html"> 
+	<h1>MAGELLAN</h1>
+	<h2>Maps of Genetical Landscapes</h2>
+	</A>
+	</td><td align="right"></td></tr>
+	</table>
+</div >
+	
+<UL id="menu">
+<LI> <h3><A href="#"  onclick ="cachedecache('menu_land');myhide('view_land')">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Models&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></h3>
+	<div id="menu_land" class="decache">
+		<form method="post" name="land_form" action="http://localhost:8888/cgi-bin/fl_webmodel.cgi" enctype="multipart/form-data">
+		<!-- <form method="post" name="land_form" action="http://wwwabi.snv.jussieu.fr/cgi-bin/fl_webmodel.cgi" enctype="multipart/form-data">-->
+
+		<p>
+		Choose a model :  
+		<select id ="LAND_MODEL" name="LAND_MODEL" onchange="affiche_suite()">
+
+		<option value="LAND_UniRandom">House of cards</option>
+		<option value="LAND_Multiplicative" selected>Multiplicative</option>
+		<option value="LAND_Kauffman_Nk">Kauffman Nk</option>
+		<option value="LAND_RMF">RMF</option>
+		<option value="LAND_Ising">Ising</option>
+		<option value="LAND_EggBox">EggBox</option>
+		<option value="LAND_Optimum">Optimum</option>
+		<option value="LAND_Full_Models">Full_Model</option>
+		</select><p>
+		<p id="mixedland">
+
+		
+		</p>
+		
+		
+		
+		
+		<p id="mult_same"  class="decache"> Same value for fitness <input type= "checkbox" id="LAND_MULTSAME" name="LAND_MULTSAME" ></p>
+		<p id="rmf_wei" class="cache">Weight:<input type= "text" id="LAND_RMFWEIGHT" name="LAND_RMFWEIGHT" size="3" value ="-1"></p>
+		<P>Number of loci: <input type= "text" id="LAND_NBLOCI" name="LAND_NBLOCI" size="1" onchange=CreateTable()> (hit &lt;enter&gt; to valid) </p>
+		<p id="tablespace"></p>
+
+	
+ 	 </div>
+	 </li>
+ 	<li><h3><A href="#"  onclick ="myhide('menu_land');cachedecache('view_land')">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Visual&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></h3>
+
+
+	 <div id="view_land" class="cache">
+		<br><p>
+		Reference on left: <input type="text" name="LAND_REFERENCE" size="2" value="0" />	
+		<p>Compact view:<input type="checkbox" name="LAND_COMPACT" /> 
+		<p>Flat view:<input type="checkbox" name="LAND_FLAT" /> 
+		<HR>
+		Scale:<input type="text" name="LAND_SCALE_W" size="2" value="80" />%<p>
+		Heigth Scale:<input type="text" name="LAND_SCALE_H" size="2" value="100" />%<p>
+		Log Scale:<input type="checkbox" name="LAND_LOG" readonly checked><p><p>
+  		<HR>
+  		<p><center><b>Neutral mutations</center></b>
+		<p>Ratio:<input type="text" name="LAND_THRESHOLD" size="3" value="1.0"  /> <!-- assimmilated to neutral under the F.R.-->
+		Display :<input type="checkbox" name="LAND_OPTCLEAN" checked/> 
+		<P></P>
+		<HR>
+		<input type="hidden" name="LAND_WINDOW_WIDTHSIZE" id="LAND_WINDOW_WIDTHSIZE" value="" />
+		<input type="hidden" name="LAND_WINDOW_HEIGHTHSIZE" id="LAND_WINDOW_HEIGHTHSIZE" value="" />
+		<input type="hidden" name="LAND_PREVIOUS_FILE" id="LAND_PREVIOUS_FILE" value="" />
+
+ <!--	<input type="Button" value= "New" onClick="location.href='http://wwwabi.snv.jussieu.fr/public/Magellan/Magellan.model.html';"  /> -->
+		<input type="Button" value= "New" onClick="location.href='http://localhost:8888/land/Magellan.model.mac.html';"  />
+		<input type="Button" value= "Clear" onClick="resetValues(0);" />	
+	
+
+		<input type="Button" value= "Draw" onClick=checkform(); />	
+	
+		</form>
+	</div>
+</li>
+<LI><h3><A href="Magellan.help.mac.html" target="_blank">Help</a> </h3></LI>
+
+
+</UL>
+<br><br><br><br>
+
+	
+	
+	
+</body>
+<script type="text/javascript" >
+
+var evt = document.createEvent("HTMLEvents");
+    evt.initEvent("change", false, true);
+document.getElementById('LAND_MODEL').dispatchEvent(evt);
+</script>
+
+</html>
