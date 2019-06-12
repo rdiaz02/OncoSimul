@@ -132,7 +132,7 @@ dependencies; see above or go to http://www.bioconductor.org/packages/devel/bioc
 
 
 Download the [OncoSimulR_2.15.xyz.zip file we
- provide](https://rdiaz02.github.io/OncoSimul/OncoSimulR_2.15.994.zip); for example, from your
+ provide](https://rdiaz02.github.io/OncoSimul/OncoSimulR_2.15.996.zip); for example, from your
  web browser, place the mouse on the link, and right click to select "Save
  link as", or similar incantation.
  
