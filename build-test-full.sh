@@ -59,7 +59,9 @@ rm ./OncoSimulR/vignettes/*.aux
 rm ./OncoSimulR/vignettes/*.toc
 rm ./OncoSimulR/vignettes/OncoSimulR.tex
 rm ./OncoSimulR/vignettes/OncoSimulR.html
+cp ./OncoSimulR/vignettes/hurlbut.pdf ./OncoSimulR/vignettes/hurlbutpdft
 rm ./OncoSimulR/vignettes/*.pdf
+mv ./OncoSimulR/vignettes/hurlbutpdft ./OncoSimulR/vignettes/hurlbut.pdf
 rm ./OncoSimulR/vignettes/*.log
 rm ./OncoSimulR/vignettes/*.out
 rm ./OncoSimulR/vignettes/*.blg
