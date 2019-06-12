@@ -1,0 +1,13 @@
+## Windoze stuff
+## This was already somewhere else. Don't remember where
+## This is with the default Rtools35. Things are different
+## with Rtools40. See Makevars.win
+
+
+R.exe CMD build --keep-empty-dirs --no-resave-data OncoSimulR
+
+R.exe CMD check --force-multiarch --no-vignettes --timings OncoSimulR_2.zzz.tar.gz
+
+R.exe CMD INSTALL --merge-multiarch --build OncoSimulR_2.zz.tar.gz
+
+R.exe CMD INSTALL OncoSimulR_2.zz.zip
