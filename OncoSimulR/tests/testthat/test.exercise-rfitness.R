@@ -57,6 +57,6 @@ test_that("Error if wrong arguments", {
                  fixed = TRUE)
 })
 
-cat(paste("\n Starting exercise-rfitness at", date(), "\n"))
+cat(paste("\n Ending exercise-rfitness at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

@@ -543,9 +543,83 @@ allGenotypes_to_matrix <- function(x,
 }
 
 
+
+
+Magellan_stats <- function(x, max_num_genotypes = 2000,
+                           verbose = FALSE,
+                           use_log = TRUE,
+                           short = TRUE,
+                           replace_missing = FALSE) {
+    ## I always use
+    ## if(!is.null(x) && is.null(file))
+    ##     stop("one of object or file name")
+    ## if(is.null(file))
+    fn <- tempfile()
+    fnret <- tempfile()
+    if(verbose)
+        cat("\n Using input file", fn, " and output file ", fnret, "\n")
+
+    if(use_log) {
+        logarg <- "-l"
+    } else {
+        logarg <- NULL
+    }
+    if(short) {
+        shortarg <- "-s"
+    } else {
+        shortarg <- NULL
+    }
+
+    if(replace_missing) {
+        zarg <- "-z"
+    } else {
+        zarg <- NULL
+    }
+
+    to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
+    ## newer versions of Magellan provide some extra values to standard output
+    call_M <- system2(fl_statistics_binary(),
+                      args = paste(shortarg, logarg, zarg, "-o", fnret, fn),
+                      stdout = NULL)
+    if(short) {
+        ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
+
+        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
+        ## ## Make names more explicit, but check we have what we think we have
+        ## ## New versions of Magellan produce different output apparently of variable length
+        ## stopifnot(length(tmp) >= 23) ## 23) ## variable length
+        ## stopifnot(identical(names(tmp)[1:13], ## only some
+        ##                     c("ngeno", "npeaks", "nsinks", "gamma", "gamma.", "r.s",
+        ##                       "nchains", "nsteps", "nori", "depth", "magn", "sign",
+        ##                       "rsign"))) ## , "w.1.", "w.2.", "w.3..", "mode_w", "s.1.",
+        ## ## "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
+        ## if(length(tmp) >= 24) ## the new version
+        ##     stopifnot(identical(names(tmp)[c(20, 24)],
+        ##                         c("steps_m", "mProbOpt_0")))
+        ## ## steps_m: the mean number of steps over the entire landscape to
+        ## ## reach the global optimum
+        ## ## mProbOpt_0: The mean probability to
+        ## ## reach that optimum (again averaged over the entire landscape).
+        ## ## but if there are multiple optima, there are many of these
+        ## names(tmp)[1:13] <- c("n_genotypes", "n_peaks", "n_sinks", "gamma", "gamma_star",
+        ##                 "r/s","n_chains", "n_steps", "n_origins", "max_depth",
+        ##                 "epist_magn", "epist_sign", "epist_rsign")## ,
+        ##                 ## "walsh_coef_1", "walsh_coef_2", "walsh_coef_3", "mode_walsh",
+        ##                 ## "synerg_coef_1", "synerg_coef_2", "synerg_coef_3", "mode_synerg",
+        ## ## "std_dev_pairs", "var_outdegree")
+    } else {
+        message("Output file: ", fnret)
+        tmp <- readLines(fnret)
+    }
+    return(tmp)
+}
+
+
+## Former version, that always tries to give a vector
+## and that uses an external executable.
 ## Magellan_stats and Magellan_draw cannot be tested
 ## routinely, as they depend on external software
-Magellan_stats <- function(x, max_num_genotypes = 2000,
+Magellan_stats_former <- function(x, max_num_genotypes = 2000,
                            verbose = FALSE,
                            use_log = TRUE,
                            short = TRUE,
