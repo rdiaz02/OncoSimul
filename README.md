@@ -293,8 +293,10 @@ that the plots of fitness landscapes used in OncoSimulR are actually
 blatantly copied in looks from MAGELLAN's plots. 
 
 
-The code under `OncoSimulR/src/exprtk.h` is copyright Arash Partow, and is
-licensed under "The MIT License (MIT)"
+The code under `OncoSimulR/src/exprtk.h` is from [The C++ Mathematical
+Expression Toolkit Library
+(ExprTk)](http://www.partow.net/programming/exprtk/index.html). This code
+is copyright Arash Partow, and is licensed under "The MIT License (MIT)"
 (http://www.opensource.org/licenses/MIT) and is compatible with GPL
 (http://directory.fsf.org/wiki/License:Expat). The file was originally
 downloaded from http://www.partow.net/programming/exprtk/index.html on
