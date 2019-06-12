@@ -44,7 +44,13 @@ r_github_packages:
 #######  x11
 ## try to use bioc devel with an R release
 install:
-  - Rscript -e 'source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite("BiocInstaller");library(BiocInstaller);try(useDevel());install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "ggplot2", "ggrepel", "pander",  "knitr"));biocLite(c("BiocStyle", "nem"));devtools::install_deps("OncoSimulR");devtools::install_github("r-lib/covr")'
+  - Rscript -e 'install.packages("BiocManager"); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "ggplot2", "ggrepel", "pander",  "knitr"));BiocManager::install(c("BiocStyle", "nem", version = "devel"));devtools::install_deps("OncoSimulR");devtools::install_github("r-lib/covr")'
+
+  ## - Rscript -e 'source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite("BiocInstaller");library(BiocInstaller);try(useDevel());install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "ggplot2", "ggrepel", "pander",  "knitr"));biocLite(c("BiocStyle", "nem"));devtools::install_deps("OncoSimulR");devtools::install_github("r-lib/covr")'
+
+
+
+
 
 #######  x22
 ## install:
