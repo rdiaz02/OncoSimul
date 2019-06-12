@@ -265,11 +265,17 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 ## Git is at C:\Program Files
 ## Add them to the path
 ## export PATH=$PATH:/c/Pandoc:/c/Program\ Files/git/bin
-
+## ##now, pdflatex
+## export PATH=$PATH:/c/Users/ramon/AppData/Roaming/TinyTeX/bin/win32
 
 #####    Full, BioC-like
 ##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data  OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD check --force-multiarch --no-vignettes --timings OncoSimulR_2.zzz.tar.gz
 ##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build OncoSimulR_xyz0.tar.gz
+
+## this next will not work with Rtools40, of course
+##  /c/R/R-testing/bin/x64/R CMD INSTALL OncoSimulR_xyz0.zip
+
 
 #####    Faster, shorter
 ##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data --no-build-vignettes OncoSimulR
