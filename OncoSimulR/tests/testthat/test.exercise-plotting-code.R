@@ -146,8 +146,7 @@ test_that("only recognized options", {
 })
 
 
-
-test_that("stacked, stream, genotypes and some colors", {
+test_that("stacked, stream, fish, genotypes and some colors", {
     data(examplesFitnessEffects)
     ## This is a quick test. We do not want to spend too much
     ## generating the data, but we also need at least four data points for the
@@ -197,6 +196,21 @@ test_that("stacked, stream, genotypes and some colors", {
     plot(tmp, type = "stacked", show = "genotypes", col = rainbow(9))
     plot(tmp, type = "stream", show = "genotypes", col = rainbow(3))
     plot(tmp, type = "line", show = "genotypes", col = rainbow(20))
+    
+    plot(tmp, type = "fish", add_legend = TRUE, ylab = "Frequency")
+    plot(tmp, type = "fish", thinData = TRUE, thinData.keep = 2.0, 
+         colour_by = "Identity",
+         pop_plot = FALSE,
+         fish_cutoff = 0.1,
+         xlab = "XXX", ylab = "YYYY", add_legend = TRUE, 
+         fish_wild_type_legend = "wt")
+    
+    plot(tmp, type = "fish", thinData = TRUE, thinData.keep = 2.0, 
+         colour_by = "Identity",
+         pop_plot = FALSE,
+         fish_cutoff = 0.1,
+         xlab = "Time", ylab = "Frequency", 
+         add_legend = TRUE, fish_wild_type_legend = "WildType")
 })
 
 
@@ -335,6 +349,9 @@ test_that("oncosimul v.1 objects and genotype plotting", {
     plot(p1, type = "stacked", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
     plot(p1, type = "stream", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
     plot(p1, type = "line", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
+    expect_error(plot(p1, type = "fish", show = "genotypes", 
+                      thinData = TRUE, thinData.keep = 0.5),
+                 "Input must be an oncosimul2 object", fixed = TRUE)
 })
 
 

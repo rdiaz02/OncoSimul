@@ -16,7 +16,7 @@
   and clones with different number of drivers are plotted in different
   colours. Plots can alternatively display genotypes instead of drivers.
 
-  Plots available are line plots, stacked area, and stream plots.
+  Plots available are line plots, stacked area, stream, and fish plots.
   
 }
 
@@ -53,7 +53,10 @@
                            srange = c(0.4, 1),
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
-                           legend.ncols = "auto", ...)
+                           legend.ncols = "auto", 
+                           fish_wild_type_legend = "wt",
+                           fish_cutoff = 0.0,
+                           ...)
 
 \method{plot}{oncosimulpop}(x,
                               ask = TRUE,
@@ -106,10 +109,11 @@
     will reflect the number of drivers. If "genotypes" you will be shown
     genotypes. You probably want to limit "genotypes" to those cases
     where only a relatively small number of genotypes exist (or the plot
-    will be an unmanageable mess). The default is "drivers".
+    will be an unmanageable mess). The default is "drivers". This is not 
+    needed for fish plots as it this works with genotype mutations names.
   }
 
-  \item{type}{One of "line", "stacked", "stream".
+  \item{type}{One of "line", "stacked", "stream", "fish".
 
     If "line", you are shown lines for each genotype or clone. This
     means that to get an idea of the total population size you need to
@@ -119,6 +123,11 @@
     If "stacked" a stacked area plot. If "stream" a stream plot. Since
   these stack areas, you immediately get the total population. But that
   also means you cannot use \code{log}.
+
+    If "fish" it represents the evolutionary dynamics as stacked area 
+  plots that combine information about frequency dynamics and phylogeny
+  of the different genotypes and their set of mutations. Fish plots 
+  require ggMuller library.
 
     The default is to use "line" for \code{show = "drivers"} and
     "stacked" for \code{show = "genotypes"}.
@@ -180,10 +189,11 @@
   }
   \item{xlab}{
     Same as \code{xlab} in \code{\link{plot.default}}.
-    
+    When \code{type = "fish"} it should be changed to "Generation".
   }
   \item{ylab}{
-    Same as \code{ylab} in \code{\link{plot.default}}.
+    Same as \code{ylab} in \code{\link{plot.default}}. 
+    When \code{type = "fish"} it should be changed to "Genotype frequency"
     
   }
   \item{plotClones}{
@@ -306,7 +316,13 @@
   entries, and two for more than six.
 }
 
+\item{fish_wild_type_legend}{Naming of the wild type genotype. Default
+  set to \code{"wt"}.
+}
 
+\item{fish_cutoff}{Frequency cutoff option to exclude low abundant
+genotypes. Default is set to \code{0.0}.
+}
  
   \item{\dots}{
     Other arguments passed to \code{plots}. For instance, \code{main}.
@@ -391,7 +407,14 @@ plot(e1, show = "genotypes", col = rainbow(8))
 ## and actually I want a line plot
 plot(e1, show = "genotypes", type = "line")
 
+## A fish plot with the frequency of genotypes over tipe
+plot(e1, type = "fish", add_legend = TRUE, ylab = "Relative frequency")
 
+## Another fish plot with a different palette.
+## It's necessary to sum one for take into account the wild type genotype
+plot(e1, type = "fish", 
+      palette = rainbow(length(e1$other$LOD_DF$child) + 1),
+      add_legend = TRUE, ylab = "Relative frequency")
 }
 
 
