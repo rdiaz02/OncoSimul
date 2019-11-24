@@ -25,6 +25,10 @@ to_Magellan <- function(x, file,
                         max_num_genotypes = 2000) {
     ## Go directly if you have, as entry, an object from
     ## rfitness!! to_Fitness_Matrix can be very slow.
+    ## But often, when we use allFitnessEffects, we
+    ## obtain the fitness landscape as genotype_fitness_matrix
+    ## FIXME: we could use that fact here.
+    ## or maybe in to_Fitness_Matrix
     if(is.null(file)) {
         file <- tempfile()
         cat("\n Using file ", file, "\n")
@@ -118,7 +122,8 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
 ## Based on from_genotype_fitness
 ## but if we are passed a fitness landscapes as produced by
-## rfitness, do nothing
+## rfitness, do nothing. Well, it actually does something.
+
 
 to_genotFitness_std <- function(x, simplify = TRUE,
                                 min_filter_fitness = 1e-9,
@@ -247,11 +252,19 @@ to_genotFitness_std <- function(x, simplify = TRUE,
     }
     if(any(is.na(x)))
         stop("NAs in fitness matrix")
+    ## Make sure correct class
+    if(is.data.frame(x)) x <- as.matrix(x)
+    stopifnot(inherits(x, "matrix"))
+    ## if(simplify) {
+    ##     return(x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE])
+    ## } else {
+    ##     return(x)
+    ## }
     if(simplify) {
-        return(x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE])
-    } else {
-        return(x)
+        x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]
     }
+    class(x) <- c("matrix", "genotype_fitness_matrix")
+    return(x)
 }
 
 ## Deprecated after flfast
@@ -492,7 +505,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
     if(short) {
         ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
 
-        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
+        tmp <- unlist(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
         ## ## Make names more explicit, but check we have what we think we have
         ## ## New versions of Magellan produce different output apparently of variable length
         ## stopifnot(length(tmp) >= 23) ## 23) ## variable length

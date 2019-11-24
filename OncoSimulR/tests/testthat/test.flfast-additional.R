@@ -35,8 +35,9 @@ test_that("Equality of fitness including allFitnessEffects", {
     colnames(m3) <- c("A", "B", "C", "Fitness")
     m4 <- rbind(c(0, 0, 0, 1), c(1, 0, 0, 2.0), c(0, 1, 1, 0))
     colnames(m4) <- c("A", "B", "C", "Fitness")
-    expect_equal(OncoSimulR:::to_genotFitness_std(df3), m3)
-    expect_equal(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
+    ## yes, m3 and m3 missing the attributes
+    expect_equivalent(OncoSimulR:::to_genotFitness_std(df3), m3)
+    expect_equivalent(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
 
     ## now, scale by fitness of WT
     df3 <- data.frame(Genotype = c("WT", "A", "B, C"),
@@ -52,8 +53,8 @@ test_that("Equality of fitness including allFitnessEffects", {
     m4[, "Fitness"] <- m4[, "Fitness"]/1.3
 
     
-    expect_equal(OncoSimulR:::to_genotFitness_std(df3), m3)
-    expect_equal(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
+    expect_equivalent(OncoSimulR:::to_genotFitness_std(df3), m3)
+    expect_equivalent(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
 
 
     

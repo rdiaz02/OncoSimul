@@ -181,11 +181,25 @@ rfitness <- function(g, c= 0.5,
                             "not include 1")
             }
         }
-        if(truncate_at_0) {
-            fi[fi <= 0] <- 1e-9
-        }
         if(log) {
-            fi <- log(fi/fi[1]) + 1
+            ## If you want logs, you certainly do not want
+            ## the log of a negative number
+            fi[fi < 0] <- 0
+            if(wt_is_1 == "no") {
+                fi <- log(fi)
+            } else {
+                ## by decree, fitness of wt is 1. So shift everything
+                fi <- log(fi) + 1
+            }
+            ## former expression, but it was more confusing
+            ## fi <- log(fi/fi[1]) + 1
+            
+        }
+        if(truncate_at_0) {
+            ## yes, truncate but add noise to prevent identical
+            fi[fi <= 0] <- runif(sum(fi <= 0),
+                                 min = 1e-10,
+                                 max = 1e-9)
         }
         m <- cbind(m, Fitness = fi)
         if(!is_null_na(min_accessible_genotypes)) {

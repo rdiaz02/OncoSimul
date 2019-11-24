@@ -76,10 +76,14 @@ mean \code{mu} and standard deviation \code{sd}).}
   option can easily lead to landscapes with no accessible genotypes
   (even if you also use \code{scale}).
 
-  If "none", the fitness of the wildtype is not touched.  }
+  If "no", the fitness of the wildtype is not modified.  }
 
 
-\item{log}{If TRUE, log-transform fitness.}
+\item{log}{If TRUE, log-transform fitness. Actually, there are two
+  cases: if \code{wt_is_1 = "no"} we simply log the fitness values;
+  otherwise, we log the fitness values and add a 1, thus shifting all
+  fitness values, because by decree the fitness (birth rate) of the
+  wildtype must be 1.}
 
 \item{min_accessible_genotypes}{If not NULL, the minimum number of
   accessible genotypes in the fitness landscape. A genotype is
@@ -110,10 +114,12 @@ mean \code{mu} and standard deviation \code{sd}).}
   negative value for \code{accessible_th}.  }
 
 \item{truncate_at_0}{If TRUE (the default) any fitness <= 0 is
-  substituted by a small positive constant (1e-9). Why? Because
-  MAGELLAN and some plotting routines can have trouble (specially if you
-  log) with values <=0. Or we might have trouble if we want to log the
-  fitness.}
+  substituted by a small positive constant (a random uniform number
+  between 1e-10 and 1e-9). Why? Because MAGELLAN and some plotting
+  routines can have trouble (specially if you log) with values <=0. Or
+  we might have trouble if we want to log the fitness. This is done
+  after possibly taking logs. Noise is added to prevent creating several
+  identical minimal fitness values.}
 
 \item{K}{K for NK model; K is the number of loci with which each locus
   interacts, and the larger the K the larger the ruggedness of the
