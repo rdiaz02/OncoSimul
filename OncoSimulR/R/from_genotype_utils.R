@@ -468,7 +468,7 @@ allGenotypes_to_matrix <- function(x) {
 
 Magellan_stats <- function(x, max_num_genotypes = 2000,
                            verbose = FALSE,
-                           use_log = TRUE,
+                           use_log = FALSE,
                            short = TRUE,
                            replace_missing = FALSE) {
     ## I always use
