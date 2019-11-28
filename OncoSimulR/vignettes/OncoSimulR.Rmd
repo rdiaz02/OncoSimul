@@ -6263,14 +6263,16 @@ We could alternatively have specified fitness either directly
 specifying the fitness of each genotype or specifying epistatic
 effects. Let us use the second approach:
 
-```{r}
+%% this was wrong
+%% u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
 
-u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
+```{r}
+u <- 0.1; i <- -0.05; vi <- (1.2/0.95) - 1; ui <- uv <- -Inf
 od2 <- allFitnessEffects(
     epistasis = c("u" = u,  "u:i" = ui,
                   "u:v" = uv, "i" = i,
                   "v:-i" = -Inf, "v:i" = vi))
-evalAllGenotypes(od, addwt = TRUE)
+evalAllGenotypes(od2, addwt = TRUE)
 
 ```
 
