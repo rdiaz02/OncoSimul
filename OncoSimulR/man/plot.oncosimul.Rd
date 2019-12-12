@@ -16,7 +16,7 @@
   and clones with different number of drivers are plotted in different
   colours. Plots can alternatively display genotypes instead of drivers.
 
-  Plots available are line plots, stacked area, and stream plots.
+  Plots available are line plots, stacked area, stream plots and Muller plots.
   
 }
 
@@ -53,7 +53,9 @@
                            srange = c(0.4, 1),
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
-                           legend.ncols = "auto", ...)
+                           legend.ncols = "auto",
+                           muller.type = "frequency",
+                           ...)
 
 \method{plot}{oncosimulpop}(x,
                               ask = TRUE,
@@ -88,6 +90,7 @@
                               vrange = c(0.8, 1),
                               breakSortColors = "oe",
                               legend.ncols = "auto",
+                              muller.type = "frequency",
                               ...)
 
 }
@@ -109,22 +112,29 @@
     will be an unmanageable mess). The default is "drivers".
   }
 
-  \item{type}{One of "line", "stacked", "stream".
+  \item{type}{One of "line", "stacked", "stream", "muller".
 
     If "line", you are shown lines for each genotype or clone. This
     means that to get an idea of the total population size you need to
     use \code{plotDrivers = TRUE} with \code{addtot = TRUE}, or do the
     visual calculation in your head.
 
-    If "stacked" a stacked area plot. If "stream" a stream plot. Since
-  these stack areas, you immediately get the total population. But that
-  also means you cannot use \code{log}.
+    If "stacked" a stacked area plot. If "stream" a stream plot. If "muller" 
+    a Muller plot. Since these stack areas, you immediately get the total 
+    population. But that also means you cannot use \code{log}.
 
     The default is to use "line" for \code{show = "drivers"} and
     "stacked" for \code{show = "genotypes"}.
     
   }
   
+  \item{muller.type}{One of "frequency", "population".
+  
+    If "frequency", it shows the frecuency of each clone. If "population"", 
+    shows changes in population sizes.
+  
+    The default is to use "frequecy".
+  }
   
   \item{col}{ Colour of the lines/areas. For \code{show = "drivers"}
     each type of clone (where type is defined by number of drivers) has
@@ -305,7 +315,6 @@
   \code{"auto"} (the default), will have one column for six or less
   entries, and two for more than six.
 }
-
 
  
   \item{\dots}{
