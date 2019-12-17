@@ -10,7 +10,7 @@
 #include "summary_statistics.h"
 #include "models.h"
 
-
+/* extern char verbose; */
 
 
 /*
@@ -21,7 +21,7 @@
 */
 
 void HouseOfCards( struct landscape *l, float sigma){
-
+  char verbose;
 	int i;
 	
 	if( sigma <= 0 )
@@ -55,7 +55,8 @@ void HouseOfCards( struct landscape *l, float sigma){
 */
 void Multiplicative( struct landscape *l , double s, double stdev, int  opt_single_fitness, float DimRet,  char opt_log )
 {
-	
+
+  char verbose;
 	int *genotype=NULL;
 	float *fa;  
 	
@@ -165,7 +166,8 @@ void Multiplicative( struct landscape *l , double s, double stdev, int  opt_sing
 
 void Optimum( struct landscape *l , double mean_p, double sigma_p, double mean_o, double sigma_o )
 {
-	
+
+  char verbose;
 	int *genotype=NULL;
 	float *fa;  
 	
@@ -266,7 +268,7 @@ void Optimum( struct landscape *l , double mean_p, double sigma_p, double mean_o
 void Kaufman_NK( struct landscape *l,  int K, short random ){
 
 
-	extern char verbose;
+	char verbose;
 
 	int i,j, g;
 	
@@ -426,12 +428,11 @@ void Kaufman_NK( struct landscape *l,  int K, short random ){
 */
 void Ising( struct landscape *l, float mu_c, float sigma_c, short opt_circ )
 {
-	
+  char verbose;
 	int i,g;
 	
 	float *costs;
 	
-	extern char verbose;
 	
 	costs = (float *) malloc( (size_t) l->ngenotypes*sizeof(float) );
 	if(!costs)fprintf(stderr, "Ising: cannot allocate the fitness of alleles, bye"), exit(3);
@@ -570,7 +571,7 @@ void MixedModel( struct landscape *fl, struct model_opt myoptions, int opt_log )
 
 
 	struct landscape fl_tmp;
-	extern char verbose;
+	char verbose;
 
 	
 	int g;
