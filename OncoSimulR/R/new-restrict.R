@@ -542,8 +542,9 @@ allFitnessORMutatorEffects <- function(rT = NULL,
         gnum <- seq_along(noIntGenes) + mg
         if(!is.null(names(noIntGenes))) {
             ng <- names(noIntGenes)
-            if( grepl(",", ng, fixed = TRUE) || grepl(">", ng, fixed = TRUE)
-                || grepl(":", ng, fixed = TRUE))
+            if( any(grepl(",", ng, fixed = TRUE)) ||
+                any(grepl(">", ng, fixed = TRUE)) ||
+                any(grepl(":", ng, fixed = TRUE))   )
                 stop("The name of some noIntGenes contain a ',' or a '>' or a ':'")
             if(any(ng %in% geneModule[, "Gene"] ))
                 stop("A gene in noIntGenes also present in the other terms")

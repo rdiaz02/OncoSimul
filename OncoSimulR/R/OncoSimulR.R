@@ -1058,9 +1058,11 @@ plot.oncosimul <- function(x,
     
 
     colauto <- FALSE
-    if(col == "auto" && (type == "line") && (show == "drivers"))
+    if((length(col) ==1) && (col == "auto") &&
+       (type == "line") && (show == "drivers"))
         col <- c(8, "orange", 6:1)
-    if(col == "auto" && (show == "genotypes")) {
+    if((length(col) ==1) && (col == "auto") &&
+       (show == "genotypes")) {
         ## For categorical data, I find Dark2, Paired, or Set1 to work best.
         col <- colorRampPalette(brewer.pal(8, "Dark2"))(ncol(x$pops.by.time) - 1)
         colauto <- TRUE

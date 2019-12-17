@@ -218,7 +218,7 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
         loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7b, strict = FALSE)
         ## we need this because o.w. the old output it ain't an igraph
         ## object with names
-        if(!grepl("_is_end", lods) && !grepl("No_descendants", lods)) {
+        if(!any(grepl("_is_end", lods)) && !any(grepl("No_descendants", lods))) {
             ## lods should be among the loda
             if(!is.null(s7$pops.by.time)) {
                 expect_true(any(
@@ -230,7 +230,7 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
                                           lods))
                 }
             }
-        } else if (grepl("No_descendants", lods)) {
+        } else if (any(grepl("No_descendants", lods))) {
             expect_true(identical(loda$lod_single,
                                   lods)) 
         } else {
