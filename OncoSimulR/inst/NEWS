@@ -1,6 +1,8 @@
+Changes in version 2.17.3 (2019-12-17):
+	- Compiles with fno-common (for gcc 10).
+	
 Changes in version 2.17.2 (2019-12-17):
 	- Fixed error "length(x) = 5 > 1' in coercion to 'logical(1)'"
-	- Compiles with fno-common (for gcc 10).
 	
 Changes in version 2.17.1 (2019-11-24):
 	- rfitness: clarified log=TRUE and truncate_at_0 after log.
