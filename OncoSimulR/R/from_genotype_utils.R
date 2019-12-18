@@ -25,6 +25,10 @@ to_Magellan <- function(x, file,
                         max_num_genotypes = 2000) {
     ## Go directly if you have, as entry, an object from
     ## rfitness!! to_Fitness_Matrix can be very slow.
+    ## But often, when we use allFitnessEffects, we
+    ## obtain the fitness landscape as genotype_fitness_matrix
+    ## FIXME: we could use that fact here.
+    ## or maybe in to_Fitness_Matrix
     if(is.null(file)) {
         file <- tempfile()
         cat("\n Using file ", file, "\n")
@@ -118,7 +122,8 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
 ## Based on from_genotype_fitness
 ## but if we are passed a fitness landscapes as produced by
-## rfitness, do nothing
+## rfitness, do nothing. Well, it actually does something.
+
 
 ##Modified
 to_genotFitness_std <- function(x,
@@ -293,12 +298,20 @@ to_genotFitness_std <- function(x,
     }
 
     if(any(is.na(x)))
-      stop("NAs in fitness matrix")
-    if(simplify && !frequencyDependentFitness) {
-      x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]
+        stop("NAs in fitness matrix")
+    ## Make sure correct class
+    if(!frequencyDependentFitness && is.data.frame(x)){
+        ## Not possible if freqDepFitness, I think: zz FIXME
+        x <- as.matrix(x)
+        stopifnot(inherits(x, "matrix"))
     }
-
-  if(frequencyDependentFitness){
+    if(!frequencyDependentFitness && simplify) {
+        x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]
+    }
+    if(!frequencyDependentFitness) {
+        class(x) <- c("matrix", "genotype_fitness_matrix")
+    }
+    if(frequencyDependentFitness){
 
     conversionTable <- conversionTable(ncol(x) - 1, frequencyType)
 
@@ -321,8 +334,10 @@ to_genotFitness_std <- function(x,
                           fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
       stop("There are some errors in fitness column")
     }
+      class(x) <- c("genotype_fitness_matrix")
   }
   return(x)
+
 }
 
 ## Deprecated after flfast
@@ -584,7 +599,7 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
     if(short) {
         ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
 
-        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
+        tmp <- unlist(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
         ## ## Make names more explicit, but check we have what we think we have
         ## ## New versions of Magellan produce different output apparently of variable length
         ## stopifnot(length(tmp) >= 23) ## 23) ## variable length

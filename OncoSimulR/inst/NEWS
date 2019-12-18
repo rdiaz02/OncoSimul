@@ -1,5 +1,20 @@
+<<<<<<< HEAD
 Changes in version 2.15.996 (2019-06-12):
 	- Numerical issues in one test in i386 (Windows)
+=======
+Changes in version 2.17.1 (2019-11-24):
+	- rfitness: clarified log=TRUE and truncate_at_0 after log.
+	- Magellan_stats: really return a vector.
+	
+Changes in version 2.17.0 (2019-10-25):
+	- Bumped version for BioC-3.11
+	
+Changes in version 2.15.2 (2019-08-14):
+	- Trying to prevent fscanf warning in FitnessLandscape/input.c
+
+Changes in version 2.15.1 (2019-06-06):
+	- Added MAGELLAN's sources and functionality from MAGELLAN.
+>>>>>>> 2e80c74... preparing 2.71.1: changes in rftiness and Magella_stats
 	
 Changes in version 2.15.995 (2019-06-12):
 	- Added MAGELLAN's sources and functionality from MAGELLAN.
