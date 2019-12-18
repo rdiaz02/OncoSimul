@@ -1,16 +1,48 @@
-
-	- Fixed error "length(x) = 5 > 1' in coercion to 'logical(1)'"
+Changes in version 2.17.991
 	- Compiles with fno-common (for gcc 10).
-	
-
-
+	- Fixed error "length(x) = 5 > 1' in coercion to 'logical(1)'"
 	- rfitness: clarified log=TRUE and truncate_at_0 after log.
 	- Magellan_stats: really return a vector.
-	
-
 	- Trying to prevent fscanf warning in FitnessLandscape/input.c
 
+	- These is from cherry-picking commits to master, as of 2019-12-17:
+	  - [60533ab]
+	    - 2.17.3: (here is where fno-common should be)
+  	      [though nothing needed to merge here]
 
+	    - [2dbc895]
+	      - link to Magellan_stats help 
+
+	    - [73854e0]
+  	      - fno-common
+  
+	    - [92b7f4b]
+  	      - renamed verbose [in one of MAGELLAN's C files]
+
+	    - [a6c95a3]
+  	      - install-dir.sh
+
+	    - [ec15dbf]
+  	      - Fixed error "length(x) = 5 > 1' in coercion to 'logical(1)'"
+
+	    - [8a06478]
+  	      - Ochs and Desai: fixed typo 
+
+	    - [94c9df7]
+  	      - do not default to log when using Magellan_stats
+
+	    - [a8b5dae]
+  	      - appveyor
+
+	    - [2e80c74]
+  	      - rfitness: clarified log=TRUE and truncate_at_0 after log.
+  	      - Magellan_stats: really return a vector.
+
+	    - [3e67e80]
+  	      - Trying to prevent fscanf warning in FitnessLandscape/input.c 
+
+	    - [b89a135]
+  	      - appveyor file
 
 Changes in version 2.15.996 (2019-06-12):
 	- Numerical issues in one test in i386 (Windows)
