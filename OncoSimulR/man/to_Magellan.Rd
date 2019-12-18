@@ -16,7 +16,7 @@ to_Magellan(x, file,
 
 Magellan_stats(x, max_num_genotypes = 2000,
                verbose = FALSE,
-               use_log = TRUE,
+               use_log = FALSE,
                short = TRUE,
                replace_missing = FALSE)
 }
@@ -62,7 +62,10 @@ Magellan_stats(x, max_num_genotypes = 2000,
   
   \item{verbose}{If TRUE provide additional information about names of
     intermediate files.}
-  \item{use_log}{Use log fitness when computing statistics.}
+  \item{use_log}{Use log fitness when computing statistics. Note that
+    the \code{\link{rfitness}} function outputs what should be
+    interpreted as log-fitness values, and thus we set this option by
+    default to \code{FALSE}.}
   \item{short}{Give short output when computing statistics.}
 
   \item{replace_missing}{From MAGELLAN's \code{fl_statistics}: replace
