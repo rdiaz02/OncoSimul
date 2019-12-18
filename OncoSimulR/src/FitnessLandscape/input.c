@@ -72,10 +72,11 @@ int * GetOrderFromFile( char *filename ){
 	alleles = (int *) malloc( (size_t) nlocus * sizeof( int )  );
 	if(! alleles )fprintf(stderr, "ReadFile: cannot allocate alleles, bye\n"), exit(3);
 
-	
+
 	for( l=0; l<nlocus; l++)
-		fscanf( f, "%d", alleles+l );
-	
+	  // fscanf( f, "%d", alleles+l );
+	  if(fscanf( f, "%d", alleles+l )){};
+	// the ignoring return value of ‘fscanf’ warning	
 
 	init_landscape( &fl, nlocus, alleles);
 	
@@ -91,9 +92,11 @@ int * GetOrderFromFile( char *filename ){
 		
 		for( l=0; l<nlocus; l++)
 		{
-			fscanf( f, "%d", alleles+l );
+		  // fscanf( f, "%d", alleles+l );
+		  if(fscanf( f, "%d", alleles+l )){};
 		}
-		fscanf( f, "%f", &fitness );
+		// fscanf( f, "%f", &fitness );
+		if(fscanf( f, "%f", &fitness )){};
 		
 		while( ((ch = fgetc(f)) != '\n') && (ch != EOF) );
 		
@@ -162,7 +165,8 @@ struct landscape ReadFile( char *filename, int opt_zero ){
 	
 	for( l=0; l<nlocus; l++)
 	{
-		fscanf( f, "%d", alleles+l );
+	  // fscanf( f, "%d", alleles+l );
+		if(fscanf( f, "%d", alleles+l )){};
 	}
 	
 	/*
@@ -188,9 +192,12 @@ struct landscape ReadFile( char *filename, int opt_zero ){
 		
 		for( l=0; l<nlocus; l++)
 		{
-			fscanf( f, "%d", alleles+l );
+		  //fscanf( f, "%d", alleles+l );
+			if(fscanf( f, "%d", alleles+l )){};
 		}
-		fscanf( f, "%f", &fitness );
+		//fscanf( f, "%f", &fitness );
+		if(fscanf( f, "%f", &fitness )){};
+		
 		
 		while( ((ch = fgetc(f)) != '\n') && (ch != EOF) );
 		
