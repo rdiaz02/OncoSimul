@@ -51,6 +51,13 @@ rm ./OncoSimulR/src/OncoSimulR.so
 rm ./OncoSimulR/src/OncoSimul.o
 rm ./OncoSimulR/src/OncoSimulR_init.o
 rm ./OncoSimulR/src/symbols.rds
+rm ./OncoSimulR/src/liblandscape.a
+rm ./OncoSimulR/src/fl_statistics 
+rm ./OncoSimulR/src/fl_generate
+rm ./OncoSimulR/src/fl_genchains
+rm ./OncoSimulR/src/FitnessLandscape/liblandscape.a
+rm ./OncoSimulR/src/FitnessLandscape/*.o
+rm ./OncoSimulR/src/FitnessLandscape/*~
 rm /OncoSimulR.Rcheck/* -r -f
 rm ./OncoSimulR.Rcheck/* -r -f
 # rm ./OncoSimulR/inst/doc/auto/*
@@ -69,6 +76,7 @@ rm ./OncoSimulR/vignettes/*.out
 rm ./OncoSimulR/vignettes/*.blg
 rm ./OncoSimulR/vignettes/*.synctex.*
 
+make -C ./OncoSimulR/src/FitnessLandscape clean
 
 $V_R --vanilla CMD INSTALL --install-tests ./OncoSimulR
 

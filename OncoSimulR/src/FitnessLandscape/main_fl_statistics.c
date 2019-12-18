@@ -57,7 +57,8 @@ int main( int argc, char ** argv ){
 
 	char *outfile=NULL;
 
-	verbose=0;
+	/* prevent confusion with the other extern verbose */
+	char verbose_fl_stats=0;
 
 	/*
 		Parse Input
@@ -85,7 +86,7 @@ int main( int argc, char ** argv ){
 				break;
 				
 			case 'v':
-				verbose=1;
+				verbose_fl_stats=1;
 				break;
 				
 			case 's':
@@ -115,7 +116,7 @@ int main( int argc, char ** argv ){
 	
 	h = ReadFile( filename, opt_zero );
 	
-	if(verbose)
+	if(verbose_fl_stats)
 		print_landscape( &h );
 	
 	OutputSummaryStats( &h, FitnessRatio, opt_log, opt_short, "coco", outfile );

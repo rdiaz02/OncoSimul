@@ -16,6 +16,7 @@
 
 
 
+
 void usage( char *prog ){
 
 	fprintf(stderr, "Version of Nov 18 2014\n");
@@ -93,8 +94,9 @@ int main( int argc, char ** argv ){
 	
 	int i;
 
-	extern char verbose;                /* level of verbosity */
-
+	/* extern char verbose; */                  /* level of verbosity */
+	char verbose;    
+	
 	int opt;
 	extern char *optarg;                /* external variables, see man 3 getopt */
 	extern int optind;

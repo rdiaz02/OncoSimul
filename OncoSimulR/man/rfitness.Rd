@@ -226,6 +226,7 @@ for the MAGELLAN code.
   \code{\link{evalAllGenotypes}}
   \code{\link{allFitnessEffects}}
   \code{\link{plotFitnessLandscape}}
+  \code{\link{Magellan_stats}}  
 
 }
 \examples{
