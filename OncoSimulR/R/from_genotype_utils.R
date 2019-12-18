@@ -299,45 +299,40 @@ to_genotFitness_std <- function(x,
 
     if(any(is.na(x)))
         stop("NAs in fitness matrix")
-    ## Make sure correct class
-    if(!frequencyDependentFitness && is.data.frame(x)){
-        ## Not possible if freqDepFitness, I think: zz FIXME
+    if(!frequencyDependentFitness) {
+        if(is.data.frame(x)) 
         x <- as.matrix(x)
         stopifnot(inherits(x, "matrix"))
-    }
-    if(!frequencyDependentFitness && simplify) {
-        x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]
-    }
-    if(!frequencyDependentFitness) {
+
+        if(simplify) {
+           x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]  
+        }
         class(x) <- c("matrix", "genotype_fitness_matrix")
+    } else { ## frequency-dependent fitness
+        conversionTable <- conversionTable(ncol(x) - 1, frequencyType)
+        
+        x[, ncol(x)] <- sapply(x[, ncol(x)],
+                               function(x){findAndReplace(x, conversionTable)})
+        
+        if(frequencyType == "abs"){
+            pattern <- stringr::regex("n_(\\d*_*)*")
+        } else {
+            pattern <- stringr::regex("f_(\\d*_*)*")
+        }
+
+        regularExpressionVector <-
+            unique(unlist(lapply(x[, ncol(x)],
+                                 function(z) {stringr::str_extract_all(string = z,
+                                                                       pattern = pattern)})))
+        
+        if((!all(regularExpressionVector %in% fVariablesN(ncol(x) - 1, frequencyType))) |
+           !(length(intersect(regularExpressionVector,
+                              fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
+            stop("There are some errors in fitness column")
+        }
+
     }
-    if(frequencyDependentFitness){
-
-    conversionTable <- conversionTable(ncol(x) - 1, frequencyType)
-
-    x[, ncol(x)] <- sapply(x[, ncol(x)],
-                           function(x){findAndReplace(x, conversionTable)})
-
-    if(frequencyType == "abs"){
-      pattern <- stringr::regex("n_(\\d*_*)*")
-    }else{
-      pattern <- stringr::regex("f_(\\d*_*)*")
-    }
-
-    regularExpressionVector <-
-      unique(unlist(lapply(x[, ncol(x)],
-                           function(z) {stringr::str_extract_all(string = z,
-                                                        pattern = pattern)})))
-
-    if((!all(regularExpressionVector %in% fVariablesN(ncol(x) - 1, frequencyType))) |
-       !(length(intersect(regularExpressionVector,
-                          fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
-      stop("There are some errors in fitness column")
-    }
-      class(x) <- c("genotype_fitness_matrix")
-  }
   return(x)
-
 }
 
 ## Deprecated after flfast
