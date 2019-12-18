@@ -603,37 +603,38 @@ allFitnessORMutatorEffects <- function(rT = NULL,
     }
 
     if(!is.null(noIntGenes)) {
-      if(inherits(noIntGenes, "character")) {
-        wm <- paste("noIntGenes is a character vector.",
-                    "This is probably not what you want, and will",
-                    "likely result in an error downstream.",
-                    "You can get messages like",
-                    " 'not compatible with requested type', and others.",
-                    "We are stopping.")
-        stop(wm)
-      }
-
-      mg <- max(geneModule[, "GeneNumID"])
-      gnum <- seq_along(noIntGenes) + mg
-      if(!is.null(names(noIntGenes))) {
-        ng <- names(noIntGenes)
-        if( grepl(",", ng, fixed = TRUE) || grepl(">", ng, fixed = TRUE)
-            || grepl(":", ng, fixed = TRUE))
-          stop("The name of some noIntGenes contain a ',' or a '>' or a ':'")
-        if(any(ng %in% geneModule[, "Gene"] ))
-          stop("A gene in noIntGenes also present in the other terms")
-        if(any(duplicated(ng)))
-          stop("Duplicated gene names in geneNoInt")
-        if(any(is.na(ng)))
-          stop("In noIntGenes some genes have names, some don't.",
-               " Name all of them, or name none of them.")
-      } else {
-        ng <- gnum
-      }
-      geneNoInt <- data.frame(Gene = as.character(ng),
-                              GeneNumID = gnum,
-                              s = noIntGenes,
-                              stringsAsFactors = FALSE)
+        if(inherits(noIntGenes, "character")) {
+            wm <- paste("noIntGenes is a character vector.",
+                        "This is probably not what you want, and will",
+                        "likely result in an error downstream.",
+                        "You can get messages like",
+                        " 'not compatible with requested type', and others.",
+                        "We are stopping.")
+            stop(wm)
+        }
+            
+        mg <- max(geneModule[, "GeneNumID"])
+        gnum <- seq_along(noIntGenes) + mg
+        if(!is.null(names(noIntGenes))) {
+            ng <- names(noIntGenes)
+            if( any(grepl(",", ng, fixed = TRUE)) ||
+                any(grepl(">", ng, fixed = TRUE)) ||
+                any(grepl(":", ng, fixed = TRUE))   )
+                stop("The name of some noIntGenes contain a ',' or a '>' or a ':'")
+            if(any(ng %in% geneModule[, "Gene"] ))
+                stop("A gene in noIntGenes also present in the other terms")
+            if(any(duplicated(ng)))
+                stop("Duplicated gene names in geneNoInt")
+            if(any(is.na(ng)))
+                stop("In noIntGenes some genes have names, some don't.",
+                     " Name all of them, or name none of them.")
+        } else {
+            ng <- gnum
+        }
+        geneNoInt <- data.frame(Gene = as.character(ng),
+                                GeneNumID = gnum,
+                                s = noIntGenes,
+                                stringsAsFactors = FALSE)
     } else {
       geneNoInt <- data.frame()
     }

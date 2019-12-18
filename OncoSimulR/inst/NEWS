@@ -1,7 +1,13 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 Changes in version 2.15.996 (2019-06-12):
 	- Numerical issues in one test in i386 (Windows)
 =======
+=======
+Changes in version 2.17.2 (2019-12-17):
+	- Fixed error "length(x) = 5 > 1' in coercion to 'logical(1)'"
+	
+>>>>>>> ec15dbf... working on length(x) = 5 > 1' in coercion to 'logical(1)'
 Changes in version 2.17.1 (2019-11-24):
 	- rfitness: clarified log=TRUE and truncate_at_0 after log.
 	- Magellan_stats: really return a vector.
