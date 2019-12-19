@@ -11,6 +11,8 @@
 
 #include "calculus.h"
 
+#include "verbose.h"
+
 #define DATE "18 NOV 2013"
 
 
@@ -58,8 +60,9 @@ int main( int argc, char ** argv ){
 	char *outfile=NULL;
 
 	/* prevent confusion with the other extern verbose */
-	char verbose_fl_stats=0;
-
+	/* char verbose_fl_stats=0; */
+	verbose = 0;
+	
 	/*
 		Parse Input
 	*/
@@ -86,7 +89,8 @@ int main( int argc, char ** argv ){
 				break;
 				
 			case 'v':
-				verbose_fl_stats=1;
+				/* verbose_fl_stats=1; */
+				verbose=1;				
 				break;
 				
 			case 's':
@@ -116,7 +120,8 @@ int main( int argc, char ** argv ){
 	
 	h = ReadFile( filename, opt_zero );
 	
-	if(verbose_fl_stats)
+	/* if(verbose_fl_stats) */
+	if(verbose)	  
 		print_landscape( &h );
 	
 	OutputSummaryStats( &h, FitnessRatio, opt_log, opt_short, "coco", outfile );

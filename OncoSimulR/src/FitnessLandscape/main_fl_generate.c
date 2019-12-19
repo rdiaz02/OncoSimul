@@ -13,7 +13,7 @@
 #include "random.h"
 #include "summary_statistics.h"
 #include "models.h"
-
+#include "verbose.h"
 
 
 
@@ -95,7 +95,7 @@ int main( int argc, char ** argv ){
 	int i;
 
 	/* extern char verbose; */                  /* level of verbosity */
-	char verbose;    
+	/* char verbose;     */
 	
 	int opt;
 	extern char *optarg;                /* external variables, see man 3 getopt */
