@@ -14,7 +14,8 @@
 
 #define DEFAULT_FITNESS -99999999999
 
-extern char verbose;   /* if set to non-0 , become verbose */
+/* extern char verbose; */
+/* if set to non-0 , become verbose */
 
 
 /*

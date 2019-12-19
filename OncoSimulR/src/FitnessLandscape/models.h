@@ -10,7 +10,7 @@
 
 
 
-extern char verbose;
+/* extern char verbose; */
 
 
 

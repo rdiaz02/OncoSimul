@@ -35,7 +35,8 @@ MAGELLAN_SRC = FitnessLandscape/gamma.c\
         FitnessLandscape/summary_statistics.c\
         FitnessLandscape/epistasis_type.c\
         FitnessLandscape/decomposition.c\
-        FitnessLandscape/models.c
+        FitnessLandscape/models.c\
+	FitnessLandscape/verbose.c
 #        FitnessLandscape/common_drawings.c\ ## I do not use it and gives a warning
 MAGELLAN_OBJECTS = $(MAGELLAN_SRC:.c=.o)
 
