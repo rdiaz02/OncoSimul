@@ -1,3 +1,6 @@
+Changes in version 2.17.4 (2019-12-19):
+	- fno-common: better way of dealing with verbose in magellan.
+
 Changes in version 2.17.3 (2019-12-17):
 	- Compiles with fno-common (for gcc 10).
 	
