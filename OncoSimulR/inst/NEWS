@@ -1,3 +1,6 @@
+Changes in version 2.17.5 (2019-12-19):
+	- Oooops: forgot Makevars.win
+	
 Changes in version 2.17.4 (2019-12-19):
 	- fno-common: better way of dealing with verbose in magellan.
 
