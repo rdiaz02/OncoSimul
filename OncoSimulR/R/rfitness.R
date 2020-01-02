@@ -75,7 +75,12 @@ rfitness <- function(g, c= 0.5,
                      truncate_at_0 = TRUE,
                      K = 1,
                      r = TRUE,
-                     model = c("RMF", "NK")) {
+                     i = 0.5,
+                     I = 1,
+                     c = TRUE,
+                     e = 0.5,
+                     E = 1,
+                     model = c("RMF", "NK", "Ising", "Eggbox", "Full")) {
     ## Like Franke et al., 2011 and others of Krug. Very similar to Greene
     ## and Crona, 2014. And this allows moving from HoC to purely additive
     ## changing c and sd.
@@ -113,6 +118,17 @@ rfitness <- function(g, c= 0.5,
                              ifelse(r, " -r ", " "),
                              g, " 2")
             fl1 <- system2(fl_generate_binary(), args = argsnk, stdout = TRUE)[-1]
+        } else if (model == "Ising") {
+            argsIsing <- paste0("-i ", i, " -I ", I ,
+                                 ifelse(c, " -c ", c),
+                                 g, " 2")
+            fl1 <- system2(fl_generate_binary(), args = argsIsing, stdout = TRUE)[-1]
+        } else if (model == "Eggbox") {
+            argsEgg <- paste0("-e ", e, " -E ", E,
+                              g, " 2")
+            fl <- system2(fl_generate_binary(), args = argsEgg, stdout = TRUE)[-1]
+        }
+        if (model != "RMF") {
             fl1 <- matrix(
                 as.numeric(unlist(strsplit(paste(fl1, collapse = " "), " "))),
                 ncol = g + 1, byrow = TRUE)
