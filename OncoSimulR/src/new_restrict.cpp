@@ -25,7 +25,7 @@
 #include <random>
 #include <string>
 #include <sstream>
-
+#include <limits>
 
 using namespace Rcpp;
 using std::vector;
@@ -1394,6 +1394,10 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
   std::string expr_string = F.fitnessLandscape.flFDFmap.at(gs);
 
 	double N = totalPop(popParams);
+	double T = popParams[0].timeLastUpdate;
+	if (T == std::numeric_limits<double>::infinity() 
+	    or T == -std::numeric_limits<double>::infinity()) {
+	T = 0;}
 
   typedef exprtk::symbol_table<double> symbol_table_t;
   typedef exprtk::expression<double> expression_t;
@@ -1404,6 +1408,7 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 		symbol_table.add_variable(iterator.first, iterator.second);
   }
 	symbol_table.add_constant("N", N);//We reserve N to total population size
+	symbol_table.add_constant("T", T); //Pass current time to exprtk
   symbol_table.add_constants();
 
   expression_t expression;
