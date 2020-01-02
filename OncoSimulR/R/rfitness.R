@@ -80,7 +80,7 @@ rfitness <- function(g, c= 0.5,
                      c = TRUE,
                      e = 0.5,
                      E = 1,
-                     model = c("RMF", "NK", "Ising", "Eggbox", "Full")) {
+                     model = c("RMF", "NK", "Ising", "Eggbox", "Full", "Additive")) {
     ## Like Franke et al., 2011 and others of Krug. Very similar to Greene
     ## and Crona, 2014. And this allows moving from HoC to purely additive
     ## changing c and sd.
@@ -112,6 +112,14 @@ rfitness <- function(g, c= 0.5,
             f_det <- -c * d_reference
             ## f_det <- rowSums(m) * slope/nrow(m) ## this is Greene and Krona
             fi <- f_r + f_det
+        } else if (model == "Additive") {
+            d_reference <- apply(m, 1, function(x) {
+                                        mut_genes <- sum(abs(x - referenceI))
+                                        mutated_genes <- rnorm(mutated_genes, mu, sd)
+                                        fit_effect <- cumsum(mutated_genes)[mut_genes]
+                                        return(abs(fit_effect))
+                }
+            fi <- f_r - fit_effect
         } else if(model == "NK") {
             if(K >= g) stop("It makes no sense to have K >= g")
             argsnk <- paste0("-K ", K,
@@ -128,7 +136,7 @@ rfitness <- function(g, c= 0.5,
                               g, " 2")
             fl <- system2(fl_generate_binary(), args = argsEgg, stdout = TRUE)[-1]
         }
-        if (model != "RMF") {
+        if (model != "RMF") && (model != "Additive") {
             fl1 <- matrix(
                 as.numeric(unlist(strsplit(paste(fl1, collapse = " "), " "))),
                 ncol = g + 1, byrow = TRUE)
