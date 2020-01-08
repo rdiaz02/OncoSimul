@@ -9139,6 +9139,77 @@ immediately.
 <!-- knitr::include_graphics("simulationsBoxPlot.png") -->
 <!-- ``` -->
 
+## Prostate cancer model with stromal dependent and stromal independent genotypes {#ProsCaMo} 
+
+introducción al paper.
+
+Applying the payoff table we have developed the following example 
+from the reference. For the sake of briefness, we are only 
+gonna show 2 examples. In the first, we have 
+modellized an medium richness environment (b = 0.8),
+with very little mutual benefit between S and D (a = 0.1), 
+having D a high advantage of I cells (c = 1) and a high
+environmente-independece cost for the I cell (d = 0.8). 
+We can appreciate how D and I benefit of the colapse of the 
+stromal cells. 
+
+```
+create_fe2 <- function(a, b, c, d, gt = c("WT", "D", "I")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+               paste0("1 + (",a,"*f_A)"),
+               paste0("1 + (1 +",a," - ",b,")*f_ + ( 1 - 2* ",b,")*f_A",
+                      " + (1 - ",b," + ",c,")*f_B" ),
+               paste0("(1 + f_*(1-",d,") + f_A*(1-",d,") + f_B*(1-",d,"))")),
+             stringsAsFactors = FALSE)
+}
+prostate = create_fe2("0.1", "0.8", "1", "0.8")
+
+afe = allFitnessEffects(genotFitness = prostate, 
+                        frequencyDependentFitness = T,
+                        frequencyType = "rel")
+
+set.seed(1) ## for reproducibility
+
+sfd <- oncoSimulIndiv(afe, 
+                      model = "McFL", 
+                      onlyCancer = FALSE, 
+                      finalTime = 100,
+                      mu = 1e-4,
+                      initSize = 10000,
+                      keepPhylog = FALSE,
+                      seed = NULL, 
+                      errorHitMaxTries = FALSE, 
+                      errorHitWallTime = FALSE)
+
+
+plot(sfd, show = "genotypes",legend.ncols = 2, type = "line")
+```
+
+We are going to see now another example in which we can visualize
+how a very small change in the genotype perfomance can lead to 
+great changes in the tumour ongoing. We fixed the following values: 
+a = 0.5, b = 0.7 and c = 0.1. This represents a medium mutual
+benefit of D and S, a poor environment and a low benefit of D
+from I. 
+
+By changing d from 0.8 to 0.7, we change from a tumour with
+preponderance of D and S to a tumour where I rises and the 
+other two genotypes, collapses. 
+
+
+```
+# Repeat above code changing prostate with this parameters 
+
+# ----- Figure 3 (Basanta et al., 2012). Left ------
+
+prostate = create_fe2("0.5", "0.7", "0.1", "0.8")
+
+# ----- Figure 3 (Basanta et al., 2012). Right ------
+
+prostate = create_fe2("0.5", "0.7", "0.1", "0.7")
+```
+
 \clearpage
 
 
