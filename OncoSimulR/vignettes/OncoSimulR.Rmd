@@ -7612,6 +7612,7 @@ are examining a large number of different scenarios.
 
 
 \clearpage
+
 # Showing the genealogical relationships of clones {#phylog}
 
 If you run simulations with `keepPhylog = TRUE`, the simulations keep track
@@ -8806,6 +8807,246 @@ plot(commens, show = "genotypes", type = "line",
 ```
 
 
+## Time dependent frequency definition {#timedep}
+The fitness definition can be made dependent on the simulation time by 
+using the variable T. The following examples shows a very artificial simulation
+where the fitness of one genotype suddenly increases at a certain timepoint.
+
+```{r fdftimed}
+fl <- data.frame(
+  Genotype = c("WT", "A", "B"),
+  Fitness = c("1", "if (T>50) 1.5; else 0;", "0*f_") 
+)
+
+
+fe <- allFitnessEffects(genotFitness = fl, 
+                        frequencyDependentFitness = TRUE,
+                        frequencyType = "rel")
+
+# Simulate
+sim <- oncoSimulIndiv(fe,
+                      model = "McFL", 
+                      onlyCancer = FALSE, 
+                      finalTime = 100,
+                      mu = 0.01,
+                      initSize = 5000, 
+                      keepPhylog = FALSE,
+                      seed = NULL, 
+                      errorHitMaxTries = FALSE, 
+                      errorHitWallTime = FALSE)
+#Plot
+plot(sim, show = "genotypes")
+```
+
+
+This can be used to, for example, simulate the effect of different chemotherapy treatment protocols (see following examples)
+
+## Adaptive control of competitive release and chemotherapeutic resistance, example 1 {#ex1}
+
+An example of the use of concepts from game theory is adaptive therapy. The main idea is that it might actually be beneficial for the patient to reduce the dosage of drug in order to enable competition between cancer subclones, which can slow down or prevent the development of resistance.
+
+@PhysRevE.99.022404 built simulations for a tumor consisting in two types of cells: resistant to chemotherapy and sensitive to chemotherapy.
+
+To that end, they developed a **three-component Prisoner's Dilemma scenario** including healthy (**H**) cells as well as chemoresistant (**R**) and chemosensitive (**S**) cancer cells. Healthy cells are cooperators, while cancer cells are defectors.
+
+This is the system's payoff matrix:
+
+```
+      ⎡ a b c ⎤      ⎡ 1       0.5   0.5 ⎤
+ A =  | d e f |  =   | 1      1.25   0.7 |
+      ⎣ g h i ⎦      ⎣ 0.975  -0.5  0.75 ⎦
+
+```
+
+The numerical values in the matrix are chosen for convenience and satisfy the following theoretical constraints:
+
+      g > a > i > c,
+      d > a > e > b,
+      f > i > e > h and
+      d > g.   (cost to resistance)
+
+So the fitness definitions for the three types of cells are:
+
+    F(H) = a*x(H) + b*x(S) + c*x(R)
+    F(S) = d*x(H) + e*x(S) + f*x(R)
+    F(R) = g*x(H) + h*x(S) + i*x(R)
+
+In summary:
+
+* The fitness of H cells is lower than that of chemosensitive cells
+* With no therapy, a S cell has a higher fitness value than R cells, because of the cost to resistance
+* In presence of therapy, R cells take over S cells
+
+One of the challenges is to optimize the drug dosage intervals. In practice, this would mean inferring the growth rates of the different cell types from the frequent monitoring of the tumor environment. With OncoSimulR it is possible to try out different intervals on simulations of the collected data.
+
+### Scenario without therapy {#ex1notherapy}
+
+First, we simulate the growth of a tumor from H cells without any treatment. We can consider that R tumor cells are generated from sensible cells as well as WT cells.
+
+```{r}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
+
+## Coefficients
+# Healthy  Sensitive  Resistant
+a=3;       b=1.5;     c=1.5  # Healthy
+d=4;       e=5;       f=2.8  # Sensitive
+g=3.9;     h=-2;      i=2.2  # Resistant
+
+
+# Here we divide coefficients to reduce the amount
+# of cells obtained in the simulation. We have divided
+# a, b and c by 3, and d-i by 4.
+  # Healthy  Sensitive   Resistant
+  a <- 1;   b <- 0.5;   c <- 0.5      # Healthy
+  d <- 1;   e <- 1.25;  f <- 0.7      # Sensitive
+  g <- 0.975;   h <- -0.5;  i <- 0.75 # Resistant
+
+
+## Fitness definition
+players <- data.frame(Genotype = c("WT","S","R","S,R"),
+                      Fitness = c(paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2"),
+                        paste0(d,"*f_+",e,"*f_1+",f,"*f_1_2"),
+                        "0",
+                        paste0(g,"*f_+",h,"*f_1+",i,"*f_1_2")),
+                        stringsAsFactors = FALSE)
+
+
+game <- allFitnessEffects(genotFitness = players,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel",
+                          spPopSizes = c(10, 1, 0, 10))
+
+
+## Plot 1
+eag <- evalAllGenotypes(game)[c(1, 3, 4),]
+plot(eag)
+
+## Simulation
+gamesimul <- oncoSimulIndiv(game,
+                            model = "McFL",
+                            onlyCancer = FALSE,
+                            finalTime = 300,
+                            mu = 0.01,
+                            initSize = 5000,
+                            keepPhylog = TRUE,
+                            seed = NULL)
+
+## Plot 2
+plot(gamesimul, show = "genotypes", type = "line",
+     col = c("black", "green", "red"), ylim = c(20, 50000))
+plot(gamesimul, show = "genotypes")
+```
+
+As expected, S population takes over (forms a tumor) and R population can’t subsist because of its fitness disadvantage (cost to resistance).
+
+
+### Scenario with continuous chemotherapy (fixed dose) {#ex1fixed}
+
+For this simulation, we add the effect of chemotherapy as a fixed coefficient (`drug_eff`), representing a fixed dose. The dose is delivered only when a tumor has already been formed - in other words, we add the drug effect some time after the start of the simulation. To control this, we use the time variable in the fitness definition ---see section \@ref(time) for details on the usage of time---.
+
+```{r}
+
+# Effect of drug on fitness sensible tumor cells
+drug_eff <- 0.01 # This term is multiplied by the fitness
+
+wt_fitness <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2")
+sens_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2")
+res_fitness <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2")
+
+players_1 <- data.frame(Genotype = c("WT", "S", "R", "S, R"),
+                        Fitness = c(
+                        wt_fitness,
+                        paste0("if (T>50) ", drug_eff, "*(",
+                               sens_fitness, ")",
+                               "; else ", sens_fitness, ";"),
+                        "0",
+                        res_fitness
+                        ),
+                      stringsAsFactors = FALSE)
+
+period_1 <- allFitnessEffects(genotFitness = players_1,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel")
+
+set.seed(2)
+final_time <- 300
+simul_period_1 <- oncoSimulIndiv(period_1,
+                            model = "McFL",
+                            onlyCancer = FALSE,
+                            finalTime = final_time,
+                            mu = 0.01,
+                            initSize = 5000,
+                            keepPhylog = TRUE,
+                            seed = NULL)
+
+# ylim has been adapted to number of cells
+plot(simul_period_1, show = "genotypes", type = "line",
+     col = c("black", "green", "red"), ylim = c(20, 300000))
+plot(simul_period_1, show = "genotypes", ylim = c(20, 12000))
+
+```
+
+As expected, sensitive cells take over until T = 50, when they start decreasing as a consequence of chemotherapy. In this regard, the code shows how sensitive cell fitness is multiplied by `drug_eff` variable after reaching 50 units of time. When this happens, resistant cells grow exponentially until reaching an equilibrium as they are not affected by chemotherapy.
+
+With this example we show how chemotherapy usage could be counterproductive under certain situations, especially in those cases in which resistant tumor cells are more aggressive than sensitive cells.
+
+### Scenario with switching doses of chemotherapy {#ex1switching}
+
+The original model by @PhysRevE.99.022404 includes chemotherapeutic dosage as a time-dependent controller. The main idea is to increase and lower the dose according to (periodic) cancer growth as to avoid the fixation of both sensitive cells and resistant cells and keep the tumor trajectory enclosed in a loop.
+
+The model this group developed is a cubic nonlinear system based in Hamiltonian orbits, but we won’t go into detail here. They use the time-dependent chemotherapeutic parameters w, which values are different in each one of several carefully chosen intervals and depend on `C(t)`, the chemo concentration parameter. For simplicity’s sake, we will just define the fitness of sensitive cells as dependent on a sine function of time:
+
+```{r}
+
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
+# Healthy  Sensitive   Resistant
+a <- 1;   b <- 0.5;   c <- 0.5      # Healthy
+d <- 1;   e <- 1.25;  f <- 0.7      # Sensitive
+g <- 0.975;   h <- -0.5;  i <- 0.75 # Resistant
+
+drug_eff <- c(0.01,0.033) # Initial value
+
+wt_fitness   <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2")
+sens_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2")
+res_fitness  <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2")
+
+fitness_df <-data.frame(Genotype = c("WT", "S", "R", "S, R"),
+                        Fitness = c(
+                          wt_fitness,
+                          paste0("if (T>50) (sin(T+2)/10) * (", sens_fitness,")",
+                                 "; else ", sens_fitness, ";"),
+                          "0",
+                          res_fitness
+                        ),
+                        stringsAsFactors = FALSE)
+
+afe <- allFitnessEffects(genotFitness = fitness_df,
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel",
+                         spPopSizes = c(10, 1, 0, 10))
+
+switching_sim  <- oncoSimulIndiv(afe,
+                                 model = "McFL",
+                                 onlyCancer = FALSE,
+                                 finalTime = 300,
+                                 mu = 0.01,
+                                 initSize = 5000,
+                                 keepPhylog = TRUE,
+                                 seed = NULL)
+
+plot(switching_sim, show = "genotypes", type = "line",
+     col = c("black", "green", "red"), ylim = c(20, 200000))
+plot(switching_sim, show = "genotypes", ylim = c(20, 1000))
+
+```
+
+As we can see, small oscillating doses keep S cells population at a minimum while avoiding progress of R cells.
+
+
 ## Frequency-dependent fitness: can I mix relative and absolute frequencies? {#fdfrelabs}
 
 Yes, of course, since you can always use an absolute specification with
@@ -8898,6 +9139,8 @@ plot(tmp3, show = "genotypes")
 ```
 
 
+
+
 ## Frequency-dependent fitness: can I use genes with mutator effects? {#fdfmutator}
 
 Yes. The following examples show it:
@@ -8947,6 +9190,7 @@ plot(s2fd, show = "genotypes")
 
 ```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
+```
 
 ```{r figmutfdf}
 plotClonePhylog(s1fd, keepEvents = TRUE)
@@ -9011,7 +9255,7 @@ plotClonePhylog(s6, keepEvents = TRUE)
 Note, though, that **evalAllGenotypesFitAndMut** does not currently
 work with frequency-dependent fitnes:
 
-```{r noworkeval}
+```{r noworkeval, eval=FALSE}
 
 evalAllGenotypes(allFitnessEffects(genotFitness = r1fd, 
                                    frequencyDependentFitness = TRUE,
