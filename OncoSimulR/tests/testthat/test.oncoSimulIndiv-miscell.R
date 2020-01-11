@@ -1020,6 +1020,75 @@ test_that("exercising oncoSimulIndiv, max size warning", {
 })
 
 
+test_that("Test that time conditional option works", {
+    
+    df1 <- data.frame(
+        Genotype = c("WT", "A", "B", "A,B"),
+        Fitness = c("1", "if (T<50) 1.5; else 0", 0, "1.5-1*f_1")
+    )
+    
+    
+    # Test that time conditional option works
+    expect_error(allFitnessEffects(genotFitness = df1,
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel"), NA)
+    
+    # Test that conditional with T works properly
+    pr1 <- allFitnessEffects(genotFitness = df1,
+                             frequencyDependentFitness = TRUE,
+                             frequencyType = "rel")
+    
+    set.seed(2)
+    sim1 <- oncoSimulIndiv(pr1,
+                           model = "McFL", 
+                           onlyCancer = FALSE, 
+                           finalTime = 200,
+                           mu = 0.01,
+                           initSize = 5000, 
+                           keepPhylog = FALSE,
+                           seed = NULL, 
+                           errorHitMaxTries = FALSE, 
+                           errorHitWallTime = FALSE)
+    
+    
+    # Test that final population of A is smaller than A,B population. Otherwise,
+    # A fitness did not decrease as expected.
+    endA <- sim1$pops.by.time[length(sim1$pops.by.time[, 1]), 3]
+    endAB <- sim1$pops.by.time[length(sim1$pops.by.time[, 1]), 4]
+    expect_true(endAB > endA)
+    
+    
+    # Repeat previous test changing T from 50 to 200. Using this, we can
+    # test whether the conditional is applied as expected
+    df2 <- data.frame(
+        Genotype = c("WT", "A", "B", "A,B"),
+        Fitness = c("1", "if (T<50) 1.5; else 0;", 0, "1.5-1*f_1"),
+        stringsAsFactors = FALSE
+    )
+    
+    pr2 <- allFitnessEffects(genotFitness = df2,
+                             frequencyDependentFitness = TRUE,
+                             frequencyType = "rel")
+    
+    
+    set.seed(2)
+    sim2 <- oncoSimulIndiv(pr2,
+                           model = "McFL", 
+                           onlyCancer = FALSE, 
+                           finalTime = 50,
+                           mu = 0.01,
+                           initSize = 5000, 
+                           keepPhylog = FALSE,
+                           seed = NULL, 
+                           errorHitMaxTries = FALSE, 
+                           errorHitWallTime = FALSE)
+    
+    # Test that final population of A is larger than A,B population. Otherwise,
+    # A fitness did increase as expected.
+    endA <- sim2$pops.by.time[length(sim2$pops.by.time[, 1]), 3]
+    endAB <- sim2$pops.by.time[length(sim2$pops.by.time[, 1]), 4]
+    expect_true(endAB < endA)
+})
 
 
 cat(paste("\n Ending oncoSimulIndiv-miscell tests", date(), "\n"))
