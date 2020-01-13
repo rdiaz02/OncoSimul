@@ -75,12 +75,22 @@ rfitness <- function(g, c= 0.5,
                      truncate_at_0 = TRUE,
                      K = 1,
                      r = TRUE,
-                     i = 0.5,
-                     I = 1,
-                     c = TRUE,
-                     e = 0.5,
-                     E = 1,
-                     model = c("RMF", "NK", "Ising", "Eggbox", "Full", "Additive")) {
+                     i = 0, # Ising, cost incompatibility
+                     I = -1, # Ising, sd for "i"
+                     circular = FALSE, # Ising, circular arrangement
+                     e = 0, # Eggbox, +/- e
+                     E = -1, # Eggbox, noise on "e"
+                     H = -1, # HoC stdev
+                     s = 0.1, # mean multiplivative
+                     S = -1, # SD multiplicative
+                     d = 0, # disminishing/increasing for multiplicative
+                     o = 0, # mean optimum
+                     O = -1, # sd optimum
+                     p = 0, # mean production for non 0 allele (optimum)
+                     P = -1, # sd for p
+                    
+                     model = c("RMF", "Additive", 
+                               "NK", "Ising", "Eggbox", "Full")) {
     ## Like Franke et al., 2011 and others of Krug. Very similar to Greene
     ## and Crona, 2014. And this allows moving from HoC to purely additive
     ## changing c and sd.
