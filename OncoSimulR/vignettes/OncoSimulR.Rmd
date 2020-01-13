@@ -9141,7 +9141,17 @@ immediately.
 
 ## Prostate cancer model with stromal dependent and stromal independent genotypes {#ProsCaMo} 
 
-introducción al paper.
+The paper in which we have focused is ‘Investigating prostate 
+cancer tumour–stroma interactions: clinical and biological insights 
+from an evolutionary game’ by Bansanta et al., 2011. 
+
+Knowing the highly heterogenity between cell types found 
+intratumoral, they took observations from prostate cancer 
+tumour to fit a mathematical model that could explain the 
+different types of tumour and the prognostic of each one of them. 
+To accomplish this, they establish three different cell 
+populations, being stromal cells, tumor cells depending on 
+the enviroment, and tumor cell non-dependent on the enviroment.
 
 Applying the payoff table we have developed the following example 
 from the reference. For the sake of briefness, we are only 
