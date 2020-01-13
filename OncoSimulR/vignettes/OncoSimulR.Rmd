@@ -8455,6 +8455,88 @@ plot(rnk)
 oncoSimulIndiv(allFitnessEffects(genotFitness = rnk))
 ```
 
+
+## Random fitness landscapes from an additive model {#additivemodel}
+
+This model evaluates fitness with different contributions of each allele, which will be randomly generated.
+
+Given a number a genes by the user, the code uses rnorm to generate random contribution for the mutated allele in each locus. Later, this constributions will be used in the generation of the matrix that gives the value of fitness for each combination of wild type/mutated alleles by addition of the values for each locus and combination.
+
+```{r addex1}
+radd <- rfitness(4, model = "Additive", mu = 0, sd = 0.5)
+plot(radd)
+```
+
+## Random fitness landscapes from Eggbox model {#eggboxmodel}
+
+You can also use Eggbox model [e.g., @ferretti_measuring_2016;
+@brouillet_magellan:_2015]. We call the function `fl_generate` from
+MAGELLAN [@brouillet_magellan:_2015].
+
+This model evaluate if each locus is either high or low fitness  (which corresponds to "e" parameter value), with a systematic change between each neighbor.
+
+"e" parameter: every other genotype is +/- e.
+"E" parameter: add noise on the mean effect for eggbox.
+
+```{r eggex1}
+regg <- rfitness(4, model = "Eggbox", e = 1, E = 0.5)
+plot(regg)
+```
+
+## Random fitness landscapes from Ising model {#isingmodel}
+
+Ising model is also available [e.g., @ferretti_measuring_2016;
+                               @brouillet_magellan:_2015] by using `model = "Ising"`.
+The implementation of this model is decribedin [@brouillet_magellan:_2015],
+and we use a call to MAGELLAN code to generate the landscape.
+
+In Ising model only loci at the same configuration are "compatible".
+Each loci interacts with its phisical neighbors, and for every one in
+not identical configurations, a cost for incompatibility `i` is applied.
+
+
+```{r isingex1}
+rnk <- rfitness(g = 4, model = "Ising", i = 0.002, I = 0.45)
+plot(rnk)
+```
+
+
+## Random fitness landscapes from Full models {#fullmodel}
+
+MAGELLAN also offers the possibility to combine different models with their own
+parameters in order to generate a Full model. The models combined are:
+  
+* House of cards: `H` is the number of interacting genes. 
+* Multiplicative: `s` and `S` mean and SD for generating random fitnesses. `d` 
+is a diminishing (negative) or increasing (positive) return as you approach the peak.
+* Kauffman NK: each locus interacts with any other `K` loci that can be chosen
+randomly pasing `r = TRUE` or among its neigbors.
+* RMF: explained at \@ref(rmfmodel).
+* Ising: `i` and `I` mean and SD for incompatibility. If `circular` option is
+provided, the last and first alleles can interact (circular arrangement).
+* Eggbox: In this model, each locus is considered as high or low fitness. From
+one locus to another the fitness changes its sign so that one is benefficial
+and its neigbor is detrimental.
+`e` and `E` are fitness and noise for fitness.
+* Optimum: there is an optimum fitness contribution defined by `o` $mu$ and 
+`O` $sigma$ and every locus has a production `p`and `P` (also mean and sd 
+                                                         respectively).
+
+All models can be taken into account for the fitness calculation.
+With default parameters, neither of Ising, Eggbox or Optimum contribute to 
+fitness lanadcape generation as all `i`, `e`, `o` and `p` all `== 0`.
+Also, as all parameters refering to standard deviations have value `== -1`,
+those are also have no effect unless changed.
+Go to MAGELLAN webpage <http://wwwabi.snv.jussieu.fr/public/Magellan/> for 
+detailed information [@brouillet_magellan:_2015].
+
+```{r fullex1}
+rnk <- rfitness(4, model = "Full", i = 0.5, I = 0.1,
+                e = 2, s = 0.3, S = 0.08)
+plot(rnk)
+```
+
+
 ## Epistasis and fitness landscape statistics {#epistats}
 
 We can call MAGELLAN's [@brouillet_magellan:_2015] `fl_statistics` to
