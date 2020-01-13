@@ -149,6 +149,7 @@ rfitness <- function(g, c= 0.5,
       argsEgg <- paste0("-e ", e, " -E ", E," ", g, " 2")
       fl1 <- system2(fl_generate_binary(), args = argsEgg, stdout = TRUE)[-1]
     } else if (model == "Full") {
+      if(K >= g) stop("It makes no sense to have K >= g")
       argsFull <- paste0("-K ", K, ifelse(r, " -r ", " "),
                          "-i ", i, " -I ", I , ifelse(circular, " -c ", " "),
                          "-e ", e, " -E ", E, " ",
