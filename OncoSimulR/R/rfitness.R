@@ -141,16 +141,24 @@ rfitness <- function(g, c= 0.5,
                              g, " 2")
             fl1 <- system2(fl_generate_binary(), args = argsnk, stdout = TRUE)[-1]
         } else if (model == "Ising") {
-            argsIsing <- paste0("-i ", i, " -I ", I ,
-                                 ifelse(c, " -c ", c),
-                                 g, " 2")
-            fl1 <- system2(fl_generate_binary(), args = argsIsing, stdout = TRUE)[-1]
-        } else if (model == "Eggbox") {
-            argsEgg <- paste0("-e ", e, " -E ", E,
-                              g, " 2")
-            fl <- system2(fl_generate_binary(), args = argsEgg, stdout = TRUE)[-1]
-        }
-        if (model != "RMF") && (model != "Additive") {
+      argsIsing <- paste0("-i ", i, " -I ", I ,
+                          ifelse(circular, " -c ", " "),
+                          g, " 2")
+      fl1 <- system2(fl_generate_binary(), args = argsIsing, stdout = TRUE)[-1]
+    } else if (model == "Eggbox") {
+      argsEgg <- paste0("-e ", e, " -E ", E," ", g, " 2")
+      fl1 <- system2(fl_generate_binary(), args = argsEgg, stdout = TRUE)[-1]
+    } else if (model == "Full") {
+      argsFull <- paste0("-K ", K, ifelse(r, " -r ", " "),
+                         "-i ", i, " -I ", I , ifelse(circular, " -c ", " "),
+                         "-e ", e, " -E ", E, " ",
+                         "-H ", H, " ",
+                         "-s ", s, " -S ", S, " -d ", d, " ",
+                         "-o ", o, " -O ", O, " -p ", p, " -P ", P, " ",
+                         g, " 2")
+      fl1 <- system2(fl_generate_binary(), args = argsFull, stdout = TRUE)[-1]
+    }
+    if (model == "Eggbox" || model == "Ising" || model == "Full" || model == "NK") {
             fl1 <- matrix(
                 as.numeric(unlist(strsplit(paste(fl1, collapse = " "), " "))),
                 ncol = g + 1, byrow = TRUE)
