@@ -123,13 +123,17 @@ rfitness <- function(g, c= 0.5,
             ## f_det <- rowSums(m) * slope/nrow(m) ## this is Greene and Krona
             fi <- f_r + f_det
         } else if (model == "Additive") {
-            d_reference <- apply(m, 1, function(x) {
-                                        mut_genes <- sum(abs(x - referenceI))
-                                        mutated_genes <- rnorm(mutated_genes, mu, sd)
-                                        fit_effect <- cumsum(mutated_genes)[mut_genes]
-                                        return(abs(fit_effect))
-                }
-            fi <- f_r - fit_effect
+      ## get fitness effect for mutations in each gene
+      mutants <-rep(1,g)
+      f_single_mut <- sapply(mutants, FUN = function(x) 
+                                            rnorm(x, mean = mu, sd = sd))
+      ## find which gene is mutated 
+      m2 <- m == 1
+      ## Sum the fitness effect of that mutation to generate a vector fi with
+      ## the fitness for each mutant condition
+      fi <- apply(m2, MARGIN = 1, FUN = function (x) sum(x*f_single_mut))
+      ## remove unnecessary variables
+      rm (f_single_mut, m2)
         } else if(model == "NK") {
             if(K >= g) stop("It makes no sense to have K >= g")
             argsnk <- paste0("-K ", K,
