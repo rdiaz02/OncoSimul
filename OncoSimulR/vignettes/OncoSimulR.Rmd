@@ -8662,7 +8662,7 @@ This makes sense for wild-type cells, since they will share space with BTC cells
 their resources; and for macrophages, because the decrease of wild-type cells will affect 
 the benefit of growth factor produced by them.
 
-```{r breastC2b}
+```{r breastC2c}
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(2,5,1,0.8,1,1,9), 
                                    frequencyDependentFitness = TRUE,
@@ -8897,7 +8897,7 @@ create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD, Q,
 
 We verify that we recover Table \@ref(tab:payoff3) :
 
-```{r breastCcheck}
+```{r breastCQcheck}
 create_fe("cG", "bG","cS", "cMMΦ", "cMMTC", "bR", "cD", "Q")
 ```
 
@@ -9029,7 +9029,7 @@ leading to the disappearance of the other cell types and allowing the
 development of a non-metastatic cancer. 
 
 
-```{r cancerwQlRm1}
+```{r cancerwQHRm1}
 #Figura
 afe_3_a <- allFitnessEffects(
   genotFitness =
