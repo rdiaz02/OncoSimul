@@ -8312,6 +8312,754 @@ plot(s_3_b_2, show = "genotypes", type = "line",
 (Examples for the remaining Figures 2 and 3 are provided, using also
 `oncoSimulPop`, in file 'inst/miscell/hurlbut-ex.R')
 
+
+## Wu A, Ross D., 2016: Evolutionary Game between Commensal and Pathogenic Microbes in Intestinal Microbiota {#wuAMicrobes}
+
+The following adapted example is based on Wu A, Ross D. (2016). 
+As explained in p. 2 of the aforementioned paper, the commensal
+microbiota has been simplified into two phenotypic groups: 
+antibiotic-sensitive bacteria (CS) [WT in the code below] and 
+antibiotic-tolerant bacteria (CT). In addition, a third phenotypic 
+group of pathogenic bacteria (PA) is considered which are kept 
+in low numbers in absence of intestinal microbiota disturbances. 
+We assume CS and CT bacteria cooperate and depend on each other 
+for optimal proliferation, leading to a benefit (bG) for both of 
+them as well as to a cost for factor growth (cG) production which 
+permits a stable coexistence between CS and CT cells if the fraction 
+of PA cells is negligible. Meanwhile, PA possess a reproductive 
+or metabolic advantage relative to CS and CT. Without antibiotic 
+administration CS population inhibits PA population via the release 
+of a chemical compound which harms PA (iPA) when their relative 
+frequency is equal to or greater than 0.2, carrying a production 
+cost (cI). However, PA population takes over CS population in the 
+presence of antibiotic (ab). In this situation PA and CT compete 
+for resources. Finally, a cohabit cost (cS) is considered for all 
+three cell types.
+
+The adapted payoff matrix obtained is shown in the next table.
+
+\clearpage
+
+|                  | CS               | CT               | PA               |
+|------------------|------------------|------------------|------------------|
+|**CS**            | bG – cG – cS     | bG – cG – cS     | bG – cG – cS -cI |
+|**CT**            | bG – cG – cS     | bG – cG – cS     | bG – cG – cS     |
+|**PA**            | bPA – iPA - cS   | bPA – cS         | bPA – cS         |
+
+Table:(\#tab:payoff) Payoff matrix for the adapted example from Wu A, 
+Ross D., 2016, ‘Evolutionary Game between Commensal and Pathogenic 
+Microbes in Intestinal Microbiota’. Games. 2016;7(3); doi: 10.3390/g7030026
+.
+
+On the basis of the interactions between the different microbe populations 
+and the payoff matrix, we establish fitness for: 
+
+* CS (Fcs = bG([CS] + [CT]) - cS*([CS] + [CT] + [PA]) - cI - cG - ab) 
+* CT (Fct = bG([CS] + [CT]) - cS*([CS] + [CT] + [PA]) - cG)
+* PA (Fpa = bPA([PA]) - cS*([CS] + [CT] + [PA]) - iPA*[CS])
+
+A function to create the data frame of frequency-dependent fitnesses is 
+defined in order to be able to model situations with different values for 
+the parameters, and it is assumed that WT derive to the other cell types 
+by a single mutation.
+
+
+```{r wuAMicrobesfit1}
+create_fe <- function(bG, cG, iPA, cI, cS, bPA, ab,
+                      gt = c("WT", "CT", "PA")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+               paste0("1 + ", bG, " * (f_ + f_1) - ", cS, 
+                      " * (f_ +  f_1 + f_2) - ", cI, "(f_2 > 0.2) - ", cG, 
+                      " - ", ab),
+               paste0("1 + ", bG, " * (f_ + f_1) - ", cS, 
+                      " * (f_ +  f_1 + f_2) - ", cG),
+               paste0("1 +", bPA, " - ", cS, " * (f_ +  f_1 + f_2) - ", iPA,
+                      " *(f_(f_2 > 0.2))")),
+             stringsAsFactors = FALSE)
+}
+
+```
+We can check we recover the Table \@ref(tab:payoff) :
+
+```{r wuAMicrobescheck}
+create_fe("bG", "cG", "iPA", "cI", "cS", "bPA", "ab")
+```
+
+We verify what we have specified executing `evalAllGenotypes`. We specify 
+populations sizes for evaluating fitness at different moments in the 
+total population evolution.
+
+In the absence of antibiotic we observe how, even though CS and 
+CT population size is equal, CT fitness is greater than CS fitness 
+due to the PA inhibitory factor releasing cost. PA fitness is decreased 
+by means of this inhibitor produced by CS.
+
+```{r wuAMicrobes2a}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(7, 1, 9, 0.5, 2, 5,0), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(100, 90, 100)))
+
+```
+
+WT fitness decrease in the presence of antibiotic, while PA fitness is affected 
+by growth inhibitor released by WT to a lesser extent and CT fitness is not 
+affected being the greatest one.
+
+```{r wuAMicrobes2b}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(7, 1, 9, 0.5, 2, 5, 2), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(1000, 0, 0)))
+
+```
+
+We observe the extreme situation in which antibiotic is administrated, only PA 
+population is present and WT and CT are unable to grow, so PA fitness takes 
+precedence over WT and CT fitnesses.
+
+```{r wuAMicrobes2c}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(7, 1, 9, 0.5, 2, 5, 2), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(0, 0, 1000)))
+
+```
+
+From a PA population size greater than WT population size, the presence of WT 
+decreases PA fitness via inhibitor production while WT fitness does not increase 
+due to antibiotic administration.
+
+```{r wuAMicrobes2d}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(7, 1, 9, 0.5, 2, 5, 2), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(100, 0, 1000)))
+
+```
+
+Starting from a population of WT, WT does not have the capacity of growing
+because of the high antibiotic dose and PA fitness decrease by means of the 
+inhibitory compound produced by WT while CT counts with the greatest fitness.
+
+```{r wuAMicrobes2e}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(7, 1, 9, 0.5, 2, 5, 5), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(1000, 0, 0)))
+
+```
+
+At same WT and PA population size and with high antibiotic dose administration,
+the fitness of both of them is decreased to the same extent since they inhibit 
+each other while CT grow a little.
+
+```{r wuAMicrobes2f}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+				   create_fe(7, 1, 9, 0.5, 2, 5, 5), 
+				   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(1000, 0, 1000)))
+
+```
+
+We have verify that fitness specification is correct. Now we create `allFitnessEffects` 
+object and simulate two different situations: microbiota evolution in the absence
+and presence of antibiotic. The model used is McFL so density dependence in the 
+death rate is considered.
+
+Parameters values are adapted for reaching the evolution desired in the simulations.
+
+
+### Antibiotic absence situation {#woAntib}
+
+We observe how CT and PA cells emerge at time 0 from WT mutations. PA population 
+tries to grow but when its frequency is greater than the established threshold, 
+0.2, WT population produces inhibitory compounds which harm WT and affect its 
+fitness; when its frequency is under that threshold, WT stop releasing inhibitory 
+PA growth factor and PA try to grow again. This loop remains over time. Meanwhile,
+WT population decrease slowly due to the cost of producing the inhibitor when PA 
+frequency exceed the established 0.2 and is reached by CT population, which grow 
+until WT and CT are stabilized and cohabit taking in account the cost for sharing 
+space.
+
+```{r woAntib1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness = create_fe(7, 1, 9, 0.5, 2, 5, 0),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+
+set.seed(2)
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 1500,
+                        mu = 1e-4,
+                        initSize = 1000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red"), xlim = c(0, 1500))
+
+```
+
+### Antibiotic presence situation {#wiAntib}
+
+We observe how CT and PA cells emerge from WT mutations. WT cells decrease in 
+number due to antibiotic administration and inhibitory PA growth factor when the
+frequency of this latest surpass the threshold imposed, so PA population grow with 
+difficulty in comparison to CT. WT population finally disappear and CT and PA compete
+for resources, but CT takes over PA given its larger population size and CT population 
+remain stable over time.
+
+```{r wiAntib1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness = create_fe(7, 1, 9, 0.5, 2, 5, 2),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+
+set.seed(2)
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 100,
+                        mu = 1e-4,
+                        initSize = 1000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red"), xlim = c(0, 20))
+
+```
+
+
+
+## Barton, K. Y., Smith, C., Rychtář, J., & Sendova, T. (2018). Modeling of breast cancer through evolutionary game theory. {#breastC}
+
+
+The following example is based on Barton et al. (2018). This model assumes that
+there are four different types of cells in the body: (a) the native cells (NC), 
+which are the healthy stromal cells; (b) the macrophages (MΦ), which are part of 
+the immune system; (c) the benign tumor cells (BTC), lump-forming cancer cells 
+that lack the ability to metastasize; (d) the motile tumor cells (MTC), metastatic
+cancer cells that can invade neighboring tissues.
+
+Both the native cells and macrophages produce growth factor, which beneﬁts all types
+of cells.The cost of producing the growth factor, cG, and the beneﬁts of the growth 
+factor, bG, will be assumed to be the same for all types of the cells. The macrophages
+and motile tumor cells can move and we will assume that the ability comes at the costs 
+cM,MΦ, and cM,MTC respectively. The native cells and benign tumor cells stay in place 
+and thus have to share the resources with other native and benign tumor cells, which 
+comes at the cost cS. The cancer cells can reproduce faster than native cells or 
+macrophages, which we model by additional beneﬁt bR to the cancer cells, but the cancer 
+cells can be destroyed by macrophages, which we model by additional cost cD to the 
+cancer cells.
+
+They provide also the payoff matrix reproduced in next table :
+
+\clearpage
+
+|                  | MTC              | MΦ               | NC               | BTC              |
+|------------------|------------------|------------------|------------------|------------------|
+|**MTC**           | bR - cMMTC   | bR - cMMTC - cD + bG | bR - cMMTC + bG  | bR - cMMTC       |
+|**MΦ**            | - cG - cMMΦ      |bG - cG - cMMΦ    | bG - cG - cMMΦ   | -cG - cMMΦ       |
+|**NC**            | - cG             | bG - cG          | bG - cG - cS     | - cG - cS        |
+|**BTC**           | bR               | bR + bG - cD     | bR + bG - cS     | bR - cS          |
+
+Table:(\#tab:payoff2)  Payoff matrix from Barton et al., 2018, ‘Modeling of breast cancer 
+through evolutionary game theory’, Involve, a Journal of Mathematics, 11(4), 541-548; 
+doi:10.2140/involve.2018.11.541
+.
+
+Overall, when the concentrations of the cells are [NC], [MΦ], [BTC] and [MTC], the net beneﬁts 
+(beneﬁts minus the costs) to each type of the cells are:
+
+* W(NC) = bG([NC] + [MΦ]) - cG - cS([NC] + [BTC])
+* W(MΦ) = bG([NC] + [MΦ]) - cG - cMMΦ
+* W(BTC) = bR + bG([NC] + [MΦ]) - cS([NC] + [BTC]) - cD[MΦ]
+* W(MTC) = bR + bG([NC] + [MΦ]) - cMMTC - cD[MΦ]
+
+
+To allow modelling scenarios with different values for the parameters in Figure 10.X we 
+will define a function to create the data frame of frequency-dependent fitnesses. First, 
+we will consider the NC cell type as the WT. Moreover, we will assume that each one of 
+the other cell types types (MΦ , BTC and MTC) are all derived from WT by a single mutation 
+in one of three genes, say, O, B, M, respectively.
+
+
+```{r breastCfit1}
+create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD,
+                      gt = c("WT", "MΦ", "BTC", "MTC")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+               paste0("1 + ", bG, "*(f_ + f_1) - ", cG, " - ", cS, "*(f_ + f_2)"),
+               paste0("1 + ", bG, "*(f_ + f_1) - ", cG, " - ", cMMΦ),
+               paste0("1 + ", bR, " + ", bG, "*(f_ + f_1) - ", cS, "* (f_ + f_2) -",
+                      cD , " * f_1"),
+               paste0("1 + ", bR, " + ", bG, " *(f_ + f_1) -", cMMTC, " - ",
+                      cD , " * f_1")
+               ),
+             stringsAsFactors = FALSE)
+}
+
+```
+
+We can check we recover the Table \@ref(tab:payoff2) :
+
+```{r breastCcheck}
+create_fe("cG", "bG","cS", "cMMΦ", "cMMTC", "bR", "cD")
+```
+
+We check that we have correctly specified the different parameters executing `evalAllGenotypes`.
+For this, we specify populations sizes for evaluating fitness at different moments in the total
+population evolution.
+
+When there are only wild-type cells, the fitness of the cancer cells is higher than the other 
+type of cells’ fitness. This makes sense, since there are no macrophages that can affect them. 
+
+```{r breastC2a}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(2,5,1,0.8,1,1,9), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(1000, 0, 0, 0)))
+
+```
+
+
+In case that there are wild-type cells and macrophages, fitness of cancer cells is lower than 
+before (although they are still going to proliferate).
+
+```{r breastC2b}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(2,5,1,0.8,1,1,9), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(1000, 1000, 0, 0)))
+
+```
+
+When cancer cells start to grow, the fitness of wild type cells and macrophages decrease. 
+This makes sense for wild-type cells, since they will share space with BTC cells, reducing 
+their resources; and for macrophages, because the decrease of wild-type cells will affect 
+the benefit of growth factor produced by them.
+
+```{r breastC2b}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(2,5,1,0.8,1,1,9), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(1000, 1000, 100, 100)))
+
+```
+
+So, since the model seems correct, we create now the allFitnessEffects object and do the 
+simulation. Here, we use the McFL model, existing a density dependence in addition to the 
+frequency dependence in the birth rates. In this case, we model 3 different situations: 
+cancer being controlled, development of a non-metastatic cancer and development of metastatic 
+cancer.
+
+
+### Cancer kept under control {#cancercontrol}
+
+In this example, cD value is increased in order to represent a highly functioning 
+immune system that helps fighting against cancer cells, while the cost of producing 
+growth factor (cG) is low to allow a better fitness of non-cancer cells. This results 
+in the fitness of wild-type cells and macrophages being kept in high levels, helping 
+to control the proliferation of cancer cells, which is maintained under acceptable levels.
+
+```{r cancercontrol1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness =
+    create_fe(0.5,4,1,0.2,1,0.5,4),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+set.seed(2)
+
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 100,
+                        mu = 1e-4,
+                        initSize = 10000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue", "yellow"),
+     xlim = c(0, 20))
+
+```
+
+### Development of a non-metastatic cancer {#cancerNM}
+
+In this second scenario, bR and cMMTC are increased, promoting a higher proliferative capacity 
+of cancer cells but increasing the cost of the ability to move by metastatic cells (MTC), 
+while Cs is slightly decreased, allowing a better fitness of non-motile cells that have to
+share resources (WT and BTC). This situation leads to the appearance of a non-metastatic 
+cancer due to the higher fitness of BTC cells, thanks to their absence of mobility cost 
+and their increased proliferative capacity, specially in the absence of other cell types 
+that compete for resources.
+
+```{r cancerNM1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness =
+    create_fe(1,4,0.5,1,1.5,1,4),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+set.seed(2)
+
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 100,
+                        mu = 1e-4,
+                        initSize = 10000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue", "yellow"),
+     xlim = c(0, 20))
+
+```
+
+
+### Development of a metastatic cancer {#cancerM}
+
+In this last example, cS value is increased, hindering the growth and 
+fitness of non-motile cells that compete for space and resources,  whereas 
+the cost of mobility of metastatic cancer cells (cMMTC) is considerably reduced,
+thus favoring their proliferation. This scenario leads to the development of 
+metastatic cancer, due to a rapid increase in the proliferation of metastatic 
+cancer cells, thanks to their low mobility cost, and a slightly slower increase 
+in the fitness of benign tumor cells, that have to compete with resources with 
+the wild-type cells until their disappearance.
+
+
+```{r cancerM1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness =
+    create_fe(0.5,4,2,0.5,0.5,1,4),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+set.seed(2)
+
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 100,
+                        mu = 1e-4,
+                        initSize = 10000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue", "yellow"),
+     xlim = c(0, 20))
+
+
+```
+
+
+## Improving the previous example. Modeling of breast cancer with the presence chemotherapy and resistance. {#breastCQ}
+
+With the aim of obtaining a more reliable and representative picture 
+of what happens in a situation of cancer development and treatment, 
+we model a more complex scenario. 
+
+This alternative model considers the presence of seven cell types, 
+four of which are the same that have been described in the previous 
+model: the native cells (NC), macrophages (MΦ), benign tumor cells 
+(BTC) and metastatic cancer cells (MTC). Moreover, we include here 
+the chemotherapy-resistant normal cells (R), chemotherapy-resistant 
+benign tumor cells (BTC,R) and chemotherapy-resistant metastatic cancer 
+cells (MTC,R).
+
+Most of the costs and benefits of this new model are similar to those
+described in the previous situation. Native cells and macrophages, 
+but also the chemotherapy-resistant normal cells, produce growth factor
+bG, which benefits all cell types. These three cells types are considered
+to have the same cost of producing the growth factor, cG. The macrophages
+and motile tumor cells  (both MTC and MTC,R) have the ability to move, 
+assuming that the cost of this ability is cM,MΦ, cM,MTC and cM,MTC,R 
+respectively. The native cells and benign tumor cells (both BTC and BTC,R)
+have no motile capacity and have to stay in place, competing for the 
+available resources with other native and benign tumor cells, which comes 
+at the cost cS for all these cell types. As occurred in the previous model, 
+considering that cancer cells have a higher reproductive rate than native 
+cells or macrophages, we add an additional beneﬁt bR to the cancer cells. 
+However, as they can also be destroyed and attacked by macrophages, we add 
+an additional cost cD to the cancer cells. Moreover, in this model we add an
+additional factor Q that represents the effect of chemotherapeutic treatment, 
+which will not have any effect on cells that have been able to develop 
+resistance to it, but it will have a negative effect on the rest of the 
+cell types, being especially important on cancer cells, as they have a higher 
+rate of reproduction.
+
+The payoff matrix will also introduce slight changes, which reproduced in 
+next table:
+
+|          | MTC              | MΦ               | NC               | BTC           | R | BTC,R | MTC,R |
+|----------|------------------|------------------|------------------|---------------|---|-------|-------|
+|**MTC**   | bR - cMMTC - Q   | bR - cMMTC - cD + bG -Q  | bR - cMMTC + bG -Q   | bR - cMMTC - Q | bR - cMMTC + bG - Q | bR - cMMTC - Q | bR - cMMTC -Q |
+|**MΦ**    | - cG - cMMΦ - 0.01 * Q  | bG - cG - cMMΦ - 0.01 * Q | bG - cG - cMMΦ - 0.01 * Q | -cG - cMMΦ - 0.01 * Q | bG - cG - cMMΦ- 0.01 * Q | -cG - cMMΦ - 0.01 * Q | - cG - cMMΦ - 0.01 * Q |
+|**NC**    | - cG - 0.01 * Q | bG - cG - 0.01 * Q  | bG - cG - cS - 0.01 * Q  | - cG - cS - 0.01 * Q  | bG - cG - cS - 0.01 * Q |  - cG - cS - 0.01 * Q | - cG - 0.01 * Q |
+|**BTC**   | bR - Q  | bR + bG - cD - Q  | bR + bG - cS - Q | bR - cS - Q  | bR + bG - cS -Q | bR - cS - Q | bR - Q |
+|**R**     | - cG | bG - cG   | bG - cG - cS  | - cG - cS  | bG - cG - cS  |  - cG - cS | - cG  | -cG |
+|**BTC,R** | bR  | bR + bG - cD | bR + bG - cS | bR - cS  | bR + bG - cS | bR - cS | bR |
+|**MTC,R** | bR - cMMTC | bR - cMMTC - cD + bG  | bR - cMMTC + bG  | bR - cMMTC | bR - cMMTC + bG | bR - cMMTC | bR - cMMTC|
+
+Table:(\#tab:payoff3)  Payoff matrix adapted from Barton et al., 2018,
+‘Modeling of breast cancer through evolutionary game theory’, Involve, 
+a Journal of Mathematics, 11(4), 541-548; doi:10.2140/involve.2018.11.541
+.
+
+Overall, when the concentrations of the cells are ǪNC, ǪMΦ, ǪBTC, ǪMTC, ǪR, 
+ǪBTC,R and ǪMTC,R, the net beneﬁts (beneﬁts minus the costs) to each cell 
+type are:
+
+
+* W(NC) = bG([NC] + [MΦ] + [R]) - cG - cS([NC] + [BTC] + [R] + [BTC,R]) - 0.01*Q
+* W(MΦ) = bG([NC] + [MΦ] + [R]) - cG - cMMΦ - 0.001*Q
+* W(BTC) = bR + bG([NC] + [MΦ] + [R]) - cS([NC] + [MΦ] + [R] + [BTC,R]) - cD[MΦ] - Q
+* W(MTC) = bR + bG([NC] + [MΦ] + [R]) - cMMTC - cD[MΦ] - Q
+* W(R) = bG ([NC] + [MΦ] + [R]) - cG - cS ([NC] + [BTC] + [R] + [BTC,R])
+* W(BTC,R) = bR + bG([NC] + [MΦ] + [R]) - cS([NC] + [MΦ] + [R] + [BTC,R]) - cD[MΦ]
+* W(MTC,R) = bR + bG([NC] + [MΦ] + [R]) - cMMTC - cD[MΦ]
+
+
+Now, we will define a function to create the data frame of frequency-dependent
+fitnesses to allow modelling several situations. As in the previous model,
+we will consider the NC cell type as the WT and  will assume that MΦ, BTC 
+and MTC cells are all derived from WT by a single mutation, as previously 
+described. Likewise, we consider that the chemotherapy-resistant normal 
+cells (R) are derived from a single mutation in a gene, say, R. Furthermore,
+we will assume that the two chemotherapy-resistant cancer cells (BTC,R and 
+MTC,R) are all derived from WT by two different mutations.
+
+```{r breastCQfit1}
+create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD, Q,
+                      gt = c("WT", "BTC", "R", "MTC", "MΦ", "BTC,R", "MTC,R")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+               
+               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cS, "(f_ + f_1 + f_2 + f_1_2) -",
+                      "0.01*", Q),
+               paste0("1 + ", bR, " + ", bG, "(f_ + f_2 + f_4) - ", cS, " (f_ + f_1 + f_2 + f_1_2) -",
+                      cD , " * f_4 -", Q),
+               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cS, "(f_ + f_1 + f_2 + f_1_2)"),
+               paste0("1 + ", bR, " + ", bG, " *(f_ + f_2 + f_4) -", cMMTC, " - ",
+                      cD , " * f_4 -", Q),
+               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cMMΦ, "- 0.01*",Q),
+               paste0("1 + ", bR, " + ", bG, "(f_ + f_2 + f_4) - ", cS, " (f_ + f_1 + f_2 + f_1_2) -",
+                      cD , " * f_4"),
+               paste0("1 + ", bR, " + ", bG, " *(f_ + f_2 + f_4) -", cMMTC, " - ",
+                      cD , " * f_4")
+             ),
+             stringsAsFactors = FALSE)
+}
+
+```
+
+We verify that we recover Table \@ref(tab:payoff3) :
+
+```{r breastCcheck}
+create_fe("cG", "bG","cS", "cMMΦ", "cMMTC", "bR", "cD", "Q")
+```
+
+We check once again that we have correctly specified the different parameters
+executing evalAllGenotypes. We are trying the same case than in the previous 
+example, having wild-type cells, macrophages and both cancer cells. But in 
+this case, we are introducing the parameter “Q” (chemotherapy), with a value 
+of 5.
+
+```{r breastCQ2a}
+evalAllGenotypes(allFitnessEffects(genotFitness =  
+                                   create_fe(2,5,1,0.8,1,1,9,5), 
+                                   frequencyDependentFitness = TRUE,
+                                   frequencyType = "rel",
+                                   spPopSizes = c(1000, 100, 0, 100, 1000, 0, 0)))
+
+```
+
+As we can see, BTC and MTC have a fitness of 0, so the will not proliferate. 
+But cancer cells mutants with a double mutation ( BTC, R and MTC, R) are resistant
+to chemotherapy, so they can still grow. This is what we were expecting to happen,
+so we started with the simulation.  
+
+Now, we create the allFitnessEffects object and do the simulation using the McFL
+model. In this case, we specify gene-specific mutations rates, so we can model a 
+more realistic scenario where the appearence of chemotherapy-resistant cells is 
+hindered. Once again, we simulate different situations by changing the values 
+of the different parameters.
+
+
+### Absence of chemotherapy {#cancerwoQ}
+
+In the first scenario, we simulate a situation where no chemotherapy is applied.
+In this condition, there is a very low R mutation rate, which hampers the 
+proliferation of chemotherapy-resistant cells. A fast appearance of macrophages 
+is observed, as well as non-resistant tumor cells. As there is no chemoterapy 
+treatment, the fitness of non-resistant tumor cells is favoured against macrophages,
+leading to the appearance of cancer, where BTC cells show the greatest fitness due 
+to the mobility cost of MTC cells.
+
+
+```{r cancerwoQ1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness =
+    create_fe(2,5,1,0.8,1,1,9,0),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+#Set mutation rates
+muvar2 <- c("MΦ" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-7)
+
+set.seed(2)
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 20,
+                        mu = muvar2,
+                        initSize = 10000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue", "yellow", "orange", "brown"))
+
+```
+
+
+
+### Chemotherapy with low R mutation rate {#cancerwQlRm}
+
+In the second scenario, we perform a simulation including chemotherapy as a 
+treatment. However, here we maintain a low R mutation rate, hampering once 
+again the appearance of chemotherapy-resistant cells. This situation can be 
+reflecting the application of a combination chemotherapy that reduces or 
+limits the appearance of resistance. We observe that the fitness of wild-type
+cells and macrophages increases rapidly and remains elevated, while tumor 
+cells undergo some proliferation at first, but it remains under control over
+time thanks to the negative effect on them of chemotherapy.
+
+```{r cancerwQlRm1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness =
+    create_fe(2,5,1,0.8,1,1,9,2),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+muvar2 <- c("MΦ" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-7)
+
+set.seed(2)
+
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 20,
+                        mu = muvar2,
+                        initSize = 10000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue", "yellow", "orange", "brown"))
+
+```
+
+
+
+### Chemotherapy with considerable R mutation rate {#cancerwQHRm}
+
+Finally, we simulate a scenario in the presence of chemotherapy as a treatment
+and also a considerable R mutation rate. This would allow the appearance of
+chemotherapy-resistant cells. This simulation reflects the situation of 
+using chemotherapy treatments against which tumor cells develop resistance.
+Here, we observe a similar fitness evolution of wild-type cells and 
+macrophages to the previous example, rapidly increasing their population
+and remaining elevated for a period of time. The proliferation of non-resistant
+tumor cells is also maintained under acceptable levels thanks to the effect
+of chemotherapy. However, due to the increased R mutation rate, 
+chemotherapy-resistant cells begin to appear in low levels, until the fitness
+of chemotherapy-resistant benign tumor cells stats to increase considerably,
+leading to the disappearance of the other cell types and allowing the 
+development of a non-metastatic cancer. 
+
+
+```{r cancerwQlRm1}
+#Figura
+afe_3_a <- allFitnessEffects(
+  genotFitness =
+    create_fe(2,5,1,0.8,1,1,9,2),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+
+muvar2 <- c("MΦ" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-5)
+
+set.seed(2)
+
+s_3_a <- oncoSimulIndiv(afe_3_a,
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 50,
+                        mu = muvar2,
+                        initSize = 10000, 
+                        keepPhylog = TRUE,
+                        seed = NULL, 
+                        errorHitMaxTries = FALSE, 
+                        errorHitWallTime = FALSE)
+
+
+plot(s_3_a, show = "genotypes", type = "line",
+     col = c("black", "green", "red", "blue", "yellow", "orange", "brown"))
+
+```
+
+
+
 ## An example with absolute numbers and population collapse {#fdfabs}
 
 
