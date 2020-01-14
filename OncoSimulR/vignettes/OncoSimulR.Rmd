@@ -8709,8 +8709,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
 
 
 plot(s_3_a, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue", "yellow"),
-     xlim = c(0, 20))
+     col = c("black", "green", "red", "blue", "yellow"))
 
 ```
 
