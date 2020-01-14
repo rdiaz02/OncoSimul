@@ -8315,7 +8315,7 @@ plot(s_3_b_2, show = "genotypes", type = "line",
 
 ## Wu A, Ross D., 2016: Evolutionary Game between Commensal and Pathogenic Microbes in Intestinal Microbiota {#wuAMicrobes}
 
-The following adapted example is based on Wu A, Ross D. (2016). 
+The following adapted example is based on @wuA2016. 
 As explained in p. 2 of the aforementioned paper, the commensal
 microbiota has been simplified into two phenotypic groups: 
 antibiotic-sensitive bacteria (CS) [WT in the code below] and 
@@ -8340,11 +8340,11 @@ The adapted payoff matrix obtained is shown in the next table.
 
 \clearpage
 
-|                  | CS               | CT               | PA               |
-|------------------|------------------|------------------|------------------|
-|**CS**            | bG – cG – cS     | bG – cG – cS     | bG – cG – cS -cI |
-|**CT**            | bG – cG – cS     | bG – cG – cS     | bG – cG – cS     |
-|**PA**            | bPA – iPA - cS   | bPA – cS         | bPA – cS         |
+|                  | CS                | CT                | PA                    |
+|------------------|-------------------|-------------------|-----------------------|
+|**CS**            | bG – cG – cS - ab | bG – cG – cS - ab | bG – cG – cS -cI - ab |
+|**CT**            | bG – cG – cS      | bG – cG – cS      | bG – cG – cS          |
+|**PA**            | bPA – iPA - cS    | bPA – cS          | bPA – cS              |
 
 Table:(\#tab:payoff) Payoff matrix for the adapted example from Wu A, 
 Ross D., 2016, ‘Evolutionary Game between Commensal and Pathogenic 
@@ -8555,7 +8555,7 @@ plot(s_3_a, show = "genotypes", type = "line",
 ## Barton, K. Y., Smith, C., Rychtář, J., & Sendova, T. (2018). Modeling of breast cancer through evolutionary game theory. {#breastC}
 
 
-The following example is based on Barton et al. (2018). This model assumes that
+The following example is based on @Barton2018. This model assumes that
 there are four different types of cells in the body: (a) the native cells (NC), 
 which are the healthy stromal cells; (b) the macrophages (MΦ), which are part of 
 the immune system; (c) the benign tumor cells (BTC), lump-forming cancer cells 
@@ -8799,7 +8799,8 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 With the aim of obtaining a more reliable and representative picture 
 of what happens in a situation of cancer development and treatment, 
-we model a more complex scenario. 
+we model a more complex scenario inproving the previous example, 
+\@ref(breastC). 
 
 This alternative model considers the presence of seven cell types, 
 four of which are the same that have been described in the previous 
