@@ -8481,7 +8481,7 @@ Parameters values are adapted for reaching the evolution desired in the simulati
 
 We observe how CT and PA cells emerge at time 0 from WT mutations. PA population 
 tries to grow but when its frequency is greater than the established threshold, 
-0.2, WT population produces inhibitory compounds which harm WT and affect its 
+0.2, WT population produces inhibitory compounds which harm PA and affect its 
 fitness; when its frequency is under that threshold, WT stop releasing inhibitory 
 PA growth factor and PA try to grow again. This loop remains over time. Meanwhile,
 WT population decrease slowly due to the cost of producing the inhibitor when PA 
@@ -8521,8 +8521,8 @@ We observe how CT and PA cells emerge from WT mutations. WT cells decrease in
 number due to antibiotic administration and inhibitory PA growth factor when the
 frequency of this latest surpass the threshold imposed, so PA population grow with 
 difficulty in comparison to CT. WT population finally disappear and CT and PA compete
-for resources, but CT takes over PA given its larger population size and CT population 
-remain stable over time.
+for resources, but CT takes over PA given its larger population size and CT 
+population remain stable over time.
 
 ```{r wiAntib1}
 #Figura
