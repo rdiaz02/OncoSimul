@@ -8804,6 +8804,182 @@ plot(commens, show = "genotypes", type = "line",
      xlim = c(80, 100), ylim = c(2000, 22000))
 
 ```
+## An example of modellization in Parkinson disease related cell community
+
+The following example is based on @tsigelny2007, and it talks about the coexistance between cells that produce α-synuclein and β-synuclein, related with pore-like oligomer development. The relation between those and the Parkinson disease is defined in the paper: "Accumulation of a-synuclein resulting in the formation of oligomers and protofibrils has been linked to Parkinson’s disease and Lewy body dementia. In contrast, b-synuclein (b-syn), a close homologue, does not aggregate and reduces a-synuclein (a-syn)-related pathology."
+
+
+```{r parka , message=FALSE}
+options(stringsAsFactors = FALSE) ## get rid of the messages
+park1<- data.frame(Genotype = c("WT", "A", "B", "A,B"), 
+                 Fitness = c("1",
+			     "1 + 3*(f_1 + f_2 + f_1_2)",
+                             "1 + 2*(f_1 + f_2 + f_1_2)", 
+                             "1.5 + 4.5*(f_1 + f_2 + f_1_2)")) 
+parkgen1<- allFitnessEffects(genotFitness = park1, 
+                         frequencyDependentFitness = TRUE, 
+                         frequencyType = "rel") 
+```
+α- – normal a-synuclein production
+β- – normal b-synuclein production
+α+ – deleterious a-synuclein production, causing aggregation and the rest of mentioned effects
+β+ – deleterious b-synuclein production, preventing it from slowing down the aggregation of a-synuclein
+WT - α- and β- (balance)
+A - α+ and β- (increases [slight] the probability of Parkinson's disease)
+B – α- and β+ (increases [slight] the probability of Parkinson's disease)
+AB – α+ and β+ (massive increase of probability of Parkinson's disease)
+
+
+In this simulation, at the very end, the only cells that remain alive are those from AB population (which means that both α and β are mutated, α+ and β+, which means that the individual has a high risk of developing the disease, and all the cells keep this mutation). Genotype AB is able to invade the population when there are some A's and B's around. Cooperation increases the fitness at 1.5 level respecting the fitness for just A's or just B's, so the rest of population (appart from AB) collapses. We can observe this cell behaviour in the following code and graphics; we are using the "McFLD" model (where death rate $D(N) = \max(1, \log(1 + N/K))$);
+
+
+```{r parkb}
+set.seed(NULL)
+fpark1 <- oncoSimulIndiv(parkgen1, 
+                     model = "McFL",
+                     onlyCancer = FALSE,
+                     finalTime = 200,
+                     mu = 1e-4,
+                     initSize = 5000,
+                     keepPhylog = TRUE,
+                     seed = NULL,
+                     errorHitMaxTries = FALSE, 
+                     errorHitWallTime = FALSE)
+```	
+
+
+
+
+```{r grafica_model1, eval=TRUE,echo=FALSE, fig.cap="Graphic from OncoSimulR simulation, 'Dynamics of alpha-synuclein aggregation and inhibition of pore-like oligomer development by beta-synuclein', *Simulation*, https://doi.org/10.1111/j.1742-4658.2007.05733.x"}
+knitr::include_graphics("tsigelny-graphic.png")
+```
+
+Analyzing the graphic obtain from OncoSimulR we can see that A, B and the WT population dissapear at (more or less) the same point that AB population increases drastically, which make sense because the fitness of AB population is greater than the other three population fitnesses. As the birth rate of the population depends directly of the fitness, at the end, just the AB population survives.
+
+
+```{r arbol_model1, eval=TRUE,echo=FALSE, fig.cap="Phylogenetic Tree from OncoSimulR simulation, 'Dynamics of alpha-synuclein aggregation and inhibition of pore-like oligomer development by beta-synuclein', *Phylogeny Tree*, https://doi.org/10.1111/j.1742-4658.2007.05733.x"}
+knitr::include_graphics("tsigelny-tree.png")
+```
+
+In the second image, the phylogenetic tree, we wanted to observe the phylogeny of the population on this simulation, we can observe that the AB population comes mainly from the A population. This makes sense because it fitness is bigger than B population fitness. 
+
+
+
+## An example of modellization using a Four Phenotype Model of Interaction Between Tumour Cells
+
+The following example is based on @krzeslak2014. The proposed model combines two different models; As it said in the paper: "The first one is the model that assumes production of a substance to harm other cells and the second one considers production of a growth factor which activates e.g. angiogenesis.
+More precisely in the first model the author assumes that harming other cells is possible by production of some cytotoxic substances which affect surrounding cells (but not the producer). As an evolutionary response to that feature some cells can acquire genetic resistance. Both, production of substances and resistance, are costly, but a phenotype that produces cytotoxins is able to gain some advantage in contact with non-resistant cells."
+
+They provide, the payoff matrix of first model reproduced in Figure
+\@ref(fig:model1_table1): 
+
+
+```{r model1_table1, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from Table 1 of Krzeslak et al., 2014, 'Four Phenotype Model of Interaction Between Tumour Cells', *Analysis of the extended model*, 3, 2; doi.org/10.3182/20140824-6-ZA-1003.02037"}
+knitr::include_graphics("krzeslak1.png")
+```
+
+Where the paper defines phenotypes as follows:
+
+"
+p - cell produces a cytotoxic substance against adjacent cells q - cell is resistant to the cytotoxic substance
+r - cell neither produces the cytotoxic substance nor is resistant (baseline)
+and parameters used to defined the measure of fitness are given by:
+z – baseline fitness (set to 1 in the context of the combined model)
+e – cost of producing cytotoxin
+f – disadvantage of being affected by cytotoxin
+g – benefit of harming other cells
+h – cost of resistance to cytotoxin
+"
+
+The second model "describes paracrine production of growth factor (GF) including angiogenesis promoters".
+
+And this is the Pay-off matrix corresponding to this model in Figure
+\@ref(fig:model2_table2)
+
+```{r model2_table2, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from Table 2 of Krzeslak et al., 2014, 'Four Phenotype Model of Interaction Between Tumour Cells', *Analysis of the extended model*, 3, 3; doi.org/10.3182/20140824-6-ZA-1003.02037"}
+knitr::include_graphics("krzeslak2.png")
+```
+
+"where phenotypes are given as:
+A+ - cell produces growth factors (paracrine fashion)
+A- - cell does not produce growth factors (baseline)
+and parameters used to defined the measure of fitness are given by:
+i – cost of proangiogenic factor production
+j – benefit of receiving growth factor
+"
+
+
+Finally the authors combine the phenotypes of both models, obtaining then a model of four different phenotypes of cells, being these, as we can observe in the paper, the following:
+
+"
+A. Cell produces the growth factor and the benefit impacts on all neighbors and cell itself;
+P. Cell produces a cytotoxic substance against nearby cells;
+Q. Cell is resistant to the cytotoxic substance;
+WT. Strategy which shall be considered as a baseline (neither produces the cytotoxic substance, resistance to it, nor growth factor).
+
+The frequency of cell type 1 is equal to A, that of type 2 is P, that of type 3 is Q and the last one’s frequency is equal to WT (in some sense it is also relevant to A-).
+"
+
+They propose a pay-off matrix that combines both models, as we can see in Figure
+\@ref(fig:model3_table3)
+
+```{r model3_table3, eval=TRUE,echo=FALSE, fig.cap="Proposed pay-off matrix from Table 3 of Krzeslak et al., 2014, 'Four Phenotype Model of Interaction Between Tumour Cells', *Analysis of the extended model*, 3, 3; doi.org/10.3182/20140824-6-ZA-1003.02037"}
+knitr::include_graphics("krzeslak3.png")
+```
+
+"The expected pay-offs (the sum of the products of frequency and pay-off) are then:
+A = 1 - i + j - f * P
+P = 1 - e + j * A-f*P+g*(A+P+WT)
+Q = 1 - h + j * A
+WT = 1 + j * A - f * P
+"
+
+```{r fpm1, message=FALSE}
+func_fitness <- function(i, j, f, g, e, h,
+                        gt = c("WT", "A", "P", "Q")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+               paste0("1 + ", j, " * f_1", " - ", f, " * f_2"),
+               paste0("1 - ", i, " + ", j, " - ", f, " * f_2"),
+               paste0("1 - ", e, " + ", j, " * f_1", " - ", f, " * f_2", " + ", g, " * (f_ + f_1 + f_2)"),
+               paste0("1 - ", h, " + ", j, " * f_1")),
+             stringsAsFactors = FALSE)
+}
+```
+
+```{r fpm2, message=FALSE}
+func_fitness("i", "j", "f", "g", "e", "h")
+}
+```
+
+```{r fpm3, message=FALSE}
+afe_fitness <- allFitnessEffects(
+  genotFitness =
+    func_fitness(0.3, 0.4, 0.4, 0.25, 0.7, 0.1),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+}
+```
+
+
+```{r fpm4, message=FALSE}
+s_fitness <- oncoSimulIndiv(afe_fitness,
+                           model = "McFL",
+                           onlyCancer = FALSE,
+                           finalTime = 500,
+                           mu = 1e-4,
+                           initSize = 5000,
+                           keepPhylog = TRUE,
+                           seed = NULL,
+                           errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+}
+```
+
+```{r grafica_model2, eval=TRUE,echo=FALSE, fig.cap="Graphical Simulation with OncoSimulR from 'Four Phenotype Model of Interaction Between Tumour Cells', doi.org/10.3182/20140824-6-ZA-1003.02037"}
+knitr::include_graphics("krzeslak_graphic.png")
+```
+
 
 
 ## Frequency-dependent fitness: can I mix relative and absolute frequencies? {#fdfrelabs}
