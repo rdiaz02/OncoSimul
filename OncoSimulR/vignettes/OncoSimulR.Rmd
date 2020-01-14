@@ -8820,10 +8820,12 @@ parkgen1<- allFitnessEffects(genotFitness = park1,
                          frequencyDependentFitness = TRUE, 
                          frequencyType = "rel") 
 ```
+
 α- – normal a-synuclein production
 β- – normal b-synuclein production
 α+ – deleterious a-synuclein production, causing aggregation and the rest of mentioned effects
 β+ – deleterious b-synuclein production, preventing it from slowing down the aggregation of a-synuclein
+
 WT - α- and β- (balance)
 A - α+ and β- (increases [slight] the probability of Parkinson's disease)
 B – α- and β+ (increases [slight] the probability of Parkinson's disease)
@@ -8854,6 +8856,7 @@ fpark1 <- oncoSimulIndiv(parkgen1,
 knitr::include_graphics("tsigelny-graphic.png")
 ```
 
+
 Analyzing the graphic obtain from OncoSimulR we can see that A, B and the WT population dissapear at (more or less) the same point that AB population increases drastically, which make sense because the fitness of AB population is greater than the other three population fitnesses. As the birth rate of the population depends directly of the fitness, at the end, just the AB population survives.
 
 
@@ -8865,10 +8868,10 @@ In the second image, the phylogenetic tree, we wanted to observe the phylogeny o
 
 
 
-## An example of modellization using a Four Phenotype Model of Interaction Between Tumour Cells
 
-The following example is based on @krzeslak2014. The proposed model combines two different models; As it said in the paper: "The first one is the model that assumes production of a substance to harm other cells and the second one considers production of a growth factor which activates e.g. angiogenesis.
-More precisely in the first model the author assumes that harming other cells is possible by production of some cytotoxic substances which affect surrounding cells (but not the producer). As an evolutionary response to that feature some cells can acquire genetic resistance. Both, production of substances and resistance, are costly, but a phenotype that produces cytotoxins is able to gain some advantage in contact with non-resistant cells."
+## An example of modellization of Interaction Between Tumour Cells
+
+The following example is based on @krzeslak2014. The proposed model combines two different models; The first model assumes production of a substance to harm other cells by producing some cytotoxic substances as an evolutionary response to that feature some cells can acquire genetic resistance. Both, production of substances and resistance, are costly, but a phenotype that produces cytotoxins is able to gain some advantage in contact with non-resistant cells. The second one considers production of a growth factor which activates e.g. angiogenesis. 
 
 They provide, the payoff matrix of first model reproduced in Figure
 \@ref(fig:model1_table1): 
@@ -8878,20 +8881,18 @@ They provide, the payoff matrix of first model reproduced in Figure
 knitr::include_graphics("krzeslak1.png")
 ```
 
-Where the paper defines phenotypes as follows:
+The phenotypes for the first model:
+WT –  cell neither produces the cytotoxic substance nor is resistant (baseline)
+P –  cell produces a cytotoxic substance against adjacent cells
+Q –  cell is resistant to the cytotoxic substance
 
-"
-p - cell produces a cytotoxic substance against adjacent cells q - cell is resistant to the cytotoxic substance
-r - cell neither produces the cytotoxic substance nor is resistant (baseline)
-and parameters used to defined the measure of fitness are given by:
-z – baseline fitness (set to 1 in the context of the combined model)
+The parameters used to defined the measure of fitness of the first model:
 e – cost of producing cytotoxin
 f – disadvantage of being affected by cytotoxin
 g – benefit of harming other cells
 h – cost of resistance to cytotoxin
-"
 
-The second model "describes paracrine production of growth factor (GF) including angiogenesis promoters".
+The second model describes paracrine production of growth factor (GF):
 
 And this is the Pay-off matrix corresponding to this model in Figure
 \@ref(fig:model2_table2)
@@ -8900,25 +8901,19 @@ And this is the Pay-off matrix corresponding to this model in Figure
 knitr::include_graphics("krzeslak2.png")
 ```
 
-"where phenotypes are given as:
+The phenotypes for the second model:
 A+ - cell produces growth factors (paracrine fashion)
 A- - cell does not produce growth factors (baseline)
-and parameters used to defined the measure of fitness are given by:
+The parameters used to defined the measure of fitness of the second model:
 i – cost of proangiogenic factor production
 j – benefit of receiving growth factor
-"
 
 
-Finally the authors combine the phenotypes of both models, obtaining then a model of four different phenotypes of cells, being these, as we can observe in the paper, the following:
-
-"
-A. Cell produces the growth factor and the benefit impacts on all neighbors and cell itself;
-P. Cell produces a cytotoxic substance against nearby cells;
-Q. Cell is resistant to the cytotoxic substance;
-WT. Strategy which shall be considered as a baseline (neither produces the cytotoxic substance, resistance to it, nor growth factor).
-
-The frequency of cell type 1 is equal to A, that of type 2 is P, that of type 3 is Q and the last one’s frequency is equal to WT (in some sense it is also relevant to A-).
-"
+Finally the authors combine the phenotypes of both models, obtaining then a model of four different phenotypes of cells:
+WT: Strategy which shall be considered as a baseline (neither produces the cytotoxic substance, resistance to it, nor growth factor).
+A: Cell produces the growth factor and the benefit impacts on all neighbors and cell itself;
+P: Cell produces a cytotoxic substance against nearby cells;
+Q: Cell is resistant to the cytotoxic substance;
 
 They propose a pay-off matrix that combines both models, as we can see in Figure
 \@ref(fig:model3_table3)
@@ -8927,12 +8922,11 @@ They propose a pay-off matrix that combines both models, as we can see in Figure
 knitr::include_graphics("krzeslak3.png")
 ```
 
-"The expected pay-offs (the sum of the products of frequency and pay-off) are then:
+The expected pay-offs (the sum of the products of frequency and pay-off) are then:
+WT = 1 + j * A - f * P
 A = 1 - i + j - f * P
 P = 1 - e + j * A-f*P+g*(A+P+WT)
 Q = 1 - h + j * A
-WT = 1 + j * A - f * P
-"
 
 ```{r fpm1, message=FALSE}
 func_fitness <- function(i, j, f, g, e, h,
@@ -8976,9 +8970,11 @@ s_fitness <- oncoSimulIndiv(afe_fitness,
 }
 ```
 
-```{r grafica_model2, eval=TRUE,echo=FALSE, fig.cap="Graphical Simulation with OncoSimulR from 'Four Phenotype Model of Interaction Between Tumour Cells', doi.org/10.3182/20140824-6-ZA-1003.02037"}
+```{r grafica_model2, eval=TRUE,echo=FALSE, fig.cap="Graphical Simulation with OncoSimulR of Interaction Between Tumour Cells. Parameters:  i=0.3, j=0.4, f=0.4, g=0.25, e= 0.7, h=0.1”, doi.org/10.3182/20140824-6-ZA-1003.02037"}
 knitr::include_graphics("krzeslak_graphic.png")
 ```
+
+
 
 
 
