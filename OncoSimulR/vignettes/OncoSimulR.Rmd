@@ -8810,15 +8810,14 @@ The following example is based on @tsigelny2007, and it talks about the coexista
 
 
 ```{r parka , message=FALSE}
-options(stringsAsFactors = FALSE) ## get rid of the messages
 park1<- data.frame(Genotype = c("WT", "A", "B", "A,B"), 
                  Fitness = c("1",
 			     "1 + 3*(f_1 + f_2 + f_1_2)",
-                             "1 + 2*(f_1 + f_2 + f_1_2)", 
-                             "1.5 + 4.5*(f_1 + f_2 + f_1_2)")) 
+                             "1 + 2*(f_1 + f_2 + f_1_2)", #We establish the fitness of B smaller than the one of A because it is an indirect cause of the disease and not a direct one. 
+                             "1.5 + 4.5*(f_1 + f_2 + f_1_2)")) #The baseline of the fitness is higher in the AB population (their growth is favored).
 parkgen1<- allFitnessEffects(genotFitness = park1, 
-                         frequencyDependentFitness = TRUE, 
-                         frequencyType = "rel") 
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel") #We use relative frequencies.
 ```
 
 α- – normal a-synuclein production
@@ -8849,24 +8848,42 @@ fpark1 <- oncoSimulIndiv(parkgen1,
                      errorHitWallTime = FALSE)
 ```	
 
-
-
-
-```{r grafica_model1, eval=TRUE,echo=FALSE, fig.cap="Graphic from OncoSimulR simulation, 'Dynamics of alpha-synuclein aggregation and inhibition of pore-like oligomer development by beta-synuclein', *Simulation*, https://doi.org/10.1111/j.1742-4658.2007.05733.x"}
-knitr::include_graphics("tsigelny-graphic.png")
+```{r parkplot1, message=FALSE}
+plot(fpark1, show = "genotypes",  type = "line",
+     col = c("black", "green", "red", "blue"))
 ```
-
 
 Analyzing the graphic obtain from OncoSimulR we can see that A, B and the WT population dissapear at (more or less) the same point that AB population increases drastically, which make sense because the fitness of AB population is greater than the other three population fitnesses. As the birth rate of the population depends directly of the fitness, at the end, just the AB population survives.
 
 
-```{r arbol_model1, eval=TRUE,echo=FALSE, fig.cap="Phylogenetic Tree from OncoSimulR simulation, 'Dynamics of alpha-synuclein aggregation and inhibition of pore-like oligomer development by beta-synuclein', *Phylogeny Tree*, https://doi.org/10.1111/j.1742-4658.2007.05733.x"}
-knitr::include_graphics("tsigelny-tree.png")
+```{r parkplot2, message=FALSE}
+plotClonePhylog(fpark1, N = 0, keepEvents=TRUE, timeEvents=TRUE, t=c(100,200)) 
+#N=0 shows all the clones even if they do not have viability at the end.
+#keepEvents show the amount of each population.
+#timeEvents make the vertical edge proportional to time.
+#t to show the clones that exist in the period of time established.
 ```
 
 In the second image, the phylogenetic tree, we wanted to observe the phylogeny of the population on this simulation, we can observe that the AB population comes mainly from the A population. This makes sense because it fitness is bigger than B population fitness. 
 
+```{r parkplot3, message=FALSE}
+#tabla:
+  	#1	#2    	#3	    #4	      #5    	#6    	#7    	#8    	#9    	#10
+#WT	0 	0     	0	     0         0     	0	0	0     	0     	0		
+#A	0	0     	0     	     0         0     	0     	0   	0     	0	0
+#B	0     	0     	0     	     0         0     	0     	0     	0     	0     	0
+#AB	1174724	1172091	1167764	1168742	1169176	1170901	1169737	1173600	1170617	1171011
 
+WT <- c(0,0,0,0,0,0,0,0,0,0)
+A <- c(0,0,0,0,0,0,0,0,0,0)
+B <- c(0,0,0,0,0,0,0,0,0,0)
+AB <- c(1174724,1172091,1167764,1168742,1169176,1170901,1169737,1173600,1170617,1171011)
+
+matriz <- cbind(WT, A, B, AB)
+boxplot(matriz, main="Genotype number of cells")	
+```
+
+To finish, this is the boxplot. We made it using the R function 'boxplot', with the objective of seeing the variance that appears into the final population. But as you can see, there is no variance, because at the end, the size of AB population remains constant across simulation, and it appears as a line in the top (meaning that a lot of cells survive in that population, around 1 million), and the others, just dissapear. This happens always after running the function N times (being N a variable number of iterations).
 
 
 ## An example of modellization of Interaction Between Tumour Cells
@@ -8887,6 +8904,7 @@ P –  cell produces a cytotoxic substance against adjacent cells
 Q –  cell is resistant to the cytotoxic substance
 
 The parameters used to defined the measure of fitness of the first model:
+z – baseline fitness
 e – cost of producing cytotoxin
 f – disadvantage of being affected by cytotoxin
 g – benefit of harming other cells
@@ -8904,6 +8922,7 @@ knitr::include_graphics("krzeslak2.png")
 The phenotypes for the second model:
 A+ - cell produces growth factors (paracrine fashion)
 A- - cell does not produce growth factors (baseline)
+
 The parameters used to defined the measure of fitness of the second model:
 i – cost of proangiogenic factor production
 j – benefit of receiving growth factor
@@ -8930,50 +8949,123 @@ Q = 1 - h + j * A
 
 ```{r fpm1, message=FALSE}
 func_fitness <- function(i, j, f, g, e, h,
-                        gt = c("WT", "A", "P", "Q")) {
+                         gt = c("WT", "A", "P", "Q")) {
   data.frame(Genotype = gt,
              Fitness = c(
-               paste0("1 + ", j, " * f_1", " - ", f, " * f_2"),
-               paste0("1 - ", i, " + ", j, " - ", f, " * f_2"),
-               paste0("1 - ", e, " + ", j, " * f_1", " - ", f, " * f_2", " + ", g, " * (f_ + f_1 + f_2)"),
-               paste0("1 - ", h, " + ", j, " * f_1")),
+               paste0("1 + ", j, " * f_1", " - ", f, " * f_2"), # Equation for WT
+               paste0("1 - ", i, " + ", j, " - ", f, " * f_2"), # A population
+               paste0("1 - ", e, " + ", j, " * f_1", " - ", f, " * f_2", " + ", g, " * (f_ + f_1 + f_2)"), # P population
+               paste0("1 - ", h, " + ", j, " * f_1")), # Q population
              stringsAsFactors = FALSE)
 }
 ```
 
 ```{r fpm2, message=FALSE}
 func_fitness("i", "j", "f", "g", "e", "h")
-}
 ```
 
 ```{r fpm3, message=FALSE}
+# FIRST PART --> FAVOURING JUST ONE POPULATION
 afe_fitness <- allFitnessEffects(
   genotFitness =
-    func_fitness(0.3, 0.4, 0.4, 0.25, 0.7, 0.1),
+    func_fitness(0.3, 0.4, 0.4, 0.25, 0.7, 0.1), 
+  # First simulation, affecting P population
+  # With this parameters, we are directly affecting P population (bad fitness)
   frequencyDependentFitness = TRUE,
-  frequencyType = "rel")
-}
+  frequencyType = "rel") # Relative values
 ```
 
 
 ```{r fpm4, message=FALSE}
+# Other simulations affecting P:
+# Second simulation: i = 0.3, j = 0.4, f = 0.4, g = 0.5, e = 0.5, h = 0.1
+# With the second simulation, P fitness improves
+
+# Third simulation: i = 0.3, j = 0.4, f = 0.4, g = 0.7, e = 0.25, h = 0.1
+# This simulation benefit directly P population 
+
+set.seed(2) # Establishment of seed
 s_fitness <- oncoSimulIndiv(afe_fitness,
-                           model = "McFL",
-                           onlyCancer = FALSE,
-                           finalTime = 500,
-                           mu = 1e-4,
-                           initSize = 5000,
-                           keepPhylog = TRUE,
-                           seed = NULL,
-                           errorHitMaxTries = FALSE,
-                           errorHitWallTime = FALSE)
-}
+                            model = "McFL", # Model used to run the simulation
+                            onlyCancer = FALSE,
+                            finalTime = 500, # 500 time units as final time
+                            mu = 1e-4,
+                            initSize = 5000, # Size of the initial population
+                            keepPhylog = TRUE,
+                            seed = NULL, # seed null because it has been established before
+                            errorHitMaxTries = FALSE,
+                            errorHitWallTime = FALSE)
 ```
 
-```{r grafica_model2, eval=TRUE,echo=FALSE, fig.cap="Graphical Simulation with OncoSimulR of Interaction Between Tumour Cells. Parameters:  i=0.3, j=0.4, f=0.4, g=0.25, e= 0.7, h=0.1”, doi.org/10.3182/20140824-6-ZA-1003.02037"}
-knitr::include_graphics("krzeslak_graphic.png")
+```{r fpmplot1, message=FALSE}
+plot(s_fitness, show = "genotypes", type = "line",
+     col = c("dodgerblue", "darkslateblue", "darkolivegreen4", "red")) # Colors in accordance with the ones used by the paper
 ```
 
+
+For this example we set a high value for the e parameter (cost of producing cytotoxin) and a reduce value for g (benefit of harming other cells), directly damaging P, because both parameters affect only this population. As a consequence of that, P quickly disappeared with time and A and WT succeeded, as you can see in the plot above.
+
+After this results, we removed the set.seed (to simulate the stochasticity of a biological situation) and repeated iteratively the simulation. We saw that the final population obtained remained the same in all iterations.
+
+Afterwards, we equalized both parameters and observed something similar to the first graphic, with a just difference: as the P fitness was better, its number of cells at the end of the simulation was bigger (results not shown). We again perform iterations and the results remain the same.
+
+Subsequently, we changed parameters in favour of P population (increasing g and decreasing e). As a result, P population grew in a short time period (results not shown). Again, the final population remained the same after some iterations. 
+
+Finally, we looked for a parameter combination with which the frequency population were more dependent on fitness. The population distribution varies between iterations. We obtained it increasing j and f as these parameters made the fitness more dependent on frequency. In the plot below the result of one iteration is shown.
+
+```{r fpm5, message=FALSE}
+# SECOND PART
+# After that, we looked for a parameter combination to make the fitness population
+# more dependent on frequencies of other populations.
+
+afe_fitness2 <- allFitnessEffects(
+  genotFitness =
+    func_fitness(0.3, 0.7, 0.7, 0.4, 0.3, 0.1), 
+  # Increment on f and g parameters
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel")
+```
+
+
+```{r fpm6, message=FALSE}
+s_fitness2 <- oncoSimulIndiv(afe_fitness2,
+                            model = "McFL",
+                            onlyCancer = FALSE,
+                            finalTime = 500,
+                            mu = 1e-4,
+                            initSize = 5000,
+                            keepPhylog = TRUE,
+                            seed = NULL, # seed NULL because to run this simulation iteratively
+                            errorHitMaxTries = FALSE,
+                            errorHitWallTime = FALSE)
+```
+
+
+```{r fpmplot2, message=FALSE}
+plot(s_fitness2, show = "genotypes", type = "line",
+     col = c("dodgerblue", "darkslateblue", "darkolivegreen4", "red"))
+```
+
+
+We generate a plot to reflect this variation. For that purpose, we made 10 iterarions and we represented them in a boxplot. We can observe how the number of cells of all populations varied between iteration except WT. Due to that, we consider that OncoSimulR is particularly useful to simulate biological situations in which fitness of different populations are very similar and dependent on the frequency of the other populations. In that cases, performing a high number of simulations help predict the populations distribution at the end, very useful to suggest treatment for disease.
+
+```{r boxplot, message=FALSE}
+
+# Population distribution at the end of the simulation after runing it iteratively 10 times
+#WT   0     0     0     0     0     0     459   0     0     0
+#A    4605  2089  2196  1749  4694  2286  4191  2188  2218  4645
+#P    1149  2779  2862  2771  1077  2893  1405  2933  2872  964
+#Q    1978  0     0     0     2149  0     1619  0     0     2327
+
+WT <- c(0,0,0,0,0,0,459,0,0,0)
+A <- c(4605,2089,2196,1749,4694,2286,4191,2188,2218,4645)
+P <- c(1149,2779,2862,2771,1077,2893,1405,2933,2872,964)
+Q <- c(1978,0,0,0,2149,0,1619,0,0,2327)
+
+matriz <- cbind(WT, A, P, Q)
+
+boxplot(matriz, main = "Boxplot with the population composition after running N times")
+```
 
 
 
