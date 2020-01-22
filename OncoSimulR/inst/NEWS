@@ -1,8 +1,13 @@
-Changes in version 2.17.992
+Changes in version 2.17.993 (2020-01-23):
+	- Further additions of MAGELLAN's functionality and Additive
+	model to rfitness. Merging from master.
+
+Changes in version 2.17.992 (2019-12-19):
+	- Oooops: forgot Makevars.win
 	- fno-common: better way of dealing with verbose in magellan.
 	[from commit 912503a and e7b549e in master ]
 
-Changes in version 2.17.991
+Changes in version 2.17.991 (2019-12-18):
 	- Compiles with fno-common (for gcc 10).
 	- Fixed error "length(x) = 5 > 1' in coercion to 'logical(1)'"
 	- rfitness: clarified log=TRUE and truncate_at_0 after log.
