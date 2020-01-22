@@ -5,8 +5,8 @@
 \title{Generate random fitness.}
 
 \description{ Generate random fitness landscapes under a House of Cards,
-  Rough Mount Fuji, additive model, Kauffman's NK model, Ising model,
-Eggbox model and Full model}
+  Rough Mount Fuji (RMF), additive (multiplicative) model, Kauffman's NK
+  model, Ising model, Eggbox model and Full model}
 
 
 \usage{
@@ -28,28 +28,32 @@ rfitness(g, c = 0.5, sd = 1, mu = 1, reference = "random", scale = NULL,
   \item{g}{Number of genes.}
 
   \item{c}{The decrease in fitness of a genotype per each unit increase
-    in Hamming distance from the reference genotype (see \code{reference}).}
+    in Hamming distance from the reference genotype for the RMF model
+    (see \code{reference}).}
 
   \item{sd}{The standard deviation of the random component (a normal
-  distribution of mean \code{mu} and standard deviation \code{sd}).}
+  distribution of mean \code{mu} and standard deviation \code{sd}) for
+  the RMF and additive models .}
 
 \item{mu}{The mean of the random component (a normal distribution of
-mean \code{mu} and standard deviation \code{sd}).}
+mean \code{mu} and standard deviation \code{sd}) for the RMF and
+additive models.}
 
 
-\item{reference}{The reference genotype: for the deterministic, additive
-  part, this is the genotype with maximal fitness, and all other
-  genotypes decrease their fitness by \code{c} for every unit of Hamming
-  distance from this reference. If "random" a genotype will be randomly
-  chosen as the reference. If "max" the genotype with all positions
-  mutated will be chosen as the reference. If you pass a vector (e.g.,
-  \code{reference = c(1, 0, 1, 0)}) that will be the reference genotype.
-  If "random2" a genotype will be randomly chosen as the reference. In
-  contrast to "random", however, not all genotypes have the same
-  probability of being chosen; here, what is equal is the probability
-  that the reference genotype has 1, 2, ..., g, mutations (and, once a
-  number mutations is chosen, all genotypes with that number of
-  mutations have equal probability of being the reference). }
+\item{reference}{The reference genotype: in the RMF model, for the
+  deterministic, additive part, this is the genotype with maximal
+  fitness, and all other genotypes decrease their fitness by \code{c}
+  for every unit of Hamming distance from this reference. If "random" a
+  genotype will be randomly chosen as the reference. If "max" the
+  genotype with all positions mutated will be chosen as the
+  reference. If you pass a vector (e.g., \code{reference = c(1, 0, 1,
+  0)}) that will be the reference genotype.  If "random2" a genotype
+  will be randomly chosen as the reference. In contrast to "random",
+  however, not all genotypes have the same probability of being chosen;
+  here, what is equal is the probability that the reference genotype has
+  1, 2, ..., g, mutations (and, once a number mutations is chosen, all
+  genotypes with that number of mutations have equal probability of
+  being the reference). }
 
 \item{scale}{Either NULL (nothing is done) or a two-element vector. If a
   two-element vector, fitness is re-scaled between \code{scale[1]} (the
@@ -178,27 +182,24 @@ mean \code{mu} and standard deviation \code{sd}).}
   random variable (in this case, a normal deviate of mean \code{mu}
   and standard deviation \code{sd}).
 
-  Setting \eqn{c = 0} we obtain a House of Cards model. Setting \eqn{sd
-    = 0} fitness is given by the distance from the reference and if the
-    reference is the genotype with all positions mutated, then we have a
-    fully additive model (fitness increases linearly with the number of
-    positions mutated).
+  When using \code{model = "RMF"}, setting \eqn{c = 0} we obtain a House
+    of Cards model. Setting \eqn{sd = 0} fitness is given by the
+    distance from the reference and if the reference is the genotype
+    with all positions mutated, then we have a fully additive model
+    (fitness increases linearly with the number of positions mutated),
+    where all mutations have the same effect.
 
-  For OncoSimulR, we often want the wildtype to have a mean of
-  1. Reasonable settings are \code{mu = 1} and \code{wt_is_1 =
-  'subtract'} so that we simulate from a distribution centered in 1, and
-  we make sure afterwards (via a simple shift) that the wildtype is
-  actuall 1. The \code{sd} controls the standard deviation, with the
-  usual working and meaning as in a normal distribution, unless \code{c}
-  is different from zero. In this case, with \code{c} large, the range
-  of the data can be large, specially if \code{g} (the number of genes)
-  is large.
-
-
-  When using \code{model = "Additive"}, the model is like the Rough Mount Fuji
-  model in Szendro et al., 2013 or Franke et al., 2011, but in this case, each 
-  locus have different contributions to the fitness evaluation.
-
+  More flexible additive models can be used using \code{model =
+  "Additive"}. This model is like the Rough Mount Fuji model in Szendro
+  et al., 2013 or Franke et al., 2011, but in this case, each locus can
+  have different contributions to the fitness evaluation. This model is
+  also referred to as the "multiplicative" model in the literature as it
+  is additive in the log-scale (e.g., see Brouillet et al., 2015 or
+  Ferretti et al., 2016). There is no epistasis in the additve model
+  because the effect of a mutation in a locus does not depend on the
+  genetic background, or whether the rest of the loci are mutated or
+  not.
+  
 
   When using \code{model = "NK"} fitness is drawn from a uniform (0, 1)
   distribution.
@@ -220,9 +221,22 @@ mean \code{mu} and standard deviation \code{sd}).}
   
   For \code{model = "NK" | "Ising" | "Eggbox" | "Full"} the fitness
   landscape is generated by directly calling the \code{fl_generate}
-  function of MAGELLAN. See details in Ferretti et al., or Brouillet et al.
+  function of MAGELLAN
+  (\url{http://wwwabi.snv.jussieu.fr/public/Magellan/}). See details in
+  Ferretti et al. 2016, or Brouillet et al., 2015.
   
-  Visit: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/} for more info.
+
+  For OncoSimulR, we often want the wildtype to have a mean of
+  1. Reasonable settings when using RMF are \code{mu = 1} and \code{wt_is_1 =
+  'subtract'} so that we simulate from a distribution centered in 1, and
+  we make sure afterwards (via a simple shift) that the wildtype is
+  actuall 1. The \code{sd} controls the standard deviation, with the
+  usual working and meaning as in a normal distribution, unless \code{c}
+  is different from zero. In this case, with \code{c} large, the range
+  of the data can be large, specially if \code{g} (the number of genes)
+  is large.
+
+  
 } 
 
 \value{
