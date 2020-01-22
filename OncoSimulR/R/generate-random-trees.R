@@ -85,7 +85,17 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
         ## adjMat <- transitiveReduction(adjMat)
         ## calling transitive.closure not necessary, as that
         ## is called inside transitive.reduction
-        trm <- nem::transitive.reduction(nem::transitive.closure(adjMat))
+        ## trm <- nem::transitive.reduction(nem::transitive.closure(adjMat))
+
+        ## could use relations package as
+        ## r1 <- relations::transitive_reduction(
+        ##       relations::transitive_closure(relations::as.relation(adjMat2)))
+        ## trm <- relation_incidence(r1)
+        ## but storage mode is double, etc, etc.
+        ## And would need to double check it is working as I think it is.
+        ## For now, trying to use nem's code directly
+        
+        trm <- nem_transitive.reduction(adjMat)
         stopifnot(all(trm %in% c(0L, 1L) ))
         storage.mode(trm) <- "integer"
         adjMat <- trm
@@ -101,6 +111,7 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
         return(df)
     }
 }
+
 
 ## simOG <- simOGraph
 
