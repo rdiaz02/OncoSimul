@@ -17,7 +17,7 @@ rfitness(g, c = 0.5, sd = 1, mu = 1, reference = "random", scale = NULL,
          accessible_th = 0, truncate_at_0 = TRUE,
          K = 1, r = TRUE, i = 0, I = -1, circular = FALSE, e = 0, E = -1,
          H = -1, s = 0.1, S = -1, d = 0, o = 0, O = -1, p = 0, P = -1, 
-         model = c("RMF", "NK", "Additive", "Ising", "Eggbox", "Full"))
+         model = c("RMF", "Additive", "NK", "Ising", "Eggbox", "Full"))
 }
 
 
@@ -161,6 +161,13 @@ additive models.}
 \item{o}{For Full models, mean value for the optimum model.}
 
 \item{O}{For Full models, standard deviation for the optimum model.}
+
+\item{p}{For Full models, the mean production value for each non 0
+  allele in the Optimum model component.}
+
+\item{P}{For Full models, the associated stdev (of non 0 alleles) in the
+Optimum model component.}
+
 
 
 \item{model}{One of "RMF" (default) for Rough Mount Fuji, "Additive" for
