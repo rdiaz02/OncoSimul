@@ -2,23 +2,47 @@ Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
 Version: 2.17.993
-Date: 2020-01-22
+Date: 2020-01-23
 Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
  	     email = "rdiaz02@gmail.com"),
 	      person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
 	      person("Sergio", "Sanchez-Carrillo", role = "ctb", 
 	        email = "sergiosanchezcarrillo@gmail.com"),
+	      person("Guillermo", "Gorines Cordero", role = "ctb"),
+	      person("Ivan", "Lorca Alonso", role = "ctb"),
+	      person("Francisco", "Muñoz Lopez", role = "ctb"),
+	      person("David", "Roncero Moroño", role = "ctb"),
 	      person("Alvaro" , "Quevedo" , role = "ctb"),
 	      person("Pablo" ,"Perez" , role = "ctb"),
 	      person("Cristina" ,"Devesa" , role = "ctb"),
-	      person("Alejandro", "Herrador" , role = "ctb"))		
+	      person("Alejandro", "Herrador" , role = "ctb"),
+	      person("Holger", "Froehlich", role = "ctb"),
+	      person("Florian", "Markowetz", role = "ctb"),
+	      person("Achim", "Tresch", role = "ctb"),
+	      person("Theresa", "Niederberger", role = "ctb"),
+	      person("Christian", "Bender", role = "ctb"),
+	      person("Matthias", "Maneck", role = "ctb"),
+	      person("Claudio", "Lottaz", role = "ctb"),
+	      person("Tim", "Beissbarth", role = "ctb"))
 Author: Ramon Diaz-Uriarte [aut, cre],
 	Sergio Sanchez-Carrillo [ctb],
 	Mark Taylor [ctb], 
+	Guillermo Gorines Cordero [ctb],
+	Ivan Lorca Alonso [ctb],
+	Francisco Muñoz Lopez [ctb],
+	David Roncero Moroño [ctb],
 	Alvaro Quevedo [ctb],
 	Pablo Perez [ctb],
 	Cristina Devesa [ctb],
-	Alejandro Herrador [ctb]
+	Alejandro Herrador [ctb],
+	Holger Froehlich [ctb],
+	Florian Markowetz [ctb],
+	Achim Tresch [ctb],
+	Theresa Niederberger [ctb],
+	Christian Bender [ctb],
+	Matthias Maneck [ctb],
+	Claudio Lottaz [ctb],
+	Tim Beissbarth [ctb]
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
@@ -40,7 +64,7 @@ License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
 BugReports: https://github.com/rdiaz02/OncoSimul/issues
 Depends: R (>= 3.3.0)
-Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, car, dplyr, smatr, ggplot2, ggrepel, nem, stringr
+Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, car, dplyr, smatr, ggplot2, ggrepel, stringr
 Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0), rmarkdown, bookdown, pander
 LinkingTo: Rcpp
 VignetteBuilder: knitr
