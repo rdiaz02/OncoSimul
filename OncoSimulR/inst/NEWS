@@ -1,3 +1,7 @@
+Changes in version 2.17.7 (2020-01-22):
+	- Removed dependency on nem, to be deprecated. Adding nem's
+	code (file nem_transitive_reduction.R).
+
 Changes in version 2.17.6 (2020-01-22):
 	- Further additions of MAGELLAN's functionality and Additive
 	model to rfitness

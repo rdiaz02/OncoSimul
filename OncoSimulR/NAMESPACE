@@ -64,7 +64,7 @@ importFrom("dplyr", "full_join", "left_join", "right_join", "%>%", "mutate",
            "filter")
 importFrom("smatr", "ma") ## for major axis regression in some tests
 importFrom("car", "linearHypothesis")
-importFrom("nem", "transitive.reduction")
+## importFrom("nem", "transitive.reduction") ## now in file nem_transitive_reduction.R
 ## importFrom("slam", "simple_triplet_zero_matrix", ## "colapply_simple_triplet_matrix",
 ##            "col_sums")
 
