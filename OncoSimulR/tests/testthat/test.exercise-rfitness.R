@@ -80,7 +80,7 @@ expect_output(print(rfitness(4, model = "Eggbox", e = 0, E = 2.4)),
 expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
                 K = 2, r = TRUE,
                 p = 0.2, P = 0.3, o = 0.3, O = 1)), "Fitness", fixed = TRUE)
-expect_output(print(rfitness(4, model = "Full", K = 5)), "Fitness",
+expect_error(rfitness(4, model = "Full", K = 5), "It makes no sense",
               fixed = TRUE)
 expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
                 K = 2, r = TRUE,
