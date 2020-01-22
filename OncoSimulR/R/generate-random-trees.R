@@ -83,6 +83,8 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
     ## Prune to remove indirect connections
     if(multilevelParent & removeDirectIndirect) {
         ## adjMat <- transitiveReduction(adjMat)
+        ## calling transitive.closure not necessary, as that
+        ## is called inside transitive.reduction
         trm <- nem::transitive.reduction(nem::transitive.closure(adjMat))
         stopifnot(all(trm %in% c(0L, 1L) ))
         storage.mode(trm) <- "integer"
