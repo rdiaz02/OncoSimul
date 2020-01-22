@@ -7922,15 +7922,16 @@ plot(radd)
 ## Random fitness landscapes from Eggbox model {#eggboxmodel}
 
 You can also use Eggbox model [e.g., @ferretti_measuring_2016;
-@brouillet_magellan:_2015]. We call the function `fl_generate` from
-MAGELLAN [@brouillet_magellan:_2015].
+@brouillet_magellan:_2015], where each locus is either high or low fitness
+(depending on the "e" parameter value), with a systematic change between
+each neighbor. We call the function `fl_generate` from MAGELLAN
+[@brouillet_magellan:_2015] to generate these landscapes.
 
-This model evaluates if each locus is either high or low fitness (which
-corresponds to "e" parameter value), with a systematic change between each
-neighbor.
 
-"e" parameter: every other genotype is +/- e.
-"E" parameter: add noise on the mean effect for eggbox.
+<!-- "e" parameter: every other genotype is +/- e. -->
+<!-- "E" parameter: add noise on the mean effect for eggbox. -->
+
+
 
 ```{r eggex1}
 regg <- rfitness(4, model = "Eggbox", e = 1, E = 0.5)
@@ -7940,9 +7941,9 @@ plot(regg)
 ## Random fitness landscapes from Ising model {#isingmodel}
 
 In the Ising model [e.g., @ferretti_measuring_2016;
-@brouillet_magellan:_2015], all loci are arranged sequentially.  Each
+@brouillet_magellan:_2015], loci are arranged sequentially and each
 locus interacts with its physical neighbors. For each pair of interacting
-loci, there is an associated cost if both alleles are not identical (and
+loci, there is a cost to (log)fitness if both alleles are not identical (and
 therefore 'compatible'); in this case, the cost for incompatibility `i` is
 applied. The last and the first loci will interact only if 'circular' is
 set. The implementation of this model is decribedin
@@ -7979,13 +7980,14 @@ and its neigbor is detrimental.
 `O` $sigma$ and every locus has a production `p`and `P` (also mean and sd 
                                                          respectively).
 
-All models can be taken into account for the fitness calculation.
-With default parameters, neither of Ising, Eggbox or Optimum contribute to 
+All models can be taken into account for the fitness calculation.  With
+default parameters, neither of Ising, Eggbox or Optimum contribute to
 fitness lanadcape generation as all `i`, `e`, `o` and `p` all `== 0`.
-Also, as all parameters refering to standard deviations have value `== -1`,
-those are also have no effect unless changed.
-Go to MAGELLAN webpage <http://wwwabi.snv.jussieu.fr/public/Magellan/> for 
-detailed information [@brouillet_magellan:_2015].
+Also, as all parameters refering to standard deviations have value `==
+-1`, those are also have no effect unless changed. Further details can be
+found in MAGELLAN's webpage
+<http://wwwabi.snv.jussieu.fr/public/Magellan/> and
+[@brouillet_magellan:_2015].
 
 ```{r fullex1}
 rnk <- rfitness(4, model = "Full", i = 0.5, I = 0.1,
