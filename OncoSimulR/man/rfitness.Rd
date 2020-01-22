@@ -311,6 +311,9 @@ rnk <- rfitness(5, K = 3, model = "NK")
 plot(rnk)
 oncoSimulIndiv(allFitnessEffects(genotFitness = rnk))
 
+## Additive model
+radd <- rfitness(4, model = "Additive", mu = 0.2, sd = 0.5)
+plot(radd)
 
 ## Eggbox model
 regg = rfitness(g=4,model="Eggbox", e = 2, E=2.4)

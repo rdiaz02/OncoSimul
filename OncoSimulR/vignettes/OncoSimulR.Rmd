@@ -8458,9 +8458,14 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = rnk))
 
 ## Random fitness landscapes from an additive model {#additivemodel}
 
-This model evaluates fitness with different contributions of each allele, which will be randomly generated.
+This model evaluates fitness with different contributions of each allele,
+which will be randomly generated.
 
-Given a number a genes by the user, the code uses rnorm to generate random contribution for the mutated allele in each locus. Later, this constributions will be used in the generation of the matrix that gives the value of fitness for each combination of wild type/mutated alleles by addition of the values for each locus and combination.
+Given a number a genes by the user, the code uses rnorm to generate random
+contribution for the mutated allele in each locus. Later, this
+constributions will be used in the generation of the matrix that gives the
+value of fitness for each combination of wild type/mutated alleles by
+addition of the values for each locus and combination.
 
 ```{r addex1}
 radd <- rfitness(4, model = "Additive", mu = 0, sd = 0.5)
@@ -8473,7 +8478,9 @@ You can also use Eggbox model [e.g., @ferretti_measuring_2016;
 @brouillet_magellan:_2015]. We call the function `fl_generate` from
 MAGELLAN [@brouillet_magellan:_2015].
 
-This model evaluate if each locus is either high or low fitness  (which corresponds to "e" parameter value), with a systematic change between each neighbor.
+This model evaluates if each locus is either high or low fitness (which
+corresponds to "e" parameter value), with a systematic change between each
+neighbor.
 
 "e" parameter: every other genotype is +/- e.
 "E" parameter: add noise on the mean effect for eggbox.
@@ -8485,19 +8492,22 @@ plot(regg)
 
 ## Random fitness landscapes from Ising model {#isingmodel}
 
-Ising model is also available [e.g., @ferretti_measuring_2016;
-                               @brouillet_magellan:_2015] by using `model = "Ising"`.
-The implementation of this model is decribedin [@brouillet_magellan:_2015],
-and we use a call to MAGELLAN code to generate the landscape.
+In the Ising model [e.g., @ferretti_measuring_2016;
+@brouillet_magellan:_2015], all loci are arranged sequentially.  Each
+locus interacts with its physical neighbors. For each pair of interacting
+loci, there is an associated cost if both alleles are not identical (and
+therefore 'compatible'); in this case, the cost for incompatibility `i` is
+applied. The last and the first loci will interact only if 'circular' is
+set. The implementation of this model is decribedin
+[@brouillet_magellan:_2015], and we use a call to MAGELLAN code to
+generate the landscape.
 
-In Ising model only loci at the same configuration are "compatible".
-Each loci interacts with its phisical neighbors, and for every one in
-not identical configurations, a cost for incompatibility `i` is applied.
+
 
 
 ```{r isingex1}
-rnk <- rfitness(g = 4, model = "Ising", i = 0.002, I = 0.45)
-plot(rnk)
+ris <- rfitness(g = 4, model = "Ising", i = 0.002, I = 0.45)
+plot(ris)
 ```
 
 
@@ -8507,7 +8517,7 @@ MAGELLAN also offers the possibility to combine different models with their own
 parameters in order to generate a Full model. The models combined are:
   
 * House of cards: `H` is the number of interacting genes. 
-* Multiplicative: `s` and `S` mean and SD for generating random fitnesses. `d` 
+* Multiplicative (what we call additive): `s` and `S` mean and SD for generating random fitnesses. `d` 
 is a diminishing (negative) or increasing (positive) return as you approach the peak.
 * Kauffman NK: each locus interacts with any other `K` loci that can be chosen
 randomly pasing `r = TRUE` or among its neigbors.
