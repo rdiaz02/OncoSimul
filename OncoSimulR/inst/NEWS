@@ -4,10 +4,29 @@ Changes in version 2.17.993 (2020-01-23):
 	- Further additions of MAGELLAN's functionality and Additive
 	model to rfitness. Merging from master.
 
+	- These is from cherry-picking commits to master, as of 2020-01-22:
+	  - [4ab7e90]
+	  - [8e35201]
+	  - [832945b]
+	  - [aafb84e]
+	  - [fe0891e]
+	  - [286bf57]
+	  - [e221a8e]
+	  - [941df3d]
+	  - [59b9662]
+	  - [39c4d55]
+	  - [a245e44]
+	  - [114a930]
+	  - [49e8d40]
+	  - [df6d0cd]
+	  - [5a0be19]
+	  - [734bf76]
+
 Changes in version 2.17.992 (2019-12-19):
 	- Oooops: forgot Makevars.win
 	- fno-common: better way of dealing with verbose in magellan.
 	[from commit 912503a and e7b549e in master ]
+	      - the equivalente of commit 9efd3ad is also included.
 
 Changes in version 2.17.991 (2019-12-18):
 	- Compiles with fno-common (for gcc 10).
