@@ -5,6 +5,7 @@ Changes in version 2.17.993 (2020-01-23):
 	model to rfitness. Merging from master.
 
 	- These is from cherry-picking commits to master, as of 2020-01-22:
+	  - [eda2e75]
 	  - [4ab7e90]
 	  - [8e35201]
 	  - [832945b]
