@@ -282,4 +282,3 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 ##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data --no-build-vignettes OncoSimulR
 ##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build --no-build-vignettes --no-manual OncoSimulR_xyz0.tar.gz
 
-
