@@ -84,7 +84,10 @@ sh. See \code{\link{allFitnessEffects}}}
   input, as "restriction table" in  \code{\link{allFitnessEffects}}.
 
 }
-\author{Ramon Diaz-Uriarte}
+\author{Ramon Diaz-Uriarte. Code for transitive closure taken from the
+  nem package, whose authors are Holger Froehlich, Florian Markowetz,
+  Achim Tresch, Theresa Niederberger, Christian Bender, Matthias Maneck,
+  Claudio Lottaz, Tim Beissbarth}
 
 \examples{
 (a1 <- simOGraph(10))
