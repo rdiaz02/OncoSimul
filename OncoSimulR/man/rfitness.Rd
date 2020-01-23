@@ -1,6 +1,6 @@
 \name{rfitness}
 \alias{rfitness}
-
+\encoding{UTF-8}
 
 \title{Generate random fitness.}
 
@@ -287,10 +287,12 @@ MAGELLAN web site: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}
 }
 
 \author{ Ramon Diaz-Uriarte for the RMF and general wrapping
-code. S. Brouillet, G. Achaz, S. Matuszewski, H. Annoni, and L. Ferreti
-for the MAGELLAN code.
-
-}
+  code. S. Brouillet, G. Achaz, S. Matuszewski, H. Annoni, and
+  L. Ferreti for the MAGELLAN code. Further contributions to the
+  additive model and to wrapping MAGELLAN code and documentation from
+  Guillermo Gorines Cordero, Ivan Lorca Alonso, Francisco Muñoz Lopez,
+  David Roncero Moroño, Alvaro Quevedo, Pablo Perez, Cristina Devesa,
+  Alejandro Herrador.}
 
 \seealso{
   
