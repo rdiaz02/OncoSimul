@@ -888,6 +888,8 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                               vrange = c(0.8, 1),
                               breakSortColors = "oe",
                               legend.ncols = "auto",
+                              legend.out = FALSE,
+                              legend.pos = 0,
                               ...
                               ) {
     op <- par(ask = ask)
@@ -924,6 +926,8 @@ plot.oncosimulpop <- function(x, ask = TRUE,
                        vrange = vrange,
                        breakSortColors = breakSortColors,
                        legend.ncols = legend.ncols,
+                       legend.out = legend.out,
+                       legend.pos = legend.pos,
                        ...))
 }
 
@@ -1043,6 +1047,8 @@ plot.oncosimul <- function(x,
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
                            legend.ncols = "auto",
+                           legend.out = FALSE,
+                           legend.pos = 0,
                            ...
                            ) {
 
@@ -1200,6 +1206,8 @@ plotClonesSt <- function(z,
                          ylab = "Number of cells",
                          ylim = NULL,
                          xlim = NULL,
+                         legend.out = FALSE,
+                         legend.pos = 0,
                          ...) {
 
     ## if given ndr, we order columns based on ndr, so clones with more
@@ -1235,8 +1243,31 @@ plotClonesSt <- function(z,
                     "pass a col vector of more elements")
         col <- rep(col, length.out = (max(ndr)))[ndr]
     }
-    ## }
+    ## Set variables to place the legend if legend.out = TRUE
+    if (legend.out) {
+        mar <- c(4, 4.8, 3, 6)
+        xpd <- TRUE
+        position <- "right"
+        ## If legend.pos is zero (by default), the inset value is -0.202
+        ## to type == "line" and -0.19 to type == "stacked".
+        ## This value allows a correct position in Rmarkdown files
+        if (legend.pos == 0) {
+            if (type == "line")
+                inset <- -0.202
+            else if (type == "stacked")
+                inset <- -0.19
+        }
+        else
+            inset <- legend.pos
+    } else {
+        mar <- c(5, 4, 4, 2) + 0.1
+        xpd <- FALSE
+        position <- "topleft"
+        inset <- 0
+    }
+
     if(type == "line") {
+        par(mar = mar)
         matplot(x = z$pops.by.time[, 1],
                 y = y,
                 log = log, type = "l",
@@ -1260,14 +1291,13 @@ plotClonesSt <- function(z,
                 if(length(ldrv) > 6) legend.ncols <- 2
                 else legend.ncols <- 1
             }
-            legend(x = "topleft",
-                   title = "Genotypes",
-                   lty = lty,
-                   col = col, lwd = lwd,
-                   legend = ldrv,
+            par(xpd = xpd)
+            legend(x = position, title = "Genotypes", lty = lty, 
+                   inset = inset, col = col, lwd = lwd, legend = ldrv, 
                    ncol = legend.ncols)
         }
     } else {
+        par(mar = mar)
         ymax <- colSums(y)
         if((show == "drivers") || ((show == "genotypes") && (colauto))) {
             cll <- myhsvcols(ndr, ymax, srange = srange, vrange = vrange,
@@ -1315,19 +1345,19 @@ plotClonesSt <- function(z,
                          ...)
         }
         if(show == "drivers") {
+            par(mar = mar)
             if(legend.ncols == "auto") {
                 if(length(cll$colorsLegend$Drivers) > 6) legend.ncols <- 2
                 else legend.ncols <- 1
             }
-            legend(x = "topleft",
-                   title = "Number of drivers",
-                   pch = 15,
-                   ## lty = 1,
-                   ## lwd = 2,
-                   col = cll$colorsLegend$Color,
-                   legend = cll$colorsLegend$Drivers,
-                   ncol = legend.ncols)
+            par(xpd = xpd)
+            legend(x = position, title = "Number of drivers", 
+                   inset = inset, pch = 15, 
+                   col = cll$colorsLegend$Color, 
+                   legend = cll$colorsLegend$Drivers, ncol = legend.ncols)
+
         } else if (show == "genotypes") {
+            par(mar = mar)
             if(!inherits(z, "oncosimul2")) {
                 ldrv <- genotypeLabel(z)
             } else {
@@ -1339,12 +1369,11 @@ plotClonesSt <- function(z,
                 if(length(ldrv) > 6) legend.ncols <- 2
                 else legend.ncols <- 1
             }
-            legend(x = "topleft",
-                   title = "Genotypes",
-                   pch = 15,
-                   col = cll$colors,
-                   legend = ldrv,
-                   ncol = legend.ncols)
+            par(xpd = xpd)
+            legend(x = position, title = "Genotypes", pch = 15,
+                   inset = inset, lty = lty, lwd = lwd,
+                   col = cll$colors, legend = ldrv, ncol = legend.ncols)
+
         }
     }
 }

@@ -12,8 +12,9 @@ export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "to_Magellan",
        "Magellan_stats",
        "sampledGenotypes"
-       , "POM", "LOD"
-       , "diversityPOM", "diversityLOD"
+     , "POM", "LOD"
+     , "diversityPOM", "diversityLOD"
+     , "meanCompositionPop", "compositionPop2"
        )
 
 S3method(plot, oncosimul)
