@@ -1,5 +1,5 @@
-Changes in version 2.17.994 (2020-01-23):
-	- New plotting code
+Changes in version 2.17.994 (2020-01-24):
+	- plot: allow legend to be outside
 
 Changes in version 2.17.993 (2020-01-23):
 	- Removed dependency on nem, to be deprecated. Adding nem's
