@@ -112,6 +112,20 @@ stripChartPop <- function(dfPop, ylab, ...) {
 ##  Plot the data as points and join with lines the ones that come from the same 
 ##  simulation.
 meanCompositionPop <- function(objPop, ylab = "N", fract = 0.5, ...) {
+
+## RDU: this is seriously
+    ## wrong!!! This assumes
+    ## that genotypes are
+    ## genes.  or that the
+    ## only genoytpes that can
+    ## exist have only one
+    ## gene mutated
+    
+    ## Note how condi is created and then used to reshape
+
+    ## there could be many more genotypes than genes
+    ## there could be different genotypes in different populations
+    
   condi <- c("WT", objPop[[1]]$geneNames)
   ## Extract the information.
   ## $pops.by.time contains all the results
