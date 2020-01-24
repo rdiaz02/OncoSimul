@@ -4,3 +4,6 @@ there are issues with the code that will need some work.
 compositionPop2 has bugs
 
 meanCompositionPop not done checking.
+
+
+See also test_functions_group5.R: would need to check that code and add appropriate testing for the new plotting code.
