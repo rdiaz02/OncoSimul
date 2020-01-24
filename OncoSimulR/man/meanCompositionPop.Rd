@@ -57,6 +57,42 @@ of the simulations in \code{pop.by.time}.
 
 \examples{
 
+
+sa <- 0.1
+sb <- -0.2
+sab <- 0.25
+sac <- -0.1
+sbc <- 0.25
+sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+                                       "A : -B" = sa,
+                                       "A : C" = sac,
+                                       "A:B" = sab,
+                                       "-A:B:C" = sbc),
+                         geneToModule = c(
+                             "Root" = "Root",
+                             "A" = "a1, a2",
+                             "B" = "b",
+                             "C" = "c"))
+evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
+
+e1 <- oncoSimulPop(5, sv2, model = "McFL",
+                     mu = 5e-6,
+                     sampleEvery = 0.02,
+                     keepEvery = 1,
+                     initSize = 5000,
+                   finalTime = 1000,
+                   mc.cores = 2,
+                   onlyCancer = FALSE)
+
+
+meanCompositionPop(e1)
+
+## The next example will only work if
+## we are using frequency-dependent fitness
+## See https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness
+
+if("frequencyDependentFitness" %in% names(formals(allFitnessEffects))) {
+
 ## Map fitness
 crs <- function (a, b, c){
   data.frame(Genotype = c("WT", "C", "R"),
@@ -87,6 +123,6 @@ resultscrs2 <- oncoSimulPop(10,
 ## Create strip chart plot
 meanCompositionPop(resultscrs2, ylab = "Number of cells", cex.lab=1.1,
      las = 1)
-
+}
 }
 \keyword{hplot}
