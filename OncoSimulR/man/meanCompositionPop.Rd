@@ -5,22 +5,16 @@
 
 \title{
   Plot stripChart to see the distribution of the mean results from several 
-  iterations of oncoSimulPop for the last fraction (fract) of the simulations.
+  iterations of oncoSimulPop since the half to the end of simulation.
 }
-
 \description{
-
-  Visualize the distribution of results form several simulations from
-  oncosimulPop. It generates a strip chart with the average of the
-  results from the last fraction of the simulations (i.e., the average
-  from all samples from total number of samples * fract until the end of
-  the simulation) for each genotype. Lines connect data from the same
-  simulation.
-  
+  It allows to see the distribution of results form several simulations from
+  oncosimulPop. It generates a strip chart with the average of the results from 
+  the middle to the end of a simulation for each genotype. Lines connect
+  data from the same simulation.
 }
-
 \usage{
-  meanCompositionPop(objPop, ylab = "N", fract = 0.5, ...)
+  meanCompositionPop(objPop, ylab = "N", ...)
 }
 
 \arguments{
@@ -30,11 +24,6 @@ of the simulations in \code{pop.by.time}.
 }
   \item{ylab}{
     Text for y axis label.
-  }
-
-  \item{fract}{ What fraction of the simulations to use. 
-    The simulations used to compute the average are those from total
-    number of simulations * fract until the last simulation.
   }
   
   \item{...}{
