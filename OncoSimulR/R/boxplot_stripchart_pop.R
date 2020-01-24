@@ -19,7 +19,7 @@
 simul_boxplot2 <- function(df, main,  xlab,
                            ylab, colors) {
   ## Create box plot, title and axis parameters
-  e <- ggplot(df, aes(x = Genotype, y = N)) +
+  e <- ggplot(df, aes_(x = ~Genotype, y = ~N)) +
     theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
           axis.title.x = element_text(size = 12, face = "bold"),
           axis.title.y = element_text(size = 12, face = "bold"),
@@ -29,7 +29,7 @@ simul_boxplot2 <- function(df, main,  xlab,
   
   ## No title
   if (main == FALSE) {
-    e + geom_boxplot(aes(fill = Genotype)) +
+    e + geom_boxplot(aes_(fill = ~Genotype)) +
       ## Show mean
       stat_summary(fun.y = mean, geom = "point", shape = 18, 
                    size = 2.5, color = "#FC4E07") +
@@ -42,7 +42,7 @@ simul_boxplot2 <- function(df, main,  xlab,
   }
   ## Title
   else {
-    e + geom_boxplot(aes(fill = Genotype)) +
+    e + geom_boxplot(aes_(fill = ~Genotype)) +
       ## Show mean
       stat_summary(fun.y = mean, geom = "point",
                    shape = 18, size = 2.5, color = "#FC4E07") +
@@ -55,7 +55,14 @@ simul_boxplot2 <- function(df, main,  xlab,
 compositionPop2 <- function(objPop, cols = NULL,  xlab = "Genotype",
                             ylab = "N", main = FALSE) {
   ## Extract the information to create a data frame
-  clon_labels <- c("WT", objPop[[1]]$geneNames)
+  clon_labels <- c("WT", objPop[[1]]$geneNames) ## RDU: this is seriously
+                                                ## wrong!!! This assumes
+                                                ## that genotypes are
+                                                ## genes.  or that the
+                                                ## only genoytpes that can
+                                                ## exist have only one
+                                                ## gene mutated
+    
   n_labels <- length(clon_labels)
   listPop <- vapply(objPop, function(x) tail(x[[1]], 1)[1, -1], 
                     as.double(1:n_labels))
@@ -69,7 +76,7 @@ compositionPop2 <- function(objPop, cols = NULL,  xlab = "Genotype",
     y <- objPop[[1]]$pops.by.time[, 2:ncol(objPop[[1]]$pops.by.time), 
                                   drop = FALSE]
     ymax <- colSums(y)
-    cols <- OncoSimulR:::myhsvcols(ndr, ymax)
+    cols <- myhsvcols(ndr, ymax)
     # Reorder the colors
     cols <- c(cols$colors[-1], cols$colors[1])
     ## Get the colors given by the user
@@ -104,7 +111,7 @@ stripChartPop <- function(dfPop, ylab, ...) {
 
 ##  Plot the data as points and join with lines the ones that come from the same 
 ##  simulation.
-meanCompositionPop <- function(objPop, ylab = "N", ...) {
+meanCompositionPop <- function(objPop, ylab = "N", fract = 0.5, ...) {
   condi <- c("WT", objPop[[1]]$geneNames)
   ## Extract the information.
   ## $pops.by.time contains all the results
@@ -112,8 +119,12 @@ meanCompositionPop <- function(objPop, ylab = "N", ...) {
   ## see length of times and select results from the half time to the end
   ## Calculate the mean for each Genotype in each simulation
   ## Use lapply because results can be not rectangular
+
+  using_rows <- round(fract * length(x$pops.by.time[,1]))
+  message("Using ", using_rows, " from pops.by.time")
+  
   listPop <- lapply(objPop, function(x) 
-    (colMeans(tail(x$pops.by.time, length(x$pops.by.time[,1])/2)[,-1])))
+    (colMeans(tail(x$pops.by.time, using_rows)[,-1])))
   ## Create data frame with the means Genotype from a list
   dfPop <- data.frame(matrix(unlist(listPop), 
                              ncol = length(condi), byrow = TRUE))

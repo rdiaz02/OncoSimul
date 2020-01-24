@@ -53,7 +53,10 @@
                            srange = c(0.4, 1),
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
-                           legend.ncols = "auto", ...)
+                           legend.ncols = "auto",
+                           legend.out = FALSE,
+                           legend.pos = 0,
+                           ...)
 
 \method{plot}{oncosimulpop}(x,
                               ask = TRUE,
@@ -88,6 +91,8 @@
                               vrange = c(0.8, 1),
                               breakSortColors = "oe",
                               legend.ncols = "auto",
+                              legend.out = FALSE,
+                              legend.pos = 0,
                               ...)
 
 }
