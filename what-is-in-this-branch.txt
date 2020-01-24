@@ -1,0 +1,6 @@
+This branch tried to incorporate several plotting ideas from group 5 (2019-20). But
+there are issues with the code that will need some work.
+
+compositionPop2 has bugs
+
+meanCompositionPop not done checking.
