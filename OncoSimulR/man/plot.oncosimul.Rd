@@ -339,8 +339,9 @@
 
 
 \seealso{
-  \code{\link{oncoSimulIndiv}}, \code{\link{compositionPop2}},
-  \code{\link{meanCompositionPop}} 
+  \code{\link{oncoSimulIndiv}} %% , \code{\link{compositionPop2}},
+  %% \code{\link{meanCompositionPop}}
+  
 }
 \examples{
 data(examplePosets)
