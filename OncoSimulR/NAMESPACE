@@ -70,5 +70,5 @@ importFrom("stringr", "regex", "str_extract_all", "str_replace_all")
 ## importFrom("slam", "simple_triplet_zero_matrix", ## "colapply_simple_triplet_matrix",
 ##            "col_sums")
 
-
+importFrom("graphics", "segments", "stripchart")
 
