@@ -8223,7 +8223,10 @@ vulnerability to cytotoxins."
 They provide, in p. 4, the payoff matrix reproduced in Figure
 \@ref(fig:hurlbutpay): 
 
-
+<!--  Yes, when making the pdf we get a an error --->
+<!--  for Input file `OncoSimulR-tex_files/figure-latex/hurlbutpay-1.pdf' --->
+<!--  not found! --->
+<!--  but not a problem --->
 ```{r hurlbutpay, eval=TRUE,echo=FALSE, fig.cap="Payoff matrix from Table 2 of Hurlbut et al., 2018, 'Game Theoretical Model of Cancer Dynamics withFour Cell Phenotypes', *Games*, 9, 61; doi:10.3390/g9030061."}
 knitr::include_graphics("hurlbut.png")
 ```
@@ -8900,6 +8903,14 @@ plot(commens, show = "genotypes", type = "line",
 ```
 
 
+
+
+
+
+
+
+
+
 ## Frequency-dependent fitness: can I mix relative and absolute frequencies? {#fdfrelabs}
 
 Yes, of course, since you can always use an absolute specification with
@@ -9233,7 +9244,1245 @@ immediately.
 <!-- knitr::include_graphics("simulationsBoxPlot.png") -->
 <!-- ``` -->
 
+
+
+# Additional examples of frequency-dependent fitness {#addfreqdepex}
+
+In this section, we provide additional examples that use
+frequency-dependent fitness. As mentioned also in \@ref(fdf), **This
+functionality is only available in the freq-dep-fitness branch**.
+See: https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
+
+Note also that in most of these examples we make rather arbitrary
+and simple assumptions about the genetic basis of the different
+phenotypes or strategies (most are one-mutation-away from WT); see
+\@ref(predprey) and \@ref(hurlbut) (where we change the
+ancestor-dependent relationships). In some examples mutation rates
+are also very high, to speed up processes and because a high
+mutation rate is used as a procedure (a hack?) to quickly obtain
+descendants from WT (i.e., to get the game started with some
+representatives of the non-WT types).
+
+
+
+
+Examples \@ref(rockscissors), \@ref(hawkdove), \@ref(gtvasc),
+\@ref(prostatestroma), \@ref(edmyel) were originally prepared by
+Sara Dorado Alfaro, Miguel Hernández del Valle, Álvaro Huertas
+García, Diego Mañanes Cayero, Alejandro Martín Muñoz as an exercisse
+for the course Programming and Statistics with R (Master's Degree
+in Bioinformatics and Computational Biology, Universidad Autónoma de
+Madrid), course 2019-20. 
+
+
+
+
+
+## Rock-paper-scissors model in bacterial community {#rockscissors}
+
+### Introduction
+
+This example is inspired by @kerr2002a. It describes the relationship
+between three populations of _Escherichia coli_, that turns out to
+be very similar to a rock-paper-scissors game.
+
+An E. coli community can have a specific strain of colicinogenic bacteria,
+that are capable of creating colicin, a toxin to which this special strain is
+resistant. The wild-type bacteria is killed by this toxin, but can mutate into
+a resistant strain. 
+
+So, there are three kinds of bacteria: wild-type (WT), colicinogenic (C) and
+resistant (R). The presence of C reduces the population of WT, but increases
+the population of R because R has an advantage over C, since R doesn't have the
+cost of creating the toxin. At the same time, WT has an advantage over R,
+because by losing the toxin receptors, R loses also some important functions.
+Therefore, every strain "wins" against one strain and "loses" against the
+other, creating a rock-paper-scissors game.
+
+```{r message=F}
+crs <- function (a, b, c){
+  data.frame(Genotype = c("WT", "C", "R"),
+             Fitness = c(paste0("1 + ", a, " * f_2 - ", b, " * f_1"),
+                         paste0("1 + ", b, " * f_ - ", c, " * f_2"),
+                         paste0("1 + ", c, " * f_1 - ", a, " * f_")
+             ))
+}
+```
+
+The equations are:
+
+\begin{align}
+  W\left(WT\right) = 1 + af_R - bf_C\\
+	W\left(C\right) = 1 + bf_{WT} - cf_R\\
+	W\left(R\right) = 1 + cf_C - af_{WT}\\
+\end{align}
+
+
+where $f_{WT}$, $f_C$ and $f_R$ are the frequencies of WT, C and R, 
+respectively. 
+
+```{r message=F}
+crs("a", "b", "c")
+```
+
+#### Case 1
+
+We are going to study the scenario in which all the relationships have the same
+relative weight.
+
+```{r message=F}
+afcrs1 <- allFitnessEffects(genotFitness = crs(1, 1, 1), 
+                           frequencyDependentFitness = TRUE,
+                           frequencyType = "rel")
+
+resultscrs1 <- oncoSimulIndiv(afcrs1,
+                             model = "McFL", 
+                             onlyCancer = FALSE,
+                             finalTime = 100, 
+                             mu = 1e-2,
+                             initSize = 4000, 
+                             keepPhylog = TRUE,
+                             seed = NULL,
+                             errorHitMaxTries = FALSE,
+                             errorHitWallTime = FALSE)
+op <- par(mfrow = c(1, 2))
+plot(resultscrs1, show = "genotypes", type = "line", cex.lab=1.1,
+     las = 1)
+plot(resultscrs1, show = "genotypes", type = "stacked")
+par(op)	 
+```
+
+An oscillatory equilibrium is reached, in which the same populations
+have a similar number of individuals but oscillates. This makes
+sense, because the rise on a particular strand will lead to a rise
+in the one that "wins" against it, and then to a rise in the one
+that "wins" against the second one, creating this cyclical
+behaviour. In the stacked plot we can see that the total population
+remains almost constant.
+
+Note, though, that altering mutation rate (which is huge here) can
+change the results of the model. 
+
+
+#### Case 2
+
+We are going to put a bigger weight in one of the coefficients, so a=10, b=1,
+c=1.
+
+```{r message=F}
+afcrs2 <- allFitnessEffects(genotFitness = crs(10, 1, 1), 
+                           frequencyDependentFitness = TRUE,
+                           frequencyType = "rel")
+
+
+```
+
+If we run multiple simulations, for example by doing
+```{r eval=FALSE}
+resultscrs2 <- oncoSimulPop(10,
+                           afcrs2,
+                             model = "McFL",
+                             onlyCancer = FALSE,
+                             finalTime = 100,
+                             mu = 1e-2,
+                             initSize = 4000,
+                             keepPhylog = TRUE,
+                             seed = NULL,
+                             errorHitMaxTries = FALSE,
+                             errorHitWallTime = FALSE)
+```
+we can verify there are two different scenarios.
+
+
+<!-- The following chart represents the average number of cells of each type during -->
+<!-- the last half of each simulation. As a boxplot would lose the informationof the -->
+<!-- different scenarios, so we decided to plot the data as points and join with -->
+<!-- lines the ones that come from the same simulation. -->
+
+<!-- ```{r message=F} -->
+<!-- meanCompositionPop(resultscrs2, ylab = "Number of cells", cex.lab=1.1, -->
+<!--      las = 1, legend.out = TRUE) -->
+<!-- ``` -->
+
+The first one is the one in which all the strains coexist, with the
+colicinogenic bacteria having a much bigger population.
+
+```{r message=F}
+set.seed(1)
+
+resultscrs2a <- oncoSimulIndiv(afcrs2,
+                             model = "McFL", 
+                             onlyCancer = FALSE,
+                             finalTime = 100, 
+                             mu = 1e-2,
+                             initSize = 4000, 
+                             keepPhylog = TRUE,
+                             seed = NULL,
+                             errorHitMaxTries = FALSE,
+                             errorHitWallTime = FALSE)
+
+plot(resultscrs2a, show = "genotypes", type = "line")
+```
+
+In the second one, the wild type and the colicinogenic bacteria dissapear, so
+the resistant strain is the only one that survives.
+
+As above, though, decreasing the mutation rate can lead to a
+different solution and you will want to run the model for much
+longer to see the resistant strain appear and outcompete the others.
+
+```{r message=F}
+set.seed(3)
+
+resultscrs2b <- oncoSimulIndiv(afcrs2,
+                             model = "McFL", 
+                             onlyCancer = FALSE,
+                             finalTime = 60, 
+                             mu = 1e-2,
+                             initSize = 4000, 
+                             keepPhylog = TRUE,
+                             seed = NULL,
+                             errorHitMaxTries = FALSE,
+                             errorHitWallTime = FALSE)
+
+plot(resultscrs2b, show = "genotypes", type = "line", cex.lab=1.1,
+     las = 1)
+```
+
+#### Case 3
+
+Finally, we are going to put more weight in two coefficients, so a=1, b=5, c=5.
+
+```{r message=F}
+afcrs3 <- allFitnessEffects(genotFitness = crs(1, 5, 5), 
+                           frequencyDependentFitness = TRUE,
+                           frequencyType = "rel")
+
+resultscrs3 <- oncoSimulIndiv(afcrs3,
+                             model = "McFL", 
+                             onlyCancer = FALSE,
+                             finalTime = 60, 
+                             mu = 1e-2,
+                             initSize = 4000, 
+                             keepPhylog = TRUE,
+                             seed = NULL,
+                             errorHitMaxTries = FALSE,
+                             errorHitWallTime = FALSE)
+
+plot(resultscrs3, show = "genotypes", type = "line", cex.lab=1.1,
+     las = 1)
+```
+
+In all the cases all three strains survive, with C having a much smaller
+population than the other two.
+
+## Hawk and Dove example {#hawkdove}
+
+The example we are going to show is one of the first games that Maynard Smith 
+analyzed, for example in his classic @maynardsmith1982 (see also,
+e.g.,  <https://en.wikipedia.org/wiki/Chicken_%28game%29> ). 
+
+In this game, the two competitors are subtypes of the same species but with 
+different strategies.  The Hawk first displays aggression, then escalates into 
+a fight until it either wins or is injured (loses). The Dove first displays 
+aggression, but if faced with major escalation runs for safety. If not faced
+with such escalation, the Dove attempts to share the resource (see
+the payoff matrix, for instance in 
+https://en.wikipedia.org/wiki/Chicken_%28game%29#Hawk%E2%80%93dove
+).
+
+<!-- ![Payoff Matrix for Hawk Dove Game](./Images_markdown/Hawk_Dove_payoff.PNG) -->
+
+Given that the resource is given the value V, the damage from losing a fight 
+is given cost C:
+
+* If a Hawk meets a Dove he gets the full resource V to himself
+* If a Hawk meets a Hawk – half the time he wins, half the time he loses... so 
+his average outcome is then V/2 minus C/2
+* If a Dove meets a Hawk he will back off and get nothing – 0
+* If a Dove meets a Dove both share the resource and get V/2
+
+The actual payoff however depends on the probability of meeting a Hawk or Dove,
+which in turn is a representation of the percentage of Hawks and Doves in the 
+population when a particular contest takes place. That in turn is determined by 
+the results of all of the previous contests. If the cost of losing C is greater
+than the value of winning V (the normal situation in the natural world) the 
+mathematics ends in an stationary point (ESS), a mix of the two strategies
+where the population of Hawks is V/C.
+
+In this case we assume a stable equilibrium in the population dynamics, that is, 
+although there are external variations in the model, it recovers and returns 
+to equilibrium.<!--  (as shown in the image below). -->
+
+<!-- ![Stable equilibrium](./Images_markdown/Stable_equilibrium.jpg) -->
+
+We are going to simulate with OncoSimulR the situation in which the
+cost of losing C is greater than the value of gaining V (C = 10, V =
+2). We assume that both Hawk and Dove are derived from WT by one
+mutation (see also \@ref(predprey)) and we will use very high
+mutation rates to get some hawks and doves from WT quickly (see
+above).
+
+
+Before performing the simulation, let's look at the fitness of each competitor.
+
+```{r, message=F}
+## Stablish Genotype-Fitnees mapping. D = Dove, H = Hawk
+H_D_fitness <- function(c, v,
+                    gt = c("WT", "H", "D")) {
+  data.frame(Genotype = gt,
+             Fitness = c(
+               paste0("1"),
+               paste0("1 + f_1 *", (v-c)/2, "+ f_2 *", v),
+               paste0("1 + f_2 *", v/2)))
+}
+
+## Fitness Effects specification
+HD_competition <-allFitnessEffects(
+  genotFitness = H_D_fitness(10, 2, 
+                         gt = c("WT", "H", "D")),
+  frequencyDependentFitness = TRUE,
+  frequencyType = "rel",
+  spPopSizes = c(5000, 5000, 5000))
+
+## Plot fitness landscape of genotype "H, D" evaluation
+data.frame("Doves_fitness" = evalGenotype(genotype = "D",
+                                          fitnessEffects = HD_competition), 
+           "Hawks_fitness" = evalGenotype(genotype = "H", 
+                                          fitnessEffects = HD_competition)) 
+```
+
+We observe that the penalty of fighting (C > V) benefits the dove in terms of 
+fitness respect to the hawk. 
+
+``` {r, message=F}
+## Simulated trajectories
+## run only a few for the sake of speed
+simulation <- oncoSimulPop(2,
+                           mc.cores = 2,
+                           HD_competition,
+                           model = "McFL", # There is no collapse
+                           onlyCancer = FALSE,
+                           finalTime = 50,
+                           mu = 1e-2, # Quick emergence of D and H
+                           initSize = 4000,
+                           keepPhylog = TRUE,
+                           seed = NULL,
+                           errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+
+
+
+## Plot first trajectory as an example
+plot(simulation[[1]], show = "genotypes", type = "line", 
+    xlim = c(40, 50),
+     lwdClone = 2, ylab = "Number of individuals", 
+     main = "Hawk and Dove trajectory",  
+     col = c("#a37acc", "#f8776d", "#7daf00"),
+     font.main=2, font.lab=2,
+     cex.main=1.4, cex.lab=1.1,
+     las = 1)
+
+```
+
+
+<!--  Agreement: Show boxplot from several simulations.  -->
+<!-- compositionPop2(simulation,  -->
+<!--                  ylab = "Number of individuals", -->
+<!--                   main = "Hawk and Dove") -->
+<!--  plot(simulation[[1]], show = "genotypes", xlim = c(40, 500), lwdClone = 2, --->
+<!--       ylab = "Number of individuals", main = "Hawk and Dove",  --->
+<!--       font.main=2, font.lab=2, --->
+<!--       cex.main=1.4, cex.lab=1.1, --->
+<!--       las = 1, legend.out = TRUE) --->
+
+
+As mentioned above, mathematically when a stationary point (ESS) is reached 
+the relative frequency of hawks is V/C and doves 1-(V/C). Considering f_H as 
+relative frecuency of hawks and f_D = 1-f_H as frequency of doves:
+
+Hawk:
+$$1 + f_H*(v-c)/2 + (1-f_H)*v$$
+
+Dove:
+$$1 + (1-f_H)*v/2$$
+
+Hawk = Dove: 
+$$1 + f_H*(v-c)/2 + (1-f_H)*v = 1 + (1-f_H)*v/2$$ 
+
+Resolving for f_H:
+$$f_H = v/c$$
+
+Therefore, the relative frequency of hawks in equilibrium is equal to V/C. 
+In our case it would be 20% (C = 10, V = 2). Let's check it:
+
+```{r}
+## Recover the final result from first simulation
+result <- tail(simulation[[1]][[1]], 1)
+
+## Get the number of organisms from each species
+n_WT <- result[2]
+n_D <- result[3]
+n_H <- result[4]
+total <- n_WT + n_D + n_H
+
+## Dove percentage
+data.frame("Doves" = round(n_D/total, 2)*100, 
+           "Hawks" = round(n_H/total, 2)*100  )
+```
+
+To sum up, this example shows that when the risks of contest injury or death
+(the Cost C) is significantly greater than the potential reward 
+(the benefit value V), the stable population will be mixed between aggressors 
+and doves, and the proportion of doves will exceed that of the aggressors. 
+This explains behaviours observed in nature.
+
+
+
+## Game Theory with social dilemmas of tumour acidity and vasculature {#gtvasc}
+
+This example is based on @kaznatcheev2017. In this work, it is
+explained that the progression of cancer is marked by the
+acquisition of a number of hallmarks, including self-sufficiency of
+growth factor production for angiogenesis and reprogramming energy
+metabolism for aerobic glycolysis. Moreover, there is evidence of
+intra-tumour heterogeneity.  Given that some cancer cells can not
+invest in something that benefits the whole tumor while others can
+free-ride on the benefits created by them (evolutionary social
+dilemmas), how do these population level traits evolve, and how are
+they maintained? The authors answer this question with a
+mathematical model that treats acid production through glycolysis as
+a tumour-wide public good that is coupled to the club good of oxygen
+from better vascularisation.
+
+The cell types of the model are:
+
+* VOP: VEGF (over)-producers.
+* GLY: glycolytic cells.
+* DEF: aerobic cells that do not call for more vasculature.
+
+On the other hand, the micro-environmental parameters of the model are:
+
+* a: the benefit per unit of acidification.
+* v: the benefit from oxygen per unit of vascularisation.
+* c: the cost of (over)-producing VEGF.
+
+The fitness equations derived from those populations and parameters are:
+
+<br>
+\begin{equation}
+  W\left(GLY\right) = 1 + a * \left(f_1 + 1\right)
+\end{equation}
+<br>
+\begin{equation}
+  W\left(VOP\right) = 1 + a * f_1 + v * \left(f_2 + 1\right) - c
+\end{equation}
+<br>
+\begin{equation}
+  W\left(DEF\right) = 1 + a * f_1 + v * f_2
+\end{equation}
+<br>
+
+Where $f_1$ is the GLY cells' frequency and $f_2$ is the DEF cells' frequency
+at a given time. All fitness equations start from balance by the sum of 1.
+
+Finally, depending of the parameter's values, the  model can lead to
+three different situations (as in other examples, the different
+types are one mutation away from WT):
+
+### Fully glycolytic tumours: 
+
+If the fitness benefit of a single unit of acidification is higher than the
+maximum benefit from the club good for aerobic cells, then GLY cells will
+always have a strictly higher fitness than aerobic cells, and be selected for.
+In this scenario, the population will converge towards all GLY, regardless of
+the initial proportions (as long as there is at least some GLY in the
+population).
+
+```{r, message=FALSE}
+
+# Definition of the function for creating the corresponding dataframe.
+avc <- function (a, v, c) {
+  data.frame(Genotype = c("WT", "GLY", "VOP", "DEF"),
+             Fitness = c("1",
+                         paste0("1 + ",a," * (f_1 + 1)"),
+                         paste0("1 + ",a," * f_1 + ",v," * (f_2 + 1) - ",c),
+                         paste0("1 + ",a," * f_1 + ",v," * f_2")
+                         ))
+                          }
+
+# Specification of the different effects on fitness.
+afavc <- allFitnessEffects(genotFitness = avc(2.5, 2, 1),
+                           frequencyDependentFitness = TRUE,
+                           frequencyType = "rel")
+
+## For real, you would probably want to run
+## this multiple times with oncoSimulPop
+simulation <- oncoSimulIndiv(afavc,
+                           model = "McFL",
+                           onlyCancer = FALSE,
+                           finalTime = 15,
+                           mu = 1e-3,
+                           initSize = 4000,
+                           keepPhylog = TRUE,
+                           seed = NULL,
+                           errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+
+```
+
+```{r, message=FALSE}
+
+# Representation of the plot of one simulation as an example (the others are
+# highly similar).
+plot(simulation, show = "genotypes", type = "line",
+     ylab = "Number of individuals", main = "Fully glycolytic tumours",
+     font.main=2, font.lab=2, cex.main=1.4, cex.lab=1.1, las = 1)
+
+```
+
+<!--  ```{r, message=FALSE} --->
+
+<!--  #\ Representation of a boxplot considering all the simulations. --->
+<!--  compositionPop2(simulation, ylab = "Number of individuals", --->
+<!--                  main = "Fully glycolytic tumours") --->
+
+<!--  ``` --->
+
+### Fully angiogenic tumours: 
+
+If the benefit to VOP from their extra unit of vascularisation is higher than
+the cost c to produce that unit, then VOP will always have a strictly higher
+fitness than DEF, selecting the proportion of VOP cells towards 1. In addition,
+if the maximum possible benefit of the club good to aerobic cells is higher
+than the benefit of an extra unit of acidification, then for sufficiently high
+number of VOP, GLY will have lower fitness than aerobic cells. When both
+conditions are satisfied, the population will converge towards all VOP. 
+
+```{r, message=FALSE}
+
+# Definition of the function for creating the corresponding dataframe.
+avc <- function (a, v, c) {
+  data.frame(Genotype = c("WT", "GLY", "VOP", "DEF"),
+             Fitness = c("1",
+                         paste0("1 + ",a," * (f_1 + 1)"),
+                         paste0("1 + ",a," * f_1 + ",v, " * (f_2 + 1) - ",c),
+                         paste0("1 + ",a," * f_1 + ",v, " * f_2")
+                         ))
+                          }
+
+# Specification of the different effects on fitness.
+afavc <- allFitnessEffects(genotFitness = avc(2.5, 7, 1),
+                           frequencyDependentFitness = TRUE,
+                           frequencyType = "rel")
+
+simulation <- oncoSimulIndiv(afavc,
+                           model = "McFL",
+                           onlyCancer = FALSE,
+                           finalTime = 15,
+                           mu = 1e-4,
+                           initSize = 4000,
+                           keepPhylog = TRUE,
+                           seed = NULL,
+                           errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+
+```
+
+```{r, message=FALSE}
+## We get a huge number of VOP very quickly
+## (too quickly?)
+plot(simulation, show = "genotypes", type = "line",
+     ylab = "Number of individuals", main = "Fully angiogenic tumours",
+     font.main=2, font.lab=2, cex.main=1.4, cex.lab=1.1, las = 1)
+
+```
+
+<!--  ```{r, message=FALSE} --->
+
+<!--  #\ Representation of a boxplot considering all the simulations. --->
+<!--  compositionPop2(simulation, ylab = "Number of individuals", --->
+<!--                  main = "Fully angiogenic tumours") --->
+
+<!--  ``` --->
+
+### Heterogeneous tumours:
+
+If the benefit from an extra unit of vascularisation in a fully aerobic group
+is lower than the cost c to produce that unit, then for a sufficiently low
+proportion of GLY and thus sufficiently large number of aerobic cells sharing
+the club good, DEF will have higher fitness than VOP. This will lead to a
+decrease in the proportion of VOP among aerobic cells and thus a decrease in
+the average fitness of aerobic cells. A lower fitness in aerobic cells will
+lead to an increase in the proportion of GLY until the aerobic groups (among
+which the club good is split) get sufficiently small and fitness starts to
+favour VOP over DEF, swinging the dynamics back.
+
+```{r, message=FALSE}
+
+# Definition of the function for creating the corresponding dataframe.
+avc <- function (a, v, c) {
+  data.frame(Genotype = c("WT", "GLY", "VOP", "DEF"),
+             Fitness = c("1",
+                         paste0("1 + ",a," * (f_1 + 1)"),
+                         paste0("1 + ",a," * f_1 + ",v," * (f_2 + 1) - ",c),
+                         paste0("1 + ",a," * f_1 + ",v," * f_2")
+                         ))
+                          }
+
+# Specification of the different effects on fitness.
+afavc <- allFitnessEffects(genotFitness = avc(7.5, 2, 1),
+                           frequencyDependentFitness = TRUE,
+                           frequencyType = "rel")
+
+# Launching of the simulation (20 times).
+simulation <- oncoSimulIndiv(afavc,
+                           model = "McFL",
+                           onlyCancer = FALSE,
+                           finalTime = 25,
+                           mu = 1e-4,
+                           initSize = 4000,
+                           keepPhylog = TRUE,
+                           seed = NULL,
+                           errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+
+```
+
+```{r, message=FALSE}
+
+# Representation of the plot of one simulation as an example (the others are
+# highly similar).
+plot(simulation, show = "genotypes", type = "line",
+     ylab = "Number of individuals", main = "Heterogeneous tumours",
+     font.main=2, font.lab=2, cex.main=1.4, cex.lab=1.1, las = 1)
+
+```
+
+
+## Prostate cancer tumour–stroma interactions {#prostatestroma}
+
+This example is based on @basanta_investigating_2012. The authors
+apply evolutionary game theory to model the behavior and progression
+of a prostate tumour formed by three different cell populations:
+stromal cells, a dependant tumour phenotype capable of co-opting
+stromal cells to support its growth and an independent tumour
+phenotype that does not require microenvironmental support, be it
+stromal associated or not. To enable this, the model has four
+variables, which is the minimun necessary to describe the
+relationships in terms of costs and benefits between the different
+types of cells and, of course, to describe the progression of the
+cancer.
+
+The different cell types, hence, are as follows:
+
+1. S: stromal cells.  
+2. D: microenvironmental-dependent tumour cells.   
+3. I: microenvironmental-independent tumour cells. 
+
+And the parameters that describe the relationships are as follows: 
+
+* $\alpha$: benefit derived from the cooperation between a S cell and a D cell.  
+* $\beta$: cost of extracting resources from the microenvironment.  
+* $\gamma$: cost of being microenvironmentally independent.  
+* $\rho$: benefit derived by D from paracrine growth factors produced by I 
+cells. 
+
+Table  \@ref(tab:tableprostate) shows the payoffs for each cell type when interacting 
+with others. We consider no other phenotypes are relevant in 
+the context of the game and disregard spatial considerations. 
+
+.     | S                  |    D       | I
+-     | ------------------ | ---------- | --------------------
+**S** | $0$                | $\alpha$   | $0$
+**D** | $1+\alpha-\beta$   | $1-2\beta$ | $1-\beta+\rho$
+**I** | $1-\gamma$         | $1-\gamma$ | $1-\gamma$
+
+: (\#tab:tableprostate) Payoff table that represents the interactions between the three cell types considered by de model
+
+As is@basanta_investigating_2012, the I cells are relatively
+independent from the microenvironment and produce their own growth
+factors (e.g. testosterone) and thus are considered to have a
+comparatively constant fitness $(1-\gamma)$, where $\gamma$
+represents the fitness cost for I cells to be independent. The D
+cells rely more on their microenvironment for survival and growth at
+a fitness cost $(\beta)$ that represents the scarcity of resources
+or space that I cells can procure themselves. A resource-poor
+microenvironment would then be characterised by a higher value of
+$\beta$. As I cells produce space and shareable growth factors, this
+model assumes that D cells derive a fitness advantage from their
+interactions with I cells represented by the variable $\rho$. On the
+other hand, D cells interacting with other D cells will have a
+harder time sharing existing microenvironmental resources with other
+equally dependant cells and thus are assumed to have double the cost
+$2\beta$ for relying on the microenvironment for survival and growth
+and thus have a fitness of $1–2\beta$. The S cells can interact with
+tumour cells. In a normal situation, this population are relatively
+growth quiescent with low rates of proliferation and death. For this
+reason the fitness benefit derived by stromal cells from the
+interactions with tumour cells is assumed to be zero. However, they
+are able to undergo rapid proliferation and produce growth factors
+if they are stimulated by factors produced by I cells, giving rise
+to a mutualistic relationship. This relationship is represented by
+the parameter $\alpha$. A low $\alpha$ represents tumours in which
+the stroma cannot be co-opted and vice versa.
+
+From these variables, the fitness of each cell population
+$(W\left(S\right), W\left(I\right), W\left(D\right))$ is as follows: 
+
+<br>
+\begin{equation}
+  W\left(S\right) = 1 + f_3\alpha
+  (\#eq:fitnessS)
+\end{equation}
+<br>
+\begin{equation}
+  W\left(I\right) = 2 - \gamma
+  (\#eq:fitnessI)
+\end{equation}
+<br>
+\begin{equation}
+  W\left(D\right) = 1 + \left(1 - f_2 - f_3\right)\left(1 - \beta + 
+  \alpha\right) +\\
+    f_2\left(1 - \beta + \rho\right) + f_3(1 - 2\beta) + \\
+    1 - \beta + \alpha + f_2\left(\rho - \alpha\right) - f_3\left(\beta + 
+    \alpha\right)
+  (\#eq:fitnessD)
+\end{equation}
+<br>
+
+where $f_2$ is the frequency of I cells and $f_3$ is the
+frequency of D cells at a given time. All fitness equations
+start from balance by the sum of 1. 
+
+### Simulations
+
+First, we define the fitness of the different genotypes (see Equations 
+\@ref(eq:fitnessS),  \@ref(eq:fitnessI) and \@ref(eq:fitnessD)) through 
+the function _fitness_rel_ that builds a data frame. 
+
+It is important to note that this program models a situation where,
+from a WT cell population, the rest of the cell population types 
+are formed. However, this model has also stromal cells that are not
+formed from a WT, since they are not tumour cells although 
+interacting with it. Hence, for this model, we can not represent 
+scenarios with total biological accuracy, something that we must
+consider when interpreting the results. 
+
+```{r example5_fitness, message=FALSE}
+fitness_rel <- function(a, b, r, g, gt = c("WT", "S", "I", "D")) {
+    data.frame(
+      Genotype = gt,
+      Fitness = c("1",
+                  paste0("1 + ", a, " * f_3"),
+                  paste0("1 + 1 - ", g),
+                  paste0("1 + (1 - f_2 - f_3) * (1 - ", b, " + ", 
+                         a, ") + f_2 * (1 - ", b, " + ", r,
+                         ") + f_3 * (1 - 2 * ", b, ") + 1 - ", b, 
+                         " + ", a, " + f_2 * (", r, " - ",
+                         a, ") - f_3 * (", b, " + ", a, ")"))
+                  )
+}
+```
+
+Then, we are going to model different scenarios that represent different
+biological situations. In this case, we are going to explain 
+four possible situations.
+
+**Note:** for these simulations the values of paratemers are normalised
+in the range (0 : 1) so 1 represents the maximum value for any parameter
+being positive of negative to fitness depending on the parameter. 
+
+#### First scenario
+
+In this simulation, we are modelling a situation where the
+environment is relatively resource-poor. In addition, we set a
+intermediate cooperation between D-D and D-I and a very low benefit
+from coexistence of D with I.
+
+* $\alpha$ (a) = 0.5: intermediate cooperation between D and D cells.
+* $\beta$ (b) = 0.7: relatively resource-poor microenvironment.
+* $\rho$ (p) = 0.1: low benefit of D cells.
+    * $\gamma$ (g) = 0.8: high cost of independence of I cells.  
+
+We can observe that high values of $\alpha$ and low values of $\rho$
+are translated in a larger profit of D cells from his interaction
+with S cells than from his interaction with I cells. Also, because
+of the high cost of independence of I cells ($\gamma$), it is not
+surprise that this population ends up becoming extinct. Finally, the
+tumour is composed by two cellular types: D and S cells.
+
+```{r example5scen1, message=FALSE}
+scen1 <- allFitnessEffects(genotFitness = fitness_rel(a = 0.5, b = 0.7,
+                                                     r = 0.1, g = 0.8),
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel")
+
+set.seed(1)
+simulScen1 <- oncoSimulIndiv(scen1,
+                              model = "McFL",
+                              onlyCancer = FALSE,
+                              finalTime = 70,
+                              mu = 1e-4,
+                              initSize = 5000,
+                              keepPhylog = TRUE,
+                              seed = NULL,
+                              errorHitMaxTries = FALSE,
+                              errorHitWallTime = FALSE)
+op <- par(mfrow = c(1, 2))
+plot(simulScen1, show = "genotypes", type = "line",
+     main = "First scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+plot(simulScen1, show = "genotypes",
+     main = "First scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+par(op)
+```
+
+To understand the stability of the results, we should run multiple
+simulations. We will not pursue that here. Note that the results can
+be sensitive to the initial population size and the mutation rate.
+
+<!--  ```{r example5scenPop1, message=FALSE} --->
+<!--  simulScen1Pop <- oncoSimulPop(20, --->
+<!--                                scen1, --->
+<!--                               model = "McFL", --->
+<!--                               onlyCancer = FALSE, --->
+<!--                               mc.cores = n_cores, --->
+<!--                               finalTime = 150, --->
+<!--                               mu = 1e-3, --->
+<!--                               initSize = 4000, --->
+<!--                               keepPhylog = TRUE, --->
+<!--                               seed = NULL, --->
+<!--                               errorHitMaxTries = FALSE, --->
+<!--                               errorHitWallTime = FALSE) --->
+<!--  compositionPop2(simulScen1Pop, --->
+<!--                  main = "First scenario", --->
+<!--                  ylab = "Number of cells") --->
+<!--  ``` --->
+
+#### Second scenario
+
+In this case, we set $\alpha$ lower than in the first scenario and we 
+enable the indepenence of I cells through a lower $\gamma$. 
+
+* $\alpha$ (a) = 0.3: low cooperation between D cells.  
+* $\beta$ (b) = 0.7: relatively resource-poor microenvironment.
+* $\rho$ (r) = 0.1: low benefit of D cells from coexisting with I cells.
+* $\gamma$ (g) = 0.7: lower cost of independence of I cells than in the 
+first scenario. 
+
+Because of we are easing the possibility of independence of I 
+cells, instead of extinguishing as in the first scenario, they
+compose the bulk of the tumour along with D cells in spite of 
+the low benefit of cooperation between them (low $\rho$). 
+Besides, we can observe that the population of I cells is 
+bigger than the population of D cells, being at the end of
+the simulation in balance. On the other hand, stromal cells 
+drop at the beginning of the simulation.
+
+```{r example5scen2, message=FALSE}
+scen2 <- allFitnessEffects(genotFitness = fitness_rel(a = 0.3, b = 0.7,
+                                                     r = 0.1, g = 0.7),
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel")
+
+set.seed(1)
+
+simulScen2 <- oncoSimulIndiv(scen2,
+                              model = "McFL",
+                              onlyCancer = FALSE,
+                              finalTime = 70,
+                              mu = 1e-4,
+                              initSize = 4000,
+                              keepPhylog = TRUE,
+                              seed = NULL,
+                              errorHitMaxTries = FALSE,
+                              errorHitWallTime = FALSE)
+op <- par(mfrow = c(1, 2))
+plot(simulScen2, show = "genotypes", type = "line",
+     main = "Second scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+plot(simulScen2, show = "genotypes",
+     main = "Second scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+par(op)
+```
+
+
+#### Third scenario
+
+In this case, we have a extreme situation where the microenvironment is 
+rich (high $\beta$) and the independence costs are very low ($\gamma$)
+in relation with the previous scenarios.
+
+* $\alpha$ (a) = 0.2: low cooperation between D cells. 
+* $\beta$ (b) = 0.3: rich microenvironment, being beneficial for D cells.
+* $\rho$ (r) = 0.1: low benefit of D cells from coexisting with I cells.
+* $\gamma$ (g) = 0.3: independence costs very low, being beneficial for
+I cells. 
+
+Although $\gamma$ and $\rho$ are very low, which could make us think that 
+I cells will control the tumour, we can observe that the fact that the 
+microenvironment is very rich (with a low value of $\beta$) allows to 
+D cells lead the progression  of the tumour over the rest of cell
+populations, including I cells.
+
+```{r example5scen3, message=FALSE}
+scen3 <- allFitnessEffects(genotFitness = fitness_rel(a = 0.2, b = 0.3,
+                                                     r = 0.1, g = 0.3),
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel")
+
+set.seed(1)
+simulScen3 <- oncoSimulIndiv(scen3,
+                              model = "McFL",
+                              onlyCancer = FALSE,
+                              finalTime = 50,
+                              mu = 1e-4,
+                              initSize = 4000,
+                              keepPhylog = TRUE,
+                              seed = NULL,
+                              errorHitMaxTries = FALSE,
+                              errorHitWallTime = FALSE)
+op <- par(mfrow = c(1, 2))
+plot(simulScen3, show = "genotypes", type = "line",
+     main = "Third scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+plot(simulScen3, show = "genotypes",
+     main = "Third scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+par(op)
+```
+
+
+#### Fourth scenario
+
+This is a variation of the third scenario to illustrate that, if 
+we set a microenvironment more rich than in the previous scenario, 
+we get a cooperation between D and I cells, although we can still observe 
+the superiority of D cells over I cells.
+
+* $\alpha$ (a) = 0.2: low cooperation between D cells. 
+* $\beta$ (b) = 0.4: lower richness than in the previous scenario.
+* $\rho$ (r) = 0.1: low benefit of D cells from coexisting with I cells.
+* $\gamma$ (g) = 0.3: independence costs very low, being beneficial for
+I cells. 
+
+```{r example5scen4, message=FALSE}
+scen4 <- allFitnessEffects(genotFitness = fitness_rel(a = 0.2, b = 0.4,
+                                                     r = 0.1, g = 0.3),
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel")
+
+## Set a different seed to show the results better since
+## with set.seed(1) the progression of I cells was not shown
+set.seed(2)
+
+simulScen4 <- oncoSimulIndiv(scen4,
+                              model = "McFL",
+                              onlyCancer = FALSE,
+                              finalTime = 40,
+                              mu = 1e-4,
+                              initSize = 4000,
+                              keepPhylog = TRUE,
+                              seed = NULL,
+                              errorHitMaxTries = FALSE,
+                              errorHitWallTime = FALSE)
+op <- par(mfrow = c(1, 2))
+plot(simulScen4, show = "genotypes", type = "line",
+     main = "Fourth scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+plot(simulScen4, show = "genotypes",
+     main = "Fourth scenario",
+     cex.main = 1.4, cex.lab = 1.1,
+     las = 1)
+par(op)
+```
+
+In this case, we can see that there is more variation in the size of
+population of I cells. There are cases where the I cell population
+cooperates with D cells and, in others, there is not
+cooperation. You can examine this running multiple simulations (or
+manually rerun the example above changing the seed).
+
+
+## Evolutionary Dynamics of Tumor-Stroma Interactions in Multiple Myeloma {#edmyel}
+
+This example is based on @sartakhti2016. The authors provide a
+frequency-dependent model to study the growth of malignant plasma
+cells in multiple myeloma. Assuming that cancer cells and stromal
+cells cooperate by exchanging diffusible factors, the study is
+carried out in the framework of evolutionary game theory.
+
+We first need to define a payoff strategy for this kind of scenario. The
+following definitions are needed:
+
+* There are $n$ phenotypes in a population denoted by $\{ P_1, \ldots, P_n \}$.
+* Each phenotype can produce one diffusible factor $\{ G_1, \ldots, G_n \}$.
+* Each diffusible factor $j$ has a different effect $r_{i,j}$ on the other
+phenotypes $i$.
+* The cost for $P_i$ for growth factor $G_i$ is denoted as $c_i$.
+* $M$ is the number of cells within the diffusion range.
+* There are $M_j$ individuals of type $P_j$ among the other group members.
+
+Then, the payoff for strategy $P_j$ is:
+\begin{align}
+      \pi_{P_j}(M_1,\ldots,M_n)=\frac{(M_j+1)\times c_j}{M}r_{j,j} + 
+      \sum_{i=1, i \neq j}^n \frac{M_i \times c_i}{M}r_{j,i} - c_j \;.
+\end{align}
+
+In multiple Myeloma we have three different types of cells that have autocrine
+and paracrine effects on the cells within their diffusion range: Malignant
+plasma cells (MM), Osteoblasts (OB) and Osteoclasts (OC). The specification of
+fitness is the following (see [[10]](#Sartakhti)):
+
+\begin{align}
+  W_{OC} &= \frac{(f_{1}(M-1)+1)c_{1}}{M}r11+
+  \frac{((1-f_{3})(M-1)-f_{1}(M-1)-1)c_{2}}{M}r12 \\
+  &+\frac{(M-(1-f_3)(M-1))c_{3}}{M}r13-c_{1} \\
+  W_{OB} &= \frac{(f_{2}(M-1)+1)c_{2}}{M}r22+
+  \frac{((1-f_{1})(M-1)-f_{2}(M-1)-1)c_{3}}{M}r23 \\
+  &+\frac{(M-(1-f_{1})(M-1))c_{1}}{M}r21-c_{2} \\
+  W_{MM} &= \frac{(f_{3}(M-1)+1)c_{3}}{M}r33+
+  \frac{((1-f_{2})(M-1)-f_{3}(M-1)-1)c_{1}}{M}r31 \\
+  &+\frac{(M-(1-f_{2})(M-1))c_{2}}{M}r32-c_{3} \;,
+\end{align}
+
+where $f_1$, $f_2$ and $f_3$ denote the frequency of the phenotype OC, OB and
+MM in the population. The multiplication factors for diffusible factors
+produced by the cells are shown in the following table (taken from @sartakhti2016):
+
+```{r smyeloma, eval=TRUE,echo=FALSE, fig.cap="Multiplication factorin myeloma interaction. Table 1 in Sartakhti et al., 2016, 'Evolutionary Dynamics of Tumor-Stroma
+Interactions in Multiple Myeloma' https://doi.org/10.1371/journal.pone.0168856 ."}
+knitr::include_graphics("Myeloma_interaction.png")
+```
+
+Several scenarios varying the values of the parameters are shown in
+@sartakhti2016. Here we reproduce some of them.
+
+### Simulations
+
+First, we define the fitness of the different genotypes 
+through the function _fitness_rel_. 
+
+```{r}
+f_cells <- function(c1, c2, c3, r11, r12, r13, 
+                    r21, r22, r23, r31, r32, r33, M, awt = 1e-4,
+                                 gt = c("WT", "OC", "OB", "MM")) {
+    data.frame(Genotype = gt,
+               Fitness = c(
+                  paste0("max(0.1, 1 - ", awt, " * (f_1+f_2+f_3)*N)"),
+                  paste0("1", "+(((f_1*(", M, "-1)+1)*", c1, ")/", M, ")*",r11,
+                          "+((((1-f_3)*(", M, "-1)-f_1*(", M, "-1)-1)*", c2, ")/", M, ")*", r12,
+                          "+(((", M, "-(1-f_3)*(", M, "-1))*", c3, ")/", M, ")*", r13,
+                          "-", c1
+                          ),
+                  paste0("1", "+(((f_2*(", M, "-1)+1)*", c2, ")/", M, ")*", r22,
+                          "+((((1-f_1)*(", M, "-1)-f_2*(", M, "-1)-1)*", c3, ")/", M, ")*", r23,
+                          "+(((", M, "-(1-f_1)*(", M, "-1))*", c1, ")/", M, ")*", r21,
+                          "-", c2
+                          ),
+                  paste0("1", "+(((f_3*(", M, "-1)+1)*", c3, ")/", M, ")*", r33,
+                          "+((((1-f_2)*(", M, "-1)-f_3*(", M, "-1)-1)*", c1, ")/", M, ")*", r31,
+                          "+(((", M, "-(1-f_2)*(", M, "-1))*", c2, ")/", M, ")*", r32,
+                          "-", c3
+                          )
+                  )
+               ,stringsAsFactors = FALSE
+               )
+}
+
+```
+
+It is important to note that, in order to exactly reproduce the
+experiments of the paper, we need to create an initial population
+with three different types of cell, but we do not need the presence
+of a wild type. For this reason, we will increase the probability of
+mutation of the wild type, which will disappear in early stages of
+the simulation; this is a procedure we have used before in several
+cases too (e.g., \@ref(hawkdove)). This is something that we must
+consider when interpreting the results.
+
+### Scenario 1
+
+Here we model a common situation in multiple myeloma in which $c_1<c_2<c_3$. In
+the presence of a small number of MM cells, the stable point on the OB-OC
+border becomes a saddle point and clonal selection leads to a stable
+coexistence of OC and MM cells. Parameters for the simulation can be seen in
+the R code.
+
+```{r}
+N <- 40000
+M <- 10
+c1 <- 1
+c2 <- 1.2
+c3 <- 1.4
+r11 <- 0
+r12 <- 1
+r13 <- 2.5
+r21 <- 1
+r22 <- 0
+r23 <- -0.3
+r31 <- 2.5
+r32 <- 0
+r33 <- 0
+
+fe_cells <-
+    allFitnessEffects(
+        genotFitness =
+            f_cells(c1, c2, c3, r11, r12, r13, 
+                    r21, r22, r23, r31, r32, r33, M,
+                    gt = c("WT", "OC", "OB", "MM")),
+        frequencyDependentFitness = TRUE,
+        frequencyType = "rel")
+
+## Simulated trajectories
+set.seed(2)
+simulation <- oncoSimulIndiv(fe_cells,
+                           model = "McFL",
+                           onlyCancer = FALSE,
+                           finalTime = 30,
+                           mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4),
+                           initSize = N,
+                           keepPhylog = FALSE,
+                           seed = NULL,
+                           errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+
+                                        #Plot trajectorie
+op <- par(mfrow = c(1, 2))
+plot(simulation, show = "genotypes", type = "line")
+plot(simulation, show = "genotypes")
+par(op)
+
+```
+
+Clearly, the appearance of MM cells quickly brings the system to an equilibrium
+point, which is stable. OB cells are extinct and cancer has propelled.
+
+### Scenario 2
+
+As in the second scenario of [[10]](#Sartakhti) ($c1=c2=c3$) configuration A (upper
+row in the grid of images). We should find one stable point on the OC-OB edge
+under certain conditions, which are met in the example. Further information
+about the parameters can be found in the R code shown below.
+
+```{r}
+N <- 40000
+M <- 10
+c1 <- 1
+c2 <- 1
+c3 <- 1
+r11 <- 0
+r12 <- 1
+r13 <- 0.5
+r21 <- 1
+r22 <- 0
+r23 <- -0.3
+r31 <- 0.5
+r32 <- 0
+r33 <- 0
+
+fe_cells <-
+    allFitnessEffects(
+        genotFitness =
+            f_cells(c1, c2, c3, r11, r12, r13, 
+                    r21, r22, r23, r31, r32, r33, M,
+                    gt = c("WT", "OC", "OB", "MM")),
+        frequencyDependentFitness = TRUE,
+        frequencyType = "rel")
+
+## Simulated trajectories
+set.seed(1)
+simulation <- oncoSimulIndiv(fe_cells,
+                           model = "McFL",
+                           onlyCancer = FALSE,
+                           finalTime = 25,
+                           mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4),
+                           initSize = N,
+                           keepPhylog = FALSE,
+                           seed = NULL,
+                           errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+
+#Plot trajectorie
+plot(simulation, show = "genotypes")
+
+```
+
+As expected, under these condtitions, MM cells are not able to propagate. The
+equilibrium point in the OB-OC edge is stable, resisting small variations in
+the number of MM cells.
+
+<!--  #\#\#\ Scenario 3 --->
+
+<!--  Here we imitate the conditions presented in the third scenario of --->
+<!--  [[10]](#\Sartakhti) ($c3<c1<c2$) configuration A (left). If diffusion range --->
+<!--  increases ($M = 50$) the game has two stable points. See the R code for further --->
+<!--  information about the parameters of this simulation. As we do not have control --->
+<!--  in the initial population (it depends on random mutations of the wild type) we --->
+<!--  will pay special attention to the box plot. --->
+
+<!--  ```{r} --->
+<!--  N <- 40000 --->
+<!--  M <- 50 --->
+<!--  c1 <- 1 --->
+<!--  c2 <- 1.2 --->
+<!--  c3 <- 0.8 --->
+<!--  r11 <- 0 --->
+<!--  r12 <- 1 --->
+<!--  r13 <- 0.5 --->
+<!--  r21 <- 1 --->
+<!--  r22 <- 0 --->
+<!--  r23 <- -0.3 --->
+<!--  r31 <- 0.5 --->
+<!--  r32 <- 0 --->
+<!--  r33 <- 0 --->
+
+<!--  fe_cells <- --->
+<!--      allFitnessEffects( --->
+<!--          genotFitness = --->
+<!--              f_cells(c1, c2, c3, r11, r12, r13,  --->
+<!--                      r21, r22, r23, r31, r32, r33, M, --->
+<!--                      gt = c("WT", "OC", "OB", "MM")), --->
+<!--          frequencyDependentFitness = TRUE, --->
+<!--          frequencyType = "rel") --->
+
+<!--  #\#\ Simulated trajectories --->
+<!--  simulation1 <- oncoSimulIndiv(fe_cells, --->
+<!--                             model = "McFL", --->
+<!--                             onlyCancer = FALSE, --->
+<!--                             finalTime = 30, --->
+<!--                             mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4), --->
+<!--                             initSize = N, --->
+<!--                             keepPhylog = FALSE, --->
+<!--                             seed = NULL, --->
+<!--                             errorHitMaxTries = FALSE, --->
+<!--                             errorHitWallTime = FALSE) --->
+<!--  plot(simulation1, show = "genotypes") --->
+<!--  ``` --->
+
+<!--  As explained in @sartakhti2016, there are two equilibrium points --->
+<!--  under this configuration: a monomorphic equilibrium on the MM vertex --->
+<!--  and a polymorphic equilibrium on the OC-MM edge. This can be clearly --->
+<!--  seen in our boxplot: there is a huge variance in the results of the --->
+<!--  $20$ simulations. Sometimes, MM cells become extint; but other times --->
+<!--  they manage to proliferate, leading to a sharp reduction in the --->
+<!--  number of OB and OC cells. --->
+
+<!--  I can't reproduce those resutls. --->
+
 \clearpage
+
+
 
 
 # Measures of evolutionary predictability and genotype diversity {#evolpredszend}
