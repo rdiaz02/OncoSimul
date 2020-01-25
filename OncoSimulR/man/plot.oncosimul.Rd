@@ -1,7 +1,7 @@
 \name{plot.oncosimul}
 \alias{plot.oncosimul}
 \alias{plot.oncosimulpop}
-\encoding{UTF-8}
+
 
 \title{
   Plot simulated tumor progression data.
@@ -53,10 +53,7 @@
                            srange = c(0.4, 1),
                            vrange = c(0.8, 1),
                            breakSortColors = "oe",
-                           legend.ncols = "auto",
-                           legend.out = FALSE,
-                           legend.pos = 0,
-                           ...)
+                           legend.ncols = "auto", ...)
 
 \method{plot}{oncosimulpop}(x,
                               ask = TRUE,
@@ -91,8 +88,6 @@
                               vrange = c(0.8, 1),
                               breakSortColors = "oe",
                               legend.ncols = "auto",
-                              legend.out = FALSE,
-                              legend.pos = 0,
                               ...)
 
 }
@@ -311,18 +306,6 @@
   entries, and two for more than six.
 }
 
-\item{legend.out}{Change the position of the legend. By default, the position 
-  of the legend is on the top-left corner of the plot. If \code{TRUE},
-  the legend is displaced outside the plot, on the rigth side. The new
-  position is optimizied to Rmarkdown files. In the case that the canvas
-  has a different size, see argument \code{lengend.pos}.
-}
-
-\item{legend.pos}{If \code{legend.out == TRUE}, the position of the legend
-  can be changed on the x axis by this argument. It allows to set a 
-  \code{inset} value (argument of \code{legend()} function) with respect to 
-  the rigth side of the plot.
-}
 
  
   \item{\dots}{
@@ -332,16 +315,13 @@
 }
 \author{
   Ramon Diaz-Uriarte. Marc Taylor for stacked and stream plots.
-  Sara Dorado Alfaro, Miguel Hernández del Valle, Álvaro Huertas García,
-  Diego Mañanes Cayero, Alejandro Martín Muñoz for legend position.
+  
 }
 
 
 
 \seealso{
-  \code{\link{oncoSimulIndiv}} %% , \code{\link{compositionPop2}},
-  %% \code{\link{meanCompositionPop}}
-  
+  \code{\link{oncoSimulIndiv}}
 }
 \examples{
 data(examplePosets)
