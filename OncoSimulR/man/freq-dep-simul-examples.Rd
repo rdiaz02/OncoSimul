@@ -16,9 +16,6 @@ Runs from simulations of frequency-dependent examples shown in the vignette.
 }
 \usage{
 data(woAntibS)
-plot(woAntibS, show = "genotypes", type = "line",
-     col = c("black", "green", "red"))
-
 }
 \format{
   For output from runs of \code{oncoSimulIndiv} a list of classes
