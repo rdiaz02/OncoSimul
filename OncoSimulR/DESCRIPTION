@@ -2,12 +2,12 @@ Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
 Version: 2.17.996
-Date: 2020-01-25
+Date: 2020-01-27
 Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
  	     email = "rdiaz02@gmail.com"),
-	      person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
-	      person("Sergio", "Sanchez-Carrillo", role = "ctb", 
+             person("Sergio", "Sanchez-Carrillo", role = "aut", 
 	        email = "sergiosanchezcarrillo@gmail.com"),
+             person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
 	      person("Guillermo", "Gorines Cordero", role = "ctb"),
 	      person("Ivan", "Lorca Alonso", role = "ctb"),
 	      person("Francisco", "Mu~noz Lopez", role = "ctb"),
@@ -28,9 +28,14 @@ Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
 	      person("Miguel", "Hernandez del Valle", role = "ctb"),
 	      person("Alvaro", "Huertas Garcia", role = "ctb"),
 	      person("Diego", "Ma~nanes Cayero", role = "ctb"),
-	      person("Alejandro", "Martin Mu~noz", role = "ctb"))
+	      person("Alejandro", "Martin Mu~noz", role = "ctb"),
+	      person("Marta", "Couce Iglesias", role = "ctb"),
+	      person("Silvia", "Garcia Cobos", role = "ctb"),
+	      person("Carlos", "Madariaga Aramendi", role = "ctb"),
+	      person("Ana", "Rodriguez Ronchel", role = "ctb"),
+	      person("Lucia", "Sanchez Garcia", role = "ctb"))
 Author: Ramon Diaz-Uriarte [aut, cre],
-	Sergio Sanchez-Carrillo [ctb],
+	Sergio Sanchez-Carrillo [aut],
 	Mark Taylor [ctb], 
 	Guillermo Gorines Cordero [ctb],
 	Ivan Lorca Alonso [ctb],
@@ -52,7 +57,12 @@ Author: Ramon Diaz-Uriarte [aut, cre],
   	Miguel Hernandez del Valle [ctb],
   	Alvaro Huertas Garcia [ctb],
   	Diego Ma\~nanes Cayero [ctb],
-  	Alejandro Martin Mu\~noz [ctb]
+  	Alejandro Martin Mu\~noz [ctb],
+	Marta Couce Iglesias [ctb],
+	Silvia Garcia Cobos [ctb],
+	Carlos Madariaga Aramendi [ctb],
+	Ana Rodriguez Ronchel [ctb],
+	Lucia Sanchez Garcia [ctb]
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
