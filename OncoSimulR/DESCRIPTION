@@ -33,7 +33,11 @@ Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
 	      person("Silvia", "Garcia Cobos", role = "ctb"),
 	      person("Carlos", "Madariaga Aramendi", role = "ctb"),
 	      person("Ana", "Rodriguez Ronchel", role = "ctb"),
-	      person("Lucia", "Sanchez Garcia", role = "ctb"))
+	      person("Lucia", "Sanchez Garcia", role = "ctb"),
+	      person("Yolanda", "Benitez Quesada", role = "ctb"),
+	      person("Asier", "Fernandez Pato", role = "ctb"),
+	      person("Esperanza", "Lopez Lopez", role = "ctb"),
+	      person("Alberto Manuel", "Parra Perez", role = "ctb"))
 Author: Ramon Diaz-Uriarte [aut, cre],
 	Sergio Sanchez-Carrillo [aut],
 	Mark Taylor [ctb], 
@@ -62,7 +66,11 @@ Author: Ramon Diaz-Uriarte [aut, cre],
 	Silvia Garcia Cobos [ctb],
 	Carlos Madariaga Aramendi [ctb],
 	Ana Rodriguez Ronchel [ctb],
-	Lucia Sanchez Garcia [ctb]
+	Lucia Sanchez Garcia [ctb],
+	Yolanda Benitez Quesada [ctb],
+	Asier Fernandez Pato [ctb],
+	Esperanza Lopez Lopez [ctb],
+	Alberto Manuel Parra Perez [ctb]
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
@@ -83,7 +91,7 @@ biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
 BugReports: https://github.com/rdiaz02/OncoSimul/issues
-Depends: R (>= 3.3.0)
+Depends: R (>= 3.5.0)
 Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igraph, methods, RColorBrewer, grDevices, car, dplyr, smatr, ggplot2, ggrepel, stringr
 Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0), rmarkdown, bookdown, pander
 LinkingTo: Rcpp
