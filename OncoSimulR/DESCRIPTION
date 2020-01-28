@@ -87,7 +87,6 @@ Author: Ramon Diaz-Uriarte [aut, cre],
 	Rafael Barrero Rodriguez [ctb],
 	Silvia Talavera Marcos [ctb],
 	Niklas Endres [ctb]  
-
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
