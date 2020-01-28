@@ -10006,7 +10006,7 @@ from coexistence of D with I.
 * $\alpha$ (a) = 0.5: intermediate cooperation between D and D cells.
 * $\beta$ (b) = 0.7: relatively resource-poor microenvironment.
 * $\rho$ (p) = 0.1: low benefit of D cells.
-    * $\gamma$ (g) = 0.8: high cost of independence of I cells.  
+* $\gamma$ (g) = 0.8: high cost of independence of I cells.  
 
 We can observe that high values of $\alpha$ and low values of $\rho$
 are translated in a larger profit of D cells from his interaction
@@ -10492,8 +10492,8 @@ the number of MM cells.
 ## An example of modellization in Parkinson disease related cell community {#parkex}
 
 The following example is based on @tsigelny2007, and it discusses
-the coexistance between cells that produce α-synuclein and
-β-synuclein, related with pore-like oligomer development and
+the coexistance between cells that produce $\alpha$-synuclein and
+$\beta$-synuclein, related with pore-like oligomer development and
 Parkinson disease.<!-- is defined in the --> <!-- paper:
 "Accumulation of a-synuclein resulting in the formation of --> <!--
 oligomers and protofibrils has been linked to Parkinson’s disease
@@ -10518,20 +10518,19 @@ parkgen1<- allFitnessEffects(genotFitness = park1,
                          frequencyType = "rel") 
 ```
 
-α- – normal a-synuclein production
-β- – normal b-synuclein production
-α+ – deleterious a-synuclein production, causing aggregation and the rest of mentioned effects
-β+ – deleterious b-synuclein production, preventing it from slowing down the aggregation of a-synuclein
-
-WT - α- and β- (balance)
-A - α+ and β- (increases [slight] the probability of Parkinson's disease)
-B – α- and β+ (increases [slight] the probability of Parkinson's disease)
-AB – α+ and β+ (massive increase of probability of Parkinson's disease)
+* $\alpha$- – normal a-synuclein production
+* $\beta$- – normal b-synuclein production
+* $\alpha$+ – deleterious a-synuclein production, causing aggregation and the rest of mentioned effects
+* $\beta$+ – deleterious b-synuclein production, preventing it from slowing down the aggregation of a-synuclein
+* WT - $\alpha$- and $\beta$- (balance)
+* A - $\alpha$+ and $\beta$- (increases [slight] the probability of Parkinson's disease)
+* B – $\alpha$- and $\beta$+ (increases [slight] the probability of Parkinson's disease)
+* AB – $\alpha$+ and $\beta$+ (massive increase of probability of Parkinson's disease)
 
 
 In this simulation, at the very end, the only cells that remain
-alive are those from AB population (which means that both α and β
-are mutated, α+ and β+, which means that the individual has a high
+alive are those from AB population (which means that both $\alpha$ and $\beta$
+are mutated, $\alpha$+ and $\beta$+, which means that the individual has a high
 risk of developing the disease, and all the cells keep this
 mutation). Genotype AB is able to invade the population when there
 are some A's and B's around. Cooperation increases the fitness at
