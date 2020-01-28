@@ -37,7 +37,16 @@ Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
 	      person("Yolanda", "Benitez Quesada", role = "ctb"),
 	      person("Asier", "Fernandez Pato", role = "ctb"),
 	      person("Esperanza", "Lopez Lopez", role = "ctb"),
-	      person("Alberto Manuel", "Parra Perez", role = "ctb"))
+	      person("Alberto Manuel", "Parra Perez", role = "ctb"),
+	      person("Jorge", "Garcia Calleja", role = "ctb"),
+	      person("Ana", "del Ramo Galian", role = "ctb"),
+	      person("Alejandro", "de los Reyes Benitez", role = "ctb"), 
+	      person("Guillermo", "Garcia Hoyos", role = "ctb"),
+	      person("Rosalia", "Palomino Cabrera", role = "ctb"),
+	      person("Rafael", "Barrero Rodriguez", role = "ctb"),
+	      person("Silvia", "Talavera Marcos", role = "ctb"),
+	      person("Niklas", "Endres", role = "ctb")  
+
 Author: Ramon Diaz-Uriarte [aut, cre],
 	Sergio Sanchez-Carrillo [aut],
 	Mark Taylor [ctb], 
@@ -70,7 +79,16 @@ Author: Ramon Diaz-Uriarte [aut, cre],
 	Yolanda Benitez Quesada [ctb],
 	Asier Fernandez Pato [ctb],
 	Esperanza Lopez Lopez [ctb],
-	Alberto Manuel Parra Perez [ctb]
+	Alberto Manuel Parra Perez [ctb],
+	Jorge Garcia Calleja [ctb],
+	Ana del Ramo Galian [ctb],
+	Alejandro de los Reyes Benitez [ctb], 
+	Guillermo Garcia Hoyos [ctb],
+	Rosalia Palomino Cabrera [ctb],
+	Rafael Barrero Rodriguez [ctb],
+	Silvia Talavera Marcos [ctb],
+	Niklas Endres [ctb]  
+
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
