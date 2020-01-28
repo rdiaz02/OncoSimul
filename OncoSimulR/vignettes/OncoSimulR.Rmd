@@ -10889,21 +10889,21 @@ plot(wiAntibS, show = "genotypes", type = "line",
 The following example is based on @Barton2018. This model assumes
 that there are four different types of cells in the body: (a) the
 native cells (NC), which are the healthy stromal cells; (b) the
-macrophages (MΦ), which are part of the immune system; (c) the
+macrophages (Mph), which are part of the immune system; (c) the
 benign tumor cells (BTC), lump-forming cancer cells that lack the
 ability to metastasize; (d) the motile tumor cells (MTC), metastatic
 cancer cells that can invade neighboring tissues.
 
 Both the native cells and macrophages produce growth factor, which
-beneﬁts all types of cells.The cost of producing the growth factor,
-cG, and the beneﬁts of the growth factor, bG, will be assumed to be
+benefits all types of cells.The cost of producing the growth factor,
+cG, and the benefits of the growth factor, bG, will be assumed to be
 the same for all types of the cells. The macrophages and motile
 tumor cells can move and we will assume that the ability comes at
-the costs cM,MΦ, and cM,MTC respectively. The native cells and
+the costs cM,Mph, and cM,MTC respectively. The native cells and
 benign tumor cells stay in place and thus have to share the
 resources with other native and benign tumor cells, which comes at
 the cost cS. The cancer cells can reproduce faster than native cells
-or macrophages, which we model by additional beneﬁt bR to the cancer
+or macrophages, which we model by additional benefit bR to the cancer
 cells, but the cancer cells can be destroyed by macrophages, which
 we model by additional cost cD to the cancer cells.
 
@@ -10911,10 +10911,10 @@ They provide also the payoff matrix reproduced in next table :
 
 
 
-|                  | MTC              | MΦ               | NC               | BTC              |
+|                  | MTC              | Mph               | NC               | BTC              |
 |------------------|------------------|------------------|------------------|------------------|
 |**MTC**           | bR - cMMTC   | bR - cMMTC - cD + bG | bR - cMMTC + bG  | bR - cMMTC       |
-|**MΦ**            | - cG - cMMΦ      |bG - cG - cMMΦ    | bG - cG - cMMΦ   | -cG - cMMΦ       |
+|**Mph**            | - cG - cMMph      |bG - cG - cMMph    | bG - cG - cMMph   | -cG - cMMph       |
 |**NC**            | - cG             | bG - cG          | bG - cG - cS     | - cG - cS        |
 |**BTC**           | bR               | bR + bG - cD     | bR + bG - cS     | bR - cS          |
 
@@ -10923,30 +10923,30 @@ through evolutionary game theory’, Involve, a Journal of Mathematics, 11(4), 5
 doi:10.2140/involve.2018.11.541
 .
 
-Overall, when the concentrations of the cells are [NC], [MΦ], [BTC] and [MTC], the net beneﬁts 
-(beneﬁts minus the costs) to each type of the cells are:
+Overall, when the concentrations of the cells are [NC], [Mph], [BTC] and [MTC], the net benefits 
+(benefits minus the costs) to each type of the cells are:
 
-* W(NC) = bG([NC] + [MΦ]) - cG - cS([NC] + [BTC])
-* W(MΦ) = bG([NC] + [MΦ]) - cG - cMMΦ
-* W(BTC) = bR + bG([NC] + [MΦ]) - cS([NC] + [BTC]) - cD[MΦ]
-* W(MTC) = bR + bG([NC] + [MΦ]) - cMMTC - cD[MΦ]
+* W(NC) = bG([NC] + [Mph]) - cG - cS([NC] + [BTC])
+* W(Mph) = bG([NC] + [Mph]) - cG - cMMph
+* W(BTC) = bR + bG([NC] + [Mph]) - cS([NC] + [BTC]) - cD[Mph]
+* W(MTC) = bR + bG([NC] + [Mph]) - cMMTC - cD[Mph]
 
 
 To allow modelling scenarios with different values for the
 parameters above we will define a function to create the data frame
 of frequency-dependent fitnesses. First, we will consider the NC
 cell type as the WT. Moreover, we will assume that each one of the
-other cell types types (MΦ , BTC and MTC) are all derived from WT by
+other cell types types (Mph , BTC and MTC) are all derived from WT by
 a single mutation in one of three genes, say, O, B, M, respectively.
 
 
 ```{r breastCfit1}
-create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD,
-                      gt = c("WT", "MΦ", "BTC", "MTC")) {
+create_fe <- function(cG, bG, cS, cMMph, cMMTC, bR, cD,
+                      gt = c("WT", "Mph", "BTC", "MTC")) {
   data.frame(Genotype = gt,
              Fitness = c(
                paste0("1 + ", bG, "*(f_ + f_1) - ", cG, " - ", cS, "*(f_ + f_2)"),
-               paste0("1 + ", bG, "*(f_ + f_1) - ", cG, " - ", cMMΦ),
+               paste0("1 + ", bG, "*(f_ + f_1) - ", cG, " - ", cMMph),
                paste0("1 + ", bR, " + ", bG, "*(f_ + f_1) - ", cS, "* (f_ + f_2) -",
                       cD , " * f_1"),
                paste0("1 + ", bR, " + ", bG, " *(f_ + f_1) -", cMMTC, " - ",
@@ -10960,7 +10960,7 @@ create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD,
 We can check we recover the Table \@ref(tab:payoff2) :
 
 ```{r breastCcheck}
-create_fe("cG", "bG","cS", "cMMΦ", "cMMTC", "bR", "cD")
+create_fe("cG", "bG","cS", "cMMph", "cMMTC", "bR", "cD")
 ```
 
 We check that we have correctly specified the different parameters
@@ -11140,7 +11140,7 @@ we model a more complex scenario inproving the previous example,
 
 This alternative model considers the presence of seven cell types, 
 four of which are the same that have been described in the previous 
-model: the native cells (NC), macrophages (MΦ), benign tumor cells 
+model: the native cells (NC), macrophages (Mph), benign tumor cells 
 (BTC) and metastatic cancer cells (MTC). Moreover, we include here 
 the chemotherapy-resistant normal cells (R), chemotherapy-resistant 
 benign tumor cells (BTC,R) and chemotherapy-resistant metastatic cancer 
@@ -11152,13 +11152,13 @@ but also the chemotherapy-resistant normal cells, produce growth factor
 bG, which benefits all cell types. These three cells types are considered
 to have the same cost of producing the growth factor, cG. The macrophages
 and motile tumor cells  (both MTC and MTC,R) have the ability to move, 
-assuming that the cost of this ability is cM,MΦ, cM,MTC and cM,MTC,R 
+assuming that the cost of this ability is cM,Mph, cM,MTC and cM,MTC,R 
 respectively. The native cells and benign tumor cells (both BTC and BTC,R)
 have no motile capacity and have to stay in place, competing for the 
 available resources with other native and benign tumor cells, which comes 
 at the cost cS for all these cell types. As occurred in the previous model, 
 considering that cancer cells have a higher reproductive rate than native 
-cells or macrophages, we add an additional beneﬁt bR to the cancer cells. 
+cells or macrophages, we add an additional benefit bR to the cancer cells. 
 However, as they can also be destroyed and attacked by macrophages, we add 
 an additional cost cD to the cancer cells. Moreover, in this model we add an
 additional factor Q that represents the effect of chemotherapeutic treatment, 
@@ -11170,10 +11170,10 @@ rate of reproduction.
 The payoff matrix will also introduce slight changes, which reproduced in 
 next table:
 
-|          | MTC              | MΦ               | NC               | BTC           | R | BTC,R | MTC,R |
+|          | MTC              | Mph               | NC               | BTC           | R | BTC,R | MTC,R |
 |----------|------------------|------------------|------------------|---------------|---|-------|-------|
 |**MTC**   | bR - cMMTC - Q   | bR - cMMTC - cD + bG -Q  | bR - cMMTC + bG -Q   | bR - cMMTC - Q | bR - cMMTC + bG - Q | bR - cMMTC - Q | bR - cMMTC -Q |
-|**MΦ**    | - cG - cMMΦ - 0.01 * Q  | bG - cG - cMMΦ - 0.01 * Q | bG - cG - cMMΦ - 0.01 * Q | -cG - cMMΦ - 0.01 * Q | bG - cG - cMMΦ- 0.01 * Q | -cG - cMMΦ - 0.01 * Q | - cG - cMMΦ - 0.01 * Q |
+|**Mph**    | - cG - cMMph - 0.01 * Q  | bG - cG - cMMph - 0.01 * Q | bG - cG - cMMph - 0.01 * Q | -cG - cMMph - 0.01 * Q | bG - cG - cMMph- 0.01 * Q | -cG - cMMph - 0.01 * Q | - cG - cMMph - 0.01 * Q |
 |**NC**    | - cG - 0.01 * Q | bG - cG - 0.01 * Q  | bG - cG - cS - 0.01 * Q  | - cG - cS - 0.01 * Q  | bG - cG - cS - 0.01 * Q |  - cG - cS - 0.01 * Q | - cG - 0.01 * Q |
 |**BTC**   | bR - Q  | bR + bG - cD - Q  | bR + bG - cS - Q | bR - cS - Q  | bR + bG - cS -Q | bR - cS - Q | bR - Q |
 |**R**     | - cG | bG - cG   | bG - cG - cS  | - cG - cS  | bG - cG - cS  |  - cG - cS | - cG  | -cG |
@@ -11185,23 +11185,23 @@ Table:(\#tab:payoff3)  Payoff matrix adapted from Barton et al., 2018,
 a Journal of Mathematics, 11(4), 541-548; doi:10.2140/involve.2018.11.541
 .
 
-Overall, when the concentrations of the cells are ǪNC, ǪMΦ, ǪBTC, ǪMTC, ǪR, 
-ǪBTC,R and ǪMTC,R, the net beneﬁts (beneﬁts minus the costs) to each cell 
+Overall, when the concentrations of the cells are ǪNC, ǪMph, ǪBTC, ǪMTC, ǪR, 
+ǪBTC,R and ǪMTC,R, the net benefits (benefits minus the costs) to each cell 
 type are:
 
 
-* W(NC) = bG([NC] + [MΦ] + [R]) - cG - cS([NC] + [BTC] + [R] + [BTC,R]) - 0.01*Q
-* W(MΦ) = bG([NC] + [MΦ] + [R]) - cG - cMMΦ - 0.001*Q
-* W(BTC) = bR + bG([NC] + [MΦ] + [R]) - cS([NC] + [MΦ] + [R] + [BTC,R]) - cD[MΦ] - Q
-* W(MTC) = bR + bG([NC] + [MΦ] + [R]) - cMMTC - cD[MΦ] - Q
-* W(R) = bG ([NC] + [MΦ] + [R]) - cG - cS ([NC] + [BTC] + [R] + [BTC,R])
-* W(BTC,R) = bR + bG([NC] + [MΦ] + [R]) - cS([NC] + [MΦ] + [R] + [BTC,R]) - cD[MΦ]
-* W(MTC,R) = bR + bG([NC] + [MΦ] + [R]) - cMMTC - cD[MΦ]
+* W(NC) = bG([NC] + [Mph] + [R]) - cG - cS([NC] + [BTC] + [R] + [BTC,R]) - 0.01*Q
+* W(Mph) = bG([NC] + [Mph] + [R]) - cG - cMMph - 0.001*Q
+* W(BTC) = bR + bG([NC] + [Mph] + [R]) - cS([NC] + [Mph] + [R] + [BTC,R]) - cD[Mph] - Q
+* W(MTC) = bR + bG([NC] + [Mph] + [R]) - cMMTC - cD[Mph] - Q
+* W(R) = bG ([NC] + [Mph] + [R]) - cG - cS ([NC] + [BTC] + [R] + [BTC,R])
+* W(BTC,R) = bR + bG([NC] + [Mph] + [R]) - cS([NC] + [Mph] + [R] + [BTC,R]) - cD[Mph]
+* W(MTC,R) = bR + bG([NC] + [Mph] + [R]) - cMMTC - cD[Mph]
 
 
 Now, we will define a function to create the data frame of frequency-dependent
 fitnesses to allow modelling several situations. As in the previous model,
-we will consider the NC cell type as the WT and  will assume that MΦ, BTC 
+we will consider the NC cell type as the WT and  will assume that Mph, BTC 
 and MTC cells are all derived from WT by a single mutation, as previously 
 described. Likewise, we consider that the chemotherapy-resistant normal 
 cells (R) are derived from a single mutation in a gene, say, R. Furthermore,
@@ -11209,8 +11209,8 @@ we will assume that the two chemotherapy-resistant cancer cells (BTC,R and
 MTC,R) are all derived from WT by two different mutations.
 
 ```{r breastCQfit1}
-create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD, Q,
-                      gt = c("WT", "BTC", "R", "MTC", "MΦ", "BTC,R", "MTC,R")) {
+create_fe <- function(cG, bG, cS, cMMph, cMMTC, bR, cD, Q,
+                      gt = c("WT", "BTC", "R", "MTC", "Mph", "BTC,R", "MTC,R")) {
   data.frame(Genotype = gt,
              Fitness = c(
                
@@ -11221,7 +11221,7 @@ create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD, Q,
                paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cS, "(f_ + f_1 + f_2 + f_1_2)"),
                paste0("1 + ", bR, " + ", bG, " *(f_ + f_2 + f_4) -", cMMTC, " - ",
                       cD , " * f_4 -", Q),
-               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cMMΦ, "- 0.01*",Q),
+               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cMMph, "- 0.01*",Q),
                paste0("1 + ", bR, " + ", bG, "(f_ + f_2 + f_4) - ", cS, " (f_ + f_1 + f_2 + f_1_2) -",
                       cD , " * f_4"),
                paste0("1 + ", bR, " + ", bG, " *(f_ + f_2 + f_4) -", cMMTC, " - ",
@@ -11235,7 +11235,7 @@ create_fe <- function(cG, bG, cS, cMMΦ, cMMTC, bR, cD, Q,
 We verify that we recover Table \@ref(tab:payoff3) :
 
 ```{r breastCQcheck}
-create_fe("cG", "bG","cS", "cMMΦ", "cMMTC", "bR", "cD", "Q")
+create_fe("cG", "bG","cS", "cMMph", "cMMTC", "bR", "cD", "Q")
 ```
 
 We check once again that we have correctly specified the different parameters
@@ -11288,7 +11288,7 @@ afe_3_a <- allFitnessEffects(
   frequencyType = "rel")
 
 #Set mutation rates
-muvar2 <- c("MΦ" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-7)
+muvar2 <- c("Mph" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-7)
 
 set.seed(2)
 s_3_a <- oncoSimulIndiv(afe_3_a,
@@ -11329,7 +11329,7 @@ afe_3_a <- allFitnessEffects(
   frequencyDependentFitness = TRUE,
   frequencyType = "rel")
 
-muvar2 <- c("MΦ" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-7)
+muvar2 <- c("Mph" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-7)
 
 set.seed(2)
 
@@ -11377,7 +11377,7 @@ afe_3_a <- allFitnessEffects(
   frequencyDependentFitness = TRUE,
   frequencyType = "rel")
 
-muvar2 <- c("MΦ" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-5)
+muvar2 <- c("Mph" = 1e-2, "BTC" = 1e-3, "MTC"=1e-3, "R" = 1e-5)
 
 set.seed(2)
 
