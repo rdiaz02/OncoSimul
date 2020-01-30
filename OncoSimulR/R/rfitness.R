@@ -125,7 +125,9 @@ rfitness <- function(g, c= 0.5,
         } else if (model == "Additive") {
       ## get fitness effect for mutations in each gene
       mutants <-rep(1,g)
-      f_single_mut <- sapply(mutants, FUN = function(x) 
+            ## FIXME: Why not just?
+            ## f_single_mut <- rnorm(g, mean = mu, sd = sd)
+            f_single_mut <- sapply(mutants, FUN = function(x) 
                                             rnorm(x, mean = mu, sd = sd))
       ## find which gene is mutated 
       m2 <- m == 1
