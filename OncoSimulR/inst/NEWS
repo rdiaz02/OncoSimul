@@ -1,4 +1,4 @@
-Changes in version 2.17.7 (2020-01-22):
+Changes in version 2.17.7 (2020-01-30):
 	- Removed dependency on nem, to be deprecated. Adding nem's
 	code (file nem_transitive_reduction.R).
 
