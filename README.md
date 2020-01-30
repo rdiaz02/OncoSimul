@@ -41,9 +41,10 @@ OncoSimulR has also been used extensively in the simulations reported in
 the Bioinformatics 
 paper
 ["Cancer Progression Models And Fitness Landscapes: A Many-To-Many
-Relationship"](https://doi.org/10.1093/bioinformatics/btx663) and the
-bioRxiv preprint 
-["Every which way? On predicting tumor evolution using cancer progression models"](https://doi.org/10.1101/371039).
+Relationship"](https://doi.org/10.1093/bioinformatics/btx663) and the PLoS
+Computational Biology paper 
+["Every which way? On predicting tumor evolution using cancer progression
+models"](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007246).
 
 
 
@@ -248,10 +249,16 @@ package).
 
 ## Further documentation
 
-This [paper published in Bioinformatics](https://doi.org/10.1093/bioinformatics/btx077)
-gives a quick overview of OncoSimulR (a former version is available as a 
-[bioRxiv preprint](http://biorxiv.org/content/early/2016/08/14/069500)). You can also take a look at this
-[poster presented at ECCB 2016](http://dx.doi.org/10.7490/f1000research.1112860.1).
+This [paper published in
+Bioinformatics](https://doi.org/10.1093/bioinformatics/btx077) gives a
+quick overview of OncoSimulR (a former version is available as a [bioRxiv
+preprint](http://biorxiv.org/content/early/2016/08/14/069500)). You can
+also take a look at this [poster presented at ECCB
+2016](http://dx.doi.org/10.7490/f1000research.1112860.1). A chapter titled
+"Simulating evolution in asexual populations with epistasis" will appear
+in K.-C. Wong (ed.), Epistasis: Methods and Protocols. Methods in
+Molecular Biology, later during 2020; here is a [preprint
+version](https://www.ligarto.org/files/simul-evol-epist-preprint.pdf).
 
 
 If you use the package in publications **please cite the Bioinformatics paper**.
