@@ -171,7 +171,7 @@ Optimum model component.}
 
 
 \item{model}{One of "RMF" (default) for Rough Mount Fuji, "Additive" for
- Additve model, "NK", for Kauffman's NK model, "Ising" for Ising model,
+ Additive model, "NK", for Kauffman's NK model, "Ising" for Ising model,
  "Eggbox" for Eggbox model or "Full" for Full models.}
 } 
 
@@ -202,10 +202,14 @@ Optimum model component.}
   have different contributions to the fitness evaluation. This model is
   also referred to as the "multiplicative" model in the literature as it
   is additive in the log-scale (e.g., see Brouillet et al., 2015 or
-  Ferretti et al., 2016). There is no epistasis in the additve model
-  because the effect of a mutation in a locus does not depend on the
-  genetic background, or whether the rest of the loci are mutated or
-  not.
+  Ferretti et al., 2016). The contribution of each mutated allele to the
+  log-fitness is a random deviate from a Normal distribution with
+  specified mean \code{mu} and standard deviation \code{sd}, and the
+  log-fitness of a genotype is the sum of the contributions of each
+  mutated allele. There is no "reference" genotype in the Additive
+  model.  There is no epistasis in the additve model because the effect
+  of a mutation in a locus does not depend on the genetic background, or
+  whether the rest of the loci are mutated or not.
   
 
   When using \code{model = "NK"} fitness is drawn from a uniform (0, 1)
