@@ -91,6 +91,7 @@ rm ./OncoSimulR/vignettes/*.synctex.*
 # echo " =======     done long manual tests   =======     "
 # echo " "
 
+export R_CHECK_ENVIRON="~/.R/check.Renviron"
 echo " ************************************** "
 echo " **********   R CMD build --vanilla  *********** "
 echo ""

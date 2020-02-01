@@ -61,7 +61,7 @@ cp OncoSimulR/DESCRIPTION ../BioConductor-git/OncoSimulR/.
 
 
 ## should we run the tests?
-
+export R_CHECK_ENVIRON="~/.R/check.Renviron"
 if [[ $# == 1 ]]; then
     V_R=$1
     cd ~/Proyectos/BioConductor-git
