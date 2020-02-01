@@ -12,8 +12,8 @@
 ## License: GPL (>= 2)
 
 nem_transitive.reduction <- function(g){
-	if (!(class(g)%in%c("matrix","graphNEL"))) stop("Input must be an adjacency matrix or graphNEL object")
-	if(class(g) == "graphNEL"){
+	if (!any(class(g)%in%c("matrix","graphNEL"))) stop("Input must be an adjacency matrix or graphNEL object")
+	if(any(class(g) == "graphNEL")){
 		g = as(g, "matrix")		
 	}
 # 	if("Rglpk" %in% loadedNamespaces()){ # constraints müssen einzeln hinzugefügt und jedesmal das ILP gelöst werden. Danach müssen jedesmal die constraints überprüft werden und nicht mehr gebrauchte rausgeschmissen werden
@@ -104,7 +104,7 @@ nem_transitive.reduction <- function(g){
 
 nem_transitive.closure <- function(g,mat=FALSE,loops=TRUE){
 
-    if (!(class(g)%in%c("graphNEL","matrix"))) stop("Input must be either graphNEL object or adjacency matrix")
+    if (!any(class(g)%in%c("graphNEL","matrix"))) stop("Input must be either graphNEL object or adjacency matrix")
     g <- as(g, "matrix")
     
     #-- adjacency matrix
