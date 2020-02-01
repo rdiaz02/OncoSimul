@@ -98,6 +98,7 @@ make -C ./OncoSimulR/src/FitnessLandscape clean
 # echo " =======     done long manual tests   =======     "
 # echo " "
 
+export R_CHECK_ENVIRON="~/.R/check.Renviron"
 echo " ************************************** "
 echo " **********   R CMD build --vanilla  *********** "
 echo ""

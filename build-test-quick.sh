@@ -71,7 +71,7 @@ make -C ./OncoSimulR/src/FitnessLandscape clean
 ## We always do this, though it should not be necessary
 sed -i 's/^};$/}/' ./OncoSimulR/src/FitnessLandscape/generalized_chain.c 
 
-
+export R_CHECK_ENVIRON="~/.R/check.Renviron"
 echo " ************************************** "
 echo " **********   R CMD build --vanilla  *********** "
 echo ""
