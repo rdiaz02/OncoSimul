@@ -1,3 +1,10 @@
+Changes in version 2.17.997 (2020-03-17):
+	- With R-devel, stringsAsFactors = FALSE by default. Fix
+	tests
+	- POM documentation.
+	- With newest R-devel (01-28) getting
+	  "the condition has length > 1": fixed.
+
 Changes in version 2.17.996 (2020-01-28):
 	- More freq-dep-fitness examples.
 
