@@ -8,22 +8,23 @@ test_that("Issue warnings and messages", {
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df1),
                    "No WT genotype. Setting its fitness to 1.", fixed = TRUE)
-    
+    if(as.character(version$major) < 4) {
     df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df2),
                    "First column of genotype fitness is a factor.",
                    fixed = TRUE)
-
+    }
     df1 <- data.frame(Genotype = c("A", "B, C"), Fitness = c(1.3, 2),
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::to_genotFitness_std(df1),
                    "No WT genotype. Setting its fitness to 1.", fixed = TRUE)
     
-    
+    if(as.character(version$major) < 4) {    
     df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::to_genotFitness_std(df2),
                    "First column of genotype fitness is a factor.",
                    fixed = TRUE)
+    }
 })
 
 test_that("Equality of fitness including allFitnessEffects", {
