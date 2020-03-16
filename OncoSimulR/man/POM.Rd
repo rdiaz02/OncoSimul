@@ -46,7 +46,7 @@ diversityLOD(llod)
 \item{llod}{A list of LODs, as returned from \code{LOD} on an object of
   class \code{oncosimulpop}.}
 
-\item{...}{Other arguments passed to methods (ignored now).}
+% \item{...}{Other arguments passed to methods (ignored now).}
 }
 
 \details{
