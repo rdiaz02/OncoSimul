@@ -36,9 +36,12 @@ test_that("testing output classes", {
   
   
   expect_identical(class(osi), c("oncosimul", "oncosimul2"))
-  
+
+  if(as.character(version$major) < 4) { 
   expect_identical(class(osi$Genotypes), "matrix")
-  
+  } else {
+      expect_identical(class(osi$Genotypes), c("matrix", "array"))
+  }
 })
 
 test_that("testing performance", {

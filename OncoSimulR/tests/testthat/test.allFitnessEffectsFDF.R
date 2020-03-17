@@ -186,12 +186,12 @@ test_that("testing output", {
                                                   300,
                                                   450)) , 
                  "spPopSizes will be considered NULL if frequencyDependentFitness = FALSE")
-  
+  if(as.character(version$major) < 4) {
   expect_warning(allFitnessEffects(genotFitness = r3, 
                                    frequencyDependentFitness = TRUE, 
                                    frequencyType = "rel"), 
                  "Last column of genotype fitness is a factor. Converting to character.")
-  
+  }
 
   expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentFitness = TRUE, 
