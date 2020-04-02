@@ -57,6 +57,8 @@ struct fitnessLandscape_struct {
   std::map<std::string, std::string> flfVarsmap; //New line to define flfVarsmap
 };
 
+// FIXME: isn't this reundant nesting?
+// as we only have a map inside the structure
 struct evalFVars_struct {//structure to store the map fVars to fitness (double)
   std::map<std::string, double> evalFVarsmap;
 };

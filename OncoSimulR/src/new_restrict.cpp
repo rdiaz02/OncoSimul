@@ -1341,33 +1341,32 @@ std::vector<int> stringVectorToIntVector(const std::string str){
 
 //This function produce the map (structure) that links fVars (keys) to its frequencies (values)
 evalFVars_struct evalFVars(const fitnessEffectsAll& F,
-			   									 const std::vector<Genotype>& Genotypes,
-		           						 const std::vector<spParamsP>& popParams){
-
-	evalFVars_struct efvs;
-	std::map<std::string, std::string> fvarsmap = F.fitnessLandscape.flfVarsmap;
-	std::string freqType = F.frequencyType;
-
-	for(const auto& iterator : fvarsmap) {
-		std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
-		std::string var = iterator.second;//variable associated to genotype
-		int position = findPositionInGenotypes(Genotypes, genotype);
-			if(position != 0){
-				int realPos = position - 1;
-				if(freqType == "abs"){
-					double freqAbs = popParams[realPos].popSize;
-					efvs.evalFVarsmap.insert({var, freqAbs});
-				}else{
-					double freqRel = frequency(realPos, popParams);
-					efvs.evalFVarsmap.insert({var, freqRel});
-				}
-			}else{
-				double freq = 0.0;
-				efvs.evalFVarsmap.insert({var, freq});
-			}
-	}
-
-	return efvs;
+			   const std::vector<Genotype>& Genotypes,
+			   const std::vector<spParamsP>& popParams){
+  
+  evalFVars_struct efvs;
+  std::map<std::string, std::string> fvarsmap = F.fitnessLandscape.flfVarsmap;
+  std::string freqType = F.frequencyType;
+  
+  for(const auto& iterator : fvarsmap) {
+    std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
+    std::string var = iterator.second;//variable associated to genotype
+    int position = findPositionInGenotypes(Genotypes, genotype);
+    if(position != 0){
+      int realPos = position - 1;
+      if(freqType == "abs"){
+	double freqAbs = popParams[realPos].popSize;
+	efvs.evalFVarsmap.insert({var, freqAbs});
+      } else {
+	double freqRel = frequency(realPos, popParams);
+	efvs.evalFVarsmap.insert({var, freqRel});
+      }
+    } else {
+      double freq = 0.0;
+      efvs.evalFVarsmap.insert({var, freq});
+    }
+  }
+  return efvs;
 }
 
 double totalPop(const std::vector<spParamsP>& popParams){
@@ -1384,56 +1383,50 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 	const std::vector<spParamsP>& popParams){
 
   double f;
-
   evalFVars_struct symbol_table_struct = evalFVars(F, Genotypes, popParams);
-
-	std::map<std::string, double> EFVMap = symbol_table_struct.evalFVarsmap;
-
+  std::map<std::string, double> EFVMap = symbol_table_struct.evalFVarsmap;
   std::string gs = concatIntsString(ge.flGenes);
-
   std::string expr_string = F.fitnessLandscape.flFDFmap.at(gs);
 
-	double N = totalPop(popParams);
+  double N = totalPop(popParams);
 
   typedef exprtk::symbol_table<double> symbol_table_t;
   typedef exprtk::expression<double> expression_t;
   typedef exprtk::parser<double> parser_t;
 
-	symbol_table_t symbol_table;
+  symbol_table_t symbol_table;
   for(auto& iterator : EFVMap){
 		symbol_table.add_variable(iterator.first, iterator.second);
   }
-	symbol_table.add_constant("N", N);//We reserve N to total population size
+  symbol_table.add_constant("N", N);//We reserve N to total population size
   symbol_table.add_constants();
 
   expression_t expression;
   expression.register_symbol_table(symbol_table);
-
-	parser_t parser;
-
-	if (!parser.compile(expr_string, expression)){
-				Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
-	      for (std::size_t i = 0; i < parser.error_count(); ++i){
-	         typedef exprtk::parser_error::type error_t;
-	         error_t error = parser.get_error(i);
-		 // RDU: FIXME?
-	         // Rcpp::Rcout <<
-		 REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
-			 i,
-			 error.token.position,
-			 exprtk::parser_error::to_str(error.mode).c_str(),
-			 error.diagnostic.c_str(),
-			 expr_string.c_str());
-		 // << std::endl;
-	      }
-				std::string errorMessage1 = "Wrong evalGenotypeFDFitnessEcuation evaluation, ";
-				std::string errorMessage2 = "probably bad fitness columm especification.";
-				std::string errorMessage = errorMessage1 + errorMessage2;
-				throw std::invalid_argument(errorMessage);
-	  }
-
+  
+  parser_t parser;
+  
+  if (!parser.compile(expr_string, expression)){
+    Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
+    for (std::size_t i = 0; i < parser.error_count(); ++i){
+      typedef exprtk::parser_error::type error_t;
+      error_t error = parser.get_error(i);
+      // RDU: FIXME?
+      // Rcpp::Rcout <<
+      REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
+	       i,
+	       error.token.position,
+	       exprtk::parser_error::to_str(error.mode).c_str(),
+	       error.diagnostic.c_str(),
+	       expr_string.c_str());
+      // << std::endl;
+    }
+    std::string errorMessage1 = "Wrong evalGenotypeFDFitnessEcuation evaluation, ";
+    std::string errorMessage2 = "probably bad fitness columm especification.";
+    std::string errorMessage = errorMessage1 + errorMessage2;
+    throw std::invalid_argument(errorMessage);
+  }
   f = expression.value();
-
   return f;
 }
 
@@ -1848,3 +1841,11 @@ std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist)
 // genesWithoutInt.  But that already comes order from R with numbers
 // starting after the last gene with interaction. See the R function
 // allFitnessEffects.
+
+
+// FIXME in new code with time, why is there this line?
+
+//	double T = popParams[0].timeLastUpdate;
+//	if (T == std::numeric_limits<double>::infinity() 
+//	    or T == -std::numeric_limits<double>::infinity()) {
+//	T = 0;}
