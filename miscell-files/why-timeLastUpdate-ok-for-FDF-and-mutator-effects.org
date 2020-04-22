@@ -1,0 +1,69 @@
+* What
+  - A line like this
+    double T = popParams[0].timeLastUpdate;
+  appears in  evalGenotypeFDFitnessEcuation (new-restrict.cpp).
+  - Why is that OK?
+    - that is taken from popParams[0] (and not other elements)
+    - that it is timeLastUpdate
+
+
+* timeLastUpdate
+
+  - In BNB_nr.cpp, around line 1541, inside the call to nr_innerBNB we see
+    when to_update == 3
+    - else { // we sampled, so update all: i.e. to_update == 3
+       for(size_t i = 0; i < popParams.size(); i++) {
+	 tmpdouble1 = ti_nextTime_tmax_2_st(popParams[i],
+					    currentTime,
+					    tSample, ti_dbl_min, ti_e3);
+	 mapTimes_updateP(mapTimes, popParams, i, tmpdouble1);
+	 popParams[i].timeLastUpdate = currentTime;
+    - similar expressions exist in other places
+      - for first iteration:  popParams[0].timeLastUpdate = currentTime;
+      - for other updates under iter == 1: popParams[u_1].timeLastUpdate = currentTime;
+      - to_update ==2:
+	popParams[u_1].timeLastUpdate = currentTime;
+	popParams[u_2].timeLastUpdate = currentTime;
+  - It is clear and obvious that timeLastUpdate contains the currentTime.
+
+
+* Why can we grab currentTime from popParams[0]
+
+
+  - Line 1541 if BNB_nr.cpp has the line
+  popParams[i].timeLastUpdate = currentTime;
+  - That affects the whole population, as we iterate whenever we sampled.
+
+  - Around line 2035, 2040 of BNB_nr.cpp we call the updateRatesFDFetc
+    functions. So we are updating the fitness of all, and thus this is
+    done after line 1541, were all times were set to a common one (that
+    was done above, when sampling,which is the same case as in here)
+
+
+* A paranoid check:
+  - Add, in the code when grabbing T, a paranoid check that always
+    verifies that the time is the same.
+
+  double T = 0;
+  
+  if(popParams.size()) {
+      T = popParams[0].timeLastUpdate;
+  }
+
+  //FIXME: remove this later, this is a paranoid check
+  if(popParams.size()) {
+     	for(size_t i = 0; i < popParams.size(); i++){
+            if (popParams[i].timeLastUpdate != T)
+                     throw std::logic_error("timeLastUpdate not constant  in evalGenotypeFDFitnessEcuation ");
+      }
+  }
+
+
+* Mutator issues
+  - In new_restrict.cpp in lines:
+    - 1586 (evalMutator)
+    - 1663 (evalRGenotype)
+    - 1707 (evalRGenotypeAndMut)
+  - we call evalGenotypeFitness
+  - Those are the functions we need to look at carefully to have FDF work
+    with mutator
