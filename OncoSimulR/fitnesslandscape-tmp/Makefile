@@ -14,7 +14,7 @@ HOME_BIN=~/bin/
 RANLIB=ranlib
 
 CC = gcc
-ALLCFLAGS= -O -Wall 
+ALLCFLAGS= -O -Wall -Wrestrict
 
 SHELL=/bin/sh
 LIBS = liblandscape.a
