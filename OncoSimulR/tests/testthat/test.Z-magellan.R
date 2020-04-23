@@ -28,8 +28,12 @@ test_that("Same output from magellan as before changing their C code", {
                                opt_i.19 = 230, mProbOpt_19 = 0.152, opt_i.20 = 232, mProbOpt_20 = 0.025, 
                                opt_i.21 = 242, mProbOpt_21 = 0.014, opt_i.22 = 251, mProbOpt_22 = 0.021
                                ))
-
-
+    cat("\n s9s[21] and s9s_compare[21]\n")
+    print(s9s[21])
+    print(s9s_compare[21])
+    cat("\n where they differ\n")
+    print(which(s9s!=s9s_compare))
+    
     s9l_compare <- structure(c("/* FL name */", "   coco", "", "/* Peaks/Sinks */", "   #genotypes: 256", 
                                "   #peaks: 23", "   #sinks: 25", "", "/* Epistasis types */", 
                                "   none:       0.027", "   magnitude:  0.361", "   sign:       0.339", 
