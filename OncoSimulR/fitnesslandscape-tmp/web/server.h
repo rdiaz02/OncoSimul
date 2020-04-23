@@ -1,0 +1,75 @@
+//on my mac
+/*
+#define INITDIRWEB "http://localhost:8888/land/"
+#define OUTDIRWEB "http://localhost:8888/land/temp/"
+#define OUTDIR "/Applications/MAMP/htdocs/land/temp/"
+#define JSDIR "/land/js/"
+#define MAINDIR "/land/"
+#define MAC_NAME ".mac"
+#define JSDIRWEB "http://localhost:8888/land/js/"
+#define PROGFILE "http://localhost:8888/cgi-bin/fl_webdraw.cgi"
+#define PROGMODELE "http://localhost:8888/cgi-bin/fl_webmodel.cgi"
+#define HTML_NAME "Magellan.custom.mac.html"
+#define HTML_MODEL "Magellan.model.mac.html"
+#define HTML_MAIN "Magellan.main.mac.html"
+#define PROG_CONV "/usr/local/bin/rsvg-convert"
+#define HTML_CUSTOM_NAME "Magellan.custom.mac.html"
+#define HTML_HELP "Magellan.help.mac.html"
+#define LAND_FILE_PLACE "/Applications/MAMP/htdocs/land/knownlands/"
+*/
+
+#define INITDIRWEB "http://wwwabi.snv.jussieu.fr/public/Magellan/"
+#define OUTDIRWEB "http://wwwabi.snv.jussieu.fr/public/Magellan/temp/"
+#define OUTDIR "/var/www/html/wwwabi/public/Magellan/temp/"
+#define JSDIR "/public/Magellan/js/"
+#define MAINDIR "/public/Magellan/"
+#define MAC_NAME ""
+#define JSDIRWEB "http://wwwabi.snv.jussieu.fr/Magellan/js/"
+
+#define HTML_NAME "Magellan.custom.html"
+#define HTML_MODEL "Magellan.model.html"
+#define HTML_MAIN "Magellan.main.html"
+#define PROG_CONV "/usr/bin/rsvg-convert"
+#define HTML_CUSTOM_NAME "Magellan.custom.html"
+#define HTML_HELP "Magellan.help.html"
+#define PROGFILE "http://wwwabi.snv.jussieu.fr/cgi-bin/fl_webdraw.cgi"
+#define PROGMODELE "http://wwwabi.snv.jussieu.fr/cgi-bin/fl_webmodel.cgi"
+#define LAND_FILE_PLACE "/var/www/html/wwwabi/public/Magellan/knownlands/"
+
+
+
+/*
+#define INITDIRWEB "http://localhost:8888/land/"
+#define OUTDIRWEB "http://localhost:8888/land/temp/"
+#define OUTDIR "/Applications/MAMP/htdocs/land/temp/"
+#define JSDIR "/land/js/"
+#define MAINDIR "/land/"
+#define MAC_NAME ".mac"
+#define JSDIRWEB "http://localhost:8888/land/js/"
+#define PROGFILE "http://localhost:8888/cgi-bin/fl_webdraw.cgi"
+#define PROGMODELE "http://localhost:8888/cgi-bin/fl_webmodel.cgi"
+#define HTML_CUSTOM_NAME "Magellan.custom.mac.html"
+#define HTML_MODEL "Magellan.model.mac.html"
+#define HTML_MAIN "Magellan.main.mac.html"
+#define HTML_HELP "Magellan.help.mac.html"
+#define PROG_CONV "/usr/local/bin/rsvg-convert"
+
+
+
+#define INITDIRWEB "http://wwwabi.snv.jussieu.fr/public/Magellan/"
+#define OUTDIRWEB "http://wwwabi.snv.jussieu.fr/public/Magellan/temp/"
+#define OUTDIR "/var/www/html/wwwabi/public/Magellan/temp/"
+#define JSDIR "/public/Magellan/js/"
+#define MAINDIR "/public/Magellan/"
+#define MAC_NAME ""
+#define JSDIRWEB "http://wwwabi.snv.jussieu.fr/Magellan/js/"
+#define PROG "http://wwwabi.snv.jussieu.fr/cgi-bin/fl_webdraw.cgi"
+#define PROGFILE "http://wwwabi.snv.jussieu.fr/cgi-bin/fl_webdraw.cgi"
+#define PROGMODELE "http://wwwabi.snv.jussieu.fr/cgi-bin/fl_webmodel.cgi"
+
+#define HTML_CUSTOM_NAME "Magellan.custom.html"
+#define HTML_MODEL "Magellan.model.html"
+#define HTML_MAIN "Magellan.main.html"
+#define HTML_HELP "Magellan.help.html"
+#define PROG_CONV "/usr/bin/rsvg-convert"
+*/
