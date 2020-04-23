@@ -83,7 +83,7 @@ int *get_sign_epistasis_FL( struct landscape *fl ){
 	int l1, l2;     /* locus to be mutated */
 	int a1, a2;     /* alleles of each locus */
 	
-	int flag=0;
+	// int flag=0;
 	
 	epistasis = calloc( (size_t)4 , (size_t) sizeof(int) );
 	if(!epistasis)fprintf(stderr, "get_sign_epistasis_FL: cannot allocate epistasis, bye\n" ), exit(3);

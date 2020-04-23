@@ -449,7 +449,8 @@ int CountFitterNeighbors( struct landscape *fl, int g, float IncreaseRatio, int 
 int CountFitterGenotypes( struct landscape *fl, int g, float IncreaseRatio, int opt_strict )
 {
 	
-	int tmp, nbetter=0;
+  //int tmp, nbetter=0;
+  int nbetter = 0;
 	int g2;     /* other genotype */
 	int cmp;   /* comparison 1, 0, -1 */
 		

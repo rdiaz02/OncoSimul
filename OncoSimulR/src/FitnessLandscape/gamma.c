@@ -757,7 +757,7 @@ double gamma_j_global(struct landscape h, int j, double tolerance){
 double gamma_ij_global(struct landscape h, int i, int j, double tolerance){
 
 	double v=gamma_denominator_j(h,j,tolerance);
-	if (v==0);
+	if (v==0)
 	{
 		printf("gamma_ij_global:should never happen"), exit(1);
 	}
