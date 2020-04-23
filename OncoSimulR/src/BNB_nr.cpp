@@ -56,7 +56,7 @@ void nr_fitness(spParamsP& tmpP,
 		const fitnessEffectsAll& F,
 		const TypeModel typeModel,
 		std::vector<Genotype>& Genotypes,
-	  std::vector<spParamsP>& popParams) {
+		std::vector<spParamsP>& popParams) {
 		       // const double& genTime,
 		       // const double& adjust_fitness_B,
 		       // const double& adjust_fitness_MF) {

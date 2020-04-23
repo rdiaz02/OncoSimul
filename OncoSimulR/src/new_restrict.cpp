@@ -1458,21 +1458,21 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // i.e., s = birth rate - 1;
 
   if(F.fitnessLandscape.NumID.size()) {
-		std::string gs = concatIntsString(ge.flGenes);
-		if(F.frequencyDependentFitness){//possible also with Genotype.size()==0 and popParams.size==0 ?
-			if(F.fitnessLandscape.flFDFmap.find(gs) == F.fitnessLandscape.flFDFmap.end()) {
-	    	s.push_back(-1.0);
-			} else {
-	      s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams) - 1);
-	    	}
-		}else{
-			if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
-	   		s.push_back(-1.0);
-	    } else {
-	      s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
-	    }
-		}
-	}
+    std::string gs = concatIntsString(ge.flGenes);
+    if(F.frequencyDependentFitness){ //possible also with Genotype.size()==0 and popParams.size==0 ?
+      if(F.fitnessLandscape.flFDFmap.find(gs) == F.fitnessLandscape.flFDFmap.end()) {
+	s.push_back(-1.0);
+      } else {
+	s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams) - 1);
+      }
+    } else {
+      if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
+	s.push_back(-1.0);
+      } else {
+	s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
+      }
+    }
+  }
 
   // Genes without any restriction or epistasis are just genes. No modules.
   // So simple we do it here.
