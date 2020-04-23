@@ -40,6 +40,11 @@
     was done above, when sampling,which is the same case as in here)
 
 
+- That is WORNG!!
+  - In line 1706 we call nr_fitness when we create a new genotype
+    (nr_fitness call evalGenotypeFitness)
+
+
 * A paranoid check:
   - Add, in the code when grabbing T, a paranoid check that always
     verifies that the time is the same.
@@ -58,6 +63,9 @@
       }
   }
 
+* Why infinite times
+  - Because in several lines we call init_tmpP, which sets timeLastUpdate
+    to infinity.
 
 * Mutator issues
   - In new_restrict.cpp in lines:
