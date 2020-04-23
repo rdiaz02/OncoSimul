@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+    <title>MAGELLAN</title>
+    <meta content="landscape manipulation" name="keywords" />
+		<style type="text/css" media="all">
+   @import "magellan.css";
+	 
+   </style>
+
+
+<script type="text/javascript" src="js/land_js.js">
+</script>
+<script type="text/javascript">
+function checkfile()
+{
+
+if (document.forms['land_form'].elements['LAND_FILE'].value=="")
+	{
+	alert ("You must specify a file name");
+	}
+else
+  {
+  	document.body.className = 'wait';
+	land_form.submit();
+  }
+
+}
+
+</script>
+
+
+
+ 
+  </head> 
+  <body>
+
+ <div id="haut">
+	<table>
+	<tr>
+	<td>
+	<A href="Magellan.main.html"> 
+<!--	<A href="Magellan.main.mac.html"> -->
+	<h1>MAGELLAN</h1>
+	<h2>Maps of Genetical Landscapes</h2>
+	</A>
+	</td><td align="right"></td></tr>
+	</table>
+</div >
+	
+<UL id="menu">
+
+
+<LI> <h3><A href="#" style="color:#848381;" onclick ="cachedecache('menu_land');myhide('view_land');">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data File&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></h3>
+
+<div id="menu_land" class="decache" > 
+	<BR>
+	<form method="post" name="land_form" action="http://wwwabi.snv.jussieu.fr/cgi-bin/fl_webdraw.cgi" enctype="multipart/form-data">
+	
+<!--	<form method="post" name="land_form" action="http://localhost:8888/cgi-bin/fl_webdraw.cgi" enctype="multipart/form-data">-->
+	<p></P><P>
+	Select a  file :
+	<input  name="LAND_FILE" type="file" /></p>
+	<P>
+</div>
+</li>
+<li>
+	<h3><A href="#"  onclick ="myhide('menu_land');cachedecache('view_land')">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Visual&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></h3>
+
+	 <div id="view_land" class="cache">
+	
+		Genotype on left: <input type="text" name="LAND_REFERENCE" size="1" value="0" /><p>	<p>
+		Scale:<input type="text" name="LAND_SCALE_W" size="2" value="80" />%<p>
+		Heigth Scale:<input type="text" name="LAND_SCALE_H" size="2" value="100" />%<p>
+		Log Scale:<input type="checkbox" name="LAND_LOG" ><p>
+ 
+		Min. fitness ratio:<input type="text" name="LAND_THRESHOLD" size="2" value="1.0"  /> <!-- assimmilated to neutral under the F.R.-->
+		<p>Display neutral:<input type="checkbox" name="LAND_OPTCLEAN" checked/> 
+		<p>Compact view:<input type="checkbox" name="LAND_COMPACT" /> 
+		<p>Flat view:<input type="checkbox" name="LAND_FLAT" /> 
+
+	<P></P>
+	
+	<input type="hidden" name="LAND_WINDOW_WIDTHSIZE" id="LAND_WINDOW_WIDTHSIZE" value="" />
+	<input type="hidden" name="LAND_WINDOW_HEIGHTHSIZE" id="LAND_WINDOW_HEIGHTHSIZE" value="" />
+	<input type="hidden" name="LAND_REFERENCE" id="LAND_REFERENCE" value="0" />
+	
+	<input type="hidden" name="LAND_DRAWTOEND" id="LAND_DRAWTOEND" value="-1" />
+	<input type="hidden" name="LAND_DRAWFROM" id="LAND_DRAWFROM" value="-1" />
+	<input type="Button" value= "New" onClick="location.href='http://wwwabi.snv.jussieu.fr/public/Magellan/Magellan.custom.html';"  />
+<!--	<input type="Button" value= "New" onClick="location.href='http://localhost:8888/land/Magellan.custom.mac.html';"  />-->
+	<input type="Button" value= "Clear" onClick="setValues()"; />	
+
+<input type="Button" id="vide" value= "Draw" onClick="checkfile() ;"/>
+	
+	</form>
+
+	</div>
+
+
+
+</LI>
+<!--<LI><h3><A href="Magellan.help.mac.html" target="_blank">Help</a> </h3></LI>-->
+<LI ><h3><A href="Magellan.main.html">Home</a></h3></LI>
+<LI><h3><A href="Magellan.help.html" target="_blank">Help</a> </h3></LI>
+
+</UL>
+<br><br><br><br>
+
+
+
+		
+</body>
+
+</html>
