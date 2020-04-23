@@ -242,30 +242,30 @@ struct matrix MatrixProduct(struct matrix *M_left, struct matrix *M_right, char 
 void MatrixProductRef(struct matrix *M_left, struct matrix *M_right, struct matrix * Prod, char opt_free)
 {
 	
-	int i,j,k;
+  int i,j,k;
 	
-	if( M_left->c != M_right->r )
-		fprintf(stderr, "MatrixProduct: The matrices cannot be multiplied together. Incompatible dimensions, bye\n"),exit(1);
+  if( M_left->c != M_right->r )
+    fprintf(stderr, "MatrixProduct: The matrices cannot be multiplied together. Incompatible dimensions, bye\n"),exit(1);
 	
 		
-		for(i=0; i<Prod->r; i++ )
-		{
-			for(j=0; j<Prod->c; j++ )
-			{
-				Prod->val[i][j]=0;
-				
-				for(k=0; k<M_left->c; k++ )
-				{
-					Prod->val[i][j] += M_left->val[i][k] * M_right->val[k][j];
-				}
-			}
-		}
-	
-	if(opt_free)
+  for(i=0; i<Prod->r; i++ )
+    {
+      for(j=0; j<Prod->c; j++ )
 	{
-		FreeMat(M_right);
-		FreeMat(M_left);
+	  Prod->val[i][j]=0;
+		
+	  for(k=0; k<M_left->c; k++ )
+	    {
+	      Prod->val[i][j] += M_left->val[i][k] * M_right->val[k][j];
+	    }
 	}
+    }
+	
+  if(opt_free)
+    {
+      FreeMat(M_right);
+      FreeMat(M_left);
+    }
 	
 	
 }
@@ -303,26 +303,26 @@ struct matrix MatrixSum(struct matrix *M1, struct matrix *M2, char opt_free)
 void MatrixSumRef(struct matrix *M1, struct matrix *M2, struct matrix *Sum, char opt_free)
 {
 	
-	int i,j;
+  int i,j;
 	
-	if( M1->r != M2->r || M1->c != M2->c )
-		fprintf(stderr, "MatrixSum: The matrices cannot be summed together. Incompatible dimensions, bye\n"),exit(1);
+  if( M1->r != M2->r || M1->c != M2->c )
+    fprintf(stderr, "MatrixSum: The matrices cannot be summed together. Incompatible dimensions, bye\n"),exit(1);
 		
 	
 		
-		for(i=0; i<Sum->r; i++ )
-		{
-			for(j=0; j<Sum->c; j++ )
-			{
-				Sum->val[i][j] = M1->val[i][j] + M2->val[i][j];
-			}
-		}
+  for(i=0; i<Sum->r; i++ )
+    {
+      for(j=0; j<Sum->c; j++ )
+	{
+	  Sum->val[i][j] = M1->val[i][j] + M2->val[i][j];
+	}
+    }
 				
-				if(opt_free)
-				{
-					FreeMat(M1);
-					FreeMat(M2);
-				}
+  if(opt_free)
+    {
+      FreeMat(M1);
+      FreeMat(M2);
+    }
 }
 
 
@@ -331,31 +331,31 @@ void MatrixSumRef(struct matrix *M1, struct matrix *M2, struct matrix *Sum, char
 struct matrix MatrixDiff(struct matrix *M1, struct matrix *M2, char opt_free)
 {
 	
-	int i,j;
-	struct matrix S;
+  int i,j;
+  struct matrix S;
 	
 	
-	if( M1->r != M2->r || M1->c != M2->c )
-		fprintf(stderr, "MatrixSum: The matrices cannot be substracted. Incompatible dimensions, bye\n"),exit(1);
+  if( M1->r != M2->r || M1->c != M2->c )
+    fprintf(stderr, "MatrixSum: The matrices cannot be substracted. Incompatible dimensions, bye\n"),exit(1);
 		
 		
-		S = MemMat( M1->r, M1->c );
+  S = MemMat( M1->r, M1->c );
 		
-		for(i=0; i<S.r; i++ )
-		{
-			for(j=0; j<S.c; j++ )
-			{
-				S.val[i][j] = M1->val[i][j] - M2->val[i][j];
-			}
-		}
+  for(i=0; i<S.r; i++ )
+    {
+      for(j=0; j<S.c; j++ )
+	{
+	  S.val[i][j] = M1->val[i][j] - M2->val[i][j];
+	}
+    }
 				
-				if(opt_free)
-				{
-					FreeMat(M1);
-					FreeMat(M2);
-				}
+  if(opt_free)
+    {
+      FreeMat(M1);
+      FreeMat(M2);
+    }
 	
-	return S;
+  return S;
 }
 
 void MatrixDiffRef(struct matrix *M1, struct matrix *M2, struct matrix * Diff, char opt_free)
