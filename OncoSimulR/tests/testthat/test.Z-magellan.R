@@ -6,10 +6,16 @@ RNGkind("Mersenne-Twister")
 test_that("Same output from magellan as before changing their C code", {
     set.seed(1)
     r9 <- rfitness(8)
+    options(digits = 5)
+    cat("\n r9 \n")
+    print(summary(r9[, "Fitness"]))
+    print(var(r9[, "Fitness"]))
+    cat("\n 10 runif \n")
+    print(runif(10))
     ## Anything that simulates from Magellan will not respect
     ## R's seed
-    s9s <- Magellan_stats(r9)
-    s9l <- Magellan_stats(r9, short = FALSE)
+    s9s <- Magellan_stats(r9, verbose = TRUE)
+    s9l <- Magellan_stats(r9, short = FALSE, verbose = TRUE)
 
     s9s_compare <- structure(c(ngeno = 256, npeaks = 23, nsinks = 25, gamma = 0.094, gamma. = 0.089, 
                                r.s = 1.814, nchains = 12, nsteps = 26, nori = 21, depth = 2, 
@@ -33,6 +39,15 @@ test_that("Same output from magellan as before changing their C code", {
     print(s9s_compare[21])
     cat("\n where they differ\n")
     print(which(s9s!=s9s_compare))
+
+    cat("\n name of binary\n")
+    print(OncoSimulR:::fl_statistics_binary())
+    
+    cat("\n s9s\n")
+    print(s9s)
+
+    cat("\n s9s_compare\n")
+    print(s9s_compare)
     
     s9l_compare <- structure(c("/* FL name */", "   coco", "", "/* Peaks/Sinks */", "   #genotypes: 256", 
                                "   #peaks: 23", "   #sinks: 25", "", "/* Epistasis types */", 
@@ -637,5 +652,5 @@ test_that("Same output from magellan as before changing their C code", {
 
 
 
-
+set.seed(NULL)
 cat(paste("\n Ended test.Z-magellan at", date(), "\n"))
