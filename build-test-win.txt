@@ -11,3 +11,39 @@ R.exe CMD check --force-multiarch --no-vignettes --timings OncoSimulR_2.zzz.tar.
 R.exe CMD INSTALL --merge-multiarch --build OncoSimulR_2.zz.tar.gz
 
 R.exe CMD INSTALL OncoSimulR_2.zz.zip
+
+
+
+##################### Building the binary package
+##                    here, so I can just copy and paste in a MINGW64 shell
+## https://www.biostat.wisc.edu/~kbroman/Rintro/Rwinpack.html ande BioConductor
+## http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/tokay1-buildsrc.html
+## http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/tokay1-buildbin.html
+
+##    - obtain the tar.gz for Linux or build with Rtools40
+##    - /c/R/R-testing/bin/x64/R CMD INSTALL --build --compile-both  OncoSimulRxyz.tar.gz
+##    - might want to pass other options
+##          /c/R/R-testing/bin/x64/R CMD INSTALL --build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulRxyz.tar.gz
+
+
+## Recall I need pandoc and git
+## Install pandoc at C:/pandoc
+## Git is at C:\Program Files
+## Add them to the path
+## export PATH=$PATH:/c/Pandoc:/c/Program\ Files/git/bin
+## ##now, pdflatex
+## export PATH=$PATH:/c/Users/ramon/AppData/Roaming/TinyTeX/bin/win32
+
+#####    Full, BioC-like
+##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data  OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD check --force-multiarch --no-vignettes --timings OncoSimulR_2.zzz.tar.gz
+##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build OncoSimulR_xyz0.tar.gz
+
+## this next will not work with Rtools40, of course
+##  /c/R/R-testing/bin/x64/R CMD INSTALL OncoSimulR_xyz0.zip
+
+
+#####    Faster, shorter
+##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data --no-build-vignettes OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build --no-build-vignettes --no-manual OncoSimulR_xyz0.tar.gz
+
