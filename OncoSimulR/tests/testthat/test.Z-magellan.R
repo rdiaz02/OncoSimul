@@ -2,7 +2,7 @@ inittime <- Sys.time()
 cat(paste("\n Starting test.Z-magellan at", date(), "\n"))
 
 RNGkind("Mersenne-Twister")
-
+RNGversion("3.6.3")
 test_that("Same output from magellan as before changing their C code", {
     set.seed(1)
     r9 <- rfitness(8)
