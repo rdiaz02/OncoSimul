@@ -132,7 +132,8 @@ test_that("long example OK", {
 
 
 set.seed(NULL)
-
+## Return RNGversion back to a saner default
+RNGversion(getRversion())
 cat(paste("\n Ending test.Z-all-fitness at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
