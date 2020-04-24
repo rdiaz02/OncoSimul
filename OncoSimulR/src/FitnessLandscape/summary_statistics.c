@@ -787,33 +787,37 @@ char * outputstats( struct landscape * FL, float IncreaseRatio, char opt_log , c
 	/****************************
 		::   Brief Output   ::
 	 ****************************/
-	
+		//https://stackoverflow.com/a/2674354
+		// https://github.com/dyne/frei0r/issues/22
+		// https://stackoverflow.com/questions/59708584/how-to-sprintf-to-write-a-string-without-warnings-about-restrictions
 		sprintf(f,"&nbsp;&nbsp;General:<BR>&nbsp;&nbsp;&nbsp;#gentotype:%d&nbsp;&nbsp;&nbsp;<BR>&nbsp;&nbsp;&nbsp;#peaks:%d<BR>&nbsp;&nbsp;&nbsp;#sinks:%d<BR><BR>",FL->ngenotypes,npeaks, nsinks);
-		sprintf(f,"%s&nbsp;&nbsp;Amount of Epistasis:&nbsp;&nbsp;<BR>&nbsp;&nbsp;&nbsp;r/s:%.3f<BR>&nbsp;&nbsp;&nbsp;gamma:%.3f<BR>&nbsp;&nbsp;&nbsp;gamma*:%.3f<BR><BR>",f,rs, gamma[1], gamma_star[1]);
+		// In what follows, I turn all things like the following, to the one below. I.e., + strlen(f), delete %s, and delete f after the ""
+		// sprintf(f,"%s&nbsp;&nbsp;Amount of Epistasis:&nbsp;&nbsp;<BR>&nbsp;&nbsp;&nbsp;r/s:%.3f<BR>&nbsp;&nbsp;&nbsp;gamma:%.3f<BR>&nbsp;&nbsp;&nbsp;gamma*:%.3f<BR><BR>",f,rs, gamma[1], gamma_star[1]);
+		sprintf(f + strlen(f),"&nbsp;&nbsp;Amount of Epistasis:&nbsp;&nbsp;<BR>&nbsp;&nbsp;&nbsp;r/s:%.3f<BR>&nbsp;&nbsp;&nbsp;gamma:%.3f<BR>&nbsp;&nbsp;&nbsp;gamma*:%.3f<BR><BR>",rs, gamma[1], gamma_star[1]);
 		none=1-( (e[1]/(0.0+total_e))+(e[2]/(0.0+total_e))+(e[3]/(0.0+total_e)));
-		sprintf(f,"%s&nbsp;Type of Epistasis:<BR>&nbsp;&nbsp;&nbsp;none:%.3f<BR>&nbsp;&nbsp;&nbsp;magnitude:%.3f<BR>&nbsp;&nbsp;&nbsp;sign:%.3f<BR>&nbsp;&nbsp;&nbsp;recipr. sign:%.3f<BR><BR>",f,none,e[1]/(0.0+total_e),e[2]/(0.0+total_e),e[3]/(0.0+total_e));
-		sprintf(f,"%s&nbsp;Chains:<BR>&nbsp;&nbsp;&nbsp;chains:%ld<BR>&nbsp;&nbsp;&nbsp;steps:%ld<BR>&nbsp;&nbsp;&nbsp;origins:%ld<BR>&nbsp;&nbsp;&nbsp;max_depth:%ld<BR><BR>",f,mychain.nchains,nsteps,norigins,depthmax);
+		sprintf(f + strlen(f),"&nbsp;Type of Epistasis:<BR>&nbsp;&nbsp;&nbsp;none:%.3f<BR>&nbsp;&nbsp;&nbsp;magnitude:%.3f<BR>&nbsp;&nbsp;&nbsp;sign:%.3f<BR>&nbsp;&nbsp;&nbsp;recipr. sign:%.3f<BR><BR>",none,e[1]/(0.0+total_e),e[2]/(0.0+total_e),e[3]/(0.0+total_e));
+		sprintf(f + strlen(f),"&nbsp;Chains:<BR>&nbsp;&nbsp;&nbsp;chains:%ld<BR>&nbsp;&nbsp;&nbsp;steps:%ld<BR>&nbsp;&nbsp;&nbsp;origins:%ld<BR>&nbsp;&nbsp;&nbsp;max_depth:%ld<BR><BR>",mychain.nchains,nsteps,norigins,depthmax);
 		
 		// :: ADAPTIVE WALK BRIEF OUTPUT ::
-		sprintf(f,"%s&nbsp;Adaptive Walks:<BR>&nbsp;&nbsp;&nbsp;mean no. Steps:%.2f<BR>&nbsp;&nbsp;&nbsp;mean reachibility:%.2f<BR>&nbsp;&nbsp;&nbsp;mean no. fitter genotypes:%.2f<BR><BR>",f,meanExpectedNumberOfStepsFL,meanReachabilityFL,meanFitterGenotypesFL);
-		sprintf(f,"%s&nbsp;Optima:<BR>",f);
+		sprintf(f + strlen(f),"&nbsp;Adaptive Walks:<BR>&nbsp;&nbsp;&nbsp;mean no. Steps:%.2f<BR>&nbsp;&nbsp;&nbsp;mean reachibility:%.2f<BR>&nbsp;&nbsp;&nbsp;mean no. fitter genotypes:%.2f<BR><BR>",meanExpectedNumberOfStepsFL,meanReachabilityFL,meanFitterGenotypesFL);
+		sprintf(f + strlen(f),"&nbsp;Optima:<BR>");
 		for (i=0; i<noOptima; i++)
 		{
-			sprintf(f,"%soptimum:%i&nbsp;&nbsp;&nbsp;mean&nbsp;absorb.&nbsp;prob.:%f.2<BR><BR>",f,optimaIndex[i],meanReachOptFL[i]);
+		  sprintf(f + strlen(f),"optimum:%i&nbsp;&nbsp;&nbsp;mean&nbsp;absorb.&nbsp;prob.:%f.2<BR><BR>",optimaIndex[i],meanReachOptFL[i]);
 		}
 		
 		// :: FOURIER DECOMPOSITION BRIEF OUTPUT ::
-		sprintf(f,"%s&nbsp;Fourier Decomposition:<BR>Order\tFraction<BR>",f);
+			sprintf(f + strlen(f),"&nbsp;Fourier Decomposition:<BR>Order\tFraction<BR>");
 		if (fourierCoefficient_total!=0)
 		{
 			for(i=1;i<FL->nlocus+1; i++)
 			{
-				sprintf(f,"%s&nbsp;&nbsp;&nbsp;%d&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%f<BR>",f,i,fourierCoefficients.val[i][0]/fourierCoefficient_total);
+			  sprintf(f + strlen(f),"&nbsp;&nbsp;&nbsp;%d&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%f<BR>",i,fourierCoefficients.val[i][0]/fourierCoefficient_total);
 			}
 		}
 		else
 		{
-			sprintf(f,"%snone<BR>",f);
+		  sprintf(f + strlen(f),"none<BR>");
 		}
 	
 	
@@ -908,7 +912,7 @@ void OutputSummaryStats( struct landscape * FL, float IncreaseRatio, char opt_lo
 	
 	double meanFitterGenotypesFL = 0;
 	double mean2FitterGenotypesFL = 0;
-	double varFitterGenotyspesFL;
+	// double varFitterGenotyspesFL;
 	
 	int npeaks;                       /* number of peaks and sinks */
 	int nsinks;

@@ -44,10 +44,10 @@ void vector_add(vector *v, int *data, int length)
     if (v->capacity == v->size)
         vector_resize(v, v->capacity * 2);
 
-	v->data[v->size] = malloc(length * sizeof(int));
-	memcpy(v->data[v->size], data, length * sizeof(int));
-	v->length[v->size] = length;
-	v->size++;
+    v->data[v->size] = malloc(length * sizeof(int));
+    memcpy(v->data[v->size], data, length * sizeof(int));
+    v->length[v->size] = length;
+    v->size++;
 }
 
 void vector_set(vector *v, int index, int *data, int length)

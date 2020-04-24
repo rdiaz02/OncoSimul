@@ -112,29 +112,30 @@ void Connect_Fitness(struct FromTo * Ptr, struct landscape *fl, int g, float Fit
 */
 long GetDepth(  struct FromTo *Ptr, int g, struct landscape *fl ){
 
-	long L=0;
-	long x,l, g_from;
+  long L=0;
+  //long x,l, g_from;
+  long x,l; 
 	
-	if( Ptr[g].From == NULL )
-		return 0;
+  if( Ptr[g].From == NULL )
+    return 0;
 
 	
-	g_from = Ptr[g].From[1];
+  //g_from = Ptr[g].From[1];
 	
-	for( x=0; x < Ptr[g].From[0]; x++ )
+  for( x=0; x < Ptr[g].From[0]; x++ )
+    {
+		
+      l =  GetDepth(  Ptr, Ptr[g].From[1+x] , fl) + 1;
+		
+      if( l>L )
 	{
-		
-		l =  GetDepth(  Ptr, Ptr[g].From[1+x] , fl) + 1;
-		
-		if( l>L )
-		{
-			g_from = Ptr[g].From[1+x];
-			L = (l>L)?l:L;
-		}
+	  //g_from = Ptr[g].From[1+x];
+	  L = (l>L)?l:L;
 	}
+    }
 	
 
-	return L;
+  return L;
 }
 
 
