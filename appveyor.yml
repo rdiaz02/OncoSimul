@@ -25,11 +25,11 @@ environment:
 ## --install-args=--build --no-multiarch
 ## R_VERSION: depending on BioC version, it has to bee devel or patched (or stable)    
   matrix:
-   - R_VERSION: devel
+   - R_VERSION: patched
      R_ARCH: x64
      GCC_PATH: mingw_64
         
-   - R_VERSION: devel
+   - R_VERSION: patched
      R_ARCH: i386
      GCC_PATH: mingw_32
      
@@ -44,42 +44,6 @@ environment:
 ##     RTOOLS_VERSION: 33
 ##     R_VERSION: devel
      
-     
-    ## - R_ARCH: x64
-    ##   GCC_PATH: mingw_64
-    ##   RTOOLS_VERSION: 33
-    ##   R_VERSION: release
-      
-    ## - R_ARCH: i386
-    ##   GCC_PATH: mingw_32
-    ##   RTOOLS_VERSION: 33
-    ##   R_VERSION: release
-
-    ## - R_ARCH: x64
-    ##   GCC_PATH: mingw_64
-    ##   RTOOLS_VERSION: 33
-    ##   R_VERSION: devel
-      
-    ## - R_ARCH: i386
-    ##   GCC_PATH: mingw_32
-    ##   RTOOLS_VERSION: 33
-    ##   R_VERSION: devel
-
-
-## No longer make any sense starting with R-3.3
-## - RTOOLS_VERSION: 32
-##   R_ARCH: i386
-## - RTOOLS_VERSION: 32
-##  R_ARCH: x64
-    
-## As soon as R-3.3 is new stable, and all migrated to Rtools 3.3
-## we will remove the last two entries
-
-## R_VERSION: 3.3.0alpha
-##  GCC_PATH: gcc-4.6.3
-##  R_ARCH: i386
-
-##  R_VERSION: 3.3.0alpha
 
 before_build:
    - cp ../travis-tool.sh travis-tool.sh
@@ -93,26 +57,9 @@ before_build:
 build_script:
   - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_r data.table
-##- travis-tool.sh install_bioc nem
 ##  - travis-tool.sh install_bioc BiocGenerics graph
-##  - travis-tool.sh install_bioc BiocStyle Rgraphviz
 ##  - travis-tool.sh install_r Oncotree testthat pander data.table gtools igraph car dplyr smatr ggrepel
-##  - travis-tool.sh install_r gtable lazyeval digest tibble reshape2 MASS
-##  - travis-tool.sh install_r chron DBI lazyeval pbkrtest scales assetthat R6 
-##  - travis-tool.sh install_r quantreg mgcv nnet magrittr NMF irlba Matrix
-##   - travis-tool.sh install_bioc RBGL
-  ## BioNet pulls RBGL dependency ?? joda does too. That is why bgmm lpSolv joda lpNet and BioNet are there
-##  - travis-tool.sh install_bioc nem  ## lpNet (which depends on lpSolve) is there to pull the nem dependency
-##    - travis-tool.sh install_r bgmm lpSolve
-   
-##- travis-tool.sh install_bioc_deps  ## not working in pre 3.5 in appveyor because repo
-## does not exist. So I pass the two packages, BiocStyle and Rgraphviz explicitly
 
-## I might not need these anymore? (which I never should have needed anyway)
-## - travis-tool.sh install_r gtable
-## - travis-tool.sh install_r scales
-## - travis-tool.sh install_r chron dplyr DBI ggplot2 geforce ggraph data.table knitr testthat car pbkrtest smatr ggrepel RColorBrewer igraph graph gtools rmarkdown bookdown
-## - travis-tool.sh install_bioc BiocGenerics BiocStyle Rgraphviz
 
 test_script:
   - travis-tool.sh run_tests
