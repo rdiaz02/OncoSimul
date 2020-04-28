@@ -903,6 +903,7 @@ void addToPOM(POM& pom,
     pom.genotypesString.push_back(g);
     pom.genotypes.push_back(genotype);
   } else if ( !(pom.genotypes.back() == genotype) ) {
+    // Insert only if different from previous
     std::string g = genotypeToNameString(genotypeSingleVector(genotype),
 				       fg, intName);
     pom.genotypesString.push_back(g);
