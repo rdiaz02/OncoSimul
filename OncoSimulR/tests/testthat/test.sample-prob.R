@@ -10,7 +10,7 @@ test_that("Increasing cPDetect decreases time, Exp" , {
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)
     n <- 200
-    max.tries <- 4  
+    max.tries <- 6 ## I once saw a failure in BioC, Windows 
     for(tries in 1:max.tries) {
         sa <- oncoSimulPop(n,
                            oi,
