@@ -1,0 +1,28 @@
+* where to pass the currentTime argument
+  - in evalAll* or in allFitness?
+  - should be same place as spPopSizes, so both in the same functions, for coherence
+
+
+* Verify mutator and FDF
+  - Tests not unlike those in
+    - test.mutator.R
+    - test.Z-mutator.R
+    - test.flfast-mutator.R
+    - test.mutator-oncoSimulSample.R
+
+* viñetas
+  - interventions
+
+* tests of FDF and time
+  - without FDF time no effect: add tests for this
+  - with FDF in fitness not dependent on time: no changes
+
+* mutator: use exprTk?
+  - change mutation rate as a function of:
+    - time
+    - genotype frequencies or population size
+    - Do the above make sense or are really needed?
+  - change mutation rate genome-wide or per locus?
+
+* time and FDF: a way to model adaptive oncogenesis
+  - add to vignette
