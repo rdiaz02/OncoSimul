@@ -38,7 +38,7 @@
 
   - [ ] double check from_genot_utils.R (why?)
 
-  - [ ] check under Windows: failing in appveyor
+  - [X] check under Windows: failing in appveyor. NO LONGER A PROBLEM
     - C:/Rtools/mingw_32/bin/../lib/gcc/i686-w64-mingw32/4.9.3/../../../../i686-w64-mingw32/bin/as.exe: new_restrict.o: too many sections
     - C:/Rtools/mingw_32/bin/../lib/gcc/i686-w64-mingw32/4.9.3/../../../../i686-w64-mingw32/bin/as.exe: new_restrict.o: too many sections (39193)
     - solution?
@@ -62,7 +62,7 @@
       - affects other libraries too (see above last two links)
   - [ ] check size of package with included exprTk
   - [ ] compilation warnings for comparisons between ints, etc.
-  - [ ] why is the library under inst/miscell?
+  - [ ] why is the library under inst/miscell? Well, now under src.
     - Also: https://stackoverflow.com/questions/51571906/which-is-the-best-way-to-develop-an-r-package-that-needs-a-heavy-c-library
     - yes, definitely, down the road, leave under /inst/include: https://stackoverflow.com/questions/36927141/syncing-rcpp-with-external-headers-and-libraries-to-build-a-batch-geocoding-pack
 
@@ -72,7 +72,7 @@
        http://r.789695.n4.nabble.com/Seeking-advice-regarding-compilation-of-large-libraries-using-RTools-Windows-td4729418.html
        [same thing, easier to read]
 
-*** mingw issue: using Rtools35.exe
+*** mingw issue: using Rtools35.exe. NOT AN ISSUE ANTMORE
     - The file to use in Windoze is, for system-wide packages,
       C:/Users/ramon/.R/Makevars.win [nope, do not go to users/whatever/Documents]
     - The variable is: CXX11FLAGS [using only CXXFLAGS was not overwriding
@@ -89,13 +89,13 @@
 	- all of this has happened before fopr other packages (see above)
 	       - http://r.789695.n4.nabble.com/Seeking-advice-regarding-compilation-of-large-libraries-using-RTools-Windows-td4729418.html
 
-*** Rtools40:
+*** Rtools40: SOLVED
     - Several dependencies of OncoSimulR fail: igraph, new, lme4 ,
       pbkrtest (for car), etc.
     - I give up after install one of the dependencies of igraph.
     - After all, this is still using gcc from mingw32
 
-*** LLVM/clang?
+*** LLVM/clang? IS THIS RELEVANT NOW?
     - It should work, but I do not see how to use clang in windowze.
     - The report from ExpTrk's autho indictes he can get ExprTk to work
       under Windowze with clang.
@@ -133,5 +133,5 @@
 
 
 
-** to fix
-  - [ ] is allMutator Effects working? Nope. It doesn't
+** to fix. 
+  - [X] is allMutator Effects working? Nope. It doesn't
