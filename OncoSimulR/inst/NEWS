@@ -3,7 +3,11 @@ Changes in version 2.17.998 (2020-05-20):
 	- Occasional failures of @test.sample-prob.R#42
 	in Windows 386
 	- Fixed Wrestrict warnings in Windows from MAGELLAN's sources.
-	
+	- Cherry picked from master, as of 2020-05-20:
+	  - from: [13a4061]
+	  - to: [e1ef78a]
+	  - Already added: [519c8a7] to [f716534]
+
 Changes in version 2.17.997 (2020-04-27):
 	- With R-devel, stringsAsFactors = FALSE by default. Fix
 	tests
