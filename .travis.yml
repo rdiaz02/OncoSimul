@@ -87,3 +87,14 @@ notifications:
 # this was causing hunspell installation to fail
 ## before_install:
 ##   - if [[ "$TRAVIS_R_VERSION_STRING" = 'bioc-devel' ]]; then mkdir ~/.R && echo 'CXX1X=g++ -std=c++0x -g -O2 -fPIC' > ~/.R/Makevars; fi
+
+
+## If we get
+
+## Error in get0(oNam, envir = ns) : 
+
+##   lazy-load database '/home/travis/R/Library/pkgbuild/R/pkgbuild.rdb' is corrupt
+
+## try deleting the cache in travis:
+## settings -> cache -> delete
+## https://github.com/marinebon/p2p/issues/5#issuecomment-447877732
