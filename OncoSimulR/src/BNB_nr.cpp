@@ -2598,3 +2598,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 // to the three piece structure. This seems much more expensive than the
 // overloaded == and the usage of the overloaded < (this is only used at
 // the end, when producing the output objects)
+
+
+
+// When you need to alter things that affect a genotype periodically, like
+// the FDF, or the McFarland rates, etc, you will want to do it here:
+// when we call updateRatesMcFarlandLog and similar, e.g.,
+// In BNB_nr.cpp, in nr_innerBNB function
+// when we are sampling.
+// Probably also where nr_fitness is called
+// And generally, in general, were we pass currentTime

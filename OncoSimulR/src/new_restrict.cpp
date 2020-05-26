@@ -1738,7 +1738,12 @@ double mutationFromScratch(const std::vector<double>& mu,
   if(full2mutator.size() > 0) { // so there are mutator effects
     mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
   } else mumult = 1.0;
-
+  //FIXME: here the code for altering mutation rate
+  // with a procedure like ExprTk for fitness??
+  // Nope: alter directly spParams.mutation.
+  // where the updateRatesFDF... are called.
+  // In BNB_nr.cpp, in nr_innerBNB function
+  // when we are sampling.
   if(mu.size() == 1) {
     if(mutationPropGrowth)
       return(mumult * mu[0] * spP.numMutablePos * spP.birth);
