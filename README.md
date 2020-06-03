@@ -183,18 +183,26 @@ version](https://www.ligarto.org/files/simul-evol-epist-preprint.pdf).
 
 If you use the package in publications **please cite the Bioinformatics paper**.
 
+The frequency-dependent fitness functionality is based on [Sergio
+Sanchez-Carrilo's Master's
+thesis](https://repositorio.uam.es/handle/10486/685417) (see also file
+['miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf'](miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf)
+for additional features that were not described in the original
+thesis). Additional functionality has been added by Juan Antonio Miguel
+González.
 
 
 # Licenses and copyright
 
-
 The R/BioConductor OncoSimulR package is licensed under the GPLv3
-license. All of the code for the OncoSimulR BioConductor package, except
-for functions `plot.stream` and `plot.stacked`, is Copyright 2012-2016 by
-Ramon Diaz-Uriarte. `plot.stream` and `plot.stacked` are Copyright
-2013-2016 by Marc Taylor (see also https://github.com/marchtaylor/sinkr
-and
+license. The code for the OncoSimulR BioConductor package, except for
+functions `plot.stream` and `plot.stacked`, is Copyright 2012-2020 by
+Ramon Diaz-Uriarte; the code for frequency dependent fitness is Copyright
+2017-2019 Sergio Sanchez-Carrillo and 2019-2020 Juan Antonio Miguel
+Gonzalez. `plot.stream` and `plot.stacked` are Copyright 2013-2016 by Marc
+Taylor (see also https://github.com/marchtaylor/sinkr and
 http://menugget.blogspot.com.es/2013/12/data-mountains-and-streams-stacked-area.html).
+
 
 The code under `src/FitnessLandascape` is from [MAGELLAN, Maps of
 Genetical
