@@ -1,11 +1,19 @@
 Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
-Version: 2.19.1
-Date: 2020-05-05
+Version: 2.19.2
+Date: 2020-06-03
 Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
 		     email = "rdiaz02@gmail.com"),
-	      person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
+             person("Sergio", "Sanchez-Carrillo", role = "aut", 
+	        email = "sergiosanchezcarrillo@gmail.com"),
+              person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
+	      person("Arash", "Partow", role = "ctb", comment = "ExprTk"),
+	      person("Sophie", "Brouillet", role = "ctb", comment = "MAGELLAN"),
+	      person("Sebastian", "Matuszewski", role = "ctb", comment = "MAGELLAN"),  
+	      person("Harry", "Annoni", role = "ctb", comment = "MAGELLAN"),
+	      person("Luca", "Ferretti", role = "ctb", comment = "MAGELLAN"),	      
+	      person("Guillaume", "Achaz", role = "ctb", comment = "MAGELLAN"),
 	      person("Guillermo", "Gorines Cordero", role = "ctb"),
 	      person("Ivan", "Lorca Alonso", role = "ctb"),
 	      person("Francisco", "Mu~noz Lopez", role = "ctb"),
@@ -23,7 +31,14 @@ Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
 	      person("Claudio", "Lottaz", role = "ctb"),
 	      person("Tim", "Beissbarth", role = "ctb"))
 Author: Ramon Diaz-Uriarte [aut, cre],
+	Sergio Sanchez-Carrillo [aut],
 	Mark Taylor [ctb],
+	Arash Partow [ctb],
+	Sophie Brouillet [ctb],
+	Sebastian Matuszewski [ctb],
+	Harry Annoni [ctb],
+	Luca Ferretti [ctb],
+	Guillaume Achaz [ctb],
 	Guillermo Gorines Cordero [ctb],
 	Ivan Lorca Alonso [ctb],
 	Francisco Mu\~noz Lopez [ctb],
