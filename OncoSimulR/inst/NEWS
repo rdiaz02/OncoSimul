@@ -1,3 +1,7 @@
+Changes in version 2.19.991 (2020-06-03):
+	- Updated ctb: added Magellan and exprTk
+	- Updated version (to 2.19.xyz) for new BioC devel.
+
 Changes in version 2.17.998 (2020-05-20):
 	- Fixed test.Z-magellan failure in Mac.
 	- Occasional failures of @test.sample-prob.R#42
