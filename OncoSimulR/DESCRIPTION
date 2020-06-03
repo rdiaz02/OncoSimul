@@ -3,57 +3,100 @@ Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
 Version: 2.19.991
 Date: 2020-06-03
-Authors@R: c(person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
- 	     email = "rdiaz02@gmail.com"),
-             person("Sergio", "Sanchez-Carrillo", role = "aut", 
+Authors@R: c(
+	      person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
+ 	   		     email = "rdiaz02@gmail.com"),
+              person("Sergio", "Sanchez-Carrillo", role = "aut", 
 	        email = "sergiosanchezcarrillo@gmail.com"),
-              person("Mark", "Taylor", role = "ctb", email = "ningkiling@gmail.com"),
+              person("Juan Antonio", "Miguel Gonzalez", role = "aut", 
+	        email = "juanantonio.miguel792@gmail.com"),
+              person("Mark", "Taylor", role = "ctb",
+	        email = "ningkiling@gmail.com",
+		comment = "plot.stream, plot.stacked"),
 	      person("Arash", "Partow", role = "ctb", comment = "ExprTk"),
 	      person("Sophie", "Brouillet", role = "ctb", comment = "MAGELLAN"),
-	      person("Sebastian", "Matuszewski", role = "ctb", comment = "MAGELLAN"),  
+	      person("Sebastian", "Matuszewski", role = "ctb",
+	             comment = "MAGELLAN"),  
 	      person("Harry", "Annoni", role = "ctb", comment = "MAGELLAN"),
 	      person("Luca", "Ferretti", role = "ctb", comment = "MAGELLAN"),	      
 	      person("Guillaume", "Achaz", role = "ctb", comment = "MAGELLAN"),
-	      person("Guillermo", "Gorines Cordero", role = "ctb"),
-	      person("Ivan", "Lorca Alonso", role = "ctb"),
-	      person("Francisco", "Mu~noz Lopez", role = "ctb"),
-	      person("David", "Roncero Moro~no", role = "ctb"),
-	      person("Alvaro" , "Quevedo" , role = "ctb"),
-	      person("Pablo" ,"Perez" , role = "ctb"),
-	      person("Cristina" ,"Devesa" , role = "ctb"),
-	      person("Alejandro", "Herrador" , role = "ctb"),
-	      person("Holger", "Froehlich", role = "ctb"),
-	      person("Florian", "Markowetz", role = "ctb"),
-	      person("Achim", "Tresch", role = "ctb"),
-	      person("Theresa", "Niederberger", role = "ctb"),
-	      person("Christian", "Bender", role = "ctb"),
-	      person("Matthias", "Maneck", role = "ctb"),
-	      person("Claudio", "Lottaz", role = "ctb"),
-	      person("Tim", "Beissbarth", role = "ctb"),
-	      person("Sara", "Dorado Alfaro", role = "ctb"),
-	      person("Miguel", "Hernandez del Valle", role = "ctb"),
-	      person("Alvaro", "Huertas Garcia", role = "ctb"),
-	      person("Diego", "Ma~nanes Cayero", role = "ctb"),
-	      person("Alejandro", "Martin Mu~noz", role = "ctb"),
-	      person("Marta", "Couce Iglesias", role = "ctb"),
-	      person("Silvia", "Garcia Cobos", role = "ctb"),
-	      person("Carlos", "Madariaga Aramendi", role = "ctb"),
-	      person("Ana", "Rodriguez Ronchel", role = "ctb"),
-	      person("Lucia", "Sanchez Garcia", role = "ctb"),
-	      person("Yolanda", "Benitez Quesada", role = "ctb"),
-	      person("Asier", "Fernandez Pato", role = "ctb"),
-	      person("Esperanza", "Lopez Lopez", role = "ctb"),
-	      person("Alberto Manuel", "Parra Perez", role = "ctb"),
-	      person("Jorge", "Garcia Calleja", role = "ctb"),
-	      person("Ana", "del Ramo Galian", role = "ctb"),
-	      person("Alejandro", "de los Reyes Benitez", role = "ctb"), 
-	      person("Guillermo", "Garcia Hoyos", role = "ctb"),
-	      person("Rosalia", "Palomino Cabrera", role = "ctb"),
-	      person("Rafael", "Barrero Rodriguez", role = "ctb"),
-	      person("Silvia", "Talavera Marcos", role = "ctb"),
-	      person("Niklas", "Endres", role = "ctb"))  
+	      person("Guillermo", "Gorines Cordero", role = "ctb",
+	             comment = "rfitness"),
+	      person("Ivan", "Lorca Alonso", role = "ctb",
+	             comment = "rfitness"),
+	      person("Francisco", "Mu~noz Lopez", role = "ctb",
+	             comment = "rfitness"),
+	      person("David", "Roncero Moro~no", role = "ctb",
+	             comment = "rfitness"),
+	      person("Alvaro" , "Quevedo" , role = "ctb", comment = "rfitness"),
+	      person("Pablo" ,"Perez" , role = "ctb", comment = "rfitness"),
+	      person("Cristina" ,"Devesa" , role = "ctb", comment = "rfitness"),
+	      person("Alejandro", "Herrador" , role = "ctb",
+	             comment = "rfitness"),
+	      person("Holger", "Froehlich", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Florian", "Markowetz", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Achim", "Tresch", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Theresa", "Niederberger", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Christian", "Bender", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Matthias", "Maneck", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Claudio", "Lottaz", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Tim", "Beissbarth", role = "ctb",
+	             comment = "simOGraph (transitive closure)"),
+	      person("Sara", "Dorado Alfaro", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Miguel", "Hernandez del Valle", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Alvaro", "Huertas Garcia", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Diego", "Ma~nanes Cayero", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Alejandro", "Martin Mu~noz", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Marta", "Couce Iglesias", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Silvia", "Garcia Cobos", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Carlos", "Madariaga Aramendi", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Ana", "Rodriguez Ronchel", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Lucia", "Sanchez Garcia", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Yolanda", "Benitez Quesada", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Asier", "Fernandez Pato", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Esperanza", "Lopez Lopez", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Alberto Manuel", "Parra Perez", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Jorge", "Garcia Calleja", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Ana", "del Ramo Galian", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Alejandro", "de los Reyes Benitez", role = "ctb",
+	             comment = "vignette examples"), 
+	      person("Guillermo", "Garcia Hoyos", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Rosalia", "Palomino Cabrera", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Rafael", "Barrero Rodriguez", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Silvia", "Talavera Marcos", role = "ctb",
+	             comment = "vignette examples"),
+	      person("Niklas", "Endres", role = "ctb",
+	             comment = "vignette examples, freq-dep-fitness time")
+	      )  
 Author: Ramon Diaz-Uriarte [aut, cre],
 	Sergio Sanchez-Carrillo [aut],
+	Juan Antonio Miguel Gonzalez [aut],
 	Mark Taylor [ctb],
 	Arash Partow [ctb],
 	Sophie Brouillet [ctb],
@@ -104,17 +147,19 @@ Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
     Fitness can be an arbitrary function of genetic interactions between
     multiple genes or modules of genes, including epistasis, order
-    restrictions in mutation accumulation, and order effects.  Mutation
-    rates can differ between genes, and we can include mutator/antimutator
-    genes (to model mutator phenotypes). Simulations
-    use continuous-time models and can include driver and passenger genes
-    and modules.  Also included are functions for: simulating random DAGs
-    of the type found in Oncogenetic Trees, Conjunctive Bayesian Networks,
-    and other cancer progression models; plotting and sampling from
-    single or multiple realizations of the simulations, including
-    single-cell sampling; plotting the parent-child relationships of the
-    clones; generating random fitness landscapes (Rough Mount Fuji, House
-    of Cards, and additive models, and NK) and plotting them.
+    restrictions in mutation accumulation, and order effects.  Fitness can
+    also be a function of the relative and absolute frequencies of other
+    genotypes (i.e., frequency-dependent fitness). Mutation rates can
+    differ between genes, and we can include mutator/antimutator genes (to
+    model mutator phenotypes). Simulations use continuous-time models and
+    can include driver and passenger genes and modules.  Also included are
+    functions for: simulating random DAGs of the type found in Oncogenetic
+    Trees, Conjunctive Bayesian Networks, and other cancer progression
+    models; plotting and sampling from single or multiple realizations of
+    the simulations, including single-cell sampling; plotting the
+    parent-child relationships of the clones; generating random fitness
+    landscapes (from Rough Mount Fuji, House of Cards, additive, NK, Ising,
+    and Eggbox models) and plotting them.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
