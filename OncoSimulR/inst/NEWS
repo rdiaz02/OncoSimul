@@ -1,5 +1,5 @@
 Changes in version 2.19.2 (2020-06-03):
-	- Updated ctb: added Magellan and exprTk
+	- Updated ctb: added Magellan and exprTk and clarified contributions.
 
 Changes in version 2.19.1 (2020-05-05):
 	- Occasional failures of @test.sample-prob.R#42
