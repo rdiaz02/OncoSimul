@@ -1543,11 +1543,11 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 }
 
 double evalMutator(const Genotype& fullge,
-		  const std::vector<int>& full2mutator,
-		  const fitnessEffectsAll& muEF,
-			const std::vector<Genotype>& Genotypes,
-			const std::vector<spParamsP>& popParams,
-		  bool verbose = false) {
+		   const std::vector<int>& full2mutator,
+		   const fitnessEffectsAll& muEF,
+		   const std::vector<Genotype>& Genotypes,
+		   const std::vector<spParamsP>& popParams,
+		   bool verbose = false) {
   // In contrast to nr_fitness, that sets birth and death, this simply
   // returns the multiplication factor for the mutation rate. This is used
   // by mutationFromParent and mutationFromScratch
@@ -1738,9 +1738,34 @@ double mutationFromScratch(const std::vector<double>& mu,
   if(full2mutator.size() > 0) { // so there are mutator effects
     mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
   } else mumult = 1.0;
+  // FIXME: when we want mutation rate as a function of time, pop sizes,
+  // etc. we will pass a new argument, call it, muprod that can change as
+  // a function of pop size, time, etc.
+
+  // then do
+  // mumult *= muprod.
+
+  // muprod is evaluated in a function like evalGenotypeFDFitnessEcuation,
+  // but it affects all (so not per genotype, because it is for all). We
+  // will use exprTk for this
+ 
+
+  // We have to call mutationFromScatcth as usual, i.e., when a genotype
+  // is created, as it is now. But also when we call
+  // updateRatesMcFarlandLog and similar, e.g., In BNB_nr.cpp, in
+  // nr_innerBNB function when we are sampling.  Probably also where
+  // nr_fitness is called And, yes, we need to change the mutation of all
+  // the genoytpes that exist in the population.
+
+  // We need to specify muprod as a function of time, popSizes, pop
+  // frequencies like we do with fitness in R. But now we do not modify it
+  // per genotype, but globally.
+
+  
+  
   //FIXME: here the code for altering mutation rate
   // with a procedure like ExprTk for fitness??
-  // Nope: alter directly spParams.mutation.
+  // Nope: alter directly spParams.mutation. NOPE;: this would be wrong.
   // where the updateRatesFDF... are called.
   // In BNB_nr.cpp, in nr_innerBNB function
   // when we are sampling.
