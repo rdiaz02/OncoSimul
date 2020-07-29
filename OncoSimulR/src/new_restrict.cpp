@@ -1377,6 +1377,10 @@ double totalPop(const std::vector<spParamsP>& popParams){
 	return sum;
 }
 
+// FIXME: refactor?
+// why Genotypes here? popParams is needed, but Genotypes is only
+// used to find the location of the genotype (see function evalFVars).
+
 double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 	const fitnessEffectsAll& F,
 	const std::vector<Genotype>& Genotypes,
@@ -1541,6 +1545,17 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 		   back_inserter(presentDrv));
   return presentDrv;
 }
+
+
+// FIXME: refactor?
+// Why does this function take as arguments popParams and
+// Genotypes?  It shouldn't, since its behavior does not depend on those.
+// It does because we call evalGenotypeFitness which calls in turn
+// evalGenotypeFDFitnessEcuation, etc. But we probably want to do this
+// differently. From creating a new function, using overloading, to do s =
+// evalGenotypeFitness, that would be double newfun(A, B) =
+// evalGenotypeFitness(A, B); and maybe having two different
+// evalGenotypeFitness.
 
 double evalMutator(const Genotype& fullge,
 		   const std::vector<int>& full2mutator,
@@ -1723,6 +1738,10 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 
   return out;
 }
+
+// FIXME refactor
+// as in evalMutator, that this takes Genotypes and popParams is arguably
+// bad design and very confusing (those arguments have nothing to do with mutations)
 
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
