@@ -135,3 +135,13 @@
 
 ** to fix. 
   - [X] is allMutator Effects working? Nope. It doesn't
+
+** miscell
+   - Add 
+   R_forceSymbols(dll, TRUE);
+
+   in void R_init_OncoSimulR(DllInfo *info) {
+
+   in OncoSimulR_init.c
+
+   see: https://cran.r-project.org/doc/manuals/R-exts.html#Registering-native-routines
