@@ -33,7 +33,7 @@ r_github_packages:
 ## #######  x11
 ## ## try to use bioc devel with an R release
 ## install:
-##   - Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel"); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "ggplot2", "ggrepel", "pander",  "knitr"));BiocManager::install("BiocStyle");devtools::install_deps("OncoSimulR");devtools::install_github("r-lib/covr")'
+##   - Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "ggplot2", "ggrepel", "pander",  "knitr"));BiocManager::install("BiocStyle", ask = FALSE);devtools::install_deps("OncoSimulR");devtools::install_github("r-lib/covr")'
 
 
 
