@@ -116,6 +116,8 @@ install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness")
 
 ### If you use Windows
 
+If you use Rtools40, the toolchain from (), you can install OncoSimulR.
+
 We have not uploaded the changes in the freq-dep-fitness branch to
 BioConductor because there are known problems compiling ExprTk with MinGW
 (e.g.,
