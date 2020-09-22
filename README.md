@@ -116,62 +116,67 @@ install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness")
 
 ### If you use Windows
 
-If you use Rtools40, the toolchain from (), you can install OncoSimulR.
+If you use Rtools40, the new toolchain starting R-4.0.0, April 2000
+(https://cran.r-project.org/bin/windows/Rtools/), you can install
+OncoSimulR.
 
-We have not uploaded the changes in the freq-dep-fitness branch to
-BioConductor because there are known problems compiling ExprTk with MinGW
-(e.g.,
-https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/).
+<!-- We have not uploaded the changes in the freq-dep-fitness branch to -->
+<!-- BioConductor because there are known problems compiling ExprTk with MinGW -->
+<!-- (e.g., -->
+<!-- https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/). -->
 
-Things work with other toolchains and, eventually, Rtools 40 should become
-the default toolchain, and the problem will get solved. In the meantime,
-you have two options:
-
-
-#### Install from a zip file:
-
-(First, install the current OncoSimulR from BioConductor, to resolve all the
-dependencies; see above or go to http://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html).
+<!-- Things work with other toolchains and, eventually, Rtools 40 should become -->
+<!-- the default toolchain, and the problem will get solved. In the meantime, -->
+<!-- you have two options: -->
 
 
-Download the [OncoSimulR_2.17.xyz.zip file we
- provide](https://rdiaz02.github.io/OncoSimul/OncoSimulR_2.17.992.zip); for example, from your
- web browser, place the mouse on the link, and right click to select "Save
- link as", or similar incantation.
+<!-- #### Install from a zip file: -->
+
+<!-- (First, install the current OncoSimulR from BioConductor, to resolve all the -->
+<!-- dependencies; see above or go to http://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html). -->
+
+
+<!-- Download the [OncoSimulR_2.17.xyz.zip file we -->
+<!--  provide](https://rdiaz02.github.io/OncoSimul/OncoSimulR_2.17.992.zip); for example, from your -->
+<!--  web browser, place the mouse on the link, and right click to select "Save -->
+<!--  link as", or similar incantation. -->
  
-Now install that zip file from R (e.g., from the menu, go to "Packages",
-"Install package(s) from local file(s)", and select the file). This works
-with [R-3.6.0](https://cran.r-project.org/bin/windows/base/) (and
-[R-3.6.0,
-patched](https://cran.r-project.org/bin/windows/base/rtest.html) and
-[R-devel, future R-3.7.0](https://cran.r-project.org/bin/windows/base/rdevel.html))
+<!-- Now install that zip file from R (e.g., from the menu, go to "Packages", -->
+<!-- "Install package(s) from local file(s)", and select the file). This works -->
+<!-- with [R-3.6.0](https://cran.r-project.org/bin/windows/base/) (and -->
+<!-- [R-3.6.0, -->
+<!-- patched](https://cran.r-project.org/bin/windows/base/rtest.html) and -->
+<!-- [R-devel, future R-3.7.0](https://cran.r-project.org/bin/windows/base/rdevel.html)) -->
 
-<!-- That zip file, for the sake of being small and fast to build and -->
-<!-- install, does not contain the vignette. Use the links to the [HTML -->
-<!-- vignette](https://rdiaz02.github.io/OncoSimul/OncoSimulR.html) or the [PDF -->
-<!-- vignette](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf). (The -->
-<!-- standard help is of course included). -->
+<!-- <\!-- That zip file, for the sake of being small and fast to build and -\-> -->
+<!-- <\!-- install, does not contain the vignette. Use the links to the [HTML -\-> -->
+<!-- <\!-- vignette](https://rdiaz02.github.io/OncoSimul/OncoSimulR.html) or the [PDF -\-> -->
+<!-- <\!-- vignette](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf). (The -\-> -->
+<!-- <\!-- standard help is of course included). -\-> -->
 
 
-#### Install using Rtools40
+<!-- #### Install using Rtools40 -->
 
-(This is more work and takes more much more time)
+<!-- (This is more work and takes more much more time) -->
 
-<!-- **The frequency-dependent fitness version will not install from source in -->
-<!-- Windows unless you use Rtools40.** This is a known problem with ExprTk and -->
-<!-- MinGW -->
+<!-- <\!-- **The frequency-dependent fitness version will not install from source in -\-> -->
+<!-- <\!-- Windows unless you use Rtools40.** This is a known problem with ExprTk and -\-> -->
+<!-- <\!-- MinGW -\-> -->
 
-We have verified that OncoSimulR (at least as of 2019-05-24) does install
-with [Rtools40](https://cran.r-project.org/bin/windows/testing/rtools40.html).
+<!-- We have verified that OncoSimulR (at least as of 2019-05-24) does install -->
+<!-- with [Rtools40](https://cran.r-project.org/bin/windows/testing/rtools40.html). -->
 
-How to do it:
- 1. Install Rtools40 and its associated R-testing as explained in
+How to do it: The standard installation procedure should work, but the
+following steps might help.
+
+ 1. Install Rtools40 and R as explained in
     https://cran.r-project.org/bin/windows/testing/rtools40.html.
- 2. Install igraph following these notes:
+ 2. (If you experience issues with igraph, install igraph following these notes:
        https://github.com/r-windows/checks/issues/2
+	   )
  3. Now, install OncoSimulR from BioConductor (to resolve all
     dependencies in one go): https://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html
-	This will take more than one hour.
+	For a fresh R installation this can take more than one hour.
  4. Clone the git repo and move to that directory.
  5. Go to a MINGW shell console, and install. For example, if you have
     installed R-testing under 'C:\R', you can do
