@@ -1396,9 +1396,7 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 
   double T = currentTime;
   
-  std::vector<double> newMutationRate = mu;
-  
-  
+ 
   typedef exprtk::symbol_table<double> symbol_table_t;
   typedef exprtk::expression<double> expression_t;
   typedef exprtk::parser<double> parser_t;
@@ -1564,12 +1562,15 @@ vector<int> getGenotypeDrivers(const Genotype& ge, const vector<int>& drv) {
 // evalGenotypeFitness(A, B); and maybe having two different
 // evalGenotypeFitness.
 
+// This same problem happens with currentTime; it is used by evalGenotypeFDFitnessEcuation,
+// etc
+
 double evalMutator(const Genotype& fullge,
 		   const std::vector<int>& full2mutator,
 		   const fitnessEffectsAll& muEF,
 		   const std::vector<Genotype>& Genotypes,
 		   const std::vector<spParamsP>& popParams,
-			const double& currentTime,
+		   const double& currentTime, // because we use it in evalGenotypeFitness
 		   bool verbose = false) {
   // In contrast to nr_fitness, that sets birth and death, this simply
   // returns the multiplication factor for the mutation rate. This is used
@@ -1774,6 +1775,7 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 // FIXME refactor
 // as in evalMutator, that this takes Genotypes and popParams is arguably
 // bad design and very confusing (those arguments have nothing to do with mutations)
+// Same problem happens with currentTime. Yes, this sucks.
 
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
@@ -1782,12 +1784,13 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const int mutationPropGrowth,
 			   const std::vector<int> full2mutator,
 			   const fitnessEffectsAll& muEF,
-				 const std::vector<Genotype>& Genotypes,
-	 			 const std::vector<spParamsP>& popParams) {
+			   const std::vector<Genotype>& Genotypes,
+			   const std::vector<spParamsP>& popParams,
+			   const double& currentTime) {
 
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams, currentTime);
+    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
   } else mumult = 1.0;
   
   
