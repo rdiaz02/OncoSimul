@@ -68,7 +68,7 @@ test_that("testing single gene evaluation", {
                "You have a NULL spPopSizes")
   
   expect_error(evalGenotype(genotype = "1", fitnessEffects = afe1), 
-               "You have a NULL spPopSizes") ## FIXME: check this!!! compare to former
+               "You have a NULL spPopSizes")
   
   expect_error(evalGenotype(genotype = "1", fitnessEffects = afe2), 
                "Genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
@@ -107,6 +107,13 @@ test_that("testing all genes evaluation", {
   evalGs_one_by_one <- sapply(genotypes, function(x) evalGenotype(x, afe,
 spPopSizes = c(500,
                                                                                  250, 
+                                                                                 250, 
+                                                                                 250, 
+                                                                                 300,
+                                                                                 300,
+                                                                                 300,
+                                                                                 450)))
+  
   evalGs_all_together <- evalAllGenotypes(afe,
                                           spPopSizes = c(500,
                                                          250,

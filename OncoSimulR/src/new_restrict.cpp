@@ -1767,7 +1767,7 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   // Genotype fullge = convertGenotypeFromR(rG, F);
 
   const std::vector<int> full2mutator = Rcpp::as<std::vector<int> >(full2mutator_);
-  out[1] = evalMutator(g, full2mutator, muef, Genotypes, popParams, verbose);
+  out[1] = evalMutator(g, full2mutator, muef, Genotypes, popParams, currentTime, verbose);
 
   return out;
 }
@@ -1790,7 +1790,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
-    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams);
+    mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams, currentTime);
   } else mumult = 1.0;
   
   

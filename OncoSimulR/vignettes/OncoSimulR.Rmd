@@ -9107,9 +9107,7 @@ plotClonePhylog(s6, keepEvents = TRUE)
 
 ```
 
-FIXME: <!-- Note that **evalAllGenotypesFitAndMut** currently work with frequency-dependent fitness: -->
-Note, though, that **evalAllGenotypesFitAndMut** does not currently
-work with frequency-dependent fitnes:
+Note that **evalAllGenotypesFitAndMut** currently works with frequency-dependent fitness:
 
 ```{r noworkeval}
 
@@ -11999,7 +11997,7 @@ or slow down the collapse of a subpopulation of cells.
 
 It is possible to increase the fitness value by using T functionality. In the following
 example we can see how fitness value in genotypes A and B increases when the simulation
-time reaches a specific value. Since we have used the exponential model, that's the 
+time reaches a specific value. Since we have used the exponential model, that is the 
 reason why we observe some delay between the specified time and when A or B 
 populations start to grow.
 
