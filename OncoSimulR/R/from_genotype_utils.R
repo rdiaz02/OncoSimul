@@ -127,11 +127,11 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
 ##Modified
 to_genotFitness_std <- function(x,
-  frequencyDependentFitness = FALSE,
-  frequencyType = frequencyType,
-  simplify = TRUE,
-  min_filter_fitness = 1e-9,
-  sort_gene_names = TRUE) {
+                                frequencyDependentFitness = FALSE,
+                                frequencyType = frequencyType,
+                                simplify = TRUE,
+                                min_filter_fitness = 1e-9,
+                                sort_gene_names = TRUE) {
   ## Would break with output from allFitnessEffects and
   ## output from allGenotypeAndMut
 
@@ -314,7 +314,19 @@ to_genotFitness_std <- function(x,
         x[, ncol(x)] <- sapply(x[, ncol(x)],
                                function(x){findAndReplace(x, conversionTable)})
         
-        if(frequencyType == "abs"){
+    if(frequencyType == "auto"){
+      ch <- paste(as.character(x[, ncol(x)]), collapse = "")
+      if( grepl("f_", ch, fixed = TRUE) ){
+        frequencyType = "rel"
+        pattern <- stringr::regex("f_(\\d*_*)*")
+        
+      } else if ( grepl("n_", ch, fixed = TRUE) ){
+        frequencyType = "abs"
+        pattern <- stringr::regex("n_(\\d*_*)*")
+        
+      } else { stop("No pattern found when frequencyType set to 'auto'") }
+        
+    } else if(frequencyType == "abs"){
             pattern <- stringr::regex("n_(\\d*_*)*")
         } else {
             pattern <- stringr::regex("f_(\\d*_*)*")

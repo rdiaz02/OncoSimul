@@ -20,25 +20,27 @@ Evaluate fitness/mutator effects of one or all possible genotypes.
 
 \usage{
 
-evalGenotype(genotype, fitnessEffects, verbose = FALSE, echo = FALSE,
-model = "")
+evalGenotype(genotype, fitnessEffects, spPopSizes = NULL,
+             verbose = FALSE, echo = FALSE, model = "",
+             currentTime = 0)
 
-evalGenotypeMut(genotype, mutatorEffects, verbose = FALSE, echo = FALSE)
+evalGenotypeMut(genotype, mutatorEffects, spPopSizes = NULL,
+                verbose = FALSE, echo = FALSE, currentTime = 0)
 
 evalAllGenotypes(fitnessEffects, order = FALSE, max = 256, addwt = FALSE,
-model = "")
+                 model = "", spPopSizes = NULL, currentTime = 0)
 
-evalAllGenotypesMut(mutatorEffects, max = 256, addwt = FALSE)
-
+evalAllGenotypesMut(mutatorEffects, max = 256, addwt = FALSE,
+                    spPopSizes = NULL, currentTime = 0)
 
 evalGenotypeFitAndMut(genotype, fitnessEffects,
-                      mutatorEffects, verbose = FALSE, echo = FALSE,
-                      model = "")
+                      mutatorEffects, spPopSizes = NULL,
+                      verbose = FALSE, echo = FALSE,
+                      model = "", currentTime = 0)
 
 evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
                           order = FALSE, max = 256, addwt = FALSE,
-                          model = "")
-
+                          model = "", spPopSizes = NULL, currentTime = 0)
 
 }
 \arguments{
@@ -68,8 +70,8 @@ evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
     (For \code{evalAllGenotypes}). If TRUE, then order matters. If order
     matters, then generate not only all possible combinations of the genes, but
     all possible permutations for each combination.
-    
 }
+    
 \item{max}{
   (For \code{evalAllGenotypes}). By default, no output is shown if the
   number of possible genotypes exceeds the max. Increase as needed.
@@ -95,6 +97,19 @@ evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
   some examples, as shown in the vignette.
 }
 
+\item{spPopSizes}{
+  \code{spPopSizes} is a numeric vector that contains the population sizes of the clones,
+  in the same order of genotypes appear in the Genotype column of \code{genotFitness}.
+  \code{spPopSizes} is only needed when \code{frequencyDependentFitness = TRUE} and
+  you want to evaluate fitness with \code{\link{evalGenotype}} or 
+  \code{\link{evalAllGenotypes}} (see these functions for more info).
+}
+
+\item{currentTime}{
+  Set to default 0 from R. It will be updated during simulation process, since
+  currentTime is initialized in BNB algorithm. It is useful to develop OncoSimul
+  interventions using the frequency-dependent-fitness functionality.
+}
 
 }
 \value{
@@ -120,11 +135,10 @@ call,  all the genes specified in
   specify them in the call to \code{fitnessEffects}, for instance as
   \code{noIntGenes} with an effect of 0.  
 
-When you are in a frequency dependent fitness situation only \code{fitnessEffects}
-are allowed; you must set \code{frequencydependentFitness = TRUE} and 
-\code{spPopSizes} must not be NULL and its length must be equal to the number of possible
-genotypes. Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
-
+When you are in a frequency dependent fitness situation you must set 
+\code{frequencydependentFitness = TRUE} and \code{spPopSizes} must not 
+be NULL and its length must be equal to the number of possible genotypes. 
+Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
 
 \strong{evalAllGenotypesFitAndMut does not (yet) work with frequency-dependent
   fitness specifications.} (The value returned for fitness is incorrect.)
@@ -306,10 +320,10 @@ r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
 
 afe <- allFitnessEffects(genotFitness = r, 
                          frequencyDependentFitness = TRUE, 
-                         frequencyType = "rel",
-                         spPopSizes = c(5000, 2500, 2500, 500))
+                         frequencyType = "rel")
+                         
 
-evalAllGenotypes(afe)
+evalAllGenotypes(afe, spPopSizes = c(5000, 2500, 2500, 500))
 
 ## Recall that evalAllGenotypesFitAndMut does not (yet) work with
 ## frequency-dependent fitness specifications.

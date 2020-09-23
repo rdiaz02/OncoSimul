@@ -14,28 +14,34 @@ test_that("testing single gene evaluation", {
   
   afe1 <- allFitnessEffects(genotFitness = r1, 
                             frequencyDependentFitness = TRUE, 
-			                frequencyType = "rel",
-                            spPopSizes = c(5000, 2500, 2500, 7500))
+			                      frequencyType = "rel")
+                            #spPopSizes = c(5000, 2500, 2500, 7500))
   
   afe2 <- allFitnessEffects(genotFitness = r2, 
-                            frequencyDependentFitness = FALSE, 
-                            spPopSizes = c(5000, 2500, 2500, 7500))
+                            frequencyDependentFitness = FALSE)
+                            #spPopSizes = c(5000, 2500, 2500, 7500))
   
   afe3 <- allFitnessEffects(genotFitness = r1, 
                             frequencyDependentFitness = TRUE, 
 			    frequencyType = "rel")
   
-  evge1 <- evalGenotype(genotype = "Root", fitnessEffects = afe1)
+  evge1 <- evalGenotype(genotype = "Root", fitnessEffects = afe1,
+                        spPopSizes = c(5000, 2500, 2500, 7500))
   
-  evge2 <- evalGenotype(genotype = 0, fitnessEffects = afe1)
+  evge2 <- evalGenotype(genotype = 0, fitnessEffects = afe1,
+                        spPopSizes = c(5000, 2500, 2500, 7500))
   
-  evge3 <- evalGenotype(genotype = "A", fitnessEffects = afe1)
+  evge3 <- evalGenotype(genotype = "A", fitnessEffects = afe1,
+                        spPopSizes = c(5000, 2500, 2500, 7500))
   
-  evge4 <- evalGenotype(genotype = 1, fitnessEffects = afe1)
+  evge4 <- evalGenotype(genotype = 1, fitnessEffects = afe1,
+                        spPopSizes = c(5000, 2500, 2500, 7500))
   
-  evge5 <- evalGenotype(genotype = c(1, 2), fitnessEffects = afe1)
+  evge5 <- evalGenotype(genotype = c(1, 2), fitnessEffects = afe1,
+                        spPopSizes = c(5000, 2500, 2500, 7500))
   
-  evge6 <- evalGenotype(genotype = "A, B", fitnessEffects = afe1)
+  evge6 <- evalGenotype(genotype = "A, B", fitnessEffects = afe1,
+                        spPopSizes = c(5000, 2500, 2500, 7500))
   
   
   expect_equal(evge1, evge2)
@@ -44,10 +50,12 @@ test_that("testing single gene evaluation", {
   
   expect_equal(evge5, evge6)
   
-  expect_error(evalGenotype(genotype = c(0, 1), fitnessEffects = afe1), 
+  expect_error(evalGenotype(genotype = c(0, 1), fitnessEffects = afe1,
+                            spPopSizes = c(5000, 2500, 2500, 7500)), 
                "Genotype cannot contain any 0 if its length > 1")
   
-  expect_error(evalGenotype(genotype = c(1, 3), fitnessEffects = afe1),
+  expect_error(evalGenotype(genotype = c(1, 3), fitnessEffects = afe1,
+                            spPopSizes = c(5000, 2500, 2500, 7500)),
                "Genotype as vector of numbers contains genes not in fitnessEffects/mutatorEffects.")
   
   expect_error(evalGenotype(genotype = 0, fitnessEffects = afe2), 
@@ -60,7 +68,7 @@ test_that("testing single gene evaluation", {
                "You have a NULL spPopSizes")
   
   expect_error(evalGenotype(genotype = "1", fitnessEffects = afe1), 
-               "Genotype contains NA or a gene not in fitnessEffects/mutatorEffects")
+               "You have a NULL spPopSizes") ## FIXME: check this!!! compare to former
   
   expect_error(evalGenotype(genotype = "1", fitnessEffects = afe2), 
                "Genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
@@ -82,23 +90,32 @@ test_that("testing all genes evaluation", {
   
   afe <- allFitnessEffects(genotFitness = r, 
                            frequencyDependentFitness = TRUE, 
-			   frequencyType = "rel",
-                           spPopSizes = c(500, 
-                                          250, 
-                                          250, 
-                                          250, 
-                                          300,
-                                          300,
-                                          300,
-                                          450))
+			                     frequencyType = "rel")
+                           #spPopSizes = c(500, 
+                            #              250, 
+                             #             250, 
+                              #            250, 
+                               #           300,
+                                #          300,
+                                 #         300,
+                                  #        450))
   
   genotypes <- c(0, OncoSimulR:::generateAllGenotypes(fitnessEffects = afe, 
                                                       order = FALSE, 
                                                       max = 256)$genotNums)
   
-  evalGs_one_by_one <- sapply(genotypes, function(x) evalGenotype(x, afe))
-  
-  evalGs_all_together <- evalAllGenotypes(afe)$Fitness
+  evalGs_one_by_one <- sapply(genotypes, function(x) evalGenotype(x, afe,
+spPopSizes = c(500,
+                                                                                 250, 
+  evalGs_all_together <- evalAllGenotypes(afe,
+                                          spPopSizes = c(500,
+                                                         250,
+                                                         250,
+                                                         250,
+                                                         300,
+                                                         300,
+                                                         300,
+                                                         450))$Fitness
   
   expect_identical(evalGs_one_by_one, evalGs_all_together)
   

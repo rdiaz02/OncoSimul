@@ -274,7 +274,8 @@ Genotype createNewGenotype(const Genotype& parent,
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
   const fitnessEffectsAll& F,
   const std::vector<Genotype>& Genotypes,
-  const std::vector<spParamsP>& popParams);
+  const std::vector<spParamsP>& popParams,
+  const double& currentTime);
 
 
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE);

@@ -169,7 +169,8 @@ test_that("eval fitness and mut OK", {
     fm <- allMutatorEffects(noIntGenes = c("a" = 10,
                                            "c" = 5))
     expect_output(ou <- evalGenotypeFitAndMut("a", fe2fl(fe), fm, verbose = TRUE),
-                  "10", fixed = TRUE)
+                  #"10", 
+                  fixed = TRUE)
     expect_identical(ou, c(1, 10))
     expect_identical(evalGenotypeFitAndMut("b", fe2fl(fe), fm),
                      c(1, 1))
@@ -272,7 +273,7 @@ test_that("mut and fitness both needed when needed", {
                  'argument "mutatorEffects" is missing',
                  fixed = TRUE)
     expect_error(evalGenotypeFitAndMut("a, b", fm),
-                 "genotype contains NAs or genes not in fitnessEffects",
+                 "Genotype contains NAs or genes not in fitnessEffects/mutatorEffects",
                  fixed = TRUE)
     expect_error(evalGenotypeFitAndMut("a, b", mutatorEffects = fm),
                  'argument "fitnessEffects" is missing',
@@ -300,8 +301,12 @@ test_that("we evaluate the WT", {
                             noIntGenes = c("e" = 0.1))
     expect_warning(ou <- OncoSimulR:::evalRGenotype(vector(mode = "integer",
                                                            length = 0),
-                                                    fe2fl(fe), TRUE, FALSE,
-                                                    "evalGenotype"),
+                                                    fe2fl(fe),
+                                                    0,
+                                                    TRUE, 
+                                                    FALSE,
+                                                    "evalGenotype", 
+                                                    0),
                    "WARNING: you have evaluated fitness/mutator status of a genotype of length zero",
                    fixed = TRUE)
     expect_identical(ou, 1)
@@ -315,11 +320,14 @@ test_that("we evaluate the WT, 2", {
     fm <- OncoSimulR:::allMutatorEffects(noIntGenes = c("a" = 10,
                                                         "c" = 5))
     expect_warning(ou2 <- OncoSimulR:::evalRGenotypeAndMut(
-                       vector(mode = "integer", length = 0),
-                       fe2fl(fe),
-                       fm,
-                       OncoSimulR:::matchGeneIDs(fm, fe)$Reduced,
-                       TRUE, FALSE),
+                       vector(mode = "integer", length = 0),#rG
+                       fe2fl(fe),#rFE
+                       fm,#muEF
+                       0,#spPop
+                       OncoSimulR:::matchGeneIDs(fm, fe)$Reduced,#fullmutator_
+                       TRUE,#verbose
+                       FALSE,#prodneg
+                       0) #currentTime
                    "WARNING: you have evaluated fitness of a genotype of length zero.",
                    fixed = TRUE)
     expect_identical(ou2, c(1, 1))

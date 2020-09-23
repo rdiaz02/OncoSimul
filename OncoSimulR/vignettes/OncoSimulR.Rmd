@@ -2,7 +2,7 @@
 title: "OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression."
 author: "
 
-         Ramon Diaz-Uriarte, Sergio Sanchez-Carrillo\\
+         Ramon Diaz-Uriarte, Sergio Sanchez-Carrillo, Juan Antonio Miguel-Gonzalez\\
 
          Dept. Biochemistry, Universidad Autónoma de Madrid, Instituto de
          Investigaciones Biomédicas 'Alberto Sols' (UAM-CSIC), Madrid,
@@ -3525,10 +3525,9 @@ r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
 
 afe <- allFitnessEffects(genotFitness = r, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(2500, 2000, 5500, 700))
+                         frequencyType = "rel")
 
-plotFitnessLandscape(evalAllGenotypes(afe))
+plotFitnessLandscape(evalAllGenotypes(afe, spPopSizes = c(2500, 2000, 5500, 700)))
 ```
 
 
@@ -8157,18 +8156,18 @@ with absolute numbers.
 ```{r fdf1b}
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(100, 20, 20, 30, 0)))
+                         frequencyType = "rel"),
+                 spPopSizes = c(100, 20, 20, 30, 0))
 
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(100, 30, 40, 0, 10)))
+                         frequencyType = "rel"),
+                 spPopSizes = c(100, 30, 40, 0, 10))
 
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(100, 30, 40, 0, 100)))
+                         frequencyType = "rel"),
+                 spPopSizes = c(100, 30, 40, 0, 100))
 
 ``` 
 
@@ -8448,13 +8447,13 @@ to `evalAllGenotypes` in the future): -->
 ```{r fdf2b, message=FALSE}
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "abs",
-                         spPopSizes = c(100, 1, 11)))
+                         frequencyType = "abs"),
+                 spPopSizes = c(100, 1, 11))
 
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "abs",
-                         spPopSizes = c(100, 11, 1)))
+                         frequencyType = "abs"),
+                 spPopSizes = c(100, 11, 1))
 ```
 
 In this simulation, the population collapses: genotype B is able to
@@ -8791,8 +8790,8 @@ evalAllGenotypes(allFitnessEffects(
               0.6, -0.5, awt = 0.1,
               gt = c("WT","prey", "Predator")),
     frequencyDependentFitness = TRUE,
-    frequencyType = "abs",
-    spPopSizes = c(0, 0, 20)))
+    frequencyType = "abs"),
+    spPopSizes = c(0, 0, 20))
 
 
 evalAllGenotypes(allFitnessEffects(
@@ -8801,8 +8800,8 @@ evalAllGenotypes(allFitnessEffects(
               0.6, -0.5, awt = 0.1,
               gt = c("WT","prey", "Predator")),
     frequencyDependentFitness = TRUE,
-    frequencyType = "abs",
-    spPopSizes = c(0, 0, 40)))
+    frequencyType = "abs"),
+    spPopSizes = c(0, 0, 40))
 ```
 
 (Of course, with those population sizes, even if prey had a birth
@@ -8917,9 +8916,9 @@ rar <- data.frame(Genotype = c("WT", "A", "B", "C"),
                              "1.0 + .5 * (f_1 + f_2)"))
 afear <- allFitnessEffects(genotFitness = rar, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(100, 200, 300, 400))
-evalAllGenotypes(afear)
+                         frequencyType = "rel")
+
+evalAllGenotypes(afear, spPopSizes = c(100, 200, 300, 400))
 
 
 rar2 <- data.frame(Genotype = c("WT", "A", "B", "C"), 
@@ -8929,9 +8928,9 @@ rar2 <- data.frame(Genotype = c("WT", "A", "B", "C"),
                              "1.0 + .5 * ((n_1 + n_2)/N)"))
 afear2 <- allFitnessEffects(genotFitness = rar2, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "abs",
-                         spPopSizes = c(100, 200, 300, 400))
-evalAllGenotypes(afear2)
+                         frequencyType = "abs")
+                         
+evalAllGenotypes(afear2, spPopSizes = c(100, 200, 300, 400))
 ```
 
 and simulating with them leads to identical results
@@ -8975,9 +8974,9 @@ rar3 <- data.frame(Genotype = c("WT", "A", "B", "C"),
                              "1.0 + .5 * ( n_1 > 20)"))
 afear3 <- allFitnessEffects(genotFitness = rar3, 
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "abs",
-                         spPopSizes = c(100, 200, 300, 400))
-evalAllGenotypes(afear3)
+                         frequencyType = "abs")
+                         
+evalAllGenotypes(afear3, spPopSizes = c(100, 200, 300, 400))
 
 
 set.seed(1)
@@ -9044,6 +9043,7 @@ plot(s2fd, show = "genotypes")
 
 ```{r echo=FALSE}
 op <- par(mfrow = c(1, 2))
+```
 
 ```{r figmutfdf}
 plotClonePhylog(s1fd, keepEvents = TRUE)
@@ -9065,7 +9065,9 @@ r5 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
                  Fitness = c("1",
                              "1.25 - .0025*(n_2)",
                              "1.25 - .0025*(n_1)",
-                             "1.4"))
+                             "1.4"),
+                 stringsAsFactors = FALSE)
+
 afe5 <- allFitnessEffects(genotFitness = r5, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "abs")
@@ -9105,6 +9107,7 @@ plotClonePhylog(s6, keepEvents = TRUE)
 
 ```
 
+FIXME: <!-- Note that **evalAllGenotypesFitAndMut** currently work with frequency-dependent fitness: -->
 Note, though, that **evalAllGenotypesFitAndMut** does not currently
 work with frequency-dependent fitnes:
 
@@ -9112,15 +9115,15 @@ work with frequency-dependent fitnes:
 
 evalAllGenotypes(allFitnessEffects(genotFitness = r1fd, 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(10, 20, 30, 40)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(10, 20, 30, 40))
 
-## Fitness is wrong
+
 evalAllGenotypesFitAndMut(allFitnessEffects(genotFitness = r1fd, 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(10, 20, 30, 40)),
-                    mtfd)
+                                            frequencyType = "rel"),
+                          mtfd,
+                          spPopSizes = c(10, 20, 30, 40))
 ```
 
 ## Can we use the BNB algorithm to model frequency-dependent fitness? {#bnbfdf}
@@ -9541,14 +9544,16 @@ HD_competition <-allFitnessEffects(
   genotFitness = H_D_fitness(10, 2, 
                          gt = c("WT", "H", "D")),
   frequencyDependentFitness = TRUE,
-  frequencyType = "rel",
-  spPopSizes = c(5000, 5000, 5000))
+  frequencyType = "rel")
 
 ## Plot fitness landscape of genotype "H, D" evaluation
 data.frame("Doves_fitness" = evalGenotype(genotype = "D",
-                                          fitnessEffects = HD_competition), 
+                                          fitnessEffects = HD_competition,
+                                          spPopSizes = c(5000, 5000, 5000)), 
            "Hawks_fitness" = evalGenotype(genotype = "H", 
-                                          fitnessEffects = HD_competition)) 
+                                          fitnessEffects = HD_competition,
+                                          spPopSizes = c(5000, 5000, 5000))
+           )
 ```
 
 We observe that the penalty of fighting (C > V) benefits the dove in terms of 
@@ -10798,8 +10803,8 @@ decreased by means of this inhibitor produced by CS.
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(7, 1, 9, 0.5, 2, 5, 0), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 1000, 1000)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 1000, 1000))
 
 ```
 
@@ -10816,8 +10821,8 @@ CT fitness are not affected, and CT fitness is the largest.<!-- is affected  -->
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(7, 1, 9, 0.5, 2, 5, 2), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 1000, 1000)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 1000, 1000))
 
 ```
 
@@ -10834,8 +10839,8 @@ only PA is present, neither WT (CS) nor CT would be able to grow:
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(7, 1, 9, 0.5, 2, 5, 2), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(0, 0, 1000)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(0, 0, 1000))
 
 ```
 
@@ -10847,8 +10852,8 @@ while WT fitness does not increase due to antibiotic administration.
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(7, 1, 9, 0.5, 2, 5, 2), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(100, 0, 1000)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(100, 0, 1000))
 
 ```
 
@@ -10861,8 +10866,8 @@ produced by WT):
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(7, 1, 9, 0.5, 2, 5, 5), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 0, 0)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 0, 0))
 
 ```
 
@@ -10874,8 +10879,8 @@ each other while CT grow a little.
 evalAllGenotypes(allFitnessEffects(genotFitness =  
 				   create_fe(7, 1, 9, 0.5, 2, 5, 5), 
 				   frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 0, 1000)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 0, 1000))
 
 ```
 
@@ -11068,8 +11073,8 @@ since there are no macrophages that can affect them.
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(2, 5, 1, 0.8, 1, 1, 9), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 0, 0, 0)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 0, 0, 0))
 
 ```
 
@@ -11082,8 +11087,8 @@ cancer cells is lower than before.<!--  (although they are still going to -->
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(2, 5, 1, 0.8, 1, 1, 9), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 1000, 0, 0)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 1000, 0, 0))
 
 ```
 
@@ -11097,8 +11102,8 @@ the benefit of growth factor produced by them.
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(2, 5, 1, 0.8, 1, 1, 9), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 1000, 100, 100)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 1000, 100, 100))
 
 ```
 
@@ -11340,8 +11345,8 @@ of 5.
 evalAllGenotypes(allFitnessEffects(genotFitness =  
                                    create_fe(2,5,1,0.8,1,1,9,5), 
                                    frequencyDependentFitness = TRUE,
-                                   frequencyType = "rel",
-                                   spPopSizes = c(1000, 100, 0, 100, 1000, 0, 0)))
+                                   frequencyType = "rel"),
+                 spPopSizes = c(1000, 100, 0, 100, 1000, 0, 0))
 
 ```
 
@@ -11493,6 +11498,640 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 \clearpage
 
+
+# Simulating therapeutic interventions {#timefdf}
+
+In this section we show some examples using the time dependent frecuency functionality by
+which fitness definition can be done with the T variable, which is actually the current time defined
+in the simulation. This examples are based on the contribution made by the working group of
+the following people from the master's in Bioinformatics and Computational Biology (UAM): 
+Niklas Endres, Rafael Barrero Rodríguez, Rosalía Palomino Cabrera and Silvia Talavera Marcos.
+
+This first example is an artificial simulation, but it shows how the fitness of a genotype can
+suddenly increase at a certain given timepoint.
+
+
+```{r timefdf1}
+## Fitness definition
+fl <- data.frame(
+  Genotype = c("WT", "A", "B"),
+  Fitness = c("1",                       #WT
+              "if (T>50) 1.5; else 0;",  #A
+              "0*f_") ,                  #B
+  stringsAsFactors = FALSE
+)
+
+fe <- allFitnessEffects(genotFitness = fl, 
+                        frequencyDependentFitness = TRUE,
+                        frequencyType = "rel")
+
+## Evaluate the fitness before and after the specified currentTime
+evalAllGenotypes(fe, spPopSizes = c(100, 100, 100))
+evalAllGenotypes(fe, spPopSizes = c(100, 100, 100), currentTime = 80)
+
+## Simulation                        
+sim <- oncoSimulIndiv(fe,
+                      model = "McFL", 
+                      onlyCancer = FALSE, 
+                      finalTime = 100,
+                      mu = 0.01,
+                      initSize = 5000, 
+                      keepPhylog = FALSE,
+                      seed = NULL, 
+                      errorHitMaxTries = FALSE, 
+                      errorHitWallTime = FALSE)
+
+## Plot the results                      
+plot(sim, show = "genotypes")                        
+
+```
+
+## Adaptive control of competitive release and chemotherapeutic resistance {#adapChemo}
+
+The code structure of the previous example can be used, for instance, to simulate
+the effect of different chemotherapy treatment protocols.
+
+An example of using these game theory concepts is the adaptive theory. The primary
+goal is to maximize the time of tumor control by using the tumor cells that are
+sensitive to treatment as agents that can supress the proliferation of the resistant cells.
+Thus, a significant residual populations of tumor cells can be under control to inhibit the 
+growth of cells that otherwise cannot control: killed vs resistant.
+
+Newton and Ma @PhysRevE built simulations for a tumor consisting in two types of cells: 
+resistant to chemotherapy and sensitive to chemotherapy. The idea is to promote
+competition among tumor cells in order to prevent tumor growth.
+
+To do this, they developed a **three-component Prisoner's Dilemma scenario** including 
+healthy (**H**) cells as well as chemoresistant (**R**) and chemosensitive (**S**) cancer
+cells. Healthy cells are cooperators, while cancer cells are defectors.
+
+This is the system's payoff matrix:
+
+```{r adapChemo1}
+a <- 1;     b <- 0.5;  c <- 0.5    ## a b c
+d <- 1;     e <- 1.25; f <- 0.7    ## d e f
+g <- 0.975; h <- -0.5; i <- 0.75   ## g h i
+
+payoff_m <- matrix(c(a,b,c,d,e,f,g,h,i), ncol=3, byrow=TRUE)
+colnames(payoff_m) <- c("Healthy", "Chemo-sensitive", "Chemo-resistant")
+rownames(payoff_m) <- c("Healthy", "Chemo-sensitive", "Chemo-resistant")
+print(payoff_m <- as.table(payoff_m))
+  
+```
+
+The numerical values in the matrix are selected to satisfy the following theoretical 
+constraints: 
+
+g > a > i > c; d > a > e > b; f > i > e > h and d > g (cost to resistance).
+
+Thus, the fitness definitions for the three types of cells could be written as in the 
+following data frame:
+
+```{r adapChemo2}
+print( df <- data.frame(
+  CellType = c("H", "S", "R"),
+  Fitness = c("F(H) = ax(H) + bx(S) + cx(R)",    #Healthy
+              "F(S) = dx(H) + ex(S) + fx(R)",    #Sensitive
+              "F(R) = gx(H) + hx(S) + ix(R)")),  #Resistant
+  row.names = FALSE )
+```
+
+In summary:
+  
+* The fitness of H cells is lower than the chemosensitive cells.
+* Without any therapy, S cells have a higher fitness value than R cells, because of 
+the cost to resistance
+* In the presence of therapy, R cells take over the S cells
+
+One of the challenges is to optimize the drug dosage intervals. In practice, this would 
+mean to infer the growth rates of the different cell types from a frequent monitoring of
+the tumor environment. With OncoSimulR is possible to try out different intervals on simulations of the collected data.
+
+### Scenario without chemotherapy {#scenChemo}
+
+First of all, we can simulate the growth of a tumor from H cells without any treatment.
+We can consider that R tumor cells are generated from S and WT cells. Thus, as we expected,
+we can observe in the simulation results that S cells grow (tumor) and R cells cannot
+subsist because of their fitness disadvantage: the cost of being resistant.
+
+```{r scenChemo1}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
+
+## Coefficients
+# Healthy  Sensitive  Resistant
+a=3;       b=1.5;     c=1.5     # Healthy
+d=4;       e=5;       f=2.8     # Sensitive
+g=3.9;     h=-2;      i=2.2     # Resistant
+
+
+# Here we divide coefficients to reduce the amount of cells obtained in the simulation. 
+# We have divided a, b and c by 3, and d, e and i by 4.
+
+# Healthy     Sensitive   Resistant
+a <- 1;       b <- 0.5;   c <- 0.5    # Healthy
+d <- 1;       e <- 1.25;  f <- 0.7    # Sensitive
+g <- 0.975;   h <- -0.5;  i <- 0.75   # Resistant
+
+
+## Fitness definition
+players <- data.frame(Genotype = c("WT","S","R","S,R"),
+                      Fitness = c(paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2"), #WT
+                                  paste0(d,"*f_+",e,"*f_1+",f,"*f_1_2"),      #S
+                                  "0",                                        #R
+                                  paste0(g,"*f_+",h,"*f_1+",i,"*f_1_2")),     #S,R
+                      stringsAsFactors = FALSE)
+
+
+game <- allFitnessEffects(genotFitness = players,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel")
+
+## Plot the first scenario
+eag <- evalAllGenotypes(game, spPopSizes = c(10,1,0,10))[c(1, 3, 4),]
+  
+plot(eag)
+
+## Simulation
+gamesimul <- oncoSimulIndiv(game,
+                            model = "McFL",
+                            onlyCancer = FALSE,
+                            finalTime = 300,
+                            mu = 0.01,
+                            initSize = 5000,
+                            keepPhylog = TRUE,
+                            seed = NULL)
+## Plot 2
+plot(gamesimul, show = "genotypes", type = "line",
+     col = c("black", "green", "red"), ylim = c(20, 50000))
+
+plot(gamesimul, show = "genotypes")
+```
+
+
+### Scenario with continuous chemotherapy: fixed dose {#fixedChemo}
+
+For this simulation, we add the effect of chemotherapy as a fixed coefficient (**drug_eff**), representing a fixed dose. The dose is delivered only when a tumor has grown up, so we
+perform the drug effect after starting the simulation. For this, we apply the time
+funcionality used in the first section of this chapter.
+
+```{r fixedChemo1}
+# Effect of drug on fitness sensible tumor cells
+drug_eff <- 0.01
+
+wt_fitness <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2")
+sens_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2")
+res_fitness <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2")
+
+players_1 <- data.frame(Genotype = c("WT", "S", "R", "S, R"),
+                        Fitness = c(wt_fitness,                                               #WT
+                                    paste0("if (T>50) ", drug_eff, "*(",sens_fitness, ")",";  
+                                           else ", sens_fitness, ";"),                        #S
+                                    "0",                                                      #R
+                                    res_fitness),                                             #S,R
+                        stringsAsFactors = FALSE)
+
+period_1 <- allFitnessEffects(genotFitness = players_1,
+                              frequencyDependentFitness = TRUE,
+                              frequencyType = "rel")
+
+set.seed(2)
+
+final_time <- 300
+simul_period_1 <- oncoSimulIndiv(period_1,
+                                 model = "McFL",
+                                 onlyCancer = FALSE,
+                                 finalTime = final_time,
+                                 mu = 0.01,
+                                 initSize = 5000,
+                                 keepPhylog = TRUE,
+                                 seed = NULL)
+
+# ylim has been adapted to number of cells
+plot(simul_period_1, show = "genotypes", type = "line",
+     col = c("black", "green", "red"), ylim = c(20, 300000))
+
+plot(simul_period_1, show = "genotypes", ylim = c(20, 12000))
+```
+
+As expected, the simulation results show how sensitive cells suddenly decrease when the current
+time of the simulation reach a value of 50, which is the consequence of the chemotherapy.
+In this regard, the code illustrates how sensitive cells fitness is multiplied by _drug_eff_ variable
+after 50 units of time, and then resistant cells start to grow exponentially until reaching an
+equilibrium where chemoterapy does not affect them anymore.
+
+With this example, we can show how chemotherapy usage could be counterproductive under certain 
+situations, especially in those cases in which resistant tumor cells are more aggressive than
+sensitive cells.
+
+
+### Scenario with switching doses of chemotherapy {#switchChemo}
+
+The original model by Newton and Ma @PhysRevE includes chemotherapeutic dosage as a time-dependent controller. The main idea is to increase or decrease the dose according to a periodic cancer growth
+in order to avoid the fixation of both sensitive and resistant cells, and keep the tumor trajectory
+enclosed in a loop.
+
+The model developed by this group is a is a cubic nonlinear system based on Hamiltonian orbits. 
+They use time-dependent chemotherapeutic parameters _w_, whose values are different in each one
+of the several and carefully chosen intervals that depends on _C(t)_, which is the chemo-concentration
+parameter. For simplicity’s sake, we will just define the fitness of sensitive cells as dependent on 
+a sine time function.
+
+During this simulation, we will see in our results small oscilations doses that keep sensitive cells
+population at a minimum value and the R cells progress is prevented.
+
+```{r switchChemo1}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
+# Healthy     Sensitive   Resistant
+a <- 1;       b <- 0.5;   c <- 0.5    # Healthy
+d <- 1;       e <- 1.25;  f <- 0.7    # Sensitive
+g <- 0.975;   h <- -0.5;  i <- 0.75   # Resistant
+
+wt_fitness   <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2")
+sens_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2")
+res_fitness  <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2")
+
+fitness_df <-data.frame(Genotype = c("WT", "S", "R", "S, R"),
+                        Fitness = c(wt_fitness,                                              #WT
+                                    paste0("if (T>50) (sin(T+2)/10) * (", sens_fitness,")",
+                                           "; else ", sens_fitness, ";"),                    #S
+                                    "0",                                                     #R
+                                    res_fitness),                                            #S,R
+                        stringsAsFactors = FALSE)
+
+afe <- allFitnessEffects(genotFitness = fitness_df,
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+switching_sim  <- oncoSimulIndiv(afe,
+                               model = "McFL",
+                               onlyCancer = FALSE,
+                               finalTime = 300,
+                               mu = 0.01,
+                               initSize = 5000,
+                               keepPhylog = TRUE,
+                               seed = NULL)
+
+plot(switching_sim, show = "genotypes", type = "line",
+   col = c("black", "green", "red"), ylim = c(20, 200000))
+
+plot(switching_sim, show = "genotypes", ylim = c(20, 1000))
+
+```
+
+
+## Growth factors as chemotherapy target {#gfChemo}
+
+It has been reported in the literature and verified in the above simulations,
+that resistance acquisition is almost unavoidable. A new approach to avoid
+this evolutionary adaptation, proposes to change the chemotherapy target, from
+the cell subclones to the growing factors (GF) they produce. These molecules, 
+which are  secreted to the medium by **cooperators**, help to grow their own 
+subclone types besides the GF **defectors**. Thus, the fitness of the whole 
+population  increases and the tumor grows.
+
+An attended side effect of this type of treatment is the emergence of cooperators
+that overproduce GF. This will increase their fitness and reduce the impact of GF 
+sequestering agents. However, it would also increase the cost of its production, 
+which will decrease this benefitial impact.
+
+@Archetti2013 develops a series of formulas to relate the impact of cooperation in
+tumor composition and fitness of subclones, which they divide as cooperators and 
+defectors. Although GFs are not always distributed homogeneously, we will assume 
+they do in the following simulations for the sake of simplicity.  
+
+Attending to the theoretical foundations mentioned, we will create a cooperation 
+scenario, including wild-type healthy cells (**WT**) and tumour cells, which are
+cooperators (**C**), defectors (**D**) and overproducers (**P**).
+
+The system payoff matrix is the following:
+
+```{r gfChemo1}
+# WT      Cooperators Defectors Overproducers  
+a <- 1;   b <- 0.5;   c <- 0.5; m <- 0.75      ## a b c m
+d <- 1;   e <- 1.25;  f <- 0.7; o <- 0.185     ## d e f o
+g <- 1;   h <- 1.5;   i <- 0.5; p <- 2.5       ## g h i p 
+j <- 0.8; k <- 1;     l <- 0.5; q <- 1.5       ## j k l q
+
+payoff_m <- matrix(c(a,b,c,m,d,e,f,o,g,h,i,p,j,k,l,q), ncol=4, byrow=TRUE)
+colnames(payoff_m) <- c("WT", "Cooperators", "Defectors", "Overproducers")
+rownames(payoff_m) <- c("WT", "Cooperators", "Defectors", "Overproducers")
+print(payoff_m <- as.table(payoff_m))
+
+```
+
+The fitness definitions for the four types of cells would be the following:
+
+```{r gfChemo2}
+print( df <- data.frame(
+  CellType = c("WT", "C", "D", "P"),
+  Fitness = c("F(WT) = ax(WT) + bx(C) + cx(D) + mx(P)",    
+              "F(C) = dx(WT) + ex(C) + fx(D) + ox(P)",    
+              "F(D) = gx(WT) + hx(C) + ix(D) + px(P)",
+              "F(P) = jx(WT) + kc(C) + lx(D) + qx(P)")), 
+  row.names = FALSE )
+```
+
+Ordered by decreasing fitness:
+  
+In summary:
+  
+* The fitness of WT cells is lower than the tumour cells.
+* Without any therapy, C cells fitness is higher than P cells, so the overproducers 
+will not overtake them.
+* D subclones benefit from the high concentration of cooperators (C or P).
+
+
+### Scenario without chemotherapy {#scenGF}
+
+First, we will study the fitness of the subclones types based on hypothetical
+frequencies. Then, we will simulate the growth of the tumor without any treatment.
+For this, we are considering that C cells are the original tumor cells and they can
+mutate and lose by deletion the GF gene (D cells grow) or duplicate it (P cells grow).
+
+```{r scenGF1}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+
+## Coefficients
+## New coefficients for the interaction with overproducing sensitive:
+
+# WT      COOPERATOR  DEFECTOR    OVERPRODUCER
+a <- 1;   b <- 0.5;   c <- 0.5;   m <- 0.75   # WT
+wt_fitness <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2+", m, "*f_1_3")
+
+d <- 1;   e <- 1.25;  f <- 0.7;   o <- 1.875  # Cooperator
+coop_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2+", o, "*f_1_3")
+
+g <- 1;   h <- 1.5;   i <- 0.5;   p <- 2.5    # Defector
+def_fitness <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2+", p, "*f_1_3")
+
+j <- 0.8; k <- 1;     l <- 0.5;   q <- 1.5    # Cooperator overproducing 
+over_fitness <- paste0(j, "*f_+", k, "*f_1+", l, "*f_1_2+", q, "*f_1_3")
+
+
+## No-chemotherapy
+## Fitness definition
+coop_no <- data.frame(Genotype = c("WT", "C", "D", "P", "C,D", "C,P", "D,P", "C,D,P"),
+                      Fitness = c(
+                        wt_fitness, #WT
+                        coop_fitness, #S
+                        "0", #D
+                        "0", #P
+                        def_fitness, #S,D
+                        over_fitness, #S,P
+                        "0", #D,P
+                        "0"  #C,D,P
+                        ), 
+                        stringsAsFactors = FALSE)
+
+game_no <- allFitnessEffects(genotFitness = coop_no,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "rel")
+                          
+
+## First plot
+eag <- evalAllGenotypes(game_no, spPopSizes = c(10, 10, 0, 0, 10, 1, 0, 0))[c(1, 2, 5, 6),]
+plot(eag)
+
+## Simulation
+gamesimul_no <- oncoSimulIndiv(game_no,
+                            model = "McFL",
+                            onlyCancer = FALSE,
+                            finalTime = 300,
+                            mu = 0.01,
+                            initSize = 5000,
+                            keepPhylog = TRUE,
+                            seed = NULL)
+
+## Second plot  
+plot(gamesimul_no, show = "genotypes", type = "line",
+     col = c("blue", "red", "green", "purple"), ylim = c(20, 50000))
+
+# Third plot  
+plot(gamesimul_no, show = "genotypes")
+```
+
+The resulting plots show that D cells are highly benefited by the second most 
+common subclone activity (C cells), which is a cooperator. On the other hand, 
+subclone P has a lower fitness value because of the GF cost. However, as we can
+see in the first plot, a small number of clones remain and survive.
+
+
+### Scenario with GF as target for chemotherapy {#scenGFChemo}
+
+In this simulation, we will add the drug effect (at time 50) to the fitness
+of each subclone. We assume that this will cause a reduction of the fitness 
+by the level of GF dependency for each subclone. We now introduce some constants
+to make it more accurate. As cooperators will keep producing GF, they will be less
+affected by the sequestration of this molecule, so their coefficients will be greater
+than 1. In addition, P also will be less affected since its production of 
+GF is greater, so its coefficient will be greater than the C one (1.5 > 1.1). 
+On the other hand, as D is a defector, it will be more affected by the treatment, 
+so its coefficient will set to 0.9, smaller than 1.
+
+```{r scenGFChemo1}
+## Chemotherapy - GF Impairing
+
+# Effect of drug on GF availability
+# This term is multiplied by the fitness, and reduces the GF available
+drug_eff <- 0.25 
+
+coop_fix <- data.frame(Genotype = c("WT", "C", "D", "P", "C,D", "C,P", "D,P", "C,D,P"),
+                      Fitness = c(
+                        wt_fitness,                                                   #WT
+                        paste0("if (T>50) ", drug_eff, "* 1.2 *(", coop_fitness, ")", 
+                               "; else ", coop_fitness, ";"),                         #C
+                        "0",                                                          #D
+                        "0",                                                          #P
+                        paste0("if (T>50) ", drug_eff, "*(", def_fitness, ")", 
+                               "; else ", def_fitness, ";"),                          #C,D
+                        paste0("if (T>50) ", drug_eff, "* 1.5 * (", over_fitness, ")", 
+                               "; else ", over_fitness, ";"),                         #C,P **
+                        "0",                                                          #D,P
+                        "0"                                                           #C,D,P
+                      ), 
+                      stringsAsFactors = FALSE)
+
+## ** The drug effect is 1.5 times the original because of the overproduction of GF and the 
+##    full availability of this molecule inside the producing subclone.
+  
+period_fix <- allFitnessEffects(genotFitness = coop_fix,
+                              frequencyDependentFitness = TRUE,
+                              frequencyType = "rel")
+
+set.seed(2)
+final_time <- 300
+simul_period_fix <- oncoSimulIndiv(period_fix,
+                                 model = "McFL",
+                                 onlyCancer = FALSE,
+                                 finalTime = final_time,
+                                 mu = 0.01,
+                                 initSize = 5000,
+                                 keepPhylog = TRUE,
+                                 seed = NULL)
+
+# First plot
+plot(simul_period_fix, show = "genotypes", type = "line",
+     col = c("blue", "red", "green", "purple"), ylim = c(20, 50000))
+
+# Second plot
+plot(simul_period_fix, show = "genotypes", ylim = c(20, 8000))
+```
+
+As expected by Archetti and Pienta @archetti2019, the tumour will be biased 
+towards P mutant. Even if its fitness is lower than C because of its overproduction
+of GF, it will assure its survival and proliferation when chemotherapy is applied. 
+As a result of this, D does not completely disappear, but reduces dramatically its number.
+
+
+## Examples using time dependent frequency definition {#exTime}
+
+Here in this chapter we will comment some others approaches that can have this
+funcionality: increasing or decreasing the fitness as therapeutic interventions,
+or slow down the collapse of a subpopulation of cells.
+
+
+### Increasing fitness at a certain timepoint {#exTime1}
+
+It is possible to increase the fitness value by using T functionality. In the following
+example we can see how fitness value in genotypes A and B increases when the simulation
+time reaches a specific value. Since we have used the exponential model, that's the 
+reason why we observe some delay between the specified time and when A or B 
+populations start to grow.
+
+```{r exTimeInc}
+dfT1 <- data.frame(Genotype = c("WT", "A", "B"),
+                 Fitness = c("1",
+                             "if (T>50) 1 + 2.35*f_; else 0.50;",
+                             "if (T>200) 1 + 0.45*(f_ + f_1); else 0.50;"),
+                 stringsAsFactors = FALSE)
+
+afeT1 <- allFitnessEffects(genotFitness = dfT1,
+                         frequencyDependentFitness = TRUE,
+                         frequencyType = "rel")
+
+set.seed(1)
+simT1 <- oncoSimulIndiv(afeT1,
+                      model = "Exp",
+                      mu = 1e-5,
+                      initSize = 1000,
+                      finalTime = 500,
+                      onlyCancer = FALSE,
+                      seed = NULL)
+
+plot(simT1, show = "genotypes", type = "line")
+```
+
+We can check if the fitness values have increased by evaluating the genotypes
+in the simulation time intervals.
+
+```{r exTimeInc1}
+evalAllGenotypes(afeT1, spPopSizes = c(10,10,10), currentTime = 49)[c(2,3), ]
+evalAllGenotypes(afeT1, spPopSizes = c(10,10,10), currentTime = 51)[c(2,3), ]
+evalAllGenotypes(afeT1, spPopSizes = c(10,10,10), currentTime = 201)[c(2,3), ]
+```
+
+
+### Intervention at a certain point to stop subpopulation growth {#exTime2}
+
+On the other hand, besides using T functionality to create time intervals, we can also use it
+as an intervention. In the following example we have used the functionality to increase the 
+fitness value of genotype A, and suddenly decreases it as an intervention, where B population
+takes advantage to grow, since its fitness is greater now. When the intervention elapses, 
+we can see how A population starts to grow again and outcompetes with wild-type population 
+whose fitness does not change during the simulation.
+
+
+```{r exTimeDec}
+dfT2 <- data.frame(Genotype = c("WT", "A", "B"),
+                     Fitness = c(
+                       "1",
+                       "if (T>0 and T<50) 0; else if (T>200 and T<300) 0.05; else 1 + 0.35*f_;",
+                       "0.8 + 0.45*(f_)"
+                     ),
+                     stringsAsFactors = FALSE)
+  
+afeT2 <- allFitnessEffects(genotFitness = dfT2,
+                             frequencyDependentFitness = TRUE,
+                             frequencyType = "rel")
+  
+set.seed(2)
+simT2 <- oncoSimulIndiv(afeT2,
+                        model = "McFL",
+                        mu = 1e-5,
+                        initSize = 5000,
+                        finalTime = 500,
+                        onlyCancer = FALSE,
+                        seed = NULL)
+  
+plot(simT2, show = "genotypes")
+
+plot(simT2, show = "genotypes", type = "line")
+```
+
+In this case, just like above, we can evaluate the fitness in each time interval and observe
+how fitness is differente in each one of them.
+
+```{r examplesTDec1}
+evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 49)[c(2,3), ]
+evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 51)[c(2,3), ]
+evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 201)[c(2,3), ]
+evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 301)[c(2,3), ]
+```
+
+
+### Intervention to slow down collapsing populations {#exTime3}
+
+We can use time dependent frequency functionality to slow down a collapsing
+population by doing an intervention at a certain time interval. In this case,
+we observe that genotype B has previously a higher fitness than genotype A
+(as long as the number of cells is greater than 10), but at certain point 
+we can reduce its fitness in order to make A grow and reach B. However, after
+the time interval, B recovers its initial fitness again and overtakes A, but 
+eventually collapses due to there are no more A's around. This could be a way to
+slow down the collapse of a population when there is a size dependency between them.
+
+```{r examplesTCol}
+dfT3 <- data.frame(Genotype = c("WT", "A", "B"),
+                 Fitness = c(
+                   "1",
+                   "1 + 0.2 * (n_2 > 10)",
+                   "if (T>50 and T<80) 0.80; else 0.9 + 0.4 * (n_1 > 10)"),
+                 stringsAsFactors = FALSE)
+
+afeT3 <- allFitnessEffects(genotFitness = dfT3,
+                           frequencyDependentFitness = TRUE,
+                           frequencyType = "abs")
+
+set.seed(2)
+simT3 <- oncoSimulIndiv(afeT3,
+                      model = "McFLD",
+                      mu = 1e-4,
+                      initSize = 5000,
+                      finalTime = 500,
+                      onlyCancer = FALSE,
+                      seed = NULL,
+                      errorHitWallTime = FALSE,
+                      errorHitMaxTries = FALSE)
+
+plot(simT3, show = "genotypes", type = "line")
+```
+
+We evaluate the fitness before and after genotype B has a higher and lower fitness respectively,
+and finally ends up collapsing because the condition of "n_1 > 10" is no longer accomplished.
+
+```{r examplesTCol1}
+evalAllGenotypes(afeT3, spPopSizes = c(10,10,10), currentTime = 30)[c(2,3), ]
+evalAllGenotypes(afeT3, spPopSizes = c(11,11,11), currentTime = 79)[c(2,3), ]
+evalAllGenotypes(afeT3, spPopSizes = c(11,11,11), currentTime = 81)[c(2,3), ]
+```
+
+
+\clearpage
 
 
 # Measures of evolutionary predictability and genotype diversity {#evolpredszend}

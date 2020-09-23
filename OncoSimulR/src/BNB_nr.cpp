@@ -56,7 +56,8 @@ void nr_fitness(spParamsP& tmpP,
 		const fitnessEffectsAll& F,
 		const TypeModel typeModel,
 		std::vector<Genotype>& Genotypes,
-		std::vector<spParamsP>& popParams) {
+	  std::vector<spParamsP>& popParams,
+	  const double& currentTime) {
 		       // const double& genTime,
 		       // const double& adjust_fitness_B,
 		       // const double& adjust_fitness_MF) {
@@ -81,7 +82,7 @@ void nr_fitness(spParamsP& tmpP,
 	}
 
   if(typeModel == TypeModel::bozic1) {
-    tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F, Genotypes, popParams));
+    tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F, Genotypes, popParams, currentTime));
     if( tmpP.death > 99) {
       tmpP.birth = 0.0;
     } else {
@@ -92,7 +93,7 @@ void nr_fitness(spParamsP& tmpP,
   //   tmpP.birth = std::max(0.0, (1.0/genTime) * (1.0 - 0.5 * pp ));
   //   tmpP.death = (0.5/genTime) * pp;
   } else {
-    double fitness = prodFitness(evalGenotypeFitness(ge, F, Genotypes, popParams));
+    double fitness = prodFitness(evalGenotypeFitness(ge, F, Genotypes, popParams, currentTime));
     if( fitness <= 0.0) {
       tmpP.absfitness = 0.0;
       tmpP.death = 1.0;
@@ -1246,11 +1247,11 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     if(typeModel == TypeModel::mcfarlandlog) {
       popParams[0].death = log1p(totPopSize/K);
       popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-								fitnessEffects, Genotypes, popParams));
+								fitnessEffects, Genotypes, popParams, currentTime));
     } else if(typeModel == TypeModel::mcfarlandlog_d) {
       popParams[0].death = std::max(1.0, log1p(totPopSize/K));
       popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-								fitnessEffects, Genotypes, popParams));
+								fitnessEffects, Genotypes, popParams, currentTime));
     } else if(typeModel == TypeModel::bozic1) {
       tmpParam.birth =  1.0;
       tmpParam.death = -99.9;
@@ -1276,7 +1277,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       nr_fitness(popParams[0], tmpParam,
 		 Genotypes[0],
 		 fitnessEffects,
-		 typeModel, Genotypes, popParams);
+		 typeModel, Genotypes, popParams, currentTime);
     // , genTime);
     //		 adjust_fitness_B, adjust_fitness_MF);
     // we pass as the parent the tmpParam; it better initialize
@@ -1312,7 +1313,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     if(typeModel == TypeModel::mcfarlandlog) {
       if(fitnessEffects.frequencyDependentFitness){
 	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-							     fitnessEffects, Genotypes, popParams));
+							     fitnessEffects, Genotypes, popParams, currentTime));
       } else {
 	popParams[0].birth = 1.0;
       }
@@ -1321,7 +1322,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     } else if(typeModel == TypeModel::mcfarlandlog_d) {
       if(fitnessEffects.frequencyDependentFitness){
 	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-							     fitnessEffects, Genotypes, popParams));
+							     fitnessEffects, Genotypes, popParams, currentTime));
       }else{
 	popParams[0].birth = 1.0;
       }
@@ -1331,7 +1332,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 			if(fitnessEffects.frequencyDependentFitness){
  				popParams[0].birth = prodDeathFitness(evalGenotypeFitness(Genotypes[0],
- 					fitnessEffects, Genotypes, popParams));
+ 					fitnessEffects, Genotypes, popParams, currentTime));
  			}else{
 				popParams[0].birth = 1.0;
 
@@ -1344,7 +1345,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 			if(fitnessEffects.frequencyDependentFitness){
 				popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-					fitnessEffects, Genotypes, popParams));
+					fitnessEffects, Genotypes, popParams, currentTime));
 			}else{
 				popParams[0].birth = 1.0;
 			}
@@ -1707,7 +1708,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	  nr_fitness(tmpParam, popParams[nextMutant],
 		     newGenotype,
 		     fitnessEffects,
-		     typeModel, Genotypes, popParams);// , genTime,
+		     typeModel, Genotypes, popParams, currentTime);// , genTime,
 		     // adjust_fitness_B, adjust_fitness_MF);
 
 	  if(tmpParam.birth > 0.0) {
@@ -2035,20 +2036,20 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	if( (typeModel == TypeModel::mcfarlandlog) ) {
 	  
 	  updateRatesFDFMcFarlandLog(popParams, Genotypes, fitnessEffects,
-				     adjust_fitness_MF, K, totPopSize);
+				     adjust_fitness_MF, K, totPopSize, currentTime);
 	  
 	} else if( (typeModel == TypeModel::mcfarlandlog_d) ) {
 	  
 	  updateRatesFDFMcFarlandLog_D(popParams, Genotypes, fitnessEffects,
-				     adjust_fitness_MF, K, totPopSize);
+				     adjust_fitness_MF, K, totPopSize, currentTime);
 	  
 	} else if(typeModel == TypeModel::exp){
 	  
-	  updateRatesFDFExp(popParams, Genotypes, fitnessEffects);
+	  updateRatesFDFExp(popParams, Genotypes, fitnessEffects, currentTime);
 	  
 	}else if(typeModel == TypeModel::bozic1){
 	  
-	  updateRatesFDFBozic(popParams, Genotypes, fitnessEffects);
+	  updateRatesFDFBozic(popParams, Genotypes, fitnessEffects, currentTime);
 	  
 	} else {
 	  throw std::invalid_argument("this ain't a valid typeModel");

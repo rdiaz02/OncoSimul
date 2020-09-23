@@ -30,7 +30,7 @@
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
   genotFitness = NULL,  keepInput = TRUE, frequencyDependentFitness =
-  FALSE, frequencyType = NA, spPopSizes = NULL)
+  FALSE, frequencyType = NA)
 
 allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
                    geneToModule = NULL,
@@ -213,16 +213,8 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   use "f" for relative frequency and "n" for absolute in
   \code{genoFitness}. Set to NA for non-frequency-dependent fitness. }
 
-\item{spPopSizes}{
-\code{spPopSizes} is a numeric vector that contains the population sizes of the clones,
-in the same order of getotypes appear in the Genotype column of \code{genotFitness}.
-\code{spPopSizes} is only needed when \code{frequencyDependentFitness = TRUE} and
-you want to evaluate fitness with \code{\link{evalGenotype}} or 
-\code{\link{evalAllGenotypes}} (see these functions for more info).
-
 }
 
-}
 \details{
   \code{allFitnessEffects} is used for extremely flexible specification of fitness
   and mutator effects, including posets, XOR relationships, synthetic mortality and
@@ -325,11 +317,6 @@ you want to evaluate fitness with \code{\link{evalGenotype}} or
   }
   
   \item{frequencyType}{A character string "abs" or "rel" (or NULL).
-  }
-
-  \item{spPopSizes}{A numeric vector of population sizes as it had been
-  passsed in the input, if \code{frequencyDependentFitness} is TRUE, or
-  NULL, if \code{frequencyDependentFitness} is FALSE.
   }
 
 }
@@ -551,10 +538,10 @@ genofit <- data.frame(A = c(0, 1, 0, 1),
 
 afe <- allFitnessEffects(genotFitness = genofit,
                          frequencyDependentFitness = TRUE,
-                         frequencyType = "rel",
-                         spPopSizes = c(5000, 2500, 3000, 7500))
+                         frequencyType = "rel")
+                         
 ##Ploting fitness landscape in case of spPopSizes = c(5000, 2500, 3000, 7500)
-plotFitnessLandscape(evalAllGenotypes(afe))
+plotFitnessLandscape(evalAllGenotypes(afe, spPopSizes = c(5000, 2500, 3000, 7500)))
 
 ## Reinitialize the seed
 set.seed(NULL)
