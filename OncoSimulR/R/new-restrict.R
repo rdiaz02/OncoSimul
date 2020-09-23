@@ -1353,8 +1353,7 @@ evalGenotypeORMut <- function(genotype,
                               echo = FALSE,
                               model = "",
                               calledBy_= NULL,
-                              currentTime = currentTime
-                              ) {
+                              currentTime = currentTime) {
   ## genotype can be a vector of integers, that are the exact same in
   ## the table of fmEffects or a vector of strings, or a vector (a
   ## string) with genes separated by "," or ">"
@@ -1498,8 +1497,7 @@ evalGenotype <- function(genotype,
                        echo = echo,
                        model  = model ,
                       calledBy_= "evalGenotype",
-                      currentTime = currentTime
-                       )
+                      currentTime = currentTime)
 }
 
 
@@ -1679,8 +1677,7 @@ evalAllGenotypesORMut <- function(fmEffects,
                                   model = "",
                                   spPopSizes = spPopSizes,
                                   calledBy_ = "",
-                                  currentTime = currentTime
-                                  ) {
+                                  currentTime = currentTime) {
 ##                                minimal = FALSE) {
     if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
         stop("How did you call this function?. Bug.")
@@ -1833,8 +1830,7 @@ evalAllGenotypes <- function(fitnessEffects,
         model = model,
         spPopSizes = spPopSizes,
         calledBy_= "evalGenotype",
-        currentTime = currentTime
-    )
+        currentTime = currentTime)
 }
 
 generateAllGenotypes <- function(fitnessEffects, order = TRUE, max = 256) {
