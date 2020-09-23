@@ -1,3 +1,9 @@
+Changes in version 2.19.992 (2020-09-23):
+	- currentTime can be used in freq-dep-fitness expressions
+	- popSizes is passed to evalGenotypes (not genotypeFitness)
+	- for freq-dep-fitness, type of freq. dep. argument can be guessed
+	  automatically
+
 Changes in version 2.19.991 (2020-06-03):
 	- Updated ctb: added Magellan and exprTk and clarified contributions.
 	- Updated version (to 2.19.xyz) for new BioC devel.
