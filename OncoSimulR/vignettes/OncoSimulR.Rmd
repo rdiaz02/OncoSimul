@@ -8,7 +8,7 @@ author: "
          Investigaciones Biomédicas 'Alberto Sols' (UAM-CSIC), Madrid,
          Spain.\\ 
 		 
-		 <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>
+		 <ramon.diaz@iib.uam.es>, <https://ligarto.org/rdiaz>
 		 "
 date: "`r paste0(Sys.Date(),'. OncoSimulR version ', packageVersion('OncoSimulR'), suppressWarnings(ifelse(length(try(system('git rev-parse --short HEAD', ignore.stderr = TRUE, intern = TRUE))), paste0('. Revision: ', system('git rev-parse --short HEAD', intern = TRUE)), '')))`"
 header-includes:
@@ -10358,8 +10358,7 @@ where $f_1$, $f_2$ and $f_3$ denote the frequency of the phenotype OC, OB and
 MM in the population. The multiplication factors for diffusible factors
 produced by the cells are shown in the following table (taken from @sartakhti2016):
 
-```{r smyeloma, eval=TRUE,echo=FALSE, fig.cap="Multiplication factorin myeloma interaction. Table 1 in Sartakhti et al., 2016, 'Evolutionary Dynamics of Tumor-Stroma
-Interactions in Multiple Myeloma' https://doi.org/10.1371/journal.pone.0168856 ."}
+```{r smyeloma, eval=TRUE,echo=FALSE, fig.cap="Multiplication factor in myeloma interaction. Table 1 in Sartakhti et al., 2016, 'Evolutionary Dynamics of Tumor-Stroma Interactions in Multiple Myeloma' https://doi.org/10.1371/journal.pone.0168856 ."}
 knitr::include_graphics("Myeloma_interaction.png")
 ```
 
@@ -11499,11 +11498,15 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 # Simulating therapeutic interventions {#timefdf}
 
-In this section we show some examples using the time dependent frecuency functionality by
-which fitness definition can be done with the T variable, which is actually the current time defined
-in the simulation. This examples are based on the contribution made by the working group of
-the following people from the master's in Bioinformatics and Computational Biology (UAM): 
-Niklas Endres, Rafael Barrero Rodríguez, Rosalía Palomino Cabrera and Silvia Talavera Marcos.
+In this section we show some examples using the time dependent
+functionality; with it, fitness can be made to depend on T, the
+current time defined in the simulation. These examples were
+originally prepared by Niklas Endres, Rafael Barrero Rodríguez,
+Rosalía Palomino Cabrera and Silvia Talavera Marcos, as an exercisse
+for the course Programming and Statistics with R (Master's Degree in
+Bioinformatics and Computational Biology, Universidad Autónoma de
+Madrid), course 2019-20; Niklas Endres had the idea of accessing T
+from exprTk.
 
 This first example is an artificial simulation, but it shows how the fitness of a genotype can
 suddenly increase at a certain given timepoint.
