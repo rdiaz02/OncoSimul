@@ -54,10 +54,11 @@ test_that("Errors expectations", {
                                  frequencyDependentFitness = TRUE,
                                  frequencyType = "rel"),  
                "There are some errors in fitness column")
-  
-  expect_error(allFitnessEffects(genotFitness = r8, 
-                                 frequencyDependentFitness = TRUE),  
-               "frequencyType must be 'abs' \\(absolute\\) or 'rel' \\(relative\\).")
+
+  ## Not anymore, thanks to the auto setting for relative or absolute frequencyType
+  ## expect_error(allFitnessEffects(genotFitness = r8, 
+  ##                                frequencyDependentFitness = TRUE),  
+  ##              "frequencyType must be 'abs' \\(absolute\\) or 'rel' \\(relative\\).")
   
   
 })
