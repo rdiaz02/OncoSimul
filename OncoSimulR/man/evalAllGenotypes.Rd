@@ -106,9 +106,11 @@ evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
 }
 
 \item{currentTime}{
-  Set to default 0 from R. It will be updated during simulation process, since
-  currentTime is initialized in BNB algorithm. It is useful to develop OncoSimul
-  interventions using the frequency-dependent-fitness functionality.
+  The time of the simulation. It is possible to access to the current time
+  and run interventions for example using the frequency-dependent-fitness
+  functionality or modifying the mutation rate through oncoSimul functions 
+  such as oncoSimulIndiv. With evalAllGenotypes we can check if the fitness 
+  has changed before or after a specific timepoint.
 }
 
 }
