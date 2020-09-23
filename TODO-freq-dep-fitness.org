@@ -26,6 +26,13 @@
     - a simple example in freq-depn-non-specified.R 
 
 
+  - [ ] Allow to mix freq and relative freqs in expressions
+  - [ ] Remove the need to specify "frequencyDependentFitness"
+  - [ ] Check example under /additional-examples-freq-dep-fitness/. Is it
+    worth adding?
+
+
+  
   - [ ] stopping conditions: allow with detectionDrivers?
     - [ ] in general, verify stopping: but then, no reason it shouldn't as
       that has not been touched.
@@ -128,14 +135,17 @@
     here, because death rate always adjusted.
     - In bnb_common.cpp, updateRatesFDFMcFarlandLog
     - fixed: McFLD as another model
-  - [ ] isn't frequencyType redundant? Couldn't we guess if from "f" or
+  - [X] isn't frequencyType redundant? Couldn't we guess if from "f" or
     "n"? So no need for "frequencyType = 'rel'"
-
+    
 
 
 ** to fix. 
   - [X] is allMutator Effects working? Nope. It doesn't
 
+
+
+  
 ** miscell
    - Add 
    R_forceSymbols(dll, TRUE);
