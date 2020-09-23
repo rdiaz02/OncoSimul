@@ -1137,12 +1137,14 @@ but it should now point to the Bioinformatics paper).
 
 ### HTML and PDF versions of the vignette {#pdfvignette}
 
-A PDF version of this vignette is available
-from <https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf>.  And an HTML
-version from <https://rdiaz02.github.io/OncoSimul/OncoSimulR.html>. These
-files should correspond to the most recent, GitHub version, of the package
-(i.e., they might include changes not yet available from the BioConductor
-package).
+A PDF version of this vignette is available from
+<https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf>.  And an
+HTML version from
+<https://rdiaz02.github.io/OncoSimul/OncoSimulR.html>. These files
+should correspond to the most recent, GitHub version, of the package
+(i.e., they might include changes not yet available from the
+BioConductor package). Beware that the PDF (which might have figures
+and R code that does not fit on the page, etc).
 
 
 
@@ -11014,8 +11016,7 @@ They provide also the payoff matrix reproduced in next table :
 
 Table:(\#tab:payoff2)  Payoff matrix from Barton et al., 2018, ‘Modeling of breast cancer 
 through evolutionary game theory’, Involve, a Journal of Mathematics, 11(4), 541-548; 
-doi:10.2140/involve.2018.11.541
-.
+https://doi.org/10.2140/involve.2018.11.541 .
 
 Overall, when the concentrations of the cells are [NC], [Mph], [BTC] and [MTC], the net benefits 
 (benefits minus the costs) to each type of the cells are:
@@ -11276,8 +11277,7 @@ next table:
 
 Table:(\#tab:payoff3)  Payoff matrix adapted from Barton et al., 2018,
 ‘Modeling of breast cancer through evolutionary game theory’, Involve, 
-a Journal of Mathematics, 11(4), 541-548; doi:10.2140/involve.2018.11.541
-.
+a Journal of Mathematics, 11(4), 541-548; https://doi.org/10.2140/involve.2018.11.541 .
 
 Overall, when the concentrations of the cells are ǪNC, ǪMph, ǪBTC, ǪMTC, ǪR, 
 ǪBTC,R and ǪMTC,R, the net benefits (benefits minus the costs) to each cell 
@@ -12913,7 +12913,9 @@ sessionInfo()
 \clearpage
 # Funding
 
-Supported by BFU2015-67302-R (MINECO/FEDER, EU).
+Supported by BFU2015-67302-R (MINECO/FEDER, EU) to
+RDU. S. Sanchez-Carrillo partially supported by a "Beca de Colaboración" from Universidad Autónoma de Madrid (2017-2018); J. Antonio Miguel supported by PEJ-2019-AI/BMD-13961 from Comunidad de Madrid.
+
 
 ```{r, echo=FALSE, eval=TRUE}
 ## reinitialize the seed
