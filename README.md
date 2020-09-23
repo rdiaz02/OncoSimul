@@ -251,7 +251,8 @@ and [get a PDF version](https://rdiaz02.github.io/OncoSimul/pdfs/OncoSimulR.pdf)
 
 These files correspond to the most recent, github version, of the package
 (i.e., they might include changes not yet available from the BioConudctor
-package).
+package). Beware that the might have figures and R code that
+do not fit on the page, etc.
 
 
 ## Further documentation

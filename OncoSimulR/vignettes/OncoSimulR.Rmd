@@ -1143,8 +1143,8 @@ HTML version from
 <https://rdiaz02.github.io/OncoSimul/OncoSimulR.html>. These files
 should correspond to the most recent, GitHub version, of the package
 (i.e., they might include changes not yet available from the
-BioConductor package). Beware that the PDF (which might have figures
-and R code that does not fit on the page, etc).
+BioConductor package). Beware that the PDF might have figures
+and R code that do not fit on the page, etc.
 
 
 
