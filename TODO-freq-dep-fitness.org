@@ -13,7 +13,11 @@
   adding 10 or 20 or something of that size should be perfectly OK if the
   tSample are reasonably small; maybe use an epsilon that works for sure
   with the tSample, or even return 2*tSample, ensuring certainly larger
-  than tSample)
+  than tSample
+
+  soemthing like: ti = 2 * tSample; if(ti <= tSample) throw_exception("whatever")
+
+  )
 
   This avoids generating a random number and a pow and calling pM_f_st
   (sinh and cosh involved). But, especially when mutation ==
@@ -34,7 +38,7 @@
   consequence of a birth <= 0. In all other cases, mutation should never
   be 0, but dummyMutationRate. And even if birth <= 0 and mutator, not
   clear to me that even then we should not set a
-  mutation=dummyMutationRate
+  mutation=dummyMutationRate (see below).
 
 
   I think we could have an exception if mutation == 0.0 (actually, less
@@ -51,8 +55,32 @@
   Again, find tests where these messages happen, think them through, and
   then maybe change.
 
-  
+  - [ ] more on mutations: I think mutationFromScratch should make sure
+    the smallest value ever returned is dummyMutationRate.
 
+    So all returns should be max(dummyMutationRate, whatever)
+
+    This would also mean that the
+
+    "inline double pE_f_st(double& pM, const spParamsP& spP){
+  double pE = (spP.death * (1.0 - pM ) )/(spP.W - spP.death - spP.birth * pM );
+  if( !std::isfinite(pE) ) {
+    DP2(spP.death);  DP2(spP.birth); DP2(pM); DP2(spP.W);
+    DP2(spP.mutation);
+    std::string error_message = R"(pE.f: pE not finite.
+      This is expected to happen when mutationPropGrowth = TRUE
+      and you have have an initMutant with death >> birth,
+      as that inevitably leads to net birth rate of 0
+      and mutation rate of 0)";
+    throw std::range_error(error_message);
+  }
+  return pE;
+}"
+
+   would never give that exception.
+
+
+   
 
     
   - [ ] get coverage to work again. I get "undefined reference to
