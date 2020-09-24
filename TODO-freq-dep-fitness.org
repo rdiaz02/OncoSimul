@@ -1,11 +1,70 @@
 * Miscell to-do in freq-dep-fitness branch
 
 ** first
+
+
+
+  - [ ] When mutation rate == dummyMutationRate, wouldn't it make sense to
+    shortcircuit ti_nextTime_tmax_2_st
+  so that we directly go to
+  ti = tSample + epsilon; (or + 2 epsilon or whatever, something clearly
+  larger, regardless of numerical issues, than tSample ---maybe even largest
+  float possible ---but watch out in case we add something to it later;
+  adding 10 or 20 or something of that size should be perfectly OK if the
+  tSample are reasonably small; maybe use an epsilon that works for sure
+  with the tSample, or even return 2*tSample, ensuring certainly larger
+  than tSample)
+
+  This avoids generating a random number and a pow and calling pM_f_st
+  (sinh and cosh involved). But, especially when mutation ==
+  dummyMutationRate because numMutablePos == 0, we know this genotype will
+  never mutate and should never mutate. Recall exchange with Mather
+  about mutation = 0.
+
+
+  - [ ] in Algo2_st:
+      if( (spP.mutation == 0.0) &&
+      !(spP.birth <= 0 && mutationPropGrowth) ) {
+    Rcpp::Rcout << "\n Entered Algo2 with mutation rate = 0\n";
+    if( spP.numMutablePos != 0 )
+      throw std::range_error("mutation = 0 with numMutable != 0?");
+  }
+
+  probably substitute by something else: mutation = 0 should only be the
+  consequence of a birth <= 0. In all other cases, mutation should never
+  be 0, but dummyMutationRate. And even if birth <= 0 and mutator, not
+  clear to me that even then we should not set a
+  mutation=dummyMutationRate
+
+
+  I think we could have an exception if mutation == 0.0 (actually, less
+  than dummyMutationRate). of course, change code where it should to have
+  mutator produce, as smallest mutation, a dummyMutationRate. Think
+  properly, find tests where we got these messages and exceptions, etc.
+
+  I think this would allow us to deal with stupid cases without throwing
+  exceptions. Things like death >> birth, things with death > birth and no
+  mutable positions left, etc, etc. (In fact, I guess Gibson and Bruck
+  could deal with this gently, without excepction.) The simulation would
+  just die, period.
+
+  Again, find tests where these messages happen, think them through, and
+  then maybe change.
+
+  
+
+
+    
   - [ ] get coverage to work again. I get "undefined reference to
     `__gcov_init'" and similar. Look at file coverage.R and try to run
     it. I just played with it, googling randomly for possible options, but
     I have no idea what is happening. Seems related to the linker with
     FitnessLandscape code, though.
+
+  - [ ] Is this code unreachable?
+    - if(spP.mutation == 0) { //   spP.W <= -90.0) {
+    - if( (spP.mutation == 0.0) &&
+      (both in bnb_common.cpp)
    
   - [X] binary files were changed: explain:
     - [X] OncoSimulR/data/examplesFitnessEffects.RData
