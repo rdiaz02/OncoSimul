@@ -47,13 +47,17 @@ system.time(cov_O3 <- package_coverage(type = "tests", quiet = FALSE))
 save(file = "../miscell-files/coverage-results-O3.RData", cov_O3)
 
 
-options(covr.flags = c(CPPFLAGS = "-O0 -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
-                       CXX1XFLAGS = "-O0 -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
-                       CXXFLAGS = "-O0 -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
-                       CFLAGS = "-O0 -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
-                       LDFLAGS = "--coverage -fno-elide-constructors"))
+options(covr.flags = c(CPPFLAGS = "-O0  -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
+                       CXX1XFLAGS = "-O0  -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
+                       CXXFLAGS = "-O0  -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
+                       CFLAGS = "-O0 -fprofile-arcs -ftest-coverage -g --coverage -fno-default-inline -fno-inline -fno-elide-constructors",
+                       LDFLAGS = "-lgcov --coverage -fno-elide-constructors"))
 
+options(covr.flags = c(CXXFLAGS = "-O0  -g -fno-inline -ftest-coverage -fprofile-arcs",
+                       CFLAGS = "-O0 -g -fno-inline -ftest-coverage -fprofile-arcs",
+                       LDFLAGS = "-lgcov"))
 cov_O0 <- package_coverage(type = "tests", quiet = FALSE)
+
 
 save(file = "../miscell-files/coverage-results-O0.RData", cov_O0)
 

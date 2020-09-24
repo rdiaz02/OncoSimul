@@ -1,6 +1,11 @@
 * Miscell to-do in freq-dep-fitness branch
 
 ** first
+  - [ ] get coverage to work again. I get "undefined reference to
+    `__gcov_init'" and similar. Look at file coverage.R and try to run
+    it. I just played with it, googling randomly for possible options, but
+    I have no idea what is happening. Seems related to the linker with
+    FitnessLandscape code, though.
    
   - [X] binary files were changed: explain:
     - [X] OncoSimulR/data/examplesFitnessEffects.RData
