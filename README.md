@@ -113,6 +113,18 @@ library(devtools)
 install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness")
 ``` 
 
+If you want to do development with the package, you might want to do, instead
+
+```r
+if (!require("devtools"))
+    install.packages("devtools") ## if you don't have it already
+library(devtools)
+install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness", 
+               dependencies = TRUE)
+``` 
+so that "Suggests" are also installed.
+
+
 
 ### If you use Windows
 
