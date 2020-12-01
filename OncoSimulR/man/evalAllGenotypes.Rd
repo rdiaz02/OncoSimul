@@ -142,12 +142,12 @@ When you are in a frequency dependent fitness situation you must set
 be NULL and its length must be equal to the number of possible genotypes. 
 Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
 
-\strong{evalAllGenotypesFitAndMut does not (yet) work with frequency-dependent
-  fitness specifications.} (The value returned for fitness is incorrect.)
+%% \strong{evalAllGenotypesFitAndMut does not (yet) work with frequency-dependent
+%%   fitness specifications.} (The value returned for fitness is incorrect.)
 }
 
 \author{
-Ramon Diaz-Uriarte
+Ramon Diaz-Uriarte, Sergio Sanchez Carrillo, Juan Antonio Miguel Gonzalez
 }
 
 \note{ Fitness is used in a slight abuse of the language. Right now,
@@ -312,7 +312,7 @@ try(evalGenotype("a1, c2", fm2, verbose = TRUE))
 ## Not what you want either
 try(evalGenotypeMut("a1, c2", fe2, verbose = TRUE))
 
-##Frequency dependent fitness example
+## Frequency dependent fitness example
 r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
                 Fitness = c("1 + 1.5*f_",
                             "5 + 3*(f_A + f_B + f_A_B)",
@@ -327,8 +327,8 @@ afe <- allFitnessEffects(genotFitness = r,
 
 evalAllGenotypes(afe, spPopSizes = c(5000, 2500, 2500, 500))
 
-## Recall that evalAllGenotypesFitAndMut does not (yet) work with
-## frequency-dependent fitness specifications.
+%% ## Recall that evalAllGenotypesFitAndMut does not (yet) work with
+%% ## frequency-dependent fitness specifications.
 }
 
 \keyword{ misc }
