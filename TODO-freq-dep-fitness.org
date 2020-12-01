@@ -2,28 +2,37 @@
 
 ** first
 
+ - [ ] More comprehensive testing of mutator with FDF? See
+   test.mutatorFDF.R function
+ - [ ] Allow for mutation = 0. Yes, exactly 0. See some of the comments
+   below, but it should be possible. In addition to the "no positions
+   left" we would be able to model in "ecological time", not in
+   evolutionary time (i.e., just ecological stuff without mutation) once
+   we have arbitrary initial composition.
 
 
-  - [ ] When mutation rate == dummyMutationRate, wouldn't it make sense to
-    shortcircuit ti_nextTime_tmax_2_st
-  so that we directly go to
-  ti = tSample + epsilon; (or + 2 epsilon or whatever, something clearly
-  larger, regardless of numerical issues, than tSample ---maybe even largest
-  float possible ---but watch out in case we add something to it later;
-  adding 10 or 20 or something of that size should be perfectly OK if the
-  tSample are reasonably small; maybe use an epsilon that works for sure
-  with the tSample, or even return 2*tSample, ensuring certainly larger
-  than tSample
+   - [ ] When mutation rate == dummyMutationRate, wouldn't it make sense to
+     shortcircuit ti_nextTime_tmax_2_st
+   so that we directly go to
+   ti = tSample + epsilon; (or + 2 epsilon or whatever, something clearly
+   larger, regardless of numerical issues, than tSample ---maybe even largest
+   float possible ---but watch out in case we add something to it later;
+   adding 10 or 20 or something of that size should be perfectly OK if the
+   tSample are reasonably small; maybe use an epsilon that works for sure
+   with the tSample, or even return 2*tSample, ensuring certainly larger
+   than tSample
 
-  soemthing like: ti = 2 * tSample; if(ti <= tSample) throw_exception("whatever")
+   soemthing like: ti = 2 * tSample; if(ti <= tSample) throw_exception("whatever")
 
-  )
+   )
 
-  This avoids generating a random number and a pow and calling pM_f_st
-  (sinh and cosh involved). But, especially when mutation ==
-  dummyMutationRate because numMutablePos == 0, we know this genotype will
-  never mutate and should never mutate. Recall exchange with Mather
-  about mutation = 0.
+   This avoids generating a random number and a pow and calling pM_f_st
+   (sinh and cosh involved). But, especially when mutation ==
+   dummyMutationRate because numMutablePos == 0, we know this genotype will
+   never mutate and should never mutate. Recall exchange with Mather about
+   mutation = 0. [2015-04-08 "yet another question about your BNB algorithm
+   " and my question in
+   https://stats.stackexchange.com/questions/145344/simulating-birth-death-process-with-random-numbers-from-negative-binomial]
 
 
   - [ ] in Algo2_st:
@@ -233,7 +242,7 @@
 
 
 ** to fix. 
-  - [X] is allMutator Effects working? Nope. It doesn't
+  - [X] is allMutator Effects working? Nope. It doesn't. Now it is.
 
 
 
