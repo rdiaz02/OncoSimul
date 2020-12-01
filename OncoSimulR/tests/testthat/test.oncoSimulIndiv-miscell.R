@@ -133,7 +133,7 @@ test_that("mu < 0 error", {
                                 "F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
               expect_error(oiI1 <- oncoSimulIndiv(oi, mu = -1),
-                           "mutation rate (mu) is negative",
+                           "(at least one) mutation rate (mu) is negative",
                            fixed = TRUE)                                                     
           })
 
