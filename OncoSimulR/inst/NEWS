@@ -1,3 +1,6 @@
+Changes in version 2.19.993 (2020-12-01):
+	- Added tests of mutator functionality with freq-dep-fitness.
+
 Changes in version 2.19.992 (2020-09-23):
 	- currentTime can be used in freq-dep-fitness expressions
 	- popSizes is passed to evalGenotypes (not genotypeFitness)
