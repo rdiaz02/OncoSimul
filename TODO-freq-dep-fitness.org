@@ -6,6 +6,9 @@
    test.mutatorFDF.R function
  - [ ] Check that changing rate of null mutation is irrelevant
    - And there is no need to add dummyMutationRate to all genomes
+ - [ ] tests for new messages from mutationFromScratch (when that stabilizes)
+
+
  
    - [ ] in Algo2_st:
        if( (spP.mutation == 0.0) &&
