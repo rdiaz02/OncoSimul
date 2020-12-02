@@ -4,50 +4,22 @@
 
  - [ ] More comprehensive testing of mutator with FDF? See
    test.mutatorFDF.R function
- - [ ] Allow for mutation = 0. Yes, exactly 0. See some of the comments
-   below, but it should be possible. In addition to the "no positions
-   left" we would be able to model in "ecological time", not in
-   evolutionary time (i.e., just ecological stuff without mutation) once
-   we have arbitrary initial composition.
+ - [ ] Check that changing rate of null mutation is irrelevant
+   - And there is no need to add dummyMutationRate to all genomes
+ 
+   - [ ] in Algo2_st:
+       if( (spP.mutation == 0.0) &&
+       !(spP.birth <= 0 && mutationPropGrowth) ) {
+     Rcpp::Rcout << "\n Entered Algo2 with mutation rate = 0\n";
+     if( spP.numMutablePos != 0 )
+       throw std::range_error("mutation = 0 with numMutable != 0?");
+   }
 
-
-   - [ ] When mutation rate == dummyMutationRate, wouldn't it make sense to
-     shortcircuit ti_nextTime_tmax_2_st
-   so that we directly go to
-   ti = tSample + epsilon; (or + 2 epsilon or whatever, something clearly
-   larger, regardless of numerical issues, than tSample ---maybe even largest
-   float possible ---but watch out in case we add something to it later;
-   adding 10 or 20 or something of that size should be perfectly OK if the
-   tSample are reasonably small; maybe use an epsilon that works for sure
-   with the tSample, or even return 2*tSample, ensuring certainly larger
-   than tSample
-
-   soemthing like: ti = 2 * tSample; if(ti <= tSample) throw_exception("whatever")
-
-   )
-
-   This avoids generating a random number and a pow and calling pM_f_st
-   (sinh and cosh involved). But, especially when mutation ==
-   dummyMutationRate because numMutablePos == 0, we know this genotype will
-   never mutate and should never mutate. Recall exchange with Mather about
-   mutation = 0. [2015-04-08 "yet another question about your BNB algorithm
-   " and my question in
-   https://stats.stackexchange.com/questions/145344/simulating-birth-death-process-with-random-numbers-from-negative-binomial]
-
-
-  - [ ] in Algo2_st:
-      if( (spP.mutation == 0.0) &&
-      !(spP.birth <= 0 && mutationPropGrowth) ) {
-    Rcpp::Rcout << "\n Entered Algo2 with mutation rate = 0\n";
-    if( spP.numMutablePos != 0 )
-      throw std::range_error("mutation = 0 with numMutable != 0?");
-  }
-
-  probably substitute by something else: mutation = 0 should only be the
-  consequence of a birth <= 0. In all other cases, mutation should never
-  be 0, but dummyMutationRate. And even if birth <= 0 and mutator, not
-  clear to me that even then we should not set a
-  mutation=dummyMutationRate (see below).
+   probably substitute by something else: mutation = 0 should only be the
+   consequence of a birth <= 0. In all other cases, mutation should never
+   be 0, but dummyMutationRate. And even if birth <= 0 and mutator, not
+   clear to me that even then we should not set a
+   mutation=dummyMutationRate (see below).
 
 
   I think we could have an exception if mutation == 0.0 (actually, less
@@ -256,3 +228,66 @@
    in OncoSimulR_init.c
 
    see: https://cran.r-project.org/doc/manuals/R-exts.html#Registering-native-routines
+
+** DONE
+
+ - [X] Allow for mutation = 0. Yes, exactly 0. See some of the comments
+   below, but it should be possible. In addition to the "no positions
+   left" we would be able to model in "ecological time", not in
+   evolutionary time (i.e., just ecological stuff without mutation) once
+   we have arbitrary initial composition.
+
+   Nope. It is not. Mutation of exactly 0 cannot work. See file ./miscell-files/BNB-mutation-0-null-mutation.org
+
+   If I set mu = 0 directly, then I get:
+
+ pM = 1
+
+pE = \upgamma/g
+
+pB = 1
+
+
+Now, plugin those into algorithm 2, there are two problems:
+
+a) The binomial generation can only work if g > \upgamma
+(i.e., birth rate > death rate). But we should be able to sample even if
+death is larger than birth (extinction is not guaranteed for short periods
+even if death > birth).
+
+
+b) The negative binomial cannot work, as it gets a 0 for the probability
+(actually, I think this was a typo in the paper or a terminology issue, as
+you want 1 - pB, not pB; your code does have 1 -pB : negbindev(m, 1.0-pB,
+iRand);)
+
+
+
+   - [X] When mutation rate == dummyMutationRate, wouldn't it make sense to
+     shortcircuit ti_nextTime_tmax_2_st
+   so that we directly go to
+   ti = tSample + epsilon; (or + 2 epsilon or whatever, something clearly
+   larger, regardless of numerical issues, than tSample ---maybe even largest
+   float possible ---but watch out in case we add something to it later;
+   adding 10 or 20 or something of that size should be perfectly OK if the
+   tSample are reasonably small; maybe use an epsilon that works for sure
+   with the tSample, or even return 2*tSample, ensuring certainly larger
+   than tSample
+
+   soemthing like: ti = 2 * tSample; if(ti <= tSample) throw_exception("whatever")
+
+   )
+
+   This avoids generating a random number and a pow and calling pM_f_st
+   (sinh and cosh involved). But, especially when mutation ==
+   dummyMutationRate because numMutablePos == 0, we know this genotype will
+   never mutate and should never mutate. Recall exchange with Mather about
+   mutation = 0. [2015-04-08 "yet another question about your BNB algorithm
+   " and my question in
+   https://stats.stackexchange.com/questions/145344/simulating-birth-death-process-with-random-numbers-from-negative-binomial]
+
+   NOPE: not a good idea. That prevents mutation to the "null"
+   completely. 
+
+   See also ./miscell-files/BNB-mutation-0-null-mutation.org
+

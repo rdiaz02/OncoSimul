@@ -1,0 +1,75 @@
+
+* TAGS: mutation 0 null dummyMutationRate 
+* Mutation of 0 cannot work
+** Details in my exchange with Bill Mather,  2015-04-18.
+** Algorithm 2 breaks:
+  - If I set mu = 0 directly, then I get:
+    
+  pM = 1
+  
+  pE = \upgamma/g
+  
+  pB = 1
+  
+  
+  Now, plugin those into algorithm 2, there are two problems:
+  
+  a) The binomial generation can only work if g > \upgamma (i.e., birth
+  rate > death rate). But we should be able to sample even if death is
+  larger than birth (extinction is not guaranteed for short periods even if
+  death > birth).
+  
+  
+  b) The negative binomial cannot work, as it gets a 0 for the probability
+  (actually, I think this was a typo in the paper or a terminology issue, as
+  you want 1 - pB, not pB; your code does have 1 -pB : negbindev(m, 1.0-pB,
+  iRand);)
+
+  And, yes, I think the BNB does apply, I just am not sure how. I have posted
+  a question in stackexchange  about it, because I thought this was a pretty
+  obvious thing, but I just can't figure it out ;-(
+
+** See my question here: 
+
+  http://stats.stackexchange.com/questions/145344/simulating-birth-death-process-with-random-numbers-from-negative-binomial
+
+* Null mutation workaround
+** " instead define a baseline rate for “null” mutation"
+ - " instead define a baseline rate for “null” mutation, e.g. k0=1.0/minute.  This null mutation does nothing to the population - you simply sample the population. "
+** Use Algorithm 3, and add 1
+*** This is my interpretation from the details of the paper
+    - Algorithm 3 is used to update the population that will mutate right
+      before it mutates
+    - Recall "Thus the mutation is simply defined as the creation and
+      subsequent departure of a single individual from the class" (p. 1232).
+      - That explains that right before the mutation the class that mutates
+	cannot be extint (p. 1233)
+    - If we have to mutate a population (a clone or genotype) with the
+      "null" mutation rate:
+      - Use Algorithm 3
+      - Add a 1 to that population
+      - That is how it is done in the code (BNB_nr.cpp):
+      - } else { // the null or dummy mutation case
+      // We increase size by 1, as we already called Algo3. And then
+      // update the ti.
+      ++popParams[nextMutant].popSize;
+      to_update = 1;
+      u_1 = nextMutant;
+      u_2 = -99;
+      if(verbosity >= 1)
+	Rcpp::Rcout << "Note: updating in null mutation\n";
+** Strictly, I think we need to add the dummyMutationRate to the overall mutation
+   - As it says: the dummyMutationRate would play the role of another
+     locus if tiny rate
+   - But then all populations could mutate to the null state.
+   - And since the null really does nothing except force an update of the
+     affected population, this is not needed.
+* When mutation rate == dummyMutationRate, wouldn't it make sense to  shortcircuit ti_nextTime_tmax_2_st
+  - Something like:
+    - ti = 2 * tSample; if(ti <= tSample) throw_exception("whatever")
+    - This avoids generating a random number and a pow and calling pM_f_st
+   (sinh and cosh involved). 
+** I don't think so:
+*** That would mean that the null mutation with Algorithm 3 would never be used
+*** But we are still using the computations for pM, pE, pB
+*** So we need to allow for the very tiny prob event of the null mutation
