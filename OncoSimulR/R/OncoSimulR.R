@@ -46,7 +46,7 @@ oncoSimulSample <- function(Nindiv,
                             initSize = 500,
                             s = 0.1,
                             sh = -1,
-                            K = initSize/(exp(1) - 1),
+                            K = sum(initSize)/(exp(1) - 1),
                             minDetectDrvCloneSz = "auto",
                             extraTime = 0,
                             finalTime = 0.25 * 25 * 365,
@@ -364,7 +364,7 @@ oncoSimulPop <- function(Nindiv,
                          initSize = 500,
                          s = 0.1,
                          sh = -1,
-                         K = initSize/(exp(1) - 1),
+                         K = sum(initSize)/(exp(1) - 1),
                          keepEvery = sampleEvery, 
                          minDetectDrvCloneSz = "auto",
                          extraTime = 0,
@@ -454,7 +454,7 @@ oncoSimulIndiv <- function(fp,
                            initSize = 500,
                            s = 0.1,
                            sh = -1,
-                           K = initSize/(exp(1) - 1),
+                           K = sum(initSize)/(exp(1) - 1),
                            keepEvery = sampleEvery,
                            minDetectDrvCloneSz = "auto",
                            extraTime = 0,
@@ -510,8 +510,8 @@ oncoSimulIndiv <- function(fp,
                           "McFLD" = "mcfarlandlogd",
                           stop("No valid value for model")
                           )
-    if(initSize < 1)
-        stop("initSize < 1")
+    if(max(initSize) < 1)
+        stop("all initSize < 1")
     
     if( (K < 1) && (model %in% c("McFL", "McFarlandLog",
                                  "McFLD", "McFarlandLogD") )) {
@@ -538,8 +538,12 @@ oncoSimulIndiv <- function(fp,
         if(model %in% c("Bozic", "Exp") )
             minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog",
-                              "McFLD", "McFarlandLogD"))
-            minDetectDrvCloneSz <- initSize
+                              "McFLD", "McFarlandLogD")) {
+            if(length(initSize) > 1) {
+                message("length(initSize) > 1; using the sum of values for minDetectDrvCloneSz")
+            }
+            minDetectDrvCloneSz <- sum(initSize)
+        }
         ## minDetectDrvCloneSz <- eFinalMf(initSize, s, detectionDrivers)
         else
             stop("Unknown model")

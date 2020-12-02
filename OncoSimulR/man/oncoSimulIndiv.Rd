@@ -366,6 +366,9 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   then immediately go extinct. This can be relevant in secenarios such
   as the McFarland model.
 
+  If \code{initSize} is larger than 1 (you are passing multiple
+  initMutants), the sum is used.
+
   See also \code{extraTime}.
 }
 

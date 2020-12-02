@@ -680,7 +680,22 @@ test_that("initMutant works if == number of genes", {
             )
         }
     }
+})
 
+
+test_that("initMutant: multiple pops", {
+
+    o1 <- allFitnessEffects(
+        noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+
+    ## test with that fitness spec
+    o2 <- allFitnessEffects(genotFitness = rfitness(2))
+
+    oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+                   initSize = c(300, 20),
+                   onlyCancer = FALSE)
+
+    
 })
 
 test_that("initMutant with freq-dep-fitness"  , {

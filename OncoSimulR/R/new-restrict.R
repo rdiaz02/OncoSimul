@@ -2246,21 +2246,26 @@ nr_oncoSimul.internal <- function(rFE,
     }
     if(!is.null(initMutant)) {
         initMutantString <- initMutant
-       if(length(grep(">", initMutant))) {
-            initMutant <- nice.vector.eo(initMutant, ">")
+        if(length(grep(">", initMutant))) {
+            initMutant <- lapply(initMutant, function(x) nice.vector.eo(x, ">"))
         } else if(length(grep(",", initMutant))) {
-            initMutant <- nice.vector.eo(initMutant, ",")
+            initMutant <- lapply(initMutant, function(x) nice.vector.eo(x, ","))
         }
-        initMutant <- getGeneIDNum(rFE$geneModule,
-                                   rFE$long.geneNoInt,
-                                   rFE$fitnessLandscape_gene_id,
-                                   initMutant,
-                             FALSE)
-       if(length(initMutant) > countGenesFe(rFE)) {
-        stop("For initMutant you passed more genes mutated ",
-             "than the number of genes in the genotype (fitness effects).")
-    }
 
+        initMutant <- lapply(initMutant,
+                             function(x)
+                                 getGeneIDNum(rFE$geneModule,
+                                              rFE$long.geneNoInt,
+                                              rFE$fitnessLandscape_gene_id,
+                                              x,
+                                              FALSE)
+                             )
+        
+        if(max(unlist(lapply(initMutant, length))) > countGenesFe(rFE)) {
+            ## if(length(initMutant) > countGenesFe(rFE)) {
+            stop("For initMutant you passed more genes mutated ",
+             "than the number of genes in the genotype (fitness effects).")
+        }
     } else {
         initMutant <- vector(mode = "integer")
         initMutantString <- ""
@@ -2333,7 +2338,7 @@ nr_oncoSimul.internal <- function(rFE,
         ## muEF <- emptyFitnessEffects()
     }
 
-    dpr <- detectionProbCheckParse(detectionProb, initSize, verbosity)
+    dpr <- detectionProbCheckParse(detectionProb, sum(initSize), verbosity)
     ## if( !is.null(cPDetect) && (sum(!is.null(p2), !is.null(n2)) >= 1 ))
     ##     stop("Specify only cPDetect xor both of p2 and n2")
     ## if( (is.null(p2) + is.null(n2)) == 1 )
@@ -2441,7 +2446,7 @@ nr_oncoSimul.internal <- function(rFE,
         nr_BNB_Algo5(rFE = rFE,
                      mu_ = mu,
                      death = death,
-                     initSize = initSize,
+                     initSize_ = initSize,
                      sampleEvery = sampleEvery,
                      detectionSize = detectionSize,
                      finalTime = finalTime,

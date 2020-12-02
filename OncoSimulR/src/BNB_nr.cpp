@@ -932,7 +932,7 @@ void addToPOM(POM& pom,
 
 
 static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
-			const double& initSize,
+			 std::vector<double>& initSize,
 			const double& K,
 			// const double& alpha,
 			// const double& genTime,
@@ -943,7 +943,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const double& death,
 			const double& keepEvery,
 			const double& sampleEvery,
-			const std::vector<int>& initMutant,
+			const std::vector<std::vector<int> >& initMutant,
 			const time_t& start_time,
 			const double& maxWallTime,
 			const double& finalTime,
@@ -2096,7 +2096,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			Rcpp::NumericVector mu_,
 			double death,
-			double initSize,
+			Rcpp::NumericVector initSize_,
 			double sampleEvery,
 			double detectionSize,
 			double finalTime,
@@ -2109,7 +2109,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			Rcpp::CharacterVector typeFitness_,
 			int maxram,
 			int mutationPropGrowth,
-			Rcpp::IntegerVector initMutant_,
+			Rcpp::List initMutant_,
 			double maxWallTime,
 			double keepEvery,
 			double K,
@@ -2139,6 +2139,15 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
   const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
+  std::vector < std::vector<int> > initMutant;
+  if(initMutant_.size() != 0 ) {
+    initMutant = list_to_vector_of_int_vectors(initMutant_);
+  } else {
+    initMutant.resize(0);
+  }
+  
+  const std::vector<double> initSize = Rcpp::as<std::vector<double> >(initSize_);
+  
   const TypeModel typeModel = stringToModel(Rcpp::as<std::string>(typeFitness_));
 
   // A simple, vector-indexed way to map from numeric ids in full to
