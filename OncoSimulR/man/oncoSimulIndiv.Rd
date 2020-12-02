@@ -414,12 +414,17 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 
 
 
-\item{mutationPropGrowth}{
-  If TRUE, make mutation rate proportional to growth rate, so clones
-  that grow faster also mutate faster. Thus, $mutation_rate = mu *
-  birth_rate$. This is a simple way of approximating that mutation happens
-  at cell division (it is not strictly making mutation happen at cell division,
-  since mutation is not strictly coupled with division).
+\item{mutationPropGrowth}{ If TRUE, make mutation rate proportional to growth
+  rate, so clones that grow faster also mutate faster (laso have a larger
+  mutation rate): $mutation_rate = mu
+  * birth_rate$. With BNB mutation is actually "mutate after division": p.\ 1232 of Mather
+  et al., 2012 explains:
+  "(...) mutation is simply defined as the creation and subsequent departure of a single individual from the class". Thus,
+  if we want to have individuals of clones/genotypes/populations that divide faster to also produce more
+  mutants per unit time (per individual) we have to set \code{mutationPropGrowth = TRUE}.
+  %% This is a simple way of approximating that mutation happens
+  %% at cell division (it is not strictly making mutation happen at cell division,
+  %% since mutation is not strictly coupled with division).
   Of course, this only makes sense in models where birth rate changes.
 }
 

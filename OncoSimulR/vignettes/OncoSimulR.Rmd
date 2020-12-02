@@ -12652,6 +12652,30 @@ avoid the "Recoverable exception ti set to DBL_MIN. Rerunning."
 issue (see discussion in section \@ref(popgtzx)).
 
 
+## mutationPropGrowth and is mutation associated to division?
+
+With BNB mutation is actually "mutate after division": p.\ 1232 of
+  Mather et al., 2012 explains: "(...) mutation is simply defined as
+  the creation and subsequent departure of a single individual from
+  the class". Thus, if we want individuals of
+  clones/genotypes/populations that divide faster to also produce
+  more mutants per unit time (per individual) we have to set
+  `mutationPropGrowth = TRUE`.
+  
+  When `mutationPropGrowth = FALSE`, two individuals, one from a
+  fast growing genotype, and the other from a slow growing genotype,
+  would be "emiting" (giving rise to) different numbers of identical
+  (non-mutated) descendants per unit time, but they would be giving
+  rise to the same number of mutated descendants per unit time.
+  
+  
+
+There is  an example in Mather et al, p. 1234, section 3.1.1
+     where "Mutation rate is proportional to growth rate (faster
+     growing species also mutate faster)".
+	 
+Of course, this only makes sense in models where birth rate changes.	 
+
 ## What can you do with the simulations?
 
 This is up to you. In section \@ref(sample-1) we show an example

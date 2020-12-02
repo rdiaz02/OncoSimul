@@ -1,0 +1,29 @@
+* TAGS: BNB mutation prop growth proportional birth rate
+* Maybe add to documentation?  
+* An intuitive explanation of the mutation prop growth
+   - In BNB a mutation is not just a mutation but also a creation:
+   - Recall "Thus the mutation is simply defined as the creation and
+      subsequent departure of a single individual from the class" (p. 1232).
+     - That explains that right before the mutation the class that mutates
+       cannot be extint (p. 1233)
+   - In other words, with how mutation is defined,
+     genotypes/clones/populations that have the same mutation rate are
+     "emiting" mutants at the same rate, regardless of birth rate.
+     - (Yes, those that have a larger birth rate generate, in total, more
+       mutants because they achieve a larger population size, but if we
+       follow individuals with same mu, they emit the same number of mutants
+       regardless of birth rate)
+   - Again: mutation in BNB is not something that happens after a birth,
+     it is birth + mutate. If it was something that happened with a
+     constant rate per birth, then we would automatically have mutation
+     proportional to birth rate (as total rate of mutants would be
+     mutation per birth rate * birth rate). But it is not.
+   - Thus, if we want those individuals that emit more new individuals to
+     also emit more mutated individuals, we need to make mutation rate
+     proportional to birth rate.
+   - And recall that Mather itself uses examples with mutation birth
+     proportional to birth: In p. 1234, section 3.1.1 "Mutation rate is
+     proportional to growth rate (faster growing species also mutate faster), μ m = ηg m"
+** Technically, then, mutations do happen at birth in BNB.
+
+  
