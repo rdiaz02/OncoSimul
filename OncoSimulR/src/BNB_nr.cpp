@@ -1200,8 +1200,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 				     ran_gen,
 				     false);
     int numGenesInitMut = Genotypes[0].orderEff.size() +
-      Genotypes[0].epistRtEff.size() + Genotypes[0].rest.size();
+      Genotypes[0].epistRtEff.size() + Genotypes[0].rest.size() +
+      Genotypes[0].flGenes.size();
     int numGenesGenotype = fitnessEffects.allGenes.size();
+    
     popParams[0].numMutablePos = numGenesGenotype - numGenesInitMut;
     // Next two are unreachable since caught in R.
     // But just in case, since it would lead to seg fault.
@@ -1385,6 +1387,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
   // X1: end of mess of initialization block
 
+  
   popParams[0].pv = mapTimes.insert(std::make_pair(-999, 0));
 
   if( keepEvery > 0 ) {
@@ -1460,9 +1463,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
     if(iter == 1) { // handle special case of first iter
     tmpdouble1 = ti_nextTime_tmax_2_st(popParams[0],
-					 currentTime,
-					 tSample,
-					 ti_dbl_min, ti_e3);
+				       currentTime,
+				       tSample,
+				       ti_dbl_min, ti_e3);
       mapTimes_updateP(mapTimes, popParams, 0, tmpdouble1);
       //popParams[0].Flag = false;
       popParams[0].timeLastUpdate = currentTime;
@@ -1638,10 +1641,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	  numSpecies << " at iteration " << iter << "\n";
 #endif
       }
-      // FIXME
-      Rcpp::Rcout <<"\n popParams[nextMutant].numMutablePos " << popParams[nextMutant].numMutablePos << "\n";
-      Rcpp::Rcout <<"\n numMutablePosParent " << numMutablePosParent << "\n";
-      DP2(nextMutant);
+
       if(popParams[nextMutant].numMutablePos != 0) {
 	// this is the usual case. The alternative is the dummy or null mutation
 

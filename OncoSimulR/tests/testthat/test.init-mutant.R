@@ -662,6 +662,25 @@ test_that("initMutant works if == number of genes", {
     expect_output(oncoSimulIndiv(o1, initMutant = "b, a, c"),
                  "No mutable positions. Mutation set to dummyMutationRate",
                  fixed = TRUE)
+    
+    ## This used to crash
+    set.seed(5)
+    o2 <- allFitnessEffects(genotFitness = rfitness(2))
+    oncoSimulIndiv(o2, initMutant = "B, A")
+
+    ## Test a few
+    for(i in 1:10) {
+        set.seed(i)
+        o2i <- allFitnessEffects(genotFitness = rfitness(2))
+        o2io <- oncoSimulIndiv(o2i, initMutant = "B, A")
+        if(!is.null(o2io$other$ExceptionMessage)) {
+            expect_false(
+                grepl("Trying to obtain a mutation when nonmutated.size is 0",
+                      o2io$other$ExceptionMessage)
+            )
+        }
+    }
+
 })
 
 test_that("initMutant with freq-dep-fitness"  , {
@@ -673,20 +692,23 @@ test_that("initMutant with freq-dep-fitness"  , {
     afe <- allFitnessEffects(genotFitness = r, 
                              frequencyDependentFitness = TRUE)
 
-    expect_s3_class(os1 <- oncoSimulIndiv(afe, 
-                          model = "McFL",
-                          initMutant = "A",
-                          onlyCancer = FALSE, 
-                          finalTime = 50, 
-                          verbosity = 0, 
-                          mu = 1e-6,
-                          initSize = 500, 
-                          keepPhylog = FALSE,
-                          seed = NULL, 
-                          errorHitMaxTries = TRUE, 
-                          errorHitWallTime = TRUE),
-                    "oncosimul2")
-
+    expect_s3_class(
+        os1 <- oncoSimulIndiv(afe, 
+                              model = "McFL",
+                              initMutant = "A",
+                              onlyCancer = FALSE, 
+                              finalTime = 50, 
+                              verbosity = 0, 
+                              mu = 1e-6,
+                              initSize = 500, 
+                              keepPhylog = FALSE,
+                              seed = NULL, 
+                              errorHitMaxTries = TRUE, 
+                              errorHitWallTime = TRUE),
+        "oncosimul2")
+    
+    expect_true(is.null(os1$other$ExceptionMessage))
+    
     expect_s3_class(os2 <- oncoSimulIndiv(afe, 
                           model = "McFL",
                           initMutant = "B",
@@ -701,7 +723,6 @@ test_that("initMutant with freq-dep-fitness"  , {
                           errorHitWallTime = TRUE),
                     "oncosimul2")
 
-    ## This crashes! Why?
     expect_s3_class(os3 <- oncoSimulIndiv(afe, 
                           model = "McFL",
                           initMutant = "A, B",
@@ -715,7 +736,8 @@ test_that("initMutant with freq-dep-fitness"  , {
                           errorHitMaxTries = TRUE, 
                           errorHitWallTime = TRUE),
                     "oncosimul2")
-
+    
+    expect_true(is.null(os3$other$ExceptionMessage))
     
 })
 
