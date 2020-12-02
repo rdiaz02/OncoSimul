@@ -110,7 +110,7 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
   const double epsilon = 10.0;
 
   // W < 0 is a signal that mutation is zero, and thus ti is Inf
-  if(spP.mutation == 0) { //   spP.W <= -90.0) {
+  if(spP.mutation == 0) { // FIXME: isn't this dead code?
     ti = tSample + 2.0 * epsilon;
     // yes, this is silly but to differentiate from
     // r < pM without further info
