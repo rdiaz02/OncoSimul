@@ -1,23 +1,12 @@
 # Sample .travis.yml for R projects +
 # https://github.com/travis-ci/travis-ci/issues/5775
 
-## This does not seeem fully, given that bioc uses r-release from mid
-# april to mid october: https://www.bioconductor.org/developers/how-to/useDevel/
+## bioc uses r-release from mid
+## april to mid october: https://www.bioconductor.org/developers/how-to/useDevel/
 
-## So this is what it seems I need: from mid-April to mid-Octorer use:
-## x1 and x11: 
-
-## Otherwise use x2 and x22
-
-## #####  x1
-## language: r
-## r:
-##  - bioc-release
-
-#####   x2
+## Broken now: https://travis-ci.community/t/r-bioc-devel-is-broken-bioconductor-version-3-11-requires-r-version-4-0/5745
 language: r
-r:
- - bioc-devel 
+r: bioc-devel
 
 
 warnings_are_errors: true
@@ -30,21 +19,11 @@ r_github_packages:
   - r-lib/covr
 
 
-## #######  x11
-## ## try to use bioc devel with an R release
-## install:
-##   - Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "ggplot2", "ggrepel", "pander",  "knitr"));BiocManager::install("BiocStyle", ask = FALSE);devtools::install_deps("OncoSimulR");devtools::install_github("r-lib/covr")'
-
-
-
 
 #######  x22
 install:
-- Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander", "knitr")); BiocManager::install("BiocStyle", ask = FALSE); devtools::install_deps("OncoSimulR")'
+- Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander", "knitr")); BiocManager::install("BiocStyle", ask = FALSE); devtools::install_deps("OncoSimulR")'; devtools::install_github("r-lib/covr")'
 
-# withr failing because of a broken dependency on "later". FIXME: return to using github' jimhester for withr and covr later.
-# install:
-#   - Rscript -e 'install.packages(c("devtools","knitr","testthat","roxygen2","Oncotree","rmarkdown","bookdown"));source("http://bioconductor.org/biocLite.R");options(repos=biocinstallRepos());biocLite(c("BiocStyle"));devtools::install_deps("OncoSimulR");devtools::install_github("jimhester/withr");devtools::install_github("jimhester/covr")'
 
 
 before_script:
