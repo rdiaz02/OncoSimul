@@ -2256,8 +2256,8 @@ nr_oncoSimul.internal <- function(rFE,
                                    rFE$fitnessLandscape_gene_id,
                                    initMutant,
                              FALSE)
-       if(length(initMutant) >= countGenesFe(rFE)) {
-        stop("For initMutant you passed as many, or more genes, mutated ",
+       if(length(initMutant) > countGenesFe(rFE)) {
+        stop("For initMutant you passed more genes mutated ",
              "than the number of genes in the genotype (fitness effects).")
     }
 
