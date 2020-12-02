@@ -1,4 +1,4 @@
 library(testthat)
-# library(OncoSimulR)
+library(OncoSimulR)
 
 test_check("OncoSimulR")
