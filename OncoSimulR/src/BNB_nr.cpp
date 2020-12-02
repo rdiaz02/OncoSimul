@@ -1005,19 +1005,27 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   // We can probably go down to 1e-13. 1e-16 is not good as we get lots
   // of pE.f not finite. 1e-15 is probably too close, and even if no pE.f
   // we can get strange behaviors.
+  // Ensures between mymindummy and targetmindummy
   double dummyMutationRate = std::max(std::min(minmu/1.0e4, targetmindummy),
 				      mymindummy);
+
   // This should very rarely happen:
-  if(minmu <= mymindummy) { // 1e-9
-    double newdd = minmu/100.0;
+  if(minmu <= dummyMutationRate) { 
+    double newdd = minmu/10.0;
     Rcpp::Rcout << "WARNING: the smallest mutation rate is "
-		<< "<= " << mymindummy << ". That is a really small value"
+		<< "<= " << dummyMutationRate << ". That is a really small value "
 		<< "(per-base mutation rate in the human genome is"
 		<< " ~ 1e-11 to 1e-9). "
-		<< "Setting dummyMutationRate to your min/100 = "
+		<< "Setting dummyMutationRate to your min/10 = "
 		<< newdd
 		<< ". There can be numerical problems later.\n";
     dummyMutationRate = newdd;
+  }
+
+  if(verbosity > 1) {
+    Rcpp::Rcout << "\n dummyMutationRate set at " << dummyMutationRate
+		<< ".  That is the smallest possible mutation rate and the one"
+		<< " for the null event."
   }
   // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero
@@ -1199,8 +1207,11 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // But just in case, since it would lead to seg fault.
     if(popParams[0].numMutablePos < 0)
       throw std::invalid_argument("initMutant's genotype has more genes than are possible.");
-    if(popParams[0].numMutablePos == 0)
-      throw std::invalid_argument("initMutant has no mutable positions: genotype with all genes mutated.");
+
+    // zz: initMutant 2020-12. Why can't we deal with this?
+    // if(popParams[0].numMutablePos == 0)
+    //   throw std::invalid_argument("initMutant has no mutable positions: genotype with all genes mutated.");
+    
     // popParams[0].numMutablePos = numGenes - 1;
     // From obtainMutations, but initMutant an int vector. But cumbersome.
     // std::vector<int> sortedg = convertGenotypeFromInts(initMutant);
@@ -1366,7 +1377,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 					      fitnessEffects, mutationPropGrowth,
 					      full2mutator, muEF,
 					      Genotypes, popParams,
-					      currentTime);
+					      currentTime,
+					      dummyMutationRate);
   W_f_st(popParams[0]);
   R_f_st(popParams[0]);
 
@@ -1722,9 +1734,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 	    tmpParam.numMutablePos = numMutablePosParent - 1;
 	    tmpParam.mutation = mutationFromScratch(mu, tmpParam, newGenotype,
-					       fitnessEffects,
-					       mutationPropGrowth, full2mutator,
-						    muEF, Genotypes, popParams, currentTime);
+						    fitnessEffects,
+						    mutationPropGrowth, full2mutator,
+						    muEF, Genotypes, popParams, currentTime,
+						    dummyMutationRate);
 	    // tmpParam.mutation = mutationFromParent(mu, tmpParam, popParams[nextMutant],
 	    // 					   newMutations, mutationPropGrowth,
 	    // 					   newGenotype, full2mutator,
@@ -1737,8 +1750,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	    if (numMutablePosParent == 1) {
 	      if(verbosity >= 1)
 		Rcpp::Rcout << "Note: mutation = 0; no positions left for mutation\n";
-	      // FIXME:varmutrate: give the value of dummy here.
-	      tmpParam.mutation = dummyMutationRate; // dummy mutation here. Set some mu.
+	      // Now set to dummy in mutationFromScratch itself
+	      // tmpParam.mutation = dummyMutationRate; // dummy mutation here. Set some mu.
 	    }
 	    W_f_st(tmpParam);
 	    R_f_st(tmpParam);

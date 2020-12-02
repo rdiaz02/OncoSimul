@@ -1777,6 +1777,9 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 // bad design and very confusing (those arguments have nothing to do with mutations)
 // Same problem happens with currentTime. Yes, this sucks.
 
+// return mutation rate for a new genotype; set to dummyMutationRate in specific cases
+//                                          do not use max indiscriminately: we want to see
+//                                          dummyMutationRate being set
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
 			   const Genotype& g,
@@ -1786,8 +1789,10 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const fitnessEffectsAll& muEF,
 			   const std::vector<Genotype>& Genotypes,
 			   const std::vector<spParamsP>& popParams,
-			   const double& currentTime) {
+			   const double& currentTime,
+			   const double& dummyMutationRate) {
 
+  double tmp;
   double mumult;
   if(full2mutator.size() > 0) { // so there are mutator effects
     mumult = evalMutator(g, full2mutator, muEF, Genotypes, popParams, currentTime);
@@ -1801,10 +1806,52 @@ double mutationFromScratch(const std::vector<double>& mu,
   // In BNB_nr.cpp, in nr_innerBNB function
   // when we are sampling.
   if(mu.size() == 1) {
-    if(mutationPropGrowth)
-      return(mumult * mu[0] * spP.numMutablePos * spP.birth);
-    else
-      return(mumult * mu[0] * spP.numMutablePos);
+    if(spP.numMutablePos == 0) {
+      Rcpp::Rcout << "mFS-message-1: "
+		  << "No mutable positions. Mutation set to dummyMutationRate "
+		  << dummyMutationRate << "\n";
+      return(dummyMutationRate);
+    }
+    if(mutationPropGrowth) {
+      tmp = mumult * mu[0] * spP.numMutablePos * spP.birth;
+      if(tmp <= dummyMutationRate) {
+	Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
+	if(mumult == 1.0) {
+	  // letters match codes for varmutrate
+	  Rcpp::Rcout << "mFS-message-2-B:  constant mut rate"
+		      << "no mutator and mutationPropGrowth "
+		      << ". birth rate = " << spP.birth << "\n";
+	} else {
+	  Rcpp::Rcout << "mFS-message-2-C:  constant mut rate"
+		      << " mutator and mutationPropGrowth "
+		      << ". birth rate = " << spP.birth
+		      << ". mumult = " << mumult << "\n";
+	}
+	Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
+		    << dummyMutationRate
+		    << ". Expect numerical problems.\n"
+	// Should set mutation rate to dummyMutationRate? Remember genotypes of birth rate 0 never created
+      }
+      return(tmp);
+    } else {
+      tmp = mumult * mu[0] * spP.numMutablePos;
+      if(tmp <= dummyMutationRate) {
+	Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
+	if(mumult == 1.0) {
+	  // letters match codes for varmutrate
+	  Rcpp::Rcout << "mFS-message-2-A:  constant mut rate"
+		      << "no mutator and no mutationPropGrowth "
+	} else {
+	  Rcpp::Rcout << "mFS-message-2-D:  constant mut rate"
+		      << " mutator and no mutationPropGrowth "
+		      << ". mumult = " << mumult << "\n";
+	}
+	Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
+		    << dummyMutationRate
+		    << ". Expect numerical problems.\n"
+	  }
+      return(tmp);
+    }
   } else {
     std::vector<int> sortedG = allGenesinGenotype(g);
     std::vector<int> nonmutated;
@@ -1820,9 +1867,42 @@ double mutationFromScratch(const std::vector<double>& mu,
     for(auto const &nm : nonmutated) {
       mutrate += mu[nm - 1];
     }
+    if(mutrate == 0) {
+      Rcpp::Rcout << "mFS-message-4 . No mutable positions? Mutation set to dummyMutationRate "
+		  << dummyMutationRate << "\n";
+      return(dummyMutationRate);
+    }
+   
     if(mutationPropGrowth)
       mutrate *= spP.birth;
-    return(mumult * mutrate);
+    tmp = mumult * mutrate;
+
+    if(tmp <= dummyMutationRate) {
+      Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
+      if( (mumult == 1.0) && (!mutationPropGrowth) ) {
+	Rcpp::Rcout << "mFS-message-5-A: variable mut rate"
+		    << "no mutator and no mutationPropGrowth\n ";
+      } else if ((mumult == 1.0) && (mutationPropGrowth) ) {
+	Rcpp::Rcout << "mFS-message-5-B:  variable mut rate"
+		    << "no mutator and mutationPropGrowth "
+		    << ". birth rate = " << spP.birth << "\n";
+      } else if ( (mumult != 1.0) && (mutationPropGrowth) ) {
+	Rcpp::Rcout << "mFS-message-5-C:  variable mut rate"
+		    << "mutator and mutationPropGrowth "
+		    << ". birth rate = " << spP.birth
+		    << ". mumult = " << mumult << "\n";
+      } else if ( (mumult != 1.0) && (!mutationPropGrowth) ) {
+	Rcpp::Rcout << "mFS-message-5-D:  variable mut rate"
+		    << "mutator and no mutationPropGrowth "
+		    << ". mumult = " << mumult << "\n";
+      } else {
+	throw std::logic_error("\n This case should not exist: mFS-except\n")
+	  }
+      
+      Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
+		  << dummyMutationRate << ". Expect numerical problems.\n"
+	}
+    return(tmp);
   }
 }
 
