@@ -640,14 +640,21 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
 })
 
 
-test_that("initMutant crashes is >= number of genes", {
+test_that("initMutant crashes if > number of genes", {
     o1 <- allFitnessEffects(
         noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
-    expect_error(oncoSimulIndiv(o1, initMutant = "b, a, c"),
-                 "For initMutant you passed as many, or more genes",
-                 fixed = TRUE)
     expect_error(oncoSimulIndiv(o1, initMutant = "b, a, c, d"),
                  "For driver or initMutant you have passed genes not in the fitness table",
+                 fixed = TRUE)
+})
+
+
+test_that("initMutant works if == number of genes", {
+    ## It works, but emits a message from mutationFromScratch
+    o1 <- allFitnessEffects(
+        noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+    expect_output(oncoSimulIndiv(o1, initMutant = "b, a, c"),
+                 "No mutable positions. Mutation set to dummyMutationRate",
                  fixed = TRUE)
 })
 
