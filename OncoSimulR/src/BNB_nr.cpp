@@ -1638,7 +1638,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	  numSpecies << " at iteration " << iter << "\n";
 #endif
       }
-
+      // FIXME
+      Rcpp::Rcout <<"\n popParams[nextMutant].numMutablePos " << popParams[nextMutant].numMutablePos << "\n";
+      Rcpp::Rcout <<"\n numMutablePosParent " << numMutablePosParent << "\n";
+      DP2(nextMutant);
       if(popParams[nextMutant].numMutablePos != 0) {
 	// this is the usual case. The alternative is the dummy or null mutation
 

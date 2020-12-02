@@ -648,6 +648,12 @@ test_that("initMutant crashes if > number of genes", {
                  fixed = TRUE)
 })
 
+test_that("initMutant crashes if not in fitness table even if fewer", {
+     o1 <- allFitnessEffects(
+         noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+     oncoSimulIndiv(o1, initMutant = "a, d")
+})
+
 
 test_that("initMutant works if == number of genes", {
     ## It works, but emits a message from mutationFromScratch
@@ -656,6 +662,61 @@ test_that("initMutant works if == number of genes", {
     expect_output(oncoSimulIndiv(o1, initMutant = "b, a, c"),
                  "No mutable positions. Mutation set to dummyMutationRate",
                  fixed = TRUE)
+})
+
+test_that("initMutant with freq-dep-fitness"  , {
+    r <- data.frame(rfitness(2))
+    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
+                        "max(100*f_1, 10)", 
+                        "max(100*f_2, 10)", 
+                        "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
+    afe <- allFitnessEffects(genotFitness = r, 
+                             frequencyDependentFitness = TRUE)
+
+    expect_s3_class(os1 <- oncoSimulIndiv(afe, 
+                          model = "McFL",
+                          initMutant = "A",
+                          onlyCancer = FALSE, 
+                          finalTime = 50, 
+                          verbosity = 0, 
+                          mu = 1e-6,
+                          initSize = 500, 
+                          keepPhylog = FALSE,
+                          seed = NULL, 
+                          errorHitMaxTries = TRUE, 
+                          errorHitWallTime = TRUE),
+                    "oncosimul2")
+
+    expect_s3_class(os2 <- oncoSimulIndiv(afe, 
+                          model = "McFL",
+                          initMutant = "B",
+                          onlyCancer = FALSE, 
+                          finalTime = 50, 
+                          verbosity = 0, 
+                          mu = 1e-6,
+                          initSize = 500, 
+                          keepPhylog = FALSE,
+                          seed = NULL, 
+                          errorHitMaxTries = TRUE, 
+                          errorHitWallTime = TRUE),
+                    "oncosimul2")
+
+    ## This crashes! Why?
+    expect_s3_class(os3 <- oncoSimulIndiv(afe, 
+                          model = "McFL",
+                          initMutant = "A, B",
+                          onlyCancer = FALSE, 
+                          finalTime = 50, 
+                          verbosity = 0, 
+                          mu = 1e-6,
+                          initSize = 500, 
+                          keepPhylog = FALSE,
+                          seed = NULL, 
+                          errorHitMaxTries = TRUE, 
+                          errorHitWallTime = TRUE),
+                    "oncosimul2")
+
+    
 })
 
 
