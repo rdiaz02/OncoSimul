@@ -1025,7 +1025,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   if(verbosity > 1) {
     Rcpp::Rcout << "\n dummyMutationRate set at " << dummyMutationRate
 		<< ".  That is the smallest possible mutation rate and the one"
-		<< " for the null event."
+		<< " for the null event.";
   }
   // double dummyMutationRate = 1e-10;
   // ALWAYS initialize this here, or reinit or rezero

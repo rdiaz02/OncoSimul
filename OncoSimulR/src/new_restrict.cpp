@@ -1829,7 +1829,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 	}
 	Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
 		    << dummyMutationRate
-		    << ". Expect numerical problems.\n"
+		    << ". Expect numerical problems.\n";
 	// Should set mutation rate to dummyMutationRate? Remember genotypes of birth rate 0 never created
       }
       return(tmp);
@@ -1840,7 +1840,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 	if(mumult == 1.0) {
 	  // letters match codes for varmutrate
 	  Rcpp::Rcout << "mFS-message-2-A:  constant mut rate"
-		      << "no mutator and no mutationPropGrowth "
+		      << "no mutator and no mutationPropGrowth ";
 	} else {
 	  Rcpp::Rcout << "mFS-message-2-D:  constant mut rate"
 		      << " mutator and no mutationPropGrowth "
@@ -1848,7 +1848,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 	}
 	Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
 		    << dummyMutationRate
-		    << ". Expect numerical problems.\n"
+		    << ". Expect numerical problems.\n";
 	  }
       return(tmp);
     }
@@ -1896,11 +1896,11 @@ double mutationFromScratch(const std::vector<double>& mu,
 		    << "mutator and no mutationPropGrowth "
 		    << ". mumult = " << mumult << "\n";
       } else {
-	throw std::logic_error("\n This case should not exist: mFS-except\n")
+	throw std::logic_error("\n This case should not exist: mFS-except\n");
 	  }
       
       Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
-		  << dummyMutationRate << ". Expect numerical problems.\n"
+		  << dummyMutationRate << ". Expect numerical problems.\n";
 	}
     return(tmp);
   }
