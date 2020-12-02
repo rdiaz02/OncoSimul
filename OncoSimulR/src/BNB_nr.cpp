@@ -943,7 +943,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const double& death,
 			const double& keepEvery,
 			const double& sampleEvery,
-			const std::vector<std::vector<int> >& initMutant,
+			std::vector<std::vector<int> >& initMutant,
 			const time_t& start_time,
 			const double& maxWallTime,
 			const double& finalTime,
@@ -1117,8 +1117,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   spParamsP tmpParam;
   init_tmpP(tmpParam);
   init_tmpP(popParams[0]);
-  popParams[0].popSize = initSize;
-  totPopSize = initSize;
+  popParams[0].popSize = initSize[0];
+  totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
 
 
       // // FIXME debug
@@ -1195,7 +1195,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   // anything. FIXME!!
   if(initMutant.size() > 0) {
     Genotypes[0] = createNewGenotype(wtGenotype(),
-				     initMutant,
+				     initMutant, //FIXME: zx
 				     fitnessEffects,
 				     ran_gen,
 				     false);
@@ -2138,7 +2138,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
-  const std::vector<int> initMutant = Rcpp::as<std::vector<int> >(initMutant_);
   std::vector < std::vector<int> > initMutant;
   if(initMutant_.size() != 0 ) {
     initMutant = list_to_vector_of_int_vectors(initMutant_);
