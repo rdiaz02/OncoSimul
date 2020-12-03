@@ -1807,9 +1807,10 @@ double mutationFromScratch(const std::vector<double>& mu,
   // when we are sampling.
   if(mu.size() == 1) {
     if(spP.numMutablePos == 0) {
-      Rcpp::Rcout << "mFS-message-1: "
-		  << "No mutable positions. Mutation set to dummyMutationRate "
-		  << dummyMutationRate << "\n";
+      // Standard modus operandi. No need to flood the user with messages.
+      // Rcpp::Rcout << "mFS-message-1: "
+      // 		  << "No mutable positions. Mutation set to dummyMutationRate "
+      // 		  << dummyMutationRate << "\n";
       return(dummyMutationRate);
     }
     if(mutationPropGrowth) {
@@ -1907,16 +1908,27 @@ double mutationFromScratch(const std::vector<double>& mu,
 }
 
 
+// list -> vector of int vectors.
+//    If input is of length zero, return object of length 0
+//    No checks are made of whether this makes sense (undefined behav
+//    if this is a list of floats, strings, etc)
 std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist) {
   // As it says. We check each vector is sorted!
   std::vector < std::vector<int> > vv(vlist.size());
-  for(int i = 0; i != vlist.size(); ++i) {
-    vv[i] = Rcpp::as<std::vector<int> >(vlist[i]);
-    if( ! is_sorted(vv[i].begin(), vv[i].end()) )
-      throw std::logic_error("Fixation genotypes not sorted. Bug in R code.");
+  if (vlist.size() != 0) {
+    for(int i = 0; i != vlist.size(); ++i) {
+      vv[i] = Rcpp::as<std::vector<int> >(vlist[i]);
+      if( ! is_sorted(vv[i].begin(), vv[i].end()) )
+	throw std::logic_error("Fixation genotypes not sorted. Bug in R code.");
+    }
+  } else {
+    vv.resize(0);
   }
   return vv;
 }
+
+
+
 
 // // [[Rcpp::export]]
 // void wrap_list_to_vector_of_int_vectors(Rcpp::List vlist) {

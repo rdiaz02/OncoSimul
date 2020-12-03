@@ -932,7 +932,7 @@ void addToPOM(POM& pom,
 
 
 static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
-			 std::vector<double>& initSize,
+			 const std::vector<double>& initSize,
 			const double& K,
 			// const double& alpha,
 			// const double& genTime,
@@ -943,7 +943,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			const double& death,
 			const double& keepEvery,
 			const double& sampleEvery,
-			std::vector<std::vector<int> >& initMutant,
+			const std::vector<std::vector<int> >& initMutant,
 			const time_t& start_time,
 			const double& maxWallTime,
 			const double& finalTime,
@@ -1190,15 +1190,19 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       // print_spP(popParams[0]);
       // // end debug
 
-    // This long block, from here to X1, is ugly and a mess!
+  // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
   if(initMutant.size() > 0) {
+
+    std::vector<int> this_initMutant = initMutant[0];
+    
     Genotypes[0] = createNewGenotype(wtGenotype(),
-				     initMutant, //FIXME: zx
+				     this_initMutant, //FIXME: zx
 				     fitnessEffects,
 				     ran_gen,
 				     false);
+    
     int numGenesInitMut = Genotypes[0].orderEff.size() +
       Genotypes[0].epistRtEff.size() + Genotypes[0].rest.size() +
       Genotypes[0].flGenes.size();
@@ -2138,12 +2142,12 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
-  std::vector < std::vector<int> > initMutant;
-  if(initMutant_.size() != 0 ) {
-    initMutant = list_to_vector_of_int_vectors(initMutant_);
-  } else {
-    initMutant.resize(0);
-  }
+  const std::vector < std::vector<int> > initMutant = list_to_vector_of_int_vectors(initMutant_);
+  // if(initMutant_.size() != 0 ) {
+  //   initMutant = list_to_vector_of_int_vectors(initMutant_);
+  // } else {
+  //   initMutant.resize(0);
+  // }
   
   const std::vector<double> initSize = Rcpp::as<std::vector<double> >(initSize_);
   
@@ -2222,12 +2226,12 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   if( fixation_i.size() != 0 ) {
     Rcpp::List fggl = fixation_i["fixation_list"] ;
-    fixation_l = list_to_vector_of_int_vectors(fggl); // FIXME
+    const std::vector < std::vector<int> > fixation_l = list_to_vector_of_int_vectors(fggl); // FIXME
     fixation_tolerance = Rcpp::as<double>(fixation_i["fixation_tolerance"]);
     min_successive_fixation = Rcpp::as<int>(fixation_i["min_successive_fixation"]);
     fixation_min_size = Rcpp::as<double>(fixation_i["fixation_min_size"]);
-  } else {
-    fixation_l.resize(0); // explicit
+  } else { 
+     fixation_l.resize(0); // explicit
   }
 
 
