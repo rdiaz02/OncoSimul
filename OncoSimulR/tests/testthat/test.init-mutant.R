@@ -688,7 +688,7 @@ test_that("initMutant: multiple pops", {
     o1 <- allFitnessEffects(
         noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
 
-    ## test with that fitness spec
+    ## zz: test with the above fitness spec
     o2 <- allFitnessEffects(genotFitness = rfitness(2))
 
     oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
@@ -764,3 +764,102 @@ cat(paste("\n Ending init-mutant tests", date(), "\n"))
 
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
+
+
+
+
+
+
+
+set.seed(1)
+rf2 <- rfitness(2)
+rf22 <- rf2
+rf22[1, 3] <- 1.5
+
+o2 <- allFitnessEffects(genotFitness = rf2)
+## WT is set to 1 anyway
+o22 <- allFitnessEffects(genotFitness = rf22)
+
+r <- data.frame(rfitness(2))
+r[, "Fitness"] <- c("10 * f_ - f_1 - f_2 - f_1_2", 
+                    "max(10*f_1, 4)", 
+                    "max(10*f_2, 4)", 
+                    "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
+afe <- allFitnessEffects(genotFitness = r, 
+                         frequencyDependentFitness = TRUE)
+evalAllGenotypes(afe, spPopSizes = c(1000, 10, 10, 10))
+evalAllGenotypes(afe, spPopSizes = c(300, 0, 0, 0))
+
+
+oncoSimulIndiv(o2,
+               initMutant = c("A"),
+               initSize = c(300),
+               finalTime = 5,
+               verbosity = 5,
+               onlyCancer = FALSE,
+               keepPhylog = FALSE,
+               seed = NULL, 
+               errorHitMaxTries = TRUE, 
+               errorHitWallTime = TRUE)
+
+oncoSimulIndiv(afe,
+               initMutant = c("A"),
+               initSize = c(300),
+               finalTime = 5,
+               verbosity = 5,
+               onlyCancer = FALSE,
+               keepPhylog = FALSE,
+               seed = NULL, 
+               errorHitMaxTries = TRUE, 
+               errorHitWallTime = TRUE)
+
+## zz1: this should work, as we want to pass combinations with WT too
+oncoSimulIndiv(afe,
+               initMutant = c(""),
+               initSize = c(300),
+               finalTime = 5,
+               verbosity = 5,
+               onlyCancer = FALSE,
+               keepPhylog = FALSE,
+               seed = NULL, 
+               errorHitMaxTries = TRUE, 
+               errorHitWallTime = TRUE)
+
+
+
+oncoSimulIndiv(o2,
+               model = "McFL",
+               initMutant = c("A"),
+               initSize = c(300),
+               finalTime = 5,
+               verbosity = 5,
+               onlyCancer = FALSE,
+               keepPhylog = FALSE,
+               seed = NULL, 
+               errorHitMaxTries = TRUE, 
+               errorHitWallTime = TRUE)
+
+oncoSimulIndiv(afe,
+               model = "McFL",
+               initMutant = c("A"),
+               initSize = c(300),
+               finalTime = 5,
+               verbosity = 5,
+               onlyCancer = FALSE,
+               keepPhylog = FALSE,
+               seed = NULL, 
+               errorHitMaxTries = TRUE, 
+               errorHitWallTime = TRUE)
+
+## zz1: this should work, as we want to pass combinations with WT too
+oncoSimulIndiv(afe,
+               model = "McFL",
+               initMutant = c(""),
+               initSize = c(300),
+               finalTime = 5,
+               verbosity = 5,
+               onlyCancer = FALSE,
+               keepPhylog = FALSE,
+               seed = NULL, 
+               errorHitMaxTries = TRUE, 
+               errorHitWallTime = TRUE)

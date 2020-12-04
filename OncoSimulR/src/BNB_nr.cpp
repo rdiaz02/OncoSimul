@@ -1193,140 +1193,58 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
-  if(initMutant.size() > 0) {
+  if(initMutant.size() > 0) { //zz1: and initSize!!!!?? it is above
 
-    std::vector<int> this_initMutant = initMutant[0];
+    for(size_t m = 0; m != initMutant.size(); ++m ) {
+    std::vector<int> this_initMutant = initMutant[m];
     
-    Genotypes[0] = createNewGenotype(wtGenotype(),
+    Genotypes[m] = createNewGenotype(wtGenotype(),
 				     this_initMutant, //FIXME: zx
 				     fitnessEffects,
 				     ran_gen,
 				     false);
     
-    int numGenesInitMut = Genotypes[0].orderEff.size() +
-      Genotypes[0].epistRtEff.size() + Genotypes[0].rest.size() +
-      Genotypes[0].flGenes.size();
+    int numGenesInitMut = Genotypes[m].orderEff.size() +
+      Genotypes[m].epistRtEff.size() + Genotypes[m].rest.size() +
+      Genotypes[m].flGenes.size();
     int numGenesGenotype = fitnessEffects.allGenes.size();
     
-    popParams[0].numMutablePos = numGenesGenotype - numGenesInitMut;
-    // Next two are unreachable since caught in R.
+    popParams[m].numMutablePos = numGenesGenotype - numGenesInitMut;
+    // Next unreachable since caught in R.
     // But just in case, since it would lead to seg fault.
-    if(popParams[0].numMutablePos < 0)
+    if(popParams[m].numMutablePos < 0)
       throw std::invalid_argument("initMutant's genotype has more genes than are possible.");
 
-    // zz: initMutant 2020-12. Why can't we deal with this?
-    // if(popParams[0].numMutablePos == 0)
-    //   throw std::invalid_argument("initMutant has no mutable positions: genotype with all genes mutated.");
-    
-    // popParams[0].numMutablePos = numGenes - 1;
-    // From obtainMutations, but initMutant an int vector. But cumbersome.
-    // std::vector<int> sortedg = convertGenotypeFromInts(initMutant);
-    // sort(sortedg.begin(), sortedg.end());
-    // std::vector<int> nonmutated;
-    // set_difference(fitnessEffects.allGenes.begin(), fitnessEffects.allGenes.end(),
-    // 		   sortedg.begin(), sortedg.end(),
-    // 		   back_inserter(nonmutated));
-    // popParams[0].numMutablePos = nonmutated.size();
-
-
-
-    // Commenting out the unused models!
-    // if(typeModel == TypeModel::beerenwinkel) {
-
-    //   popParams[0].death = 1.0; //note same is in McFarland.
-    //   // But makes sense here; adjustment in beerenwinkel is via fitness
-
-    //   // initialize to prevent birth/mutation warning with Beerenwinkel
-    //   // when no mutator. O.w., the defaults
-    //   if(!mutationPropGrowth)
-    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-    //   popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
-    // 								fitnessEffects));
-    //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
-    // 			currentTime, alpha, initSize,
-    // 			mutationPropGrowth, mu);
-    // } else if(typeModel == TypeModel::mcfarland0) {
-    //   // death equal to birth of a non-mutant.
-    //   popParams[0].death = log1p(totPopSize/K); // log(2.0), except rare cases
-    //   if(!mutationPropGrowth)
-    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-    //   popParams[0].absfitness = prodFitness(evalGenotypeFitness(Genotypes[0],
-    // 								fitnessEffects));
-    //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K,
-    // 			    totPopSize,
-    // 			    mutationPropGrowth, mu);
-    // } else if(typeModel == TypeModel::mcfarland) {
-    //   popParams[0].death = totPopSize/K;
-    //   popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-    // 								fitnessEffects));
-    // } else       if(typeModel == TypeModel::mcfarlandlog) {
-
     if(typeModel == TypeModel::mcfarlandlog) {
-      popParams[0].death = log1p(totPopSize/K);
-      popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+      popParams[m].death = log1p(totPopSize/K);
+      popParams[m].birth = prodFitness(evalGenotypeFitness(Genotypes[m],
 								fitnessEffects, Genotypes, popParams, currentTime));
     } else if(typeModel == TypeModel::mcfarlandlog_d) {
-      popParams[0].death = std::max(1.0, log1p(totPopSize/K));
-      popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+      popParams[m].death = std::max(1.0, log1p(totPopSize/K));
+      popParams[m].birth = prodFitness(evalGenotypeFitness(Genotypes[m],
 								fitnessEffects, Genotypes, popParams, currentTime));
     } else if(typeModel == TypeModel::bozic1) {
       tmpParam.birth =  1.0;
       tmpParam.death = -99.9;
-    // } else if (typeModel == TypeModel::bozic2) {
-    //   tmpParam.birth =  -99;
-    //   tmpParam.death = -99;
     } else if (typeModel == TypeModel::exp) {
-      tmpParam.birth =  -99;
-      tmpParam.death = death;
+      tmpParam.birth =  -99; //zz1:eh??? // because we call nr_fitness below
+      tmpParam.death = death; // passed from R; set at 1
     } else {
       // caught in R, so unreachable here
       throw std::invalid_argument("this ain't a valid typeModel");
     }
-    // if( (typeModel != TypeModel::beerenwinkel) && (typeModel != TypeModel::mcfarland0)
-    // 	&& (typeModel != TypeModel::mcfarland) && (typeModel != TypeModel::mcfarlandlog)) // wouldn't matter
-    //   nr_fitness(popParams[0], tmpParam,
-    // 		 Genotypes[0],
-    // 		 fitnessEffects,
-    // 		 typeModel, genTime,
-    // 		 adjust_fitness_B, adjust_fitness_MF);
     if( (typeModel != TypeModel::mcfarlandlog) &&
 	(typeModel != TypeModel::mcfarlandlog_d) ) // wouldn't matter
-      nr_fitness(popParams[0], tmpParam,
-		 Genotypes[0],
+      nr_fitness(popParams[m], tmpParam,
+		 Genotypes[m],
 		 fitnessEffects,
 		 typeModel, Genotypes, popParams, currentTime);
-    // , genTime);
-    //		 adjust_fitness_B, adjust_fitness_MF);
-    // we pass as the parent the tmpParam; it better initialize
-    // everything right, or that will blow. Reset to init
     init_tmpP(tmpParam);
-    addToPOM(pom, Genotypes[0], intName, genesInFitness);
-	} else { //no initMutant
+    addToPOM(pom, Genotypes[m], intName, genesInFitness);
+    }
+  } else { //no initMutant
     popParams[0].numMutablePos = numGenes;
 
-    // if(typeModel == TypeModel::beerenwinkel) {
-    //   popParams[0].death = 1.0;
-    //   // initialize to prevent birth/mutation warning with Beerenwinkel
-    //   // when no mutator. O.w., the defaults
-    //   if(!mutationPropGrowth)
-    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-    //   popParams[0].absfitness = 1.0;
-    //   updateRatesBeeren(popParams, adjust_fitness_B, initSize,
-    // 			currentTime, alpha, initSize,
-    // 			mutationPropGrowth, mu);
-    // } else if(typeModel == TypeModel::mcfarland0) {
-    //   popParams[0].death = log1p(totPopSize/K);
-    //   if(!mutationPropGrowth)
-    // 	popParams[0].mutation = mu * popParams[0].numMutablePos;
-    //   popParams[0].absfitness = 1.0;
-    //   updateRatesMcFarland0(popParams, adjust_fitness_MF, K,
-    // 			    totPopSize,
-    // 			    mutationPropGrowth, mu);
-    // } else if(typeModel == TypeModel::mcfarland) {
-    //   popParams[0].birth = 1.0;
-    //   popParams[0].death = totPopSize/K;
-    //   // no need to call updateRates
-    // } else if(typeModel == TypeModel::mcfarlandlog) {
     if(typeModel == TypeModel::mcfarlandlog) {
       if(fitnessEffects.frequencyDependentFitness){
 	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
@@ -1340,32 +1258,29 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       if(fitnessEffects.frequencyDependentFitness){
 	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
 							     fitnessEffects, Genotypes, popParams, currentTime));
-      }else{
+      } else{
 	popParams[0].birth = 1.0;
       }
       popParams[0].death = std::max(1.0, log1p(totPopSize/K));
       
     } else if(typeModel == TypeModel::bozic1) {
 
-			if(fitnessEffects.frequencyDependentFitness){
- 				popParams[0].birth = prodDeathFitness(evalGenotypeFitness(Genotypes[0],
- 					fitnessEffects, Genotypes, popParams, currentTime));
- 			}else{
-				popParams[0].birth = 1.0;
+      if(fitnessEffects.frequencyDependentFitness){
+	popParams[0].birth = prodDeathFitness(evalGenotypeFitness(Genotypes[0],
+								  fitnessEffects, Genotypes, popParams, currentTime));
+      }else{
+	popParams[0].birth = 1.0;
 
-			}
+      }
       popParams[0].death = 1.0;
-    // } else if (typeModel == TypeModel::bozic2) {
-    //   popParams[0].birth = 0.5/genTime;
-    //   popParams[0].death = 0.5/genTime;
     } else if (typeModel == TypeModel::exp) {
 
-			if(fitnessEffects.frequencyDependentFitness){
-				popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-					fitnessEffects, Genotypes, popParams, currentTime));
-			}else{
-				popParams[0].birth = 1.0;
-			}
+      if(fitnessEffects.frequencyDependentFitness){
+	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
+							     fitnessEffects, Genotypes, popParams, currentTime));
+      } else {
+	popParams[0].birth = 1.0; // why is this fixed?? zz1
+      }
       popParams[0].death = death;
     } else {
       throw std::invalid_argument("this ain't a valid typeModel");
@@ -1422,8 +1337,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   print_spP(popParams[0]);
 #endif
 
-
-
+  // zz2
+  Rcpp::Rcout << "\n the initial species\n";
+  print_spP(popParams[0]);
 
 
   while(!simulsDone) {

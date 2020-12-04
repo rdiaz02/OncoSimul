@@ -4,6 +4,10 @@
 
  - [ ] More comprehensive testing of mutator with FDF? See
    test.mutatorFDF.R function
+ - [ ] Why should fitness of WT be forced to 1? FDF allows to avoid that.
+
+
+
  - [ ] Check that changing rate of null mutation is irrelevant
    - And there is no need to add dummyMutationRate to all genomes
  - [ ] tests for new messages from mutationFromScratch (when that stabilizes)
