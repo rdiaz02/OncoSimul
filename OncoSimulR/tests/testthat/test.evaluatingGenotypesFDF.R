@@ -128,6 +128,74 @@ spPopSizes = c(500,
   
 })
 
+
+test_that("eval single WT genotype with FDF" , {
+
+    r <- data.frame(rfitness(2))
+    r[, "Fitness"] <- c("100 - n_1 - 2 * n_2 - 3 * n_1_2", 
+                        "max(10*n_1, 4)", 
+                        "max(10*n_2, 4)", 
+                        "max((200*(n_1 + n_2) + 50*n_1_2), 1)")
+    afe <- allFitnessEffects(genotFitness = r, 
+                             frequencyDependentFitness = TRUE)
+
+
+    expect_equal(evalGenotype(0, afe, spPopSizes = rep(2, 4)),
+                 100 - 2 - 4 - 6)
+
+    expect_equal(evalGenotype(0, afe, spPopSizes = c(10, 10, 2, 8)),
+                 100 - 10 - 4 - 24)
+
+    expect_equal(evalGenotype(0, afe, spPopSizes = c(10, 10, 7, 8)),
+                 100 - 10 - 14 - 24)
+
+
+    expect_equal(evalGenotype("WT",  afe, spPopSizes = rep(2, 4)),
+                 100 - 2 - 4 - 6)
+
+    expect_equal(evalGenotype("WT",  afe, spPopSizes = c(10, 10, 2, 8)),
+                 100 - 10 - 4 - 24)
+
+    expect_equal(evalGenotype("WT", afe, spPopSizes = c(10, 10, 7, 8)),
+                 100 - 10 - 14 - 24)
+
+    
+    expect_equal(evalGenotype("",  afe, spPopSizes = rep(2, 4)),
+                 100 - 2 - 4 - 6)
+
+    expect_equal(evalGenotype("",  afe, spPopSizes = c(10, 10, 2, 8)),
+                 100 - 10 - 4 - 24)
+
+    expect_equal(evalGenotype("", afe, spPopSizes = c(10, 10, 7, 8)),
+                 100 - 10 - 14 - 24)
+
+
+    expect_equal(evalGenotype("Root",  afe, spPopSizes = rep(2, 4)),
+                 100 - 2 - 4 - 6)
+
+    expect_equal(evalGenotype("Root",  afe, spPopSizes = c(10, 10, 2, 8)),
+                 100 - 10 - 4 - 24)
+
+    expect_equal(evalGenotype("Root", afe, spPopSizes = c(10, 10, 7, 8)),
+                 100 - 10 - 14 - 24)
+
+    
+    
+    ## These all do not interpret as WT but as mispelled gene
+    expect_error(evalGenotype("aeiou", afe, spPopSizes = rep(10, 4)),
+                 "Genotype contains NA or a gene not in fitnessEffects/mutatorEffects",
+                 fixed = TRUE)
+    expect_error(evalGenotype("root", afe, spPopSizes = rep(10, 4)),
+                 "Genotype contains NA or a gene not in fitnessEffects/mutatorEffects",
+                 fixed = TRUE)
+    expect_error(evalGenotype("wt", afe, spPopSizes = rep(10, 4)),
+                 "Genotype contains NA or a gene not in fitnessEffects/mutatorEffects",
+                 fixed = TRUE)
+
+    
+})
+
+
 cat(paste("\n Ending test.evaluatingGenotypesFDF at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

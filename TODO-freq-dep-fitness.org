@@ -2,11 +2,17 @@
 
 ** first
 
+   
+ - [ ] Add a warning about names of genes: avoid "", "WT", "Root"
+ - [ ] Fix this in vignette:
+   "Let us verify that we have specified what we think we have specified using evalAllGenotypes (we have done this repeatedly in this vignette, for example in 1.3.2 or 1.6 or 5.1. Because of the way the code works, we need to pass the populations sizes at which we want fitness evaluated in evalAllGenotypes (this we do now in allFitnessEffects, but this might be moved to evalAllGenotypes in the future).
+
+Note that when calling allFitnessEffects we have to set the paramenter frequencyDependentFitness to TRUE. Since we are using relative frequencies, we also specify freqType = "rel" (the need to do this might be removed in the future). We will see below (10.3, 10.5, and 10.4) several examples with absolute numbers."
+
+
  - [ ] More comprehensive testing of mutator with FDF? See
    test.mutatorFDF.R function
  - [ ] Why should fitness of WT be forced to 1? FDF allows to avoid that.
-
-
 
  - [ ] Check that changing rate of null mutation is irrelevant
    - And there is no need to add dummyMutationRate to all genomes

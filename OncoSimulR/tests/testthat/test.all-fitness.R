@@ -1371,6 +1371,36 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
 })
 
 
+
+test_that("eval single WT genotype" , {
+    set.seed(1)
+    rf2 <- rfitness(2)
+    o2 <- allFitnessEffects(genotFitness = rf2)
+    ## This all break on a true WT
+    expect_error(evalGenotype(0, o2),
+                 "We do not handle WT on its own in non-freq-dep",
+                 fixed = TRUE)
+    expect_error(evalGenotype("WT", o2),
+                 "We do not handle WT on its own in non-freq-dep",
+                fixed = TRUE)
+    expect_error(evalGenotype("Root", o2),
+                 "We do not handle WT on its own in non-freq-dep",
+                 fixed = TRUE)
+    expect_error(evalGenotype("", o2),
+                 "We do not handle WT on its own in non-freq-dep",
+                 fixed = TRUE)
+    ## These all do not interpret as WT but as mispelled gene
+    expect_error(evalGenotype("aeiou", o2),
+                 "Genotype contains NAs or genes not in fitnessEffects/mutatorEffects",
+                 fixed = TRUE)
+    expect_error(evalGenotype("root", o2),
+                 "Genotype contains NAs or genes not in fitnessEffects/mutatorEffects",
+                 fixed = TRUE)
+    expect_error(evalGenotype("wt", o2),
+                 "Genotype contains NAs or genes not in fitnessEffects/mutatorEffects",
+                 fixed = TRUE)
+})
+
 cat(paste("\n Ending all-fitness at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
