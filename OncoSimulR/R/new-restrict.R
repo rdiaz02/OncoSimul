@@ -2265,7 +2265,6 @@ nr_oncoSimul.internal <- function(rFE,
             initMutant <- lapply(initMutant, function(x) nice.vector.eo(x, ","))
         }
 
-        ## browser()
         initMutant <- lapply(initMutant,
                              function(x)
                                  getGeneIDNum(rFE$geneModule,
@@ -2274,7 +2273,7 @@ nr_oncoSimul.internal <- function(rFE,
                                               x,
                                               FALSE)
                              )
-        
+
         if(max(unlist(lapply(initMutant, length))) > countGenesFe(rFE)) {
             ## if(length(initMutant) > countGenesFe(rFE)) {
             stop("For initMutant you passed more genes mutated ",

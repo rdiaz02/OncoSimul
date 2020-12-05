@@ -1337,10 +1337,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   print_spP(popParams[0]);
 #endif
 
-  // zz2
-  Rcpp::Rcout << "\n the initial species\n";
-  print_spP(popParams[0]);
-
 
   while(!simulsDone) {
     // Check how we are doing with time as first thing.
@@ -2058,7 +2054,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
-  const std::vector < std::vector<int> > initMutant = list_to_vector_of_int_vectors(initMutant_);
+  const std::vector < std::vector<int> >
+    initMutant =  list_to_vector_of_int_vectors(initMutant_, false);
   // if(initMutant_.size() != 0 ) {
   //   initMutant = list_to_vector_of_int_vectors(initMutant_);
   // } else {
@@ -2142,7 +2139,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   if( fixation_i.size() != 0 ) {
     Rcpp::List fggl = fixation_i["fixation_list"] ;
-    const std::vector < std::vector<int> > fixation_l = list_to_vector_of_int_vectors(fggl); // FIXME
+    fixation_l = list_to_vector_of_int_vectors(fggl, true); // FIXME
     fixation_tolerance = Rcpp::as<double>(fixation_i["fixation_tolerance"]);
     min_successive_fixation = Rcpp::as<int>(fixation_i["min_successive_fixation"]);
     fixation_min_size = Rcpp::as<double>(fixation_i["fixation_min_size"]);

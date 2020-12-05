@@ -459,8 +459,8 @@ fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
 }
 
 fitnessLandscape_struct convertFitnessLandscape_fdf(Rcpp::List flg,
-						    																		Rcpp::List fl_df,
-						    																		Rcpp::StringVector fvars) {
+						    Rcpp::List fl_df,
+						    Rcpp::StringVector fvars) {
 
   fitnessLandscape_struct flS;
 
@@ -1912,13 +1912,15 @@ double mutationFromScratch(const std::vector<double>& mu,
 //    If input is of length zero, return object of length 0
 //    No checks are made of whether this makes sense (undefined behav
 //    if this is a list of floats, strings, etc)
-std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist) {
+//    Check for order is necessary for fixation genotypes but not for init mutant.
+std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist,
+							       bool check_ordered = true) {
   // As it says. We check each vector is sorted!
   std::vector < std::vector<int> > vv(vlist.size());
   if (vlist.size() != 0) {
     for(int i = 0; i != vlist.size(); ++i) {
       vv[i] = Rcpp::as<std::vector<int> >(vlist[i]);
-      if( ! is_sorted(vv[i].begin(), vv[i].end()) )
+      if( check_ordered && (! is_sorted(vv[i].begin(), vv[i].end())) )
 	throw std::logic_error("Fixation genotypes not sorted. Bug in R code.");
     }
   } else {

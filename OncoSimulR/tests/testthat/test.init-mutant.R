@@ -651,17 +651,18 @@ test_that("initMutant crashes if > number of genes", {
 test_that("initMutant crashes if not in fitness table even if fewer", {
      o1 <- allFitnessEffects(
          noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
-     oncoSimulIndiv(o1, initMutant = "a, d")
+     expect_error(oncoSimulIndiv(o1, initMutant = "a, d"),
+                  "For driver or initMutant you have passed genes not in the fitness table",
+                  fixed = TRUE)
 })
 
 
 test_that("initMutant works if == number of genes", {
-    ## It works, but emits a message from mutationFromScratch
     o1 <- allFitnessEffects(
         noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
-    expect_output(oncoSimulIndiv(o1, initMutant = "b, a, c"),
-                 "No mutable positions. Mutation set to dummyMutationRate",
-                 fixed = TRUE)
+    expect_silent(ooox <- oncoSimulIndiv(o1, initMutant = "b, a, c"))
+                 ## "No mutable positions. Mutation set to dummyMutationRate",
+                 ## fixed = TRUE)
     
     ## This used to crash
     set.seed(5)
@@ -683,20 +684,23 @@ test_that("initMutant works if == number of genes", {
 })
 
 
-test_that("initMutant: multiple pops", {
+## ## zz4:
+## test_that("initMutant: multiple pops", {
 
-    o1 <- allFitnessEffects(
-        noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+##     o1 <- allFitnessEffects(
+##         noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
 
-    ## zz: test with the above fitness spec
-    o2 <- allFitnessEffects(genotFitness = rfitness(2))
+##     ## zz: test with the above fitness spec
+##     o2 <- allFitnessEffects(genotFitness = rfitness(2))
 
-    oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
-                   initSize = c(300, 20),
-                   onlyCancer = FALSE)
+##     oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+##                    initSize = c(300, 20),
+##                    onlyCancer = FALSE)
 
     
-})
+## })
+
+
 
 test_that("initMutant with freq-dep-fitness"  , {
     r <- data.frame(rfitness(2))
