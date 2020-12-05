@@ -278,16 +278,17 @@ test_that("we evaluate the WT", {
     fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
                             noIntGenes = c("e" = 0.1))
-    expect_warning(ou <- OncoSimulR:::evalRGenotype(vector(mode = "integer",
+    ## expect_warning(
+        ou <- OncoSimulR:::evalRGenotype(vector(mode = "integer",
                                                            length = 0),
                                                     fe,
                                                     0,
                                                     TRUE, 
                                                     FALSE,
                                                     "evalGenotype", 
-                                                    0),
-                   "WARNING: you have evaluated fitness/mutator status of a genotype of length zero",
-                   fixed = TRUE)
+                                                    0)## ,
+                   ## "WARNING: you have evaluated fitness/mutator status of a genotype of length zero",
+                   ## fixed = TRUE)
     expect_identical(ou, 1)
 })
 
@@ -298,7 +299,8 @@ test_that("we evaluate the WT, 2", {
                             noIntGenes = c("e" = 0.1))
     fm <- OncoSimulR:::allMutatorEffects(noIntGenes = c("a" = 10,
                                                         "c" = 5))
-    expect_warning(ou2 <- OncoSimulR:::evalRGenotypeAndMut(
+    ## expect_warning(
+        ou2 <- OncoSimulR:::evalRGenotypeAndMut(
                        vector(mode = "integer", length = 0),
                        fe,
                        fm,
@@ -306,9 +308,9 @@ test_that("we evaluate the WT, 2", {
                        OncoSimulR:::matchGeneIDs(fm, fe)$Reduced,
                        TRUE, 
                        FALSE, 
-                       0),
-                   "WARNING: you have evaluated fitness of a genotype of length zero.",
-                   fixed = TRUE)
+                       0)## ,
+                   ## "WARNING: you have evaluated fitness of a genotype of length zero.",
+                   ## fixed = TRUE)
     expect_identical(ou2, c(1, 1))
 })
     

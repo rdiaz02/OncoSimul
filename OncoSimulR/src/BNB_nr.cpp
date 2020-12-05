@@ -1,5 +1,4 @@
-//     Copyright 2013, 2014, 2015, 2016 Ramon Diaz-Uriarte
-
+//     Copyright 2013-2021 Ramon Diaz-Uriarte
 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -13,7 +12,6 @@
 
 //     You should have received a copy of the GNU General Public License
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 
 
 // #include "OncoSimul.h"

@@ -761,6 +761,103 @@ test_that("initMutant with freq-dep-fitness"  , {
 })
 
 
+test_that("WT initMutant simulation equiv. to no init mutant", {
+
+    set.seed(1)
+    r <- data.frame(rfitness(2))
+    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
+                        "max(100*f_1, 10)", 
+                        "max(100*f_2, 10)", 
+                        "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
+    afe <- allFitnessEffects(genotFitness = r, 
+                             frequencyDependentFitness = TRUE)
+    set.seed(1)
+    of1 <- oncoSimulIndiv(afe, 
+                          model = "McFL",
+                          initMutant = "WT",
+                          onlyCancer = FALSE, 
+                          finalTime = 50, 
+                          verbosity = 0, 
+                          mu = 1e-6,
+                          initSize = 500, 
+                          keepPhylog = FALSE,
+                          seed = NULL, 
+                          errorHitMaxTries = TRUE, 
+                          errorHitWallTime = TRUE)
+
+    set.seed(1)
+    of2 <- oncoSimulIndiv(afe, 
+                          model = "McFL",
+                          onlyCancer = FALSE, 
+                          finalTime = 50, 
+                          verbosity = 0, 
+                          mu = 1e-6,
+                          initSize = 500, 
+                          keepPhylog = FALSE,
+                          seed = NULL, 
+                          errorHitMaxTries = TRUE, 
+                          errorHitWallTime = TRUE)
+
+    expect_true(of1$InitMutant == "WT")
+    expect_true(of2$InitMutant == "")
+    expect_identical(of1[!(names(of1) == "InitMutant")],
+                     of2[!(names(of2) == "InitMutant")])
+
+    set.seed(2)
+    o2 <- allFitnessEffects(genotFitness = rfitness(2))
+    set.seed(2)
+    os1 <- oncoSimulIndiv(o2, initMutant = "WT",
+                   model = "McFLD",
+                   onlyCancer = FALSE, 
+                   finalTime = 50, 
+                   verbosity = 0, 
+                   mu = 1e-6,
+                   initSize = 500, 
+                   keepPhylog = FALSE,
+                   seed = NULL, 
+                   errorHitMaxTries = TRUE, 
+                   errorHitWallTime = TRUE)
+    set.seed(2)
+    os2 <- oncoSimulIndiv(o2, 
+                   model = "McFLD",
+                   onlyCancer = FALSE, 
+                   finalTime = 50, 
+                   verbosity = 0, 
+                   mu = 1e-6,
+                   initSize = 500, 
+                   keepPhylog = FALSE,
+                   seed = NULL, 
+                   errorHitMaxTries = TRUE, 
+                   errorHitWallTime = TRUE)
+
+    expect_true(os1$InitMutant == "WT")
+    expect_true(os2$InitMutant == "")
+    expect_identical(os1[!(names(of1) == "InitMutant")],
+                     os2[!(names(of2) == "InitMutant")])
+    
+    
+})
+
+test_that("initMutant does not accept integer vectors", {
+    ## Yes, evalGenotype does accept them
+    set.seed(2)
+    o2 <- allFitnessEffects(genotFitness = rfitness(2))
+    set.seed(2)
+    expect_error(oncoSimulIndiv(o2, initMutant = 1,
+                   model = "McFLD",
+                   onlyCancer = FALSE, 
+                   finalTime = 50, 
+                   verbosity = 0, 
+                   mu = 1e-6,
+                   initSize = 500, 
+                   keepPhylog = FALSE,
+                   seed = NULL, 
+                   errorHitMaxTries = TRUE, 
+                   errorHitWallTime = TRUE),
+                 "initMutant must be a (list of) character string(s)",
+                 fixed = TRUE)
+})
+
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
 
 

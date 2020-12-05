@@ -1,5 +1,5 @@
 
-## Copyright 2013, 2014, 2015, 2016 Ramon Diaz-Uriarte
+## Copyright 2013-2021 Ramon Diaz-Uriarte
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -2258,20 +2258,25 @@ nr_oncoSimul.internal <- function(rFE,
                        "mutation rate in the human genome is about 1e-11 to 1e-9."))
     }
     if(!is.null(initMutant)) {
+        if(!all(unlist(lapply(initMutant, is.character))))
+            stop("initMutant must be a (list of) character string(s)") ## FIXME: remove in the future
         initMutantString <- initMutant
         if(length(grep(">", initMutant))) {
             initMutant <- lapply(initMutant, function(x) nice.vector.eo(x, ">"))
         } else if(length(grep(",", initMutant))) {
             initMutant <- lapply(initMutant, function(x) nice.vector.eo(x, ","))
         }
-
         initMutant <- lapply(initMutant,
-                             function(x)
-                                 getGeneIDNum(rFE$geneModule,
-                                              rFE$long.geneNoInt,
-                                              rFE$fitnessLandscape_gene_id,
-                                              x,
-                                              FALSE)
+                             function(x) {
+                                 if( (length(x) == 1) && ((x == "") || (x == "WT")))
+                                     return(vector(mode = "integer", length = 0))
+                                 else
+                                     return(getGeneIDNum(rFE$geneModule,
+                                                  rFE$long.geneNoInt,
+                                                  rFE$fitnessLandscape_gene_id,
+                                                  x,
+                                                  FALSE))
+                             }
                              )
 
         if(max(unlist(lapply(initMutant, length))) > countGenesFe(rFE)) {

@@ -438,7 +438,11 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   mutant, if any. This is the same format as for
   \code{\link{evalGenotype}}. The default (if you pass nothing) is to
   start the simulation from the wildtype genotype with nothing mutated.
-  For v.1 we no longer accept initMutant: it will be ignored. }
+  For v.1 we no longer accept initMutant: it will be ignored.
+
+  (\code{evalGenotype} also accepts the genotype as a numeric vector;
+  \code{initMutant} must be a character string.)
+}
 
 %% \item{initMutant}{For v.2, a string with the mutations of the initial
 %%   mutant, if any. This is the same format as for

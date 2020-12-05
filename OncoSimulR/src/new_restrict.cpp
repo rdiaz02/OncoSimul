@@ -1,4 +1,4 @@
-//     Copyright 2013, 2014, 2015, 2016 Ramon Diaz-Uriarte
+//     Copyright 2013-2021 Ramon Diaz-Uriarte
 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -1451,7 +1451,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 
 	if( ((ge.orderEff.size() + ge.epistRtEff.size() +
        ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
-    Rcpp::warning("WARNING: you have evaluated fitness of a genotype of length zero.");
+	  Rcpp::Rcout << "NOTE: you have evaluated fitness of a genotype of length zero (WT?) when non-fdf-fitness. It is 1 by decree. \n";
     // s.push_back(1.0); //Eh??!! 1? or 0? FIXME It should be empty! and have prodFitness
     // deal with it.
     return s;
@@ -1659,29 +1659,28 @@ double evalRGenotype(Rcpp::IntegerVector rG,
   // time. Use evalRGenotypeAndMut for that.
 
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
-	const bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+  const bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
 
-	if(rG.size() == 0 && fdf == false) {
-		// Why don't we evaluate it?
-		Rcpp::warning(
-		  "WARNING: you have evaluated fitness/mutator status of a genotype of length zero.");
-		return 1;
-	}
+  if(rG.size() == 0 && fdf == false) {
+    // Why don't we evaluate it?
+    Rcpp::Rcout << "NOTE: you have evaluated fitness/mutator status of a genotype of length zero  (WT?) in non fdf fitness. It is 1 by decree. \n";
+    return 1;
+  }
 
-	std::vector<Genotype> Genotypes;
+  std::vector<Genotype> Genotypes;
   std::vector<spParamsP> popParams;
-	if(fdf){
-		//std::vector<int> spPopSizes;
-		//spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
-		std::vector<int> spPopSizes = as<std::vector<int> > (spPop);
-		Rcpp::List fl_df = rFE["fitnessLandscape_df"];
-		std::vector<std::string> genotNames = Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
-		Genotypes = genotypesFromScratch(genotNames);
-		popParams = popParamsFromScratch(spPopSizes);
-	}//else{
-		//const std::vector<Genotype> Genotypes(0);
-		//const std::vector<spParamsP> popParams(0);
-	//}
+  if(fdf){
+    //std::vector<int> spPopSizes;
+    //spPopSizes = as<std::vector<int> > (rFE["spPopSizes"]);
+    std::vector<int> spPopSizes = as<std::vector<int> > (spPop);
+    Rcpp::List fl_df = rFE["fitnessLandscape_df"];
+    std::vector<std::string> genotNames = Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
+    Genotypes = genotypesFromScratch(genotNames);
+    popParams = popParamsFromScratch(spPopSizes);
+  }//else{
+  //const std::vector<Genotype> Genotypes(0);
+  //const std::vector<spParamsP> popParams(0);
+  //}
 
   //const Rcpp::List rF(rFE);
   fitnessEffectsAll F = convertFitnessEffects(rFE);
