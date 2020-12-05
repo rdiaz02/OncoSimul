@@ -13,12 +13,26 @@
 //     You should have received a copy of the GNU General Public License
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 #include <cfloat> 
 #include "bnb_common.h"
 // #include "new_restrict.h" // for the TypeModel enum
 #include <Rcpp.h>
 
+
+void print_initMutant(const std::vector < std::vector<int> >& initMutant) {
+  Rcpp::Rcout <<"\n This is initMutant\n";
+  for(size_t i = 0; i != initMutant.size(); ++i) {
+    Rcpp::Rcout << "Init Mutant " << i
+		<< ". Number of mutated genes: "
+		<< initMutant[i].size()
+		<<". Mutated genes: ";
+    for(auto const &g : initMutant[i]) {
+      Rcpp::Rcout << g << " ";
+    }
+    Rcpp::Rcout << "\n";
+  }
+  Rcpp::Rcout << "Finished printing initMutant \n";
+}
 
 void print_spP(const spParamsP& spP) {
   Rcpp::Rcout <<"\n this is spP\n"

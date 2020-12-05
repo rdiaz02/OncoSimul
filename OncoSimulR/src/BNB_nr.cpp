@@ -48,6 +48,7 @@ double g_tmp1_nr = DBL_MAX;
 #endif
 
 
+
 void nr_fitness(spParamsP& tmpP,
 		const spParamsP& parentP,
 		const Genotype& ge,
@@ -928,6 +929,12 @@ void addToPOM(POM& pom,
 }
 
 
+// // zz4: maybe use this later
+// // Initialize the population. Deal with initMutant
+// void initPop(const TypeModel typeModel,
+// 	     const std::vector<std::vector<int> >& initMutant,
+// 	     const std::vector<double>& initSize,
+// 	     )
 
 static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			 const std::vector<double>& initSize,
@@ -1090,85 +1097,33 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   int u_1 = -99;
   int u_2 = -99;
 
-  Genotype newGenotype;
-  std::vector<Genotype> Genotypes(1);
-  Genotypes[0] = wtGenotype(); //Not needed, but be explicit.
-
-  std::vector<spParamsP> popParams(1);
-
-      // // FIXME debug
-      // Rcpp::Rcout << "\n popSize[0]  at 1 ";
-      // print_spP(popParams[0]);
-      // // end debug
-
-
   const int sp_per_period = 5000;
-  popParams.reserve(sp_per_period);
-  Genotypes.reserve(sp_per_period);
 
-      // // FIXME debug
-      // Rcpp::Rcout << "\n popSize[0]  at 01 ";
-      // print_spP(popParams[0]);
-      // // end debug
-
-
+  // The new genotype created at mutation
+  Genotype newGenotype;
+  
+  // Temporary place holder whenever a new (candidate) genotype created
   spParamsP tmpParam;
   init_tmpP(tmpParam);
-  init_tmpP(popParams[0]);
-  popParams[0].popSize = initSize[0];
-  totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
-
-
-      // // FIXME debug
-      // Rcpp::Rcout << "\n popSize[0]  at 10000 ";
-      // print_spP(popParams[0]);
-      // // end debug
-
-
 
   std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
 
-    // multimap to hold nextMutationTime
+  // multimap to hold nextMutationTime
   std::multimap<double, int> mapTimes;
-  //std::multimap<double, int>::iterator m1pos;
 
-  // int ti_dbl_min = 0;
-  // int ti_e3 = 0;
   ti_dbl_min = 0;
   ti_e3 = 0;
 
 
-      // // FIXME debug
-      // Rcpp::Rcout << "\n popSize[0]  at 10002 ";
-      // print_spP(popParams[0]);
-      // // end debug
-
-
-
-  // // Beerenwinkel
-  // double adjust_fitness_B = -std::numeric_limits<double>::infinity();
+  
   //McFarland
   double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
-
   // for McFarland error
   em1 = 0.0;
   em1sc = 0.0;
-  // n_0 = 0.0;
-  // n_1 = 0.0;
-  // double tps_0; //, tps_1;
-  // tps_0 = totPopSize;
-  // tps_1 = totPopSize;
 
-  // en1 = 0;
   double totPopSize_previous = totPopSize;
   double DA_previous = log1p(totPopSize_previous/K);
-
-      // // FIXME debug
-      // Rcpp::Rcout << "\n popSize[0]  at 10004 ";
-      // print_spP(popParams[0]);
-      // // end debug
-
-
 
   int lastMaxDr = 0;
   double done_at = -9;
@@ -1176,21 +1131,45 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
   int num_successive_fixation = 0; // none so far
 
-
 #ifdef MIN_RATIO_MUTS_NR
   g_min_birth_mut_ratio_nr = DBL_MAX;
   g_min_death_mut_ratio_nr = DBL_MAX;
   g_tmp1_nr = DBL_MAX;
 #endif
 
-      // // FIXME debug
-      // Rcpp::Rcout << " popSize[0]  at 1b ";
-      // print_spP(popParams[0]);
-      // // end debug
 
   // This long block, from here to X1, is ugly and a mess!
   // This is what takes longer to figure out whenever I change
   // anything. FIXME!!
+
+
+  std::vector<Genotype> Genotypes(1);
+  Genotypes[0] = wtGenotype(); //Not needed, but be explicit.
+  std::vector<spParamsP> popParams(1);
+  popParams.reserve(sp_per_period);
+  Genotypes.reserve(sp_per_period);
+
+
+  
+  // initMutant code. 
+  init_tmpP(popParams[0]);
+  popParams[0].popSize = initSize[0];
+  totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
+
+  // Create a temporal copy: we were passed a const. and might need to
+  // add if no initMutant
+  std::vector < std::vector<int> > tmpInitMutant;
+  if(initMutant.size() == 0) {
+    // Empty genotype
+    tmpInitMutant = {{}};
+  } else {
+    tmpInitMutant = initMutant;
+  }
+
+  //zz4: DB
+  print_initMutant(tmpInitMutant);
+
+
   if(initMutant.size() > 0) { //zz1: and initSize!!!!?? it is above
 
     for(size_t m = 0; m != initMutant.size(); ++m ) {

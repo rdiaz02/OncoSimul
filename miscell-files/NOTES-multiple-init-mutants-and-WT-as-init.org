@@ -1,2 +1,17 @@
 
+* Fitness of wildtype
+- When fitness if FDF WT can have arbitrary values
+- O.w. it is for now set by decree at 1  
+- In C++ we represent the WT as a genotype of length 0
+- For now, we emit notes/messages when evaluating length 0 genotypes
 
+
+* An inconsistency
+  - evalGenotype can take a genotype as "0" (the number) but initMutant
+    does not accept that
+
+* Multiple initMutants and initMutants in general
+  - As of now, [2020-12-05 Sat], we have started, in C++, always dealing
+    with initMutants as if initMutants were present. If they are not, the
+    WT is the initMutant. Simplifies logic of the population
+    initialization block.
