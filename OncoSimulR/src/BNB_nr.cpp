@@ -1337,9 +1337,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   print_spP(popParams[0]);
 #endif
 
-  // zz2
-  Rcpp::Rcout << "\n the initial species\n";
-  print_spP(popParams[0]);
+  // // zz2
+  // Rcpp::Rcout << "\n the initial species\n";
+  // print_spP(popParams[0]);
 
 
   while(!simulsDone) {

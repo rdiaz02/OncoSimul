@@ -2265,7 +2265,7 @@ nr_oncoSimul.internal <- function(rFE,
             initMutant <- lapply(initMutant, function(x) nice.vector.eo(x, ","))
         }
 
-        browser()
+        ## browser()
         initMutant <- lapply(initMutant,
                              function(x)
                                  getGeneIDNum(rFE$geneModule,
