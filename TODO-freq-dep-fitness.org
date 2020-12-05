@@ -3,6 +3,8 @@
 ** first
 
    
+ - [ ] FDF: specify fitness functions as f_C, n_WT, f_A,D, etc.
+   
  - [ ] Add a warning about names of genes: avoid "", "WT", "Root"
  - [ ] Fix this in vignette:
    "Let us verify that we have specified what we think we have specified using evalAllGenotypes (we have done this repeatedly in this vignette, for example in 1.3.2 or 1.6 or 5.1. Because of the way the code works, we need to pass the populations sizes at which we want fitness evaluated in evalAllGenotypes (this we do now in allFitnessEffects, but this might be moved to evalAllGenotypes in the future).
