@@ -1356,7 +1356,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
     if(iter == 1) {
       // skip the next block and go directly to finding min of next mutation
-      // 
     } else { // any other iter
       if(to_update == 1) {
 	// we did not sample or mutate to a different species in previous period
