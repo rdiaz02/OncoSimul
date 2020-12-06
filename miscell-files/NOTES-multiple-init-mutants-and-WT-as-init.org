@@ -15,3 +15,14 @@
     with initMutants as if initMutants were present. If they are not, the
     WT is the initMutant. Simplifies logic of the population
     initialization block.
+    
+* What we used to do in the messy initialization block
+  - For McFL compute fitness
+  - For Bozic and exp:
+    - Create a dummy "parent gentoype" with default birth and death
+    - call nr_fitness with that parent genotype as the parent and the new
+      genotype as the tmpP, the genotype for which we evaluate.
+      - since nr_fitness modifies in place the first argument, we get the
+        birth/rate in there.
+  - But this sucks a lot.
+

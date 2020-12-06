@@ -81,10 +81,10 @@ double pM_f_st(const double& t,
 }
 
 double ti_nextTime_tmax_2_st(const spParamsP& spP,
-				    const double& currentTime,
-				    const double& tSample,
-				    int& ti_dbl_min,
-				    int& ti_e3) {
+			     const double& currentTime,
+			     const double& tSample,
+			     int& ti_dbl_min,
+			     int& ti_e3) {
   // Following the logic of the code by Mather in
   // findNextMutationTime
 
@@ -615,6 +615,7 @@ void precissionLoss(){
   if( f != 1 ) Rcpp::Rcout << "WARNING!!!! \n Precission loss: f != 1\n";
 }
 
+// initalize to absurd values an element of spParams
 void init_tmpP(spParamsP& tmpParam) {
   tmpParam.popSize = -std::numeric_limits<double>::infinity();
   tmpParam.birth = -std::numeric_limits<double>::infinity();
@@ -1267,12 +1268,11 @@ void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
 
 
 
-
+// Update the map times <-> indices and the popParams.pv
 void mapTimes_updateP(std::multimap<double, int>& mapTimes,
 		      std::vector<spParamsP>& popParams,
 		      const int index,
 		      const double time) {
-  // Update the map times <-> indices
   // Recall this is the map of nextMutationTime and index of species
   // First, remove previous entry, then insert.
   // But if we just created the species, nothing to remove from the map.

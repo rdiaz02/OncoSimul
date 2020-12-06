@@ -48,18 +48,18 @@ double g_tmp1_nr = DBL_MAX;
 #endif
 
 
-
+// Obtain birth and death for a new genotype.
+//     return values that signal no-viability when appropriate
+//                    (to avoid adding to tables)
+//     parentP used to provide the model-specific details
 void nr_fitness(spParamsP& tmpP,
 		const spParamsP& parentP,
 		const Genotype& ge,
 		const fitnessEffectsAll& F,
 		const TypeModel typeModel,
 		std::vector<Genotype>& Genotypes,
-	  std::vector<spParamsP>& popParams,
-	  const double& currentTime) {
-		       // const double& genTime,
-		       // const double& adjust_fitness_B,
-		       // const double& adjust_fitness_MF) {
+		std::vector<spParamsP>& popParams,
+		const double& currentTime) {
 
   // We want a way to signal immediate non-viability of a clone. For
   // "birth-based" models that happens when any s = -1, as the fitness is
@@ -67,18 +67,22 @@ void nr_fitness(spParamsP& tmpP,
   // we never reach into algo2, etc, leading to numerical problems.
 
   // With Bozic models, which are "death-based", it is different. For
-  // bozic2, birth is bounded, so any death > 2 would lead to birth <
-  // 0. For bozic1, deaths of around 50 lead to numerical issues.  The
-  // general rule is: set those mutations to -inf, so prodDeathFitness
-  // returns an inf for death, and that is recognized as "no
-  // viability" (anything with death > 99)
+  // bozic1, deaths of around 50 lead to numerical issues.  The general
+  // rule is: set those mutations to -inf, so prodDeathFitness returns an
+  // inf for death, and that is recognized as "no viability" (anything
+  // with death > 99)
 
   // The ones often used are bozic1, exp, mcfarlandlog
 
-	if(F.frequencyDependentFitness){
-		popParams.push_back(tmpP);
-		Genotypes.push_back(ge);
-	}
+  // For frequency dependence we need to add the candidate genotype
+  // to evaluate fitness. At end we pop it out.
+  // FIXME
+  // Could use const and create a copy, but possibly expensive?
+  // This is FDF: those tables are most likely tiny
+  if(F.frequencyDependentFitness){
+    popParams.push_back(tmpP);
+    Genotypes.push_back(ge);
+  }
 
   if(typeModel == TypeModel::bozic1) {
     tmpP.death = prodDeathFitness(evalGenotypeFitness(ge, F, Genotypes, popParams, currentTime));
@@ -87,10 +91,6 @@ void nr_fitness(spParamsP& tmpP,
     } else {
       tmpP.birth = 1.0;
     }
-  // } else if (typeModel == TypeModel::bozic2) {
-  //   double pp = prodDeathFitness(evalGenotypeFitness(ge, F));
-  //   tmpP.birth = std::max(0.0, (1.0/genTime) * (1.0 - 0.5 * pp ));
-  //   tmpP.death = (0.5/genTime) * pp;
   } else {
     double fitness = prodFitness(evalGenotypeFitness(ge, F, Genotypes, popParams, currentTime));
     if( fitness <= 0.0) {
@@ -98,24 +98,16 @@ void nr_fitness(spParamsP& tmpP,
       tmpP.death = 1.0;
       tmpP.birth = 0.0;
     } else{
-      // Set appropriate defaults and change only as needed
-      tmpP.death = parentP.death;
-      tmpP.absfitness = parentP.absfitness;
+      // Set appropriate model-specific defaults and change only as needed
+      tmpP.death = parentP.death; // will use 1 for exp, log whatever for McF
+      tmpP.absfitness = parentP.absfitness; // was used for old Beerenwinkel model
       tmpP.birth = fitness;
-      // exp, mcfarland, and mcfarlandlog as above. Next are the two exceptions.
-      // if(typeModel == TypeModel::beerenwinkel) {
-      // 	tmpP.absfitness = fitness;
-      // 	tmpP.birth = adjust_fitness_B * tmpP.absfitness;
-      // } else if(typeModel == TypeModel::mcfarland0) {
-      // 	tmpP.absfitness = fitness;
-      // 	tmpP.birth = adjust_fitness_MF * tmpP.absfitness;
-      // }
-    }
+      }
   }
-	if(F.frequencyDependentFitness){
-		popParams.pop_back();
-		Genotypes.pop_back();
-	}
+  if(F.frequencyDependentFitness){
+    popParams.pop_back();
+    Genotypes.pop_back();
+  }
   // Exp and McFarland and McFarlandlog are also like Datta et al., 2013
   // An additional driver gene mutation increases a cell’s fitness by a
   // factor of (1+sd), whereas an additional housekeeper gene mutation
@@ -1099,13 +1091,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
   const int sp_per_period = 5000;
 
-  // The new genotype created at mutation
-  Genotype newGenotype;
-  
-  // Temporary place holder whenever a new (candidate) genotype created
-  spParamsP tmpParam;
-  init_tmpP(tmpParam);
-
+ 
   std::vector<int>mutablePos(numGenes); // could be inside getMuatedPos_bitset
 
   // multimap to hold nextMutationTime
@@ -1122,8 +1108,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   em1 = 0.0;
   em1sc = 0.0;
 
-  double totPopSize_previous = totPopSize;
-  double DA_previous = log1p(totPopSize_previous/K);
 
   int lastMaxDr = 0;
   double done_at = -9;
@@ -1144,16 +1128,23 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 
   std::vector<Genotype> Genotypes(1);
-  Genotypes[0] = wtGenotype(); //Not needed, but be explicit.
+  // Genotypes[0] = wtGenotype(); //Not needed, but be explicit.
   std::vector<spParamsP> popParams(1);
   popParams.reserve(sp_per_period);
   Genotypes.reserve(sp_per_period);
 
 
+  // The new genotype created at mutation (or initialization)
+  Genotype newGenotype = wtGenotype();
   
-  // initMutant code. 
+  // Temporary place holder whenever a new (candidate) genotype created
+  // at mutation or initialization
+  spParamsP tmpParam;
+  init_tmpP(tmpParam);
+
+  // initMutant code. zz4: these is wrong!!
   init_tmpP(popParams[0]);
-  popParams[0].popSize = initSize[0];
+  // popParams[0].popSize = initSize[0];
   totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
 
   // Create a temporal copy: we were passed a const. and might need to
@@ -1166,125 +1157,132 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     tmpInitMutant = initMutant;
   }
 
-  //zz4: DB
+  //zz4: debug
   print_initMutant(tmpInitMutant);
 
+  // Place in (reuse) tmpParam and newGenotype;
+  // Add all to pop
+  // Do a final round of update
 
-  if(initMutant.size() > 0) { //zz1: and initSize!!!!?? it is above
 
-    for(size_t m = 0; m != initMutant.size(); ++m ) {
-    std::vector<int> this_initMutant = initMutant[m];
+  if(tmpInitMutant.size() == 0) throw std::logic_error("tmpInitMutant is of size 0");
+
+  int numGenesInitMut = -99;
+  int numLoci = fitnessEffects.allGenes.size();
+
+  // Loop twice: create genotypes and fill up population sizes in
+  // popParams
+
+  //Then compute fitness (which might be affected by identity and
+  // population size of other genotypes)
+
+  // We do not remove non-viable genotypes. 
+  
+  // Fill up Genotypes and popParams
+  for(size_t m = 0; m != tmpInitMutant.size(); ++m ) {
+    init_tmpP(tmpParam);
+    newGenotype = wtGenotype();
+    std::vector<int> this_initMutant = tmpInitMutant[m];
+    // Create the new genotype by adding mutations into a wtGenotype
+    newGenotype = createNewGenotype(wtGenotype(),
+				    this_initMutant, 
+				    fitnessEffects,
+				    ran_gen,
+				    false);
     
-    Genotypes[m] = createNewGenotype(wtGenotype(),
-				     this_initMutant, //FIXME: zx
-				     fitnessEffects,
-				     ran_gen,
-				     false);
+    numGenesInitMut = newGenotype.orderEff.size() +
+      newGenotype.epistRtEff.size() + newGenotype.rest.size() +
+      newGenotype.flGenes.size();
+   
+
+    if( (!(numGenesInitMut == 0)) != (!(newGenotype == wtGenotype()))  )
+      throw std::logic_error("InitMutant: Either a WT genotype without 0 mutations or a non-WT with 0 mutations");
+
     
-    int numGenesInitMut = Genotypes[m].orderEff.size() +
-      Genotypes[m].epistRtEff.size() + Genotypes[m].rest.size() +
-      Genotypes[m].flGenes.size();
-    int numGenesGenotype = fitnessEffects.allGenes.size();
-    
-    popParams[m].numMutablePos = numGenesGenotype - numGenesInitMut;
+    tmpParam.numMutablePos = numLoci - numGenesInitMut;
     // Next unreachable since caught in R.
     // But just in case, since it would lead to seg fault.
-    if(popParams[m].numMutablePos < 0)
+    if(tmpParam[m].numMutablePos < 0)
       throw std::invalid_argument("initMutant's genotype has more genes than are possible.");
 
-    if(typeModel == TypeModel::mcfarlandlog) {
+    tmpParam.popSize = initSize[m];
+    popParams.push_back(tmpParam);
+    Genotypes.push_back(newGenotype);
+    // birth, death, W, R, absfitness: updated when fitness, below
+    // mutation: below, when calling mutationFromScratch
+    // pv: when calling mapTimes_updateP
+    // timeLastUpdate updated below, right after pv
+
+  }
+
+  // Assign fitness, mutation, W, R. In that order. Then pv and add to POM.
+  // The last two are specific of BNB. Beware if using a different algorithm
+  for(size_t m = 0; m != tmpInitMutant.size(); ++m ) {
+    if(typeModel == TypeModel::bozic1) {
+      popParams[m].death =
+	prodDeathFitness(evalGenotypeFitness(Genotypes[m],
+					     fitnessEffects, Genotypes, popParams,
+					     currentTime));
+     
+    } else if (typeModel == TypeModel::mcfarlandlog) {
       popParams[m].death = log1p(totPopSize/K);
-      popParams[m].birth = prodFitness(evalGenotypeFitness(Genotypes[m],
-								fitnessEffects, Genotypes, popParams, currentTime));
     } else if(typeModel == TypeModel::mcfarlandlog_d) {
       popParams[m].death = std::max(1.0, log1p(totPopSize/K));
-      popParams[m].birth = prodFitness(evalGenotypeFitness(Genotypes[m],
-								fitnessEffects, Genotypes, popParams, currentTime));
-    } else if(typeModel == TypeModel::bozic1) {
-      tmpParam.birth =  1.0;
-      tmpParam.death = -99.9;
-    } else if (typeModel == TypeModel::exp) {
-      tmpParam.birth =  -99; //zz1:eh??? // because we call nr_fitness below
-      tmpParam.death = death; // passed from R; set at 1
+    }  else if (typeModel == TypeModel::exp) {
+      popParams[m].death = death; // passed from R; set at 1
     } else {
       // caught in R, so unreachable here
       throw std::invalid_argument("this ain't a valid typeModel");
     }
-    if( (typeModel != TypeModel::mcfarlandlog) &&
-	(typeModel != TypeModel::mcfarlandlog_d) ) // wouldn't matter
-      nr_fitness(popParams[m], tmpParam,
-		 Genotypes[m],
-		 fitnessEffects,
-		 typeModel, Genotypes, popParams, currentTime);
-    init_tmpP(tmpParam);
-    addToPOM(pom, Genotypes[m], intName, genesInFitness);
-    }
-  } else { //no initMutant
-    popParams[0].numMutablePos = numGenes;
-
-    if(typeModel == TypeModel::mcfarlandlog) {
-      if(fitnessEffects.frequencyDependentFitness){
-	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-							     fitnessEffects, Genotypes, popParams, currentTime));
-      } else {
-	popParams[0].birth = 1.0;
-      }
-      popParams[0].death = log1p(totPopSize/K);
-      // no need to call updateRates
-    } else if(typeModel == TypeModel::mcfarlandlog_d) {
-      if(fitnessEffects.frequencyDependentFitness){
-	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-							     fitnessEffects, Genotypes, popParams, currentTime));
-      } else{
-	popParams[0].birth = 1.0;
-      }
-      popParams[0].death = std::max(1.0, log1p(totPopSize/K));
-      
-    } else if(typeModel == TypeModel::bozic1) {
-
-      if(fitnessEffects.frequencyDependentFitness){
-	popParams[0].birth = prodDeathFitness(evalGenotypeFitness(Genotypes[0],
-								  fitnessEffects, Genotypes, popParams, currentTime));
-      }else{
-	popParams[0].birth = 1.0;
-
-      }
-      popParams[0].death = 1.0;
-    } else if (typeModel == TypeModel::exp) {
-
-      if(fitnessEffects.frequencyDependentFitness){
-	popParams[0].birth = prodFitness(evalGenotypeFitness(Genotypes[0],
-							     fitnessEffects, Genotypes, popParams, currentTime));
-      } else {
-	popParams[0].birth = 1.0; // why is this fixed?? zz1
-      }
-      popParams[0].death = death;
+    // Common settings, warnings and exceptions
+    if(typeModel == TypeModel::bozic1) {
+      popParams[m].birth = 1.0;
+      if(!fitnessEffects.frequencyDependentFitness &&
+	 (popParams[m].numMutablePos == numGenesGenotype ) &&
+	 (popParams[m].death != 1.0)) throw std::logic_error("WT initMutant in non-FDF must have death rate 1 with this model");
+      if(popParams[m].death == 1.0) Rcpp::Rcout << "Init Mutant with death == 1.0\n";
+      if(popParams[m].death >  99) Rcpp::warning << "Init Mutant with death > 99\n";
     } else {
-      throw std::invalid_argument("this ain't a valid typeModel");
+      popParams[m].birth =
+	prodFitness(evalGenotypeFitness(Genotypes[m],
+					fitnessEffects, Genotypes, popParams,
+					currentTime));
+      if(!fitnessEffects.frequencyDependentFitness &&
+	 (popParams[m].numMutablePos == numGenesGenotype ) &&
+	 (popParams[m].birth != 1.0) ) throw std::logic_error("WT initMutant in non-FDF must have birth rate 1 with this model");
+      if(popParams[m].birth == 1.0) Rcpp::Rcout << "Init Mutant with birth == 1.0\n";
+      if(popParams[m].birth == 0.0) Rcpp::warning << "Init Mutant with birth == 0.0\n";
     }
+
+    popParams[m].mutation = mutationFromScratch(mu, popParams[m], Genotypes[m],
+						fitnessEffects, mutationPropGrowth,
+						full2mutator, muEF,
+						Genotypes, popParams,
+						currentTime,
+						dummyMutationRate);
+    W_f_st(popParams[m]);
+    R_f_st(popParams[m]);
+
+    // FIXME: next line not needed? We assign it right below
+    // and we first erase the entry in mapTimes
+    popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
+    tmpdouble1 = ti_nextTime_tmax_2_st(popParams[m],
+				       currentTime,
+				       tSample,
+				       ti_dbl_min, ti_e3);
+    mapTimes_updateP(mapTimes, popParams, m, tmpdouble1);
+    popParams[m].timeLastUpdate = currentTime;
+    
   }
+  // zz4 : add the one that needs to be added only!
+    addToPOM(pom, Genotypes[m], intName, genesInFitness); 
+ 
 
-  // // these lines (up to, and including, R_F_st)
-  // // not needed with mcfarland0 or beerenwinkel
-  // if(mutationPropGrowth)
-  //   popParams[0].mutation = mu * popParams[0].birth * popParams[0].numMutablePos;
-  // else
-  //   popParams[0].mutation = mu * popParams[0].numMutablePos;
-
-  popParams[0].mutation = mutationFromScratch(mu, popParams[0], Genotypes[0],
-					      fitnessEffects, mutationPropGrowth,
-					      full2mutator, muEF,
-					      Genotypes, popParams,
-					      currentTime,
-					      dummyMutationRate);
-  W_f_st(popParams[0]);
-  R_f_st(popParams[0]);
-
-
+// zz4: spit out the values of spParams if verbosity
   // X1: end of mess of initialization block
 
   
-  popParams[0].pv = mapTimes.insert(std::make_pair(-999, 0));
+ 
 
   if( keepEvery > 0 ) {
     // We keep the first ONLY if we are storing more than one.
@@ -1306,13 +1304,15 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   // It is just ugly to get a 0 in that first genotype when keepEvery < 0
   // uniqueGenotypes.insert(Genotypes[0].to_ullong());
   timeNextPopSample = currentTime + sampleEvery;
-  numSpecies = 1;
+
+  numSpecies = tmpInitMutant.size();
 
 
-#ifdef DEBUGV
-  Rcpp::Rcout << "\n the initial species\n";
-  print_spP(popParams[0]);
-#endif
+
+
+// For McFL error
+  double totPopSize_previous = totPopSize;
+  double DA_previous = log1p(totPopSize_previous/K);
 
 
   while(!simulsDone) {
@@ -1354,14 +1354,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	      << "  currentTime " << currentTime;
 #endif
 
-    if(iter == 1) { // handle special case of first iter
-    tmpdouble1 = ti_nextTime_tmax_2_st(popParams[0],
-				       currentTime,
-				       tSample,
-				       ti_dbl_min, ti_e3);
-      mapTimes_updateP(mapTimes, popParams, 0, tmpdouble1);
-      //popParams[0].Flag = false;
-      popParams[0].timeLastUpdate = currentTime;
+    if(iter == 1) {
+      // skip the next block and go directly to finding min of next mutation
+      // 
     } else { // any other iter
       if(to_update == 1) {
 	// we did not sample or mutate to a different species in previous period

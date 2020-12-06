@@ -44,7 +44,11 @@ std::string concatIntsString(const std::vector<int>& ints,
   return strout;
 }
 
-
+// Cumulative product of (1 + s).
+//      If fitness landscape, a single s is passed, and that has a - 1 subtracted
+//      See function evalGenotypeFitness
+//      Whenever we call prodFitness (e.g., nr_fitness or initMutantInitialization)
+//       it is called on the output of evalGenotypeFitness
 double prodFitness(const std::vector<double>& s) {
   return accumulate(s.begin(), s.end(), 1.0,
 		    [](double x, double y) {return (x * std::max(0.0, (1 + y)));});
@@ -896,6 +900,7 @@ Genotype createNewGenotype(const Genotype& parent,
   // (chromothripsis), we randomly insert them
 
   // FIXME: initMutant cannot use this!! we give the order!!!
+  // That is why the call from initMutant uses random = false
   if( (tempOrder.size() > 1) && random)
     shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
   // The new randutils engine:
@@ -1777,7 +1782,8 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
 // Same problem happens with currentTime. Yes, this sucks.
 
 // return mutation rate for a new genotype; set to dummyMutationRate in specific cases
-//                                          do not use max indiscriminately: we want to see
+//                                          do not use max w.r.t dummyMutationRate
+//                                          indiscriminately: we want to see
 //                                          dummyMutationRate being set
 double mutationFromScratch(const std::vector<double>& mu,
 			   const spParamsP& spP,
