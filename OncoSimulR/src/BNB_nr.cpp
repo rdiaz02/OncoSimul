@@ -1047,11 +1047,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   sampleLargestPopSize.clear();
   sampleMaxNDr.clear();
   sampleNDrLargestPop.clear();
-  // end of rezeroing.
-
-
-  // }
-  // anyForceRerunIssues = false;
+ 
 
   bool forceSample = false;
   bool simulsDone = false;
@@ -1100,18 +1096,15 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   ti_dbl_min = 0;
   ti_e3 = 0;
 
-
-  
+ 
   //McFarland
   double adjust_fitness_MF = -std::numeric_limits<double>::infinity();
   // for McFarland error
   em1 = 0.0;
   em1sc = 0.0;
 
-
   int lastMaxDr = 0;
   double done_at = -9;
-
 
   int num_successive_fixation = 0; // none so far
 
@@ -1122,9 +1115,14 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 #endif
 
 
-  // This long block, from here to X1, is ugly and a mess!
-  // This is what takes longer to figure out whenever I change
-  // anything. FIXME!!
+
+  totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
+
+  
+  /////////////////////////////////////////////////////////////////
+
+  ///   Initialize population. Former initMutant stuff   //////////
+  ///   This could all be a function 
 
 
   std::vector<Genotype> Genotypes(1);
@@ -1133,21 +1131,13 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   popParams.reserve(sp_per_period);
   Genotypes.reserve(sp_per_period);
 
-
-  // The new genotype created at mutation (or initialization)
+  // Placeholders for genotype and params created at mutation (or
+  //     initialization)
   Genotype newGenotype = wtGenotype();
-  
-  // Temporary place holder whenever a new (candidate) genotype created
-  // at mutation or initialization
   spParamsP tmpParam;
   init_tmpP(tmpParam);
 
-  // initMutant code. zz4: these is wrong!!
-  init_tmpP(popParams[0]);
-  // popParams[0].popSize = initSize[0];
-  totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
-
-  // Create a temporal copy: we were passed a const. and might need to
+  // Create temporal copy: we were passed a const. and might need to
   // add if no initMutant
   std::vector < std::vector<int> > tmpInitMutant;
   if(initMutant.size() == 0) {
@@ -1157,28 +1147,24 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     tmpInitMutant = initMutant;
   }
 
-  //zz4: debug
+  //zz4: debug print_ini
   print_initMutant(tmpInitMutant);
-
-  // Place in (reuse) tmpParam and newGenotype;
-  // Add all to pop
-  // Do a final round of update
-
-
   if(tmpInitMutant.size() == 0) throw std::logic_error("tmpInitMutant is of size 0");
 
+
+
   int numGenesInitMut = -99;
-  int numLoci = fitnessEffects.allGenes.size();
+  const int numLoci = fitnessEffects.allGenes.size();
 
   // Loop twice: create genotypes and fill up population sizes in
   // popParams
 
-  //Then compute fitness (which might be affected by identity and
-  // population size of other genotypes)
+  // Then compute fitness (which might be affected by identity and
+  // population size of other genotypes), W, R, mutation, etc
 
   // We do not remove non-viable genotypes. 
   
-  // Fill up Genotypes and popParams
+  /////  Fill up Genotypes and popParams
   for(size_t m = 0; m != tmpInitMutant.size(); ++m ) {
     init_tmpP(tmpParam);
     newGenotype = wtGenotype();
@@ -1223,19 +1209,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	prodDeathFitness(evalGenotypeFitness(Genotypes[m],
 					     fitnessEffects, Genotypes, popParams,
 					     currentTime));
-     
-    } else if (typeModel == TypeModel::mcfarlandlog) {
-      popParams[m].death = log1p(totPopSize/K);
-    } else if(typeModel == TypeModel::mcfarlandlog_d) {
-      popParams[m].death = std::max(1.0, log1p(totPopSize/K));
-    }  else if (typeModel == TypeModel::exp) {
-      popParams[m].death = death; // passed from R; set at 1
-    } else {
-      // caught in R, so unreachable here
-      throw std::invalid_argument("this ain't a valid typeModel");
-    }
-    // Common settings, warnings and exceptions
-    if(typeModel == TypeModel::bozic1) {
       popParams[m].birth = 1.0;
       if(!fitnessEffects.frequencyDependentFitness &&
 	 (popParams[m].numMutablePos == numGenesGenotype ) &&
@@ -1247,6 +1220,13 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	prodFitness(evalGenotypeFitness(Genotypes[m],
 					fitnessEffects, Genotypes, popParams,
 					currentTime));
+      if (typeModel == TypeModel::exp) 
+	popParams[m].death = death; // passed from R; set at 1
+      if (typeModel == TypeModel::mcfarlandlog)
+	popParams[m].death = log1p(totPopSize/K);
+      if (typeModel == TypeModel::mcfarlandlog_d)
+	popParams[m].death = std::max(1.0, log1p(totPopSize/K));
+      
       if(!fitnessEffects.frequencyDependentFitness &&
 	 (popParams[m].numMutablePos == numGenesGenotype ) &&
 	 (popParams[m].birth != 1.0) ) throw std::logic_error("WT initMutant in non-FDF must have birth rate 1 with this model");
@@ -1263,6 +1243,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     W_f_st(popParams[m]);
     R_f_st(popParams[m]);
 
+    // zz5: I think I need it because I will be deleting from
+    // within mapTimes_ipdateP. I would not need it if I just
+    // had timeLastUpdate < -1 ??
     // FIXME: next line not needed? We assign it right below
     // and we first erase the entry in mapTimes
     popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
