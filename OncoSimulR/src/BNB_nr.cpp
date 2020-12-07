@@ -1182,8 +1182,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       newGenotype.epistRtEff.size() + newGenotype.rest.size() +
       newGenotype.flGenes.size();
 
-    DP2(numGenesInitMut);
-
     if( (!(numGenesInitMut == 0)) != (!(newGenotype == wtGenotype()))  )
       throw std::logic_error("InitMutant: Either a WT genotype without 0 mutations or a non-WT with 0 mutations");
 
@@ -1203,31 +1201,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // pv: when calling mapTimes_updateP
     // timeLastUpdate updated below, right after pv
 
-    //zz
-    DP2(m);
-    DP2(initSize[m]);
-    print_spP(tmpParam);
-    print_Genotype(newGenotype);
-  }
-
-  //zz: debug
-  DP2(tmpInitMutant.size());
-  DP1("print all genotypes in initMutant");
-  for(size_t m = 0; m != tmpInitMutant.size(); ++m ) {
-    print_Genotype(Genotypes[m]);
-    print_spP(popParams[m]);
   }
 
 
-  //zz: debug
-  DP2(popParams.size());
-  DP1("print all genotypes in popParams");
-  for(size_t m = 0; m != popParams.size(); ++m ) {
-    print_Genotype(Genotypes[m]);
-    print_spP(popParams[m]);
-  }
-
-  // Not used any more.
+  // We will not use this any more.
   tmpInitMutant.clear();
   
   // Assign fitness, mutation, W, R. In that order. Then pv and add to POM.
@@ -1245,8 +1222,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       if(popParams[m].death == 1.0) Rcpp::Rcout << "Init Mutant with death == 1.0\n";
       if(popParams[m].death >  99) Rcpp::warning("Init Mutant with death > 99");
     } else {
-      DP2(m);
-      print_Genotype(Genotypes[m]);
       
       popParams[m].birth =
 	prodFitness(evalGenotypeFitness(Genotypes[m],
@@ -1282,9 +1257,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // and we first erase the entry in mapTimes
     popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
     //zz5
-    DP1("popParams right before ti_next");
-    DP2(m);
-    print_spP(popParams[m]);
+    // DP1("popParams right before ti_next");
+    // DP2(m);
+    // print_spP(popParams[m]);
 
     tmpdouble1 = ti_nextTime_tmax_2_st(popParams[m],
 				       currentTime,

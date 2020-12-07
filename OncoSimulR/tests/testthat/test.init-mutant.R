@@ -845,25 +845,30 @@ test_that("initMutant does not accept integer vectors", {
 test_that("initMutant: multiple pops, basic", {
     o1 <- allFitnessEffects(
         noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+    
     expect_silent(out <- oncoSimulIndiv(o1, initMutant = c("c, b", "b"),
                                         initSize = c(300, 20),
-                                        onlyCancer = FALSE))
+                                        onlyCancer = FALSE,
+                                        seed = NULL))
 
 
     oncoSimulIndiv(o1, initMutant = c("c, b", "WT"),
                    initSize = c(300, 20),
-                   onlyCancer = FALSE)
+                   onlyCancer = FALSE,
+                   seed = NULL)
 
     oncoSimulIndiv(o1, initMutant = c("c, b", "WT", "a"),
                    initSize = c(300, 20, 10),
-                   onlyCancer = FALSE)
+                   onlyCancer = FALSE,
+                   seed = NULL)
 
     ## Pass all genotypes
     oncoSimulIndiv(o1, initMutant = c("WT", "a", "b", "c",
                                       "a, b", "a, c", "b, c",
                                       "a, b, c"),
                    initSize = c(300, 20, 10, 6, 9, 5, 4, 6),
-                   onlyCancer = FALSE)
+                   onlyCancer = FALSE,
+                   seed = NULL)
 
     set.seed(1)
     r2 <- rfitness(2)
@@ -881,7 +886,8 @@ test_that("initMutant: multiple pops, basic", {
     o2 <- allFitnessEffects(genotFitness = r2)
     expect_silent(out <- oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
                    initSize = c(300, 20),
-                   onlyCancer = FALSE))
+                   onlyCancer = FALSE,
+                   seed = NULL))
 })
 
 
@@ -913,12 +919,96 @@ test_that("multiple init mutants: pops of 0 size is error", {
 })
 
 
+## con fdf and without fdf
+test_that("multiple init mutants: different species", {
 
+    num_reps <- 10
+    for(i in 1:num_reps) {
+        r2 <- rfitness(6)
+        ## Make sure these always viable for interesting stuff
+        r2[2, 7] <- 1 + runif(1) # A
+        r2[4, 7] <- 1 + runif(1) # C
+        r2[8, 7] <- 1 + runif(1) # A, B
+        ## Two species, first with pos 1 and 2
+        ## all with both mutated is 0
+        r2[ (r2[, 1] == 0) & (r2[, 2] == 1),  7] <- 0
+        r2[ (r2[, 3] == 0) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
+        
+        r2[ (r2[, 1] == 1) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
+        r2[ (r2[, 3] == 1) & apply(r2[, 1:2] == 1, 1, any),  7] <- 0
+        r2 <- r2[r2[, 7] > 0, ]
+        o2 <- allFitnessEffects(genotFitness = r2)
+        ag <- evalAllGenotypes(o2)
+        ## Set mutation rate of the "species indicator" close to 1e-10
+        out1 <- oncoSimulIndiv(o2, initMutant = c("A", "C"),
+                               initSize = c(10, 20),
+                               mu = c(A = 1e-10, C = 1e-10,
+                                      B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
+                               onlyCancer = FALSE)
+        not_possible <- c("", ag$Genotype[ag$Fitness == 0])
+        expect_false(any(not_possible %in%  out1$GenotypesLabels))
+    }
+
+
+    num_reps <- 5
+    for(i in 1:num_reps) {
+        r2 <- rfitness(6)
+        ## Make sure these always viable for interesting stuff
+        r2[2, 7] <- 1 + runif(1) # A
+        r2[4, 7] <- 1 + runif(1) # C
+        r2[8, 7] <- 1 + runif(1) # A, B
+        ## Two species, first with pos 1 and 2
+        ## all with both mutated is 0
+        r2[ (r2[, 1] == 0) & (r2[, 2] == 1),  7] <- 0
+        r2[ (r2[, 3] == 0) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
+        
+        r2[ (r2[, 1] == 1) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
+        r2[ (r2[, 3] == 1) & apply(r2[, 1:2] == 1, 1, any),  7] <- 0
+        r2 <- r2[r2[, 7] > 0, ]
+        o2 <- allFitnessEffects(genotFitness = r2)
+        ag <- evalAllGenotypes(o2)
+        ## Set mutation rate of the "species indicator" close to 1e-10
+        out1 <- oncoSimulIndiv(o2, initMutant = c("A", "C"),
+                   model = "McFLD",
+                   initSize = c(10, 20),
+                   mu = c(A = 1e-10, C = 1e-10,
+                          B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
+                   onlyCancer = FALSE)
+        not_possible <- c("", ag$Genotype[ag$Fitness == 0])
+        expect_false(any(not_possible %in%  out1$GenotypesLabels))
+    }
+
+    
+    
+
+
+
+})
+
+
+
+test_that("multiple init mutants: different species, FDF", {
+
+    gffd <- data.frame(
+        Genotype = c("WT",
+                     "A", "A, B",
+                     "C", "C, D", "C, E"),
+        Fitness = c("0",
+                    "1.3",
+                    "1.4",
+                    "1.4",
+                    "1.1 + 0.7*((f_1 + f_2) > 0.3)",
+                    "1.2 + sqrt(f_1 + f_3 + f_2)"),        
+    stringsAsFactors = FALSE)
+    afd <- allFitnessEffects(genotFitness = gffd, 
+                             frequencyDependentFitness = TRUE)
+    evalAllGenotypes(afd, spPopSizes = rep(10, 6))
+    
+
+})
 
 
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
-
-
 
 
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))

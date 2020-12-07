@@ -2,7 +2,8 @@
 
 ** first
 
-   
+ - [ ] use the full_fl_spec in fitness evaluations in FDF. That is the
+   single thing that shows all mappings explicitly  
  - [ ] FDF: specify fitness functions as f_C, n_WT, f_A,D, etc.
    
  - [ ] Add a warning about names of genes: avoid "", "WT", "Root"

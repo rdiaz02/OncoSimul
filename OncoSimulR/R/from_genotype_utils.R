@@ -309,10 +309,12 @@ to_genotFitness_std <- function(x,
         }
         class(x) <- c("matrix", "genotype_fitness_matrix")
     } else { ## frequency-dependent fitness
-        conversionTable <- conversionTable(ncol(x) - 1, frequencyType)
+        ## browser()
+        ## RDU: what is this for?
+        conversionTable_o <- conversionTable(ncol(x) - 1, frequencyType)
         
         x[, ncol(x)] <- sapply(x[, ncol(x)],
-                               function(x){findAndReplace(x, conversionTable)})
+                               function(x){ findAndReplace(x, conversionTable_o)})
         
     if(frequencyType == "auto"){
       ch <- paste(as.character(x[, ncol(x)]), collapse = "")
