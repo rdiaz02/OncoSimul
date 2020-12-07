@@ -2288,6 +2288,11 @@ nr_oncoSimul.internal <- function(rFE,
         initMutant <- vector(mode = "integer")
         initMutantString <- ""
     }
+    if(any(initSize <= 0)) stop("At least one initSize <= 0")
+
+    if(length(initSize) != length(initMutant))
+        stop("Lengths of initSize and initMutant differ")
+    
     ## these are never user options
     ## if(initSize_species < 10) {
     ##     warning("initSize_species too small?")

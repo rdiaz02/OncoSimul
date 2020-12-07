@@ -1451,14 +1451,15 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 
   // check_disable_later
   checkLegitGenotype(ge, F);
-
+  
   std::vector<double> s;
-
-	if( ((ge.orderEff.size() + ge.epistRtEff.size() +
-       ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
-	  Rcpp::Rcout << "NOTE: you have evaluated fitness of a genotype of length zero (WT?) when non-fdf-fitness. It is 1 by decree. \n";
-    // s.push_back(1.0); //Eh??!! 1? or 0? FIXME It should be empty! and have prodFitness
-    // deal with it.
+  
+  if( ((ge.orderEff.size() + ge.epistRtEff.size() +
+	ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
+    Rcpp::Rcout << "NOTE: you have evaluated fitness of a genotype of length zero (WT?) when non-fdf-fitness. It is 1 by decree. \n";
+    // Empty and have prodFitness deal with it.
+    // Why not return a 0 (1 - 1)? FIXME: zz5
+    // s.push_back(0.0); return s;
     return s;
   }
 

@@ -684,24 +684,6 @@ test_that("initMutant works if == number of genes", {
 })
 
 
-## zz4:
-test_that("initMutant: multiple pops", {
-
-    o1 <- allFitnessEffects(
-        noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
-
-    ## zz: test with the above fitness spec
-    o2 <- allFitnessEffects(genotFitness = rfitness(2))
-
-    oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
-                   initSize = c(300, 20),
-                   onlyCancer = FALSE)
-
-    
-})
-
-
-
 test_that("initMutant with freq-dep-fitness"  , {
     r <- data.frame(rfitness(2))
     r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
@@ -858,6 +840,82 @@ test_that("initMutant does not accept integer vectors", {
                  fixed = TRUE)
 })
 
+
+## zz4:
+test_that("initMutant: multiple pops, basic", {
+    o1 <- allFitnessEffects(
+        noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
+    expect_silent(out <- oncoSimulIndiv(o1, initMutant = c("c, b", "b"),
+                                        initSize = c(300, 20),
+                                        onlyCancer = FALSE))
+
+
+    oncoSimulIndiv(o1, initMutant = c("c, b", "WT"),
+                   initSize = c(300, 20),
+                   onlyCancer = FALSE)
+
+    oncoSimulIndiv(o1, initMutant = c("c, b", "WT", "a"),
+                   initSize = c(300, 20, 10),
+                   onlyCancer = FALSE)
+
+    ## Pass all genotypes
+    oncoSimulIndiv(o1, initMutant = c("WT", "a", "b", "c",
+                                      "a, b", "a, c", "b, c",
+                                      "a, b, c"),
+                   initSize = c(300, 20, 10, 6, 9, 5, 4, 6),
+                   onlyCancer = FALSE)
+
+    set.seed(1)
+    r2 <- rfitness(2)
+    r2[4, 3] <- 0
+    o2 <- allFitnessEffects(genotFitness = r2)
+    oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+                   initSize = c(300, 20),
+                   onlyCancer = FALSE)
+    expect_warning( oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+                   initSize = c(300, 20),
+                   onlyCancer = FALSE),
+                   "Init Mutant with birth == 0.0", fixed = TRUE)
+    set.seed(1)
+    r2 <- rfitness(2)
+    o2 <- allFitnessEffects(genotFitness = r2)
+    expect_silent(out <- oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+                   initSize = c(300, 20),
+                   onlyCancer = FALSE))
+})
+
+
+test_that("lengths initSize and initMutant must match", {
+    set.seed(1)
+    r2 <- rfitness(2)
+    o2 <- allFitnessEffects(genotFitness = r2)
+    expect_error(oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+                          initSize = c(20),
+                          onlyCancer = FALSE),
+                 "Lengths of initSize and initMutant differ",
+                 fixed = TRUE)
+    })
+
+
+test_that("multiple init mutants: pops of 0 size is error", {
+    set.seed(1)
+    r2 <- rfitness(2)
+    o2 <- allFitnessEffects(genotFitness = r2)
+    expect_error(oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+                          initSize = c(0, 20),
+                          onlyCancer = FALSE),
+                 "At least one initSize <= 0",
+                 fixed = TRUE)
+    ## Now caught in R
+    ## expect_true(out$other$ExceptionMessage
+    ##              "Unrecoverable exception: ti: popSize <= 0",
+    ##              fixed = TRUE)
+})
+
+
+
+
+
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
 
 
@@ -868,3 +926,4 @@ rm(inittime)
 
 
 
+ 

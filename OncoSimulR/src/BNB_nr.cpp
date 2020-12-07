@@ -1116,18 +1116,19 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 
 
-  totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
+  
 
   
   /////////////////////////////////////////////////////////////////
-
+  ///
   ///   Initialize population. Former initMutant stuff   //////////
   ///   This could all be a function 
 
 
-  std::vector<Genotype> Genotypes(1);
-  // Genotypes[0] = wtGenotype(); //Not needed, but be explicit.
-  std::vector<spParamsP> popParams(1);
+  totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
+  
+  std::vector<Genotype> Genotypes(0);
+  std::vector<spParamsP> popParams(0);
   popParams.reserve(sp_per_period);
   Genotypes.reserve(sp_per_period);
 
@@ -1137,8 +1138,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   spParamsP tmpParam;
   init_tmpP(tmpParam);
 
-  // Create temporal copy: we were passed a const. and might need to
-  // add if no initMutant
+  // Create temporal copy: we were passed a const. If there are no initMutants,
+  // we create the initMutant with just the wildtype
+  
   std::vector < std::vector<int> > tmpInitMutant;
   if(initMutant.size() == 0) {
     // Empty genotype
@@ -1147,9 +1149,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     tmpInitMutant = initMutant;
   }
 
-  //zz4: debug print_ini
-  print_initMutant(tmpInitMutant);
-  if(tmpInitMutant.size() == 0) throw std::logic_error("tmpInitMutant is of size 0");
+  // //zz4: debug print_ini
+  // print_initMutant(tmpInitMutant);
+  // if(tmpInitMutant.size() == 0) throw std::logic_error("tmpInitMutant is of size 0");
 
 
 
@@ -1179,7 +1181,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     numGenesInitMut = newGenotype.orderEff.size() +
       newGenotype.epistRtEff.size() + newGenotype.rest.size() +
       newGenotype.flGenes.size();
-   
+
+    DP2(numGenesInitMut);
 
     if( (!(numGenesInitMut == 0)) != (!(newGenotype == wtGenotype()))  )
       throw std::logic_error("InitMutant: Either a WT genotype without 0 mutations or a non-WT with 0 mutations");
@@ -1188,9 +1191,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     tmpParam.numMutablePos = numLoci - numGenesInitMut;
     // Next unreachable since caught in R.
     // But just in case, since it would lead to seg fault.
-    if(tmpParam[m].numMutablePos < 0)
+    if(tmpParam.numMutablePos < 0)
       throw std::invalid_argument("initMutant's genotype has more genes than are possible.");
 
+    
     tmpParam.popSize = initSize[m];
     popParams.push_back(tmpParam);
     Genotypes.push_back(newGenotype);
@@ -1199,11 +1203,36 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // pv: when calling mapTimes_updateP
     // timeLastUpdate updated below, right after pv
 
+    //zz
+    DP2(m);
+    DP2(initSize[m]);
+    print_spP(tmpParam);
+    print_Genotype(newGenotype);
   }
 
+  //zz: debug
+  DP2(tmpInitMutant.size());
+  DP1("print all genotypes in initMutant");
+  for(size_t m = 0; m != tmpInitMutant.size(); ++m ) {
+    print_Genotype(Genotypes[m]);
+    print_spP(popParams[m]);
+  }
+
+
+  //zz: debug
+  DP2(popParams.size());
+  DP1("print all genotypes in popParams");
+  for(size_t m = 0; m != popParams.size(); ++m ) {
+    print_Genotype(Genotypes[m]);
+    print_spP(popParams[m]);
+  }
+
+  // Not used any more.
+  tmpInitMutant.clear();
+  
   // Assign fitness, mutation, W, R. In that order. Then pv and add to POM.
   // The last two are specific of BNB. Beware if using a different algorithm
-  for(size_t m = 0; m != tmpInitMutant.size(); ++m ) {
+  for(size_t m = 0; m != popParams.size(); ++m ) {
     if(typeModel == TypeModel::bozic1) {
       popParams[m].death =
 	prodDeathFitness(evalGenotypeFitness(Genotypes[m],
@@ -1211,11 +1240,14 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 					     currentTime));
       popParams[m].birth = 1.0;
       if(!fitnessEffects.frequencyDependentFitness &&
-	 (popParams[m].numMutablePos == numGenesGenotype ) &&
+	 (popParams[m].numMutablePos == numLoci ) &&
 	 (popParams[m].death != 1.0)) throw std::logic_error("WT initMutant in non-FDF must have death rate 1 with this model");
       if(popParams[m].death == 1.0) Rcpp::Rcout << "Init Mutant with death == 1.0\n";
-      if(popParams[m].death >  99) Rcpp::warning << "Init Mutant with death > 99\n";
+      if(popParams[m].death >  99) Rcpp::warning("Init Mutant with death > 99");
     } else {
+      DP2(m);
+      print_Genotype(Genotypes[m]);
+      
       popParams[m].birth =
 	prodFitness(evalGenotypeFitness(Genotypes[m],
 					fitnessEffects, Genotypes, popParams,
@@ -1228,10 +1260,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	popParams[m].death = std::max(1.0, log1p(totPopSize/K));
       
       if(!fitnessEffects.frequencyDependentFitness &&
-	 (popParams[m].numMutablePos == numGenesGenotype ) &&
+	 (popParams[m].numMutablePos == numLoci ) &&
 	 (popParams[m].birth != 1.0) ) throw std::logic_error("WT initMutant in non-FDF must have birth rate 1 with this model");
       if(popParams[m].birth == 1.0) Rcpp::Rcout << "Init Mutant with birth == 1.0\n";
-      if(popParams[m].birth == 0.0) Rcpp::warning << "Init Mutant with birth == 0.0\n";
+      if(popParams[m].birth == 0.0) Rcpp::warning("Init Mutant with birth == 0.0");
     }
 
     popParams[m].mutation = mutationFromScratch(mu, popParams[m], Genotypes[m],
@@ -1249,6 +1281,11 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // FIXME: next line not needed? We assign it right below
     // and we first erase the entry in mapTimes
     popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
+    //zz5
+    DP1("popParams right before ti_next");
+    DP2(m);
+    print_spP(popParams[m]);
+
     tmpdouble1 = ti_nextTime_tmax_2_st(popParams[m],
 				       currentTime,
 				       tSample,
@@ -1257,43 +1294,98 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     popParams[m].timeLastUpdate = currentTime;
     
   }
-  // zz4 : add the one that needs to be added only!
-    addToPOM(pom, Genotypes[m], intName, genesInFitness); 
- 
 
-// zz4: spit out the values of spParams if verbosity
-  // X1: end of mess of initialization block
-
+  // POM and storing output
+  // Code repeated from end of  nr_totPopSize_and_fill_out_crude_P
+  // (except the keepEvery condition)
+  // Finding max_ndr from code at start of that function
   
- 
-
-  if( keepEvery > 0 ) {
-    // We keep the first ONLY if we are storing more than one.
+   if( keepEvery > 0 ) {
+     // We keep the first genotype(s) ONLY if we are storing more than one.
+    lastStoredSample = currentTime;
     outNS_i++;
+    int ndr_lp = 0;
+    double l_pop_s = 0.0;
+    int largest_clone = -99;
+
+    int tmp_ndr = 0;
+    int max_ndr = 0;
+
     time_out.push_back(currentTime);
 
-    genot_out.push_back(Genotypes[0]);
-    popSizes_out.push_back(popParams[0].popSize);
-    index_out.push_back(outNS_i);
+    for(size_t i = 0; i < popParams.size(); ++i) {
+      genot_out.push_back(Genotypes[i]);
+      popSizes_out.push_back(popParams[i].popSize);
+      index_out.push_back(outNS_i);
 
-    sampleTotPopSize.push_back(popParams[0].popSize);
-    sampleLargestPopSize.push_back(popParams[0].popSize);
-    sampleMaxNDr.push_back(getGenotypeDrivers(Genotypes[0],
-					      fitnessEffects.drv).size());
-    sampleNDrLargestPop.push_back(sampleMaxNDr[0]);
+      tmp_ndr = getGenotypeDrivers(Genotypes[i], fitnessEffects.drv).size();
+      if(tmp_ndr > max_ndr) max_ndr = tmp_ndr;
+      
+      if(popParams[i].popSize > l_pop_s) {
+	l_pop_s = popParams[i].popSize;
+	ndr_lp = getGenotypeDrivers(Genotypes[i], fitnessEffects.drv).size();
+	largest_clone = i;
+      }
+    }
+    
+    sampleTotPopSize.push_back(totPopSize); //totPopSize computed above
+    sampleLargestPopSize.push_back(l_pop_s);
+    sampleMaxNDr.push_back(max_ndr); 
+    sampleNDrLargestPop.push_back(ndr_lp);
+
+    if(l_pop_s > 0) {
+      if (largest_clone < 0)
+    	throw std::logic_error("largest_clone < 0");
+      addToPOM(pom, Genotypes[largest_clone], intName, genesInFitness);
+    } else {
+      addToPOM(pom, "_EXTINCTION_");
+    }
+   } else {
+     double l_pop_s = 0.0;
+     int largest_clone = -99;
+     for(size_t i = 0; i < popParams.size(); ++i) {
+       if(popParams[i].popSize > l_pop_s) {
+	 l_pop_s = popParams[i].popSize;
+	 largest_clone = i;
+       }
+     }
+     if(l_pop_s > 0) {
+       if (largest_clone < 0)
+	 throw std::logic_error("largest_clone < 0");
+       addToPOM(pom, Genotypes[largest_clone], intName, genesInFitness);
+     } else {
+       addToPOM(pom, "_EXTINCTION_");
+    }
+   }
+
+
+   if(verbosity > 2) {
+     Rcpp::Rcout << "\n Population right after initialization\n";
+     for(size_t i = 0; i < popParams.size(); ++i) {
+       print_spP(popParams[i]);
+     }
+   }
+  /////////////////////////////////////////////////////////////////
+  ///
+  ///  < /Initialize population. Former initMutant stuff   //////////
+  /// 
+
+
+
+  DP1("print all genotypes in popParams AFTER all init done");
+  for(size_t m = 0; m != popParams.size(); ++m ) {
+    print_Genotype(Genotypes[m]);
+    print_spP(popParams[m]);
   }
-  // FIXME: why next line and not just genot_out.push_back(Genotypes[i]);
-  // if keepEvery > 0? We do that already.
-  // It is just ugly to get a 0 in that first genotype when keepEvery < 0
-  // uniqueGenotypes.insert(Genotypes[0].to_ullong());
+
+
+     
   timeNextPopSample = currentTime + sampleEvery;
 
   numSpecies = tmpInitMutant.size();
 
 
-
-
-// For McFL error
+  // For McFL error
   double totPopSize_previous = totPopSize;
   double DA_previous = log1p(totPopSize_previous/K);
 
@@ -1315,7 +1407,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     if(verbosity > 1) {
       if(! (iter % iterL) ) {
 	Rcpp::Rcout << "\n\n    ... iteration " << iter;
-	Rcpp::Rcout << "\n    ... currentTime " << currentTime <<"\n";
+	Rcpp::Rcout << "\n      ... currentTime " << currentTime <<"\n";
       }
       if(!(numSpecies % speciesL )) {
 	Rcpp::Rcout << "\n\n    ... iteration " << iter;

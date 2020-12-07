@@ -44,7 +44,7 @@ void print_spP(const spParamsP& spP) {
 	    <<"\n mutation = " << spP.mutation
 	    <<"\n timeLastUpdate = " << spP.timeLastUpdate
 	    <<"\n absfitness = " << spP.absfitness
-	    <<"\n numMutablePos =" << spP.numMutablePos
+	    <<"\n numMutablePos = " << spP.numMutablePos
 	    <<"\n";
 }
 
