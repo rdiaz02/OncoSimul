@@ -798,13 +798,11 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       ## Create, for the user, a single data frame with everything.
       ## This is what C++ should consume
       stopifnot(identical(genotFitness$Fitness, fitnessLandscape_df$Fitness))
- 
-    
       ct1 <- conversionTable(ncol(genotFitness) - 1, frequencyType)
       Fitness_as_fvars <- sapply(fitnessLandscape_df$Fitness,
                              function(x){findAndReplace(x, ct1)})
       
-      Fitness_letters <- fitnessLandscape_df$Fitness
+      Fitness_original_as_letters <- fitnessLandscape_df$Fitness
       
       Genotype_letters <- genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
      
@@ -815,9 +813,10 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                  , Genotype_letters = Genotype_letters
                  , Genotype_fvars = fitnessLandscapeVariables ## used in C++
                  , Fitness_as_fvars = Fitness_as_fvars
-                 , Fitness_original_as_letters =  fitnessLandscape_df$Fitness 
+                 , Fitness_original_as_letters =  Fitness_original_as_letters
                    )
-
+      rownames(full_FDF_spec) <- 1:nrow(full_FDF_spec)
+      
     out <- list(long.rt = list(),
                 long.epistasis = list(),
                 long.orderEffects = list(),

@@ -309,12 +309,13 @@ to_genotFitness_std <- function(x,
         }
         class(x) <- c("matrix", "genotype_fitness_matrix")
     } else { ## frequency-dependent fitness
-        ## browser()
-        ## RDU: what is this for?
-        conversionTable_o <- conversionTable(ncol(x) - 1, frequencyType)
+        ## RDU: what is this for? It converts to numbers.
+        ## But it does not work reliably. It does not work when given as "n_"
+        ## We will do this at end. in full_FDF_spec
+        ## conversionTable_o <- conversionTable(ncol(x) - 1, frequencyType)
         
-        x[, ncol(x)] <- sapply(x[, ncol(x)],
-                               function(x){ findAndReplace(x, conversionTable_o)})
+        ## x[, ncol(x)] <- sapply(x[, ncol(x)],
+        ##                        function(x){ findAndReplace(x, conversionTable_o)})
         
     if(frequencyType == "auto"){
       ch <- paste(as.character(x[, ncol(x)]), collapse = "")

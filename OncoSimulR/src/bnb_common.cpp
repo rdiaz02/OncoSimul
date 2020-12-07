@@ -19,6 +19,23 @@
 #include <Rcpp.h>
 
 
+void print_mapTimes(std::multimap<double, int>& mapTimes) {
+  Rcpp::Rcout << "\n Printing mapTimes\n";
+  for(auto elem : mapTimes) {
+    Rcpp::Rcout << elem.first << "\t " << elem.second << "\n";
+  }
+  // std::multimap <double, int >::const_iterator it;
+  // for (it = mapTimes.begin(); it != mapTimes.end(); ++it) {
+  //   Rcpp::Rcout << it->first << "\n\n";
+
+  //   std::vector<int>::const_iterator itVec;
+  //   for (itVec = it->second.begin(); itVec != it->second.end(); ++itVec) {
+  //     Rcpp::Rcout << *itVec <<" ";
+  //   }
+  //   Rcpp::Rcout<<"\n";
+  // }
+}
+
 void print_initMutant(const std::vector < std::vector<int> >& initMutant) {
   Rcpp::Rcout <<"\n This is initMutant\n";
   for(size_t i = 0; i != initMutant.size(); ++i) {
@@ -1280,6 +1297,8 @@ void mapTimes_updateP(std::multimap<double, int>& mapTimes,
     mapTimes.erase(popParams[index].pv);
   popParams[index].pv = mapTimes.insert(std::make_pair(time, index));
 }
+
+
 
 
 void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,

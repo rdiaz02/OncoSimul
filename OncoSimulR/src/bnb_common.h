@@ -93,6 +93,8 @@ void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
 			       const std::vector<int>& sampleMaxNDr,
 		 const std::vector<int>& sampleNDrLargestPop);
 
+void print_mapTimes(std::multimap<double, int>& mapTimes);
+  
 void print_initMutant(const std::vector < std::vector<int> >& initMutant);
 
 void print_spP(const spParamsP& spP);

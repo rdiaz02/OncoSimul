@@ -997,14 +997,34 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.3",
                     "1.4",
                     "1.4",
+                    "1.1 + 0.7*((f_1 + f_1_2) > 0.3)",
+                    "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
+    stringsAsFactors = FALSE)
+    afd <- allFitnessEffects(genotFitness = gffd, 
+                             frequencyDependentFitness = TRUE)
+
+    evalAllGenotypes(afd, spPopSizes = rep(10, 6))
+})
+
+
+test_that("multiple init mutants: different species, FDF, crash if not in fitness table", {
+    ## Crash, as f_2 is not present
+    gffd <- data.frame(
+        Genotype = c("WT",
+                     "A", "A, B",
+                     "C", "C, D", "C, E"),
+        Fitness = c("0",
+                    "1.3",
+                    "1.4",
+                    "1.4",
                     "1.1 + 0.7*((f_1 + f_2) > 0.3)",
                     "1.2 + sqrt(f_1 + f_3 + f_2)"),        
     stringsAsFactors = FALSE)
     afd <- allFitnessEffects(genotFitness = gffd, 
                              frequencyDependentFitness = TRUE)
-    evalAllGenotypes(afd, spPopSizes = rep(10, 6))
-    
 
+    expect_error(evalAllGenotypes(afd, spPopSizes = rep(10, 6)))
+    ### FIXME: catch this exact string"Undefined symbol: 'f_2'", fixed = TRUE)
 })
 
 

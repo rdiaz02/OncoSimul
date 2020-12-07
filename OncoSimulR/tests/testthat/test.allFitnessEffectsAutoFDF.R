@@ -72,31 +72,33 @@ test_that("testing output when frequencyType = 'auto'", {
                                      frequencyDependentFitness = TRUE),
                    allFitnessEffects(genotFitness = r4,
                                      frequencyDependentFitness = TRUE))
+
+  ## 20 is where we are storing full_FDF_spec for now. Very brittle
+  expect_identical(allFitnessEffects(genotFitness = r3, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
+                   allFitnessEffects(genotFitness = r5, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE),
-                   allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE))
-  
-  expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE),
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE),
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
                    allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE),
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE))
+                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE),
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentFitness = TRUE))
+
 })
 
 cat(paste("\n Ending test.allFitnessEffectsFDF at", date(), "\n"))

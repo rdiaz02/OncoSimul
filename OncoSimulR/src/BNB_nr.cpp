@@ -1102,12 +1102,12 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   // for McFarland error
   em1 = 0.0;
   em1sc = 0.0;
-
+  
   int lastMaxDr = 0;
   double done_at = -9;
-
+  
   int num_successive_fixation = 0; // none so far
-
+  
 #ifdef MIN_RATIO_MUTS_NR
   g_min_birth_mut_ratio_nr = DBL_MAX;
   g_min_death_mut_ratio_nr = DBL_MAX;
@@ -1116,15 +1116,13 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 
 
-  
-
-  
   /////////////////////////////////////////////////////////////////
   ///
-  ///   Initialize population. Former initMutant stuff   //////////
-  ///   This could all be a function 
-
-
+  ///  Initialize population. Former initMutant stuff   //////////
+  ///
+  //
+     
+  numSpecies = initSize.size();
   totPopSize = std::accumulate(initSize.begin(), initSize.end(), 0.0);
   
   std::vector<Genotype> Genotypes(0);
@@ -1203,10 +1201,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
   }
 
-
-  // We will not use this any more.
   tmpInitMutant.clear();
-  
+   
   // Assign fitness, mutation, W, R. In that order. Then pv and add to POM.
   // The last two are specific of BNB. Beware if using a different algorithm
   for(size_t m = 0; m != popParams.size(); ++m ) {
@@ -1219,7 +1215,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       if(!fitnessEffects.frequencyDependentFitness &&
 	 (popParams[m].numMutablePos == numLoci ) &&
 	 (popParams[m].death != 1.0)) throw std::logic_error("WT initMutant in non-FDF must have death rate 1 with this model");
-      if(popParams[m].death == 1.0) Rcpp::Rcout << "Init Mutant with death == 1.0\n";
+      // Usual runs without initMutant can use this
+      if( (popParams[m].death == 1.0) &&
+	  (initMutant.size() != 0)) Rcpp::Rcout << "Init Mutant with death == 1.0\n";
       if(popParams[m].death >  99) Rcpp::warning("Init Mutant with death > 99");
     } else {
       
@@ -1237,7 +1235,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       if(!fitnessEffects.frequencyDependentFitness &&
 	 (popParams[m].numMutablePos == numLoci ) &&
 	 (popParams[m].birth != 1.0) ) throw std::logic_error("WT initMutant in non-FDF must have birth rate 1 with this model");
-      if(popParams[m].birth == 1.0) Rcpp::Rcout << "Init Mutant with birth == 1.0\n";
+      if((popParams[m].birth == 1.0) &&
+	 (initMutant.size() != 0) ) Rcpp::Rcout << "Init Mutant with birth == 1.0\n";
       if(popParams[m].birth == 0.0) Rcpp::warning("Init Mutant with birth == 0.0");
     }
 
@@ -1249,25 +1248,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 						dummyMutationRate);
     W_f_st(popParams[m]);
     R_f_st(popParams[m]);
-
-    // zz5: I think I need it because I will be deleting from
-    // within mapTimes_ipdateP. I would not need it if I just
-    // had timeLastUpdate < -1 ??
-    // FIXME: next line not needed? We assign it right below
-    // and we first erase the entry in mapTimes
-    popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
-    //zz5
-    // DP1("popParams right before ti_next");
-    // DP2(m);
-    // print_spP(popParams[m]);
-
-    tmpdouble1 = ti_nextTime_tmax_2_st(popParams[m],
-				       currentTime,
-				       tSample,
-				       ti_dbl_min, ti_e3);
-    mapTimes_updateP(mapTimes, popParams, m, tmpdouble1);
-    popParams[m].timeLastUpdate = currentTime;
-    
   }
 
   // POM and storing output
@@ -1346,18 +1326,17 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   /// 
 
 
-
-  DP1("print all genotypes in popParams AFTER all init done");
-  for(size_t m = 0; m != popParams.size(); ++m ) {
-    print_Genotype(Genotypes[m]);
-    print_spP(popParams[m]);
-  }
+   // zz5
+  // DP1("print all genotypes in popParams AFTER all init done");
+  // for(size_t m = 0; m != popParams.size(); ++m ) {
+  //   print_Genotype(Genotypes[m]);
+  //   print_spP(popParams[m]);
+  // }
 
 
      
   timeNextPopSample = currentTime + sampleEvery;
-
-  numSpecies = tmpInitMutant.size();
+  // numSpecies = popParams.size();
 
 
   // For McFL error
@@ -1374,6 +1353,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       simulsDone = true;
     }
 
+   
+
+    
     iter++;
 
     if( !(iter % iterInterrupt))
@@ -1403,9 +1385,24 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	      << "  tSample " << tSample
 	      << "  currentTime " << currentTime;
 #endif
-
+    
     if(iter == 1) {
-      // skip the next block and go directly to finding min of next mutation
+      // DO NOT move this block above (e.g., right after
+      // initializing initPop): this depends on tSample
+      // which depends on timeNextPopSample, which is changed inside
+      // this loop.  You could move the first definition
+      // of timeNextPopSample and tSample before the init
+      // block but what is the point?
+      for(size_t m = 0; m != popParams.size(); ++m ) {
+	// zz5: do I need this pv? See above, similar comment.
+	popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
+	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[m],
+					   currentTime,
+					   tSample,
+					   ti_dbl_min, ti_e3);
+	mapTimes_updateP(mapTimes, popParams, m, tmpdouble1);
+	popParams[m].timeLastUpdate = currentTime;
+      }
     } else { // any other iter
       if(to_update == 1) {
 	// we did not sample or mutate to a different species in previous period
@@ -1846,7 +1843,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
 	    // What we do here is step 6 of Algorithm 5, in the
 	    // "Otherwise", in p. 5 of suppl mat.
-
+	    
 	    if(popParams[sp].popSize > 0.0) {
 	      popParams[sp].popSize = 1.0 +
 		Algo2_st(popParams[sp], currentTime, mutationPropGrowth);

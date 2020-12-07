@@ -216,6 +216,7 @@ Dependency stringToDep(const std::string& dep) {
 //   }
 // }
 
+
 void print_EFVMap(const std::map<std::string, double>& efv) {
   Rcpp::Rcout << "\n Printing evalFVars_struct\n";
   for(auto elem : efv) {
@@ -1485,7 +1486,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   
   if( ((ge.orderEff.size() + ge.epistRtEff.size() +
 	ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
-    Rcpp::Rcout << "NOTE: you have evaluated fitness of a genotype of length zero (WT?) when non-fdf-fitness. It is 1 by decree. \n";
+    // Rcpp::Rcout << "NOTE: you have evaluated fitness of a genotype of length zero (WT?) when non-fdf-fitness. It is 1 by decree. \n";
     // Empty and have prodFitness deal with it.
     // Why not return a 0 (1 - 1)? FIXME: zz5
     // s.push_back(0.0); return s;

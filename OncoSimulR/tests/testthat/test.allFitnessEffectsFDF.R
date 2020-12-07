@@ -139,11 +139,11 @@ test_that("testing output", {
   
   expect_true(afe2$gMOneToOne)
   
-  lapply(afe1[c(10:13, 20)],  function(x){
+  lapply(afe1[c(10:13, 21)],  function(x){
     expect_null(x)
   })
   
-  lapply(afe2[c(10:13, 20)],  function(x){
+  lapply(afe2[c(10:13, 21)],  function(x){
     expect_null(x)
   })
   
@@ -151,11 +151,11 @@ test_that("testing output", {
   
   expect_equivalent(afe2$geneToModule, "Root")
   
-  expect_identical(afe1$fitnessLandscapeVariables, 
+  expect_equivalent(afe1$fitnessLandscapeVariables, 
                    OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 1, 
                                             frequencyType = "rel"))
   
-  expect_identical(afe2$fitnessLandscapeVariables, 
+  expect_equivalent(afe2$fitnessLandscapeVariables, 
                    OncoSimulR:::fVariablesN(ncol(afe2$fitnessLandscape) - 1, 
                                             frequencyType = "abs"))
   
@@ -198,31 +198,31 @@ test_that("testing output", {
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"), 
+                                     frequencyType = "rel")[-c(14, 20)], 
                    allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"))
+                                     frequencyType = "rel")[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"), 
+                                     frequencyType = "rel")[-c(14, 20)], 
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"))
+                                     frequencyType = "rel")[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"), 
+                                     frequencyType = "rel")[-c(14, 20)], 
                    allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"))
+                                     frequencyType = "rel")[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"), 
+                                     frequencyType = "rel")[-c(14, 20)], 
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"))
+                                     frequencyType = "rel")[-c(14, 20)])
   
   expect_identical(allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE, 
@@ -230,6 +230,7 @@ test_that("testing output", {
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentFitness = TRUE, 
                                      frequencyType = "rel"))
+
 })
 
 cat(paste("\n Ending test.allFitnessEffectsFDF at", date(), "\n"))

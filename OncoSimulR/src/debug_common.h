@@ -6,7 +6,9 @@
 // #define DEBUGZ
 // #define DEBUGV
 #define DEBUGW
-
+#define DP {Rcpp::Rcout <<"\nHola";\
+    Rcpp::Rcout << "\n A test of DPtest";	\
+    Rcpp::Rcout << "     tSample  = " << tSample << "\n";} 
 #define DP1(x) {Rcpp::Rcout << "\n DEBUG2: I am at " << x << std::endl;}
 #define DP2(x) {Rcpp::Rcout << "\n DEBUG2: Value of " << #x << " = " << x << std::endl;}
 #define DP3(x, t){                                                    \
@@ -17,11 +19,6 @@
     Rcpp::Rcout <<"\n DEBUG2:" ;                                      \
     for(int xut = 0; xut < t; ++xut) Rcpp::Rcout << "\t ";            \
     Rcpp::Rcout << "  Value of " << #x << " = " << x << std::endl; }
-
-/* void here(std::string x) { */
-/*   Rcpp::Rcout << "\n DEBUG: HERE at " << x << std::endl; */
-/* } */
-
 
 // Windows compiler in BioC is pre 4.8.0, so no to_string
 // From http://stackoverflow.com/a/5590404
