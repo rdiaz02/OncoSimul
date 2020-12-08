@@ -7,6 +7,9 @@
  - [ ] Check that changing rate of null mutation is irrelevant
    - And there is no need to add dummyMutationRate to all genomes
  - [ ] tests for new messages from mutationFromScratch (when that stabilizes)
+ - [ ] test where FDF crashes when no WT and no initMutant.
+ - [ ] The second predator-prey example sucks. In general, those examples
+   I am not sure are properly parameterized.
 
 
  
