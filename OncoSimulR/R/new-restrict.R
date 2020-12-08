@@ -414,17 +414,54 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
     )
 }
 
-## generate fitnesLanscapeVariables for FDF
-## fitness landscape as data frame with cols as genes,
-## and last column is genotype
-create_flvars <- function(x, frequencyType) {
-    x <- x[, -ncol(x), drop = FALSE]
+## Next two in crate_flvars_fitvars.
+
+## ## generate fitnesLanscapeVariables for FDF
+## ## fitness landscape as data frame with cols as genes,
+## ## and last column is genotype
+## create_flvars <- function(x, frequencyType) {
+##     x <- x[, -ncol(x), drop = FALSE]
+##     pasted <- apply(x, 1, function(z) paste(which(z == 1), collapse = "_"))
+##     npasted <- apply(x, 1, function(z) paste(colnames(x)[which(z == 1)], collapse = "_"))
+##     if(frequencyType == "abs") {
+##         tmp <- paste0("n_", pasted)
+##     } else {
+##         tmp <- paste0("f_", pasted)
+##     }
+##     names(tmp) <- npasted
+##     return(tmp)
+## }
+
+## ## fitness specification with letters -> fitness specification with numbers
+## names_to_nums_fitness <- function(fitness, genotFitness) {
+##     from_subst_pattern <- colnames(genotFitness[, -ncol(genotFitness)])
+##     to_subst_pattern <- as.character(1:(ncol(genotFitness) - 1))
+##     names(to_subst_pattern) <- from_subst_pattern
+##     return(stringr::str_replace_all(fitness, to_subst_pattern))
+## }
+
+## genotFitnes and frequency type -> fitnesLanscapeVariables for FDF and
+##          fitness with numbers, not names
+##   Done in a single function since both operations make
+##   the same assumptions
+create_flvars_fitvars <- function(genotFitness, frequencyType) {
+    x <- genotFitness[, -ncol(genotFitness), drop = FALSE]
     pasted <- apply(x, 1, function(z) paste(which(z == 1), collapse = "_"))
+    npasted <- apply(x, 1, function(z) paste(colnames(x)[which(z == 1)], collapse = "_"))
     if(frequencyType == "abs") {
-        return(paste0("n_", pasted))
+        flvars <- paste0("n_", pasted)
     } else {
-        return(paste0("f_", pasted))
+        flvars <- paste0("f_", pasted)
     }
+    names(flvars) <- npasted
+
+
+    from_subst_pattern <- colnames(x)
+    to_subst_pattern <- as.character(1:ncol(x))
+    names(to_subst_pattern) <- from_subst_pattern
+    Fitness_as_fvars <- stringr::str_replace_all(genotFitness$Fitness, to_subst_pattern)
+    return(list(flvars = flvars,
+                Fitness_as_fvars = Fitness_as_fvars))
 }
 
 ##New function
@@ -480,24 +517,24 @@ fVariablesL <- function (g, frequencyType) {
   return (fsVector)
 }
 
-## Assuming we are using the full fitness landscapes (i.e., none of
-## setting genotypes with 0 fitness are absent from the table)
-conversionTable <- function(g, frequencyType){
-  df <- data.frame(let = fVariablesL(g, frequencyType)[-1],
-                   num = fVariablesN(g, frequencyType)[-1],
-                   stringsAsFactors = FALSE)
-  return (df)
-}
+## ## Assuming we are using the full fitness landscapes (i.e., none of
+## ## setting genotypes with 0 fitness are absent from the table)
+## conversionTable <- function(g, frequencyType){
+##   df <- data.frame(let = fVariablesL(g, frequencyType)[-1],
+##                    num = fVariablesN(g, frequencyType)[-1],
+##                    stringsAsFactors = FALSE)
+##   return (df)
+## }
 
-findAndReplace <- function(str, conversionTable_input){
+## findAndReplace <- function(str, conversionTable_input){
 
-  pattern <- rev(setNames(as.character(conversionTable_input$num),
-                      conversionTable_input$let))
+##   pattern <- rev(setNames(as.character(conversionTable_input$num),
+##                       conversionTable_input$let))
 
-  str <- stringr::str_replace_all(string = str,
-                                  pattern = pattern)
-  return(str)
-}
+##   str <- stringr::str_replace_all(string = str,
+##                                   pattern = pattern)
+##   return(str)
+## }
 
 allFitnessORMutatorEffects <- function(rT = NULL,
                                        epistasis = NULL,
@@ -781,7 +818,13 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       } else { frequencyType = frequencyType }
       ## Wrong: assumes all genotypes in fitness landscape
       ## fitnessLandscapeVariables = fVariablesN(ncol(genotFitness) - 1, frequencyType)
-      fitnessLandscapeVariables <- create_flvars(genotFitness, frequencyType)
+      ## fitnessLandscapeVariables <- create_flvars(genotFitness, frequencyType)
+
+      stopifnot(identical(genotFitness$Fitness, fitnessLandscape_df$Fitness))
+      
+      flvars_and_fitvars <- create_flvars_fitvars(genotFitness, frequencyType)
+      fitnessLandscapeVariables <- flvars_and_fitvars$flvars
+      Fitness_as_fvars <- flvars_and_fitvars$Fitness_as_fvars
     }
 
     if(!is.null(drvNames)) {
@@ -797,23 +840,28 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                       stringsAsFactors = FALSE)
       ## Create, for the user, a single data frame with everything.
       ## This is what C++ should consume
-      stopifnot(identical(genotFitness$Fitness, fitnessLandscape_df$Fitness))
-      ct1 <- conversionTable(ncol(genotFitness) - 1, frequencyType)
-      Fitness_as_fvars <- sapply(fitnessLandscape_df$Fitness,
-                             function(x){findAndReplace(x, ct1)})
+
+      ## stopifnot(identical(genotFitness$Fitness, fitnessLandscape_df$Fitness))
+      ## ct1 <- conversionTable(ncol(genotFitness) - 1, frequencyType)
+      ## browser()
+
+      ## from_subst_pattern <- colnames(genotFitness[, -ncol(genotFitness)])
+      ## to_subst_pattern <- 1:(ncol(genotFitness) - 1)
       
-      Fitness_original_as_letters <- fitnessLandscape_df$Fitness
-      
-      Genotype_letters <- genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
+      ## Fitness_as_fvars <- names_to_nums_fitness(fitnessLandscape_df$Fitness,
+      ##                                           genotFitness)
+      ## Fitness_as_fvars <- sapply(fitnessLandscape_df$Fitness,
+      ##                        function(x){findAndReplace(x, ct1)})
      
-      ## And this ought to allow to pass fitness spec as letters
+      ## This ought to allow to pass fitness spec as letters. Preserve original
+      Fitness_original_as_letters <- fitnessLandscape_df$Fitness
       fitnessLandscape_df$Fitness <- Fitness_as_fvars
       
       full_FDF_spec <- cbind(genotFitness[, -ncol(genotFitness)]
-                 , Genotype_letters = Genotype_letters
+                 , Genotype_letters = genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
                  , Genotype_fvars = fitnessLandscapeVariables ## used in C++
                  , Fitness_as_fvars = Fitness_as_fvars
-                 , Fitness_original_as_letters =  Fitness_original_as_letters
+                 , Fitness_original_as_letters = Fitness_original_as_letters
                    )
       rownames(full_FDF_spec) <- 1:nrow(full_FDF_spec)
       
