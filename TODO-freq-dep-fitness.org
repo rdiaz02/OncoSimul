@@ -5,6 +5,9 @@
    
  - [ ] make onlyCancer = FALSE the default. And ditto for detection
    drivers, etc.
+ - [ ] Allow spPopSizes (evalAllGenotypes) to be named, and check if matches order.
+ - [ ] Same for initSize.
+ - [ ] Think about catching silly gene names: f_, n_, etc.
  - [ ] mutator and multispecies: think, since it would affect the species marker genes.
  - [ ] for FDF: any expression of things that do not exist do not make it
    bail or crash, but return a 0 for that symbol, with a warning given to

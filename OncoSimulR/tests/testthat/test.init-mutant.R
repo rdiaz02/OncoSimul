@@ -1083,7 +1083,43 @@ test_that("multiple init mutants: different species, FDF", {
 
 
 
+test_that("multiple init mutants: different species, FDF, check fitness", {
+    mspecF <- data.frame(
+        Genotype = c("A",
+                     "A, a1", "A, a2", "A, a1, a2",
+                     "B",
+                     "B, b1", "B, b2", "B, b3",
+                     "B, b1, b2", "B, b1, b3", "B, b1, b2, b3"),
+        Fitness = c("1 + f_A_a1",
+                    "1 + f_A_a2",
+                    "1 + f_A_a1_a2",
+                    "1 + f_B",
+                    "1 + f_B_b1",
+                    "1 + f_B_b2",
+                    "1 + f_B_b3",
+                    "1 + f_B_b1_b2",
+                    "1 + f_B_b1_b3",
+                    "1 + f_B_b1_b2_b3",
+                    "1 + f_A")
+    )
+    fmspecF <- allFitnessEffects(genotFitness = mspecF,
+                                 frequencyDependentFitness = TRUE)
+    ## Remeber, spPopSizes correspond to the genotypes
+    ## shown in
+    fmspecF$full_FDF_spec
+    ## in exactly that order
 
+    afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11)
+
+    ## Show only viable ones
+    afmspecF[afmspecF$Fitness >= 1, ]
+
+    ## Expected values
+    exv <- 1 + c(3, 5, 4, 8, 6, 7, 9, 2, 10, 11, 1)/sum(1:11)
+    stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Fitness >= 1, ]$Fitness)))
+
+
+})
 
 
 test_that("multiple init mutants: different species, FDF, crash if not in fitness table", {

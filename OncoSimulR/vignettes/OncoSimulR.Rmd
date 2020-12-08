@@ -226,6 +226,12 @@ is a summary of some of its key features:
   study complex scenarios that are not amenable to analytical
   solutions. More generally, we can model predation and parasitism,
   cooperation and mutualism, and commensalism.
+
+* It is possible to start the simulation with arbitrary initial
+  composition (section \@ref(minitmutant)) and to simulate multiple species
+  (section \@ref(multispecies)). You can thus run simulations
+  that involve both ecological and evolutionary processes involving
+  inter-species relationships plus genetic restrictions in evolution.
   
   <!-- Evaluating frequently the fitness across -->
   <!-- the simulation, you can obtain a dynamic fitness landscape . -->
@@ -7496,40 +7502,47 @@ mspecF <- data.frame(
                  "B",
                  "B, b1", "B, b2", "B, b3",
                  "B, b1, b2", "B, b1, b3", "B, b1, b2, b3"),
-    Fitness = c("1 + f_B_b1_b2",
-                "1 + f_B_b1_b3",
-                "1 + f_B_b2_b3",
-                "1 + f_B_b1_b2_b3",
-                "1 + f_A",
-                "1 + f_A_a1",
+    Fitness = c("1 + f_A_a1",
                 "1 + f_A_a2",
                 "1 + f_A_a1_a2",
                 "1 + f_B",
                 "1 + f_B_b1",
-                "1 + f_B_b2")
+                "1 + f_B_b2",
+                "1 + f_B_b3",
+                "1 + f_B_b1_b2",
+                "1 + f_B_b1_b3",
+                "1 + f_B_b1_b2_b3",
+                "1 + f_A")
 )
 fmspecF <- allFitnessEffects(genotFitness = mspecF,
                              frequencyDependentFitness = TRUE)
+## Remeber, spPopSizes correspond to the genotypes
+## shown in
+fmspecF$full_FDF_spec
+## in exactly that order
 
 afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11)
 
 ## Show only viable ones
-afmspec[afmspec$Fitness >= 1, ]
+afmspecF[afmspecF$Fitness >= 1, ]
+
+## Expected values
+exv <- 1 + c(3, 5, 4, 8, 6, 7, 9, 2, 10, 11, 1)/sum(1:11)
+stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Fitness >= 1, ]$Fitness)))
 
 muv <- c(1e-10, rep(1e-5, 2), 1e-10, rep(1e-5, 3))
 names(muv) <- c("A", paste0("a", 1:2), "B", paste0("b", 1:3))
 
-out1 <- oncoSimulIndiv(fmspec, initMutant = c("A", "B"),
-                       initSize = c(100, 200),
+out1 <- oncoSimulIndiv(fmspecF, initMutant = c("A", "B"),
+                       initSize = c(1e4, 1e5),
                        mu = muv,
-                       onlyCancer = FALSE,
-                       finalTime = 200)
+                       finalTime = 20,
+                       model = "McFLD",
+                       onlyCancer = FALSE)
 
 ```
 
-
-
-
+Some further examples are given below, as in \@ref(#competition1mult).
 
 \clearpage
 
@@ -8784,15 +8797,19 @@ consumer-resource models [see, for example, section 3.4 in
 @Otto2007].
 
 OncoSimulR was originally designed as a forward-time genetic
-simulator; thus, we need to use a simple trick to get the system
-going. For example, suppose we want to model a predator-prey system;
-we can do this having a WT that can mutate into either preys or
-predators. (This will not be necessary once we can specify starting
-the simulation from populations with arbitrary numbers of different
-clones.) There is, in fact, a small leakage in the system because
-both preys and predators are "leaking" a small number of children,
-via mutation to a non-viable predator-and-prey genotype, but this is
-negligible relative to their birth/death rates.
+simulator; thus, we used to need to use a simple trick to get the
+system going. For example, suppose we want to model a predator-prey
+system; we could do this having a WT that can mutate into either
+preys or predators. (This is no longer necessary since we can
+specify starting the simulation from populations with arbitrary
+numbers of different clones; see sections \@ref(minitmutant) and
+\@ref(multispecies). But we have not yet updated the examples).
+
+Even with the There is, in fact, a small leakage in the system
+because both preys and predators are "leaking" a small number of
+children, via mutation to a non-viable predator-and-prey genotype,
+but this is negligible relative to their birth/death rates.
+
 
 
 We will use below the usual consumer-resource model with
@@ -8827,14 +8844,17 @@ system going differently by having different mutations from WT to prey and
 predator.
 
 
-
+FIXME: clarify how we use `n_` or `f_`, since some of the examples
+below should use `f_` or at least a ratio over the appropriate `n_`
+(otherwise, we are passing propensities).
 
 
 
 
 ### Competition {#competition1}
 First, create a function that will generate the usual Lotka-Volterra
-expressions for competition models: 
+expressions for competition models (see below for this example
+without using the WT, and directly starting from "S1" and "S2").
 
 ```{r lotka1}
 G_fe_LV <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-4,
@@ -8920,6 +8940,200 @@ par(op)
 <!-- Fine, the op, etc do not seem to work. -->
 
 
+### Competition {#competition1mult}
+
+We repeat the above, but starting directly from the two species,
+using the \@ref(multispecies) logic and \@ref(minitmutant). 
+
+
+```{r lotka1multi}
+G_fe_LVm <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-4,
+                                 gt = c("S1", "S2")) {
+    data.frame(Genotype = gt,
+               Fitness = c(
+                  paste0("1 + ", r1,
+                         " * ( 1 - (n_1 + ", a_12, " * n_2)/", K1,
+                         ")"),
+                  paste0("1 + ", r2,
+                         " * ( 1 - (n_2 + ", a_21, " * n_1)/", K2,
+                         ")")
+                  ))
+}
+
+## Show expressions for birth rates
+G_fe_LVm("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
+
+``` 
+```{r, echo = FALSE}
+set.seed(1)
+```
+```{r complv1multi, message=FALSE}
+fe_competitionm <-
+    allFitnessEffects(
+        genotFitness =
+            G_fe_LVm(1.5, 1.4, 10000, 4000, 0.6, 0.2,
+                  gt = c("S1", "S2")),
+        frequencyDependentFitness = TRUE)
+
+fe_competitionm$full_FDF_spec
+
+competitionm <- oncoSimulIndiv(fe_competitionm,
+                              model = "Exp",
+                              initMutant = c("S1", "S2"),
+                              initSize = c(5000, 2000), 
+                              onlyCancer = FALSE, 
+                              finalTime = 100,
+                              mu = 1e-4,
+                              keepPhylog = TRUE,
+                              seed = NULL, 
+                              errorHitMaxTries = FALSE, 
+                              errorHitWallTime = FALSE)
+```
+
+```{r pp1wtmulti}
+plot(competitionm, show = "genotypes")
+```
+
+
+
+
+<!-- ### Predator-prey, first example {#predprey1} -->
+
+<!-- The simplest model would use the above Lotka-Volterra expressions -->
+<!-- and set one of the `a_` to be negative [see, for example, @Otto2007, -->
+<!-- p. 73]. Let's turn former "S2" and thus `a_21 < 0` (to make the -->
+<!-- effects more salient, we also increase that value in magnitude). -->
+
+<!-- ```{r echo = FALSE} -->
+<!-- set.seed(1) -->
+<!-- ``` -->
+
+
+<!-- FIXME and RECHECK!!!!! -->
+<!-- I think this is wrong, because Predator is actually n_1, so -->
+<!-- expressions are wrong.  -->
+
+<!-- ```{r lotka2} -->
+<!-- fe_pred_prey <- -->
+<!--     allFitnessEffects( -->
+<!--         genotFitness = -->
+<!--             G_fe_LV(1.5, 1.4, 10000, 4000, 0.6, -0.5, awt = 1, -->
+<!--                   gt = c("WT", "prey", "Predator")), -->
+<!--         frequencyDependentFitness = TRUE, -->
+<!--         frequencyType = "abs") -->
+
+<!-- pred_prey <- oncoSimulIndiv(fe_pred_prey, -->
+<!--                             model = "Exp", -->
+<!--                             onlyCancer = FALSE,  -->
+<!--                             finalTime = 100, -->
+<!--                             mu = 1e-4, -->
+<!--                             initSize = 40000,  -->
+<!--                             keepPhylog = TRUE, -->
+<!--                             seed = NULL,  -->
+<!--                             errorHitMaxTries = FALSE,  -->
+<!--                             errorHitWallTime = FALSE) -->
+<!-- ``` -->
+
+<!-- ```{r echo=FALSE} -->
+<!-- op <- par(mfrow = c(1, 2)) -->
+<!-- ``` -->
+
+<!-- ```{r prepreylv2} -->
+<!-- plot(pred_prey, show = "genotypes") -->
+<!-- plot(pred_prey, show = "genotypes", -->
+<!--      xlim = c(50, 100)) -->
+
+<!-- ``` -->
+<!-- ```{r echo=FALSE} -->
+<!-- op <- par(mfrow = c(1, 2)) -->
+<!-- ``` -->
+
+
+<!-- You can easily play with a range of parameters, say the -->
+<!-- carrying capacity of one of the species, to see how they affect the -->
+<!-- stochasticity of the system. Here we also start from a large number -->
+<!-- of WT (to generate preys and predators quickly) but we can set -->
+<!-- carrying capacity to much smaller numbers: -->
+
+<!-- ```{r echo=FALSE } -->
+<!-- set.seed(2) -->
+<!-- ``` -->
+
+<!-- ```{r ppsmallk, message=FALSE} -->
+<!-- fe_pred_prey <- -->
+<!--     allFitnessEffects( -->
+<!--         genotFitness = -->
+<!--             G_fe_LV(1.5, 1.4, 100, 40, 0.6, -0.5, awt = 1, -->
+<!--                   gt = c("WT","prey", "Predator")), -->
+<!--         frequencyDependentFitness = TRUE, -->
+<!--         frequencyType = "abs") -->
+
+
+<!-- pred_prey <- oncoSimulIndiv(fe_pred_prey, -->
+<!--                             model = "Exp", -->
+<!--                             onlyCancer = FALSE,  -->
+<!--                             finalTime = 200, -->
+<!--                             mu = 1e-3, -->
+<!--                             initSize = 1000,  -->
+<!--                             keepPhylog = TRUE, -->
+<!--                             seed = NULL,  -->
+<!--                             errorHitMaxTries = FALSE,  -->
+<!--                             errorHitWallTime = FALSE) -->
+<!-- ``` -->
+
+<!-- ```{r echo=FALSE} -->
+<!-- op <- par(mfrow = c(1, 2)) -->
+<!-- ``` -->
+
+<!-- Plotting the complete range shows the drop from the initial WT population -->
+<!-- size to the final carrying capacities (and the second plot zooms in after -->
+<!-- there are no WTs): -->
+
+<!-- ```{r prepreylv7} -->
+<!-- plot(pred_prey, show = "genotypes") -->
+<!-- plot(pred_prey, show = "genotypes", -->
+<!--      xlim = c(50, 200)) -->
+<!-- ``` -->
+
+<!-- ```{r echo=FALSE} -->
+<!-- par(op)	  -->
+<!-- ``` -->
+
+<!-- If you run the above model repeatedly, you will frequently find that -->
+<!-- only one of the species is left; and, yes, that could be the -->
+<!-- "Predator", as in the Lotka-Volterra expressions above there can be -->
+<!-- predators without prey. For example, you can check that the birth -->
+<!-- rate of the predator is larger than 1 even if there are 0 prey -->
+<!-- (identically 1 when `n_2` = `K_2`: -->
+
+<!-- ```{r checklvpredprey} -->
+<!-- evalAllGenotypes(allFitnessEffects( -->
+<!--     genotFitness = -->
+<!--         G_fe_LV(1.5, 1.4, 100, 40, -->
+<!--               0.6, -0.5, awt = 0.1, -->
+<!--               gt = c("WT","prey", "Predator")), -->
+<!--     frequencyDependentFitness = TRUE, -->
+<!--     frequencyType = "abs"), -->
+<!--     spPopSizes = c(0, 0, 20)) -->
+
+
+<!-- evalAllGenotypes(allFitnessEffects( -->
+<!--     genotFitness = -->
+<!--         G_fe_LV(1.5, 1.4, 100, 40, -->
+<!--               0.6, -0.5, awt = 0.1, -->
+<!--               gt = c("WT","prey", "Predator")), -->
+<!--     frequencyDependentFitness = TRUE, -->
+<!--     frequencyType = "abs"), -->
+<!--     spPopSizes = c(0, 0, 40)) -->
+<!-- ``` -->
+
+<!-- (Of course, with those population sizes, even if prey had a birth -->
+<!-- rate > 1, they cannot appear as there are no WT to generate prey). -->
+
+
+
+
+
 ### Predator-prey, first example {#predprey1}
 
 The simplest model would use the above Lotka-Volterra expressions
@@ -8927,127 +9141,100 @@ and set one of the `a_` to be negative [see, for example, @Otto2007,
 p. 73]. Let's turn former "S2" and thus `a_21 < 0` (to make the
 effects more salient, we also increase that value in magnitude).
 
-```{r echo = FALSE}
+We will also use a general function to generate fitness
+expressions. This is actually nicer than we did above, because it
+allows us to give the names of the species, not codes such as "n_1"
+that depend on how the names are ordered by R.
+
+
+```{r ppreydefvm2}
+G_fe_LVm2 <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-4,
+                                 gt = c("S1", "S2")) {
+    data.frame(Genotype = gt,
+               Fitness = c(
+                   paste0("1 + ", r1,
+                         " * ( 1 - (n_", gt[1], " + ", a_12, " * n_", gt[2], ")/", K1,
+                         ")"),
+                  paste0("1 + ", r2,
+                         " * ( 1 - (n_", gt[2], " + ", a_21, " * n_", gt[1], ")/", K2,
+                         ")")
+                  ))
+}
+
+
+## But notice that, because of ordering, "prey" ends up being n_2
+## but that is not a problem.
+
+fe_pred_preym2 <-
+    allFitnessEffects(
+        genotFitness =
+            G_fe_LVm2(1.5, 1.4, 10000, 4000, 1.1, -0.5, awt = 1,
+                  gt = c("prey", "Predator")),
+        frequencyDependentFitness = TRUE)
+fe_pred_preym2$full_FDF_spec
+
+## Change order and note how these are, of course, equivalent
+
+fe_pred_preym3 <-
+    allFitnessEffects(
+        genotFitness =
+            G_fe_LVm2(1.4, 1.5, 4000, 10000, -0.5, 1.1, awt = 1,
+                  gt = c("Predator", "prey")),
+        frequencyDependentFitness = TRUE)
+fe_pred_preym3$full_FDF_spec
+
+evalAllGenotypes(fe_pred_preym2, spPopSizes = c(1000, 300))
+evalAllGenotypes(fe_pred_preym3, spPopSizes = c(300, 1000))
+```
+
+
+```{r, echo=FALSE}
 set.seed(1)
 ```
 
-```{r lotka2}
-
-fe_pred_prey <-
-    allFitnessEffects(
-        genotFitness =
-            G_fe_LV(1.5, 1.4, 10000, 4000, 0.6, -0.5, awt = 1,
-                  gt = c("WT","prey", "Predator")),
-        frequencyDependentFitness = TRUE,
-        frequencyType = "abs")
-
-pred_prey <- oncoSimulIndiv(fe_pred_prey,
-                            model = "Exp",
-                            onlyCancer = FALSE, 
-                            finalTime = 100,
-                            mu = 1e-4,
-                            initSize = 40000, 
-                            keepPhylog = TRUE,
-                            seed = NULL, 
-                            errorHitMaxTries = FALSE, 
-                            errorHitWallTime = FALSE)
+```{r pprey3}
+s_pred_preym2 <- oncoSimulIndiv(fe_pred_preym2,
+                                model = "Exp",
+                                initMutant = c("prey", "Predator"),
+                                initSize = c(1000, 1000), 
+                                onlyCancer = FALSE, 
+                                finalTime = 200,
+                                mu = 1e-3,
+                                keepPhylog = TRUE,
+                                seed = NULL, 
+                                errorHitMaxTries = FALSE, 
+                                errorHitWallTime = FALSE)
 ```
 
-```{r echo=FALSE}
-op <- par(mfrow = c(1, 2))
-```
 
-```{r prepreylv2}
-plot(pred_prey, show = "genotypes")
-plot(pred_prey, show = "genotypes",
-     xlim = c(50, 100))
-
+```{r prepreylv1237}
+plot(s_pred_preym2, show = "genotypes")
 ```
-```{r echo=FALSE}
-op <- par(mfrow = c(1, 2))
-```
-
 
 You can easily play with a range of parameters, say the
 carrying capacity of one of the species, to see how they affect the
-stochasticity of the system. Here we also start from a large number
-of WT (to generate preys and predators quickly) but we can set
-carrying capacity to much smaller numbers:
+stochasticity of the system. 
 
-```{r echo=FALSE }
-set.seed(2)
-```
-
-```{r ppsmallk, message=FALSE}
-fe_pred_prey <-
-    allFitnessEffects(
-        genotFitness =
-            G_fe_LV(1.5, 1.4, 100, 40, 0.6, -0.5, awt = 1,
-                  gt = c("WT","prey", "Predator")),
-        frequencyDependentFitness = TRUE,
-        frequencyType = "abs")
-
-
-pred_prey <- oncoSimulIndiv(fe_pred_prey,
-                            model = "Exp",
-                            onlyCancer = FALSE, 
-                            finalTime = 200,
-                            mu = 1e-3,
-                            initSize = 1000, 
-                            keepPhylog = TRUE,
-                            seed = NULL, 
-                            errorHitMaxTries = FALSE, 
-                            errorHitWallTime = FALSE)
-```
-
-```{r echo=FALSE}
-op <- par(mfrow = c(1, 2))
-```
-
-Plotting the complete range shows the drop from the initial WT population
-size to the final carrying capacities (and the second plot zooms in after
-there are no WTs):
-
-```{r prepreylv7}
-plot(pred_prey, show = "genotypes")
-plot(pred_prey, show = "genotypes",
-     xlim = c(50, 200))
-
-
-```{r echo=FALSE}
-par(op)	 
-```
 
 If you run the above model repeatedly, you will frequently find that
 only one of the species is left; and, yes, that could be the
 "Predator", as in the Lotka-Volterra expressions above there can be
 predators without prey. For example, you can check that the birth
 rate of the predator is larger than 1 even if there are 0 prey
-(identically 1 when `n_2` = `K_2`:
+(identically 1 when `n_1` = `K_1`:
 
-```{r checklvpredprey}
-evalAllGenotypes(allFitnessEffects(
-    genotFitness =
-        G_fe_LV(1.5, 1.4, 100, 40,
-              0.6, -0.5, awt = 0.1,
-              gt = c("WT","prey", "Predator")),
-    frequencyDependentFitness = TRUE,
-    frequencyType = "abs"),
-    spPopSizes = c(0, 0, 20))
-
+```{r prepreylv1237}
+evalAllGenotypes(fe_pred_preym2, spPopSizes = c(0, 300))
 
 evalAllGenotypes(allFitnessEffects(
     genotFitness =
-        G_fe_LV(1.5, 1.4, 100, 40,
-              0.6, -0.5, awt = 0.1,
-              gt = c("WT","prey", "Predator")),
-    frequencyDependentFitness = TRUE,
-    frequencyType = "abs"),
-    spPopSizes = c(0, 0, 40))
+        G_fe_LVm2(1.5, 1.4, 100, 40,
+                  0.6, -0.5, awt = 0.1,
+                  gt = c("prey", "Predator")),
+    frequencyDependentFitness = TRUE),
+    spPopSizes = c(0, 40))
+
 ```
-
-(Of course, with those population sizes, even if prey had a birth
-rate > 1, they cannot appear as there are no WT to generate prey).
 
 
 
@@ -9061,46 +9248,83 @@ eventually go extinct in the absence of prey):
 $$\frac{\mathrm{d}n_1}{\mathrm{d}t} = r\ n_1 - a\ c\ n_1\ n_2$$
 $$\frac{\mathrm{d}n_2}{\mathrm{d}t} = \epsilon\ a\ c\ n_1\ n_2 - \delta\ n2$$
 
+
+<!-- The next is wrong because prey is n2 -->
+<!-- ## Use e for epsilon and d for delta -->
+<!-- ## C_fe_pred_prey <- function(r, a, c, e, d, awt = 0.1, -->
+<!-- ##                            gt = c("WT", "Prey", "predator")) { -->
+<!-- ##     data.frame(Genotype = gt, -->
+<!-- ##                Fitness = c( -->
+<!-- ##                    paste0("max(0.1, 1 - ", awt, -->
+<!-- ##                           " * (n_2 + n_1))"), -->
+<!-- ##                    paste0("1 + ", r, " - ", a, -->
+<!-- ##                           " * ", c, " * n_2"), -->
+<!-- ##                    paste0("1 + ", e, " * ", a, -->
+<!-- ##                           " * ", c, " * n_1 - ", d) -->
+<!-- ##                )) -->
+<!-- ## } -->
+
+<!-- ## C_fe_pred_prey("r", "a", "c", "e", "d") -->
+
+
 ```{r predprey2a}
-## Use e for epsilon and d for delta
-C_fe_pred_prey <- function(r, a, c, e, d, awt = 0.1,
-                           gt = c("WT", "prey", "Predator")) {
+C_fe_pred_prey2 <- function(r, a, c, e, d,
+                           gt = c("s1", "s2")) {
     data.frame(Genotype = gt,
                Fitness = c(
-                   paste0("max(0.1, 1 - ", awt,
-                          " * (n_2 + n_1))"),
                    paste0("1 + ", r, " - ", a,
-                          " * ", c, " * n_2"),
+                          " * ", c, " * n_2/n_1"),
                    paste0("1 + ", e, " * ", a,
-                          " * ", c, " * n_1 - ", d)
+                          " * ", c, " * n_1/n_2 - ", d)
                ))
 }
 
-C_fe_pred_prey("r", "a", "c", "e", "d")
+C_fe_pred_prey2("r", "a", "c", "e", "d")
+
 ```
 ```{r echo=FALSE }
 set.seed(2)
 ```
+
+Given how we wrote `C_fe_pred_prey2`, the prey is hardcoded as
+`n_1`, so specify names of creatures so that the prey comes first,
+in terms of order (note we avoided this problem in the example
+above, \@ref(predprey1), by always using the full name of the
+genotype we refered to in the function to generate the fitness
+effects, `G_fe_LVm2`)
+
+
 ```{r predprey2b}
 fe_pred_prey2 <-
     allFitnessEffects(
         genotFitness =
-            C_fe_pred_prey(r = .7, a = 1, c = 0.005,
-                           e = 0.02, d = 0.4, awt = 0.001,
-                           gt = c("WT","prey", "Predator")),
-        frequencyDependentFitness = TRUE,
-        frequencyType = "abs")
+            C_fe_pred_prey2(r = .1, a = 1, c = 0.05,
+                            e = 0.5, d = 0.4,
+                            gt = c("Fly", "Lizard")),
+        frequencyDependentFitness = TRUE)
+
+
+fe_pred_prey2$full_FDF_spec
+
+## You want to make sure you start the simulation from
+## a viable condition
+
+evalAllGenotypes(fe_pred_prey2,
+                 spPopSizes = c(500, 6))
+
 pred_prey2 <- oncoSimulIndiv(fe_pred_prey2,
-                            model = "Exp",
-                            sampleEvery = 0.01,
-                            mu = 1e-3,
-                            onlyCancer = FALSE, 
-                            finalTime = 80,
-                            initSize = 1e4, 
-                            keepPhylog = TRUE,
-                            seed = NULL, 
-                            errorHitMaxTries = FALSE, 
-                            errorHitWallTime = FALSE)		
+                             model = "Exp",
+                             initMutant = c("Fly", "Lizard"),
+                             initSize = c(500, 6),
+                             sampleEvery = 0.1,
+                             mu = 1e-3,
+                             onlyCancer = FALSE, 
+                             finalTime = 30,
+                             keepPhylog = TRUE,
+                             seed = NULL, 
+                             errorHitMaxTries = FALSE, 
+                             errorHitWallTime = FALSE)
+
 plot(pred_prey2, show = "genotypes")
 ```
 
