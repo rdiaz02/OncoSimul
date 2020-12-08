@@ -2,6 +2,14 @@
 
 ** first
 
+   
+ - [ ] make onlyCancer = FALSE the default. And ditto for detection
+   drivers, etc.
+ - [ ] mutator and multispecies: think, since it would affect the species marker genes.
+ - [ ] for FDF: any expression of things that do not exist do not make it
+   bail or crash, but return a 0 for that symbol, with a warning given to
+   the user.   This can be done in R? In vignette
+   <!-- no expression on fitness zero in FDF: zz:FIXME:remove_restriction -->
  - [ ] use the full_fl_spec in fitness evaluations in FDF. That is the
    single thing that shows all mappings explicitly  
  - [ ] FDF: specify fitness functions as f_C, n_WT, f_A,D, etc.

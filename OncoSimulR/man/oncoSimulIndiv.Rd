@@ -308,7 +308,10 @@ This option can not be used with v.1 objects.
   Initial population size. If you are passing more than one
   \code{initMutant}, the initial population sizes of each
   clone/species/genotype, given in the same order as in the
-  \code{initMutant} vector.
+  \code{initMutant} vector. \code{initMutant} thus allows to start the
+  simulation from arbitrary population compositions. Combined with
+  \code{mu} it allows for multispecies simulations (see the vignette for
+  examples).
 
 }
 

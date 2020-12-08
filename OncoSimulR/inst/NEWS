@@ -1,3 +1,9 @@
+Changes in version 2.21.994 (2020-12-08):
+	- Can start simulation from arbitrary configuration: multiple init
+	mutants (and multispecies functionality).
+	- Freq-dep-fitness does not need to have a WT in fitness tables.
+	- Bumped version (to 2.21.xyz) for new BioC devel.
+
 Changes in version 2.19.993 (2020-12-01):
 	- Added tests of mutator functionality with freq-dep-fitness.
 

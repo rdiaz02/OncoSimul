@@ -6332,6 +6332,12 @@ ossI$popSample
 ossI$popSummary[, "OccurringDrivers", drop = FALSE]
 ``` 
 
+Since version 2.21.994, it is possible to start the simulations from
+arbitrary initial configurations: this uses multiple initial
+mutants (see section \@ref(minitmut)) and allows for multispecies
+simulations (section \@ref(multispecies)).
+
+
 ## Ending the simulations {#endsimul}
 
 OncoSimulR provides very flexible ways to decide when to stop a
@@ -7343,6 +7349,187 @@ streamgraph(lb1, Genotype, Y, Time, scale = "continuous",
 <!-- %% but it gives me problems with knitr, etc). -->
 
 
+## Multiple initial mutants: starting the simulation from arbitrary configuration {#minitmut}
+
+You can specify the population composition when you start the
+simulation and, thus, use multiple initial mutants. Simply pass a
+vector to `initMutant` and a vector of the same length to
+`initSize`: the first are the genotypes/clones, the second the
+population sizes of the corresponding genotypes/clones.
+
+
+(It often makes no sense to start the simulation with genotypes with
+birth rate of 0: you can try it, but you will be told about it.) 
+
+
+Two examples. 
+
+```{r minitm1}
+r2 <- rfitness(6)
+## Make sure these always viable for interesting stuff
+r2[2, 7] <- 1 + runif(1) # A
+r2[4, 7] <- 1 + runif(1) # C
+r2[8, 7] <- 1 + runif(1) # A, B
+o2 <- allFitnessEffects(genotFitness = r2)
+ag <- evalAllGenotypes(o2)
+
+out1 <- oncoSimulIndiv(o2, initMutant = c("A", "C"),
+                       initSize = c(100, 200),
+                       onlyCancer = FALSE,
+                       finalTime = 200)
+
+
+```
+No WT, nor any other genotypes with a single mutation (except "A"
+and "C") would thus be possible either (it is impossible to obtain,
+say, a "B" if there are no WT).
+
+
+We can do a similar thing with the frequency-dependent
+functionality (section \@ref(fdf)):
+
+
+```{r minitm1fdf}
+gffd0 <- data.frame(
+    Genotype = c(
+        "A", "A, B",
+        "C", "C, D", "C, E"),
+    Fitness = c(
+        "1.3",
+        "1.4",
+        "1.4",
+        "1.1 + 0.7*((f_1 + f_A_B) > 0.3)",
+        "1.2 + sqrt(f_A + f_C + f_C_D)"))
+
+afd0 <- allFitnessEffects(genotFitness = gffd0,
+                          frequencyDependentFitness = TRUE)
+
+eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5)
+
+os0 <- oncoSimulIndiv(afd0,
+                      initMutant = c("A", "C"),
+                      finalTime = 20, initSize = c(1e4, 1e5),
+                      onlyCancer = FALSE, model = "McFLD")
+```
+
+
+
+## Multispecies simulations {#multispecies}
+
+Since we can use arbitrary initial populations to start the
+simulation (section \@ref(minitmutant)) and we can use arbitrary
+fitness specifications, it is simple to run multi-species
+simulations using a simple trick. 
+
+Suppose you want to use a two species simulation, where the first
+species has two loci and the second three loci. This will work:
+
+* Create a genotype of length (1 + 2) + (1 + 3).
+* The first locus in each set is the "species indicator".
+* Species A will use loci 1, 2, 3. Species B loci 4 to 7.
+* Make all genotype combinations where loci from different species
+  are mutated lethal (e.g., a genotype with loci 2 and 5 mutated is
+  not viable).
+* Now you can start the simulation from the WT of each species: the
+  initMutants will have genotypes with only loci 1 or loci 4
+  mutated.
+  
+This trick is only an approximation: mutation to the other species
+is actually death. So there is "leakage" from mutation to death, as
+in example \@ref(predprey): both species are leaking a small number
+of children via mutation to non-viable "hybrids". Factor this into
+your equations for death rate, but this should be negligible if
+death rate $\gg$ mutation rate. (You can ameliorate this problem
+slightly by making mutation to the "species indicator" locus very
+small, say $10^{10}$).
+
+Of course, you can extend the scheme above to arbitrary numbers of
+species. 
+
+
+Let's give several examples.
+
+We use a capital letter for the "species indicator locus" and name
+each of the species-specific loci with the lower case and a
+number. We then ameliorate the leakage issue by making mutation to
+"A" or "B" tiny (though there is still leakage from, say, "A" to "A,
+b1").
+
+
+```{r mspeci1}
+
+mspec <- data.frame(
+    Genotype = c("A",
+                 "A, a1", "A, a2", "A, a1, a2",
+                 "B",
+                 "B, b1", "B, b2", "B, b3",
+                 "B, b1, b2", "B, b1, b3", "B, b1, b2, b3"),
+    Fitness = 1 + runif(11)
+)
+fmspec <- allFitnessEffects(genotFitness = mspec)
+afmspec <- evalAllGenotypes(fmspec)
+
+## Show only viable ones
+afmspec[afmspec$Fitness >= 1, ]
+
+muv <- c(1e-10, rep(1e-5, 2), 1e-10, rep(1e-5, 3))
+names(muv) <- c("A", paste0("a", 1:2), "B", paste0("b", 1:3))
+
+out1 <- oncoSimulIndiv(fmspec, initMutant = c("A", "B"),
+                       initSize = c(100, 200),
+                       mu = muv,
+                       onlyCancer = FALSE,
+                       finalTime = 200)
+
+```
+
+We can do something similar with the frequency-dependent-fitness
+functionality. (We use a somewhat silly specification, so that
+checking equations is easy)
+
+
+```{r mspeci2}
+
+mspecF <- data.frame(
+    Genotype = c("A",
+                 "A, a1", "A, a2", "A, a1, a2",
+                 "B",
+                 "B, b1", "B, b2", "B, b3",
+                 "B, b1, b2", "B, b1, b3", "B, b1, b2, b3"),
+    Fitness = c("1 + f_B_b1_b2",
+                "1 + f_B_b1_b3",
+                "1 + f_B_b2_b3",
+                "1 + f_B_b1_b2_b3",
+                "1 + f_A",
+                "1 + f_A_a1",
+                "1 + f_A_a2",
+                "1 + f_A_a1_a2",
+                "1 + f_B",
+                "1 + f_B_b1",
+                "1 + f_B_b2")
+)
+fmspecF <- allFitnessEffects(genotFitness = mspecF,
+                             frequencyDependentFitness = TRUE)
+
+afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11)
+
+## Show only viable ones
+afmspec[afmspec$Fitness >= 1, ]
+
+muv <- c(1e-10, rep(1e-5, 2), 1e-10, rep(1e-5, 3))
+names(muv) <- c("A", paste0("a", 1:2), "B", paste0("b", 1:3))
+
+out1 <- oncoSimulIndiv(fmspec, initMutant = c("A", "B"),
+                       initSize = c(100, 200),
+                       mu = muv,
+                       onlyCancer = FALSE,
+                       finalTime = 200)
+
+```
+
+
+
+
 
 \clearpage
 
@@ -8135,7 +8322,24 @@ gffd <- data.frame(
     stringsAsFactors = FALSE)
 ```
 (In the data frame creation, we use `stringsAsFactors = FALSE`
-to avoid messages about conversions between factors and characters).
+to avoid messages about conversions between factors and characters
+in former versions of R).
+
+
+You could also specify that as
+```{r fdf1named}
+## Define fitness of the different genotypes
+gffdn <- data.frame(
+    Genotype = c("WT", "A", "B", "C", "A, B"), 
+    Fitness = c("1 + 1.5 * f_A_B",
+                "1.3 + 1.5 * f_A_B",
+                "1.4",
+                "1.1 + 0.7*((f_A + f_B) > 0.3) + f_A_B",
+                "1.2 + sqrt(f_A + f_C + f_B) - 0.3 * (f_A_B > 0.5)"),
+    stringsAsFactors = FALSE)
+```
+
+
 
 
 Let us verify that we have specified what we think we have specified
@@ -8149,8 +8353,8 @@ might be moved to `evalAllGenotypes` in the future).
 
 Note that when calling `allFitnessEffects` we have to set the
 paramenter `frequencyDependentFitness` to TRUE. Since we are using
-relative frequencies, we also specify `freqType = "rel"` (the need
-to do this might be removed in the future). We will see below
+relative frequencies, we can be explicit and specify `freqType =
+"rel"` (though it is not needed). We will see below
 (\@ref(fdfabs), \@ref(fdfrelabs), and \@ref(predprey)) several examples
 with absolute numbers.
 
@@ -8172,6 +8376,29 @@ evalAllGenotypes(allFitnessEffects(genotFitness = gffd,
                  spPopSizes = c(100, 30, 40, 0, 100))
 
 ``` 
+
+The named one gives the same results. Note as well that using
+`frequencyType` is not needed anymore (the default, `auto`, infers
+the type)
+
+```{r fdf1bnamed}
+evalAllGenotypes(allFitnessEffects(genotFitness = gffdn, 
+                         frequencyDependentFitness = TRUE),
+                 spPopSizes = c(100, 20, 20, 30, 0))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffdn, 
+                         frequencyDependentFitness = TRUE),
+                 spPopSizes = c(100, 30, 40, 0, 10))
+
+evalAllGenotypes(allFitnessEffects(genotFitness = gffdn, 
+                         frequencyDependentFitness = TRUE),
+                 spPopSizes = c(100, 30, 40, 0, 100))
+
+``` 
+
+
+
+
 
 The fitness specification is correct. Let us now create the
 `allFitnessEffects` object and simulate.  We will use the McFL
@@ -8198,6 +8425,19 @@ sfd <- oncoSimulIndiv(afd,
                      errorHitWallTime = FALSE)
 plot(sfd, show = "genotypes")
 ```
+
+<!-- no expression on fitness zero in FDF:
+zz:FIXME:remove_restriction -->
+
+There is no need to specify the fitness of all possible genotypes
+(and no need to always specify the fitness of a WT): those are taken
+to be 0. But no fitness expression can, thus, contain a function of
+the genotypes for which fitness is not specified (e.g., suppose you
+do not pass the fitness of genotype "B": it will be taken as 0; but
+no genotype can have, in its fitness, a function such as "2 * f_B").
+
+
+
 
 ## Hurlbut et al., 2018: a four-cell example with angiogenesis and cytotoxicity {#hurlbut}
 

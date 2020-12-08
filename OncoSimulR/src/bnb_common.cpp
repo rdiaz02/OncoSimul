@@ -112,6 +112,10 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 
   // However, I pass mutation, and split computation to avoid numerical problems
   // I was getting ti == 0 and ti < 0 in the other versions with large N.
+
+  // FIXME: Should we short-circuit this when tSample = 0? Then, pM is 1, and we could
+  // return ti = tSample + epsilon;
+  
   using namespace Rcpp ;
 
   double r1;

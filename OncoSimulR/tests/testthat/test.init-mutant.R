@@ -184,7 +184,7 @@ test_that("initMutant non lexicog order", {
     cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-
+  
 
 test_that("initMutant non lexicog order",
 {
@@ -673,7 +673,8 @@ test_that("initMutant works if == number of genes", {
     for(i in 1:5){
         set.seed(i)
         o2i <- allFitnessEffects(genotFitness = rfitness(2))
-        o2io <- oncoSimulIndiv(o2i, initMutant = "B, A")
+        o2io <- oncoSimulIndiv(o2i, initMutant = "B, A",
+                               onlyCancer = FALSE)
         if(!is.null(o2io$other$ExceptionMessage)) {
             expect_false(
                 grepl("Trying to obtain a mutation when nonmutated.size is 0",
@@ -919,7 +920,7 @@ test_that("multiple init mutants: pops of 0 size is error", {
 })
 
 
-## con fdf and without fdf
+## with fdf and without fdf
 test_that("multiple init mutants: different species", {
 
     num_reps <- 10
@@ -941,7 +942,8 @@ test_that("multiple init mutants: different species", {
         ag <- evalAllGenotypes(o2)
         ## Set mutation rate of the "species indicator" close to 1e-10
         out1 <- oncoSimulIndiv(o2, initMutant = c("A", "C"),
-                               initSize = c(10, 20),
+                               initSize = c(1e3, 1e4),
+                               finalTime = 300,
                                mu = c(A = 1e-10, C = 1e-10,
                                       B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
                                onlyCancer = FALSE)
@@ -968,25 +970,50 @@ test_that("multiple init mutants: different species", {
         o2 <- allFitnessEffects(genotFitness = r2)
         ag <- evalAllGenotypes(o2)
         ## Set mutation rate of the "species indicator" close to 1e-10
+        ## But this ain't really enough: what about A, D? A is mutating
+        ## to A, D with rate given by D, not by C.
         out1 <- oncoSimulIndiv(o2, initMutant = c("A", "C"),
                    model = "McFLD",
-                   initSize = c(10, 20),
+                   initSize = c(1e3, 1e4),
+                   finalTime = 500,
                    mu = c(A = 1e-10, C = 1e-10,
                           B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
                    onlyCancer = FALSE)
         not_possible <- c("", ag$Genotype[ag$Fitness == 0])
         expect_false(any(not_possible %in%  out1$GenotypesLabels))
     }
-
-    
-    
-
-
-
 })
 
+
+
+
+test_that("multiple init mutants: cannot have descendants of absent parents", {
+    num_reps <- 10
+    for(i in 1:num_reps) {
+        r2 <- rfitness(6)
+        ## Make sure these always viable 
+        r2[8, 7] <- 1 + runif(1) # A, B
+        r2[19, 7] <- 1 + runif(1) # C, F
+        o2 <- allFitnessEffects(genotFitness = r2)
+        ag <- evalAllGenotypes(o2)
+        ## Set mutation rate of the "species indicator" close to 1e-10
+        out1 <- oncoSimulIndiv(o2, initMutant = c("A, B", "C, F"),
+                               initSize = c(100, 200),
+                               onlyCancer = FALSE)
+        not_possible <- unique(c("", LETTERS[1:6],
+                          paste0("A, ", LETTERS[3:6]),
+                          paste0("B, ", LETTERS[3:6]),
+                          paste0("C, ", LETTERS[4:5]),
+                          paste0("D, ", LETTERS[5:6]),
+                          "E, F",
+                          ag$Genotype[ag$Fitness == 0]))
+        expect_false(any(not_possible %in%  out1$GenotypesLabels))
+    }
+})
+
+
 test_that("multiple init mutants: different species, FDF", {
-    gffd0<- data.frame(
+    gffd0 <- data.frame(
         Genotype = c(
                      "A", "A, B",
                      "C", "C, D", "C, E"),
@@ -1089,3 +1116,11 @@ rm(inittime)
 
 
  
+
+
+
+
+
+
+
+

@@ -539,9 +539,9 @@ oncoSimulIndiv <- function(fp,
             minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog",
                               "McFLD", "McFarlandLogD")) {
-            if(length(initSize) > 1) {
-                message("length(initSize) > 1; using the sum of values for minDetectDrvCloneSz")
-            }
+            ## if(length(initSize) > 1) {
+            ##     message("length(initSize) > 1; using the sum of values for minDetectDrvCloneSz")
+            ## }
             minDetectDrvCloneSz <- sum(initSize)
         }
         ## minDetectDrvCloneSz <- eFinalMf(initSize, s, detectionDrivers)
