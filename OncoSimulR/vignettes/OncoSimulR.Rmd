@@ -8292,6 +8292,12 @@ functions [so linear, non-linear, convex, concave, etc, functions can be
 used, including of course affine fitness functions as in @gerstung2011].
 
 
+FIXME: BEWARE: some examples below are likely to be wrong because
+they assume the order of genes is as given in "Genotype" , but that
+is not necessarily correct. We are checking these, and moving all
+the specifications to the new alternative that uses gene names
+explicitly. 
+
 ## A first example with frequency-dependent fitness {#fdfex1}
 
 The following is an arbitrary example. We will model birth rate of
