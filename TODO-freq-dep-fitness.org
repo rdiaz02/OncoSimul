@@ -2,7 +2,10 @@
 
 ** first
 
-   
+ - [ ] test where FDF crashes when no WT and no initMutant.
+ - [ ] The second predator-prey example sucks. In general, those examples
+   I am not sure are properly parameterized.
+ 
  - [ ] make onlyCancer = FALSE the default. And ditto for detection
    drivers, etc.
  - [ ] Allow spPopSizes (evalAllGenotypes) to be named, and check if matches order.

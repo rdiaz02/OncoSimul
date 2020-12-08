@@ -9223,7 +9223,7 @@ predators without prey. For example, you can check that the birth
 rate of the predator is larger than 1 even if there are 0 prey
 (identically 1 when `n_1` = `K_1`:
 
-```{r prepreylv1237}
+```{r prepreylv1238}
 evalAllGenotypes(fe_pred_preym2, spPopSizes = c(0, 300))
 
 evalAllGenotypes(allFitnessEffects(
@@ -11766,24 +11766,31 @@ cells (R) are derived from a single mutation in a gene, say, R. Furthermore,
 we will assume that the two chemotherapy-resistant cancer cells (BTC,R and 
 MTC,R) are all derived from WT by two different mutations.
 
+
+FIXME: original example had `f_1_2` but that seems wrong, as that
+would be genotype "BTC, R" which has fitness 0. I think they really
+meant `f_1_4`. Other mistakes are possible! This needs to be revised carefully.
+
+
+
 ```{r breastCQfit1}
 create_fe <- function(cG, bG, cS, cMMph, cMMTC, bR, cD, Q,
                       gt = c("WT", "BTC", "R", "MTC", "Mph", "BTC,R", "MTC,R")) {
   data.frame(Genotype = gt,
              Fitness = c(
                
-               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cS, "(f_ + f_1 + f_2 + f_1_2) -",
+               paste0("1 + ", bG, "(f_ + f_R + f_Mph) - ", cG, " - ", cS, "(f_ + f_BTC + f_R + f_BTC_R) -",
                       "0.01*", Q),
-               paste0("1 + ", bR, " + ", bG, "(f_ + f_2 + f_4) - ", cS, " (f_ + f_1 + f_2 + f_1_2) -",
-                      cD , " * f_4 -", Q),
-               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cS, "(f_ + f_1 + f_2 + f_1_2)"),
-               paste0("1 + ", bR, " + ", bG, " *(f_ + f_2 + f_4) -", cMMTC, " - ",
-                      cD , " * f_4 -", Q),
-               paste0("1 + ", bG, "(f_ + f_2 + f_4) - ", cG, " - ", cMMph, "- 0.01*",Q),
-               paste0("1 + ", bR, " + ", bG, "(f_ + f_2 + f_4) - ", cS, " (f_ + f_1 + f_2 + f_1_2) -",
-                      cD , " * f_4"),
-               paste0("1 + ", bR, " + ", bG, " *(f_ + f_2 + f_4) -", cMMTC, " - ",
-                      cD , " * f_4")
+               paste0("1 + ", bR, " + ", bG, "(f_ + f_R + f_Mph) - ", cS, " (f_ + f_BTC + f_R + f_BTC_R) -",
+                      cD , " * f_Mph -", Q),
+               paste0("1 + ", bG, "(f_ + f_R + f_Mph) - ", cG, " - ", cS, "(f_ + f_BTC + f_R + f_BTC_R)"),
+               paste0("1 + ", bR, " + ", bG, " *(f_ + f_R + f_Mph) -", cMMTC, " - ",
+                      cD , " * f_Mph -", Q),
+               paste0("1 + ", bG, "(f_ + f_R + f_Mph) - ", cG, " - ", cMMph, "- 0.01*",Q),
+               paste0("1 + ", bR, " + ", bG, "(f_ + f_R + f_Mph) - ", cS, " (f_ + f_BTC + f_R + f_BTC_R) -",
+                      cD , " * f_Mph"),
+               paste0("1 + ", bR, " + ", bG, " *(f_ + f_R + f_Mph) -", cMMTC, " - ",
+                      cD , " * f_Mph")
              ),
              stringsAsFactors = FALSE)
 }
