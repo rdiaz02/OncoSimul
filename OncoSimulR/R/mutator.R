@@ -59,7 +59,7 @@ evalAllGenotypesMut <- function(mutatorEffects,
 evalGenotypeMut <- function(genotype, 
                             mutatorEffects,
                             spPopSizes = NULL,
-                         verbose = FALSE,
+                            verbose = FALSE,
                             echo = FALSE,
                             currentTime = 0
                             ) {
@@ -68,14 +68,14 @@ evalGenotypeMut <- function(genotype,
         stop("You are trying to get the mutator effects of a fitness specification. ",
              "You did not pass an object of class mutatorEffects.")
     evalGenotypeORMut(genotype = genotype,
-                       fmEffects = mutatorEffects,
+                      fmEffects = mutatorEffects,
                       spPopSizes = spPopSizes,
-                       verbose = verbose,
-                       echo = echo,
-                       model  = "" ,
+                      verbose = verbose,
+                      echo = echo,
+                      model  = "" ,
                       calledBy_= "evalGenotypeMut",
                       currentTime = currentTime
-                       )
+                      )
 
 }
 

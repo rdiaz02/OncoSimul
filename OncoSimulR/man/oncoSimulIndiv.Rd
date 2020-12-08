@@ -28,7 +28,7 @@
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
-                K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                K = sum(initSize)/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
@@ -52,7 +52,7 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 sampleEvery = ifelse(model \%in\% c("Bozic", "Exp"), 1,
                              0.025),
                 initSize = 500, s = 0.1, sh = -1,
-                K = initSize/(exp(1) - 1), keepEvery = sampleEvery,
+                K = sum(initSize)/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
@@ -100,7 +100,7 @@ oncoSimulSample(Nindiv,
                 initSize = 500,
                 s = 0.1,
                 sh = -1,
-                K = initSize/(exp(1) - 1),
+                K = sum(initSize)/(exp(1) - 1),
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365,
@@ -243,7 +243,8 @@ simulations.
 
     \item{PDBaseline:}{ Baseline size subtracted to total population size
     to compute the probability of detection. If not given explicitly,
-    the default is \code{1.2 * initSize}.
+    the default is \code{1.2 * initSize} (or \code{1.2 * sum(initSize)}
+    when multiple \code{initMutant}s).
     }
 
     \item{p2:}{ The probability of detection at population size
@@ -304,7 +305,10 @@ This option can not be used with v.1 objects.
 
 }
 \item{initSize}{
-  Initial population size.
+  Initial population size. If you are passing more than one
+  \code{initMutant}, the initial population sizes of each
+  clone/species/genotype, given in the same order as in the
+  \code{initMutant} vector.
 
 }
 

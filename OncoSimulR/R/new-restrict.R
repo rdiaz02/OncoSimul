@@ -1426,11 +1426,10 @@ evalGenotypeORMut <- function(genotype,
         all.g.names <- c(fmEffects$geneModule$Gene,
                          fmEffects$long.geneNoInt$Gene,
                          fmEffects$fitnessLandscape_gene_id$Gene)
-
-        if(!(genotype %in% c("", "WT") )) {
-            genotype <- all.g.nums[match(genotype, all.g.names)]
-        } else {
+        if((length(genotype) == 1) && (genotype %in% c("", "WT") )) {
             genotype <- 0
+        } else {
+            genotype <- all.g.nums[match(genotype, all.g.names)]
         }
     } else {
         all.g.nums <- c(fmEffects$geneModule$GeneNumID,
@@ -1534,11 +1533,11 @@ evalGenotype <- function(genotype,
 
 
     evalGenotypeORMut(genotype = genotype,
-                       fmEffects = fitnessEffects,
+                      fmEffects = fitnessEffects,
                       spPopSizes = spPopSizes,
-                       verbose = verbose,
-                       echo = echo,
-                       model  = model ,
+                      verbose = verbose,
+                      echo = echo,
+                      model  = model ,
                       calledBy_= "evalGenotype",
                       currentTime = currentTime)
 }

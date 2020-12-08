@@ -16,3 +16,5 @@ src/GPATH
 src/GRTAGS
 ^\.travis\.yml$
 ^appveyor\.yml$
+src/TAGS
+src/.ccls-root

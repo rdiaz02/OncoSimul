@@ -670,7 +670,7 @@ test_that("initMutant works if == number of genes", {
     oncoSimulIndiv(o2, initMutant = "B, A")
 
     ## Test a few
-    for(i in 1:10) {
+    for(i in 1:5){
         set.seed(i)
         o2i <- allFitnessEffects(genotFitness = rfitness(2))
         o2io <- oncoSimulIndiv(o2i, initMutant = "B, A")
@@ -985,10 +985,25 @@ test_that("multiple init mutants: different species", {
 
 })
 
-
-
 test_that("multiple init mutants: different species, FDF", {
+    gffd0<- data.frame(
+        Genotype = c(
+                     "A", "A, B",
+                     "C", "C, D", "C, E"),
+        Fitness = c(
+                    "1.3",
+                    "1.4",
+                    "1.4",
+                    "1.1 + 0.7*((f_1 + f_A_B) > 0.3)",
+                    "1.2 + sqrt(f_A + f_C + f_C_D)"),        
+    stringsAsFactors = FALSE)
+    afd0 <- allFitnessEffects(genotFitness = gffd0,
+                             frequencyDependentFitness = TRUE)
 
+    eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5)
+
+
+    
     gffd <- data.frame(
         Genotype = c("WT",
                      "A", "A, B",
@@ -1003,8 +1018,45 @@ test_that("multiple init mutants: different species, FDF", {
     afd <- allFitnessEffects(genotFitness = gffd, 
                              frequencyDependentFitness = TRUE)
 
-    evalAllGenotypes(afd, spPopSizes = rep(10, 6))
+    eag1 <- evalAllGenotypes(afd, spPopSizes = 0:5)
+
+    ## No wildtype
+    gffd2 <- data.frame(
+        Genotype = c("A", "A, B",
+                     "C", "C, D", "C, E"),
+        Fitness = c("1.3",
+                    "1.4",
+                    "1.4",
+                    "1.1 + 0.7*((f_1 + f_1_2) > 0.3)",
+                    "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
+    stringsAsFactors = FALSE)
+    afd2 <- allFitnessEffects(genotFitness = gffd2, 
+                             frequencyDependentFitness = TRUE)
+
+    eag2 <- evalAllGenotypes(afd2, spPopSizes = 1:5)
+    expect_identical(eag1, eag2)
+    expect_identical(eag0, eag2)
+
+    set.seed(1)
+    os1 <- oncoSimulIndiv(afd, initMutant = "A", seed = NULL,
+                          finalTime = 20, initSize = 1e6,                         
+                          onlyCancer = FALSE, model = "McFLD")
+    set.seed(1)
+    os2 <- oncoSimulIndiv(afd2, initMutant = "A", seed = NULL,
+                          finalTime = 20, initSize = 1e6,
+                          onlyCancer = FALSE, model = "McFLD")
+    set.seed(1)
+    os0 <- oncoSimulIndiv(afd0, initMutant = "A", seed = NULL,
+                          finalTime = 20, initSize = 1e6,
+                          onlyCancer = FALSE, model = "McFLD")
+
+    expect_equivalent(os1, os2)
+    expect_equivalent(os1, os0)
 })
+
+
+
+
 
 
 test_that("multiple init mutants: different species, FDF, crash if not in fitness table", {
