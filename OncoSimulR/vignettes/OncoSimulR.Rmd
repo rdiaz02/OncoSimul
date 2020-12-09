@@ -8889,10 +8889,10 @@ arbitrary initial compositions (section \@ref(minitmut)). This is
 left here for historical purposes and to show additional use cases.
 
 
-FIXME: clarify how we use `n_` or `f_`, since some of the examples
-below should use `f_` or at least a ratio over the appropriate `n_`
-(otherwise, we are passing propensities).
-
+<!-- FIXME: clarify how we use `n_` or `f_`, since some of the examples -->
+<!-- below should use `f_` or at least a ratio over the appropriate `n_` -->
+<!-- (otherwise, we are passing propensities). -->
+<!-- Done -->
 
 
 
@@ -8932,7 +8932,15 @@ Remember the above are the birth rates for a model with death rate =
 you subtract 1 from the expressions for the birth rates of predators
 and prey above you get the standard expressions for the differential
 equations for Lotka-Volterra model of competition: $\frac{\mathrm{d}n_1}{\mathrm{d}t}
-= r_1 (1 - \frac{n_1 + \alpha_{12} n_2}{K_1})$.
+= r_1 n_1 (1 - \frac{n_1 + \alpha_{12} n_2}{K_1})$. (Verbosely: 
+we are simulating using a model where we have, in a
+rather general expression, $\frac{\mathrm{d}n_1}{\mathrm{d}t} = (b\ -
+d)\ n_1$), where $b$ and $d$ are the birth and death rates (that
+could be arbitrary functions of other stuff); these are the birth
+and death rates used in the BNB algorithm. And when we simulate
+under the "Exp" model we have $d  = 1$. So just solve for $(b - d) n_1 =  r_1 n_1 (1 -
+\frac{n_1 + \alpha_{12} n_2}{K_1}) $, with $b = 1$ and you get the
+$b$ you need to use).
 
 
 Now, run that model by setting appropriate parameters;
@@ -9300,6 +9308,11 @@ $$\frac{\mathrm{d}n_1}{\mathrm{d}t} = r\ n_1 - a\ c\ n_1\ n_2$$
 $$\frac{\mathrm{d}n_2}{\mathrm{d}t} = \epsilon\ a\ c\ n_1\ n_2 - \delta\ n2$$
 
 
+(Recall what we explained in section \@ref(competition1) for how we
+find the $b$, birth rate, to use in our simulations when we are using
+and "Exp" model with death rate 1: basically, each of the birth
+rates, $b_i$ is $1 + expression above/n_i$).
+
 <!-- The next is wrong because prey is n2 -->
 <!-- ## Use e for epsilon and d for delta -->
 <!-- ## C_fe_pred_prey <- function(r, a, c, e, d, awt = 0.1, -->
@@ -9324,9 +9337,9 @@ C_fe_pred_prey2 <- function(r, a, c, e, d,
     data.frame(Genotype = gt,
                Fitness = c(
                    paste0("1 + ", r, " - ", a,
-                          " * ", c, " * n_2/n_1"),
+                          " * ", c, " * n_2"),
                    paste0("1 + ", e, " * ", a,
-                          " * ", c, " * n_1/n_2 - ", d)
+                          " * ", c, " * n_1 - ", d)
                ))
 }
 
@@ -9349,8 +9362,8 @@ effects, `G_fe_LVm2`)
 fe_pred_prey2 <-
     allFitnessEffects(
         genotFitness =
-            C_fe_pred_prey2(r = .1, a = 1, c = 0.05,
-                            e = 0.5, d = 0.4,
+            C_fe_pred_prey2(r = .7, a = 1, c = 0.005,
+                            e = 0.02, d = 0.4,
                             gt = c("Fly", "Lizard")),
         frequencyDependentFitness = TRUE)
 
@@ -9361,22 +9374,25 @@ fe_pred_prey2$full_FDF_spec
 ## a viable condition
 
 evalAllGenotypes(fe_pred_prey2,
-                 spPopSizes = c(500, 6))
+                 spPopSizes = c(5000, 100))
 
+set.seed(2)
 pred_prey2 <- oncoSimulIndiv(fe_pred_prey2,
                              model = "Exp",
                              initMutant = c("Fly", "Lizard"),
-                             initSize = c(500, 6),
+                             initSize = c(500, 100),
                              sampleEvery = 0.1,
                              mu = 1e-3,
                              onlyCancer = FALSE, 
-                             finalTime = 30,
+                             finalTime = 100,
                              keepPhylog = TRUE,
                              seed = NULL, 
                              errorHitMaxTries = FALSE, 
                              errorHitWallTime = FALSE)
 
 plot(pred_prey2, show = "genotypes")
+
+
 ```
 
 If you run that model repeatedly, sometimes the system will go
