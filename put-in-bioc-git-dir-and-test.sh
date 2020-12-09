@@ -37,6 +37,9 @@ cp OncoSimulR/src/*.cpp ../BioConductor-git/OncoSimulR/src/.
 cp OncoSimulR/src/*.h ../BioConductor-git/OncoSimulR/src/.
 cp OncoSimulR/src/Makevars* ../BioConductor-git/OncoSimulR/src/.
 
+cp OncoSimulR/src/FitnessLandscape/* ../BioConductor-git/OncoSimulR/src/FitnessLandscape/.
+cp OncoSimulR/src/FitnessLandscape/web/* ../BioConductor-git/OncoSimulR/src/FitnessLandscape/web/.
+
 cp OncoSimulR/R/*.R ../BioConductor-git/OncoSimulR/R/.
 
 cp OncoSimulR/tests/testthat.R ../BioConductor-git/OncoSimulR/tests/.
