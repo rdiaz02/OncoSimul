@@ -3510,37 +3510,59 @@ a look at the test file `test.genot_fitness_to_epistasis.R` that
 uses the `fem6` object. We no longer do that but instead pass
 directly the fitness landscape.
 
-In the case of frequency-dependent fitness situations, the only way to specify
-fitness effects is using `genoFitnes` as we have shown before, but now you need
-to set `frequencyDependentFitness = TRUE` in `allFitnessEffects`. The fundamental
-difference is the Fitness column in `genoFitnes`. Now this column must be a character
-vector and each element (character also) is a function whose variables are the
-relative frequencies of the clones in the population. You must specify the variables
-like f_, for frequency of wild type, f_1 or f_A for frequency of mutant A or position
-1, f_1_2 or f_A_B for double mutant, and so on. Mathematical operations and symbols
+In the case of frequency-dependent fitness situations, the only way
+to specify fitness effects is using `genoFitnes` as we have shown
+before, but now you need to set `frequencyDependentFitness = TRUE`
+in `allFitnessEffects`. The fundamental difference is the Fitness
+column in `genoFitnes`. Now this column must be a character vector
+and each element (character also) is a function whose variables are
+the relative frequencies of the clones in the population. You must
+specify the variables like f_, for frequency of wild type, f_1 or
+f_A for frequency of mutant A or position 1, f_1_2 or f_A_B for
+double mutant, and so on. Mathematical operations and symbols
 allowed are described in the documentation of C++ library ExprTk
-(<http://www.partow.net/programming/exprtk/>). ExprTk is the library used to parse and evaluate the
-fitness equations. The numeric vector `spPopSizes` is only necesary to evaluate
-genotypes through `evalGenotype` or `evalAllGenotypes` functions because population
+(<http://www.partow.net/programming/exprtk/>). ExprTk is the library
+used to parse and evaluate the fitness equations. The numeric vector
+`spPopSizes` is only necesary to evaluate genotypes through
+`evalGenotype` or `evalAllGenotypes` functions because population
 sizes are needed to calculate the clone's frequencies.
 
-```{r}
+```{r rj68v3x}
 r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
-                 Fitness = c("10*f_", 
-                             "10*f_1", 
-                             "50*f_2", 
-                             "200*(f_1 + f_2) + 50*f_1_2"))
+                 Fitness = c("10 * f_", 
+                             "10 * f_1", 
+                             "50 * f_2", 
+                             "200 * (f_1 + f_2) + 50 * f_1_2"))
 
 afe <- allFitnessEffects(genotFitness = r, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel")
 
-plotFitnessLandscape(evalAllGenotypes(afe, spPopSizes = c(2500, 2000, 5500, 700)))
+plotFitnessLandscape(evalAllGenotypes(afe,
+                                      spPopSizes = c(WT = 2500, A = 2000,
+                                                     B = 5500, "A, B" = 700)))
+
 ```
 
+The above example is simple enough in terms of genes and genotypes
+that using `f_1` is OK. But it will be better, as examples get more
+complex, to use:
 
 
+```{r j8hhkiu}
+r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                 Fitness = c("10 * f_", 
+                             "10 * f_A", 
+                             "50 * f_B", 
+                             "200 * (f_A + f_B) + 50 * f_A_B"))
 
+```
+which makes explicit what depends on what (i.e., you do not need to
+keep in mind the mapping of letters to numbers). In other words, we
+write `f_genotype expressed as combination of gene names`, with the
+gene names we are actually using. And those `f_something_other`,
+will match the genotypes given in `Genotype` (there will a
+`something, other` genotype).
 
 
 
@@ -7404,13 +7426,15 @@ gffd0 <- data.frame(
         "1.3",
         "1.4",
         "1.4",
-        "1.1 + 0.7*((f_1 + f_A_B) > 0.3)",
+        "1.1 + 0.7*((f_A + f_A_B) > 0.3)",
         "1.2 + sqrt(f_A + f_C + f_C_D)"))
 
 afd0 <- allFitnessEffects(genotFitness = gffd0,
                           frequencyDependentFitness = TRUE)
 
-eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5)
+sp <- 1:5
+names(sp) <- c("A", "C", "A, B", "C, D", "C, E")
+eag0 <- evalAllGenotypes(afd0, spPopSizes = sp)
 
 os0 <- oncoSimulIndiv(afd0,
                       initMutant = c("A", "C"),
@@ -7519,9 +7543,23 @@ fmspecF <- allFitnessEffects(genotFitness = mspecF,
 ## Remeber, spPopSizes correspond to the genotypes
 ## shown in
 fmspecF$full_FDF_spec
-## in exactly that order
+## in exactly that order if it is unnamed.
+## Alternatively, pass a named vector (recommended).
 
-afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11)
+afmspecF <- evalAllGenotypes(fmspecF,
+                             spPopSizes = 1:11)
+
+## Better
+spp <- 1:11
+names(spp) <- c("A","B",
+                "A, a1", "A, a2", 
+                "B, b1", "B, b2", "B, b3",
+                "A, a1, a2",
+                "B, b1, b2", "B, b1, b3", "B, b1, b2, b3")
+
+afmspecF <- evalAllGenotypes(fmspecF,
+                             spPopSizes = spp)
+
 
 ## Show only viable ones
 afmspecF[afmspecF$Fitness >= 1, ]
@@ -8292,11 +8330,6 @@ functions [so linear, non-linear, convex, concave, etc, functions can be
 used, including of course affine fitness functions as in @gerstung2011].
 
 
-FIXME: BEWARE: some examples below are likely to be wrong because
-they assume the order of genes is as given in "Genotype" , but that
-is not necessarily correct. We are checking these, and moving all
-the specifications to the new alternative that uses gene names
-explicitly. 
 
 ## A first example with frequency-dependent fitness {#fdfex1}
 
@@ -8308,15 +8341,17 @@ frequency of the genotype with the first and second genes mutated,
 etc, and `f_` to denote the frequency of the WT genotype ---below,
 in sections \@ref(fdfabs), \@ref(fdfrelabs), and \@ref(predprey), we
 will use absolute number of cells instead of relative frequencies).
-
+(As we have discussed already, instead of `f_1` you can, and
+probably should for any example except trivial ones, use `f_A` or
+`f_genotype expressed as combination of gene names`).
 
 As you can see below, the birth rate of genotype "A" $= 1.2 + 1.5*
-f\_1\_2$ and that of the wildtype $= 1 + 1.5* f\_1\_2$.  Genotype
+f\_A\_B$ and that of the wildtype $= 1 + 1.5* f\_A\_B$.  Genotype
 "A, B" in this example could be a genotype whose presence leads to
 an increase in the growth of other genotypes (maybe via diffusible
 factors, induction of angiogenesis, etc). Genotype "B" does not show
 frequency-dependence.  The birth rate of genotype "C" increases with
-the frequency of `f_1_2` and increases (adding 0.7) with the
+the frequency of `f_A_B` and increases (adding 0.7) with the
 frequency of genotypes "A" and "B", but only if the sum of the
 frequencies of genotypes "A" and "B" is larger than 0.3.  For
 genotype "A, B" its fitness increases with the square root of the
@@ -8333,12 +8368,12 @@ a fitness of 0. <!-- See the documentation of `allFitnessEffects` for -->
 ## Define fitness of the different genotypes
 gffd <- data.frame(
     Genotype = c("WT", "A", "B", "C", "A, B"), 
-    Fitness = c("1 + 1.5 * f_1_2",
-                "1.3 + 1.5 * f_1_2",
+    Fitness = c("1 + 1.5 * f_A_B",
+                "1.3 + 1.5 * f_A_B",
                 "1.4",
-                "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
-                "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
-    stringsAsFactors = FALSE)
+                "1.1 + 0.7*((f_A + f_B) > 0.3) + f_A_B",
+                "1.2 + sqrt(f_1 + f_C + f_B) - 0.3 * (f_A_B > 0.5)"))
+
 ```
 (In the data frame creation, we use `stringsAsFactors = FALSE`
 to avoid messages about conversions between factors and characters
@@ -8350,24 +8385,26 @@ You could also specify that as
 ## Define fitness of the different genotypes
 gffdn <- data.frame(
     Genotype = c("WT", "A", "B", "C", "A, B"), 
-    Fitness = c("1 + 1.5 * f_A_B",
-                "1.3 + 1.5 * f_A_B",
+    Fitness = c("1 + 1.5 * f_1_2",
+                "1.3 + 1.5 * f_1_2",
                 "1.4",
-                "1.1 + 0.7*((f_A + f_B) > 0.3) + f_A_B",
-                "1.2 + sqrt(f_A + f_C + f_B) - 0.3 * (f_A_B > 0.5)"),
+                "1.1 + 0.7*((f_1 + f_2) > 0.3) + f_1_2",
+                "1.2 + sqrt(f_1 + f_3 + f_2) - 0.3 * (f_1_2 > 0.5)"),
     stringsAsFactors = FALSE)
 ```
-
+but it is *strongly preferred* to use explicit gene name letters
+(otherwise, you must keep in mind how R orders names of genes when
+making the mapping from letters to numbers). 
 
 
 
 Let us verify that we have specified what we think we have specified
 using `evalAllGenotypes` (we have done this repeatedly in this
 vignette, for example in \@ref(ex-ochs) or \@ref(quickexample) or
-\@ref(bauer). Because of the way the code works, we need to pass the
+\@ref(bauer). Because fitness can depend on population sizes of
+different populations, we need to pass the
 populations sizes at which we want fitness evaluated in
-`evalAllGenotypes` (this we do now in `allFitnessEffects`, but this
-might be moved to `evalAllGenotypes` in the future).
+`evalAllGenotypes`. 
 
 
 Note that when calling `allFitnessEffects` we have to set the
@@ -8377,13 +8414,19 @@ relative frequencies, we can be explicit and specify `freqType =
 (\@ref(fdfabs), \@ref(fdfrelabs), and \@ref(predprey)) several examples
 with absolute numbers.
 
+When passing `spPopSizes` it is also strongly preferred to use a
+named vector as that allows the code to run some checks. Otherwise,
+the order of the population sizes *must* be identical to that in the
+table with the fitness descriptions (component `full_FDF_spec` in
+the fitness effects object).
 
 ```{r fdf1b}
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel"),
-                 spPopSizes = c(100, 20, 20, 30, 0))
+                 spPopSizes = c(WT = 100, A = 20, B = 20, C = 30, "A, B" = 0))
 
+## Notice the warning
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel"),
@@ -8396,8 +8439,8 @@ evalAllGenotypes(allFitnessEffects(genotFitness = gffd,
 
 ``` 
 
-The named one gives the same results. Note as well that using
-`frequencyType` is not needed anymore (the default, `auto`, infers
+The numbered one gives the same results. Note as well that using
+`frequencyType` is not needed (the default, `auto`, infers
 the type)
 
 ```{r fdf1bnamed}
@@ -8509,29 +8552,28 @@ respectively.
 
 
 ```{r hurlbutfit1}
-options(stringsAsFactors = FALSE) ## Get rid of the messages
+
 
 create_fe <- function(a, b, c, d, e, f, g,
                         gt = c("WT", "A", "P", "C")) {
   data.frame(Genotype = gt,
              Fitness = c(
                  paste0("1 + ",
-                       d, " * f_1 ",
-                       "- ", c, " * f_3"),
+                       d, " * f_A ",
+                       "- ", c, " * f_C"),
                  paste0("1 - ", a, 
 				     " + ", d, " + ",
-                       f, " * f_1 ",
-                      "- ", c, " * f_3"),
+                       f, " * f_A ",
+                      "- ", c, " * f_C"),
                  paste0("1 + ", g, " + ",
-                       d, " * f_1 ",
+                       d, " * f_A ",
                        "- ", c, " * (1 + ",
-                       g, ") * f_3"),
+                       g, ") * f_C"),
                  paste0("1 - ", b, " + ",
                        e, " * f_ + ",
                        "(", d, " + ", 
-					   e, ") * f_1 + ",
-                       e , " * f_2")),
-             stringsAsFactors = FALSE)
+					   e, ") * f_A + ",
+                       e , " * f_P")))
 }
 ```
 
@@ -8553,31 +8595,32 @@ create_fe2 <- function(a, b, c, d, e, f, g,
   data.frame(Genotype = gt,
              Fitness = c(
                  paste0("1 + ",
-                       d, " * f_1_2 ",
-                       "- ", c, " * f_2_3"),
+                       d, " * f_A_P ",
+                       "- ", c, " * f_P_C"),
                  "0",
                  paste0("1 + ", g, " + ",
-                       d, " * f_1_2 ",
+                       d, " * f_A_P ",
                        "- ", c, " * (1 + ",
-                       g, ") * f_2_3"),
+                       g, ") * f_P_C"),
                  "0",
                  paste0("1 - ", a, " + ", 
 				 d, " + ",
-                       f, " * f_1_2 ",
-                       "- ", c, " * f_2_3"),
+                       f, " * f_A_P ",
+                       "- ", c, " * f_P_C"),
                  "0",
                  paste0("1 - ", b, " + ",
                        e, " * f_ + ",
                        "(", d, " + ", 
-					   e, ") * f_1_2 + ",
-                       e , " * f_2")),
+					   e, ") * f_A_P + ",
+                       e , " * f_P")),
              stringsAsFactors = FALSE)
 }
 
 ## And check:
 create_fe2("a", "b", "c", "d", "e", "f", "g")
 ```
-
+Note: we are writing `f_P_C`: this is remapped internally to `f_C_P`
+(which is the genotype name, with gene names reordered).
 
 
 To show two examples, we will run the analyses @hurlbut2018 use for
@@ -8590,13 +8633,12 @@ afe_3_a <- allFitnessEffects(
 		        genotFitness =
                        create_fe(0.02, 0.04, 0.08, 0.06,
                                  0.15, 0.1, 0.06),
-                frequencyDependentFitness = TRUE,
-                frequencyType = "rel")
+                frequencyDependentFitness = TRUE)
 set.seed(2)
 s_3_a <- oncoSimulIndiv(afe_3_a,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 200,
+                     finalTime = 160,
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = TRUE,
@@ -8617,13 +8659,12 @@ afe_3_b <- allFitnessEffects(
                 genotFitness =
                        create_fe(0.02, 0.04, 0.08, 0.1,
                                  0.15, 0.1, 0.05),
-                frequencyDependentFitness = TRUE,
-                frequencyType = "rel")
+                frequencyDependentFitness = TRUE)
 set.seed(2)
 s_3_b <- oncoSimulIndiv(afe_3_b,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 200,
+                     finalTime = 160,
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = TRUE,
@@ -8685,15 +8726,13 @@ with genotype A mutated.
 
 
 ```{r fdf2, message=FALSE}
-options(stringsAsFactors = FALSE) ## get rid of the messages
 gffd3 <- data.frame(Genotype = c("WT", "A", "B"), 
                    Fitness = c("1",
-                               "1 + 0.2 * (n_2 > 10)",
-                               ".9 + 0.4 * (n_1 > 10)"
+                               "1 + 0.2 * (n_B > 10)",
+                               ".9 + 0.4 * (n_A > 10)"
                                ))
 afd3 <- allFitnessEffects(genotFitness = gffd3, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "abs")
+                         frequencyDependentFitness = TRUE)
 ```
 
 As usual, let us verify that we have specified what we think we have
@@ -8707,14 +8746,12 @@ to `evalAllGenotypes` in the future): -->
 
 ```{r fdf2b, message=FALSE}
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "abs"),
-                 spPopSizes = c(100, 1, 11))
+                         frequencyDependentFitness = TRUE),
+                 spPopSizes = c(WT = 100, A = 1, B = 11))
 
 evalAllGenotypes(allFitnessEffects(genotFitness = gffd3, 
-                         frequencyDependentFitness = TRUE,
-                         frequencyType = "abs"),
-                 spPopSizes = c(100, 11, 1))
+                         frequencyDependentFitness = TRUE),
+                 spPopSizes = c(WT = 100, A = 11, B = 1))
 ```
 
 In this simulation, the population collapses: genotype B is able to
@@ -8847,7 +8884,9 @@ both preys and predators (and we use the max function to prevent birth
 rate from ever becoming negative or identically 0). Finally, note that we
 can make this much more sophisticated; for example, we could get the
 system going differently by having different mutations from WT to prey and
-predator.
+predator. Remember that you can now start the simulation from
+arbitrary initial compositions (section \@ref(minitmut)). This is
+left here for historical purposes and to show additional use cases.
 
 
 FIXME: clarify how we use `n_` or `f_`, since some of the examples
@@ -8881,6 +8920,12 @@ G_fe_LV <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-4,
 G_fe_LV("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
 
 ``` 
+Note we use numbers, not letters, in the expressions above (`n_1`,
+etc). This allows for reusing the function, but requires extra care
+making sure that the numbers match the order of the genotypes (it is
+not a problem with "S1" and "S2", since there "S1" will always be 1
+and "S2" 2; but what about "Predator" and "prey"?)
+
 
 Remember the above are the birth rates for a model with death rate =
 1 (the "Exp" model). That is why we added a 1 to the birth rate. If
@@ -9340,8 +9385,11 @@ extinct quickly, or you will only get prey growing exponentially.
 
 ### Commensalism {#commens}
 Modelling commensalism simply requires changing the values of the
-$\alpha$, the `a_12` and `a_21`. For example (not run, as this is
-just repetitive):
+$\alpha$, the `a_12` and `a_21`. Again, we can now avoid starting
+from a WT and start the simulation directly from "A" and "Commensal"
+(secton \ref@(minitmutant)). 
+
+For example (not run, as this is just repetitive):
 
 ```{r commens, eval=FALSE}
 fe_commens <-
@@ -9774,9 +9822,9 @@ other, creating a rock-paper-scissors game.
 ```{r message=F}
 crs <- function (a, b, c){
   data.frame(Genotype = c("WT", "C", "R"),
-             Fitness = c(paste0("1 + ", a, " * f_2 - ", b, " * f_1"),
-                         paste0("1 + ", b, " * f_ - ", c, " * f_2"),
-                         paste0("1 + ", c, " * f_1 - ", a, " * f_")
+             Fitness = c(paste0("1 + ", a, " * f_R - ", b, " * f_C"),
+                         paste0("1 + ", b, " * f_ - ", c, " * f_R"),
+                         paste0("1 + ", c, " * f_C - ", a, " * f_")
              ))
 }
 ```
@@ -10000,13 +10048,16 @@ Before performing the simulation, let's look at the fitness of each competitor.
 
 ```{r, message=F}
 ## Stablish Genotype-Fitnees mapping. D = Dove, H = Hawk
+
+## With newer OncoSimulR functionality, using WT to start the simulation
+## would no longer be needed.
 H_D_fitness <- function(c, v,
                     gt = c("WT", "H", "D")) {
   data.frame(Genotype = gt,
              Fitness = c(
                paste0("1"),
-               paste0("1 + f_1 *", (v-c)/2, "+ f_2 *", v),
-               paste0("1 + f_2 *", v/2)))
+               paste0("1 + f_H *", (v-c)/2, "+ f_D *", v),
+               paste0("1 + f_D *", v/2)))
 }
 
 ## Fitness Effects specification
@@ -10157,8 +10208,11 @@ The fitness equations derived from those populations and parameters are:
 \end{equation}
 <br>
 
-Where $f_1$ is the GLY cells' frequency and $f_2$ is the DEF cells' frequency
+Where $f_1$ is the GLY cells' frequency and $f_2$ is the VOF cells' frequency
 at a given time. All fitness equations start from balance by the sum of 1.
+
+<!-- FIXME: it is unclear that $f_2$ is really DEF and not VOP's frequency. -->
+<!-- I fix it -->
 
 Finally, depending of the parameter's values, the  model can lead to
 three different situations (as in other examples, the different
@@ -10179,9 +10233,9 @@ population).
 avc <- function (a, v, c) {
   data.frame(Genotype = c("WT", "GLY", "VOP", "DEF"),
              Fitness = c("1",
-                         paste0("1 + ",a," * (f_1 + 1)"),
-                         paste0("1 + ",a," * f_1 + ",v," * (f_2 + 1) - ",c),
-                         paste0("1 + ",a," * f_1 + ",v," * f_2")
+                         paste0("1 + ",a," * (f_GLY + 1)"),
+                         paste0("1 + ",a," * f_GLY + ",v," * (f_VOP + 1) - ",c),
+                         paste0("1 + ",a," * f_GLY + ",v," * f_VOP")
                          ))
                           }
 
@@ -10239,9 +10293,9 @@ conditions are satisfied, the population will converge towards all VOP.
 avc <- function (a, v, c) {
   data.frame(Genotype = c("WT", "GLY", "VOP", "DEF"),
              Fitness = c("1",
-                         paste0("1 + ",a," * (f_1 + 1)"),
-                         paste0("1 + ",a," * f_1 + ",v, " * (f_2 + 1) - ",c),
-                         paste0("1 + ",a," * f_1 + ",v, " * f_2")
+                         paste0("1 + ",a," * (f_GLY + 1)"),
+                         paste0("1 + ",a," * f_GLY + ",v, " * (f_VOP + 1) - ",c),
+                         paste0("1 + ",a," * f_GLY + ",v, " * f_VOP")
                          ))
                           }
 
@@ -10298,9 +10352,9 @@ favour VOP over DEF, swinging the dynamics back.
 avc <- function (a, v, c) {
   data.frame(Genotype = c("WT", "GLY", "VOP", "DEF"),
              Fitness = c("1",
-                         paste0("1 + ",a," * (f_1 + 1)"),
-                         paste0("1 + ",a," * f_1 + ",v," * (f_2 + 1) - ",c),
-                         paste0("1 + ",a," * f_1 + ",v," * f_2")
+                         paste0("1 + ",a," * (f_GLY + 1)"),
+                         paste0("1 + ",a," * f_GLY + ",v," * (f_VOP + 1) - ",c),
+                         paste0("1 + ",a," * f_GLY + ",v," * f_VOP")
                          ))
                           }
 
@@ -10377,7 +10431,7 @@ the context of the game and disregard spatial considerations.
 
 : (\#tab:tableprostate) Payoff table that represents the interactions between the three cell types considered by de model
 
-As is@basanta_investigating_2012, the I cells are relatively
+As in @basanta_investigating_2012, the I cells are relatively
 independent from the microenvironment and produce their own growth
 factors (e.g. testosterone) and thus are considered to have a
 comparatively constant fitness $(1-\gamma)$, where $\gamma$
@@ -10451,13 +10505,13 @@ fitness_rel <- function(a, b, r, g, gt = c("WT", "S", "I", "D")) {
     data.frame(
       Genotype = gt,
       Fitness = c("1",
-                  paste0("1 + ", a, " * f_3"),
+                  paste0("1 + ", a, " * f_D"),
                   paste0("1 + 1 - ", g),
-                  paste0("1 + (1 - f_2 - f_3) * (1 - ", b, " + ", 
-                         a, ") + f_2 * (1 - ", b, " + ", r,
-                         ") + f_3 * (1 - 2 * ", b, ") + 1 - ", b, 
-                         " + ", a, " + f_2 * (", r, " - ",
-                         a, ") - f_3 * (", b, " + ", a, ")"))
+                  paste0("1 + (1 - f_I - f_D) * (1 - ", b, " + ", 
+                         a, ") + f_I * (1 - ", b, " + ", r,
+                         ") + f_D * (1 - 2 * ", b, ") + 1 - ", b, 
+                         " + ", a, " + f_I * (", r, " - ",
+                         a, ") - f_D * (", b, " + ", a, ")"))
                   )
 }
 ```
@@ -10848,20 +10902,20 @@ f_cells <- function(c1, c2, c3, r11, r12, r13,
                                  gt = c("WT", "OC", "OB", "MM")) {
     data.frame(Genotype = gt,
                Fitness = c(
-                  paste0("max(0.1, 1 - ", awt, " * (f_1+f_2+f_3)*N)"),
-                  paste0("1", "+(((f_1*(", M, "-1)+1)*", c1, ")/", M, ")*",r11,
-                          "+((((1-f_3)*(", M, "-1)-f_1*(", M, "-1)-1)*", c2, ")/", M, ")*", r12,
-                          "+(((", M, "-(1-f_3)*(", M, "-1))*", c3, ")/", M, ")*", r13,
+                  paste0("max(0.1, 1 - ", awt, " * (f_OC + f_OB+f_MM)*N)"),
+                  paste0("1", "+(((f_OC * (", M, "-1)+1)*", c1, ")/", M, ")*",r11,
+                          "+((((1-f_MM) * (", M, "-1)-f_OC*(", M, "-1)-1)*", c2, ")/", M, ")*", r12,
+                          "+(((", M, "-(1-f_MM)*(", M, "-1))*", c3, ")/", M, ")*", r13,
                           "-", c1
                           ),
-                  paste0("1", "+(((f_2*(", M, "-1)+1)*", c2, ")/", M, ")*", r22,
-                          "+((((1-f_1)*(", M, "-1)-f_2*(", M, "-1)-1)*", c3, ")/", M, ")*", r23,
-                          "+(((", M, "-(1-f_1)*(", M, "-1))*", c1, ")/", M, ")*", r21,
+                  paste0("1", "+(((f_OB*(", M, "-1)+1)*", c2, ")/", M, ")*", r22,
+                          "+((((1-f_OC)*(", M, "-1)-f_OB*(", M, "-1)-1)*", c3, ")/", M, ")*", r23,
+                          "+(((", M, "-(1-f_OC)*(", M, "-1))*", c1, ")/", M, ")*", r21,
                           "-", c2
                           ),
-                  paste0("1", "+(((f_3*(", M, "-1)+1)*", c3, ")/", M, ")*", r33,
-                          "+((((1-f_2)*(", M, "-1)-f_3*(", M, "-1)-1)*", c1, ")/", M, ")*", r31,
-                          "+(((", M, "-(1-f_2)*(", M, "-1))*", c2, ")/", M, ")*", r32,
+                  paste0("1", "+(((f_MM*(", M, "-1)+1)*", c3, ")/", M, ")*", r33,
+                          "+((((1-f_OB)*(", M, "-1)-f_MM*(", M, "-1)-1)*", c1, ")/", M, ")*", r31,
+                          "+(((", M, "-(1-f_OB)*(", M, "-1))*", c2, ")/", M, ")*", r32,
                           "-", c3
                           )
                   )
@@ -11242,13 +11296,13 @@ create_fe <- function(bG, cG, iPA, cI, cS, bPA, ab,
                       gt = c("WT", "CT", "PA")) {
   data.frame(Genotype = gt,
              Fitness = c(
-               paste0("1 + ", bG, " * (f_ + f_1) - ", cS, 
-                      " * (f_ +  f_1 + f_2) - ", cI, "(f_2 > 0.2) - ", cG, 
+               paste0("1 + ", bG, " * (f_ + f_CT) - ", cS, 
+                      " * (f_ +  f_CT + f_PA) - ", cI, "(f_PA > 0.2) - ", cG, 
                       " - ", ab),
-               paste0("1 + ", bG, " * (f_ + f_1) - ", cS, 
-                      " * (f_ +  f_1 + f_2) - ", cG),
-               paste0("1 +", bPA, " - ", cS, " * (f_ +  f_1 + f_2) - ", iPA,
-                      " *(f_(f_2 > 0.2))")),
+               paste0("1 + ", bG, " * (f_ + f_CT) - ", cS, 
+                      " * (f_ +  f_CT + f_PA) - ", cG),
+               paste0("1 +", bPA, " - ", cS, " * (f_ +  f_CT + f_PA) - ", iPA,
+                      " *(f_(f_PA > 0.2))")),
              stringsAsFactors = FALSE)
 }
 
@@ -11510,12 +11564,12 @@ create_fe <- function(cG, bG, cS, cMMph, cMMTC, bR, cD,
                       gt = c("WT", "Mph", "BTC", "MTC")) {
   data.frame(Genotype = gt,
              Fitness = c(
-               paste0("1 + ", bG, "*(f_ + f_1) - ", cG, " - ", cS, "*(f_ + f_2)"),
-               paste0("1 + ", bG, "*(f_ + f_1) - ", cG, " - ", cMMph),
-               paste0("1 + ", bR, " + ", bG, "*(f_ + f_1) - ", cS, "* (f_ + f_2) -",
-                      cD , " * f_1"),
-               paste0("1 + ", bR, " + ", bG, " *(f_ + f_1) -", cMMTC, " - ",
-                      cD , " * f_1")
+               paste0("1 + ", bG, "*(f_ + f_Mph) - ", cG, " - ", cS, "*(f_ + f_BTC)"),
+               paste0("1 + ", bG, "*(f_ + f_Mph) - ", cG, " - ", cMMph),
+               paste0("1 + ", bR, " + ", bG, "*(f_ + f_Mph) - ", cS, "* (f_ + f_BTC) -",
+                      cD , " * f_Mph"),
+               paste0("1 + ", bR, " + ", bG, " *(f_ + f_Mph) -", cMMTC, " - ",
+                      cD , " * f_Mph")
                ),
              stringsAsFactors = FALSE)
 }
@@ -11542,7 +11596,7 @@ evalAllGenotypes(allFitnessEffects(genotFitness =
                                    create_fe(2, 5, 1, 0.8, 1, 1, 9), 
                                    frequencyDependentFitness = TRUE,
                                    frequencyType = "rel"),
-                 spPopSizes = c(1000, 0, 0, 0))
+                 spPopSizes = c(WT = 1000, Mph = 0, BTC = 0, MTC = 0))
 
 ```
 
@@ -11556,7 +11610,7 @@ evalAllGenotypes(allFitnessEffects(genotFitness =
                                    create_fe(2, 5, 1, 0.8, 1, 1, 9), 
                                    frequencyDependentFitness = TRUE,
                                    frequencyType = "rel"),
-                 spPopSizes = c(1000, 1000, 0, 0))
+                 spPopSizes = c(WT = 1000, Mph = 1000, BTC = 0, MTC = 0))
 
 ```
 
@@ -11571,7 +11625,7 @@ evalAllGenotypes(allFitnessEffects(genotFitness =
                                    create_fe(2, 5, 1, 0.8, 1, 1, 9), 
                                    frequencyDependentFitness = TRUE,
                                    frequencyType = "rel"),
-                 spPopSizes = c(1000, 1000, 100, 100))
+                 spPopSizes = c(WT = 1000, Mph = 1000, BTC = 100, MTC = 100))
 
 ```
 
@@ -11773,9 +11827,6 @@ we will assume that the two chemotherapy-resistant cancer cells (BTC,R and
 MTC,R) are all derived from WT by two different mutations.
 
 
-FIXME: original example had `f_1_2` but that seems wrong, as that
-would be genotype "BTC, R" which has fitness 0. I think they really
-meant `f_1_4`. Other mistakes are possible! This needs to be revised carefully.
 
 
 
@@ -11820,7 +11871,9 @@ evalAllGenotypes(allFitnessEffects(genotFitness =
                                    create_fe(2,5,1,0.8,1,1,9,5), 
                                    frequencyDependentFitness = TRUE,
                                    frequencyType = "rel"),
-                 spPopSizes = c(1000, 100, 0, 100, 1000, 0, 0))
+                 spPopSizes = c(WT = 1000, BTC = 100, R = 0,
+                                MTC = 100, Mph = 1000,
+                                "BTC, R" = 0, "MTC, R" = 0))
 
 ```
 
@@ -12115,10 +12168,10 @@ g <- 0.975;   h <- -0.5;  i <- 0.75   # Resistant
 
 ## Fitness definition
 players <- data.frame(Genotype = c("WT","S","R","S,R"),
-                      Fitness = c(paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2"), #WT
-                                  paste0(d,"*f_+",e,"*f_1+",f,"*f_1_2"),      #S
+                      Fitness = c(paste0(a, "*f_+", b, "*f_S+", c, "*f_S_R"), #WT
+                                  paste0(d,"*f_+",e,"*f_S+",f,"*f_S_R"),      #S
                                   "0",                                        #R
-                                  paste0(g,"*f_+",h,"*f_1+",i,"*f_1_2")),     #S,R
+                                  paste0(g,"*f_+",h,"*f_S+",i,"*f_S_R")),     #S,R
                       stringsAsFactors = FALSE)
 
 
@@ -12135,7 +12188,7 @@ plot(eag)
 gamesimul <- oncoSimulIndiv(game,
                             model = "McFL",
                             onlyCancer = FALSE,
-                            finalTime = 300,
+                            finalTime = 40,
                             mu = 0.01,
                             initSize = 5000,
                             keepPhylog = TRUE,
@@ -12158,9 +12211,9 @@ funcionality used in the first section of this chapter.
 # Effect of drug on fitness sensible tumor cells
 drug_eff <- 0.01
 
-wt_fitness <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2")
-sens_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2")
-res_fitness <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2")
+wt_fitness <- paste0(a, "*f_+", b, "*f_S+", c, "*f_S_R")
+sens_fitness <- paste0(d, "*f_+", e, "*f_S+", f, "*f_S_R")
+res_fitness <- paste0(g, "*f_+", h, "*f_S+", i, "*f_S_R")
 
 players_1 <- data.frame(Genotype = c("WT", "S", "R", "S, R"),
                         Fitness = c(wt_fitness,                                               #WT
@@ -12176,7 +12229,7 @@ period_1 <- allFitnessEffects(genotFitness = players_1,
 
 set.seed(2)
 
-final_time <- 300
+final_time <- 200
 simul_period_1 <- oncoSimulIndiv(period_1,
                                  model = "McFL",
                                  onlyCancer = FALSE,
@@ -12228,9 +12281,9 @@ a <- 1;       b <- 0.5;   c <- 0.5    # Healthy
 d <- 1;       e <- 1.25;  f <- 0.7    # Sensitive
 g <- 0.975;   h <- -0.5;  i <- 0.75   # Resistant
 
-wt_fitness   <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2")
-sens_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2")
-res_fitness  <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2")
+wt_fitness   <- paste0(a, "*f_+", b, "*f_S+", c, "*f_S_R")
+sens_fitness <- paste0(d, "*f_+", e, "*f_S+", f, "*f_S_R")
+res_fitness  <- paste0(g, "*f_+", h, "*f_S+", i, "*f_S_R")
 
 fitness_df <-data.frame(Genotype = c("WT", "S", "R", "S, R"),
                         Fitness = c(wt_fitness,                                              #WT
@@ -12247,7 +12300,7 @@ afe <- allFitnessEffects(genotFitness = fitness_df,
 switching_sim  <- oncoSimulIndiv(afe,
                                model = "McFL",
                                onlyCancer = FALSE,
-                               finalTime = 300,
+                               finalTime = 100,
                                mu = 0.01,
                                initSize = 5000,
                                keepPhylog = TRUE,
@@ -12339,16 +12392,16 @@ RNGkind("L'Ecuyer-CMRG")
 
 # WT      COOPERATOR  DEFECTOR    OVERPRODUCER
 a <- 1;   b <- 0.5;   c <- 0.5;   m <- 0.75   # WT
-wt_fitness <- paste0(a, "*f_+", b, "*f_1+", c, "*f_1_2+", m, "*f_1_3")
+wt_fitness <- paste0(a, "*f_+", b, "*f_C+", c, "*f_C_D+", m, "*f_C_P")
 
 d <- 1;   e <- 1.25;  f <- 0.7;   o <- 1.875  # Cooperator
-coop_fitness <- paste0(d, "*f_+", e, "*f_1+", f, "*f_1_2+", o, "*f_1_3")
+coop_fitness <- paste0(d, "*f_+", e, "*f_C+", f, "*f_C_D+", o, "*f_C_P")
 
 g <- 1;   h <- 1.5;   i <- 0.5;   p <- 2.5    # Defector
-def_fitness <- paste0(g, "*f_+", h, "*f_1+", i, "*f_1_2+", p, "*f_1_3")
+def_fitness <- paste0(g, "*f_+", h, "*f_C+", i, "*f_C_D+", p, "*f_C_P")
 
 j <- 0.8; k <- 1;     l <- 0.5;   q <- 1.5    # Cooperator overproducing 
-over_fitness <- paste0(j, "*f_+", k, "*f_1+", l, "*f_1_2+", q, "*f_1_3")
+over_fitness <- paste0(j, "*f_+", k, "*f_C+", l, "*f_C_D+", q, "*f_C_P")
 
 
 ## No-chemotherapy
@@ -12372,14 +12425,17 @@ game_no <- allFitnessEffects(genotFitness = coop_no,
                           
 
 ## First plot
-eag <- evalAllGenotypes(game_no, spPopSizes = c(10, 10, 0, 0, 10, 1, 0, 0))[c(1, 2, 5, 6),]
+eag <- evalAllGenotypes(game_no,
+                        spPopSizes = c(WT = 10, C = 10, D = 0, P = 0,
+                                       "C, D" = 10, "C, P" = 1,
+                                       "D, P" = 0, "C, D, P" = 0))[c(1, 2, 5, 6),]
 plot(eag)
 
 ## Simulation
 gamesimul_no <- oncoSimulIndiv(game_no,
                             model = "McFL",
                             onlyCancer = FALSE,
-                            finalTime = 300,
+                            finalTime = 70,
                             mu = 0.01,
                             initSize = 5000,
                             keepPhylog = TRUE,
@@ -12442,7 +12498,7 @@ period_fix <- allFitnessEffects(genotFitness = coop_fix,
                               frequencyType = "rel")
 
 set.seed(2)
-final_time <- 300
+final_time <- 100
 simul_period_fix <- oncoSimulIndiv(period_fix,
                                  model = "McFL",
                                  onlyCancer = FALSE,
