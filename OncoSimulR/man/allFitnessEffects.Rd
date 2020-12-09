@@ -174,13 +174,21 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   genotype.  Relative frequency variables must be f_ for wild type, f_1
   or f_A if first gene is mutated, f_2 or f_B if is the case for the
   second one, f_1_2 or f_A_B, if both the first and second genes are
-  mutated, and so on. If we want to use absolute frequencies, just
-  subtitute "f" for "n". Please remember that the election between
-  relative or absolute frequencies must be specified also in
-  \code{frequencyType}. Mathematical operations and symbols allowed are
-  described in the documentation of C++'s library ExprTk that is used to
-  parse and evaluate the fitness equations (see references for more
-  information).  }
+  mutated, and so on. For anything beyond the trivially simple, using
+  letters (not numbers) is strongly recommended. Note also that you need
+  not specify the fitness of every genotype (those missing are assumed
+  to have a fitness of 0), nor do you need to pass the WT genotype. See
+  the vignette for many examples.
+
+  If we want to use absolute numbers (absolute frequencies), just
+  subtitute "f" for "n". The choice between relative or absolute
+  frequencies may be specified also in \code{frequencyType} or, if using
+  the default (auto) it can be automatically inferred.
+
+  Mathematical operations and symbols allowed are described in the
+  documentation of C++'s library ExprTk that is used to parse and
+  evaluate the fitness equations (see references for more information).
+  }
 
 
 \item{keepInput}{
