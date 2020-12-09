@@ -7580,7 +7580,7 @@ out1 <- oncoSimulIndiv(fmspecF, initMutant = c("A", "B"),
 
 ```
 
-Some further examples are given below, as in \@ref(#competition1mult).
+Some further examples are given below, as in \@ref(competition1mult).
 
 \clearpage
 
