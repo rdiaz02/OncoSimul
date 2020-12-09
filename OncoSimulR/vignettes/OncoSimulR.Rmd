@@ -228,7 +228,7 @@ is a summary of some of its key features:
   cooperation and mutualism, and commensalism.
 
 * It is possible to start the simulation with arbitrary initial
-  composition (section \@ref(minitmutant)) and to simulate multiple species
+  composition (section \@ref(minitmut)) and to simulate multiple species
   (section \@ref(multispecies)). You can thus run simulations
   that involve both ecological and evolutionary processes involving
   inter-species relationships plus genetic restrictions in evolution.
@@ -7447,7 +7447,7 @@ os0 <- oncoSimulIndiv(afd0,
 ## Multispecies simulations {#multispecies}
 
 Since we can use arbitrary initial populations to start the
-simulation (section \@ref(minitmutant)) and we can use arbitrary
+simulation (section \@ref(minitmut)) and we can use arbitrary
 fitness specifications, it is simple to run multi-species
 simulations using a simple trick. 
 
@@ -8845,7 +8845,7 @@ system going. For example, suppose we want to model a predator-prey
 system; we could do this having a WT that can mutate into either
 preys or predators. (This is no longer necessary since we can
 specify starting the simulation from populations with arbitrary
-numbers of different clones; see sections \@ref(minitmutant) and
+numbers of different clones; see sections \@ref(minitmut) and
 \@ref(multispecies). But we have not yet updated the examples).
 
 Even with the There is, in fact, a small leakage in the system
@@ -8931,15 +8931,18 @@ Remember the above are the birth rates for a model with death rate =
 1 (the "Exp" model). That is why we added a 1 to the birth rate. If
 you subtract 1 from the expressions for the birth rates of predators
 and prey above you get the standard expressions for the differential
-equations for Lotka-Volterra model of competition: $\frac{\mathrm{d}n_1}{\mathrm{d}t}
-= r_1 n_1 (1 - \frac{n_1 + \alpha_{12} n_2}{K_1})$. (Verbosely: 
-we are simulating using a model where we have, in a
-rather general expression, $\frac{\mathrm{d}n_1}{\mathrm{d}t} = (b\ -
-d)\ n_1$), where $b$ and $d$ are the birth and death rates (that
+equations for Lotka-Volterra model of competition: 
+$\frac{\mathrm{d}n_1}{\mathrm{d}t} = r_1 n_1 (1 - \frac{n_1 +
+\alpha_{12} n_2}{K_1})$. 
+(Verbosely: we are simulating using a model where we have, in a
+rather general expression, 
+$\frac{\mathrm{d}n_1}{\mathrm{d}t} = (b\ - d)\ n_1$, 
+where $b$ and $d$ are the birth and death rates (that
 could be arbitrary functions of other stuff); these are the birth
 and death rates used in the BNB algorithm. And when we simulate
-under the "Exp" model we have $d  = 1$. So just solve for $(b - d) n_1 =  r_1 n_1 (1 -
-\frac{n_1 + \alpha_{12} n_2}{K_1}) $, with $b = 1$ and you get the
+under the "Exp" model we have $d  = 1$. So just solve for
+$(b - d) n_1 =  r_1 n_1 (1 - \frac{n_1 + \alpha_{12} n_2}{K_1})$, 
+with $b = 1$ and you get the
 $b$ you need to use).
 
 
@@ -9002,7 +9005,7 @@ par(op)
 ### Competition {#competition1mult}
 
 We repeat the above, but starting directly from the two species,
-using the \@ref(multispecies) logic and \@ref(minitmutant). 
+using the \@ref(multispecies) logic and \@ref(minitmut). 
 
 
 ```{r lotka1multi}
@@ -9311,7 +9314,7 @@ $$\frac{\mathrm{d}n_2}{\mathrm{d}t} = \epsilon\ a\ c\ n_1\ n_2 - \delta\ n2$$
 (Recall what we explained in section \@ref(competition1) for how we
 find the $b$, birth rate, to use in our simulations when we are using
 and "Exp" model with death rate 1: basically, each of the birth
-rates, $b_i$ is $1 + expression above/n_i$).
+rates, $b_i$ is $1 + expression\ above/n_i$).
 
 <!-- The next is wrong because prey is n2 -->
 <!-- ## Use e for epsilon and d for delta -->
@@ -9409,7 +9412,7 @@ coefficients above).
 Modelling commensalism simply requires changing the values of the
 $\alpha$, the `a_12` and `a_21`. Again, we can now avoid starting
 from a WT and start the simulation directly from "A" and "Commensal"
-(secton \ref@(minitmutant)). 
+(secton \ref@(minitmut)). 
 
 For example (not run, as this is just repetitive):
 
