@@ -9412,7 +9412,7 @@ coefficients above).
 Modelling commensalism simply requires changing the values of the
 $\alpha$, the `a_12` and `a_21`. Again, we can now avoid starting
 from a WT and start the simulation directly from "A" and "Commensal"
-(secton \ref@(minitmut)). 
+(section \@ref(minitmut)). 
 
 For example (not run, as this is just repetitive):
 
