@@ -9399,6 +9399,12 @@ If you run that model repeatedly, sometimes the system will go
 extinct quickly, or you will only get prey growing exponentially.
 
 
+You could now (left as an exercise) build a more complex model to
+simulate arms-race scenarios between predators and prey (maybe by
+having mutations with possibly opposing effects on different
+coefficients above).
+
+
 ### Commensalism {#commens}
 Modelling commensalism simply requires changing the values of the
 $\alpha$, the `a_12` and `a_21`. Again, we can now avoid starting
