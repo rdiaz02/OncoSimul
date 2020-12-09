@@ -463,7 +463,7 @@ create_flvars_fitvars <- function(genotFitness, frequencyType) {
     names(flvars2) <- paste0(prefix, names(flvars))
 
     rmwt <- which(flvars2 == prefix)
-    if(length(rmwt)) flvars2 <- flvars2[rmwt] ## rm this.
+    if(length(rmwt)) flvars2 <- flvars2[-rmwt] ## rm this.
 
     ## Need to rev the vector, to ensure larger patterns come first
     ## and to place "f_" as last.
@@ -475,6 +475,7 @@ create_flvars_fitvars <- function(genotFitness, frequencyType) {
                 "Check the conversion of gene names to numbers in fitness spec")
         rflvars2 <- rflvars2[order(count_seps, decreasing = TRUE)]
     }
+
     ## Users can pass in many possible orderings. Get all.
     full_rflvars <- all_orders_fv(rflvars2, prefix, prefixre)
     Fitness_as_fvars <- stringr::str_replace_all(genotFitness$Fitness,
@@ -489,7 +490,7 @@ all_orders_fv <- function(x, prefix, prefixre) {
     f1 <- function(zz, prefix, prefixre) {
         z <- gsub(prefixre, "", names(zz))
         spl <- strsplit(z, "_")[[1]]
-        if(length(spl) == 1) {
+        if(length(spl) <= 1) {
             return(zz)
         } else {
             pp <- gtools::permutations(length(spl), length(spl), spl)
@@ -499,6 +500,7 @@ all_orders_fv <- function(x, prefix, prefixre) {
             return(ppoo)
         }
     }
+
     ## I cannot use lapply, as it strips the names
     out <- vector(mode = "character", length = 0)
     for(i in 1:length(x)) {
