@@ -309,7 +309,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   }
 
   \item{fitnessLandscapeVariables}{A character vector that contains the
-  frequency variables necessary for the C++ code.
+  frequency variables necessary for the C++ code. The "fvars".
 }
 
   \item{frequencyDependentFitness}{TRUE or FALSE as we have explained
@@ -317,6 +317,16 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   }
   
   \item{frequencyType}{A character string "abs" or "rel" (or NULL).
+  }
+
+   \item{full_FDF_spec}{For frequency-dependent fitness, a complete
+  data frame showing the genotypes (as matrix, letters, and "fvars") and the
+  fitness specification, in terms of the original specification
+  (Fitness_as_letters) and with genotypes mapped to numbers according to
+  the "fvars" (Fitness_as_fvars). If fitness was originally specified in
+  terms of numbers, these two columns will be identical. All the
+  information in this data frame is implicitly above, but this
+  simplifies checking that you are doing what you think you are doing.
   }
 
 }

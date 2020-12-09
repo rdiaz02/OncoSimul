@@ -98,16 +98,21 @@ evalAllGenotypesFitAndMut(fitnessEffects, mutatorEffects,
 }
 
 \item{spPopSizes}{
-  \code{spPopSizes} is a numeric vector that contains the population sizes of the clones,
-  in the same order of genotypes appear in the Genotype column of
-  \code{genotFitness}. Do \code{your_object$full_FDF_spec} to see the
-  genotypes (and the order) for which you need to pass the values
-  (genotypes with fitness 0 might not be in the genotype fitness table,
-  and need no population size passed).
-  
   \code{spPopSizes} is only needed when \code{frequencyDependentFitness = TRUE} and
   you want to evaluate fitness with \code{\link{evalGenotype}} or 
   \code{\link{evalAllGenotypes}} (see these functions for more info).
+  
+  \code{spPopSizes} is a numeric vector that contains the population sizes of the clones,
+  in the same order of genotypes appear in the Genotype column of
+  \code{genotFitness}.   In \code{your_object$full_FDF_spec} you can see the
+  genotypes (and the order) for which you need to pass the values
+  (recall genotypes not specified explicitly are given a value of 0 and
+  do not show up in this table).
+
+  It is strongly recommended that \code{spPopSizes} be a named vector to
+  allow for checks and matches to the actual genotypes.
+  
+  
 }
 
 \item{currentTime}{
