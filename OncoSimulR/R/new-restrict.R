@@ -446,23 +446,78 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
 ##   the same assumptions
 create_flvars_fitvars <- function(genotFitness, frequencyType) {
     x <- genotFitness[, -ncol(genotFitness), drop = FALSE]
-    pasted <- apply(x, 1, function(z) paste(which(z == 1), collapse = "_"))
-    npasted <- apply(x, 1, function(z) paste(colnames(x)[which(z == 1)], collapse = "_"))
+    pasted <- apply(x, 1, function(z) paste(sort(which(z == 1)), collapse = "_"))
+    npasted <- apply(x, 1, function(z) paste(sort(colnames(x)[which(z == 1)]), collapse = "_"))
     if(frequencyType == "abs") {
-        flvars <- paste0("n_", pasted)
+        prefix <- "n_"
+        prefixre <- "^n_"
     } else {
-        flvars <- paste0("f_", pasted)
+        prefix <- "f_"
+        prefixre <- "^f_"
     }
+    flvars <- paste0(prefix, pasted)
     names(flvars) <- npasted
 
+    ## make sure we get f_1_2 and not f_2_1, etc
+    flvars2 <- flvars
+    names(flvars2) <- paste0(prefix, names(flvars))
+    flvars2 <- flvars2[-which(flvars2 == prefix)] ## rm this.
 
-    from_subst_pattern <- colnames(x)
-    to_subst_pattern <- as.character(1:ncol(x))
-    names(to_subst_pattern) <- from_subst_pattern
-    Fitness_as_fvars <- stringr::str_replace_all(genotFitness$Fitness, to_subst_pattern)
+    ## Need to rev the vector, to ensure larger patterns come first
+    ## and to place "f_" as last.
+    rflvars2 <- rev(flvars2)
+    count_seps <- stringr::str_count(rflvars2, stringr::fixed("_"))
+    
+    if(any(diff(count_seps) > 0)) {
+        warning("flvars not ordered?",
+                "Check the conversion of gene names to numbers in fitness spec")
+        rflvars2 <- rflvars2[order(count_seps, decreasing = TRUE)]
+    }
+
+    ## Users can pass in many possible orderings. Get all.
+    full_rflvars <- all_orders_fv(rflvars2, prefix, prefixre)
+    Fitness_as_fvars <- stringr::str_replace_all(genotFitness$Fitness,
+                                                 stringr::fixed(full_rflvars))
     return(list(flvars = flvars,
                 Fitness_as_fvars = Fitness_as_fvars))
 }
+
+
+## named vector, prefixes -> all possible combinations of the name
+all_orders_fv <- function(x, prefix, prefixre) {
+    f1 <- function(zz, prefix, prefixre) {
+        z <- gsub(prefixre, "", names(zz))
+        spl <- strsplit(z, "_")[[1]]
+        if(length(spl) == 1) {
+            return(zz)
+        } else {
+            pp <- gtools::permutations(length(spl), length(spl), spl)
+            ppo <- apply(pp, 1, function(u) paste(u, collapse = "_"))
+            ppoo <- rep(zz, length(ppo))
+            names(ppoo) <- paste0(prefix, ppo)
+            return(ppoo)
+        }
+    }
+    ## I cannot use lapply, as it strips the names
+    out <- vector(mode = "character", length = 0)
+    for(i in 1:length(x)) {
+        out <- c(out, f1(x[i], prefix, prefixre))
+    }
+    return(out)
+}
+
+## ## character vector, named replacement -> replaced vector
+## ## named_replace: names are the (fixed) pattern, value the replacement
+## ## stringr::str_replace_all seems too smart and does not respect order
+## my_mgsub <- function(x, named_replace) {
+##     nn <- names(named_replace)
+##     xr <- x
+##     for(i in 1:length(named_replace)) {
+##         xr <- gsub(nn[i], named_replace[i], xr, fixed = TRUE)
+##     }
+##     return(xr)
+## }
+
 
 ##New function
 fVariablesN <- function (g, frequencyType) {
@@ -818,10 +873,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       } else { frequencyType = frequencyType }
       ## Wrong: assumes all genotypes in fitness landscape
       ## fitnessLandscapeVariables = fVariablesN(ncol(genotFitness) - 1, frequencyType)
-      ## fitnessLandscapeVariables <- create_flvars(genotFitness, frequencyType)
-
       stopifnot(identical(genotFitness$Fitness, fitnessLandscape_df$Fitness))
-      
       flvars_and_fitvars <- create_flvars_fitvars(genotFitness, frequencyType)
       fitnessLandscapeVariables <- flvars_and_fitvars$flvars
       Fitness_as_fvars <- flvars_and_fitvars$Fitness_as_fvars
@@ -841,17 +893,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       ## Create, for the user, a single data frame with everything.
       ## This is what C++ should consume
 
-      ## stopifnot(identical(genotFitness$Fitness, fitnessLandscape_df$Fitness))
-      ## ct1 <- conversionTable(ncol(genotFitness) - 1, frequencyType)
-      ## browser()
-
-      ## from_subst_pattern <- colnames(genotFitness[, -ncol(genotFitness)])
-      ## to_subst_pattern <- 1:(ncol(genotFitness) - 1)
-      
-      ## Fitness_as_fvars <- names_to_nums_fitness(fitnessLandscape_df$Fitness,
-      ##                                           genotFitness)
-      ## Fitness_as_fvars <- sapply(fitnessLandscape_df$Fitness,
-      ##                        function(x){findAndReplace(x, ct1)})
+   
      
       ## This ought to allow to pass fitness spec as letters. Preserve original
       Fitness_original_as_letters <- fitnessLandscape_df$Fitness
@@ -861,7 +903,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                  , Genotype_letters = genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
                  , Genotype_fvars = fitnessLandscapeVariables ## used in C++
                  , Fitness_as_fvars = Fitness_as_fvars
-                 , Fitness_original_as_letters = Fitness_original_as_letters
+                 , Fitness_as_letters = Fitness_original_as_letters
                    )
       rownames(full_FDF_spec) <- 1:nrow(full_FDF_spec)
       
@@ -1457,6 +1499,8 @@ evalGenotypeORMut <- function(genotype,
     ## This will avoid errors is evalRGenotype where spPopSizes = NULL  
     if (!fmEffects$frequencyDependentFitness) {
         spPopSizes = 0
+    } else {
+        spPopSizes <- match_spPopSizes(spPopSizes, fmEffects)
     }
 
     if(echo)
@@ -1616,7 +1660,8 @@ evalGenotypeFitAndMut <- function(genotype,
       if (is.null(spPopSizes))
         stop("You have a NULL spPopSizes")
       if (!(length(spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
-        stop("spPopSizes must be as long as number of genotypes")
+          stop("spPopSizes must be as long as number of genotypes")
+      spPopSizes <- match_spPopSizes(spPopSizes, fitnessEffects)
     }
   
     # This will avoid errors is evalRGenotype where spPopSizes = NULL  
@@ -1760,6 +1805,41 @@ evalGenotypeFitAndMut <- function(genotype,
 
 ## I am here: simplify this
 
+## fitnesEffects from FDF, spPopSizes -> reordered spPopSizes
+##    Verify if named. If not, issue a warning.
+##    If yes, check matches genotypes and reorder
+match_spPopSizes <- function(sp, fe){
+    if(!fe$frequencyDependentFitness) return(sp)
+    if(is.null(names(sp))) {
+        warning("spPopSizes unnamed: cannot check genotype names.")
+        return(sp)
+    }
+    nns <- names(sp)
+    nns <- sort_genes_genots(nns)
+    names(sp) <- nns
+    nnf <- fe$full_FDF_spec$Genotype_letters
+    
+    if( ( length(nns) != length(nnf) ) ||
+        (!(identical(sort(nnf), sort(nns))) ) )
+        stop("Genotype names in spPopSizes differ w.r.t. fitness landscape")
+
+    return(sp[nnf])
+}
+
+## genotype names -> genotype names with names sorted
+sort_genes_genots <- function(x) {
+    return(
+        unlist(
+            lapply(
+                lapply(strsplit(x, ", "), sort),
+                function(x) paste(x, collapse = ", "))))
+    ## Or this:
+    ## lapply(names(nn3), function(x) paste(sort(strsplit(x, ", ")[[1]]),
+    ## collapse = ", "))
+}
+
+
+        
 evalAllGenotypesORMut <- function(fmEffects,
                                   order = FALSE, 
                                   max = 256,
@@ -1785,7 +1865,8 @@ evalAllGenotypesORMut <- function(fmEffects,
         if (is.null(spPopSizes))
          stop("You have a NULL spPopSizes")
         if (!(length(spPopSizes) == nrow(fmEffects$fitnessLandscape)))
-          stop("spPopSizes must be as long as number of genotypes")
+            stop("spPopSizes must be as long as number of genotypes")
+        spPopSizes <- match_spPopSizes(spPopSizes, fmEffects)
     }
 
     # This will avoid errors is evalRGenotype where spPopSizes = NULL  
@@ -2008,7 +2089,8 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
       if (is.null(spPopSizes))
         stop("You have a NULL spPopSizes")
       if (!(length(spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
-        stop("spPopSizes must be as long as number of genotypes")
+          stop("spPopSizes must be as long as number of genotypes")
+      spPopSizes <- match_spPopSizes(spPopSizes, fitnessEffects)
     }
   
     # This will avoid errors is evalRGenotype where spPopSizes = NULL  
