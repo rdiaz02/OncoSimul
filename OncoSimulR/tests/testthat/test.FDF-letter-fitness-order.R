@@ -356,7 +356,41 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
     expect_equal(o1, ggx)
 })
 
+test_that("should run", {
+    r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                    Fitness = c("10*f_", 
+                                "10*f_1", 
+                                "50*f_2", 
+                                "200*(f_1 + f_2) + 50*f_1_2"))
 
+    afe <- allFitnessEffects(genotFitness = r, 
+                             frequencyDependentFitness = TRUE,
+                             frequencyType = "rel")
+
+    evalAllGenotypes(afe,
+                     spPopSizes = c(WT = 2500, A = 2000,
+                                    B = 5500, "A, B" = 700))   
+
+
+    gffd0 <- data.frame(
+        Genotype = c(
+            "A", "A, B",
+            "C", "C, D", "C, E"),
+        Fitness = c(
+            "1.3",
+            "1.4",
+            "1.4",
+            "1.1 + 0.7*((f_1 + f_A_B) > 0.3)",
+            "1.2 + sqrt(f_A + f_C + f_C_D)"))
+
+    afd0 <- allFitnessEffects(genotFitness = gffd0,
+                              frequencyDependentFitness = TRUE)
+
+    sp <- 1:5
+    names(sp) <- c("A", "C", "A, B", "C, D", "C, E")
+    eag0 <- evalAllGenotypes(afd0, spPopSizes = sp)
+
+})
 
 
 cat(paste("\n Ending FDF-small-fitness-specs", date(), "\n"))
