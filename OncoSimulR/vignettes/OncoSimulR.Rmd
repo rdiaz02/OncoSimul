@@ -587,6 +587,9 @@ set.seed(7)
 RNGkind("L'Ecuyer-CMRG")
 ```
 
+
+<!-- FIXME: why can't I issue "Magellan_stats" now in the BioC repo? -->
+
 ```{r exszendro}
 ## For reproducibility
 set.seed(7)
@@ -621,7 +624,8 @@ rl <- rfitness(g, c = c, min_accessible_genotypes = g)
 
 ## or use the binary copy provided with OncoSimulR
 ## see also below.
-Magellan_stats(rl)
+
+Magellan_stats(rl) ## (Commented out here to avoid writing files)
 
 ## Simulate evolution in that landscape many times (here just 10)
 simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),

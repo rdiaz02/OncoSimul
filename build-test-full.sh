@@ -73,6 +73,9 @@ rm ./OncoSimulR/src/fl_generate
 rm ./OncoSimulR/src/fl_genchains
 rm ./OncoSimulR/src/FitnessLandscape/*.o
 rm ./OncoSimulR/src/FitnessLandscape/*~
+
+## Next not needed in the BioC script, as the directory has been rm'ed
+## and populated only with c and h files.
 make -C ./OncoSimulR/src/FitnessLandscape clean
 
 

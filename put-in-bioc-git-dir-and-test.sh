@@ -31,11 +31,18 @@ cp OncoSimulR/vignettes/OncoSimulR.bib ../BioConductor-git/OncoSimulR/vignettes/
 cp OncoSimulR/vignettes/gitsetinfo.sty ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitinfo.sty ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/gitHeadInfo.gin ../BioConductor-git/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/hurlbut.png ../BioConductor-git/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/hurlbut.pdf ../BioConductor-git/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/Myeloma_interaction.png ../BioConductor-git/OncoSimulR/vignettes/.
+
+
 
 cp OncoSimulR/src/*.c ../BioConductor-git/OncoSimulR/src/.
 cp OncoSimulR/src/*.cpp ../BioConductor-git/OncoSimulR/src/.
 cp OncoSimulR/src/*.h ../BioConductor-git/OncoSimulR/src/.
 cp OncoSimulR/src/Makevars* ../BioConductor-git/OncoSimulR/src/.
+
+cp OncoSimulR/src/install.libs.R ../BioConductor-git/OncoSimulR/src/.
 
 cp OncoSimulR/src/FitnessLandscape/* ../BioConductor-git/OncoSimulR/src/FitnessLandscape/.
 cp OncoSimulR/src/FitnessLandscape/web/* ../BioConductor-git/OncoSimulR/src/FitnessLandscape/web/.
@@ -61,6 +68,11 @@ cp OncoSimulR/data/*.RData ../BioConductor-git/OncoSimulR/data/.
 cp OncoSimulR/NAMESPACE ../BioConductor-git/OncoSimulR/.
 
 cp OncoSimulR/DESCRIPTION ../BioConductor-git/OncoSimulR/.
+
+
+## We always do this, though it should not be necessary
+sed -i 's/^};$/}/' ../BioConductor-git/OncoSimulR/src/FitnessLandscape/generalized_chain.c 
+
 
 
 ## should we run the tests?
