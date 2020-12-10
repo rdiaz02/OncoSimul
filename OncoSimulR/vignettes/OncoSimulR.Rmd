@@ -104,9 +104,11 @@ of genes in a module. In addition, arbitrary numbers of genes without
 interactions (and with fitness effects coming from any distribution you
 might want) are also possible.
 
+
 You can also directly specify the mapping between genotypes and
 fitness and, thus, you can simulate on fitness landscapes of
 arbitrary complexity. 
+
 
 It is now (released initially in this repo as the freq-dep-fitness
 branch on February 2019) also possible to simulate scenarios with
@@ -114,8 +116,13 @@ frequency-dependent fitness, where the fitness of one or more
 genotypes depends on the relative or absolute frequencies of other
 genotypes, as in game theory and adaptive dynamics. This makes it
 possible to model predation and parasitism, cooperation and
-mutualism, and commensalism.
+mutualism, and commensalism. It also allows to model therapeutic
+interventions (where fitness changes at specified time points or as
+a function of the total populations size).
 
+Simulations can start from arbitrary initial population compositions
+and it is also possible to simulate multiple species. Thus, simulations
+that involve both ecological and evolutionary processes are possible.
 
 
 Mutator/antimutator genes, genes that alter the mutation rate of
@@ -232,9 +239,20 @@ is a summary of some of its key features:
   (section \@ref(multispecies)). You can thus run simulations
   that involve both ecological and evolutionary processes involving
   inter-species relationships plus genetic restrictions in evolution.
-  
-  <!-- Evaluating frequently the fitness across -->
-  <!-- the simulation, you can obtain a dynamic fitness landscape . -->
+
+* It is possible to simulate many different therapeutic
+  interventions. Section \@ref(timefdf) shows examples of
+  interventions where certain genotypes change fitness (because of
+  chemotherapy) at specified times. More generally, since fitness
+  (birth rates) can be made a function of total populations sizes
+  and/or frequencies (see section \@ref(fdf)), many different
+  arbitrary intervention schemes can be simulated. Possible models
+  are, of course, not limited to cancer chemotherapy, but could
+  include antibiotic
+  treatment of bacteria, antiviral therapy, etc.  
+  <!-- Evaluating frequently
+  the fitness across --> <!-- the simulation, you can obtain a
+  dynamic fitness landscape . -->
   
 
 
@@ -598,7 +616,8 @@ rl <- rfitness(g, c = c, min_accessible_genotypes = g)
 
 ## Obtain landscape measures from MAGELLAN. Export to MAGELLAN and
 ## call your own copy of MAGELLAN's binary
-to_Magellan(rl, file = "rl1.txt")
+
+## to_Magellan(rl, file = "rl1.txt") ## (Commented out here to avoid writing files)
 
 ## or use the binary copy provided with OncoSimulR
 ## see also below.
@@ -7377,13 +7396,13 @@ streamgraph(lb1, Genotype, Y, Time, scale = "continuous",
 <!-- %% but it gives me problems with knitr, etc). -->
 
 
-## Multiple initial mutants: starting the simulation from arbitrary configuration {#minitmut}
+## Multiple initial mutants: starting the simulation from arbitrary configurations {#minitmut}
 
 You can specify the population composition when you start the
-simulation and, thus, use multiple initial mutants. Simply pass a
-vector to `initMutant` and a vector of the same length to
-`initSize`: the first are the genotypes/clones, the second the
-population sizes of the corresponding genotypes/clones.
+simulation: in other words, you can use multiple initial
+mutants. Simply pass a vector to `initMutant` and a vector of the
+same length to `initSize`: the first are the genotypes/clones, the
+second the population sizes of the corresponding genotypes/clones.
 
 
 (It often makes no sense to start the simulation with genotypes with
@@ -7413,7 +7432,7 @@ and "C") would thus be possible either (it is impossible to obtain,
 say, a "B" if there are no WT).
 
 
-We can do a similar thing with the frequency-dependent
+We can do something similar with the frequency-dependent
 functionality (section \@ref(fdf)):
 
 
@@ -7448,30 +7467,30 @@ os0 <- oncoSimulIndiv(afd0,
 
 Since we can use arbitrary initial populations to start the
 simulation (section \@ref(minitmut)) and we can use arbitrary
-fitness specifications, it is simple to run multi-species
-simulations using a simple trick. 
+fitness specifications, you can run multi-species simulations using
+a simple trick.
 
 Suppose you want to use a two species simulation, where the first
-species has two loci and the second three loci. This will work:
+species has two loci and the second three loci. This is a possible procedure:
 
-* Create a genotype of length (1 + 2) + (1 + 3).
-* The first locus in each set is the "species indicator".
-* Species A will use loci 1, 2, 3. Species B loci 4 to 7.
+* Create a genotype of total length (1 + 2) + (1 + 3).
+* The first locus in each set we will use as the "species indicator".
+* Thus, Species A will use loci 1, 2, 3 and Species B loci 4 to 7.
 * Make all genotype combinations where loci from different species
   are mutated lethal (e.g., a genotype with loci 2 and 5 mutated is
   not viable).
-* Now you can start the simulation from the WT of each species: the
+* Now you can start the simulation from the "WT of each species": the
   initMutants will have genotypes with only loci 1 or loci 4
   mutated.
   
-This trick is only an approximation: mutation to the other species
-is actually death. So there is "leakage" from mutation to death, as
-in example \@ref(predprey): both species are leaking a small number
-of children via mutation to non-viable "hybrids". Factor this into
-your equations for death rate, but this should be negligible if
-death rate $\gg$ mutation rate. (You can ameliorate this problem
-slightly by making mutation to the "species indicator" locus very
-small, say $10^{10}$).
+This trick is really only an approximation: mutation to the other
+species is actually death. So there is "leakage" from mutation to
+death, as in example \@ref(predprey): both species are leaking a
+small number of children via mutation to non-viable
+"hybrids". Factor this into your equations for death rate, but this
+should be negligible if death rate $\gg$ mutation rate. (You can
+ameliorate this problem slightly by making mutation to the "species
+indicator" locus very small, say $10^{10}$).
 
 Of course, you can extend the scheme above to arbitrary numbers of
 species. 
@@ -7544,12 +7563,12 @@ fmspecF <- allFitnessEffects(genotFitness = mspecF,
 ## shown in
 fmspecF$full_FDF_spec
 ## in exactly that order if it is unnamed.
-## Alternatively, pass a named vector (recommended).
 
 afmspecF <- evalAllGenotypes(fmspecF,
                              spPopSizes = 1:11)
 
-## Better
+## Alternatively, pass a named vector, which is the recommended approach
+
 spp <- 1:11
 names(spp) <- c("A","B",
                 "A, a1", "A, a2", 
@@ -7564,7 +7583,7 @@ afmspecF <- evalAllGenotypes(fmspecF,
 ## Show only viable ones
 afmspecF[afmspecF$Fitness >= 1, ]
 
-## Expected values
+## Expected values of fitness
 exv <- 1 + c(3, 5, 4, 8, 6, 7, 9, 2, 10, 11, 1)/sum(1:11)
 stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Fitness >= 1, ]$Fitness)))
 
@@ -12051,7 +12070,7 @@ plot(s_3_a, show = "genotypes", type = "line",
 \clearpage
 
 
-# Simulating therapeutic interventions {#timefdf}
+# Simulating therapeutic interventions that depend on time {#timefdf}
 
 In this section we show some examples using the time dependent
 functionality; with it, fitness can be made to depend on T, the

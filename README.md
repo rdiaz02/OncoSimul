@@ -12,16 +12,20 @@ Code for forward population genetic simulation in asexual populations,
 with special focus on cancer progression.  Fitness can be an arbitrary
 function of genetic interactions between multiple genes or modules of
 genes, including epistasis, order restrictions in mutation accumulation,
-and order effects.  Mutation rates can differ between genes, and we can
-include mutator/antimutator genes (to model mutator
-phenotypes). Simulations so far use continuous-time models and can include
-driver and passenger genes and modules. Also included are functions for:
+and order effects. Fitness can also be a function of the relative and
+absolute frequencies of other genotypes (i.e., frequency-dependent
+fitness).  Mutation rates can differ between genes, and we can include
+mutator/antimutator genes (to model mutator phenotypes).  Simulating
+multi-species scenarios and therapeutic interventions is also
+possible. Simulations use continuous-time models and can include driver
+and passenger genes and modules. Also included are functions for:
 simulating random DAGs of the type found in Oncogenetic Trees, Conjunctive
 Bayesian Networks, and other cancer progression models; plotting and
 sampling from single or multiple realizations of the simulations,
 including single-cell sampling; plotting the parent-child relationships of
 the clones; generating random fitness landscapes (Rough Mount Fuji, House
-of Cards, and additive models) and plotting them.
+of Cards, additive NK, Ising, and Eggbox models) and plotting them.
+
 
 New functionality to allow for **frequency-dependent fitness has been added**.
 
