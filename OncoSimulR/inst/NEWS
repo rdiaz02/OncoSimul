@@ -1,3 +1,8 @@
+Changes in version 2.99.1 (2020-12-09):
+	- Bump version number for BioC, so it will become version 3.0.0 in
+          next release.
+	- Latest version of exprtk.  
+	
 Changes in version 2.21.995 (2020-12-09):
 	- Vignette: rewrote most FDF examples using names (not numbers)
 	for fitness specification.
