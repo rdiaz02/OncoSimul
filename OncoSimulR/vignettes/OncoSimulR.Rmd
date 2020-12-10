@@ -50,6 +50,7 @@ MathJax.Hub.Config({
 ```{r setup, include=FALSE}
 ## use collapse for bookdown, to collapse all the source and output
 ## blocks from one code chunk into a single block
+time0 <- Sys.time()
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 options(width = 70)
 require(BiocStyle)
@@ -13515,7 +13516,18 @@ This is the information about the version of R and packages used:
 ```{r}
 sessionInfo()
 ``` 
+Time to build the vignette:
+
+```{r last, echo=FALSE}
+print(Sys.time() - time0)
+```
+
 \clearpage
+
+
+
+
+
 # Funding
 
 Supported by BFU2015-67302-R (MINECO/FEDER, EU) to
