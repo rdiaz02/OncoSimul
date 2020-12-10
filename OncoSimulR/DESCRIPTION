@@ -1,7 +1,7 @@
 Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
-Version: 2.21.995
+Version: 2.99.1
 Date: 2020-12-09
 Authors@R: c(
 	      person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
@@ -151,15 +151,16 @@ Description: Functions for forward population genetic simulation in
     also be a function of the relative and absolute frequencies of other
     genotypes (i.e., frequency-dependent fitness). Mutation rates can
     differ between genes, and we can include mutator/antimutator genes (to
-    model mutator phenotypes). Simulations use continuous-time models and
-    can include driver and passenger genes and modules.  Also included are
-    functions for: simulating random DAGs of the type found in Oncogenetic
-    Trees, Conjunctive Bayesian Networks, and other cancer progression
-    models; plotting and sampling from single or multiple realizations of
-    the simulations, including single-cell sampling; plotting the
-    parent-child relationships of the clones; generating random fitness
-    landscapes (from Rough Mount Fuji, House of Cards, additive, NK, Ising,
-    and Eggbox models) and plotting them.
+    model mutator phenotypes). Simulating multi-species scenarios and
+    therapeutic interventions is also possible. Simulations use
+    continuous-time models and can include driver and passenger genes and
+    modules.  Also included are functions for: simulating random DAGs of
+    the type found in Oncogenetic Trees, Conjunctive Bayesian Networks,
+    and other cancer progression models; plotting and sampling from single
+    or multiple realizations of the simulations, including single-cell
+    sampling; plotting the parent-child relationships of the clones;
+    generating random fitness landscapes (Rough Mount Fuji, House of
+    Cards, additive, NK, Ising, and Eggbox models) and plotting them.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
