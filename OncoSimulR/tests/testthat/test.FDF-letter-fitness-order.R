@@ -30,8 +30,8 @@ test_that("We can run and equal with letters", {
     ## It seems it is the Genotypes in the original Genotype spec.
     ## but they are the ones left in fg1$Genotype
     ## Since we cannot now what was in g1, do not allow for this.
-    efg1 <- evalAllGenotypes(fg1, spPopSizes = c(9, 2, 6))
-    efg11 <- evalAllGenotypes(fg11, spPopSizes = c(9, 2, 6))
+    efg1 <- suppressWarnings(evalAllGenotypes(fg1, spPopSizes = c(9, 2, 6)))
+    efg11 <- suppressWarnings(evalAllGenotypes(fg11, spPopSizes = c(9, 2, 6)))
 
     expect_identical(efg1, efg11)
     ## is that correct?
@@ -48,16 +48,21 @@ test_that("We can run and equal with letters", {
     fg1b <- allFitnessEffects(genotFitness = g1b, 
                          frequencyDependentFitness = TRUE)
     ## it thinks n_1_2 is 6. This is right
-    (ea1b <- evalAllGenotypes(fg1b, spPopSizes = c(9, 2, 0, 6)))
+
+    (ea1b <- suppressWarnings(evalAllGenotypes(fg1b,
+                                               spPopSizes = c(9, 2, 0, 6))))
+    
     
     ## is it correct? Yes
     stopifnot(identical(ea1b[, "Fitness"], c(1, 1.3 + 1.2 * 6, 0, 1.1)))
     
  
     set.seed(1)
-    rfg1 <- oncoSimulIndiv(fg1, initMutant = "A", onlyCancer = FALSE, finalTime = 500, seed = NULL)
+    rfg1 <- oncoSimulIndiv(fg1, initMutant = "A", onlyCancer = FALSE,
+                           finalTime = 500, seed = NULL)
     set.seed(1)
-    rfg1b <- oncoSimulIndiv(fg1b, initMutant = "A", onlyCancer = FALSE, finalTime = 500, seed = NULL)
+    rfg1b <- oncoSimulIndiv(fg1b, initMutant = "A", onlyCancer = FALSE,
+                            finalTime = 500, seed = NULL)
     
     expect_equivalent(rfg1, rfg1b)
     
@@ -71,11 +76,13 @@ test_that("We can run and equal with letters", {
     fg1c <- allFitnessEffects(genotFitness = g1c,
                               frequencyDependentFitness = TRUE)
     set.seed(1)
-    rfg1c <- oncoSimulIndiv(fg1c, initMutant = "A", onlyCancer = FALSE, finalTime = 500, seed = NULL)
+    rfg1c <- oncoSimulIndiv(fg1c, initMutant = "A", onlyCancer = FALSE,
+                            finalTime = 500, seed = NULL)
     expect_equivalent(rfg1, rfg1c)
     
     set.seed(1)
-    oncoSimulIndiv(fg1, initMutant = "A, B", onlyCancer = FALSE, finalTime = 500, seed = NULL)
+    oncoSimulIndiv(fg1, initMutant = "A, B", onlyCancer = FALSE,
+                   finalTime = 500, seed = NULL)
 } )
 
 
