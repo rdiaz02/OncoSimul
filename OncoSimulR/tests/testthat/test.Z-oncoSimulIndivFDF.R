@@ -115,11 +115,11 @@ test_that("testing performance", {
   
   expect_identical(osi$FinalTime, osi_ra$FinalTime)
 
-  ## It fails on Mac. Well, the key is the identity below
-  skip_on_os("mac") expect_equal(osi$NumIter, 458)
-  
   expect_identical(osi$NumIter, osi_ra$NumIter)
   
+  ## It fails on Mac. Well, the key is the identity below
+  skip_on_os(c("mac"))
+  expect_equal(osi$NumIter, 458)
 })
 
 test_that("testing Bozic failure", {
