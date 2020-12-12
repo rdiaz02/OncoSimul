@@ -24,7 +24,7 @@ test_that("testing single gene evaluation", {
   afe3 <- allFitnessEffects(genotFitness = r1, 
                             frequencyDependentFitness = TRUE, 
 			    frequencyType = "rel")
-  
+  suppressWarnings({
   evge1 <- evalGenotype(genotype = "Root", fitnessEffects = afe1,
                         spPopSizes = c(5000, 2500, 2500, 7500))
   
@@ -42,14 +42,14 @@ test_that("testing single gene evaluation", {
   
   evge6 <- evalGenotype(genotype = "A, B", fitnessEffects = afe1,
                         spPopSizes = c(5000, 2500, 2500, 7500))
-  
+  })
   
   expect_equal(evge1, evge2)
   
   expect_equal(evge3, evge4)
   
   expect_equal(evge5, evge6)
-  
+  suppressWarnings({
   expect_error(evalGenotype(genotype = c(0, 1), fitnessEffects = afe1,
                             spPopSizes = c(5000, 2500, 2500, 7500)), 
                "Genotype cannot contain any 0 if its length > 1")
@@ -57,7 +57,7 @@ test_that("testing single gene evaluation", {
   expect_error(evalGenotype(genotype = c(1, 3), fitnessEffects = afe1,
                             spPopSizes = c(5000, 2500, 2500, 7500)),
                "Genotype as vector of numbers contains genes not in fitnessEffects/mutatorEffects.")
-  
+  })
   expect_error(evalGenotype(genotype = 0, fitnessEffects = afe2), 
                "Genotype cannot be 0.")
   
@@ -103,9 +103,10 @@ test_that("testing all genes evaluation", {
   genotypes <- c(0, OncoSimulR:::generateAllGenotypes(fitnessEffects = afe, 
                                                       order = FALSE, 
                                                       max = 256)$genotNums)
-  
+
+  suppressWarnings({
   evalGs_one_by_one <- sapply(genotypes, function(x) evalGenotype(x, afe,
-spPopSizes = c(500,
+                                                                  spPopSizes = c(500,
                                                                                  250, 
                                                                                  250, 
                                                                                  250, 
@@ -123,7 +124,8 @@ spPopSizes = c(500,
                                                          300,
                                                          300,
                                                          450))$Fitness
-  
+
+  })                                     
   expect_identical(evalGs_one_by_one, evalGs_all_together)
   
 })
@@ -140,6 +142,11 @@ test_that("eval single WT genotype with FDF" , {
                              frequencyDependentFitness = TRUE)
 
 
+    suppressWarnings({
+           ## Silencing the warnings, which are irrelevant, does not silence errors.
+    ## uncomment this to see for yourself
+    ## expect_true(2 == 3)
+    ## expect_error(2 * 5)
     expect_equal(evalGenotype(0, afe, spPopSizes = rep(2, 4)),
                  100 - 2 - 4 - 6)
 
@@ -192,6 +199,8 @@ test_that("eval single WT genotype with FDF" , {
                  "Genotype contains NA or a gene not in fitnessEffects/mutatorEffects",
                  fixed = TRUE)
 
+ 
+    })
     
 })
 

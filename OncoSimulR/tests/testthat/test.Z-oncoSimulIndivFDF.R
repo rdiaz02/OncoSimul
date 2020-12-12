@@ -21,10 +21,10 @@ test_that("testing output classes", {
   osi <- oncoSimulIndiv(afe, 
                         model = "McFL", 
                         onlyCancer = FALSE, 
-                        finalTime = 5000, 
+                        finalTime = 20, 
                         verbosity = 0, 
                         mu = 1e-6,
-                        initSize = 500, 
+                        initSize = 5000, 
                         keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = TRUE, 
@@ -70,7 +70,7 @@ test_that("testing performance", {
   
   set.seed(1)
   
-  osi <- oncoSimulIndiv(afe, 
+  null <- capture.output(osi <- oncoSimulIndiv(afe, 
                         model = "Exp", 
                         onlyCancer = FALSE, 
                         finalTime = 5000, 
@@ -80,11 +80,11 @@ test_that("testing performance", {
                         keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = TRUE, 
-                        errorHitWallTime = TRUE)
+                        errorHitWallTime = TRUE))
   
   set.seed(1)
   
-  osi_ra <- oncoSimulIndiv(afe_ra, 
+  null <- capture.output(osi_ra <- oncoSimulIndiv(afe_ra, 
                         model = "Exp", 
                         onlyCancer = FALSE, 
                         finalTime = 5000, 
@@ -94,7 +94,7 @@ test_that("testing performance", {
                         keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = TRUE, 
-                        errorHitWallTime = TRUE)
+                        errorHitWallTime = TRUE))
   
   expect_output(print(osi),
                 "Individual OncoSimul trajectory", fixed = TRUE)
@@ -137,7 +137,7 @@ test_that("testing Bozic failure", {
   
   set.seed(1)
   
-  st <- capture.output(osi <- oncoSimulIndiv(afe, 
+  st <- capture.output(suppressWarnings(osi <- oncoSimulIndiv(afe, 
                                              model = "Bozic", 
                                              onlyCancer = FALSE, 
                                              finalTime = 5000, 
@@ -147,7 +147,7 @@ test_that("testing Bozic failure", {
                                              keepPhylog = FALSE,
                                              seed = NULL, 
                                              errorHitMaxTries = TRUE, 
-                                             errorHitWallTime = TRUE))
+                                             errorHitWallTime = TRUE)))
   expect_true(st[22] == " Unrecoverable exception: Algo 2: retval not finite. Aborting. ")
 
 })

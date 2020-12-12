@@ -25,7 +25,11 @@ test_that("Mutator genes missing from fitness", {
 })
 
 test_that("fit. mut. eff. values, long ex",  {
-  
+    ## Because of testthat's reluctance to behave sensibly
+    silent_expect_true <- function(x) {
+        expect_true(suppressWarnings(x))
+    }
+    
   r1 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
                    Fitness = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_1))",
@@ -41,39 +45,39 @@ test_that("fit. mut. eff. values, long ex",  {
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
   
-  expect_true(all.equal(target = evalGenotype("A", fe,
+  silent_expect_true(all.equal(target = evalGenotype("A", fe,
                                               spPopSizes = c(5000, 2500, 2500, 7500)), current = 1.5))
   
-  expect_true(all.equal(target = evalGenotype("B", fe,
+  silent_expect_true(all.equal(target = evalGenotype("B", fe,
                                               spPopSizes = c(5000, 2500, 2500, 7500)), current = 1.5))
   
-  expect_true(all.equal(target = round(
+  silent_expect_true(all.equal(target = round(
                                       evalGenotype("A, B", fe,
                                       spPopSizes = c(5000, 2500, 2500, 7500)), 2),
                         current = 7.71))
   
   set.seed(2)
   
-  expect_true(all.equal(target = evalGenotype("A", fe,
+  silent_expect_true(all.equal(target = evalGenotype("A", fe,
                                               spPopSizes = c(5000, 2500, 2500, 7500)), current = 1.5))
   
-  expect_true(all.equal(target = evalGenotype("B", fe,
+  silent_expect_true(all.equal(target = evalGenotype("B", fe,
                                               spPopSizes = c(5000, 2500, 2500, 7500)), current = 1.5))
   
-  expect_true(all.equal(target = round(
+  silent_expect_true(all.equal(target = round(
                                        evalGenotype("A, B", fe,
                                                     spPopSizes = c(5000, 2500, 2500, 7500)), 2),
                         current = 7.71))
   
-  expect_true(all.equal(target = evalGenotypeFitAndMut("A", fe, mt,
+  silent_expect_true(all.equal(target = evalGenotypeFitAndMut("A", fe, mt,
                                                        spPopSizes = c(5000, 2500, 2500, 7500)), 
                         current = c(1.5, 1.0)))
   
-  expect_true(all.equal(target = evalGenotypeFitAndMut("B", fe, mt,
+  silent_expect_true(all.equal(target = evalGenotypeFitAndMut("B", fe, mt,
                                                        spPopSizes = c(5000, 2500, 2500, 7500)), 
                         current = c(1.5, 10)))
   
-  expect_true(all.equal(target = round(
+  silent_expect_true(all.equal(target = round(
                                        evalGenotypeFitAndMut("A, B", fe, mt,
                                                              spPopSizes = c(5000, 2500, 2500, 7500)), 2),
                         current = c(7.71, 10)))

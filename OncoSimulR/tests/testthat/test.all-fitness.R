@@ -957,6 +957,7 @@ test_that("We limit number of genotypes in eval", {
 ## Nope, this is not inconsistent
 
 test_that("Bozic limit cases handled consistently", {
+
     sv <- allFitnessEffects(data.frame(
         parent = c("Root", "Root", "a1", "a2"),
         child = c("a1", "a2", "b", "b"),
@@ -1217,14 +1218,28 @@ test_that("not all genes named", {
 
 test_that("We can deal with single-gene genotypes and trivial cases" ,{
 
+    ## Yeah, testthat does not want to cater to this. Oh well.
+    expect_message_silent <- function(x, ...) {
+        suppressWarnings(expect_message(x, ...))
+    }
+
+    expect_output_silent <- function(x, ...) {
+        suppressWarnings(expect_output(x, ...))
+    }
+
+    expect_true_silent <- function(x) {
+        suppressWarnings(expect_true(x))
+    }
+    
+    
     ## we get the message
-    expect_message(allFitnessEffects(
+    expect_message_silent(allFitnessEffects(
         genotFitness = data.frame(g = c("A", "B"),
                                   y = c(1, 2))), "All single-gene genotypes",
         fixed = TRUE)
 
     
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "A, B"),
                    Fitness = c(1.0, 1.0, 2.0, 0.0), ## 0.0 used to be 1.0
                    stringsAsFactors = FALSE),
@@ -1234,7 +1249,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
             addwt = TRUE))
     ))
 
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "A, B"),
                    Fitness = c(1.0, 1.5, 2.9, 0.0),
                    stringsAsFactors = FALSE),
@@ -1244,7 +1259,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
             addwt = TRUE))
     ))
 
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "E", "A, B", "A, E", "B, E", "A, B, E"),
                    Fitness = c(1.0, 1.3, 2.4, 3.2, rep(0, 4)),
                    stringsAsFactors = FALSE),
@@ -1255,7 +1270,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     ))
 
 
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A"),
                    Fitness = c(1.0, 1.0),
                    stringsAsFactors = FALSE),
@@ -1265,7 +1280,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
             addwt = TRUE))
     ))
     
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A"),
                    Fitness = c(1.0, 0.6),
                    stringsAsFactors = FALSE),
@@ -1275,7 +1290,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
             addwt = TRUE))
     ))
 
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "D", "F", "A, D", "A, F", "D, F",
                                 "A, D, F"),
                    Fitness = c(1.0, rep(0, 6), 1.7), ## c(rep(1, 7), 1.7),
@@ -1290,7 +1305,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     m <- rbind(c(1, 0, 1.2),
                c(0, 1, 2.4))
 
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "A, B"),
                    Fitness = c(1.0, 1.2, 2.4, 0.0),
                    stringsAsFactors = FALSE),
@@ -1299,7 +1314,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
             addwt = TRUE))
     ))    
 
-    expect_message(evalAllGenotypes(
+    expect_message_silent(evalAllGenotypes(
         allFitnessEffects(genotFitness = m)),
         "No column names", fixed = TRUE)
 
@@ -1313,7 +1328,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     m2 <- rbind(c(1, 0, 1.2),
                c(0, 1, 2.4))
     colnames(m2) <- c("U", "M", "Fitness")
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "M", "U", "M, U"),
                    Fitness = c(1.0, 2.4, 1.2, 0),
                    stringsAsFactors = FALSE),
@@ -1322,7 +1337,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
             addwt = TRUE))
     ))
 
-    expect_message(
+    expect_message_silent(
         evalAllGenotypes(
             allFitnessEffects(genotFitness = m2)),
         "Sorting gene column names", fixed = TRUE
@@ -1332,7 +1347,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     m2df <- data.frame(rbind(c(1, 0, 1.2),
                c(0, 1, 2.4)))
     colnames(m2df) <- c("U", "M", "Fitness")
-    expect_true(identical(
+    expect_true_silent(identical(
         data.frame(Genotype = c("WT", "M", "U", "M, U"),
                    Fitness = c(1.0, 2.4, 1.2, 0),
                    stringsAsFactors = FALSE),

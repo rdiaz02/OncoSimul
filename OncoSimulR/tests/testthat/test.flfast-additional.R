@@ -53,9 +53,10 @@ test_that("Equality of fitness including allFitnessEffects", {
     colnames(m4) <- c("A", "B", "C", "Fitness")
     m4[, "Fitness"] <- m4[, "Fitness"]/1.3
 
-    expect_equivalent(OncoSimulR:::to_genotFitness_std(df3), m3)
-    expect_equivalent(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
-
+    suppressWarnings(expect_equivalent(OncoSimulR:::to_genotFitness_std(df3), m3))
+    suppressWarnings(expect_equivalent(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4))
+    ## Yes, suppressing warnings does not invalidate the test. Uncomment and see:
+    ## suppressWarnings(expect_equivalent(3, 5))
 
     for(i in 1:10) {
         rxx <- rfitness(7)
@@ -91,15 +92,15 @@ test_that("drv names OK", {
 
 
 ## Make sure warning if using Bozic
-test_that("Bozic and fitness landscape spec", {
+test_that("Bozic and fitness landscape spec will throw exception", {
     rxx <- rfitness(7)
-    expect_warning(oncoSimulIndiv(
+    expect_warning(out <- oncoSimulIndiv(
         allFitnessEffects(genotFitness = rxx),
         model = "Bozic", initSize = 5000,
         onlyCancer = FALSE,
         finalTime = 10,
         verbosity = 0),
-        "Bozic model passing a fitness landscape will not work for now",
+        "Bozic model passing a fitness landscape most likely will not work for now",
         fixed = TRUE)
     rm(rxx)
 })
@@ -178,7 +179,7 @@ test_that("rt and fl specifications are the same", {
         set.seed(is)
         s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rtfl$fl))
         expect_equal(s1$pops.by.time, s2$pops.by.time)
-        print(summary(s1))
+        ## print(summary(s1))
         ##  expect_identical(s1[1:length(s1)], s2[1:length(s2)])
         ## in WIndoze, i386, can fail identical test by factors order e-11
         if( (.Platform$OS.type == "windows") &&

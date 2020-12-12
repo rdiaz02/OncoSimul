@@ -43,7 +43,7 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
     ## But not too large, to avoid numerical issues
     ## with large s
     E <- expected(no = no, s = s, ft = ft, model = model)
-    O <- oncoSimulPop(reps,
+    suppressWarnings(O <- oncoSimulPop(reps,
                       fe,
                       mu = mu,
                       initSize = no,
@@ -58,7 +58,7 @@ OandE <- function(fe, s, ft,  model, initMutant, no,
                       initMutant = initMutant,
                       mutationPropGrowth = FALSE,
                       onlyCancer = FALSE,
-                      mc.cores = 2)
+                      mc.cores = 2))
     if(verbose) {
         print(E)
         print(summary(O)[, c(1:3, 8:9)])
