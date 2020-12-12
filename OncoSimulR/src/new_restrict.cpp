@@ -1855,11 +1855,11 @@ double mutationFromScratch(const std::vector<double>& mu,
 	Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
 	if(mumult == 1.0) {
 	  // letters match codes for varmutrate
-	  Rcpp::Rcout << "mFS-message-2-B:  constant mut rate"
+	  Rcpp::Rcout << "mFS-message-2-B:  constant mut rate "
 		      << "no mutator and mutationPropGrowth "
 		      << ". birth rate = " << spP.birth << "\n";
 	} else {
-	  Rcpp::Rcout << "mFS-message-2-C:  constant mut rate"
+	  Rcpp::Rcout << "mFS-message-2-C:  constant mut rate "
 		      << " mutator and mutationPropGrowth "
 		      << ". birth rate = " << spP.birth
 		      << ". mumult = " << mumult << "\n";
@@ -1876,7 +1876,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 	Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
 	if(mumult == 1.0) {
 	  // letters match codes for varmutrate
-	  Rcpp::Rcout << "mFS-message-2-A:  constant mut rate"
+	  Rcpp::Rcout << "mFS-message-2-A:  constant mut rate "
 		      << "no mutator and no mutationPropGrowth ";
 	} else {
 	  Rcpp::Rcout << "mFS-message-2-D:  constant mut rate"
@@ -1917,19 +1917,19 @@ double mutationFromScratch(const std::vector<double>& mu,
     if(tmp <= dummyMutationRate) {
       Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
       if( (mumult == 1.0) && (!mutationPropGrowth) ) {
-	Rcpp::Rcout << "mFS-message-5-A: variable mut rate"
+	Rcpp::Rcout << "mFS-message-5-A: variable mut rate "
 		    << "no mutator and no mutationPropGrowth\n ";
       } else if ((mumult == 1.0) && (mutationPropGrowth) ) {
-	Rcpp::Rcout << "mFS-message-5-B:  variable mut rate"
+	Rcpp::Rcout << "mFS-message-5-B:  variable mut rate "
 		    << "no mutator and mutationPropGrowth "
 		    << ". birth rate = " << spP.birth << "\n";
       } else if ( (mumult != 1.0) && (mutationPropGrowth) ) {
-	Rcpp::Rcout << "mFS-message-5-C:  variable mut rate"
+	Rcpp::Rcout << "mFS-message-5-C:  variable mut rate "
 		    << "mutator and mutationPropGrowth "
 		    << ". birth rate = " << spP.birth
 		    << ". mumult = " << mumult << "\n";
       } else if ( (mumult != 1.0) && (!mutationPropGrowth) ) {
-	Rcpp::Rcout << "mFS-message-5-D:  variable mut rate"
+	Rcpp::Rcout << "mFS-message-5-D:  variable mut rate "
 		    << "mutator and no mutationPropGrowth "
 		    << ". mumult = " << mumult << "\n";
       } else {
