@@ -28,12 +28,13 @@ test_that("Exercise plotting and dealing with different matrix input", {
                    "One column named ''", fixed = TRUE)
 
     m88 <- cbind(B = c(0, 1, 0, 1), c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
-    expect_identical(as.data.frame(
+    suppressWarnings(expect_identical(as.data.frame(
         evalAllGenotypes(allFitnessEffects(genotFitness = m88),
                                       addwt = TRUE)),
                      data.frame(Genotype = c("WT", "A", "B", "A, B"),
                                 Fitness = c(1, 3, 2, 5.5),
                                 stringsAsFactors = FALSE))
+    )
     expect_warning(plotFitnessLandscape(m88),
                    "One column named ''", fixed = TRUE)
 
@@ -45,15 +46,16 @@ test_that("Exercise plotting and dealing with different matrix input", {
     
     expect_silent(plot(evalAllGenotypes(fe, order = FALSE)))
 
+
     ## same as
     expect_silent(plotFitnessLandscape(evalAllGenotypes(fe, order = FALSE)))
     ## more ggrepel
     expect_silent(plot(evalAllGenotypes(fe, order = FALSE), use_ggrepel = TRUE))
 
     m98 <- cbind(B = c(2, 1, 0, 1), c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
-    expect_error(allFitnessEffects(genotFitness = m98),
+    suppressWarnings(expect_error(allFitnessEffects(genotFitness = m98),
                  "First ncol - 1 entries not in ",
-                 fixed = TRUE)
+                 fixed = TRUE))
 })
 
 
@@ -83,6 +85,7 @@ test_that("to_FitnessMatrix stops as it should", {
 
 
 test_that("to_FitnessMatrix can deal with df", {
+    suppressWarnings({
     m4 <- data.frame(G = c("A, B", "A", "WT", "B"),
                      Fitness = c(3, 2, 1, 4))
     expect_message(OncoSimulR:::to_Fitness_Matrix(m4, 2000),
@@ -106,6 +109,7 @@ test_that("to_FitnessMatrix can deal with df", {
     expect_message(plotFitnessLandscape(x3))
     expect_message(plotFitnessLandscape(m5))
     expect_message(plotFitnessLandscape(m4))
+    })
 })
 
 

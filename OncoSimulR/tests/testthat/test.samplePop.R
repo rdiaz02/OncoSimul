@@ -3,7 +3,7 @@ cat(paste("\n Starting samplePop tests", date(), "\n"))
 
 ## RNGkind("Mersenne-Twister")
 
-test_that("exercising the sampling code, v1 objects", {
+test_that("exercising the sampling code, v1 objects", { suppressWarnings({
               data(examplePosets)
               p705 <- examplePosets[["p705"]]
               r1 <- oncoSimulIndiv(p705,
@@ -28,8 +28,9 @@ test_that("exercising the sampling code, v1 objects", {
               expect_message(samplePop(r1, typeSample = "single", timeSample = "uniform"),
                             "Subjects by Genes matrix of 1 subjects and 7 genes")
           })
+})
 
-test_that("exercising the sampling code, v1 objects, possibly NAs", {
+test_that("exercising the sampling code, v1 objects, possibly NAs", { suppressWarnings({
               data(examplePosets)
               p705 <- examplePosets[["p705"]]
               r1 <- oncoSimulIndiv(p705, numPassengers = 30,
@@ -68,8 +69,9 @@ test_that("exercising the sampling code, v1 objects, possibly NAs", {
                                        timeSample = "uniform"),
                             "Subjects by Genes matrix of 1 subjects and 37 genes")
           })
+})
 
-test_that("exercising the sampling code, v1 objects, possibly NAs, more", {
+test_that("exercising the sampling code, v1 objects, possibly NAs, more", { suppressWarnings({
               data(examplePosets)
               p1101 <- examplePosets[["p1101"]]
               r1 <- oncoSimulIndiv(p1101, onlyCancer = FALSE,
@@ -107,8 +109,9 @@ test_that("exercising the sampling code, v1 objects, possibly NAs, more", {
                                        timeSample = "uniform"),
                             "Subjects by Genes matrix of 1 subjects and 11 genes")
           })
+})
 
-test_that("exercising the sampling code, v2 objects, possibly NAs in output", {
+test_that("exercising the sampling code, v2 objects, possibly NAs in output", { suppressWarnings({
               oi <- allFitnessEffects(orderEffects =
                                           c("F > D" = -0.3, "D > F" = 0.4),
                                       noIntGenes = rexp(5, 10),
@@ -156,8 +159,9 @@ test_that("exercising the sampling code, v2 objects, possibly NAs in output", {
                                        typeSample = "whole"),
                              "Subjects by Genes matrix of 2 subjects and 10 genes")
           })
+})
 
-test_that("exercising the sampling code, v2 objects, possibly NAs in output, more", {
+test_that("exercising the sampling code, v2 objects, possibly NAs in output, more", { suppressWarnings({
               cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                                 s = 0.1,
@@ -204,9 +208,10 @@ test_that("exercising the sampling code, v2 objects, possibly NAs in output, mor
                                        typeSample = "whole"),
                              "Subjects by Genes matrix of 4 subjects and 6 genes")
           })
+})
 
 
-test_that("exercising the sampling code, v2 objects", {
+test_that("exercising the sampling code, v2 objects", { suppressWarnings({
               oi <- allFitnessEffects(orderEffects =
                                           c("F > D" = -0.3, "D > F" = 0.4),
                                       noIntGenes = rexp(5, 10),
@@ -260,8 +265,9 @@ test_that("exercising the sampling code, v2 objects", {
                                        timeSample = "uniform"),
                              "Subjects by Genes matrix of 2 subjects and 10 genes")
 })
+})
 
-test_that("exercising the sampling code, v2 objects, more", {
+test_that("exercising the sampling code, v2 objects, more", { suppressWarnings({
               cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                                 s = 0.1,
@@ -314,10 +320,11 @@ test_that("exercising the sampling code, v2 objects, more", {
                                        timeSample = "uniform"),
                              "Subjects by Genes matrix of 4 subjects and 6 genes")
 })
+})
 
 
 
-test_that("exercising sampling code, single sampled period", {
+test_that("exercising sampling code, single sampled period", { suppressWarnings({
     o3init <- allFitnessEffects(orderEffects = c(
                             "M > D > F" = 0.99,
                             "D > M > F" = 0.2,
@@ -345,10 +352,11 @@ test_that("exercising sampling code, single sampled period", {
                        "Subjects", fixed = TRUE)
     }
 })
+})
 
 
 
-test_that("exercising sampling code, customSize", {
+test_that("exercising sampling code, customSize", { suppressWarnings({
 
     cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -427,10 +435,11 @@ test_that("exercising sampling code, customSize", {
                              popSizeSample = c(9000, 9000, 8500, 9000)),
                    "Subjects by Genes matrix of 4 subjects and 6 genes")
 })
+})
 
 
 
-test_that("exercising sampling code, customSize", {
+test_that("exercising sampling code, customSize", { suppressWarnings({
     cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                       s = 0.1,
@@ -446,13 +455,14 @@ test_that("exercising sampling code, customSize", {
     expect_message(samplePop(o1, timeSample = "unif"),
                    "Only one sampled time period with mutants", fixed = TRUE)
 })
+})
 
 
 
 
 
 
-test_that("Exercise sampledGenotypes, option for selecting genes", {
+test_that("Exercise sampledGenotypes, option for selecting genes", { suppressWarnings({
     initS <- 200
     u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
     od <- allFitnessEffects(
@@ -476,12 +486,13 @@ test_that("Exercise sampledGenotypes, option for selecting genes", {
     expect_output(print(sampledGenotypes(sp)))
     expect_output(print(summary(sampledGenotypes(sp))))
 })
+})
 
 
 
 
 
-test_that("exercising sampling code, propError", {
+test_that("exercising sampling code, propError", { suppressWarnings({
     cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                                 child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                       s = 0.1,
@@ -522,11 +533,12 @@ test_that("exercising sampling code, propError", {
                    "Subjects by Genes matrix of 4 subjects",
                    fixed = TRUE)
 })
+})
 
 
 
 
-test_that("sampledGenotypes deals with NAs", {
+test_that("sampledGenotypes deals with NAs", { suppressWarnings({
     sp <- structure(c(1, NA, 1, 0, 0, NA, 0, 0, 0, NA, 0, 0, 0, NA, 0, 
                       0, 0, NA, 1, 0, 0, NA, 0, 0, 0, NA, 0, 0, 1, NA, 1, 0),
                     .Dim = c(4L, 
@@ -537,6 +549,7 @@ test_that("sampledGenotypes deals with NAs", {
     sg <- sampledGenotypes(sp)
     expect_true(is.na(sg[4, 1]))
     expect_true(sg[1, 1] == "WT")
+})
 })
 
 cat(paste("\n Ending samplePop tests", date(), "\n"))

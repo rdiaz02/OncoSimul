@@ -9,7 +9,7 @@ test_that("genot_fitness_to_epistasis works minimally", {
     fepi <- OncoSimulR:::genot_fitness_to_epistasis(m6)
     
     fem6 <- allFitnessEffects(epistasis = fepi)
-    fem6b <- allFitnessEffects(genotFitness = m6)
+    suppressWarnings(fem6b <- allFitnessEffects(genotFitness = m6))
 
     afe1 <- evalAllGenotypes(fem6, addwt = TRUE)
     afe2 <- evalAllGenotypes(fem6b, addwt = TRUE)

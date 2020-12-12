@@ -20,7 +20,8 @@ test_that("eval fitness and mut OK", {
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
-  
+
+  suppressWarnings({
   expect_output(ou <- evalGenotypeFitAndMut(genotype = "A",
                                             fitnessEffects = fe,
                                             mutatorEffects = mt,
@@ -28,7 +29,7 @@ test_that("eval fitness and mut OK", {
                                             verbose = TRUE),
                 regexp = "0.5",
                 fixed = TRUE)
-  
+
   expect_identical(ou, c(1.5, 1))
   expect_identical(evalGenotypeFitAndMut("B", fe, mt, c(5000,2500,2500,7500)),
                    c(1.5, 10))
@@ -37,7 +38,7 @@ test_that("eval fitness and mut OK", {
                        0.5*( (2500/(5000+2500+2500+7500)) + (2500/(5000+2500+2500+7500)) ) +
                        15*(7500/(5000+2500+2500+7500)), 10))
   
-  
+  })  
   expect_error(evalGenotypeFitAndMut("A", fe, mt),
                "You have a NULL spPopSizes",
                fixed = TRUE)
@@ -66,7 +67,7 @@ test_that("eval mut genotypes", {
                            frequencyDependentFitness = FALSE)
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
-  
+  suppressWarnings({
   evge1 <- evalGenotypeFitAndMut(genotype = "Root", fitnessEffects = fe,
                                  mutatorEffects = mt,
                         spPopSizes = c(5000, 2500, 2500, 7500))
@@ -89,14 +90,15 @@ test_that("eval mut genotypes", {
   
   evge6 <- evalGenotypeFitAndMut(genotype = "A, B", fitnessEffects = fe,
                                  mutatorEffects = mt,
-                        spPopSizes = c(5000, 2500, 2500, 7500))
+                                 spPopSizes = c(5000, 2500, 2500, 7500))
+  })
   
   expect_equal(evge1, evge2)
   
   expect_equal(evge3, evge4)
   
   expect_equal(evge5, evge6)
-  
+  suppressWarnings({
   expect_error(evalGenotypeFitAndMut(genotype = c(0, 1), fitnessEffects = fe,
                                      mutatorEffects = mt,
                                      spPopSizes = c(5000, 2500, 2500, 7500)), 
@@ -106,7 +108,7 @@ test_that("eval mut genotypes", {
                                      mutatorEffects = mt,
                                      spPopSizes = c(5000, 2500, 2500, 7500)),
                "Genotype as vector of numbers contains genes not in fitnessEffects/mutatorEffects.")
-  
+  })
   expect_error(evalGenotypeFitAndMut(genotype = 0, fitnessEffects = fe2,
                                      mutatorEffects = mt), 
                "Genotype cannot be 0.")
@@ -141,12 +143,13 @@ test_that("eval mut genotypes, echo", {
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
-  
+  suppressWarnings({
   expect_output(evalGenotypeFitAndMut("A, B", fe, mt,
                                       spPopSizes = c(5000, 2500, 2500, 7500),
                                       echo = TRUE),
                 "Genotype: ", 
                 fixed = TRUE)
+      })
 })
 
 test_that("testing all genes evaluation", {
@@ -167,7 +170,8 @@ test_that("testing all genes evaluation", {
   genotypes <- c(0, OncoSimulR:::generateAllGenotypes(fitnessEffects = fe, 
                                                       order = FALSE,
                                                       max = 256)$genotNums)
-  
+
+  suppressWarnings({
   evalGs_one_by_one1 <- sapply(genotypes, function(x) evalGenotypeFitAndMut(x,
                                                                            fitnessEffects = fe,
                                                                            mutatorEffects = mt,
@@ -187,7 +191,7 @@ test_that("testing all genes evaluation", {
                                                     spPopSizes = c(5000, 2500, 2500, 7500),
                                                     )$MutatorFactor
   
-  
+  })
   expect_identical(evalGs_one_by_one1, evalGs_all_together1)
   expect_identical(evalGs_one_by_one2, evalGs_all_together2)
 })

@@ -19,8 +19,8 @@ test_that("simuls runs tests: no crashes or uncaught errors", {
         sample(length(examplesFitnessEffects), nex)]
 
     for(i in 1:length(examplesFitnessEffects)) {
-        cat(paste("\n Doing i = ", i , " name = ",
-                  names(examplesFitnessEffects)[i], "\n"))
+        ## cat(paste("\n Doing i = ", i , " name = ",
+        ##           names(examplesFitnessEffects)[i], "\n"))
         if (names(examplesFitnessEffects)[i] == "e2") {
             detectionDrv <- 2
             sE <- 0.05
@@ -29,7 +29,8 @@ test_that("simuls runs tests: no crashes or uncaught errors", {
             sE <- 0.02 ## smaller than usual but very rarely (< 1/1000) I can
             ## get crashes of Algo 2 as popSize > 1e15
         }
-        tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
+        null <- capture.output(
+        suppressWarnings(tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                                model = "Bozic", 
                                mu = 1e-6,
                                detectionSize = 1e8, 
@@ -37,13 +38,13 @@ test_that("simuls runs tests: no crashes or uncaught errors", {
                                sampleEvery = sE, keepEvery = 1,
                                max.num.tries = 100,
                                initSize = 2000,
-                               onlyCancer = FALSE, detectionProb = NA)
+                               onlyCancer = FALSE, detectionProb = NA)))
         expect_true(inherits(tmp, "oncosimul2"))
     }
 
     for(i in 1:length(examplesFitnessEffects)) {
-        cat(paste("\n Doing i = ", i , " name = ",
-                  names(examplesFitnessEffects)[i], "\n"))
+        ## cat(paste("\n Doing i = ", i , " name = ",
+        ##           names(examplesFitnessEffects)[i], "\n"))
         if (names(examplesFitnessEffects)[i] == "e2") {
             detectionDrv <- 2
             sE <- 0.05
@@ -51,7 +52,8 @@ test_that("simuls runs tests: no crashes or uncaught errors", {
             detectionDrv <- 4
             sE <- 0.02
         }
-        tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
+         null <- capture.output(
+             suppressWarnings(tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                                model = "Exp", 
                                mu = 1e-6,
                                detectionSize = 1e8, 
@@ -59,13 +61,15 @@ test_that("simuls runs tests: no crashes or uncaught errors", {
                                sampleEvery = sE, keepEvery = 1,
                                max.num.tries = 100,
                                initSize = 2000,
-                               onlyCancer = FALSE, detectionProb = NA)
+                               onlyCancer = FALSE, detectionProb = NA))
+        )
         expect_true(inherits(tmp, "oncosimul2"))
     }
 
 
     for(i in 1:length(examplesFitnessEffects)) {
-        tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
+         null <- capture.output(
+        suppressWarnings(tmp <-  oncoSimulIndiv(examplesFitnessEffects[[i]],
                                model = "McFL", 
                                mu = 5e-6,
                                detectionSize = 1e8, 
@@ -75,33 +79,35 @@ test_that("simuls runs tests: no crashes or uncaught errors", {
                                max.num.tries = 10,
                                initSize = 2000,
                                finalTime = 15000,
-                               onlyCancer = FALSE, detectionProb = NA)
+                               onlyCancer = FALSE, detectionProb = NA))
+        )
         expect_true(inherits(tmp, "oncosimul2"))
     }
 
 
 
     for(i in 1:length(examplesFitnessEffects)) {
-        cat(paste("\n Doing i = ", i , " name = ",
-                  names(examplesFitnessEffects)[i], "\n"))
-        cat(paste("\n Doing i = ", i , " name = ",
-                  names(examplesFitnessEffects)[i], "\n"))
+        ## cat(paste("\n Doing i = ", i , " name = ",
+        ##           names(examplesFitnessEffects)[i], "\n"))
+        ## cat(paste("\n Doing i = ", i , " name = ",
+        ##           names(examplesFitnessEffects)[i], "\n"))
         if (names(examplesFitnessEffects)[i] == "e2") {
             sE <- 0.05
         } else {
             sE <- 0.1
         }
-        tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
+         null <- capture.output(
+        suppressWarnings(tmp <-  oncoSimulSample(4, examplesFitnessEffects[[i]],
                                 onlyCancer = FALSE, detectionProb = NA,
-                                sampleEvery = sE)
+                                sampleEvery = sE)))
         expect_true(inherits(tmp, "list"))
     }
 
 
 
     for(i in 1:length(examplesFitnessEffects)) {
-        cat(paste("\n Doing i = ", i , " name = ",
-                  names(examplesFitnessEffects)[i], "\n"))
+        ## cat(paste("\n Doing i = ", i , " name = ",
+        ##           names(examplesFitnessEffects)[i], "\n"))
         if (names(examplesFitnessEffects)[i] == "e2") {
             detectionDrv <- 2
             sE <- 0.05
@@ -109,13 +115,16 @@ test_that("simuls runs tests: no crashes or uncaught errors", {
             detectionDrv <- 4
             sE <- 0.02
         }
+        null <- capture.output(
+            suppressWarnings(
         tmp <-  oncoSimulPop(4, examplesFitnessEffects[[i]],
                              onlyCancer = FALSE, detectionProb = NA,
                              detectionDrivers = detectionDrv,
                              sampleEvery = sE, keepEvery = 1,
-                             mc.cores = 2)
+                             mc.cores = 2))
+        )
         expect_true(inherits(tmp, "oncosimulpop"))
-        tmp2 <- samplePop(tmp)
+        suppressWarnings(tmp2 <- samplePop(tmp))
         expect_true(inherits(tmp2, "matrix"))
     }
 

@@ -1,12 +1,15 @@
 inittime <- Sys.time()
 cat(paste("\n Starting at mutPropGrowth ", date(), "\n"))
 
+## I comment out a lot of the former cat's
+
+
 ## RNGkind("L'Ecuyer-CMRG") ## for the mclapplies
 ## If crashes I want to see where: thus output seed.
 ## The tests below can occasionally fail (but that probability decreases
 ## as we increase number of pops), as they should.
 
-cat("\n", date(), "\n") ## whole file takes about 16 seconds
+## cat("\n", date(), "\n") ## whole file takes about 16 seconds
 
 mutsPerClone <- function(x, per.pop.mean = TRUE) {
     perCl <- function(z)
@@ -34,7 +37,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         ## in these models, but we stop on size to
         ## control for different  pop size. Now, time should be very similar, or we introduce a serious distorsion.
         
-        cat("\n mcf1: a runif is", runif(1), "\n")
+        ## cat("\n mcf1: a runif is", runif(1), "\n")
         ft <- 26  # 3 
         pops <- 50
         lni <- 100
@@ -43,7 +46,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         names(ni) <- c("a", paste0("n", seq.int(lni)))
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
-        cat("\n mcf1a: a runif is", runif(1), "\n")
+        ## cat("\n mcf1a: a runif is", runif(1), "\n")
         nca <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                             mutationPropGrowth = TRUE,
                             initSize = no,
@@ -51,7 +54,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
                             keepEvery = 1,
                             initMutant = "a", model = "McFL",
                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-        cat("\n mcf1c: a runif is", runif(1), "\n")
+        ## cat("\n mcf1c: a runif is", runif(1), "\n")
         nca2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                              mutationPropGrowth = FALSE,
                              initSize = no,
@@ -81,10 +84,10 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-cat("\n", date(), "\n")
+## cat("\n", date(), "\n")
 
 
 
@@ -99,7 +102,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
         ## have been in the plateau for long
         
         
-        cat("\n mcf1_ontime: a runif is", runif(1), "\n")
+        ## cat("\n mcf1_ontime: a runif is", runif(1), "\n")
         ft <- 6 
         pops <- 50
         lni <- 100
@@ -109,7 +112,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
         names(ni) <- c("a", paste0("n", seq.int(lni)))
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
-        cat("\n mcf1a: a runif is", runif(1), "\n")
+        ## cat("\n mcf1a: a runif is", runif(1), "\n")
         nca <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                             mutationPropGrowth = TRUE,
                             initSize = no,
@@ -117,7 +120,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
                             keepEvery = 1,
                             initMutant = "a", model = "McFL",
                             onlyCancer = FALSE, seed = NULL, mc.cores = 2)
-        cat("\n mcf1c: a runif is", runif(1), "\n")
+        ## cat("\n mcf1c: a runif is", runif(1), "\n")
         nca2 <- oncoSimulPop(pops, fe, finalTime = ft, detectionProb = NA,
                              mutationPropGrowth = FALSE,
                              initSize = no,
@@ -147,10 +150,10 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
         
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
-cat("\n", date(), "\n")
+## cat("\n", date(), "\n")
 
 
 
@@ -159,7 +162,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n oss1: a runif is", runif(1), "\n")
+        ## cat("\n oss1: a runif is", runif(1), "\n")
         
         ft <- 133 ## we stop on size way earlier 
         pops <- 50
@@ -171,7 +174,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         names(ni) <- c("a", paste0("n", seq.int(lni)))
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
-        cat("\n oss1a: a runif is", runif(1), "\n")
+        ## cat("\n oss1a: a runif is", runif(1), "\n")
         nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu,
                                mutationPropGrowth = TRUE,
@@ -181,7 +184,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                detectionSize = 1e6,
                                detectionDrivers = 99,
                                thresholdWhole = x)
-        cat("\n oss1c: a runif is", runif(1), "\n")
+        ## cat("\n oss1c: a runif is", runif(1), "\n")
         nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu,
                                 mutationPropGrowth = FALSE,
@@ -222,7 +225,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
 date()
@@ -236,7 +239,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     max.tries <- 4
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n oss1_ontime: a runif is", runif(1), "\n")
+        ## cat("\n oss1_ontime: a runif is", runif(1), "\n")
         
         ft <- 4 ## we stop on time 
         pops <- 50
@@ -248,7 +251,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         names(ni) <- c("a", paste0("n", seq.int(lni)))
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
-        cat("\n oss1a: a runif is", runif(1), "\n")
+        ## cat("\n oss1a: a runif is", runif(1), "\n")
         nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu,
                                mutationPropGrowth = TRUE,
@@ -258,7 +261,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                detectionSize = 1e9,
                                detectionDrivers = 99,
                                thresholdWhole = x)
-        cat("\n oss1c: a runif is", runif(1), "\n")
+        ## cat("\n oss1c: a runif is", runif(1), "\n")
         nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu,
                                 mutationPropGrowth = FALSE,
@@ -299,7 +302,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
 date()
@@ -312,7 +315,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
     for(tries in 1:max.tries) {
         
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n ossmcf1: a runif is", runif(1), "\n")
+        ## cat("\n ossmcf1: a runif is", runif(1), "\n")
         ft <- 100  ## we stop on size
         pops <- 50
         lni <- 200 ## 150
@@ -323,7 +326,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
         names(ni) <- c("a", paste0("n", seq.int(lni)))
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
-        cat("\n ossmcf1a: a runif is", runif(1), "\n")
+        ## cat("\n ossmcf1a: a runif is", runif(1), "\n")
         nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu, model = "McFL",
                                mutationPropGrowth = TRUE,
@@ -333,7 +336,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                                detectionSize = 3e4,
                                detectionDrivers = 99,
                                thresholdWhole = x)
-        cat("\n ossmcf1c: a runif is", runif(1), "\n")
+        ## cat("\n ossmcf1c: a runif is", runif(1), "\n")
         nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu, model = "McFL",
                                 mutationPropGrowth = FALSE,
@@ -373,7 +376,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
         
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
 date()
@@ -387,7 +390,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
     for(tries in 1:max.tries) {
         
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
-        cat("\n ossmcf1: a runif is", runif(1), "\n")
+        ## cat("\n ossmcf1: a runif is", runif(1), "\n")
         ft <- 10 ## we stop on time but sizes are about same. We are in the plateau
         pops <- 50
         lni <- 200 ## 150
@@ -398,7 +401,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
         names(ni) <- c("a", paste0("n", seq.int(lni)))
         ni <- sample(ni) ## scramble
         fe <- allFitnessEffects(noIntGenes = ni)
-        cat("\n ossmcf1a: a runif is", runif(1), "\n")
+        ## cat("\n ossmcf1a: a runif is", runif(1), "\n")
         nca <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                mu = mu, model = "McFL",
                                mutationPropGrowth = TRUE,
@@ -408,7 +411,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
                                detectionSize = 3e7,
                                detectionDrivers = 99,
                                thresholdWhole = x)
-        cat("\n ossmcf1c: a runif is", runif(1), "\n")
+        ## cat("\n ossmcf1c: a runif is", runif(1), "\n")
         nca2 <- oncoSimulSample(pops, fe, finalTime = ft, detectionProb = NA,
                                 mu = mu, model = "McFL",
                                 mutationPropGrowth = FALSE,
@@ -448,7 +451,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
         
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
 date()
@@ -465,7 +468,9 @@ test_that("We crash as we should", {
                              noIntGenes = rep(0, 50))
     ## with testthat 0.11.0.9000 we should be able
     ## to use use_catch to catch the C++ exception directly
-    o1 <- oncoSimulIndiv(feo,
+    null <- capture.output(
+    suppressWarnings(
+        o1 <- oncoSimulIndiv(feo,
                mu = 1e-7, detectionProb = NA,
                initSize = 1e4,
                K = 1e4,
@@ -478,7 +483,8 @@ test_that("We crash as we should", {
                initMutant = "b > a",
                mutationPropGrowth = TRUE, 
                onlyCancer = FALSE,
-               verbosity = 0)
+               verbosity = 0))
+    )
     expect_true(grepl("pE not finite", o1$other$ExceptionMessage,
                       fixed = TRUE))
 })
@@ -490,6 +496,8 @@ test_that("...and we don't when we shouldn't", {
                              noIntGenes = rep(0, 50))
     ## with testthat 0.11.0.9000 we should be able
     ## to use use_catch to catch the C++ exception directly
+    null <- capture.output(
+    suppressWarnings(
     o1 <- oncoSimulIndiv(feo,
                mu = 1e-7,
                initSize = 1e4,
@@ -504,6 +512,7 @@ test_that("...and we don't when we shouldn't", {
                mutationPropGrowth = FALSE, 
                onlyCancer = FALSE,
                verbosity = 0)
+    ))
     expect_true(length(grepl("pE not finite", o1$other$ExceptionMessage,
                       fixed = TRUE)) == 0)
 })

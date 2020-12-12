@@ -673,8 +673,8 @@ test_that("initMutant works if == number of genes", {
     for(i in 1:5){
         set.seed(i)
         o2i <- allFitnessEffects(genotFitness = rfitness(2))
-        o2io <- oncoSimulIndiv(o2i, initMutant = "B, A",
-                               onlyCancer = FALSE)
+        suppressWarnings(o2io <- oncoSimulIndiv(o2i, initMutant = "B, A",
+                               onlyCancer = FALSE))
         if(!is.null(o2io$other$ExceptionMessage)) {
             expect_false(
                 grepl("Trying to obtain a mutation when nonmutated.size is 0",
@@ -754,6 +754,7 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
     afe <- allFitnessEffects(genotFitness = r, 
                              frequencyDependentFitness = TRUE)
+    null <- capture.output({
     set.seed(1)
     of1 <- oncoSimulIndiv(afe, 
                           model = "McFL",
@@ -780,12 +781,13 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
                           seed = NULL, 
                           errorHitMaxTries = TRUE, 
                           errorHitWallTime = TRUE)
-
+    })
     expect_true(of1$InitMutant == "WT")
     expect_true(of2$InitMutant == "")
     expect_identical(of1[!(names(of1) == "InitMutant")],
                      of2[!(names(of2) == "InitMutant")])
 
+    null <- capture.output({
     set.seed(2)
     o2 <- allFitnessEffects(genotFitness = rfitness(2))
     set.seed(2)
@@ -812,7 +814,7 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
                    seed = NULL, 
                    errorHitMaxTries = TRUE, 
                    errorHitWallTime = TRUE)
-
+    })
     expect_true(os1$InitMutant == "WT")
     expect_true(os2$InitMutant == "")
     expect_identical(os1[!(names(of1) == "InitMutant")],
@@ -852,32 +854,33 @@ test_that("initMutant: multiple pops, basic", {
                                         onlyCancer = FALSE,
                                         seed = NULL))
 
-
-    oncoSimulIndiv(o1, initMutant = c("c, b", "WT"),
+    null <- capture.output({
+    outx <- oncoSimulIndiv(o1, initMutant = c("c, b", "WT"),
                    initSize = c(300, 20),
                    onlyCancer = FALSE,
                    seed = NULL)
 
-    oncoSimulIndiv(o1, initMutant = c("c, b", "WT", "a"),
+    outx <- oncoSimulIndiv(o1, initMutant = c("c, b", "WT", "a"),
                    initSize = c(300, 20, 10),
                    onlyCancer = FALSE,
                    seed = NULL)
-
+    })
+    
     ## Pass all genotypes
-    oncoSimulIndiv(o1, initMutant = c("WT", "a", "b", "c",
+    null <- capture.output(oncoSimulIndiv(o1, initMutant = c("WT", "a", "b", "c",
                                       "a, b", "a, c", "b, c",
                                       "a, b, c"),
                    initSize = c(300, 20, 10, 6, 9, 5, 4, 6),
                    onlyCancer = FALSE,
-                   seed = NULL)
+                   seed = NULL))
 
     set.seed(1)
     r2 <- rfitness(2)
     r2[4, 3] <- 0
     o2 <- allFitnessEffects(genotFitness = r2)
-    oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
-                   initSize = c(300, 20),
-                   onlyCancer = FALSE)
+    ## oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
+    ##                initSize = c(300, 20),
+    ##                onlyCancer = FALSE)
     expect_warning( oncoSimulIndiv(o2, initMutant = c("B, A", "A"),
                    initSize = c(300, 20),
                    onlyCancer = FALSE),
@@ -1027,7 +1030,7 @@ test_that("multiple init mutants: different species, FDF", {
     afd0 <- allFitnessEffects(genotFitness = gffd0,
                              frequencyDependentFitness = TRUE)
 
-    eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5)
+    suppressWarnings(eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5))
 
 
     
@@ -1045,7 +1048,7 @@ test_that("multiple init mutants: different species, FDF", {
     afd <- allFitnessEffects(genotFitness = gffd, 
                              frequencyDependentFitness = TRUE)
 
-    eag1 <- evalAllGenotypes(afd, spPopSizes = 0:5)
+    suppressWarnings(eag1 <- evalAllGenotypes(afd, spPopSizes = 0:5))
 
     ## No wildtype
     gffd2 <- data.frame(
@@ -1060,7 +1063,7 @@ test_that("multiple init mutants: different species, FDF", {
     afd2 <- allFitnessEffects(genotFitness = gffd2, 
                              frequencyDependentFitness = TRUE)
 
-    eag2 <- evalAllGenotypes(afd2, spPopSizes = 1:5)
+    suppressWarnings(eag2 <- evalAllGenotypes(afd2, spPopSizes = 1:5))
     expect_identical(eag1, eag2)
     expect_identical(eag0, eag2)
 
@@ -1109,7 +1112,7 @@ test_that("multiple init mutants: different species, FDF, check fitness", {
     fmspecF$full_FDF_spec
     ## in exactly that order
 
-    afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11)
+    suppressWarnings(afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11))
 
     ## Show only viable ones
     afmspecF[afmspecF$Fitness >= 1, ]
@@ -1122,7 +1125,7 @@ test_that("multiple init mutants: different species, FDF, check fitness", {
 })
 
 
-test_that("multiple init mutants: different species, FDF, crash if not in fitness table", {
+test_that("multiple init mutants: different species, FDF, exprtk crash if not in fitness table", {
     ## Crash, as f_2 is not present
     gffd <- data.frame(
         Genotype = c("WT",
@@ -1137,8 +1140,7 @@ test_that("multiple init mutants: different species, FDF, crash if not in fitnes
     stringsAsFactors = FALSE)
     afd <- allFitnessEffects(genotFitness = gffd, 
                              frequencyDependentFitness = TRUE)
-
-    expect_error(evalAllGenotypes(afd, spPopSizes = rep(10, 6)))
+        suppressWarnings(expect_error(evalAllGenotypes(afd, spPopSizes = rep(10, 6))))
     ### FIXME: catch this exact string"Undefined symbol: 'f_2'", fixed = TRUE)
 })
 

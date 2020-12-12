@@ -22,8 +22,8 @@ test_that("Conversion for matrix", {
 
 test_that("Conversion for incomplete matrix", {
     m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
-    fem6 <- allFitnessEffects(genotFitness = m6)
-    evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
+    suppressWarnings(fem6 <- allFitnessEffects(genotFitness = m6))
+    ## evalAllGenotypes(fem6, addwt = TRUE, order = FALSE)
     expect_true(all(
         evalAllGenotypes(fem6, addwt = TRUE,
                          order = FALSE)[, 2]
@@ -64,8 +64,8 @@ test_that("The WT is added if absent, in two cases", {
     ## internal call
     ## the wt was added to the output from allGenotypes_to_matrix
     ## though this is mostly redundant now
-    expect_equivalent(OncoSimulR:::allGenotypes_to_matrix(ag)[, 3],
-                      c(1, 3, 0, 2))
+    suppressWarnings(expect_equivalent(OncoSimulR:::allGenotypes_to_matrix(ag)[, 3],
+                      c(1, 3, 0, 2)))
     ## the user visible, which is via plotFitnessLandscape -> to_Fitness_Matrix
     plot(ag)
 })
@@ -114,8 +114,8 @@ test_that("Missing genotypes defaults: WT 1, others 0", {
         Fitness = c(1, 0, 2, rep(0, 4), 3),
         stringsAsFactors = FALSE)
     
-    o_m8 <- evalAllGenotypes(allFitnessEffects(genotFitness = m8),
-                     addwt = TRUE)
+    suppressWarnings(o_m8 <- evalAllGenotypes(allFitnessEffects(genotFitness = m8),
+                     addwt = TRUE))
     ## as exp_m8 does not have the evalAllGenotypes attribute
     expect_equivalent(o_m8, exp_m8)
 
@@ -138,7 +138,7 @@ test_that("Missing genotypes defaults: WT 1, others 0", {
                     rep(0, 7)),
         stringsAsFactors = FALSE)
 
-    o_m9 <- evalAllGenotypes(allFitnessEffects(genotFitness = m9), addwt = TRUE)
+    suppressWarnings(o_m9 <- evalAllGenotypes(allFitnessEffects(genotFitness = m9), addwt = TRUE))
 
     expect_equivalent(o_m9, exp_m9)
     
