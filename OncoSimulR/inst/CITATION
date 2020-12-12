@@ -2,7 +2,7 @@ citHeader("If you use OncoSimulR, please cite the OncoSimulR Bioinformatics pape
           " OncoSimulR has been used in three large",
           " comparative studies of methods to infer restrictions in",
           " the order of accumulation of mutations (cancer progression models)",
-          " published in Bioinformatics and BMC Bioinformatics; you might want to cite those too,",
+          " published in PLoS Computational Biology, Bioinformatics and BMC Bioinformatics; you might want to cite those too,",
           " if appropriate, such as when referring to using evolutionary simulations",
           " to assess oncogenetic tree/cancer progression methods performance.")
 
@@ -25,6 +25,21 @@ citEntry(entry="Article",
 
 
 
+citEntry(entry = "Article",
+	author = "R Diaz-Uriarte and C Vasallo",
+	title = "Every which way? On predicting tumor evolution using cancer progression models",
+	journal = "PLoS Computational Biology",
+	year = "2019",
+        volume = "15",
+        number = "8",
+	doi = "10.1371/journal.pcbi.100724610.1101/371039",
+	URL = "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007246",
+        textVersion = paste("R Diaz-Uriarte and C. Vasallo.",
+                            "Every which way? On predicting tumor evolution using cancer progression models",
+                            "2019",
+                            "PLoS Computational Biology",
+                            "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007246")
+)
 
 
 
@@ -60,16 +75,3 @@ citEntry(entry="Article",
 )
 
 
-citEntry(entry = "Article",
-	author = "R Diaz-Uriarte and C Vasallo",
-	title = "Every which way? On predicting tumor evolution using cancer progression models",
-	journal = "bioRxiv",
-	year = "2018",
-	doi = "10.1101/371039",
-	URL = "https://www.biorxiv.org/content/early/2018/11/20/371039",
-        textVersion = paste("R Diaz-Uriarte and C. Vasallo.",
-                            "Every which way? On predicting tumor evolution using cancer progression models",
-                            "2018",
-                            "bioRxiv",
-                            "https://www.biorxiv.org/content/early/2018/11/20/371039")
-)
