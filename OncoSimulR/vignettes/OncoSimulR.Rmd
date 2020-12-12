@@ -55,6 +55,23 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE)
 options(width = 70)
 require(BiocStyle)
 require(pander)
+
+
+## https://bookdown.org/yihui/rmarkdown-cookbook/time-chunk.html
+all_times <- list()  # store the time for each chunk
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      now <<- Sys.time()
+    } else {
+      res <- difftime(Sys.time(), now, units = "secs")
+      all_times[[options$label]] <<- as.double(res)
+    }
+  }
+}))
+
+knitr::opts_chunk$set(time_it = TRUE)
 ```
 
 
@@ -13519,11 +13536,17 @@ sessionInfo()
 Time to build the vignette:
 
 ```{r last, echo=FALSE}
-print(Sys.time() - time0)
+paste(difftime(Sys.time(), time0, units = "mins")), "minutes")
 ```
 
 \clearpage
 
+FIXME: 
+
+
+```{r timeit}
+all_times
+```
 
 
 
