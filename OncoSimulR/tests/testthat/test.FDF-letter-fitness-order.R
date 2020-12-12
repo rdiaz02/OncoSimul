@@ -25,11 +25,10 @@ test_that("We can run and equal with letters", {
     fg11 <- allFitnessEffects(genotFitness = g11, 
                               frequencyDependentFitness = TRUE)
 
-    ## FIXME
     ## So, what does spPopSizes refer to ?? that is ambiguous here. 
     ## It seems it is the Genotypes in the original Genotype spec.
     ## but they are the ones left in fg1$Genotype
-    ## Since we cannot now what was in g1, do not allow for this.
+    ## Since we cannot now what was in g1, emits warnings, that we silence here
     efg1 <- suppressWarnings(evalAllGenotypes(fg1, spPopSizes = c(9, 2, 6)))
     efg11 <- suppressWarnings(evalAllGenotypes(fg11, spPopSizes = c(9, 2, 6)))
 
@@ -113,8 +112,8 @@ test_that("We can run and equal in different order" , {
                               frequencyDependentFitness = TRUE)
 
     ## spPopSizes are for genotypes AT, A, B, AB
-    ofg2 <- evalAllGenotypes(fg2, spPopSizes = c(9, 2, 6, 3))
-    ofg2b <- evalAllGenotypes(fg2b, spPopSizes = c(9, 2, 6, 3))
+    ofg2 <- suppressWarnings(evalAllGenotypes(fg2, spPopSizes = c(9, 2, 6, 3)))
+    ofg2b <- suppressWarnings(evalAllGenotypes(fg2b, spPopSizes = c(9, 2, 6, 3)))
     ## Are they correct?
     expect_identical(ofg2, ofg2b)
     out_expec_ofg2 <- c(1, 1 + 2 * 3 , 1 + 2 * 2, 1 + 2 * 6)
@@ -132,10 +131,10 @@ test_that("Breaks as it should", {
                                   "n_1",
                                   "n_2"
                                   ))
-    adf1 <- allFitnessEffects(genotFitness = df1,
-                              frequencyDependentFitness = TRUE)
-    (adf1)
-    expect_error(evalAllGenotypes(adf1, spPopSizes = 1:6))
+    suppressMessages(adf1 <- allFitnessEffects(genotFitness = df1,
+                              frequencyDependentFitness = TRUE))
+    ## (adf1)
+    expect_error(suppressWarnings(evalAllGenotypes(adf1, spPopSizes = 1:6)))
     ## Breaks in old and new: n_2_3
 
     df1 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
@@ -146,11 +145,11 @@ test_that("Breaks as it should", {
                               "f_1",
                               "f_2"
                               ))
-    adf1 <- allFitnessEffects(genotFitness = df1,
-                              frequencyDependentFitness = TRUE)
+    suppressMessages(adf1 <- allFitnessEffects(genotFitness = df1,
+                              frequencyDependentFitness = TRUE))
     
-    (adf1)
-    expect_error(evalAllGenotypes(adf1, spPopSizes = 1:6)) ## Breaks in old
+    ## (adf1)
+    expect_error(suppressWarnings(evalAllGenotypes(adf1, spPopSizes = 1:6))) ## Breaks in old
                                                        ## and new: f_2_3
 })
 
@@ -169,7 +168,7 @@ test_that("eval fitness gives wrong answer, as misspecified", {
                               frequencyDependentFitness = TRUE)
 
     (adf2)
-    gg <- evalAllGenotypes(adf2, spPopSizes = 1:6)
+    suppressWarnings(gg <- evalAllGenotypes(adf2, spPopSizes = 1:6))
     expect_equal(gg[gg$Genotype == "B", "Fitness"], 6) 
     ## Wrong: gives for B fitness of using CA, not BA (both old and new versions)
 })

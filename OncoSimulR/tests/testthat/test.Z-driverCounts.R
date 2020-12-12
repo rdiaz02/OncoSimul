@@ -16,14 +16,16 @@ test_that("Assertion is correct when nothing returned",{
                                   "D" = "d1, d2"),
                             drvNames = c("d1", "d2", "f1", "f2", "f3"))
     set.seed(13)
-    expect_message(ou <- oncoSimulSample(1, 
+    suppressWarnings(expect_message(ou <- oncoSimulSample(1, 
                                   oi,
                                   sampleEvery = 0.03,
                                   onlyCancer = FALSE,
                                   model = "Bozic",
                                   mutationPropGrowth = TRUE,
                                   seed = NULL),
-                  "Subjects by Genes", fixed = TRUE)
+                                  ## "Subjects by Genes",
+                                  "Successfully sampled 1 individuals",
+                                  fixed = TRUE))
 
 
 
@@ -38,14 +40,14 @@ test_that("Assertion is correct when nothing returned",{
                                   "D" = "d1, d2"),
                             drvNames = c("d1", "d2", "f1", "f2", "f3"))
     set.seed(13)
-    expect_message(ou2 <- oncoSimulSample(1, 
+    suppressWarnings(expect_message(ou2 <- oncoSimulSample(1, 
                     oi,
                     sampleEvery = 0.03,
                     onlyCancer = FALSE,
                     model = "Bozic",
                     mutationPropGrowth = TRUE,
                     seed = NULL),
-                  "Subjects by Genes", fixed = TRUE)
+                  "Subjects by Genes", fixed = TRUE))
 
 } )
 date()
@@ -68,8 +70,9 @@ test_that("driverCounts: a run that used to cause crashes", {
                             detectionSize = 5e6,
                             finalTime = 5, 
                             onlyCancer = FALSE)
-    cat("\n ... output from mue11\n")
-    print(mue11)
+    ## cat("\n ... output from mue11\n")
+    ## print(mue11)
+    expect_output(print(mue11), "Individual OncoSimul trajectory", fixed = TRUE)
 })
 
 set.seed(NULL)
