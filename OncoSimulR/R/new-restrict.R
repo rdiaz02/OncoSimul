@@ -2470,7 +2470,7 @@ nr_oncoSimul.internal <- function(rFE,
 
     if(typeFitness %in% c("bozic1", "bozic2")) {
         if(nrow(rFE$fitnessLandscape_df) > 0)
-            warning("Bozic model passing a fitness landscape will not work",
+            warning("Bozic model passing a fitness landscape most likely will not work",
                     " for now.")
         ## FIXME: bozic and fitness landscape
         ## the issue is that in the C++ code we directly do
