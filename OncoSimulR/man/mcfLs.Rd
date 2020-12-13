@@ -22,11 +22,12 @@ mcfLs simulation from the vignette
 
 
 \examples{
+\dontrun{
 data(mcfLs)
 
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "")
 summary(mcfLs)
-
+}
 }
 \keyword{datasets}
 

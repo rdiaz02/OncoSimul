@@ -168,7 +168,13 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
 
 
 pancr1 <- oncoSimulIndiv(pancr, model = "Exp")
-pancr8 <- oncoSimulPop(8, pancr, model = "Exp",
+
+RNGkind("L'Ecuyer-CMRG")
+set.seed(3)
+pancr8 <- oncoSimulPop(3, pancr, model = "Exp",
+                       finalTime = 600,
+                       onlyCancer = TRUE,
+                       seed = NULL,
                        mc.cores = 2)
 
 POM(pancr1)

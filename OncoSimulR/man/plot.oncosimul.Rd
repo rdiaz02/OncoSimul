@@ -324,6 +324,7 @@
   \code{\link{oncoSimulIndiv}}
 }
 \examples{
+\dontrun{
 data(examplePosets)
 p701 <- examplePosets[["p701"]]
 
@@ -350,10 +351,11 @@ plot(p1, ask = FALSE)
 
 ## Stacked; we cannot log here, and harder to see patterns
 plot(p1, ask = FALSE, type = "stacked")
-
+}
 
 ## Show individual genotypes and drivers for an
 ## epistasis case with at most eight genotypes
+set.seed(1) 
 
 sa <- 0.1
 sb <- -0.2
@@ -376,11 +378,16 @@ e1 <- oncoSimulIndiv(sv2, model = "McFL",
                      sampleEvery = 0.02,
                      keepEvery = 1,
                      initSize = 2000,
-                     finalTime = 3000,
+                     finalTime = 2000,
+                     seed = NULL,
                      onlyCancer = FALSE)
+
 
 ## Drivers and clones
 plot(e1, show = "drivers")
+
+## Stack
+plot(e1, type = "stacked")
 
 ## Make genotypes explicit
 plot(e1, show = "genotypes")

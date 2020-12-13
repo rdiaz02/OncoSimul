@@ -314,11 +314,6 @@ MAGELLAN web site: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}
 ## plotting and simulating an oncogenetic trajectory
 
 
-r1 <- rfitness(4)
-plot(r1)
-oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
-
-
 ## NK model
 rnk <- rfitness(5, K = 3, model = "NK")
 plot(rnk)
@@ -328,6 +323,8 @@ oncoSimulIndiv(allFitnessEffects(genotFitness = rnk))
 radd <- rfitness(4, model = "Additive", mu = 0.2, sd = 0.5)
 plot(radd)
 
+
+\dontrun{
 ## Eggbox model
 regg = rfitness(g=4,model="Eggbox", e = 2, E=2.4)
 plot(regg)
@@ -342,7 +339,8 @@ plot(ris)
 rfull = rfitness(g=4, model="Full", i = 0.002, I=2, 
                  K = 2, r = TRUE,
                  p = 0.2, P = 0.3, o = 0.3, O = 1)
-plot(rfull)
+    plot(rfull)
+    }
 }
 \keyword{ datagen }
 
