@@ -6379,10 +6379,12 @@ ospI <- oncoSimulPop(2,
                     initMutant = c("d > m > z"),
                     mc.cores = 2
                     )
-op <- par(mar = rep(0, 4), mfrow = c(1, 2))
+
+## Show just one example
+## op <- par(mar = rep(0, 4), mfrow = c(1, 2))
 plotClonePhylog(ospI[[1]])
-plotClonePhylog(ospI[[2]])
-par(op)
+## plotClonePhylog(ospI[[2]])
+## par(op)
 
 ossI <- oncoSimulSample(2, 
                         o3init, model = "Exp",
@@ -7102,7 +7104,7 @@ aggressively thin the data for this plot so it is faster and smaller
 
 ```{r mcflsx3}
 plot(mcfLs, type = "stacked", thinData = TRUE, 
-     thinData.keep = 0.2,
+     thinData.keep = 0.1,
      plotDiversity = TRUE,
      xlim = c(0, 1000))
 ``` 
@@ -7136,7 +7138,9 @@ data(examplesFitnessEffects)
 names(examplesFitnessEffects)
 ``` 
 
-
+```{r seedsmmmcfls}
+set.seed(1)
+```
 
 We will simulate using the simple CBN-like restrictions of
 section \@ref(cbn1) with two different models. 
@@ -8519,7 +8523,7 @@ set.seed(1) ## for reproducibility
 sfd <- oncoSimulIndiv(afd, 
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 100,
+                     finalTime = 55, ## short, for speed
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = FALSE,
@@ -8682,7 +8686,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                      finalTime = 160,
                      mu = 1e-4,
                      initSize = 5000, 
-                     keepPhylog = TRUE,
+                     keepPhylog = FALSE,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
@@ -8690,7 +8694,8 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
 ##      xlim = c(40, 200),
 ##      col = c("black", "green", "red", "blue"))
 plot(s_3_a, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"))
+     col = c("black", "green", "red", "blue"),
+     thinData = TRUE)
 ```
 
 
@@ -8702,20 +8707,22 @@ afe_3_b <- allFitnessEffects(
                                  0.15, 0.1, 0.05),
                 frequencyDependentFitness = TRUE)
 set.seed(2)
+## Use a short finalTime, for speed of vignette execution
 s_3_b <- oncoSimulIndiv(afe_3_b,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 160,
+                     finalTime = 100, ## 160,
                      mu = 1e-4,
                      initSize = 5000, 
-                     keepPhylog = TRUE,
+                     keepPhylog = FALSE, 
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
 ## plot(s_3_b, show = "genotypes", 
 ##      col = c("black", "green", "red", "blue"))
 plot(s_3_b, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"))
+     col = c("black", "green", "red", "blue"),
+     thinData = TRUE) ## thin for faster plotting
 ```
 
 Of course, if we assume that the mutations leading to the different
@@ -8723,6 +8730,7 @@ cell types are different, the results can change:
 
 ```{r hurl3b2}
 ## Figure 3b. Now with WT -> P; P -> A,P; P -> C,P
+## For speed, we set finalTiem = 100
 afe_3_b_2 <- allFitnessEffects(
                   genotFitness =
                       create_fe2(0.02, 0.04, 0.08, 0.1,
@@ -8733,15 +8741,16 @@ set.seed(2)
 s_3_b_2 <- oncoSimulIndiv(afe_3_b_2,
                    model = "McFL", 
                    onlyCancer = FALSE, 
-                   finalTime = 300,
+                   finalTime = 100, ## 300
                    mu = 1e-4,
                    initSize = 5000, 
-                   keepPhylog = TRUE,
+                   keepPhylog = FALSE,
                    seed = NULL, 
                    errorHitMaxTries = FALSE, 
                    errorHitWallTime = FALSE)
 plot(s_3_b_2, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"))
+     col = c("black", "green", "red", "blue"),
+     thinData = TRUE)
 
 ```
 
@@ -8841,7 +8850,7 @@ set.seed(1)
 sfd4 <- oncoSimulIndiv(afd3,
                        model = "McFL", 
                        onlyCancer = FALSE, 
-                       finalTime = 200,
+                       finalTime = 145,
                        mu = 1e-4,
                        initSize = 5000, 
                        keepPhylog = FALSE,
@@ -9885,7 +9894,7 @@ because by losing the toxin receptors, R loses also some important functions.
 Therefore, every strain "wins" against one strain and "loses" against the
 other, creating a rock-paper-scissors game.
 
-```{r message=F}
+```{r rps1,  message=F}
 crs <- function (a, b, c){
   data.frame(Genotype = c("WT", "C", "R"),
              Fitness = c(paste0("1 + ", a, " * f_R - ", b, " * f_C"),
@@ -9907,7 +9916,7 @@ The equations are:
 where $f_{WT}$, $f_C$ and $f_R$ are the frequencies of WT, C and R, 
 respectively. 
 
-```{r message=F}
+```{r rps2, message=F}
 crs("a", "b", "c")
 ```
 
@@ -9916,7 +9925,7 @@ crs("a", "b", "c")
 We are going to study the scenario in which all the relationships have the same
 relative weight.
 
-```{r message=F}
+```{r sps3b, message=F}
 afcrs1 <- allFitnessEffects(genotFitness = crs(1, 1, 1), 
                            frequencyDependentFitness = TRUE,
                            frequencyType = "rel")
@@ -9955,7 +9964,7 @@ change the results of the model.
 We are going to put a bigger weight in one of the coefficients, so a=10, b=1,
 c=1.
 
-```{r message=F}
+```{r rps4, message=F}
 afcrs2 <- allFitnessEffects(genotFitness = crs(10, 1, 1), 
                            frequencyDependentFitness = TRUE,
                            frequencyType = "rel")
@@ -9964,7 +9973,7 @@ afcrs2 <- allFitnessEffects(genotFitness = crs(10, 1, 1),
 ```
 
 If we run multiple simulations, for example by doing
-```{r eval=FALSE}
+```{r rps4, eval=FALSE}
 resultscrs2 <- oncoSimulPop(10,
                            afcrs2,
                              model = "McFL",
@@ -9993,7 +10002,7 @@ we can verify there are two different scenarios.
 The first one is the one in which all the strains coexist, with the
 colicinogenic bacteria having a much bigger population.
 
-```{r message=F}
+```{r rps5, message=F}
 set.seed(1)
 
 resultscrs2a <- oncoSimulIndiv(afcrs2,
@@ -10017,7 +10026,7 @@ As above, though, decreasing the mutation rate can lead to a
 different solution and you will want to run the model for much
 longer to see the resistant strain appear and outcompete the others.
 
-```{r message=F}
+```{r rps6, message=F}
 set.seed(3)
 
 resultscrs2b <- oncoSimulIndiv(afcrs2,
@@ -10039,7 +10048,7 @@ plot(resultscrs2b, show = "genotypes", type = "line", cex.lab=1.1,
 
 Finally, we are going to put more weight in two coefficients, so a=1, b=5, c=5.
 
-```{r message=F}
+```{r rps7, message=F}
 afcrs3 <- allFitnessEffects(genotFitness = crs(1, 5, 5), 
                            frequencyDependentFitness = TRUE,
                            frequencyType = "rel")
@@ -10112,7 +10121,7 @@ above).
 
 Before performing the simulation, let's look at the fitness of each competitor.
 
-```{r, message=F}
+```{r hkdv, message=F}
 ## Stablish Genotype-Fitnees mapping. D = Dove, H = Hawk
 
 ## With newer OncoSimulR functionality, using WT to start the simulation
@@ -10146,7 +10155,7 @@ data.frame("Doves_fitness" = evalGenotype(genotype = "D",
 We observe that the penalty of fighting (C > V) benefits the dove in terms of 
 fitness respect to the hawk. 
 
-``` {r, message=F}
+``` {r hkdv2, message=F}
 ## Simulated trajectories
 ## run only a few for the sake of speed
 simulation <- oncoSimulPop(2,
@@ -10207,7 +10216,7 @@ $$f_H = v/c$$
 Therefore, the relative frequency of hawks in equilibrium is equal to V/C. 
 In our case it would be 20% (C = 10, V = 2). Let's check it:
 
-```{r}
+```{r hkdvx45}
 ## Recover the final result from first simulation
 result <- tail(simulation[[1]][[1]], 1)
 
@@ -10293,7 +10302,7 @@ In this scenario, the population will converge towards all GLY, regardless of
 the initial proportions (as long as there is at least some GLY in the
 population).
 
-```{r, message=FALSE}
+```{r glvop1, message=FALSE}
 
 # Definition of the function for creating the corresponding dataframe.
 avc <- function (a, v, c) {
@@ -10325,7 +10334,7 @@ simulation <- oncoSimulIndiv(afavc,
 
 ```
 
-```{r, message=FALSE}
+```{r glvop2, message=FALSE}
 
 # Representation of the plot of one simulation as an example (the others are
 # highly similar).
@@ -10353,7 +10362,7 @@ than the benefit of an extra unit of acidification, then for sufficiently high
 number of VOP, GLY will have lower fitness than aerobic cells. When both
 conditions are satisfied, the population will converge towards all VOP. 
 
-```{r, message=FALSE}
+```{r glvop3, message=FALSE}
 
 # Definition of the function for creating the corresponding dataframe.
 avc <- function (a, v, c) {
@@ -10383,7 +10392,7 @@ simulation <- oncoSimulIndiv(afavc,
 
 ```
 
-```{r, message=FALSE}
+```{r glvop4, message=FALSE}
 ## We get a huge number of VOP very quickly
 ## (too quickly?)
 plot(simulation, show = "genotypes", type = "line",
@@ -10412,7 +10421,7 @@ lead to an increase in the proportion of GLY until the aerobic groups (among
 which the club good is split) get sufficiently small and fitness starts to
 favour VOP over DEF, swinging the dynamics back.
 
-```{r, message=FALSE}
+```{r glvop5, message=FALSE}
 
 # Definition of the function for creating the corresponding dataframe.
 avc <- function (a, v, c) {
@@ -10443,7 +10452,7 @@ simulation <- oncoSimulIndiv(afavc,
 
 ```
 
-```{r, message=FALSE}
+```{r glvop6, message=FALSE}
 
 # Representation of the plot of one simulation as an example (the others are
 # highly similar).
@@ -10962,7 +10971,7 @@ Several scenarios varying the values of the parameters are shown in
 First, we define the fitness of the different genotypes 
 through the function _fitness_rel_. 
 
-```{r}
+```{r smyelo56j}
 f_cells <- function(c1, c2, c3, r11, r12, r13, 
                     r21, r22, r23, r31, r32, r33, M, awt = 1e-4,
                                  gt = c("WT", "OC", "OB", "MM")) {
@@ -11008,7 +11017,7 @@ border becomes a saddle point and clonal selection leads to a stable
 coexistence of OC and MM cells. Parameters for the simulation can be seen in
 the R code.
 
-```{r}
+```{r smyelo3v57}
 N <- 40000
 M <- 10
 c1 <- 1
@@ -11038,7 +11047,7 @@ set.seed(2)
 simulation <- oncoSimulIndiv(fe_cells,
                            model = "McFL",
                            onlyCancer = FALSE,
-                           finalTime = 30,
+                           finalTime = 20, ## 30
                            mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4),
                            initSize = N,
                            keepPhylog = FALSE,
@@ -11046,11 +11055,11 @@ simulation <- oncoSimulIndiv(fe_cells,
                            errorHitMaxTries = FALSE,
                            errorHitWallTime = FALSE)
 
-                                        #Plot trajectorie
-op <- par(mfrow = c(1, 2))
-plot(simulation, show = "genotypes", type = "line")
-plot(simulation, show = "genotypes")
-par(op)
+## Plot trajectories
+## op <- par(mfrow = c(1, 2))
+## plot(simulation, show = "genotypes", type = "line")
+plot(simulation, show = "genotypes", thinData = TRUE)
+## par(op)
 
 ```
 
@@ -11064,7 +11073,7 @@ row in the grid of images). We should find one stable point on the OC-OB edge
 under certain conditions, which are met in the example. Further information
 about the parameters can be found in the R code shown below.
 
-```{r}
+```{r smyeloc1v23}
 N <- 40000
 M <- 10
 c1 <- 1
@@ -11094,7 +11103,7 @@ set.seed(1)
 simulation <- oncoSimulIndiv(fe_cells,
                            model = "McFL",
                            onlyCancer = FALSE,
-                           finalTime = 25,
+                           finalTime = 15, ## 25
                            mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4),
                            initSize = N,
                            keepPhylog = FALSE,
@@ -11103,7 +11112,7 @@ simulation <- oncoSimulIndiv(fe_cells,
                            errorHitWallTime = FALSE)
 
 #Plot trajectorie
-plot(simulation, show = "genotypes")
+plot(simulation, show = "genotypes", thinData = TRUE)
 
 ```
 
@@ -11994,7 +12003,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
 
 
 plot(s_3_a, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue", "yellow", "orange", "brown"))
+     col = c("black", "green", "red", "blue", "pink", "orange", "brown"))
 
 ```
 
@@ -12029,14 +12038,14 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                         finalTime = 20,
                         mu = muvar2,
                         initSize = 10000, 
-                        keepPhylog = TRUE,
+                        keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = FALSE, 
                         errorHitWallTime = FALSE)
 
 
 plot(s_3_a, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue", "yellow", "orange", "brown"))
+     col = c("black", "green", "red", "blue", "pink", "orange", "brown"))
 
 ```
 
@@ -12074,17 +12083,17 @@ set.seed(2)
 s_3_a <- oncoSimulIndiv(afe_3_a,
                         model = "McFL", 
                         onlyCancer = FALSE, 
-                        finalTime = 50,
+                        finalTime = 20, ## short for speed; increase for "real"
                         mu = muvar2,
                         initSize = 10000, 
-                        keepPhylog = TRUE,
+                        keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = FALSE, 
                         errorHitWallTime = FALSE)
 
 
 plot(s_3_a, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue", "yellow", "orange", "brown"))
+     col = c("black", "green", "red", "blue", "pink", "orange", "brown"))
 
 ```
 
@@ -12257,7 +12266,7 @@ gamesimul <- oncoSimulIndiv(game,
                             finalTime = 40,
                             mu = 0.01,
                             initSize = 5000,
-                            keepPhylog = TRUE,
+                            keepPhylog = FALSE,
                             seed = NULL)
 ## Plot 2
 plot(gamesimul, show = "genotypes", type = "line",
@@ -12295,21 +12304,22 @@ period_1 <- allFitnessEffects(genotFitness = players_1,
 
 set.seed(2)
 
-final_time <- 200
+final_time <- 170 ## for speed
 simul_period_1 <- oncoSimulIndiv(period_1,
                                  model = "McFL",
                                  onlyCancer = FALSE,
                                  finalTime = final_time,
                                  mu = 0.01,
                                  initSize = 5000,
-                                 keepPhylog = TRUE,
+                                 keepPhylog = FALSE,
                                  seed = NULL)
 
 # ylim has been adapted to number of cells
 plot(simul_period_1, show = "genotypes", type = "line",
-     col = c("black", "green", "red"), ylim = c(20, 300000))
+     col = c("black", "green", "red"), ylim = c(20, 300000),
+     thinData = TRUE)
 
-plot(simul_period_1, show = "genotypes", ylim = c(20, 12000))
+## plot(simul_period_1, show = "genotypes", ylim = c(20, 12000))
 ```
 
 As expected, the simulation results show how sensitive cells suddenly decrease when the current
@@ -12369,13 +12379,13 @@ switching_sim  <- oncoSimulIndiv(afe,
                                finalTime = 100,
                                mu = 0.01,
                                initSize = 5000,
-                               keepPhylog = TRUE,
+                               keepPhylog = FALSE,
                                seed = NULL)
 
 plot(switching_sim, show = "genotypes", type = "line",
    col = c("black", "green", "red"), ylim = c(20, 200000))
 
-plot(switching_sim, show = "genotypes", ylim = c(20, 1000))
+## plot(switching_sim, show = "genotypes", ylim = c(20, 1000))
 
 ```
 
@@ -12501,18 +12511,19 @@ plot(eag)
 gamesimul_no <- oncoSimulIndiv(game_no,
                             model = "McFL",
                             onlyCancer = FALSE,
-                            finalTime = 70,
+                            finalTime = 35,
                             mu = 0.01,
                             initSize = 5000,
-                            keepPhylog = TRUE,
+                            keepPhylog = FALSE,
                             seed = NULL)
 
 ## Second plot  
 plot(gamesimul_no, show = "genotypes", type = "line",
-     col = c("blue", "red", "green", "purple"), ylim = c(20, 50000))
+     col = c("blue", "red", "green", "purple"), ylim = c(20, 50000),
+     thinData = TRUE)
 
 # Third plot  
-plot(gamesimul_no, show = "genotypes")
+## plot(gamesimul_no, show = "genotypes")
 ```
 
 The resulting plots show that D cells are highly benefited by the second most 
@@ -12564,22 +12575,23 @@ period_fix <- allFitnessEffects(genotFitness = coop_fix,
                               frequencyType = "rel")
 
 set.seed(2)
-final_time <- 100
+final_time <- 30 ## you'd want this longer; short for speed of vignette
 simul_period_fix <- oncoSimulIndiv(period_fix,
                                  model = "McFL",
                                  onlyCancer = FALSE,
                                  finalTime = final_time,
                                  mu = 0.01,
                                  initSize = 5000,
-                                 keepPhylog = TRUE,
+                                 keepPhylog = FALSE,
                                  seed = NULL)
 
 # First plot
 plot(simul_period_fix, show = "genotypes", type = "line",
-     col = c("blue", "red", "green", "purple"), ylim = c(20, 50000))
+     col = c("blue", "red", "green", "purple"), ylim = c(20, 50000),
+     thinData = TRUE)
 
 # Second plot
-plot(simul_period_fix, show = "genotypes", ylim = c(20, 8000))
+## plot(simul_period_fix, show = "genotypes", ylim = c(20, 8000))
 ```
 
 As expected by Archetti and Pienta @archetti2019, the tumour will be biased 
@@ -12664,13 +12676,13 @@ simT2 <- oncoSimulIndiv(afeT2,
                         model = "McFL",
                         mu = 1e-5,
                         initSize = 5000,
-                        finalTime = 500,
+                        finalTime = 450,
                         onlyCancer = FALSE,
                         seed = NULL)
   
-plot(simT2, show = "genotypes")
+plot(simT2, show = "genotypes", thinData = TRUE)
 
-plot(simT2, show = "genotypes", type = "line")
+## plot(simT2, show = "genotypes", type = "line", thinData = TRUE)
 ```
 
 In this case, just like above, we can evaluate the fitness in each time interval and observe
