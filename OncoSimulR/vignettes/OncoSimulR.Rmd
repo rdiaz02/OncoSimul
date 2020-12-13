@@ -1217,7 +1217,7 @@ starting from BioConductor 3.2 (and, of course, available too from
 development versions of BioC).  So, if you are using the current stable or
 development version of BioConductor, or you grab the sources from GitHub
 (<https://github.com/rdiaz02/OncoSimul>) you are using what we call
-version 2. Please note that **the functionality of version 1 will soon be removed.**
+version 2. **The functionality of version has been removed.**
 
 
 
@@ -3715,7 +3715,7 @@ conferred by a passenger" in @McFarland2013 (p. 2911) and
 @McFarland2014-phd (p. 9) to the expression where we have a product
 $\prod (1 + s_i)$, with the "positive s means advantage and negative
 s means disadvantage" rule. This reparameterization applies to
-v.2. In v.1 we use the same parameterization as in the original one
+v.2. In v.1 we used the same parameterization as in the original one
 in @McFarland2013, but with the "positive s means advantage and negative
 s means disadvantage" rule (so we are using expression 
 $\frac{(1 + s)^d}{(1 - s_p)^p}$).
@@ -6230,7 +6230,8 @@ evalAllGenotypes(wc, order = FALSE, addwt = TRUE)
 
 ## Gerstung et al., 2011, pancreatic cancer poset {#pancreas}
 
-Similar to what we did in v.1 (see section \@ref(poset)) we can specify the
+<!-- Similar to what we did in v.1 (see section \@ref(poset)) w -->
+We can specify the
 pancreatic cancer poset in @Gerstung2011 (their
 figure 2B, left). We use directly the names of the genes, since that is
 immediately supported by the new version.
@@ -13298,246 +13299,246 @@ questions where OncoSimulR could help.
 
 \clearpage
 
-# Using v.1 posets and simulations {#v1}
+<!-- # Using v.1 posets and simulations {#v1} -->
 
-It is strongly recommended that you use the new (v.2) procedures for
-specifying fitness effects. However, the former v.1 procedures are still
-available, with only very minor changes to function calls. What follows
-below is the former vignette. You might want to use v.1 because for
-certain models (e.g., small number of genes, with restrictions as
-specified by a simple poset) simulations might be faster with v.1 (fitness
-evaluation is much simpler ---we are working on further improving speed).
+<!-- It is strongly recommended that you use the new (v.2) procedures for -->
+<!-- specifying fitness effects. However, the former v.1 procedures are still -->
+<!-- available, with only very minor changes to function calls. What follows -->
+<!-- below is the former vignette. You might want to use v.1 because for -->
+<!-- certain models (e.g., small number of genes, with restrictions as -->
+<!-- specified by a simple poset) simulations might be faster with v.1 (fitness -->
+<!-- evaluation is much simpler ---we are working on further improving speed). -->
 
-## Specifying restrictions: posets {#poset}
+<!-- ## Specifying restrictions: posets {#poset} -->
 
-How to specify the restrictions is shown in the help for
-`poset`. It is often useful, to make sure you did not make any
-mistakes, to plot the poset. This is from the examples (we use an "L"
-after a number so that the numbers are integers, not doubles; we could
-alternatively have modified `storage.mode`).
+<!-- How to specify the restrictions is shown in the help for -->
+<!-- `poset`. It is often useful, to make sure you did not make any -->
+<!-- mistakes, to plot the poset. This is from the examples (we use an "L" -->
+<!-- after a number so that the numbers are integers, not doubles; we could -->
+<!-- alternatively have modified `storage.mode`). -->
 
-```{r, fig.height=3}
-## Node 2 and 3 depend on 1, and 4 depends on no one
-p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L))
-plotPoset(p1, addroot = TRUE)
-``` 
+<!-- ```{r, fig.height=3} -->
+<!-- ## Node 2 and 3 depend on 1, and 4 depends on no one -->
+<!-- p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L)) -->
+<!-- plotPoset(p1, addroot = TRUE) -->
+<!-- ```  -->
 
-```{r, fig.height=3}
-## A simple way to create a poset where no gene (in a set of 15)
-## depends on any other.
-p4 <- cbind(0L, 15L)
-plotPoset(p4, addroot = TRUE)
-``` 
+<!-- ```{r, fig.height=3} -->
+<!-- ## A simple way to create a poset where no gene (in a set of 15) -->
+<!-- ## depends on any other. -->
+<!-- p4 <- cbind(0L, 15L) -->
+<!-- plotPoset(p4, addroot = TRUE) -->
+<!-- ```  -->
 
 
 
-Specifying posets is actually straightforward. For instance, we can
-specify the pancreatic cancer poset in 
-@Gerstung2011 (their figure 2B, left). We specify the poset using
-numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2,
-etc). This example is also in the help for `poset`:
+<!-- Specifying posets is actually straightforward. For instance, we can -->
+<!-- specify the pancreatic cancer poset in  -->
+<!-- @Gerstung2011 (their figure 2B, left). We specify the poset using -->
+<!-- numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2, -->
+<!-- etc). This example is also in the help for `poset`: -->
 
-```{r, fig.height=3}
-pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5),
-                               c(2, 3, 4, 5, 6, 6, 6, 7, 7))
-storage.mode(pancreaticCancerPoset) <- "integer"
-plotPoset(pancreaticCancerPoset,
-          names = c("KRAS", "SMAD4", "CDNK2A", "TP53",
-                    "MLL3","PXDN", "TGFBR2"))
+<!-- ```{r, fig.height=3} -->
+<!-- pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5), -->
+<!--                                c(2, 3, 4, 5, 6, 6, 6, 7, 7)) -->
+<!-- storage.mode(pancreaticCancerPoset) <- "integer" -->
+<!-- plotPoset(pancreaticCancerPoset, -->
+<!--           names = c("KRAS", "SMAD4", "CDNK2A", "TP53", -->
+<!--                     "MLL3","PXDN", "TGFBR2")) -->
 
-```
-## Simulating cancer progression {#simul1}
+<!-- ``` -->
+<!-- ## Simulating cancer progression {#simul1} -->
 
 
-We can simulate the progression in a single subject. Using an example
-very similar to the one in the help:
+<!-- We can simulate the progression in a single subject. Using an example -->
+<!-- very similar to the one in the help: -->
 
 
-```{r, echo=FALSE,results='hide',error=FALSE}
-options(width=60)
-``` 
+<!-- ```{r, echo=FALSE,results='hide',error=FALSE} -->
+<!-- options(width=60) -->
+<!-- ```  -->
 
-```{r}
-## use poset p1101
-data(examplePosets)
-p1101 <- examplePosets[["p1101"]]
+<!-- ```{r} -->
+<!-- ## use poset p1101 -->
+<!-- data(examplePosets) -->
+<!-- p1101 <- examplePosets[["p1101"]] -->
 
-## Bozic Model
-b1 <- oncoSimulIndiv(p1101, keepEvery = 15)
-summary(b1)
-``` 
+<!-- ## Bozic Model -->
+<!-- b1 <- oncoSimulIndiv(p1101, keepEvery = 15) -->
+<!-- summary(b1) -->
+<!-- ```  -->
 
 
-The first thing we do is make it simpler (for future examples) to use a
-set of restrictions. In this case, those encoded in poset p1101. Then, we
-run the simulations and look at a simple summary and a plot. 
+<!-- The first thing we do is make it simpler (for future examples) to use a -->
+<!-- set of restrictions. In this case, those encoded in poset p1101. Then, we -->
+<!-- run the simulations and look at a simple summary and a plot.  -->
 
 
-If you want to plot the trajectories, it is better to keep more frequent
-samples,  so you can see when clones appear:
-
-```{r pb2bothx1,fig.height=5.5, fig.width=5.5}
-b2 <- oncoSimulIndiv(p1101, keepEvery = 1)
-summary(b2)
-plot(b2)
-``` 
+<!-- If you want to plot the trajectories, it is better to keep more frequent -->
+<!-- samples,  so you can see when clones appear: -->
+
+<!-- ```{r pb2bothx1,fig.height=5.5, fig.width=5.5} -->
+<!-- b2 <- oncoSimulIndiv(p1101, keepEvery = 1) -->
+<!-- summary(b2) -->
+<!-- plot(b2) -->
+<!-- ```  -->
 
-As we have seen before, the stacked plot here is less useful and that is
-why I do not evaluate that code for this vignette.
+<!-- As we have seen before, the stacked plot here is less useful and that is -->
+<!-- why I do not evaluate that code for this vignette. -->
 
-```{r pbssttx1,eval=FALSE}
-plot(b2, type = "stacked")
-``` 
+<!-- ```{r pbssttx1,eval=FALSE} -->
+<!-- plot(b2, type = "stacked") -->
+<!-- ```  -->
 
 
 
 
-The following is an example where we do not care about passengers, but we
-want to use a different graph, and we want a few more drivers before
-considering cancer has been reached. And we allow it to run for longer.
-Note that in the McFL model `detectionSize` really plays no
-role. Note also how we pass the poset: it is the same as before, but now
-we directly access the poset in the list of posets.
+<!-- The following is an example where we do not care about passengers, but we -->
+<!-- want to use a different graph, and we want a few more drivers before -->
+<!-- considering cancer has been reached. And we allow it to run for longer. -->
+<!-- Note that in the McFL model `detectionSize` really plays no -->
+<!-- role. Note also how we pass the poset: it is the same as before, but now -->
+<!-- we directly access the poset in the list of posets. -->
 
-```{r, echo=FALSE,eval=TRUE}
-set.seed(1) ## for reproducibility. Once I saw it not reach cancer.
-``` 
-```{r}
+<!-- ```{r, echo=FALSE,eval=TRUE} -->
+<!-- set.seed(1) ## for reproducibility. Once I saw it not reach cancer. -->
+<!-- ```  -->
+<!-- ```{r} -->
 
-m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL", 
-                     numPassengers = 0, detectionDrivers = 8, 
-                     mu = 5e-7, initSize = 4000, 
-                     sampleEvery = 0.025,
-                     finalTime = 25000, keepEvery = 5, 
-                     detectionSize = 1e6) 
-``` 
+<!-- m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL",  -->
+<!--                      numPassengers = 0, detectionDrivers = 8,  -->
+<!--                      mu = 5e-7, initSize = 4000,  -->
+<!--                      sampleEvery = 0.025, -->
+<!--                      finalTime = 25000, keepEvery = 5,  -->
+<!--                      detectionSize = 1e6)  -->
+<!-- ```  -->
 
-(Very rarely the above run will fail to reach cancer. If that
-happens, execute it again.)
+<!-- (Very rarely the above run will fail to reach cancer. If that -->
+<!-- happens, execute it again.) -->
 
 
-As usual, we will plot using both a line and a stacked plot:
+<!-- As usual, we will plot using both a line and a stacked plot: -->
 
-```{r m2x1,fig.width=6.5, fig.height=10}
-par(mfrow = c(2, 1))
-plot(m2, addtot = TRUE, log = "",
-     thinData = TRUE, thinData.keep = 0.5)
-plot(m2, type = "stacked",
-     thinData = TRUE, thinData.keep = 0.5)
-``` 
+<!-- ```{r m2x1,fig.width=6.5, fig.height=10} -->
+<!-- par(mfrow = c(2, 1)) -->
+<!-- plot(m2, addtot = TRUE, log = "", -->
+<!--      thinData = TRUE, thinData.keep = 0.5) -->
+<!-- plot(m2, type = "stacked", -->
+<!--      thinData = TRUE, thinData.keep = 0.5) -->
+<!-- ```  -->
 
-The default is to simulate progression until a simulation reaches cancer
-(i.e., only simulations that satisfy the detectionDrivers or the
-detectionSize will be returned). If you use the McFL model with large
-enough `initSize` this will often be the case but not if you use
-very small `initSize`. Likewise, most of the Bozic runs do not
-reach cancer. Lets try a few:
+<!-- The default is to simulate progression until a simulation reaches cancer -->
+<!-- (i.e., only simulations that satisfy the detectionDrivers or the -->
+<!-- detectionSize will be returned). If you use the McFL model with large -->
+<!-- enough `initSize` this will often be the case but not if you use -->
+<!-- very small `initSize`. Likewise, most of the Bozic runs do not -->
+<!-- reach cancer. Lets try a few: -->
 
-```{r}
-b3 <- oncoSimulIndiv(p1101, onlyCancer = FALSE)
-summary(b3)
+<!-- ```{r} -->
+<!-- b3 <- oncoSimulIndiv(p1101, onlyCancer = FALSE) -->
+<!-- summary(b3) -->
 
-b4 <- oncoSimulIndiv(p1101, onlyCancer = FALSE)
-summary(b4)
-``` 
+<!-- b4 <- oncoSimulIndiv(p1101, onlyCancer = FALSE) -->
+<!-- summary(b4) -->
+<!-- ```  -->
 
-Plot those runs:
+<!-- Plot those runs: -->
 
-```{r b3b4x1ch1, fig.width=8, fig.height=4}
-par(mfrow = c(1, 2))
-par(cex = 0.8) ## smaller font
-plot(b3)
-plot(b4)
-``` 
+<!-- ```{r b3b4x1ch1, fig.width=8, fig.height=4} -->
+<!-- par(mfrow = c(1, 2)) -->
+<!-- par(cex = 0.8) ## smaller font -->
+<!-- plot(b3) -->
+<!-- plot(b4) -->
+<!-- ```  -->
 
 
-### Simulating progression in several subjects
+<!-- ### Simulating progression in several subjects -->
 
-To simulate the progression in a bunch of subjects (we will use only
-four, so as not to fill the vignette with plots) we can do, with the same
-settings as above:
+<!-- To simulate the progression in a bunch of subjects (we will use only -->
+<!-- four, so as not to fill the vignette with plots) we can do, with the same -->
+<!-- settings as above: -->
 
-```{r ch2}
-p1 <- oncoSimulPop(4, p1101, mc.cores = 2)
-par(mfrow = c(2, 2))
-plot(p1, ask = FALSE)
-``` 
+<!-- ```{r ch2} -->
+<!-- p1 <- oncoSimulPop(4, p1101, mc.cores = 2) -->
+<!-- par(mfrow = c(2, 2)) -->
+<!-- plot(p1, ask = FALSE) -->
+<!-- ```  -->
 
-We can also use stream and stacked plots, though they might not be as
-useful in this case. For the sake of keeping the vignette small, these are
-commented out.
-```{r p1multx1,eval=FALSE}
-par(mfrow = c(2, 2))
-plot(p1, type = "stream", ask = FALSE)
-```
+<!-- We can also use stream and stacked plots, though they might not be as -->
+<!-- useful in this case. For the sake of keeping the vignette small, these are -->
+<!-- commented out. -->
+<!-- ```{r p1multx1,eval=FALSE} -->
+<!-- par(mfrow = c(2, 2)) -->
+<!-- plot(p1, type = "stream", ask = FALSE) -->
+<!-- ``` -->
 
-```{r p1multstx1,eval=FALSE}
-par(mfrow = c(2, 2))
-plot(p1, type = "stacked", ask = FALSE)
-```
+<!-- ```{r p1multstx1,eval=FALSE} -->
+<!-- par(mfrow = c(2, 2)) -->
+<!-- plot(p1, type = "stacked", ask = FALSE) -->
+<!-- ``` -->
 
 
-## Sampling from a set of simulated subjects {#sample-1}
+<!-- ## Sampling from a set of simulated subjects {#sample-1} -->
 
 
-You will often want to do something with the simulated data. For instance,
-sample the simulated data. Here we will obtain the trajectories for 100
-subjects in a scenario without passengers. Then we will sample with the
-default options and store that as a vector of genotypes (or a matrix of
-subjects by genes):
+<!-- You will often want to do something with the simulated data. For instance, -->
+<!-- sample the simulated data. Here we will obtain the trajectories for 100 -->
+<!-- subjects in a scenario without passengers. Then we will sample with the -->
+<!-- default options and store that as a vector of genotypes (or a matrix of -->
+<!-- subjects by genes): -->
 
 
-```{r}
+<!-- ```{r} -->
 
-m1 <- oncoSimulPop(100, examplePosets[["p1101"]], 
-                   numPassengers = 0, mc.cores = 2)
+<!-- m1 <- oncoSimulPop(100, examplePosets[["p1101"]],  -->
+<!--                    numPassengers = 0, mc.cores = 2) -->
 
-``` 
+<!-- ```  -->
 
-The function `samplePop` samples that object, and also gives you
-some information about the output:
+<!-- The function `samplePop` samples that object, and also gives you -->
+<!-- some information about the output: -->
 
-```{r}
-genotypes <- samplePop(m1)
-``` 
+<!-- ```{r} -->
+<!-- genotypes <- samplePop(m1) -->
+<!-- ```  -->
 
 
 
-What can you do with it? That is up to you. As an example, let us try to
-infer an Oncogenetic tree (and plot it) using the `r CRANpkg("Oncotree")`
-package @Oncotree after getting a quick look at the marginal
-frequencies of events:
+<!-- What can you do with it? That is up to you. As an example, let us try to -->
+<!-- infer an Oncogenetic tree (and plot it) using the `r CRANpkg("Oncotree")` -->
+<!-- package @Oncotree after getting a quick look at the marginal -->
+<!-- frequencies of events: -->
 
-```{r fxot1,fig.width=4, fig.height=4}
-colSums(genotypes)/nrow(genotypes)
+<!-- ```{r fxot1,fig.width=4, fig.height=4} -->
+<!-- colSums(genotypes)/nrow(genotypes) -->
 
-require(Oncotree)
-ot1 <- oncotree.fit(genotypes)
-plot(ot1)
-``` 
+<!-- require(Oncotree) -->
+<!-- ot1 <- oncotree.fit(genotypes) -->
+<!-- plot(ot1) -->
+<!-- ```  -->
 
-Your run will likely differ from mine, but with the defaults (detection
-size of $10^8$) it is likely that events down the tree will never
-appear. You can set `detectionSize = 1e9` and you will see that
-events down the tree are now found in the cross-sectional sample.
+<!-- Your run will likely differ from mine, but with the defaults (detection -->
+<!-- size of $10^8$) it is likely that events down the tree will never -->
+<!-- appear. You can set `detectionSize = 1e9` and you will see that -->
+<!-- events down the tree are now found in the cross-sectional sample. -->
 
 
-Alternatively, you can use single cell sampling and that, sometimes,
-recovers one or a couple more events.
+<!-- Alternatively, you can use single cell sampling and that, sometimes, -->
+<!-- recovers one or a couple more events. -->
 
-```{r fxot2,fig.width=4, fig.height=4}
-genotypesSC <- samplePop(m1, typeSample = "single")
-colSums(genotypesSC)/nrow(genotypesSC)
+<!-- ```{r fxot2,fig.width=4, fig.height=4} -->
+<!-- genotypesSC <- samplePop(m1, typeSample = "single") -->
+<!-- colSums(genotypesSC)/nrow(genotypesSC) -->
 
-ot2 <- oncotree.fit(genotypesSC)
-plot(ot2)
-``` 
+<!-- ot2 <- oncotree.fit(genotypesSC) -->
+<!-- plot(ot2) -->
+<!-- ```  -->
 
-You can of course rename the columns of the output matrix to something
-else if you want so the names of the nodes will reflect those potentially
-more meaningful names.
+<!-- You can of course rename the columns of the output matrix to something -->
+<!-- else if you want so the names of the nodes will reflect those potentially -->
+<!-- more meaningful names. -->
 
-\clearpage
+<!-- \clearpage -->
 
 
 # Session info and packages used
