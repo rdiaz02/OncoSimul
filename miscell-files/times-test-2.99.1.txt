@@ -1,0 +1,41 @@
+* Notes on timings and sizing after first submission of FDF to BioC
+  - [2020-12-11 Fri]
+* Linux
+
+** PackageFileSize: 6.897 MiB
+
+** Install: 292 seconds
+
+** Check: 
+
+*** 507.5 seconds
+
+*** [ FAIL 0 | WARN 332 | SKIP 12 | PASS 3168 ]
+
+**** 447.018 user seconds
+
+* Windows, tokay 2
+** PackageFileSize: (timeout at 2409)
+** Install: 1036 seconds (before timeout)
+** Check:
+*** 1302 seconds
+*** [ FAIL 0 | WARN 440 | SKIP 11 | PASS 3191 ]
+**** 414.31 seconds
+
+* Windows, riesling
+** PackageFileSize: 3.175 MiB
+** Install: 643.3 seconds
+** Check:
+*** 848 seconds
+*** [ FAIL 0 | WARN 430 | SKIP 11 | PASS 3203 ]
+**** 253.28 seconds
+* Mac, machv2:
+** PackageFileSize: 2.836 MiB
+
+** Install: 180.4 seconds
+
+** Check:
+
+*** 690 seconds
+
+*** [FAIL 1 | WARN 340 | SKIP 13 | PASS 3194 ]

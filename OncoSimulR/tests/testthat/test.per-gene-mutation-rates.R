@@ -338,7 +338,7 @@ test_that("McFL: Same freqs, chisq, when s", {
 
 
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0", {
-    max.tries <- 4
+    max.tries <- 6
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n s5: a runif is", runif(1), "\n")
@@ -375,7 +375,7 @@ test_that("McFL: Different freqs as they should be ordered and chisq, when s=0",
 
 ## date()
 test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
-    max.tries <- 4
+    max.tries <- 6
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n s6: a runif is", runif(1), "\n")
@@ -407,7 +407,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1", {
 
 ## date()
 test_that("McFL: Different freqs as they should be ordered when s and t > 1, again", {
-    max.tries <- 4
+    max.tries <- 6
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n s7: a runif is", runif(1), "\n")
@@ -440,7 +440,7 @@ test_that("McFL: Different freqs as they should be ordered when s and t > 1, aga
 
 
 test_that("McFL: Complex fitness specification, s diffs, tiny finalTime, systematic mu", {
-    max.tries <- 4
+    max.tries <- 6
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n s8: a runif is", runif(1), "\n")

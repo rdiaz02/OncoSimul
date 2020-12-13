@@ -279,6 +279,7 @@ test_that("we evaluate the WT", {
                                           "b : c" = 0.5),
                             noIntGenes = c("e" = 0.1))
     ## expect_warning(
+    null <- capture.output(
         ou <- OncoSimulR:::evalRGenotype(vector(mode = "integer",
                                                            length = 0),
                                                     fe,
@@ -288,7 +289,8 @@ test_that("we evaluate the WT", {
                                                     "evalGenotype", 
                                                     0)## ,
                    ## "WARNING: you have evaluated fitness/mutator status of a genotype of length zero",
-                   ## fixed = TRUE)
+        ## fixed = TRUE)
+        )
     expect_identical(ou, 1)
 })
 
@@ -300,6 +302,7 @@ test_that("we evaluate the WT, 2", {
     fm <- OncoSimulR:::allMutatorEffects(noIntGenes = c("a" = 10,
                                                         "c" = 5))
     ## expect_warning(
+    null <- capture.output(
         ou2 <- OncoSimulR:::evalRGenotypeAndMut(
                        vector(mode = "integer", length = 0),
                        fe,
@@ -310,7 +313,8 @@ test_that("we evaluate the WT, 2", {
                        FALSE, 
                        0)## ,
                    ## "WARNING: you have evaluated fitness of a genotype of length zero.",
-                   ## fixed = TRUE)
+        ## fixed = TRUE)
+        )
     expect_identical(ou2, c(1, 1))
 })
     
