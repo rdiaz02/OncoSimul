@@ -13536,7 +13536,7 @@ sessionInfo()
 Time to build the vignette:
 
 ```{r last, echo=FALSE}
-paste(difftime(Sys.time(), time0, units = "mins")), "minutes")
+paste(difftime(Sys.time(), time0, units = "mins"), "minutes")
 ```
 
 \clearpage
