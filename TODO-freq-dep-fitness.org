@@ -3,6 +3,7 @@
 ** first
 
  - [ ] test where FDF crashes when no WT and no initMutant.
+ - [ ] vignette: reduce running times
  - [ ] The second predator-prey example sucks. In general, those examples
    I am not sure are properly parameterized.
  

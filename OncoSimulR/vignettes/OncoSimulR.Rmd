@@ -57,21 +57,21 @@ require(BiocStyle)
 require(pander)
 
 
-## https://bookdown.org/yihui/rmarkdown-cookbook/time-chunk.html
-all_times <- list()  # store the time for each chunk
-knitr::knit_hooks$set(time_it = local({
-  now <- NULL
-  function(before, options) {
-    if (before) {
-      now <<- Sys.time()
-    } else {
-      res <- difftime(Sys.time(), now, units = "secs")
-      all_times[[options$label]] <<- as.double(res)
-    }
-  }
-}))
+## ## https://bookdown.org/yihui/rmarkdown-cookbook/time-chunk.html
+## all_times <- list()  # store the time for each chunk
+## knitr::knit_hooks$set(time_it = local({
+##   now <- NULL
+##   function(before, options) {
+##     if (before) {
+##       now <<- Sys.time()
+##     } else {
+##       res <- difftime(Sys.time(), now, units = "secs")
+##       all_times[[options$label]] <<- as.double(res)
+##     }
+##   }
+## }))
 
-knitr::opts_chunk$set(time_it = TRUE)
+## knitr::opts_chunk$set(time_it = TRUE)
 ```
 
 
@@ -8316,10 +8316,11 @@ fitness landscapes; with frequency-dependent fitness, as in section
 
 # Frequency-dependent fitness {#fdf}
 
-**NOTE: This functionality is only available in the freq-dep-fitness
-branch** See:
-https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.  (*Note
-also that except for the example of \@ref(hurlbut), based on
+<!-- **NOTE: This functionality is only available in the freq-dep-fitness -->
+<!-- branch** See: -->
+<!-- https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness. -->
+<!-- --> 
+(*Note  that except for the example of \@ref(hurlbut), based on
 @hurlbut2018, the examples below are not used because of their
 biological realism, but rather to show some key features of the
 software*)
@@ -9836,9 +9837,9 @@ immediately.
 # Additional examples of frequency-dependent fitness {#addfreqdepex}
 
 In this section, we provide additional examples that use
-frequency-dependent fitness. As mentioned also in \@ref(fdf), **This
-functionality is only available in the freq-dep-fitness branch**.
-See: https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness.
+frequency-dependent fitness. As mentioned also in \@ref(fdf), <!-- **This -->
+<!-- functionality is only available in the freq-dep-fitness branch**. -->
+<!-- See: https://github.com/rdiaz02/OncoSimul/tree/freq-dep-fitness. -->
 
 Note also that in most of these examples we make rather arbitrary
 and simple assumptions about the genetic basis of the different
@@ -9973,7 +9974,7 @@ afcrs2 <- allFitnessEffects(genotFitness = crs(10, 1, 1),
 ```
 
 If we run multiple simulations, for example by doing
-```{r rps4, eval=FALSE}
+```{r rps4b, eval=FALSE}
 resultscrs2 <- oncoSimulPop(10,
                            afcrs2,
                              model = "McFL",
@@ -13551,14 +13552,16 @@ Time to build the vignette:
 paste(difftime(Sys.time(), time0, units = "mins"), "minutes")
 ```
 
+<!-- Time it takes to run each chunkc. Uncomment also the hook and -->
+<!-- setting at beginning of vignette: search for all_times -->
+
+<!-- ```{r timeit} -->
+<!-- all_times -->
+<!-- ``` -->
+
+
+
 \clearpage
-
-FIXME: 
-
-
-```{r timeit}
-all_times
-```
 
 
 
