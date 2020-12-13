@@ -30,12 +30,12 @@ test_that("Minimal tests of generate_matrix_genotypes", {
     ## take long in slow machines.
     for(i in 1:13) {
         tmp <- OncoSimulR:::generate_matrix_genotypes(i)
-        stopifnot(nrow(tmp) == (2^i))
-        stopifnot(ncol(tmp) == i)
+        expect_true(nrow(tmp) == (2^i))
+        expect_true(ncol(tmp) == i)
         cstmp <- colSums(tmp)
         lucstmp <- unique(cstmp)
-        stopifnot(length(lucstmp) == 1)
-        stopifnot(lucstmp[1] == ((2^i)/2)) ## yes, 2^(i - 1) but do full
+        expect_true(length(lucstmp) == 1)
+        expect_true(lucstmp[1] == ((2^i)/2)) ## yes, 2^(i - 1) but do full
         ## simple logic
         rm(tmp)
         rm(cstmp)

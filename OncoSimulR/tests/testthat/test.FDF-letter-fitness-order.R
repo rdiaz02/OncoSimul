@@ -1,5 +1,5 @@
 inittime <- Sys.time()
-cat(paste("\n Starting FDF-small-fitness-specs", date(), "\n"))
+cat(paste("\n Starting FDF-letter-fitness-order", date(), "\n"))
 
 
 ## Testing fitness specs with missing genotypes and with letters too
@@ -136,7 +136,6 @@ test_that("Breaks as it should", {
     ## (adf1)
     expect_error(suppressWarnings(evalAllGenotypes(adf1, spPopSizes = 1:6)))
     ## Breaks in old and new: n_2_3
-
     df1 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
                   Fitness = c("1",
                               "f_1_3", ## BA
@@ -150,7 +149,7 @@ test_that("Breaks as it should", {
     
     ## (adf1)
     expect_error(suppressWarnings(evalAllGenotypes(adf1, spPopSizes = 1:6))) ## Breaks in old
-                                                       ## and new: f_2_3
+    ## and new: f_2_3
 })
 
 

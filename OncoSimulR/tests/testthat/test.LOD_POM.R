@@ -10,12 +10,14 @@ test_that("Exercise LOD and POM code", {
                                       s = 0.05,
                                       sh = -0.3,
                                       typeDep = "MN"))
+    null <- capture.output({
     pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE)
     pancr8 <- oncoSimulPop(6, pancr, model = "Exp", keepPhylog = TRUE,
                            detectionSize = 1e5,
                            mc.cores = 2)
+    })
     lop8 <- LOD(pancr8)
-    OncoSimulR:::LOD_as_path(lop8)
+    null <- OncoSimulR:::LOD_as_path(lop8)
     expect_true(inherits(POM(pancr1), "character"))
     require(igraph)
     ## expect_true(inherits(LOD(pancr1, strict = FALSE)$all_paths[[1]], "igraph.vs"))
@@ -31,6 +33,7 @@ test_that("Exercise LOD and POM code", {
                  "Object must be a list", fixed = TRUE)
     expect_error(diversityLOD(LOD(pancr1)),
                  "Object must be a list", fixed = TRUE)
+    null <- capture.output(
     pancr88 <- oncoSimulPop(8, pancr, model = "McFL",
                            keepPhylog = TRUE,
                            finalTime = 0.01,
@@ -38,10 +41,12 @@ test_that("Exercise LOD and POM code", {
                            mc.cores = 2,
                            max.wall.time = 0.01,
                            detectionSize = 1e6)
+    )
     expect_warning(LOD(pancr88),
                    "Missing needed components.", fixed = TRUE)
     expect_warning(POM(pancr88),
                    "Missing needed components.", fixed = TRUE)
+    null <- capture.output(
     pancr8 <- suppressWarnings(suppressMessages(oncoSimulPop(20,
                                                              pancr, model = "McFL",
                                             keepPhylog = TRUE,
@@ -53,11 +58,13 @@ test_that("Exercise LOD and POM code", {
                                             mc.cores = 2,
                                             mutationPropGrowth = FALSE,
                                             initSize = 10)))
+    )
     lop8 <- suppressWarnings(LOD(pancr8))
     lop8b <- suppressWarnings(LOD(pancr8))
-    OncoSimulR:::LOD_as_path(lop8[[1]])
-    OncoSimulR:::LOD_as_path(lop8)
+    null <- OncoSimulR:::LOD_as_path(lop8[[1]])
+    null <- OncoSimulR:::LOD_as_path(lop8)
     gg <- allFitnessEffects(noIntGenes = rep(-.9, 100))
+    null <- capture.output(
     pancr22 <- oncoSimulPop(6, gg,
                             model = "Exp",
                             keepPhylog = TRUE,
@@ -67,25 +74,28 @@ test_that("Exercise LOD and POM code", {
                             mu = 1e-2,
                             mc.cores = 2,
                             finalTime = 2.5)
+    )
     lp22 <- LOD(pancr22)
     ## There is like soooo remote chance this will fail
     ## and the previous exercises the code anyway.
     ## expect_true(any(unlist(lp22) %in% "WT_is_end"))
 })
-date()
+## date()
 
 test_that("Warnings when no descendants",  {
     ## cannot move from wt with this fitness landscape
     m1 <- cbind(A = c(0, 1), B = c(0, 1), Fitness = c(1, 1e-8))
+    null <- capture.output({
     s1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
                          mu = 1e-14, detectionSize = 1, initSize = 100,
                          keepPhylog = TRUE)
-    expect_warning(LOD(s1),
-                   "LOD structure has 0 rows:",
-                   fixed = TRUE)
     s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
                          mu = 1e-14, detectionSize = 1, initSize = 100,
                          keepPhylog = FALSE)
+    })
+    expect_warning(LOD(s1),
+                   "LOD structure has 0 rows:",
+                   fixed = TRUE)
     expect_warning(LOD(s2),
                    "LOD structure has 0 rows:",
                    fixed = TRUE)
@@ -153,8 +163,8 @@ test_that("Warnings when no descendants",  {
 
 set.seed(NULL)
 si <- runif(1, 1, 1e9)
-print(si)
-date()
+# print(si)
+## date()
 test_that("LOD, strict, same as would be obtained from full structure, seed", {
     ## we are testing in an extremely paranoid way, against a
     ## former version
@@ -173,7 +183,7 @@ test_that("LOD, strict, same as would be obtained from full structure, seed", {
                              initSize = 10, detectionSize = 1e5,
                              keepPhylog = TRUE, mu = 5e-3)
         lods <- LOD(s7)
-        print(lods)
+        null <- capture.output(print(lods))
         loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7b, strict = FALSE)
         ## lods should be among the loda
         if(!is.null(s7$pops.by.time)) {
@@ -190,12 +200,12 @@ test_that("LOD, strict, same as would be obtained from full structure, seed", {
         }
     }
 })
-date()
+## date()
 
 set.seed(NULL)
 si <- runif(1, 1, 1e9)
-print(si)
-date()
+## print(si)
+## date()
 test_that("LOD, strict, same as would be obtained from full structure, with initMutant", {
     n <- 10
     ## with initMutant
@@ -213,7 +223,7 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
                               keepPhylog = TRUE, mu = 5e-3,
                               initMutant = c("C"))
         lods <- LOD(s7)
-        print(lods)
+        null <- capture.output(print(lods))
         attributes(lods) <- NULL
         loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7b, strict = FALSE)
         ## we need this because o.w. the old output it ain't an igraph
@@ -248,11 +258,11 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
     }
     
 })
-date()
+## date()
 set.seed(NULL)
 
 
-date()
+## date()
 test_that("POM from C++ is the same as from the pops.by.time object", {
     ## Must make sure keepEvery = sampleEvery or granularity of
     ## C++ can be larger
@@ -261,9 +271,10 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
         ng <- 6
         rxx <- rfitness(ng)
         rxx[sample(2:(ng + 1)), ng + 1] <- 1.5 ## make sure we get going
+        null <- capture.output(
         s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
                              initSize = 1000, detectionSize = 1e6,
-                             mu = 1e-3)
+                             mu = 1e-3))
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
         if(!is.null(s7$pops.by.time) &&
            !any(apply(s7$pops.by.time[, -1], 1, function(x) length(which(x == max(x))) > 1)))
@@ -272,11 +283,12 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
     ## with initMutant
     for(i in 1:n) {
         rxx <- rfitness(6)
-        rxx[3, 7] <- 1.5        
+        rxx[3, 7] <- 1.5
+        null <- capture.output(
         s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
                              initSize = 1000, detectionSize = 1e6,
                              mu = 1e-3,
-                             initMutant = c("B"))
+                             initMutant = c("B")))
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
         ## if(!is.null(s7$pops.by.time)) {
         if(!is.null(s7$pops.by.time) &&
@@ -288,12 +300,13 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
     for(i in 1:n) {
         rxx <- rfitness(6)
         rxx[3, 7] <- 1e-8
+        null <- capture.output(
         s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
                              initSize = 10, detectionSize = 1e6,
                              mu = 1e-3,
                              max.num.tries = 3,
                              errorHitMaxTries = FALSE,
-                             initMutant = c("B"))
+                             initMutant = c("B")))
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
         if(!is.null(s7$pops.by.time) &&
            !any(apply(s7$pops.by.time[, -1, drop = FALSE], 1,
@@ -305,7 +318,7 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
         }
     }
 })
-date()
+## date()
 
 
 

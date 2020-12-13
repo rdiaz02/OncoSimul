@@ -135,7 +135,7 @@ test_that("initMutant lexicog order with noint",
                   print(tmp)
               }
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
 
@@ -181,7 +181,7 @@ test_that("initMutant non lexicog order", {
             print(tmp)
         }
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
   
@@ -229,7 +229,7 @@ test_that("initMutant non lexicog order",
                   print(tmp)
               }
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
 

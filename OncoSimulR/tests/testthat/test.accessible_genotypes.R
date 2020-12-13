@@ -10,16 +10,16 @@ test_that("We obtain same accessible genotypes with different functions plus gen
 
             ajm <- OncoSimulR:::genot_to_adj_mat(rtmp)
             ajmr <- OncoSimulR:::genot_to_adj_mat_R(rtmp)
-            stopifnot(all.equal(ajm, ajmr))
+            expect_equal(ajm, ajmr)
             
             a1 <- OncoSimulR:::faster_accessible_genotypes_R(rtmp, 0)
             a2 <- colnames(OncoSimulR:::filter_inaccessible(ajm, 0))
             a3 <- OncoSimulR:::wrap_accessibleGenotypes(rtmp, 0)
             a4 <- OncoSimulR:::wrap_accessibleGenotypes_former(rtmp, 0)
 
-            stopifnot(identical(as.integer(a1), a3))
-            stopifnot(identical(as.integer(a2), a3))
-            stopifnot(all(a3 ==  a4))
+            expect_identical(as.integer(a1), a3)
+            expect_identical(as.integer(a2), a3)
+            expect_true(all(a3 ==  a4))
 
         }
     } 

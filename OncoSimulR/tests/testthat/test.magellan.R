@@ -15,17 +15,16 @@ test_that("Abort in NK", {
 
 test_that("Call Magellan stats on NK", {
     rnk1 <- rfitness(6, K = 1, model = "NK")
-    Magellan_stats(rnk1)
+    expect_true(is.numeric(Magellan_stats(rnk1)))
     
     rnk2 <- rfitness(6, K = 4, model = "NK")
-    Magellan_stats(rnk2)
+    expect_true(is.numeric(Magellan_stats(rnk2)))
     })
 
 
 test_that("Call Magellan stats on RMF", {
     rmf1 <- rfitness(6)
-    Magellan_stats(rmf1)
-    
+    expect_true(is.numeric(Magellan_stats(rmf1)))
     })
 
 

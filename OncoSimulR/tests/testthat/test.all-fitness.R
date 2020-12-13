@@ -930,6 +930,7 @@ test_that("we are exercising evalGenotype with a comma, echo, and proNeg", {
                                   c("Root" = "Root",
                                     "F" = "f1, f2, f3",
                                     "D" = "d1, d2") )
+    null <- capture.output({
     expect_equal(evalGenotype("d1 , d2, f3", ofe2, verbose = TRUE, echo = TRUE),
                  1.4)
     expect_equal(evalGenotype("f3 , d1 , d2", ofe2, verbose = TRUE, echo = TRUE),
@@ -937,6 +938,7 @@ test_that("we are exercising evalGenotype with a comma, echo, and proNeg", {
     expect_equal(evalGenotype("f3 , d1 , d2", ofe2, verbose = TRUE,
                               echo = TRUE, model = "Bozic"),
                  1.3)
+    })
 })
 
 
@@ -965,6 +967,8 @@ test_that("Bozic limit cases handled consistently", {
         sh = 0.1,
         typeDep = "OR"),
         noIntGenes = c("E" = 0.85, "F" = 1))
+
+    null <- capture.output({
     expect_output(print(evalAllGenotypes(sv, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
@@ -1083,7 +1087,8 @@ test_that("Bozic limit cases handled consistently", {
     expect_output(print(oncoSimulIndiv(svff3, model = "Bozic",
                                        sampleEvery = 0.02)),
                  "Individual OncoSimul trajectory with call"
-                 ) 
+                 )
+    })
 })
 
 

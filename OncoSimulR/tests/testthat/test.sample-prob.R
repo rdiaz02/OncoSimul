@@ -4,7 +4,7 @@ cat(paste("\n Starting sample-prob", date(), "\n"))
 p.value.threshold <- 1e-4
 
 ## a McFL version in long tests and also below
-date()
+## date()
 test_that("Increasing cPDetect decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -38,13 +38,13 @@ test_that("Increasing cPDetect decreases time, Exp" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 ## McFL in long
-date()
+## date()
 test_that("Increasing p2 decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -76,15 +76,15 @@ test_that("Increasing p2 decreases time, Exp" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
 
 
-date()
+## date()
 test_that("Increasing n2 increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -118,14 +118,14 @@ test_that("Increasing n2 increases time" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
 
-date()
+## date()
 test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -159,14 +159,14 @@ test_that("Increasing checkSizePEvery increases time" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
 
-date()
+## date()
 test_that("Increasing cPDetect decreases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -200,12 +200,12 @@ test_that("Increasing cPDetect decreases time, Exp" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
-date()
+## date()
 test_that("Increasing p2 decreases time, Exp" , {
     gi <- rep(0.2, 10)
     names(gi) <- letters[1:10]
@@ -239,13 +239,13 @@ test_that("Increasing p2 decreases time, Exp" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
-date()
+## date()
 test_that("Increasing n2 increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -277,14 +277,14 @@ test_that("Increasing n2 increases time, Exp" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
 
-date()
+## date()
 test_that("Increasing checkSizePEvery increases time, Exp" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -318,14 +318,14 @@ test_that("Increasing checkSizePEvery increases time, Exp" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
 ## And there is no need for fitness effects
-date()
+## date()
 test_that("Increasing cPDetect decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -359,12 +359,12 @@ test_that("Increasing cPDetect decreases time" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
-date()
+## date()
 test_that("Increasing p2 decreases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -398,13 +398,13 @@ test_that("Increasing p2 decreases time" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
-date()
+## date()
 test_that("Increasing n2 increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -438,14 +438,14 @@ test_that("Increasing n2 increases time" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
 
-date()
+## date()
 test_that("Increasing checkSizePEvery increases time" , {
     gi <- rep(0.0,  10)
     names(gi) <- letters[1:10]
@@ -479,16 +479,16 @@ test_that("Increasing checkSizePEvery increases time" , {
         T1 <- suppressWarnings(wilcox.test(ta, tb, alternative = "greater")$p.value < p.value.threshold)
         if(T1) break;
     }
-    cat(paste("\n done tries", tries, "\n"))
+    ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-date()
+## date()
 
 
 
 
 
-date()
+## date()
 test_that("Exercise the default option and other substitutions/defaults" , {
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
@@ -667,9 +667,9 @@ test_that("Exercise the default option and other substitutions/defaults" , {
         "Individual OncoSimul trajectory",
         fixed = TRUE)
 })
-date()
+## date()
 
-date()
+## date()
 test_that("Fails as expected" , {
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
@@ -814,7 +814,7 @@ test_that("Fails as expected" , {
                  "At least one stopping condition should be given",
                  fixed = TRUE)
 })
-date()
+## date()
 
 
 

@@ -62,12 +62,12 @@ for(i in 1:length(examplePosets)) {
         test_that(paste("Sampling only last same for ",
                         paste(names(ffs), collapse = " ")), {
                             ## comment next cat later
-                            cat(paste("\n ",
-                                      " Seed = ", s1, " ",
-                                      paste(names(ffs), collapse = " "),
-                                      ". Poset = ",
-                                      attributes(Poset)$namePoset,
-                                      "\n"))
+                            ## cat(paste("\n ",
+                            ##           " Seed = ", s1, " ",
+                            ##           paste(names(ffs), collapse = " "),
+                            ##           ". Poset = ",
+                            ##           attributes(Poset)$namePoset,
+                            ##           "\n"))
                             
                             bb <- runBothFuncts(s1, Poset, ffs)
                             b1 <- bb$all

@@ -59,6 +59,7 @@ test_that("using old poset format, hitting wall time", {
     set.seed(1)
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
+    null <- capture.output({
     pet <- oncoSimulIndiv(p701, sh = 0,
                           initSize = 1e2,
                           detectionSize = 5e8,
@@ -68,6 +69,7 @@ test_that("using old poset format, hitting wall time", {
                           max.wall.time = 0.0001,
                           onlyCancer = FALSE,
                           seed = NULL)
+    })
     expect_true(pet$HittedWallTime)
 })
 
@@ -77,7 +79,7 @@ test_that("using old poset format, verbose exercise iteration", {
     set.seed(1)
     data(examplePosets)
     p701 <- examplePosets[["p701"]]
-    ## st <- capture.output(
+    st <- capture.output(
         p1 <- oncoSimulIndiv(p701, sh = 0,
                              initSize = 1e4,
                              detectionSize = 1e7,
@@ -87,7 +89,7 @@ test_that("using old poset format, verbose exercise iteration", {
                              onlyCancer = FALSE,
                              verbosity = 2,
                              seed = NULL)
-    ## )
+    )
     expect_output(print(p1), "Individual OncoSimul", fixed = TRUE)
 })
 

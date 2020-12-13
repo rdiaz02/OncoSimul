@@ -238,6 +238,7 @@ test_that("printing oncosimul pop object", {
 test_that("exercising oncoSimulSample, old format", {
               data(examplePosets)
               p701 <- examplePosets[["p701"]]
+              null <- capture.output({
               expect_message(ofw <- oncoSimulSample(2, p701,
                                                     sampleEvery = 0.03,
                                                     detectionSize = 1e3,
@@ -252,12 +253,14 @@ test_that("exercising oncoSimulSample, old format", {
                                                     onlyCancer = FALSE,
                                                     typeSample = "single"),
                              "Successfully sampled 2 individuals")
+              })
               expect_equal(dim(ofw$popSample), c(2, 7))
               expect_equal(dim(ofs$popSample), c(2, 7))
           })
 
 
 test_that("exercising oncoSimulSample, new format", {
+     null <- capture.output({
               pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
                                                         "TP53", "TP53", "MLL3"),
                                                     child = c("KRAS","SMAD4", "CDNK2A", 
@@ -281,6 +284,7 @@ test_that("exercising oncoSimulSample, new format", {
                                          typeSample = "single",
                                          showProgress = TRUE),
                   "Successfully sampled 2 individuals")
+              })
               expect_equal(dim(pS$popSample), c(2, 7))
               expect_equal(dim(pSs$popSample), c(2, 7))
           })

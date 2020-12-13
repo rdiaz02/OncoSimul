@@ -32,7 +32,7 @@ test_that("mutationPropGrowth no warning with Exp, indiv", {
     ## I once (out of over > 10000) saw it fail. Try to catch it
     
     
-    cat("\n a runif is", runif(1), "\n")
+    ## cat("\n a runif is", runif(1), "\n")
     oi <- allFitnessEffects(orderEffects =
                                 c("F > D" = -0.3, "D > F" = 0.4),
                             noIntGenes = rexp(5, 10),

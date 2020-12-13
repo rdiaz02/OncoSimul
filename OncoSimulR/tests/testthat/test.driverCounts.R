@@ -10,7 +10,7 @@ test_that("Runs without crashes", {
     names(ni) <- paste0("g", 2:11)
     ## each single one
     for(i in 2:11) {
-        cat("\n doing iteration", iteration, "\n")
+        ## cat("\n doing iteration", iteration, "\n")
         ni[] <- runif(10, min = -0.01, max = 0.1)
         ni <- sample(ni)
         drvN <- paste0("g", i)
@@ -39,7 +39,7 @@ test_that("Runs without crashes", {
     for(n in c(2, 3)) {
         m <- gtools::combinations(10, n, 2:11)
         for(j in sample(nrow(m), 45)) { ## all for 2, a sample of 45 for 3
-            cat("\n doing iteration", iteration, "\n")
+            ## cat("\n doing iteration", iteration, "\n")
             ni[] <- runif(10, min = -0.01, max = 0.1)
             ni <- sample(ni)
             drvN <- paste0("g", sample(m[j, ]))

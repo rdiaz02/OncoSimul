@@ -12,17 +12,18 @@ RNGversion("3.6.3")
 test_that("Same output from magellan as before changing their C code", {
     set.seed(1)
     r9 <- rfitness(8)
-    options(digits = 5)
-    cat("\n r9 \n")
-    print(summary(r9[, "Fitness"]))
-    print(var(r9[, "Fitness"]))
-    cat("\n 10 runif \n")
-    print(runif(10))
+    ## options(digits = 5)
+    ## cat("\n r9 \n")
+    ## print(summary(r9[, "Fitness"]))
+    ## print(var(r9[, "Fitness"]))
+    ## cat("\n 10 runif \n")
+    ## print(runif(10))
     ## Anything that simulates from Magellan will not respect
     ## R's seed
-    s9s <- Magellan_stats(r9, verbose = TRUE)
-    s9l <- Magellan_stats(r9, short = FALSE, verbose = TRUE)
-
+    null <- capture.output({
+        s9s <- Magellan_stats(r9, verbose = TRUE)
+        s9l <- Magellan_stats(r9, short = FALSE, verbose = TRUE)
+    })
     s9s_compare <- structure(c(ngeno = 256, npeaks = 23, nsinks = 25, gamma = 0.094, gamma. = 0.089, 
                                r.s = 1.814, nchains = 12, nsteps = 26, nori = 21, depth = 2, 
                                magn = 0.361, sign = 0.339, rsign = 0.272, f.1. = 0.382, X.2. = 0.094, 
@@ -40,20 +41,20 @@ test_that("Same output from magellan as before changing their C code", {
                                opt_i.19 = 230, mProbOpt_19 = 0.152, opt_i.20 = 232, mProbOpt_20 = 0.025, 
                                opt_i.21 = 242, mProbOpt_21 = 0.014, opt_i.22 = 251, mProbOpt_22 = 0.021
                                ))
-    cat("\n s9s[21] and s9s_compare[21]\n")
-    print(s9s[21])
-    print(s9s_compare[21])
-    cat("\n where they differ\n")
-    print(which(s9s!=s9s_compare))
+    ## cat("\n s9s[21] and s9s_compare[21]\n")
+    ## print(s9s[21])
+    ## print(s9s_compare[21])
+    ## cat("\n where they differ\n")
+    ## print(which(s9s!=s9s_compare))
 
-    cat("\n name of binary\n")
-    print(OncoSimulR:::fl_statistics_binary())
+    ## cat("\n name of binary\n")
+    ## print(OncoSimulR:::fl_statistics_binary())
     
-    cat("\n s9s\n")
-    print(s9s)
+    ## cat("\n s9s\n")
+    ## print(s9s)
 
-    cat("\n s9s_compare\n")
-    print(s9s_compare)
+    ## cat("\n s9s_compare\n")
+    ## print(s9s_compare)
     
     s9l_compare <- structure(c("/* FL name */", "   coco", "", "/* Peaks/Sinks */", "   #genotypes: 256", 
                                "   #peaks: 23", "   #sinks: 25", "", "/* Epistasis types */", 
@@ -653,9 +654,9 @@ test_that("Same output from magellan as before changing their C code", {
                                )
                              )
     
-    cat("which differ")     
-    print(which(s9l_compare != s9l))
-    cat("done which differ")
+    ## cat("which differ")     
+    ## print(which(s9l_compare != s9l))
+    ## cat("done which differ")
     ## position 21 differs in Windoze and Mac
     expect_identical(s9s[-21], s9s_compare[-21])
     ## Go figure, a bunch of lines differ in Windows and Mac
