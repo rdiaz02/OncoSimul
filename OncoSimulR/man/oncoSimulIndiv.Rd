@@ -937,11 +937,11 @@ p2 <- oncoSimulSample(4, p701)
 
 
 
-#### A model similar to the one in McFarland. We use 2070 genes.
-
+#### A model similar to the one in McFarland. We use 270 genes.
+t1 <- Sys.time()
 set.seed(456)
 nd <- 70
-np <- 2000
+np <- 200
 s <- 0.1
 sp <- 1e-3
 spp <- -sp/(1 + sp)
@@ -1017,34 +1017,30 @@ pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4"
 plot(pancr)
 
 ### Use an exponential growth model
+(pancr1 <- oncoSimulIndiv(pancr, model = "Exp"))
 
-pancr1 <- oncoSimulIndiv(pancr, model = "Exp")
-pancr1
 summary(pancr1)
 plot(pancr1)
-pancr1$GenotypesLabels
-
 
 ## Pop and Sample
-pancrPop <- oncoSimulPop(4,
+pancrPop <- oncoSimulPop(2,
                          pancr,
                          keepEvery = 10,
                          mc.cores = 2)
 summary(pancrPop)
-pancrSPop <- samplePop(pancrPop)
-pancrSPop
-
-pancrSamp <- oncoSimulSample(2, pancr)
-pancrSamp
+(pancrSPop <- samplePop(pancrPop))
 
 
+(pancrSamp <- oncoSimulSample(2, pancr))
+
+\dontrun{
 ## Using gene-specific mutation rates
 muv <- c("U" = 1e-3, "z" = 1e-7, "e" = 1e-6, "m" = 1e-5, "D" = 1e-4)
 ni <- rep(0.01, 5)
 names(ni) <- names(muv)
 femuv <- allFitnessEffects(noIntGenes = ni)
 oncoSimulIndiv(femuv, mu = muv)
-
+}
 
 #########Frequency dependent fitness examples
 
@@ -1053,20 +1049,22 @@ oncoSimulIndiv(femuv, mu = muv)
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
                       Fitness = c("3 + 5*f_",
-                                  "3 + 5*(f_ + f_1)",
-                                  "3 + 5*(f_ + f_2)",
-                                  "5 + 6*(f_ + f_1_2)"))
+                                  "3 + 5*(f_ + f_A)",
+                                  "3 + 5*(f_ + f_B)",
+                                  "5 + 6*(f_ + f_A_B)"))
 
 afe <- allFitnessEffects(genotFitness = genofit,
-                         frequencyDependentFitness = TRUE, 
-                         frequencyType = "rel")
+                         frequencyDependentFitness = TRUE)
 
+## Use gene-specific mutation rates and start the simulation from
+## 5000 WT and 1000 A mutants.
 osi <- oncoSimulIndiv(afe,
                       model = "McFL",
                       onlyCancer = FALSE,
-                      finalTime = 5000,
-                      mu = 1e-6,
-                      initSize = 5000,
+                      finalTime = 50,
+                      mu = c("A" = 1e-6, B = 1e-8),
+                      initMutant = c("WT", "A")
+                      initSize = c(5000, 1000),
                       keepPhylog = FALSE,
                       seed = NULL,
                       errorHitMaxTries = FALSE,
@@ -1074,6 +1072,9 @@ osi <- oncoSimulIndiv(afe,
 osi
 
 plot(osi, show = "genotypes", type = "line")
+
+
+t2 <- Sys.time()
 
 \dontrun{
 ## This can be slow
@@ -1093,6 +1094,8 @@ sp
 
 ## A little bit more complex example situation. WT favours clones A and B. A and
 ## B compete with each other. Presence of A and B favours clone A, B.
+\dontrun{
+## This can be slow
 
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
@@ -1108,7 +1111,7 @@ afe <- allFitnessEffects(genotFitness = genofit,
 osi <- oncoSimulIndiv(afe,
                       model = "McFL",
                       onlyCancer = FALSE,
-                      finalTime = 5000,
+                      finalTime = 200,
                       mu = 1e-6,
                       initSize = 5000,
                       keepPhylog = FALSE,
@@ -1118,7 +1121,7 @@ osi <- oncoSimulIndiv(afe,
 osi
 
 plot(osi, show = "genotypes", type = "line")
-
+}
 \dontrun{
 ## This can be slow
 osp <- oncoSimulPop(5,
