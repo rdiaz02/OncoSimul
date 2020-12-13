@@ -1,3 +1,6 @@
+Changes in version 2.99.4 (2020-12-13):
+	- No longer v.1 functionality.
+
 Changes in version 2.99.3 (2020-12-13):
 	- Remove unnecessary (and cluttering) output and irrelevant
 	warnings when running tests.
