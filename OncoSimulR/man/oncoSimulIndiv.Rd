@@ -1063,7 +1063,7 @@ osi <- oncoSimulIndiv(afe,
                       onlyCancer = FALSE,
                       finalTime = 50,
                       mu = c("A" = 1e-6, B = 1e-8),
-                      initMutant = c("WT", "A")
+                      initMutant = c("WT", "A"),
                       initSize = c(5000, 1000),
                       keepPhylog = FALSE,
                       seed = NULL,
