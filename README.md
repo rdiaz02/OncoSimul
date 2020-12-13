@@ -105,6 +105,11 @@ dependent fitness**.
 
 ## Installing the frequency-dependent fitness branch
 
+The code is, or should soon be, available from BioConductor, in the
+development version. So the above instructions
+(`BiocManager::install("OncoSimulR", version = "devel")`) are likely to
+work. If not, read on.
+
 ### If you use Linux and other Unixes (Macs)
 
 You should install from github as follows: <!-- (and this might be newer
