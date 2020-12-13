@@ -23,6 +23,7 @@ rm ./OncoSimulR/data/*~
 rm ./OncoSimulR/data/Rplots.pdf
 rm ./OncoSimulR/data/.Rhistory
 rm ./OncoSimulR/tests/testthat/*~
+rm -r -f ./OncoSimulR/tests/testthat/_snaps
 rm ./OncoSimulR/tests/testthat/Rplots.pdf
 rm ./OncoSimulR/tests/testthat/.Rhistory
 rm ./OncoSimulR/tests/manual/*~
