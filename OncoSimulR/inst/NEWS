@@ -1,3 +1,8 @@
+Changes in version 2.99.3 (2020-12-13):
+	- Remove unnecessary (and cluttering) output and irrelevant
+	warnings when running tests.
+	- Decrease execution time of oncoSimulIndiv help.
+	
 Changes in version 2.99.2 (2020-12-11):
 	- Failed on test on Mac.
 
