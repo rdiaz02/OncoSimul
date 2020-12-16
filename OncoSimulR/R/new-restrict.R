@@ -839,7 +839,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
     } else if(calledBy == "allMutatorEffects") {
       class(out) <- c("mutatorEffects")
     }
-  } else {
+  } else { ## Frequency-dependent fitness
 
     if(is.null(genotFitness)) {
       #genotFitness <- matrix(NA, nrow = 0, ncol = 1)
@@ -895,22 +895,41 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                                       stringsAsFactors = FALSE)
       ## Create, for the user, a single data frame with everything.
       ## This is what C++ should consume
-
-   
      
       ## This ought to allow to pass fitness spec as letters. Preserve original
       Fitness_original_as_letters <- fitnessLandscape_df$Fitness
       fitnessLandscape_df$Fitness <- Fitness_as_fvars
-      
-      full_FDF_spec <- cbind(genotFitness[, -ncol(genotFitness)]
-                 , Genotype_letters = genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
-                 , Genotype_fvars = fitnessLandscapeVariables ## used in C++
-                 , Fitness_as_fvars = Fitness_as_fvars
-                 , Fitness_as_letters = Fitness_original_as_letters
-                   )
+
+      full_FDF_spec <-
+          cbind(genotFitness[, -ncol(genotFitness)]
+              , Genotype_as_numbers = fitnessLandscape_df$Genotype
+              , Genotype_as_letters = genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
+              , Genotype_as_fvars = fitnessLandscapeVariables ## used in C++
+              , Fitness_as_fvars = Fitness_as_fvars
+              , Fitness_as_letters = Fitness_original_as_letters
+                )
       rownames(full_FDF_spec) <- 1:nrow(full_FDF_spec)
       
-    out <- list(long.rt = list(),
+      ## fitnessLanscape and fitnessLandscape_df are now redundant given
+      ## full_FDF_spec. Remove them later. In the mean time, ensure a
+      ## single canonical object used.
+
+      rm(fitnessLandscape_df)
+      rm(fitnessLandscape)
+      rm(fitnessLandscapeVariables)
+      rm(Fitness_as_fvars)
+      rm(Fitness_original_as_letters)
+      
+      fitnessLandscape <- full_FDF_spec[, c(fitnessLandscape_gene_id$Gene,
+                                            "Fitness_as_fvars")]
+      colnames(fitnessLandscape)[ncol(fitnessLandscape)] <- "Fitness"
+      
+      fitnessLandscape_df <- full_FDF_spec[, c("Genotype_as_numbers",
+                                               "Fitness_as_fvars")]
+      colnames(fitnessLandscape_df) <- c("Genotype", "Fitness")
+      
+      
+      out <- list(long.rt = list(),
                 long.epistasis = list(),
                 long.orderEffects = list(),
                 long.geneNoInt = data.frame(),
@@ -923,10 +942,10 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 epistasis = NULL,
                 orderEffects = NULL,
                 noIntGenes = NULL,
-                fitnessLandscape = genotFitness,
-                fitnessLandscape_df = fitnessLandscape_df,
-                fitnessLandscape_gene_id = fitnessLandscape_gene_id,
-                fitnessLandscapeVariables = fitnessLandscapeVariables,
+                fitnessLandscape = genotFitness, ## redundant
+                fitnessLandscape_df = fitnessLandscape_df, ## redundant
+                fitnessLandscape_gene_id = fitnessLandscape_gene_id, 
+                ## fitnessLandscapeVariables = NULL, ## now part of full_FDF_spec
                 frequencyDependentFitness = frequencyDependentFitness,
                 frequencyType = frequencyType,
                 full_FDF_spec = full_FDF_spec
@@ -1820,7 +1839,7 @@ match_spPopSizes <- function(sp, fe){
     nns <- names(sp)
     nns <- sort_genes_genots(nns)
     names(sp) <- nns
-    nnf <- fe$full_FDF_spec$Genotype_letters
+    nnf <- fe$full_FDF_spec$Genotype_as_letters
     
     if( ( length(nns) != length(nnf) ) ||
         (!(identical(sort(nnf), sort(nns))) ) )
@@ -1877,62 +1896,15 @@ evalAllGenotypesORMut <- function(fmEffects,
       spPopSizes = 0
     }
 
-    ## if(!minimal)
-
-    ## else
-        ## allg <- generateAllGenotypes_minimal(fitnessEffects = fmEffects,
-        ##                                      max = max)
-    ## if(order)
-    ##     tot <- function(n) {sum(sapply(seq.int(n),
-    ##                                    function(x) choose(n, x) * factorial(x)))}
-    ## else
-    ##     tot <- function(n) {2^n}
-    ## nn <- nrow(fitnessEffects$geneModule) -1  + nrow(fitnessEffects$long.geneNoInt)
-    ## tnn <- tot(nn)
-    ## if(tnn > max) {
-    ##     m <- paste("There are", tnn, "genotypes.")
-    ##     m <- paste(m, "This is larger than max.")
-    ##     m <- paste(m, "Adjust max and rerun if you want")
-    ##     stop(m)
-    ## }
-    ## ## With mutator, the ids of genes need not go from 1:n
-    ## vid <- allNamedGenes(fitnessEffects)$GeneNumID
-    ## if(order) {
-    ##     f1 <- function(n) {
-    ##         lapply(seq.int(n), function(x) permutations(n = n, r = x, v = vid))
-    ##     }
-    ## } else {
-    ##     f1 <- function(n) {
-    ##         lapply(seq.int(n), function(x) combinations(n = n, r = x, v = vid))}
-
-    ## }
-    ## genotNums <- f1(nn)
-    ## list.of.vectors <- function(y) {
-    ##     ## there's got to be a simpler way
-    ##     lapply(unlist(lapply(y, function(x) {apply(x, 1, list)}), recursive = FALSE),
-    ##            function(m) m[[1]])
-    ## }
-    ## genotNums <- list.of.vectors(genotNums)
-    ## names <- c(fitnessEffects$geneModule$Gene[-1],
-    ##            fitnessEffects$long.geneNoInt$Gene)
-
-    ## genotNames <- unlist(lapply(lapply(genotNums, function(x) names[x]),
-    ##                      function(z)
-    ##                          paste(z,
-    ##                                collapse = if(order){" > "} else {", "} )))
-    ## This ain't the best, as we repeatedly read and convert
-    ## fitnessEffects.  If this were slow, prepare C++ function that takes
-    ## vectors of genotypes and uses same fitnessEffects.
-
 
     if(model %in% c("Bozic", "bozic1", "bozic2") )
         prodNeg <- TRUE
     else
         prodNeg <- FALSE
 
-    ## For non-FDF we do not evaluate WT; we rbind it as a 1, by
-    ## decree. For FDF WT is evaluated on its own with evalWT below, and
-    ## rbinded to the rest.
+    ## For non-FDF we do not evaluate WT; we rbind it as a 1, because it
+    ## is 1 by decree. For FDF WT is evaluated on its own with evalWT
+    ## below, and rbinded to the rest.
     
     allg <- generateAllGenotypes(fitnessEffects = fmEffects,
                                  order = order,
