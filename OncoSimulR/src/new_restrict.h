@@ -281,7 +281,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE);
 std::vector<int> getGenotypeDrivers(const Genotype& ge, const std::vector<int>& drv);
 std::vector<int> allGenesinGenotype(const Genotype& ge);
-void print_Genotype(const Genotype& ge);
 
 fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe);
 

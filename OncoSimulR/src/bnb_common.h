@@ -76,6 +76,13 @@ inline double pB_f_st(const double& pE,
   return (spP.birth * pE)/spP.death;
 }
 
+
+void print_mapTimes(std::multimap<double, int>& mapTimes);
+  
+void print_initMutant(const std::vector < std::vector<int> >& initMutant);
+
+void print_Genotype(const Genotype& ge);
+
 void mapTimes_updateP(std::multimap<double, int>& mapTimes,
 			     std::vector<spParamsP>& popParams,
 			     const int index,
@@ -93,9 +100,7 @@ void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
 			       const std::vector<int>& sampleMaxNDr,
 		 const std::vector<int>& sampleNDrLargestPop);
 
-void print_mapTimes(std::multimap<double, int>& mapTimes);
-  
-void print_initMutant(const std::vector < std::vector<int> >& initMutant);
+
 
 void print_spP(const spParamsP& spP);
 
