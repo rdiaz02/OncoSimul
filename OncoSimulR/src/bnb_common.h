@@ -72,7 +72,7 @@ inline double pE_f_st(double& pM, const spParamsP& spP){
 }
 
 inline double pB_f_st(const double& pE,
-			     const spParamsP& spP) {
+		      const spParamsP& spP) {
   return (spP.birth * pE)/spP.death;
 }
 
@@ -84,9 +84,9 @@ void print_initMutant(const std::vector < std::vector<int> >& initMutant);
 void print_Genotype(const Genotype& ge);
 
 void mapTimes_updateP(std::multimap<double, int>& mapTimes,
-			     std::vector<spParamsP>& popParams,
-			     const int index,
-			     const double time);
+		      std::vector<spParamsP>& popParams,
+		      const int index,
+		      const double time);
 
 
 void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
@@ -94,10 +94,10 @@ void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
 
 
 void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
-			       const std::vector<double>& sampleTotPopSize,
-			       const std::vector<double>& sampleLargestPopSize,
-			       const std::vector<double>& sampleLargestPopProp,
-			       const std::vector<int>& sampleMaxNDr,
+		 const std::vector<double>& sampleTotPopSize,
+		 const std::vector<double>& sampleLargestPopSize,
+		 const std::vector<double>& sampleLargestPopProp,
+		 const std::vector<int>& sampleMaxNDr,
 		 const std::vector<int>& sampleNDrLargestPop);
 
 
@@ -122,31 +122,12 @@ void precissionLoss();
 
 void init_tmpP(spParamsP& tmpParam);
 
-// double returnMFE(double& e1,
-// 		 const std::string& typeFitness);
-
-// double returnMFE(double& e1,
-// 		 const TypeModel typeModel);
-
 double returnMFE_new(double& en1,
 		     const std::string& typeFitness);
 
 double returnMFE_new(double& en1,
 		     const TypeModel typeModel);
 
-// void computeMcFarlandError(double& e1,
-// 			   double& n_0,
-// 			   double& tps_0,
-// 			   const std::string& typeFitness,
-// 			   const double& totPopSize,
-// 			   const double& K);
-
-// void computeMcFarlandError(double& e1,
-// 			   double& n_0,
-// 			   double& tps_0,
-// 			   const TypeModel typeModel,
-// 			   const double& totPopSize,
-// 			   const double& K);
 
 void computeMcFarlandError_new(double& en1,
 			       double& en1sc,
@@ -165,65 +146,90 @@ void computeMcFarlandError_new(double& en1,
 			       const double& K);
 
 void updateRatesMcFarland(std::vector<spParamsP>& popParams,
-				 double& adjust_fitness_MF,
-				 const double& K,
+			  double& adjust_fitness_MF,
+			  const double& K,
 			  const double& totPopSize);
 
 void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
-				    double& adjust_fitness_MF,
-				    const double& K,
+			     double& adjust_fitness_MF,
+			     const double& K,
 			     const double& totPopSize);
 
 void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  double& adjust_fitness_MF,
-  const double& K,
-  const double& totPopSize,
-  const double& currentTime);
+				const std::vector<Genotype>& Genotypes,
+				const fitnessEffectsAll& fitnessEffects,
+				double& adjust_fitness_MF,
+				const double& K,
+				const double& totPopSize,
+				const double& currentTime);
 
 void updateRatesMcFarlandLog_D(std::vector<spParamsP>& popParams,
-				    double& adjust_fitness_MF,
-				    const double& K,
-			     const double& totPopSize);
+			       double& adjust_fitness_MF,
+			       const double& K,
+			       const double& totPopSize);
 
 void updateRatesFDFMcFarlandLog_D(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  double& adjust_fitness_MF,
-  const double& K,
-  const double& totPopSize,
-  const double& currentTime);
-
-
-void updateRatesFDFExp(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  const double& currentTime);
-
-void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  const double& currentTime);
-
-void updateRatesMcFarland0(std::vector<spParamsP>& popParams,
+				  const std::vector<Genotype>& Genotypes,
+				  const fitnessEffectsAll& fitnessEffects,
 				  double& adjust_fitness_MF,
 				  const double& K,
 				  const double& totPopSize,
-				  const int& mutationPropGrowth,
-			   const double& mu);
+				  const double& currentTime);
 
-void updateRatesBeeren(std::vector<spParamsP>& popParams,
-			      double& adjust_fitness_B,
-			      const double& initSize,
-			      const double& currentTime,
-			      const double& alpha,
-			      const double& totPopSize,
-			      const int& mutationPropGrowth,
-		       const double& mu);
+
+void updateRatesFDFExp(std::vector<spParamsP>& popParams,
+		       const std::vector<Genotype>& Genotypes,
+		       const fitnessEffectsAll& fitnessEffects,
+		       const double& currentTime);
+
+void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
+			 const std::vector<Genotype>& Genotypes,
+			 const fitnessEffectsAll& fitnessEffects,
+			 const double& currentTime);
+
+
+void updateBirthDeathRates(std::vector<spParamsP>& popParams,
+			   const std::vector<Genotype>& Genotypes,
+			   const fitnessEffectsAll& fitnessEffects,
+			   double& adjust_fitness_MF,
+			   const double& K,
+			   const double& totPopSize,
+			   const double& currentTime,
+			   const TypeModel typeModel);
 
 void detect_ti_duplicates(const std::multimap<double, int>& m,
 			  const double ti,
 			  const int spcies);
 
+
+
+void message1(const int verbosity, const std::string message,
+	      const int iteration, const double currentTime,
+	      const unsigned int numSpecies,
+	      const double totalPopulationSize,
+	      const double timeNextPopSample,
+	      const double minNextMutationTime);
+
+void messageNewSpecies(const int verbosity,
+		       const int iteration, 
+		       const unsigned int numSpecies,
+		       const int nextMutant);
+
+void vvmessageNewSpecies(const int verbosity,
+			 const unsigned int sp,
+			 const Genotype& newGenotype,
+			 const Genotype& parentGenotype,
+			 const spParamsP& tmpParam,
+			 const spParamsP& parentParam);
+
+void messageSampling(const int verbosity,
+		     const double tSample,
+		     const double finalTime,
+		     std::vector<spParamsP>& popParams);
+
+void messagePostSampling(const int verbosity,
+			 std::vector<spParamsP>& popParams,
+			 const double totPopSize);
+
+double setDummyMutationRate(std::vector<double> mu, const int verbosity);
 #endif

@@ -177,7 +177,7 @@ oncoSimulSample(Nindiv,
   you pass a vector, it must be named, and it must have entries for all
   the genes in the fitness specification. Passing a vector is only
   available when using fitnessEffects objects for fitness specification.
-
+  Mutation rates \code{<10^-20} are not accepted.
   See also \code{mutationPropGrowth}. 
 
 }
@@ -938,7 +938,7 @@ p2 <- oncoSimulSample(4, p701)
 
 
 #### A model similar to the one in McFarland. We use 270 genes.
-t1 <- Sys.time()
+
 set.seed(456)
 nd <- 70
 np <- 200
@@ -1074,7 +1074,7 @@ osi
 plot(osi, show = "genotypes", type = "line")
 
 
-t2 <- Sys.time()
+
 
 \dontrun{
 ## This can be slow
