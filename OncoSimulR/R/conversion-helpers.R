@@ -16,11 +16,8 @@
 
 ## Posets, restriction tables, etc.
 
-
 ## This is all too complicated. Have here just the minimal set we need,
 ## because we will soon be changing formats.
-
-
 
 ## When we go poset -> rT or
 ##  adjMat -> rT
@@ -151,35 +148,7 @@ adjmat.to.restrictTable <- function(x, root = FALSE,
                              orderedNames = TRUE)
     if(root)
         x <- x[-1, -1, drop = FALSE]
-    ## ## we have the zero
-    ## if( any(colnames(x) %in% c("0", "root", "Root")) & !root)
-    ##     warning("Looks like the matrix has a root but you specified root = FALSE")
-
-    ## if(!identical(colnames(x), rownames(x)))
-    ##     stop("colnames and rownames not identical")
-    ## if(root) {
-    ##     posRoot <- which(colnames(x) %in% rootNames)
-    ##     if(!length(posRoot))
-    ##         stop("No column with the root name")
-    ##     if(length(posRoot) > 1)
-    ##         stop("Ambiguous location of root")
-    ##     x <- x[-posRoot, -posRoot]
-    ## }
-
-    ## if(typeof(x) != "integer")
-    ##     warning("This is not an _integer_ adjacency matrix")
-    ## if( !all(x %in% c(0, 1) ))
-    ##     stop("Values not in [0, 1]")
-
-    ## if(!is.null(colnames(x))) {
-    ##     ## FIXME: this makes sense with numeric labels for columns, but
-    ##     ## not ow.
-    ##     oi <- order(as.numeric(colnames(x)))
-    ##     if(any(oi != (1:ncol(x)))) {
-    ##         warning("Reordering adjacency matrix")
-    ##         x <- x[oi, oi]
-    ##     }
-    ## }
+ 
     
     num.deps <- colSums(x)
     max.n.deps <- max(num.deps)
@@ -205,29 +174,11 @@ adjmat.to.restrictTable <- function(x, root = FALSE,
 OTtoPoset <- function(x) {
     checkProperOTAdjMat(x)
 
-    ## ## root must always be dropped, as we are creating a poset
-    ## dropRoot <- TRUE
-    ## if(!dropRoot)
-    ##     warning("Are you sure you do not want dropRoot?")
-    ## if(dropRoot) {
-    ##     ncx <- ncol(x)
-    ##     x <- x[-1, -1]
-    ##     ## y <- (which(x == 1L, arr.ind = TRUE) )
-    ##     ## if(nrow(y) == 0) ## all nodes descend from 0
-    ##     ##     y <- cbind(0L, ncx - 1L)
-    ##     namesInts <- type.convert(colnames(x), as.is = TRUE)
-        
-    ## } else {
-    ##     ## y <- (which(x == 1L, arr.ind = TRUE) )
-    ##     namesInts <- c(0L, type.convert(colnames(x)[-1], as.is = TRUE))
-    ## }
+
 
     ncx <- ncol(x)
     x <- x[-1, -1, drop = FALSE]
-    ## y <- (which(x == 1L, arr.ind = TRUE) )
-    ## if(nrow(y) == 0) ## all nodes descend from 0
-    ##     y <- cbind(0L, ncx - 1L)
-    namesInts <- type.convert(colnames(x), as.is = TRUE)
+  namesInts <- type.convert(colnames(x), as.is = TRUE)
     
     if(!is.integer(namesInts))
         stop("cannot convert to poset adj mat with non-int colnames")
@@ -242,34 +193,6 @@ OTtoPoset <- function(x) {
     return(p2)
 }    
 
-## the next is just a convenience
-## sortAdjMat <- function(am) {
-##     cn <- colnames(am)
-##     rootpos <- grep("^Root$", cn) 
-##     if(length(rootpos) != 1)
-##         stop("No root in adj mat, or multiple Roots")
-##     cn <- c("Root", sort(colnames(am)[-rootpos]))
-##     return(am[cn, cn])
-## }
-
-
-## No longer used
-## sortAdjMat <- function(am) {
-##     ## If column names, except Root, are integers, sort as integers. O.w.,
-##     ## general lexicog. sort.
-##     cn <- colnames(am)
-##     rootpos <- grep("^Root$", cn) 
-##     if(length(rootpos) != 1)
-##         stop("No root in adj mat, or multiple Roots")
-##     cn0 <- colnames(am)[-rootpos]
-##     namesInts <- type.convert(cn0, as.is = TRUE)
-##     if(is.integer(namesInts)) {
-##         cn <- c("Root", sort(namesInts))
-##     } else {
-##         cn <- c("Root", sort(cn0))
-##     }
-##     return(am[cn, cn])
-## }
 
 
 

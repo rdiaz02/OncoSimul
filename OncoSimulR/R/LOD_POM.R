@@ -53,17 +53,7 @@ phcl_from_lod <- function(df, x) {
     ## df <- df[!duplicated(df[, c(1, 2)]), , drop = FALSE]
     
     tG <- unique(c(as.character(df[, 1]), as.character(df[, 2])))
-    ## ## Do as in phylogClone. So that we have the same nodes
-    ## ## in LOD all and not LOD all?
-    ## z <- which_N_at_T(x, N = 1, t = "last")
-    ## tG <- x$GenotypesLabels[z]
-    
-    ## ## FIXME: aren't these two warnings redundant or aliased?
-    ## ## yes, partlt
-    ##  I think this can never happen now
-    ## if ((length(tG) == 1) && (tG == "")) {
-    ##     warning("There never was a descendant of WT")
-    ## }
+
     if (nrow(df) == 0) {
         warning("LOD structure has 0 rows: no descendants of initMutant ever appeared. ")
         return(NA)
@@ -149,15 +139,6 @@ diversityLOD <- function(llod) {
     shannonI(table(pathstr))
 }
 
-## diversityLOD <- function(llod) {
-##     nn <- names(llod[[1]])
-##     if( is_null_na(nn) ||
-##         !(is.list(llod)))
-##         stop("Object must be a list of LODs")
-##     pathstr <- unlist(lapply(llod, function(x) paste(names(x),
-##                                                      collapse = "_")))
-##     shannonI(table(pathstr))
-## }
 
 LOD_as_path <- function(llod) {
     path_l <- function(u) {
@@ -220,44 +201,6 @@ LOD.oncosimul2 <- function(x) return(LOD.internal(x))
 POM.oncosimulpop <- function(x) return(lapply(x, POM.internal))
 LOD.oncosimulpop <- function(x) return(lapply(x, LOD.internal))
 
-
-
-
-## POM.oncosimul2 <- function(x) {
-##     out <- POM.internal(x)
-##     class(out) <- c(class(out), "oncosimul_pom")
-##     return(out)
-## }
-
-## LOD.oncosimul2 <- function(x) {
-##     out <- LOD.internal(x)
-##     class(out) <- c(class(out), "oncosimul_lod")
-##     return(out)
-## }
-
-
-## POM.oncosimulpop <- function(x) {
-##     out <- lapply(x, POM.internal)
-##     class(out) <- c(class(out), "oncosimul_pom_list")
-##     return(out)
-## }
-
-## LOD.oncosimulpop <- function(x) {
-##     out <- lapply(x, LOD.internal)
-##     class(out) <- c(class(out), "oncosimul_lod_list")
-##     return(out)
-## }
-
-
-## summary.oncosimul_lod_list <- function(x) {
-##     cat("List of ", length(x), " simulations\n.")
-##     cat("Shannon's diversity (entropy) = ", diversityLOD(x), "\n")
-## }
-
-## summary.oncosimul_pom_list <- function(x) {
-##     cat("List of ", length(x), " simulations\n.")
-##     cat("Shannon's diversity (entropy) = ", diversityPOM(x), "\n")
-## }
 
 
 
@@ -368,45 +311,6 @@ LOD.internal_pre_2.9.2 <- function(x, strict) {
 }
 
 
-
-## LOD_as_path_pre_2.9.2 <- function(llod) {
-##     path_l <- function(u) {
-##         if(length(u$lod_single) == 1) {
-##             if(is.null(attributes(u)$initMutant))
-##                 initMutant <- ""
-##             else
-##                 initMutant <- attributes(u)$initMutant
-##             if(initMutant == "") initMutant <- "WT"
-##             if(grepl("_is_end", u$lod_single))
-##                 return(initMutant)
-##             if(u$lod_single == "No_descendants")
-##                 return(initMutant)
-##         } else {
-##             ## Deal with "" meaning WT
-##             the_names <- names(u$lod_single)
-##             the_names_wt <- which(the_names == "")
-            
-##             if(length(the_names_wt)) {
-##                 if(length(the_names_wt) > 1) stop("more than 1 WT?!")
-##                 if(the_names_wt > 1) stop("WT in position not 1?!")
-##                 the_names[the_names_wt] <- "WT"
-##             }
-##             return(paste(the_names, collapse = " -> ")) 
-##             ## return(paste0("WT", paste(names(u$lod_single),
-##             ##                           collapse = " -> ")) )
-##         }
-##     }
-##     if(identical(names(llod), c("all_paths", "lod_single")))
-##         pathstr <- path_l(llod)
-##     else {
-##         ## should be a list
-##         pathstr <- unlist(lapply(llod, path_l))
-##     }
-##     return(pathstr)
-##     ## pathstr <- unlist(lapply(llod, function(x) paste(names(x$lod_single),
-##     ##                                                  collapse = " -> ")))
-##     ## return(paste0("WT", pathstr))
-## }
 
 
 
