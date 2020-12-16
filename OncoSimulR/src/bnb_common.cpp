@@ -18,6 +18,7 @@
 #include <Rcpp.h>
 
 
+
 // Can be useful for debugging
 void print_mapTimes(std::multimap<double, int>& mapTimes) {
   Rcpp::Rcout << "\n Printing mapTimes\n";
@@ -45,20 +46,20 @@ void print_initMutant(const std::vector < std::vector<int> >& initMutant) {
 // Can be useful for debugging
 void print_spP(const spParamsP& spP) {
   Rcpp::Rcout <<"\n this is spP\n"
-	    <<"\n popSize = " << spP.popSize
-	    <<"\n birth = " << spP.birth
-	    <<"\n death = " << spP.death
-	    <<"\n W = " << spP.W
-	    <<"\n R = " << spP.R
-	    <<"\n mutation = " << spP.mutation
-	    <<"\n timeLastUpdate = " << spP.timeLastUpdate
-	    <<"\n absfitness = " << spP.absfitness
-	    <<"\n numMutablePos = " << spP.numMutablePos
-	    <<"\n";
+	      <<"\n popSize = " << spP.popSize
+	      <<"\n birth = " << spP.birth
+	      <<"\n death = " << spP.death
+	      <<"\n W = " << spP.W
+	      <<"\n R = " << spP.R
+	      <<"\n mutation = " << spP.mutation
+	      <<"\n timeLastUpdate = " << spP.timeLastUpdate
+	      <<"\n absfitness = " << spP.absfitness
+	      <<"\n numMutablePos = " << spP.numMutablePos
+	      <<"\n";
 }
 
-// Can be useful for debugging
-void print_EFVMap(const std::map<std::string, double>& efv) {
+// Can be useful for debugging mapFvarsValues
+void print_map_string_double(const std::map<std::string, double>& efv) {
   Rcpp::Rcout << "\n Printing evalFVars_struct\n";
   for(auto elem : efv) {
     Rcpp::Rcout << elem.first << "\t " << elem.second << "\n";
@@ -142,16 +143,17 @@ double ti_nextTime_tmax_2_st(const spParamsP& spP,
 
   // FIXME: should never happen
   if(spP.popSize <= 0.0) {
-
-#ifdef _WIN32
     throw std::range_error("ti: popSize <= 0. spP.popSize = "
-			   + SSTR(spP.popSize));
-#endif
-
-#ifndef _WIN32
-        throw std::range_error("ti: popSize <= 0. spP.popSize = "
 			   + std::to_string(spP.popSize));
-#endif
+
+    // #ifdef _WIN32
+    //     throw std::range_error("ti: popSize <= 0. spP.popSize = "
+    // 			   + SSTR(spP.popSize));
+    // #endif
+    // #ifndef _WIN32
+    //         throw std::range_error("ti: popSize <= 0. spP.popSize = "
+    // 			   + std::to_string(spP.popSize));
+    // #endif
   }
   // long double invpop = 1/spP.popSize;
   // long double r;
@@ -337,9 +339,9 @@ double Algo2_st(const spParamsP& spP,
   double t = ti - spP.timeLastUpdate;
 
   if (spP.popSize == 0.0) {
-    #ifdef DEBUGW
+#ifdef DEBUGW
     Rcpp::Rcout << "\n Entered Algo2 with pop size = 0\n";
-    #endif
+#endif
     return 0.0;
   }
 
@@ -379,28 +381,28 @@ double Algo2_st(const spParamsP& spP,
   double rnb; // holder for neg. bino. So we can check.
   double retval; //So we can check
 
-    if( (1.0 - pe/pm) > 1.0) {
-      Rcpp::Rcout << "\n ERROR: Algo 2: (1.0 - pe/pm) > 1.0\n";
-      throw std::range_error("Algo 2:  1 - pe/pm > 1");
-    }
+  if( (1.0 - pe/pm) > 1.0) {
+    Rcpp::Rcout << "\n ERROR: Algo 2: (1.0 - pe/pm) > 1.0\n";
+    throw std::range_error("Algo 2:  1 - pe/pm > 1");
+  }
 
-    if( (1.0 - pe/pm) < 0.0 ) {
-      Rcpp::Rcout << "\n ERROR: Algo 2, (1.0 - pe/pm) < 0.0 \n"
-		  << " t = " << t << "; R = " << spP.R
-		  <<  "; W = " << spP.W << ";\n death = " << spP.death
-		  <<  "; growth = " << spP.birth << ";\n pm = " << pm
-		  << "; pe = " << pe << "; pb = " << pb << std::endl;
-      throw std::range_error("Algo 2: 1 - pe/pm < 0");
-    }
+  if( (1.0 - pe/pm) < 0.0 ) {
+    Rcpp::Rcout << "\n ERROR: Algo 2, (1.0 - pe/pm) < 0.0 \n"
+		<< " t = " << t << "; R = " << spP.R
+		<<  "; W = " << spP.W << ";\n death = " << spP.death
+		<<  "; growth = " << spP.birth << ";\n pm = " << pm
+		<< "; pe = " << pe << "; pb = " << pb << std::endl;
+    throw std::range_error("Algo 2: 1 - pe/pm < 0");
+  }
 
-    if( pb > 1.0 ) {
-      throw std::range_error("Algo 2: pb > 1 ");
-    }
+  if( pb > 1.0 ) {
+    throw std::range_error("Algo 2: pb > 1 ");
+  }
 
-    if( pb < 0.0 ) {
-      throw std::range_error("Algo 2: pb < 0");
-    }
-    //}
+  if( pb < 0.0 ) {
+    throw std::range_error("Algo 2: pb < 0");
+  }
+  //}
 
 
   if( pe == pm ) {
@@ -415,10 +417,10 @@ double Algo2_st(const spParamsP& spP,
   // we can get issues with rbinom and odd numbers > 1e15
   // see "example-binom-problems.cpp"
   if(m <= 0.5) { // they are integers, so 0 or 1.
-    #ifdef DEBUGW // just checking
-      if(m != 0.0)
-	Rcpp::Rcout << "\n WARNING: Algo 2: 0.0 < m < 0.5" <<std::endl;
-    #endif
+#ifdef DEBUGW // just checking
+    if(m != 0.0)
+      Rcpp::Rcout << "\n WARNING: Algo 2: 0.0 < m < 0.5" <<std::endl;
+#endif
     retval = 0.0;
   } else {
     rnb = ::Rf_rnbinom(m, 1.0 - pb); // this is the correct one
@@ -654,9 +656,9 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
 
 // Yes, identical to previous one, but with death rate a minimal value of 1
 void updateRatesMcFarlandLog_D(std::vector<spParamsP>& popParams,
-			     double& adjust_fitness_MF,
-			     const double& K,
-			     const double& totPopSize){
+			       double& adjust_fitness_MF,
+			       const double& K,
+			       const double& totPopSize){
 
   // from original log(1 + totPopSize/K)
   // adjust_fitness_MF = log1p(totPopSize/K);
@@ -673,12 +675,12 @@ void updateRatesMcFarlandLog_D(std::vector<spParamsP>& popParams,
 
 
 void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  double& adjust_fitness_MF,
-	const double& K,
-	const double& totPopSize,
-	const double& currentTime) {
+				const std::vector<Genotype>& Genotypes,
+				const fitnessEffectsAll& fitnessEffects,
+				double& adjust_fitness_MF,
+				const double& K,
+				const double& totPopSize,
+				const double& currentTime) {
 
   const std::vector<spParamsP>& lastPopParams = popParams;
   //const std::vector<Genotype>& lastGenotypes = Genotypes;
@@ -687,7 +689,7 @@ void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
     popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
-              fitnessEffects, Genotypes, lastPopParams, currentTime));
+							 fitnessEffects, Genotypes, lastPopParams, currentTime));
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
@@ -696,12 +698,12 @@ void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
 
 // Yes, identical to previous one, but with death rate a minimal value of 1
 void updateRatesFDFMcFarlandLog_D(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  double& adjust_fitness_MF,
-	const double& K,
-	const double& totPopSize,
-	const double& currentTime) {
+				  const std::vector<Genotype>& Genotypes,
+				  const fitnessEffectsAll& fitnessEffects,
+				  double& adjust_fitness_MF,
+				  const double& K,
+				  const double& totPopSize,
+				  const double& currentTime) {
 
   const std::vector<spParamsP>& lastPopParams = popParams;
   //const std::vector<Genotype>& lastGenotypes = Genotypes;
@@ -712,7 +714,7 @@ void updateRatesFDFMcFarlandLog_D(std::vector<spParamsP>& popParams,
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = adjust_fitness_MF;
     popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
-              fitnessEffects, Genotypes, lastPopParams, currentTime));
+							 fitnessEffects, Genotypes, lastPopParams, currentTime));
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
@@ -721,38 +723,74 @@ void updateRatesFDFMcFarlandLog_D(std::vector<spParamsP>& popParams,
 
 
 void updateRatesFDFExp(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  const double& currentTime) {
-
+		       const std::vector<Genotype>& Genotypes,
+		       const fitnessEffectsAll& fitnessEffects,
+		       const double& currentTime) {
+  
   const std::vector<spParamsP>& lastPopParams = popParams;
   //const std::vector<Genotype>& lastGenotypes = Genotypes;
 
   for(size_t i = 0; i < popParams.size(); ++i) {
 
     popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
-                fitnessEffects, Genotypes, lastPopParams, currentTime));
+							 fitnessEffects, Genotypes, lastPopParams, currentTime));
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
 }
 
 void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
-  const std::vector<Genotype>& Genotypes,
-  const fitnessEffectsAll& fitnessEffects,
-  const double& currentTime) {
-
+			 const std::vector<Genotype>& Genotypes,
+			 const fitnessEffectsAll& fitnessEffects,
+			 const double& currentTime) {
+  
   const std::vector<spParamsP>& lastPopParams = popParams;
   //const std::vector<Genotype>& lastGenotypes = Genotypes;
 
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death =  prodDeathFitness(evalGenotypeFitness(Genotypes[i],
-      fitnessEffects, Genotypes, lastPopParams, currentTime));
+							       fitnessEffects, Genotypes, lastPopParams, currentTime));
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
 
 }
+
+
+// Update birth or death rates as appropriate
+// Exp and Bozic are not updated, unless FDF
+void updateBirthDeathRates(std::vector<spParamsP>& popParams,
+			   const std::vector<Genotype>& Genotypes,
+			   const fitnessEffectsAll& fitnessEffects,
+			   double& adjust_fitness_MF,
+			   const double& K,
+			   const double& totPopSize,
+			   const double& currentTime,
+			   const TypeModel typeModel) {
+
+  if(!fitnessEffects.frequencyDependentFitness) {
+    if (typeModel == TypeModel::mcfarlandlog)
+      updateRatesMcFarlandLog(popParams, adjust_fitness_MF, K, totPopSize);
+    if(typeModel == TypeModel::mcfarlandlog_d)
+      updateRatesMcFarlandLog_D(popParams, adjust_fitness_MF, K, totPopSize);
+  } else { // FDF
+    if( typeModel == TypeModel::mcfarlandlog)  
+      updateRatesFDFMcFarlandLog(popParams, Genotypes, fitnessEffects,
+				 adjust_fitness_MF, K, totPopSize, currentTime);
+    
+    else if( typeModel == TypeModel::mcfarlandlog_d) 
+      updateRatesFDFMcFarlandLog_D(popParams, Genotypes, fitnessEffects,
+				   adjust_fitness_MF, K, totPopSize, currentTime);
+	  
+    else if(typeModel == TypeModel::exp) 
+      updateRatesFDFExp(popParams, Genotypes, fitnessEffects, currentTime);
+
+    else if(typeModel == TypeModel::bozic1)
+      updateRatesFDFBozic(popParams, Genotypes, fitnessEffects, currentTime);
+    else throw std::invalid_argument("this ain't a valid typeModel");
+  } 
+}
+
 
 
 // Update the map times <-> indices and the popParams.pv
@@ -780,11 +818,11 @@ void getMinNextMutationTime4(int& nextMutant, double& minNextMutationTime,
 
 
 void fill_SStats(Rcpp::NumericMatrix& perSampleStats,
-			       const std::vector<double>& sampleTotPopSize,
-			       const std::vector<double>& sampleLargestPopSize,
-			       const std::vector<double>& sampleLargestPopProp,
-			       const std::vector<int>& sampleMaxNDr,
-			       const std::vector<int>& sampleNDrLargestPop){
+		 const std::vector<double>& sampleTotPopSize,
+		 const std::vector<double>& sampleLargestPopSize,
+		 const std::vector<double>& sampleLargestPopProp,
+		 const std::vector<int>& sampleMaxNDr,
+		 const std::vector<int>& sampleNDrLargestPop){
 
   for(size_t i = 0; i < sampleTotPopSize.size(); ++i) {
     perSampleStats(i, 0) = sampleTotPopSize[i];
@@ -814,4 +852,115 @@ void detect_ti_duplicates(const std::multimap<double, int>& m,
     }
     Rcpp::Rcout << "\n\n\n";
   }
+}
+
+// Give message output of the state of the simulation
+void message1(const int verbosity, const std::string message,
+	      const int iteration, const double currentTime,
+	      const unsigned int numSpecies,
+	      const double totalPopulationSize,
+	      const double timeNextPopSample,
+	      const double minNextMutationTime) {
+  if(verbosity >= 2)
+    Rcpp::Rcout << "\n\n Verbose message at " << message
+		<< ". Iteration = " << iteration
+		<< ". currentTime =" << currentTime
+		<< ". numSpecies = " << numSpecies
+		<< ". totalPopulationSize " << totalPopulationSize
+		<< ". timeNextPopSample " << timeNextPopSample
+		<< ". minNextMutationTime " << minNextMutationTime
+		<< "\n";
+}
+
+// another verbose message about the simulation
+void messageNewSpecies(const int verbosity,
+		       const int iteration, 
+		       const unsigned int numSpecies,
+		       const int nextMutant) {
+  if(verbosity >= 2)
+    Rcpp::Rcout <<"\n     Creating new species   " << (numSpecies - 1)
+		<< " from species "  <<   nextMutant
+		<<" at iteration " << iteration << "\n";
+}
+
+// more messages about the state of the simulation
+void vvmessageNewSpecies(const int verbosity,
+			 const unsigned int sp,
+			 const Genotype& newGenotype,
+			 const Genotype& parentGenotype,
+			 const spParamsP& tmpParam,
+			 const spParamsP& parentParam) {
+  if(verbosity >= 2) {
+    Rcpp::Rcout << " \n\n\n Looking at NEW species " << sp << " at creation";
+    Rcpp::Rcout << "\n New Genotype :";
+    print_Genotype(newGenotype);
+    Rcpp::Rcout << "\n Parent Genotype :";
+    print_Genotype(parentGenotype);
+    Rcpp::Rcout << "\n birth of sp = " << tmpParam.birth;
+    Rcpp::Rcout << "\n death of sp = " << tmpParam.death;
+    Rcpp::Rcout << "\n parent birth = " << parentParam.birth;
+    Rcpp::Rcout << "\n parent death = " << parentParam.death;
+    Rcpp::Rcout << "\n\n popParams parent: \n";
+    print_spP(parentParam);
+    Rcpp::Rcout << "\n\npopParams child: \n";
+    print_spP(tmpParam);
+  }    
+}
+
+void messageSampling(const int verbosity,
+		     const double tSample,
+		     const double finalTime,
+		     std::vector<spParamsP>& popParams) {
+  if(verbosity >= 2) {
+    Rcpp::Rcout <<"\n We are SAMPLING";
+    if(tSample < finalTime) {
+      Rcpp::Rcout << " at time " << tSample << "\n";
+    } else
+      Rcpp::Rcout <<". We reached finalTime " << finalTime << "\n";
+    Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size() << "\n";
+  }
+}
+
+
+void messagePostSampling(const int verbosity,
+			 std::vector<spParamsP>& popParams,
+			 const double totPopSize) {
+  if(verbosity >= 2) 
+    Rcpp::Rcout << "\n popParams.size() before sampling " << popParams.size()
+		<< "\n totPopSize after sampling " << totPopSize << "\n";
+}
+
+
+// set dummyMutationRate
+double setDummyMutationRate(std::vector<double> mu, const int verbosity) {
+  double mymindummy = 1.0e-11; //1e-10
+  double targetmindummy = 1.0e-10; //1e-9
+  double minmu = *std::min_element(mu.begin(), mu.end());
+  // Very small, but no less than mymindummy, for numerical issues.
+  // We can probably go down to 1e-13. 1e-16 is not good as we get lots
+  // of pE.f not finite. 1e-15 is probably too close, and even if no pE.f
+  // we can get strange behaviors.
+  // Ensures between mymindummy and targetmindummy
+  double dummyMutationRate = std::max(std::min(minmu/1.0e4, targetmindummy),
+				      mymindummy);
+
+  // This should very rarely happen:
+  if(minmu <= dummyMutationRate) { 
+    double newdd = minmu/10.0;
+    Rcpp::Rcout << "WARNING: the smallest mutation rate is "
+		<< "<= " << dummyMutationRate << ". That is a really small value "
+		<< "(per-base mutation rate in the human genome is"
+		<< " ~ 1e-11 to 1e-9). "
+		<< "Setting dummyMutationRate to your min/10 = "
+		<< newdd
+		<< ". There can be numerical problems later.\n";
+    dummyMutationRate = newdd;
+  }
+
+  if(verbosity >= 2) {
+    Rcpp::Rcout << "\n dummyMutationRate set at " << dummyMutationRate
+		<< ".  That is the smallest possible mutation rate and the one"
+		<< " for the null event.";
+  }
+  return dummyMutationRate;
 }

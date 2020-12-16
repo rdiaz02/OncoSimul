@@ -421,19 +421,11 @@ fitnessLandscape_struct convertFitnessLandscape_fdf(Rcpp::List flg,
 }
 
 genesWithoutInt convertNoInts(Rcpp::List nI) {
-
   genesWithoutInt genesNoInt;
-  // FIXME: I think I want to force Gene in long.geneNoInt to be a char.vector
-  // to avoid this transformation.
-  // Rcpp::CharacterVector names = nI["Gene"];
-  // Rcpp::IntegerVector id = nI["GeneNumID"];
-  // Rcpp::NumericVector s1 = nI["s"];
-
-  // genesNoInt.names = Rcpp::as<std::vector<std::string> >(names);
   genesNoInt.names = Rcpp::as<std::vector<std::string> >(nI["Gene"]);
   genesNoInt.NumID = Rcpp::as<std::vector<int> >(nI["GeneNumID"]);
   genesNoInt.s = Rcpp::as<std::vector<double> >(nI["s"]);
-  genesNoInt.shift = genesNoInt.NumID[0]; // FIXME: we assume mutations always
+  genesNoInt.shift = genesNoInt.NumID[0]; // we assume mutations always
 				      // indexed 1 to something. Not 0 to
 				      // something.
   return genesNoInt;
@@ -615,15 +607,15 @@ void obtainMutations(const Genotype& parent,
     throw std::out_of_range("Trying to obtain a mutation when nonmutated.size is 0."
 			    " Bug in R code; let us know.");
   if(mu.size() == 1) { // common mutation rate
-    // FIXME:chromothr would not use this, or this is the limit case with a
-  // single mutant
+    //chromothripsis would not use this, or this is the limit case with a
+    // single mutant
     std::uniform_int_distribution<int> rpos(0, nonmutated.size() - 1);
     newMutations.push_back(nonmutated[rpos(ran_gen)]);
   } else { // per-gene mutation rate.
     // Remember that mutations always indexed from 1, not from 0.
     // We take an element from a discrete distribution, with probabilities
     // proportional to the rates.
-    // FIXME:varmutrate give a warning if the only mu is for mu = 0.
+    // FIXME:varmutrate give a warning if the only mu is for mu = 0?
     std::vector<double> mu_nm;
     for(auto const &nm : nonmutated) mu_nm.push_back(mu[nm - 1]);
     std::discrete_distribution<int> rpos(mu_nm.begin(), mu_nm.end());
@@ -667,14 +659,6 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   }
 
   fg.noInt = fe.genesNoInt.NumID;
-  // //zz: debugging
-  // for(auto const &o : fe.genesNoInt.NumID) {
-  //   DP2(o);
-  // }
-  // for(auto const &o : fe.genesNoInt.names) {
-  //   DP2(o);
-  // }
-  // //
   std::multimap<int, int> MG;
   for( auto const &mt : fe.Gene_Module_tabl) {
     MG.insert({mt.ModuleNumID, mt.GeneNumID});
@@ -692,28 +676,6 @@ fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe) {
   set_difference(fe.allGenes.begin(), fe.allGenes.end(),
 		 tmpv.begin(), tmpv.end(),
 		 back_inserter(fg.posetEpistG));
-  // fg.posetEpistG.sort(fg.posetEpistG.begin(),
-  // 		      fg.posetEpistG.end());
-
-  // // //zz: debugging
-  // DP1("order");
-  // for(auto const &o : fg.orderG) {
-  //   DP2(o);
-  // }
-  // DP1("posetEpist");
-  // for(auto const &o : fg.posetEpistG) {
-  //   DP2(o);
-  // }
-  // DP1("noint");
-  //   for(auto const &o : fg.noInt) {
-  //   DP2(o);
-  // }
-  // DP1("fl");
-  // for(auto const &o : fg.flGenes) {
-  //   DP2(o);
-  // }
-
-
   return fg;
 }
 
@@ -736,7 +698,6 @@ std::map<int, std::string> mapGenesIntToNames(const fitnessEffectsAll& fe) {
     gg.insert({fe.genesNoInt.NumID[i], fe.genesNoInt.names[i]});
   }
 
-  // zz
   for(size_t i = 0;
       i != fe.fitnessLandscape.NumID.size(); ++i){
     gg.insert({fe.fitnessLandscape.NumID[i], fe.fitnessLandscape.names[i]});
@@ -763,8 +724,6 @@ Genotype createNewGenotype(const Genotype& parent,
   bool sort_rest = false;
   bool sort_epist = false;
   bool sort_flgenes = false;
-
-  // FIXME: we need to create the mutations!
 
   // Order of ifs: I suspect order effects rare. No idea about
   // non-interaction genes, but if common the action is simple.
@@ -812,7 +771,7 @@ Genotype createNewGenotype(const Genotype& parent,
   // If there is order but multiple simultaneous mutations
   // (chromothripsis), we randomly insert them
 
-  // FIXME: initMutant cannot use this!! we give the order!!!
+  // initMutant cannot use this: we give the order.
   // That is why the call from initMutant uses random = false
   if( (tempOrder.size() > 1) && random)
     shuffle(tempOrder.begin(), tempOrder.end(), ran_gen);
@@ -832,13 +791,12 @@ Genotype createNewGenotype(const Genotype& parent,
   if(sort_flgenes)
     sort(newGenot.flGenes.begin(), newGenot.flGenes.end());
   return newGenot;
+
+  // Prepare specialized functions:??
+  // Specialized functions:
+  // Never interactions: push into rest and sort. Identify by shift == 1.
+  // Never no interactions: remove the if. shift == -9.
 }
-
-// FIXME: Prepare specialized functions:
-// Specialized functions:
-// Never interactions: push into rest and sort. Identify by shift == 1.
-// Never no interactions: remove the if. shift == -9.
-
 
 
 
@@ -1159,12 +1117,13 @@ std::vector<int> stringVectorToIntVector(const std::string str){
   return vector;
 }
 
-//This function produce the map (structure) that links fVars (keys) to its frequencies (values)
-evalFVars_struct evalFVars(const fitnessEffectsAll& F,
-			   const std::vector<Genotype>& Genotypes,
-			   const std::vector<spParamsP>& popParams){
+
+//This function produces the map that links fVars (keys) to its frequencies (values)
+std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
+					const std::vector<Genotype>& Genotypes,
+					const std::vector<spParamsP>& popParams){
   
-  evalFVars_struct efvs;
+  std::map<std::string, double> mapFvarsValues;
   std::map<std::string, std::string> fvarsmap = F.fitnessLandscape.flfVarsmap;
   std::string freqType = F.frequencyType;
   
@@ -1177,18 +1136,21 @@ evalFVars_struct evalFVars(const fitnessEffectsAll& F,
       int realPos = position - 1;
       if(freqType == "abs"){
 	double freqAbs = popParams[realPos].popSize;
-	efvs.evalFVarsmap.insert({var, freqAbs});
+	mapFvarsValues.insert({var, freqAbs});
       } else {
 	double freqRel = frequency(realPos, popParams);
-	efvs.evalFVarsmap.insert({var, freqRel});
+	mapFvarsValues.insert({var, freqRel});
       }
     } else {
       double freq = 0.0;
-      efvs.evalFVarsmap.insert({var, freq});
+      mapFvarsValues.insert({var, freq});
     }
   }
-  return efvs;
+  return mapFvarsValues;
 }
+
+
+
 
 double totalPop(const std::vector<spParamsP>& popParams){
 	double sum = 0.0;
@@ -1205,9 +1167,8 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
                                      const double& currentTime){
 
   double f;
-  evalFVars_struct symbol_table_struct = evalFVars(F, Genotypes, popParams);
-  std::map<std::string, double> EFVMap = symbol_table_struct.evalFVarsmap;
-  // print_EFVMap(EFVMap); debugging
+  std::map<std::string, double> mapFvarsValues = evalFVars(F, Genotypes, popParams);
+
   std::string gs = concatIntsString(ge.flGenes);
   std::string expr_string = F.fitnessLandscape.flFDFmap.at(gs);
 
@@ -1219,7 +1180,7 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
   typedef exprtk::parser<double> parser_t;
 
   symbol_table_t symbol_table;
-  for(auto& iterator : EFVMap) {
+  for(auto& iterator : mapFvarsValues) {
     symbol_table.add_variable(iterator.first, iterator.second);
   }
   symbol_table.add_constant("N", N);//We reserve N to total population size
@@ -1236,15 +1197,13 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
     for (std::size_t i = 0; i < parser.error_count(); ++i){
       typedef exprtk::parser_error::type error_t;
       error_t error = parser.get_error(i);
-      // RDU: FIXME?
-      // Rcpp::Rcout <<
+      // FIXMEmaybe: Use warning or error to capture it easily in tests?
       REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
 	       i,
 	       error.token.position,
 	       exprtk::parser_error::to_str(error.mode).c_str(),
 	       error.diagnostic.c_str(),
 	       expr_string.c_str());
-      // << std::endl;
     }
     std::string errorMessage1 = "Wrong evalGenotypeFDFitnessEcuation evaluation, ";
     std::string errorMessage2 = "probably bad fitness columm especification.";
@@ -1604,10 +1563,10 @@ double mutationFromScratch(const std::vector<double>& mu,
   // where the updateRatesFDF... are called.
   // In BNB_nr.cpp, in nr_innerBNB function
   // when we are sampling.
-  if(mu.size() == 1) {
-    if(spP.numMutablePos == 0) {
-      return(dummyMutationRate);
+  if(spP.numMutablePos == 0) {
+    return(dummyMutationRate);
     }
+  if(mu.size() == 1) {
     if(mutationPropGrowth) {
       tmp = mumult * mu[0] * spP.numMutablePos * spP.birth;
       if(tmp <= dummyMutationRate) {
@@ -1648,7 +1607,7 @@ double mutationFromScratch(const std::vector<double>& mu,
 	  }
       return(tmp);
     }
-  } else {
+  } else { // variable mutation rate
     std::vector<int> sortedG = allGenesinGenotype(g);
     std::vector<int> nonmutated;
     set_difference(fe.allGenes.begin(), fe.allGenes.end(),
@@ -1659,9 +1618,14 @@ double mutationFromScratch(const std::vector<double>& mu,
       mutrate += mu[nm - 1];
     }
     if(mutrate == 0) {
-      Rcpp::Rcout << "mFS-message-4 . No mutable positions? Mutation set to dummyMutationRate "
-		  << dummyMutationRate << "\n";
-      return(dummyMutationRate);
+      if(nonmutated.size() > 0)
+	throw std::logic_error("\n This case should not exist: mFS-except-4-pre\n");
+      if(nonmutated.size() == 0)
+	throw std::logic_error("\n This case should not exist: mFS-except-4-post\n");
+      // if(verbosity >= 1)
+      // 	Rcpp::Rcout << "mFS-message-4 . No mutable positions. Mutation set to dummyMutationRate "
+      // 		    << dummyMutationRate << "\n";
+      // return(dummyMutationRate);
     }
    
     if(mutationPropGrowth)

@@ -694,12 +694,13 @@ static inline void whichDrivers(int& totalPresentDrivers,
   std::string comma = "";
   for(size_t i = 0; i < countByDriver.size(); ++i) {
     if(countByDriver[i] > 0) {
-#ifdef _WIN32  
-      strDrivers += (comma + SSTR(i + 1));
-#endif
-#ifndef _WIN32
       strDrivers += (comma + std::to_string(i + 1)); //SSTR(i + 1));
-#endif      
+// #ifdef _WIN32  
+//       strDrivers += (comma + SSTR(i + 1));
+// #endif
+// #ifndef _WIN32
+//       strDrivers += (comma + std::to_string(i + 1)); //SSTR(i + 1));
+// #endif      
       comma = ", ";
       ++totalPresentDrivers;
     }

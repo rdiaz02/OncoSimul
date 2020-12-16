@@ -781,7 +781,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       ## single canonical object used.
 
       rm(fitnessLandscape_df)
-      rm(fitnessLandscape)
+      suppressWarnings(try(rm(fitnessLandscape), silent = TRUE))
       rm(fitnessLandscapeVariables)
       rm(Fitness_as_fvars)
       rm(Fitness_original_as_letters)
