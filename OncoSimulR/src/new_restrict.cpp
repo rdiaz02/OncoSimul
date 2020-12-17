@@ -195,7 +195,6 @@ vector<int> allGenesinFitness(const fitnessEffectsAll& F) {
   }
   sort(g0.begin(), g0.end());
 
-
   // Can we assume the fitness IDs go from 0 to n? Nope: because of
   // muEF. But we assume in several places that there are no repeated
   // elements in the output from this function.
@@ -615,7 +614,7 @@ void obtainMutations(const Genotype& parent,
     // Remember that mutations always indexed from 1, not from 0.
     // We take an element from a discrete distribution, with probabilities
     // proportional to the rates.
-    // FIXME:varmutrate give a warning if the only mu is for mu = 0?
+    // FIXMEmaybe:varmutrate give a warning if the only mu is for mu = 0?
     std::vector<double> mu_nm;
     for(auto const &nm : nonmutated) mu_nm.push_back(mu[nm - 1]);
     std::discrete_distribution<int> rpos(mu_nm.begin(), mu_nm.end());
@@ -1682,6 +1681,16 @@ std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist,
   }
   return vv;
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

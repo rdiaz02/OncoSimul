@@ -18,9 +18,9 @@
 #ifndef _NEW_RESTRICT_H__
 #define _NEW_RESTRICT_H__
 
+// #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include "debug_common.h"
 #include "common_classes.h"
-// #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include <Rcpp.h>
 #include <limits>
 #include <random>
@@ -55,15 +55,6 @@ struct fitnessLandscape_struct {
   std::map<std::string, std::string> flFDFmap; //New line to define flFDFmap
   std::map<std::string, std::string> flfVarsmap; //New line to define flfVarsmap
 };
-
-// zz6
-// //structure to store the map fVars to fitness (double)
-// struct evalFVars_struct {
-// // FIXME: Isn't this reundant nesting?
-// // as we only have a map inside the structure
-//   std::map<std::string, double> evalFVarsmap;
-// };
-
 
 
 struct Poset_struct {

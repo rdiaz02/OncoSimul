@@ -26,7 +26,35 @@
 // #define SSTR( x ) dynamic_cast< std::ostringstream & >( 
 //        ( std::ostringstream() << std::dec << x ) ).str()
 
-
+#define DP_ti_notfinite {if(std::abs(ti - ti2) > 1e-5) { \
+	  DP2(ti); \
+	  DP2(ti2); \
+	  DP2(numerator); \
+	  DP2(numerator2); \
+	  DP2(denominator); \
+	  DP2(denominator2); \
+	  DP2(invspr); \
+	  DP2(r); \
+	  DP2(r1); \
+	  DP2(tmp); \
+	  DP2(tmp2); \
+	  DP2(oneminusr); \
+	} \
+	Rcpp::Rcout << "\n r1 = " << r1; \
+	Rcpp::Rcout << "\n r = " << r; \
+	Rcpp::Rcout << "\n numerator = " << numerator; \
+	Rcpp::Rcout << "\n denominator = " << denominator; \
+	Rcpp::Rcout << "\n ti2 = " << ti2; \
+	Rcpp::Rcout << "\n numerator2 = " << numerator2; \
+	Rcpp::Rcout << "\n denominator2 = " << denominator2; \
+	Rcpp::Rcout << "\n is r > 1? " << (r > 1.0) << "\n"; \
+	Rcpp::Rcout << "\n is r < 0? " << (r < 0.0) << "\n"; \
+	Rcpp::Rcout << "\n is eq12 < r? " << (eq12 < r) << "\n"; \
+	Rcpp::Rcout << "\n tmp = " << tmp << "\n"; \
+	Rcpp::Rcout << "\n tmp2 = " << tmp2 << "\n"; \
+	Rcpp::Rcout << "\n eq12 = " << eq12 << "\n"; \
+	print_spP(spP); \
+}
 
 
 #ifdef DEBUGW
@@ -229,6 +257,25 @@
 #define DEBUG_nr3 {Rcpp::Rcout << "\n\n   post-update popSize = "	\
 		<< popParams[i].popSize << "\n";			\
 }
+#define DEBUG_ti {Rcpp::Rcout << "\n\n\n WARNING: ti == 0. Setting it to DBL_MIN \n"; \
+	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) /  (spP.R + spP.W - 2.0 * spP.birth) , spP.p \opSize);
+	Rcpp::Rcout << "\n tmp2 = " << tmp2; \
+	Rcpp::Rcout << "\n tmp = " << tmp; \
+	Rcpp::Rcout << "\n invspr = " << invspr; \
+	Rcpp::Rcout << "\n invpop = " << invpop; \
+	Rcpp::Rcout << "\n numerator = " << numerator; \
+	Rcpp::Rcout << "\n denominator = " << denominator; \
+	Rcpp::Rcout << "\n numerator == denominator? " << (numerator == denominator); \
+	Rcpp::Rcout << "\n is r > 1? " << (r > 1.0); \
+	Rcpp::Rcout << "\n is r < 0? " << (r < 0.0); \
+	Rcpp::Rcout << "\n r = " << r; \
+	Rcpp::Rcout << "\n is r == 1? " << (r == 1.0L); \
+	Rcpp::Rcout << "\n oneminusr = " << oneminusr; \
+	Rcpp::Rcout << "\n is oneminusr == 0? " << (oneminusr == 0.0L); \
+	Rcpp::Rcout << "\n r1 = " << r1; \
+	Rcpp::Rcout << "\n is r1 == 1? " << (r1 == 1.0); \
+	Rcpp::Rcout << "\n is eq12 < r? " << (eq12 < r); \
+}
 #else
 #define DEBUGfs {} do {} while(0)
 #define DEBUGfs2 {} do {} while(0)
@@ -241,5 +288,6 @@
 #define DEBUG_nr {} do {} while(0)
 #define DEBUG_nr2 {} do {} while(0)
 #define DEBUG_nr3 {} do {} while(0)
+#define DEBUG_ti {} do {} while(0)
 #endif
 
