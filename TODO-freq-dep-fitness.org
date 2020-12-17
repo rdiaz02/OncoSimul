@@ -1,5 +1,10 @@
 * Miscell to-do in freq-dep-fitness branch
-
+** urgent
+   - [ ] LOD with multiple initmutants
+     - might not be defined
+   - [ ] and check POM too
+     - yes, this is well defined
+  
 ** first
 
  - [ ] test where FDF crashes when no WT and no initMutant.
