@@ -9410,7 +9410,8 @@ Given how we wrote `C_fe_pred_prey2`, the prey is hardcoded as
 in terms of order (note we avoided this problem in the example
 above, \@ref(predprey1), by always using the full name of the
 genotype we refered to in the function to generate the fitness
-effects, `G_fe_LVm2`)
+effects, `G_fe_LVm2`). (Yes, we could have used a classic pair:
+"Hare" and "Lynx").
 
 
 ```{r predprey2b}
@@ -9444,9 +9445,12 @@ pred_prey2 <- oncoSimulIndiv(fe_pred_prey2,
                              seed = NULL, 
                              errorHitMaxTries = FALSE, 
                              errorHitWallTime = FALSE)
-
+op <- par(mfrow = c(1, 2))
+## Nicer colors
 plot(pred_prey2, show = "genotypes")
-
+## But this shows better what is going on
+plot(pred_prey2, show = "genotypes", type = "line")
+par(op)
 
 ```
 
