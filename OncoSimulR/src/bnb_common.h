@@ -23,27 +23,6 @@
 #include "debug_common.h"
 #include "new_restrict.h" // for the TypeModel enum
 
-// // Simple custom exception for exceptions that lead to re-runs.
-// class rerunExcept: public std::runtime_error {
-// public:
-//   rerunExcept(const std::string &s) :
-//     std::runtime_error(s) {}
-// };
-
-
-// struct spParamsP {
-//   double popSize;
-//   double birth;
-//   double death;
-//   double W;
-//   double R;
-//   double mutation;
-//   double timeLastUpdate;
-//   std::multimap<double, int>::iterator pv;
-//   double absfitness; //convenient for Beerenwinkel
-//   int numMutablePos; //for mutator if need update of mutation
-// };
-
 
 inline void W_f_st(spParamsP& spP){
   spP.W = spP.death + spP.birth + spP.mutation;
@@ -232,4 +211,41 @@ void messagePostSampling(const int verbosity,
 			 const double totPopSize);
 
 double setDummyMutationRate(std::vector<double> mu, const int verbosity);
+
+
+void initPops(
+	     unsigned int& numSpecies,
+	     double& totPopSize,
+	     int& outNS_i,
+	     double& lastStoredSample,
+	     std::vector<Genotype>& Genotypes,
+	     std::vector<spParamsP>& popParams,
+	     std::vector<Genotype>& genot_out,
+	     std::vector<double>& popSizes_out,
+	     std::vector<int>& index_out,
+	     std::vector<double>& time_out,
+	     std::vector<double>& sampleTotPopSize,
+	     std::vector<double>& sampleLargestPopSize,
+	     std::vector<int>& sampleMaxNDr,
+	     std::vector<int>& sampleNDrLargestPop,
+	     POM& pom,
+	     std::mt19937& ran_gen,
+	     const std::vector<std::vector<int> >& initMutant,
+	     const std::vector<double>& initSize,
+	     const fitnessEffectsAll& fitnessEffects,
+	     const std::vector<double>& mu,
+	     const fitnessEffectsAll& muEF,
+	     const std::vector<int>& full2mutator,
+	     const std::map<int, std::string>& intName,
+	     const fitness_as_genes& genesInFitness,	     
+	     const double& dummyMutationRate,
+	     const double& K,
+	     const double& death,
+	     const double& currentTime,	     
+	     const double& keepEvery,
+	     const int& mutationPropGrowth,	     
+	     const TypeModel typeModel,
+	     const int& verbosity
+	      );
+
 #endif
