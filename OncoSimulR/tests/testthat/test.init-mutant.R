@@ -1,7 +1,8 @@
 inittime <- Sys.time()
 cat(paste("\n Starting init-mutant tests", date(), "\n"))
 
-## RNGkind("Mersenne-Twister")
+RNGkind("Mersenne-Twister")
+set.seed(NULL)
 
 ## Processing this file takes about 3 seconds on my laptop
 test_that("initMutant crashes",
@@ -682,6 +683,7 @@ test_that("initMutant works if == number of genes", {
             )
         }
     }
+    set.seed(NULL)
 })
 
 
@@ -1144,7 +1146,7 @@ test_that("multiple init mutants: different species, FDF, exprtk crash if not in
     ### FIXME: catch this exact string"Undefined symbol: 'f_2'", fixed = TRUE)
 })
 
-
+set.seed(NULL)
 cat(paste("\n Ending init-mutant tests", date(), "\n"))
 
 
