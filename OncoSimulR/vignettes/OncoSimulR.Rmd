@@ -503,7 +503,7 @@ d1 <- samplePop(s1, timeSample = "unif", propError = 0.1)
 ```
 
 ```{r hidden-rng-exochs, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -585,7 +585,7 @@ sampledGenotypes(samplePop(od_sim))
 ```
 
 ```{r hidden-rng-exochs33, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 ### Predictability of evolution in complex fitness landscapes {#ex-predict}
@@ -659,7 +659,7 @@ sampledGenotypes(samplePop(simulrl, typeSample = "whole"))
 ```
 
 ```{r hidden-rng-exszend, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -749,7 +749,7 @@ unlist(lapply(st, function(x) x$FinalTime))
 
 ```
 ```{r hidden-rng-tom, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -832,7 +832,7 @@ sum(summary(sb1)[, "TotalPopSize"] > (4 * initSize))/totalpops
 
 ```
 ```{r hidden-rng-exbau, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -863,7 +863,7 @@ unlist(lapply(sb2, function(x) x$FinalTime))
 ```
 
 ```{r hidden-rng-exbau22, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 #### Consequences of order effects for cancer initiation {#exorder1intro}
@@ -933,7 +933,7 @@ sum(summary(soe1)[, "TotalPopSize"] > 0)/totalpops
 ```
 
 ```{r hidden-rng-exoef, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -13233,7 +13233,7 @@ st <- oncoSimulPop(4, ft, muEF = mt,
                    keepEvery = NA, 
                    mc.cores = 2, ## adapt to your hardware
                    seed = NULL) ## for reproducibility
-set.seed(NULL) ## return things to their "usual state"
+## set.seed(NULL) ## return things to their "usual state"
 
 ```
 
