@@ -867,7 +867,7 @@ of the individual done, and the number of attempts and time used.}
 
 
 \seealso{
-  \code{\link{plot.oncosimul}}, \code{\link{examplePosets}},
+  \code{\link{plot.oncosimul}}, 
   \code{\link{samplePop}}, \code{\link{allFitnessEffects}}
   
 
@@ -940,7 +940,7 @@ object.size(oiP1)
 
 
 
-######## Using a poset for pancreatic cancer from Gerstung et al.
+######## Using an extended poset for pancreatic cancer from Gerstung et al.
 ###      (s and sh are made up for the example; only the structure
 ###       and names come from Gerstung et al.)
 
@@ -981,7 +981,7 @@ femuv <- allFitnessEffects(noIntGenes = ni)
 oncoSimulIndiv(femuv, mu = muv)
 }
 
-#########Frequency dependent fitness examples
+######### Frequency dependent fitness examples
 
 ## An example with cooperation. Presence of WT favours all clones
 ## and all clones have a positive effect on themselves
