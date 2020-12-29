@@ -7,6 +7,7 @@
   
 ** first
 
+ - [ ] fast_peaks and peak_valley: turn into a user usable function
  - [ ] test where FDF crashes when no WT and no initMutant.
  - [ ] vignette: reduce running times
  - [ ] The second predator-prey example sucks. In general, those examples
