@@ -1,9 +1,15 @@
+Changes in version 2.99.5 (2020-12-18):
+	- Random timeouts when building in tokay2 (Windows, BioC); fixing
+	seed in vignette.
+
 Changes in version 2.99.4 (2020-12-17):
+	- Clean up of C++ code.	
+
+Changes in version 2.99.3 (2020-12-13):
 	- Remove unnecessary (and cluttering) output and irrelevant
 	warnings when running tests.
 	- Decrease execution time of longer running examples in man (Rd) files.
 	- Decrease time of vignette.
-	- Clean up of C++ code.
 	
 Changes in version 2.99.2 (2020-12-11):
 	- Failed on test on Mac.
