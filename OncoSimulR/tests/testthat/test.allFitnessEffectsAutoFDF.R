@@ -75,24 +75,24 @@ test_that("testing output when frequencyType = 'auto'", {
 
   ## 20 is where we are storing full_FDF_spec for now. Very brittle
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
                    allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
                    allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)],
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 20)])
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
   
   expect_identical(allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE),

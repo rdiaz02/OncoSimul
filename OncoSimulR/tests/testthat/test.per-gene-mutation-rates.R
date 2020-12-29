@@ -274,7 +274,7 @@ test_that("McFL: Only no-int, different numbers, fail", {
 
 
 test_that("McFL: Same freqs, chisq, when s=0", {
-    max.tries <- 4
+    max.tries <- 5
     for(tries in 1:max.tries) {
         ## cat("\n s3: a runif is", runif(1), "\n")
         muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
@@ -663,7 +663,7 @@ test_that("McFL: Init mutant with tiny mutation always present", {
 
 ## date()
 test_that("McFL: Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
-    max.tries <- 4
+    max.tries <- 5
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n s18: a runif is", runif(1), "\n")
@@ -756,7 +756,7 @@ test_that("McFL: Different freqs as they are expected with chisq, when s=0 and i
 
 ## date()
 test_that("Different freqs as they should be ordered and chisq, when s=0, and initMutant",{
-    max.tries <- 4
+    max.tries <- 5
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## More on the above, with less variation. But yet another set of tests.

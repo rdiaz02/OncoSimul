@@ -97,7 +97,10 @@ diversityLOD(llod)
   descent in a given simulation. In v. 2.9.1 we also returned the LOD
   as explained above. Now we only return the LOD as defined above.
   
-  
+  Beware, however, that if you use multiple initial mutants the LOD
+function will probably not do what you want. It is not even clear that
+the LOD is well defined in this case. We are working on this.
+
 }
 
 \value{

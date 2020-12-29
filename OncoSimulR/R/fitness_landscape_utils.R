@@ -16,12 +16,6 @@
 ## plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
 ##     plot.genotype_fitness_matrix <- plotFitnessLandscape 
 
-## FIXME: show only accessible paths? 
-## FIXME: when show_labels = FALSE we still show the boxes
-##        and some of the labels.!!!
-## FIXME: if using only_accessible, maybe we
-## can try to use fast_peaks, and use the slower
-## approach as fallback (if identical fitness)
 plotFitnessLandscape <- function(x, show_labels = TRUE,
                                  col = c("green4", "red", "yellow"),
                                  lty = c(1, 2, 3), use_ggrepel = FALSE,
@@ -31,7 +25,12 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
                                  ...) {
 
     ## FIXME future:
-
+    ## FIXME: when show_labels = FALSE we still show the boxes
+    ##        and some of the labels.!!!
+    ## FIXME: if using only_accessible, maybe we
+    ## can try to use fast_peaks, and use the slower
+    ## approach as fallback (if identical fitness)
+    
     ## - Allow passing order effects. Change "allGenotypes_to_matrix"
     ##   below? Probably not, as we cannot put order effects as a
     ##   matrix. Do something else, like allow only order effects if from
@@ -70,14 +69,7 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     }
     vv <- which(!is.na(gaj), arr.ind = TRUE)
     
-    ## plot(x = mutated, y = e1$Fitness, ylab = "Fitness",
-    ##      xlab = "", type = "n", axes = FALSE)
-    ## box()
-    ## axis(2)
-    ## text(x = mutated, y = x$Fitness, labels = x$Genotype)
-
-    ## The R CMD CHEKC notes about no visible binding for global variable
-
+  
     x_from <- y_from <- x_to <- y_to <- Change <- muts <-
         label <- fitness <- Type <- NULL
                 
@@ -183,27 +175,6 @@ plot.evalAllGenotypes <- plot.evalAllGenotypesMut <-
 ######################################################################
 ######################################################################
 
-
-## wrap_filter_inaccessible <- function(x, max_num_genotypes, accessible_th) {
-##     ## wrap it, for my consumption
-##     tfm <- to_Fitness_Matrix(x, max_num_genotypes = max_num_genotypes)
-##     mutated <- rowSums(tfm$gfm[, -ncol(tfm$gfm)])
-##     gaj <- genot_to_adj_mat(tfm$gfm)
-##     gaj <- filter_inaccessible(gaj, accessible_th)
-##     remaining <- as.numeric(colnames(gaj))
-##     mutated <- mutated[remaining]
-##     tfm$afe <- tfm$afe[remaining, , drop = FALSE]
-##     return(list(remaining = remaining,
-##                 mutated = mutated,
-##                 tfm = tfm))
-## }
-
-## No longer being used. Used to be in rfitness
-## count_accessible_g <- function(gfm, accessible_th) {
-##     gaj <- genot_to_adj_mat(gfm)
-##     gaj <- filter_inaccessible(gaj, accessible_th)
-##     return(ncol(gaj) - 1)
-## }
 
 
 ## There is now C++ code to get just the locations/positions of the

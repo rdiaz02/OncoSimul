@@ -18,15 +18,15 @@
 #ifndef _NEW_RESTRICT_H__
 #define _NEW_RESTRICT_H__
 
+// #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include "debug_common.h"
 #include "common_classes.h"
-// #include "randutils.h" //Nope, until we have gcc-4.8 in Win; full C++11
 #include <Rcpp.h>
 #include <limits>
 #include <random>
 
 // Yes, even if covr suggests epistasis, Poset_struct and
-// Gene_Module_struct are not used they are used a lot.
+// Gene_Module_struct are not used, they really are used a lot.
 // There are many vectors of these structs. This is just a problem
 // of coverage testing of structs. Google for it.
 
@@ -41,7 +41,7 @@ struct genesWithoutInt {
 	     // how that is numbered from R. We assume mutations always
 	     // indexed 1 to something. Not 0 to something.
   // If shift is -9, no elements The next first two are not really
-  // needed. Will remove later. Nope! we use them to provide nice output.
+  // needed. We use them to provide nice output.
   std::vector<int> NumID;
   std::vector<std::string> names;
   std::vector<double> s;
@@ -51,17 +51,11 @@ struct genesWithoutInt {
 struct fitnessLandscape_struct {
   std::vector<int> NumID;
   std::vector<std::string> names;
-  // zz: maybe not a char; hold on
   std::map<std::string, double> flmap;
   std::map<std::string, std::string> flFDFmap; //New line to define flFDFmap
   std::map<std::string, std::string> flfVarsmap; //New line to define flfVarsmap
 };
 
-// FIXME: isn't this reundant nesting?
-// as we only have a map inside the structure
-struct evalFVars_struct {//structure to store the map fVars to fitness (double)
-  std::map<std::string, double> evalFVarsmap;
-};
 
 struct Poset_struct {
   Dependency typeDep;
@@ -150,9 +144,9 @@ inline fitnessEffectsAll nullFitnessEffects() {
   return f;
 }
 
-// FIXME: fitness_as_genes and Genotype are identical
+// fitness_as_genes and Genotype are identical
 // structures. Why not use the same thing?
-// Because even if just four vectors of ints, have different meaning.
+// Because even if just four vectors of ints, they have different meaning.
 // Humm...
 struct fitness_as_genes {
   // fitnessEffectsAll in terms of genes.  Useful for output
@@ -204,14 +198,11 @@ inline Genotype wtGenotype() {
   g.epistRtEff.resize(0);
   g.rest.resize(0);
   g.flGenes.resize(0);
+  // why not keep the number of present drivers in the genotype? We
+  // call often the getGenotypeDrivers(ge, drv).size()
   return g;
 }
 
-// struct st_PhylogNum {
-//   double time;
-//   std::vector<int> parent;
-//   std::vector<int> child;
-// };
 
 // This is all we need to then use igraph on the data frame.
 struct PhylogName {
@@ -226,7 +217,6 @@ struct PhylogName {
 // This is all we need to then use igraph on the data frame.
 // simplified for the LOD that is always stored
 struct LOD {
-  // std::vector<double> time;
   std::vector<std::string> parent;
   std::vector<std::string> child;
 };
@@ -235,7 +225,6 @@ struct LOD {
 // we can avoid a costly conversion that often leads to storing nothing
 // in
 struct POM {
-  // std::vector<double> time;
   std::vector<std::string> genotypesString;
   std::vector<Genotype> genotypes;
 };
@@ -253,8 +242,6 @@ bool operator==(const Genotype& lhs, const Genotype& rhs);
 TypeModel stringToModel(const std::string& dep);
 
 Dependency stringToDep(const std::string& dep);
-
-// std::string depToString(const Dependency dep);
 
 void obtainMutations(const Genotype& parent,
 		     const fitnessEffectsAll& fe,
@@ -281,7 +268,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
 fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE);
 std::vector<int> getGenotypeDrivers(const Genotype& ge, const std::vector<int>& drv);
 std::vector<int> allGenesinGenotype(const Genotype& ge);
-void print_Genotype(const Genotype& ge);
 
 fitness_as_genes fitnessAsGenes(const fitnessEffectsAll& fe);
 
@@ -304,16 +290,6 @@ double mutationFromScratch(const std::vector<double>& mu,
 			   const std::vector<spParamsP>& popParams,
 			   const double& currentTime,
 			   const double& dummyMutationRate);
-
-// double mutationFromParent(const std::vector<double>& mu,
-// 			  const spParamsP& newP,
-// 			  const spParamsP& parentP,
-// 			  const std::vector<int>& newMutations,
-// 			  // const std::vector<int>& nonmutated,
-// 			  const int mutationPropGrowth,
-// 			  const Genotype& fullge,
-// 			  const std::vector<int> full2mutator,
-// 			  const fitnessEffectsAll& muEF);
 
 double prodMuts(const std::vector<double>& s);
 

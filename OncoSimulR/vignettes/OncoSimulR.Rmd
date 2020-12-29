@@ -57,21 +57,21 @@ require(BiocStyle)
 require(pander)
 
 
-## ## https://bookdown.org/yihui/rmarkdown-cookbook/time-chunk.html
-## all_times <- list()  # store the time for each chunk
-## knitr::knit_hooks$set(time_it = local({
-##   now <- NULL
-##   function(before, options) {
-##     if (before) {
-##       now <<- Sys.time()
-##     } else {
-##       res <- difftime(Sys.time(), now, units = "secs")
-##       all_times[[options$label]] <<- as.double(res)
-##     }
-##   }
-## }))
+## https://bookdown.org/yihui/rmarkdown-cookbook/time-chunk.html
+all_times <- list()  # store the time for each chunk
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      now <<- Sys.time()
+    } else {
+      res <- difftime(Sys.time(), now, units = "secs")
+      all_times[[options$label]] <<- as.double(res)
+    }
+  }
+}))
 
-## knitr::opts_chunk$set(time_it = TRUE)
+knitr::opts_chunk$set(time_it = TRUE)
 ```
 
 
@@ -503,7 +503,7 @@ d1 <- samplePop(s1, timeSample = "unif", propError = 0.1)
 ```
 
 ```{r hidden-rng-exochs, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -585,7 +585,7 @@ sampledGenotypes(samplePop(od_sim))
 ```
 
 ```{r hidden-rng-exochs33, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 ### Predictability of evolution in complex fitness landscapes {#ex-predict}
@@ -659,7 +659,7 @@ sampledGenotypes(samplePop(simulrl, typeSample = "whole"))
 ```
 
 ```{r hidden-rng-exszend, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -749,7 +749,7 @@ unlist(lapply(st, function(x) x$FinalTime))
 
 ```
 ```{r hidden-rng-tom, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -832,7 +832,7 @@ sum(summary(sb1)[, "TotalPopSize"] > (4 * initSize))/totalpops
 
 ```
 ```{r hidden-rng-exbau, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -863,7 +863,7 @@ unlist(lapply(sb2, function(x) x$FinalTime))
 ```
 
 ```{r hidden-rng-exbau22, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 #### Consequences of order effects for cancer initiation {#exorder1intro}
@@ -933,7 +933,7 @@ sum(summary(soe1)[, "TotalPopSize"] > 0)/totalpops
 ```
 
 ```{r hidden-rng-exoef, echo = FALSE}
-set.seed(NULL)
+## set.seed(NULL)
 ```
 
 
@@ -7517,7 +7517,8 @@ small number of children via mutation to non-viable
 "hybrids". Factor this into your equations for death rate, but this
 should be negligible if death rate $\gg$ mutation rate. (You can
 ameliorate this problem slightly by making mutation to the "species
-indicator" locus very small, say $10^{10}$).
+indicator" locus very small, say $10^{10}$ ---do not set it to 0, as
+you will get an error).
 
 Of course, you can extend the scheme above to arbitrary numbers of
 species. 
@@ -9410,7 +9411,8 @@ Given how we wrote `C_fe_pred_prey2`, the prey is hardcoded as
 in terms of order (note we avoided this problem in the example
 above, \@ref(predprey1), by always using the full name of the
 genotype we refered to in the function to generate the fitness
-effects, `G_fe_LVm2`)
+effects, `G_fe_LVm2`). (Yes, we could have used a classic pair:
+"Hare" and "Lynx").
 
 
 ```{r predprey2b}
@@ -9444,9 +9446,12 @@ pred_prey2 <- oncoSimulIndiv(fe_pred_prey2,
                              seed = NULL, 
                              errorHitMaxTries = FALSE, 
                              errorHitWallTime = FALSE)
-
+op <- par(mfrow = c(1, 2))
+## Nicer colors
 plot(pred_prey2, show = "genotypes")
-
+## But this shows better what is going on
+plot(pred_prey2, show = "genotypes", type = "line")
+par(op)
 
 ```
 
@@ -12806,6 +12811,10 @@ sampledGenotypes(samplePop(pancr16))
 
 ```
 
+Beware, however, that if you use multiple initial mutants (section
+\@ref(minitmut)) the LOD function will probably not do what you
+want. It is not even clear that the LOD is well defined in this
+case. We are working on this.
 
 \clearpage
 
@@ -13225,7 +13234,7 @@ st <- oncoSimulPop(4, ft, muEF = mt,
                    keepEvery = NA, 
                    mc.cores = 2, ## adapt to your hardware
                    seed = NULL) ## for reproducibility
-set.seed(NULL) ## return things to their "usual state"
+## set.seed(NULL) ## return things to their "usual state"
 
 ```
 
@@ -13556,9 +13565,13 @@ paste(difftime(Sys.time(), time0, units = "mins"), "minutes")
 <!-- Time it takes to run each chunkc. Uncomment also the hook and -->
 <!-- setting at beginning of vignette: search for all_times -->
 
-<!-- ```{r timeit} -->
-<!-- all_times -->
-<!-- ``` -->
+```{r timeit}
+sort(unlist(all_times))
+```
+
+```{r sumtimeit}
+paste("Sum times of chunks = ", sum(unlist(all_times))/60, " minutes")
+```
 
 
 

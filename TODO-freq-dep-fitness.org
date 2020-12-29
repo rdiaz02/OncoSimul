@@ -1,7 +1,13 @@
 * Miscell to-do in freq-dep-fitness branch
-
+** urgent
+   - [ ] LOD with multiple initmutants
+     - might not be defined
+   - [ ] and check POM too
+     - yes, this is well defined
+  
 ** first
 
+ - [ ] fast_peaks and peak_valley: turn into a user usable function
  - [ ] test where FDF crashes when no WT and no initMutant.
  - [ ] vignette: reduce running times
  - [ ] The second predator-prey example sucks. In general, those examples

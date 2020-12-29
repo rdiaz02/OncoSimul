@@ -81,18 +81,18 @@ export R_CHECK_ENVIRON="~/.R/check.Renviron"
 echo " ************************************** "
 echo " **********   R CMD build --vanilla  *********** "
 echo ""
-time $V_R --vanilla CMD build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulR
+time R_ENVIRON_USER="~/.R/check.Renviron" $V_R --vanilla CMD build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulR
 echo " "
 echo " =======      done R CMD build --vanilla  ======= "
 echo " "
 echo " ************************************** "
 echo " *********     R CMD check --vanilla  ********** "
 echo " "
-time $V_R --vanilla CMD check --no-vignettes --no-build-vignettes --ignore-vignettes --no-manual --timings OncoSimulR_$V_ADA.tar.gz
+time R_ENVIRON_USER="~/.R/check.Renviron" $V_R --vanilla CMD check --no-vignettes --no-build-vignettes --ignore-vignettes --no-manual --timings OncoSimulR_$V_ADA.tar.gz
 echo " "
 echo " =======      done R CMD check --vanilla  =======  "
 echo " "
 echo " =======  installing with tests "
-$V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
+R_ENVIRON_USER="~/.R/check.Renviron" $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 
     
