@@ -1226,7 +1226,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   
   if( ((ge.orderEff.size() + ge.epistRtEff.size() +
 	ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
-    return s;
+    return s; //return 0.0 explicitly?? FIXME
   }
 
   // If we are dealing with a fitness landscape, that is as far as we go here
@@ -1458,7 +1458,7 @@ double evalRGenotype(Rcpp::IntegerVector rG,
     std::string sprod;
     if(calledBy == "evalGenotype") {
       sprod = "s";
-    } else { // if (calledBy == "evalGenotypeMut") {
+    } else { // if (calledBy == "evalGenotypeMut") 
       sprod = "mutator product";
     }
     Rcpp::Rcout << "\n Individual " << sprod << " terms are :";
@@ -1466,11 +1466,11 @@ double evalRGenotype(Rcpp::IntegerVector rG,
     Rcpp::Rcout << std::endl;
   }
   if(calledBy == "evalGenotype") {
-    if(!prodNeg)
+    if(!prodNeg) //for Bozic models. Comes from R.
       return prodFitness(s);
     else
       return prodDeathFitness(s);
-  } else { //if (calledBy == "evalGenotypeMut") {
+  } else { //if (calledBy == "evalGenotypeMut") 
     return prodMuts(s);
   }
 }
