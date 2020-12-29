@@ -18,3 +18,5 @@ src/GRTAGS
 ^appveyor\.yml$
 src/TAGS
 src/.ccls-root
+^doc$
+^Meta$

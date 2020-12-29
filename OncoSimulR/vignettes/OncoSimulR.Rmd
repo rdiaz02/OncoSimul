@@ -13565,7 +13565,11 @@ paste(difftime(Sys.time(), time0, units = "mins"), "minutes")
 <!-- setting at beginning of vignette: search for all_times -->
 
 ```{r timeit}
-all_times
+sort(unlist(all_times))
+```
+
+```{r sumtimeit}
+paste("Sum times of chunks = ", sum(unlist(all_times))/60, " minutes")
 ```
 
 
