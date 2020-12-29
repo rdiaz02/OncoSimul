@@ -499,6 +499,8 @@ oncoSimulIndiv <- function(fp,
     if(inherits(fp, "fitnessEffects")) {
         s <- sh <- NULL ## force it soon!
     }
+    if(!inherits(fp, "fitnessEffects")) 
+        stop("v.1 functionality has been removed. Please use v.2")
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -584,8 +586,7 @@ oncoSimulIndiv <- function(fp,
 
     if(is_null_na(sampleEvery)) stop("sampleEvery cannot be NULL or NA")
     
-    if(!inherits(fp, "fitnessEffects")) {
-        stop("v.1 functionality has been removed. Please use v.2")
+    ## if(!inherits(fp, "fitnessEffects")) {
         ## if(any(unlist(lapply(list(fp, 
         ##                           numPassengers,
         ##                           s, sh), is.null)))) {
@@ -661,7 +662,7 @@ oncoSimulIndiv <- function(fp,
         ##                              errorHitMaxTries = errorHitMaxTries),
         ##           silent = !verbosity)
         ## objClass <- "oncosimul"
-    } else {
+    ## } else {
         s <- sh <- NULL ## force it.
         if(numPassengers != 0)
             warning(paste("Specifying numPassengers has no effect",
@@ -729,7 +730,7 @@ oncoSimulIndiv <- function(fp,
                                         fixation = fixation),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
-    }
+    ## }
     if(inherits(op, "try-error")) {
         ##         if(length(grep("BAIL OUT NOW", op)))
         stop(paste("Unrecoverable error:", op ))

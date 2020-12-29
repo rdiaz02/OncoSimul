@@ -32,46 +32,46 @@ test_that("exercise no positions left for mutation, updating in null mut, old fo
 })
 
 
-test_that("exercise mu > 1, old format", {
-    RNGkind("Mersenne-Twister")
-    set.seed(2)
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    st <- capture.output(pp1 <- oncoSimulIndiv(p701,
-                          mu = 0.7,
-                          sh = 0,
-                          initSize = 1e5,
-                          sampleEvery = 0.02,
-                          detectionSize = 1e6,
-                          model = "Exp",
-                          finalTime = 2000,
-                          onlyCancer = FALSE,
-                          seed = NULL))
+## test_that("exercise mu > 1, old format", {
+##     RNGkind("Mersenne-Twister")
+##     set.seed(2)
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     st <- capture.output(pp1 <- oncoSimulIndiv(p701,
+##                           mu = 0.7,
+##                           sh = 0,
+##                           initSize = 1e5,
+##                           sampleEvery = 0.02,
+##                           detectionSize = 1e6,
+##                           model = "Exp",
+##                           finalTime = 2000,
+##                           onlyCancer = FALSE,
+##                           seed = NULL))
     
-    expect_true(any(grepl("mutation > 1", st)))
+##     expect_true(any(grepl("mutation > 1", st)))
     
-    expect_output(print(pp1),
-                  "Individual OncoSimul trajectory", fixed = TRUE)
-})
+##     expect_output(print(pp1),
+##                   "Individual OncoSimul trajectory", fixed = TRUE)
+## })
 
-test_that("using old poset format, hitting wall time", {
-    RNGkind("Mersenne-Twister")
-    set.seed(1)
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    null <- capture.output({
-    pet <- oncoSimulIndiv(p701, sh = 0,
-                          initSize = 1e2,
-                          detectionSize = 5e8,
-                          model = "McFL",
-                          finalTime = 1e6,
-                          extraTime = 3.17,
-                          max.wall.time = 0.0001,
-                          onlyCancer = FALSE,
-                          seed = NULL)
-    })
-    expect_true(pet$HittedWallTime)
-})
+## test_that("using old poset format, hitting wall time", {
+##     RNGkind("Mersenne-Twister")
+##     set.seed(1)
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     null <- capture.output({
+##     pet <- oncoSimulIndiv(p701, sh = 0,
+##                           initSize = 1e2,
+##                           detectionSize = 5e8,
+##                           model = "McFL",
+##                           finalTime = 1e6,
+##                           extraTime = 3.17,
+##                           max.wall.time = 0.0001,
+##                           onlyCancer = FALSE,
+##                           seed = NULL)
+##     })
+##     expect_true(pet$HittedWallTime)
+## })
 
 
 test_that("using old poset format, verbose exercise iteration", {
