@@ -57,21 +57,21 @@ require(BiocStyle)
 require(pander)
 
 
-## ## https://bookdown.org/yihui/rmarkdown-cookbook/time-chunk.html
-## all_times <- list()  # store the time for each chunk
-## knitr::knit_hooks$set(time_it = local({
-##   now <- NULL
-##   function(before, options) {
-##     if (before) {
-##       now <<- Sys.time()
-##     } else {
-##       res <- difftime(Sys.time(), now, units = "secs")
-##       all_times[[options$label]] <<- as.double(res)
-##     }
-##   }
-## }))
+## https://bookdown.org/yihui/rmarkdown-cookbook/time-chunk.html
+all_times <- list()  # store the time for each chunk
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      now <<- Sys.time()
+    } else {
+      res <- difftime(Sys.time(), now, units = "secs")
+      all_times[[options$label]] <<- as.double(res)
+    }
+  }
+}))
 
-## knitr::opts_chunk$set(time_it = TRUE)
+knitr::opts_chunk$set(time_it = TRUE)
 ```
 
 
@@ -13564,9 +13564,9 @@ paste(difftime(Sys.time(), time0, units = "mins"), "minutes")
 <!-- Time it takes to run each chunkc. Uncomment also the hook and -->
 <!-- setting at beginning of vignette: search for all_times -->
 
-<!-- ```{r timeit} -->
-<!-- all_times -->
-<!-- ``` -->
+```{r timeit}
+all_times
+```
 
 
 
