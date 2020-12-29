@@ -3,113 +3,113 @@ cat(paste("\n Starting samplePop tests", date(), "\n"))
 
 ## RNGkind("Mersenne-Twister")
 
-test_that("exercising the sampling code, v1 objects", { suppressWarnings({
-              data(examplePosets)
-              p705 <- examplePosets[["p705"]]
-              r1 <- oncoSimulIndiv(p705,
-                                   sampleEvery = 0.03, keepEvery = 1
-                                   )
-              p1 <- oncoSimulPop(4, p705, numPassengers = 30, mc.cores = 2,
-                                 sampleEvery = 0.03, keepEvery = 1)
-              expect_message(samplePop(p1  ),
-                            "Subjects by Genes matrix of 4 subjects and 37 genes")
-              expect_message(samplePop(p1, typeSample = "single"),
-                             "Subjects by Genes matrix of 4 subjects and 37 genes")
-              expect_message(samplePop(p1, typeSample = "whole", timeSample = "unif"),
-                             "Subjects by Genes matrix of 4 subjects and 37 genes")
-              expect_message(samplePop(p1, typeSample = "single", timeSample = "unif"),
-                            "Subjects by Genes matrix of 4 subjects and 37 genes")
-              expect_message(samplePop(r1, typeSample = "whole", timeSample = "last"),
-                             "Subjects by Genes matrix of 1 subjects and 7 genes")
-              expect_message(samplePop(r1, typeSample = "single", timeSample = "last"),
-                            "Subjects by Genes matrix of 1 subjects and 7 genes")
-              expect_message(samplePop(r1, typeSample = "whole", timeSample = "unif"),
-                            "Subjects by Genes matrix of 1 subjects and 7 genes")
-              expect_message(samplePop(r1, typeSample = "single", timeSample = "uniform"),
-                            "Subjects by Genes matrix of 1 subjects and 7 genes")
-          })
-})
+## test_that("exercising the sampling code, v1 objects", { suppressWarnings({
+##               data(examplePosets)
+##               p705 <- examplePosets[["p705"]]
+##               r1 <- oncoSimulIndiv(p705,
+##                                    sampleEvery = 0.03, keepEvery = 1
+##                                    )
+##               p1 <- oncoSimulPop(4, p705, numPassengers = 30, mc.cores = 2,
+##                                  sampleEvery = 0.03, keepEvery = 1)
+##               expect_message(samplePop(p1  ),
+##                             "Subjects by Genes matrix of 4 subjects and 37 genes")
+##               expect_message(samplePop(p1, typeSample = "single"),
+##                              "Subjects by Genes matrix of 4 subjects and 37 genes")
+##               expect_message(samplePop(p1, typeSample = "whole", timeSample = "unif"),
+##                              "Subjects by Genes matrix of 4 subjects and 37 genes")
+##               expect_message(samplePop(p1, typeSample = "single", timeSample = "unif"),
+##                             "Subjects by Genes matrix of 4 subjects and 37 genes")
+##               expect_message(samplePop(r1, typeSample = "whole", timeSample = "last"),
+##                              "Subjects by Genes matrix of 1 subjects and 7 genes")
+##               expect_message(samplePop(r1, typeSample = "single", timeSample = "last"),
+##                             "Subjects by Genes matrix of 1 subjects and 7 genes")
+##               expect_message(samplePop(r1, typeSample = "whole", timeSample = "unif"),
+##                             "Subjects by Genes matrix of 1 subjects and 7 genes")
+##               expect_message(samplePop(r1, typeSample = "single", timeSample = "uniform"),
+##                             "Subjects by Genes matrix of 1 subjects and 7 genes")
+##           })
+## })
 
-test_that("exercising the sampling code, v1 objects, possibly NAs", { suppressWarnings({
-              data(examplePosets)
-              p705 <- examplePosets[["p705"]]
-              r1 <- oncoSimulIndiv(p705, numPassengers = 30,
-                                   sampleEvery = 0.03, keepEvery = 1,
-                                   onlyCancer = FALSE)
-              p1 <- oncoSimulPop(4, p705, mc.cores = 2, onlyCancer = FALSE,
-                                 sampleEvery = 0.03, keepEvery = 1)
-              expect_message(samplePop(p1),
-                            "Subjects by Genes matrix of 4 subjects and 7 genes")
-              expect_message(samplePop(p1, typeSample = "whole",
-                                       timeSample = "last"),
-                             "Subjects by Genes matrix of 4 subjects and 7 genes")
-              expect_message(samplePop(p1, typeSample = "whole",
-                                       timeSample = "unif"),
-                             "Subjects by Genes matrix of 4 subjects and 7 genes")
-              expect_message(samplePop(p1, typeSample = "single",
-                                       timeSample = "unif"),
-                             "Subjects by Genes matrix of 4 subjects and 7 genes")
-              expect_message(samplePop(p1, typeSample = "single",
-                                       timeSample = "last"),
-                             "Subjects by Genes matrix of 4 subjects and 7 genes")
-              expect_message(samplePop(p1, typeSample = "single"),
-                             "Subjects by Genes matrix of 4 subjects and 7 genes")
-              expect_message(samplePop(r1),
-                             "Subjects by Genes matrix of 1 subjects and 37 genes")
-              expect_message(samplePop(r1, typeSample = "whole",
-                                       timeSample = "last"),
-                             "Subjects by Genes matrix of 1 subjects and 37 genes")
-              expect_message(samplePop(r1, typeSample = "whole",
-                                       timeSample = "unif"),
-                            "Subjects by Genes matrix of 1 subjects and 37 genes")
-              expect_message(samplePop(r1, typeSample = "single",
-                                       timeSample = "last"),
-                            "Subjects by Genes matrix of 1 subjects and 37 genes")
-              expect_message(samplePop(r1, typeSample = "single",
-                                       timeSample = "uniform"),
-                            "Subjects by Genes matrix of 1 subjects and 37 genes")
-          })
-})
+## test_that("exercising the sampling code, v1 objects, possibly NAs", { suppressWarnings({
+##               data(examplePosets)
+##               p705 <- examplePosets[["p705"]]
+##               r1 <- oncoSimulIndiv(p705, numPassengers = 30,
+##                                    sampleEvery = 0.03, keepEvery = 1,
+##                                    onlyCancer = FALSE)
+##               p1 <- oncoSimulPop(4, p705, mc.cores = 2, onlyCancer = FALSE,
+##                                  sampleEvery = 0.03, keepEvery = 1)
+##               expect_message(samplePop(p1),
+##                             "Subjects by Genes matrix of 4 subjects and 7 genes")
+##               expect_message(samplePop(p1, typeSample = "whole",
+##                                        timeSample = "last"),
+##                              "Subjects by Genes matrix of 4 subjects and 7 genes")
+##               expect_message(samplePop(p1, typeSample = "whole",
+##                                        timeSample = "unif"),
+##                              "Subjects by Genes matrix of 4 subjects and 7 genes")
+##               expect_message(samplePop(p1, typeSample = "single",
+##                                        timeSample = "unif"),
+##                              "Subjects by Genes matrix of 4 subjects and 7 genes")
+##               expect_message(samplePop(p1, typeSample = "single",
+##                                        timeSample = "last"),
+##                              "Subjects by Genes matrix of 4 subjects and 7 genes")
+##               expect_message(samplePop(p1, typeSample = "single"),
+##                              "Subjects by Genes matrix of 4 subjects and 7 genes")
+##               expect_message(samplePop(r1),
+##                              "Subjects by Genes matrix of 1 subjects and 37 genes")
+##               expect_message(samplePop(r1, typeSample = "whole",
+##                                        timeSample = "last"),
+##                              "Subjects by Genes matrix of 1 subjects and 37 genes")
+##               expect_message(samplePop(r1, typeSample = "whole",
+##                                        timeSample = "unif"),
+##                             "Subjects by Genes matrix of 1 subjects and 37 genes")
+##               expect_message(samplePop(r1, typeSample = "single",
+##                                        timeSample = "last"),
+##                             "Subjects by Genes matrix of 1 subjects and 37 genes")
+##               expect_message(samplePop(r1, typeSample = "single",
+##                                        timeSample = "uniform"),
+##                             "Subjects by Genes matrix of 1 subjects and 37 genes")
+##           })
+## })
 
-test_that("exercising the sampling code, v1 objects, possibly NAs, more", { suppressWarnings({
-              data(examplePosets)
-              p1101 <- examplePosets[["p1101"]]
-              r1 <- oncoSimulIndiv(p1101, onlyCancer = FALSE,
-                                   sampleEvery = 0.03, keepEvery = 1)
-              p1 <- oncoSimulPop(4, p1101, mc.cores = 2, onlyCancer = FALSE,
-                                 sampleEvery = 0.03, keepEvery = 1)
-              expect_message(samplePop(p1),
-                            "Subjects by Genes matrix of 4 subjects and 11 genes")
-              expect_message(samplePop(p1, typeSample = "whole",
-                                       timeSample = "last"),
-                             "Subjects by Genes matrix of 4 subjects and 11 genes")
-              expect_message(samplePop(p1, typeSample = "whole",
-                                       timeSample = "unif"),
-                             "Subjects by Genes matrix of 4 subjects and 11 genes")
-              expect_message(samplePop(p1, typeSample = "single",
-                                       timeSample = "unif"),
-                             "Subjects by Genes matrix of 4 subjects and 11 genes")
-              expect_message(samplePop(p1, typeSample = "single",
-                                       timeSample = "last"),
-                             "Subjects by Genes matrix of 4 subjects and 11 genes")
-              expect_message(samplePop(p1, typeSample = "single"),
-                             "Subjects by Genes matrix of 4 subjects and 11 genes")
-              expect_message(samplePop(r1),
-                             "Subjects by Genes matrix of 1 subjects and 11 genes")
-              expect_message(samplePop(r1, typeSample = "whole",
-                                       timeSample = "last"),
-                             "Subjects by Genes matrix of 1 subjects and 11 genes")
-              expect_message(samplePop(r1, typeSample = "whole",
-                                       timeSample = "unif"),
-                            "Subjects by Genes matrix of 1 subjects and 11 genes")
-              expect_message(samplePop(r1, typeSample = "single",
-                                       timeSample = "last"),
-                            "Subjects by Genes matrix of 1 subjects and 11 genes")
-              expect_message(samplePop(r1, typeSample = "single",
-                                       timeSample = "uniform"),
-                            "Subjects by Genes matrix of 1 subjects and 11 genes")
-          })
-})
+## test_that("exercising the sampling code, v1 objects, possibly NAs, more", { suppressWarnings({
+##               data(examplePosets)
+##               p1101 <- examplePosets[["p1101"]]
+##               r1 <- oncoSimulIndiv(p1101, onlyCancer = FALSE,
+##                                    sampleEvery = 0.03, keepEvery = 1)
+##               p1 <- oncoSimulPop(4, p1101, mc.cores = 2, onlyCancer = FALSE,
+##                                  sampleEvery = 0.03, keepEvery = 1)
+##               expect_message(samplePop(p1),
+##                             "Subjects by Genes matrix of 4 subjects and 11 genes")
+##               expect_message(samplePop(p1, typeSample = "whole",
+##                                        timeSample = "last"),
+##                              "Subjects by Genes matrix of 4 subjects and 11 genes")
+##               expect_message(samplePop(p1, typeSample = "whole",
+##                                        timeSample = "unif"),
+##                              "Subjects by Genes matrix of 4 subjects and 11 genes")
+##               expect_message(samplePop(p1, typeSample = "single",
+##                                        timeSample = "unif"),
+##                              "Subjects by Genes matrix of 4 subjects and 11 genes")
+##               expect_message(samplePop(p1, typeSample = "single",
+##                                        timeSample = "last"),
+##                              "Subjects by Genes matrix of 4 subjects and 11 genes")
+##               expect_message(samplePop(p1, typeSample = "single"),
+##                              "Subjects by Genes matrix of 4 subjects and 11 genes")
+##               expect_message(samplePop(r1),
+##                              "Subjects by Genes matrix of 1 subjects and 11 genes")
+##               expect_message(samplePop(r1, typeSample = "whole",
+##                                        timeSample = "last"),
+##                              "Subjects by Genes matrix of 1 subjects and 11 genes")
+##               expect_message(samplePop(r1, typeSample = "whole",
+##                                        timeSample = "unif"),
+##                             "Subjects by Genes matrix of 1 subjects and 11 genes")
+##               expect_message(samplePop(r1, typeSample = "single",
+##                                        timeSample = "last"),
+##                             "Subjects by Genes matrix of 1 subjects and 11 genes")
+##               expect_message(samplePop(r1, typeSample = "single",
+##                                        timeSample = "uniform"),
+##                             "Subjects by Genes matrix of 1 subjects and 11 genes")
+##           })
+## })
 
 test_that("exercising the sampling code, v2 objects, possibly NAs in output", { suppressWarnings({
               oi <- allFitnessEffects(orderEffects =

@@ -1,51 +1,51 @@
 inittime <- Sys.time()
 cat(paste("\n Starting oncoSimulSample-limits tests", date(), "\n"))
 
-## RNGkind("Mersenne-Twister")
-data(examplePosets)
+## ## RNGkind("Mersenne-Twister")
+## data(examplePosets)
 
-p701 <- examplePosets[["p701"]]
-
-
-test_that("oncoSimulSample success when no onlyCancer", {
-    nindiv <- 4
-    suppressWarnings(p4 <- oncoSimulSample(nindiv, p701,
-                          sampleEvery = 0.03,
-                          max.num.tries = nindiv,
-                          onlyCancer = FALSE))
-    expect_true(p4$probCancer ==  1)
-    expect_true(p4$attemptsUsed ==  nindiv)
-    expect_true(nrow(p4$popSummary) == nindiv)
-})
+## p701 <- examplePosets[["p701"]]
 
 
-
-test_that("oncoSimulSample exits with minimal num tries", {
-    nindiv <- 50
-    null <- capture.output({
-    p5 <- oncoSimulSample(nindiv, p701,
-                          initSize = 10,
-                          finalTime = 50,
-                          sampleEvery = 0.03,                          
-                          max.num.tries = nindiv,
-                          onlyCancer = TRUE)})
-    expect_true(p5$HittedMaxTries)
-    expect_true(is.na(p5$popSummary))
-})
+## test_that("oncoSimulSample success when no onlyCancer", {
+##     nindiv <- 4
+##     suppressWarnings(p4 <- oncoSimulSample(nindiv, p701,
+##                           sampleEvery = 0.03,
+##                           max.num.tries = nindiv,
+##                           onlyCancer = FALSE))
+##     expect_true(p4$probCancer ==  1)
+##     expect_true(p4$attemptsUsed ==  nindiv)
+##     expect_true(nrow(p4$popSummary) == nindiv)
+## })
 
 
-test_that("oncoSimulSample exits with small num tries", {
-    nindiv <- 50
-    null <- capture.output({
-    p6 <- oncoSimulSample(nindiv, p701,
-                          initSize = 10,
-                          finalTime = 50,
-                          sampleEvery = 0.03,
-                          max.num.tries = nindiv + 2,
-                          onlyCancer = TRUE)})
-    expect_true(p6$HittedMaxTries)
-    expect_true(is.na(p6$popSummary))
-})
+
+## test_that("oncoSimulSample exits with minimal num tries", {
+##     nindiv <- 50
+##     null <- capture.output({
+##     p5 <- oncoSimulSample(nindiv, p701,
+##                           initSize = 10,
+##                           finalTime = 50,
+##                           sampleEvery = 0.03,                          
+##                           max.num.tries = nindiv,
+##                           onlyCancer = TRUE)})
+##     expect_true(p5$HittedMaxTries)
+##     expect_true(is.na(p5$popSummary))
+## })
+
+
+## test_that("oncoSimulSample exits with small num tries", {
+##     nindiv <- 50
+##     null <- capture.output({
+##     p6 <- oncoSimulSample(nindiv, p701,
+##                           initSize = 10,
+##                           finalTime = 50,
+##                           sampleEvery = 0.03,
+##                           max.num.tries = nindiv + 2,
+##                           onlyCancer = TRUE)})
+##     expect_true(p6$HittedMaxTries)
+##     expect_true(is.na(p6$popSummary))
+## })
 
 
 test_that("oncoSimulSample does not use drivers as stopping when there are none", {

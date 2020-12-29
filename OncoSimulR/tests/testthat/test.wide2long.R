@@ -4,22 +4,22 @@ cat(paste("\n Starting wide2long tests", date(), "\n"))
 ## RNGkind("Mersenne-Twister")
 test_that("wide2long, two basic cases, minimal testing",
 {
-    data(examplePosets)
-    ## An object of class oncosimul
-    p705 <- examplePosets[["p705"]]
-    p1 <- oncoSimulIndiv(p705, sampleEvery = 0.025,
-                         keepEvery = 5, onlyCancer = FALSE)
-    class(p1)
-    lp1 <- OncoSimulWide2Long(p1)
-    head(lp1)
-    summary(lp1)
-    tt1 <- table(table(lp1$Time))
-    expect_true(ncol(lp1) == 4)
-    ## expect_true(any(is.na(lp1))) in very rare cases we could have full
-    ## data
-    expect_true(length(tt1) == 1)
-    expect_true(tt1 == length(unique(p1$pops.by.time[, 1])))
-    expect_true(names(tt1) == as.character(length(unique(lp1$Genotype))))
+    ## data(examplePosets)
+    ## ## An object of class oncosimul
+    ## p705 <- examplePosets[["p705"]]
+    ## p1 <- oncoSimulIndiv(p705, sampleEvery = 0.025,
+    ##                      keepEvery = 5, onlyCancer = FALSE)
+    ## class(p1)
+    ## lp1 <- OncoSimulWide2Long(p1)
+    ## head(lp1)
+    ## summary(lp1)
+    ## tt1 <- table(table(lp1$Time))
+    ## expect_true(ncol(lp1) == 4)
+    ## ## expect_true(any(is.na(lp1))) in very rare cases we could have full
+    ## ## data
+    ## expect_true(length(tt1) == 1)
+    ## expect_true(tt1 == length(unique(p1$pops.by.time[, 1])))
+    ## expect_true(names(tt1) == as.character(length(unique(lp1$Genotype))))
     
     ## An object of class oncosimul2
     data(examplesFitnessEffects)

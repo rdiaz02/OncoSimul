@@ -9,7 +9,7 @@ test_that("sampleEvery must have a value", {
                                 c("Root" = "Root",
                                   "F" = "f1, f2, f3",
                                   "D" = "d1, d2") )
-     expect_error(oncoSimulIndiv(pi, sampleEvery = NA),
+     expect_error(oncoSimulIndiv(oi, sampleEvery = NA),
                   "sampleEvery cannot be NULL or NA",
                   fixed = TRUE)
 })
@@ -156,26 +156,26 @@ test_that("keepEevery and sampleEvery consistency", {
           })
 
 
-test_that("using old poset format: error if need param null", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              expect_error(oncoSimulIndiv(p701, s = NULL),
-                           "You must specify all of")                                                     
-          })
+## test_that("using old poset format: error if need param null", {
+##               data(examplePosets)
+##               p701 <- examplePosets[["p701"]]
+##               expect_error(oncoSimulIndiv(p701, s = NULL),
+##                            "You must specify all of")                                                     
+##           })
 
-test_that("using old poset format: error if need param null", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              expect_error(oncoSimulIndiv(p701, sh = NULL),
-                           "You must specify all of")                                                     
-          })
+## test_that("using old poset format: error if need param null", {
+##               data(examplePosets)
+##               p701 <- examplePosets[["p701"]]
+##               expect_error(oncoSimulIndiv(p701, sh = NULL),
+##                            "You must specify all of")                                                     
+##           })
 
-test_that("using old poset format: error if need param null", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              expect_error(oncoSimulIndiv(p701, numPassengers = NULL),
-                           "You must specify all of")                                                     
-          })
+## test_that("using old poset format: error if need param null", {
+##               data(examplePosets)
+##               p701 <- examplePosets[["p701"]]
+##               expect_error(oncoSimulIndiv(p701, numPassengers = NULL),
+##                            "You must specify all of")                                                     
+##           })
 
 test_that("verbosity options", {
               oi <- allFitnessEffects(orderEffects =
@@ -235,28 +235,28 @@ test_that("printing oncosimul pop object", {
 
 
 
-test_that("exercising oncoSimulSample, old format", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              null <- capture.output({
-              expect_message(ofw <- oncoSimulSample(2, p701,
-                                                    sampleEvery = 0.03,
-                                                    detectionSize = 1e3,
-                                                    finalTime = 3,
-                                                    onlyCancer = FALSE,
-                                                    showProgress = TRUE),
-                             "Successfully sampled 2 individuals")
-              expect_message(ofs <- oncoSimulSample(2, p701,
-                                                    sampleEvery = 0.03,
-                                                    detectionSize = 1e3,
-                                                    finalTime = 3,
-                                                    onlyCancer = FALSE,
-                                                    typeSample = "single"),
-                             "Successfully sampled 2 individuals")
-              })
-              expect_equal(dim(ofw$popSample), c(2, 7))
-              expect_equal(dim(ofs$popSample), c(2, 7))
-          })
+## test_that("exercising oncoSimulSample, old format", {
+##               data(examplePosets)
+##               p701 <- examplePosets[["p701"]]
+##               null <- capture.output({
+##               expect_message(ofw <- oncoSimulSample(2, p701,
+##                                                     sampleEvery = 0.03,
+##                                                     detectionSize = 1e3,
+##                                                     finalTime = 3,
+##                                                     onlyCancer = FALSE,
+##                                                     showProgress = TRUE),
+##                              "Successfully sampled 2 individuals")
+##               expect_message(ofs <- oncoSimulSample(2, p701,
+##                                                     sampleEvery = 0.03,
+##                                                     detectionSize = 1e3,
+##                                                     finalTime = 3,
+##                                                     onlyCancer = FALSE,
+##                                                     typeSample = "single"),
+##                              "Successfully sampled 2 individuals")
+##               })
+##               expect_equal(dim(ofw$popSample), c(2, 7))
+##               expect_equal(dim(ofs$popSample), c(2, 7))
+##           })
 
 
 test_that("exercising oncoSimulSample, new format", {
@@ -291,49 +291,49 @@ test_that("exercising oncoSimulSample, new format", {
 
 
 
-test_that("check error unknown timeSample", {
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE, max.num.tries = 5000)
-    expect_error(samplePop(r1, timeSample = "uniformo"), 
-                 "Unknown timeSample option")
-    expect_error(samplePop(r1, timeSample = "uni"), 
-                 "Unknown timeSample option")
-    expect_error(samplePop(r1, timeSample = "lasto"), 
-                 "Unknown timeSample option")
-    expect_error(samplePop(r1, timeSample = "whole"), 
-                 "Unknown timeSample option")
-    expect_error(samplePop(r1, timeSample = "single"), 
-                 "Unknown timeSample option")
-    expect_error(samplePop(r1, timeSample = "cucu"), 
-                 "Unknown timeSample option")
-})
+## test_that("check error unknown timeSample", {
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE, max.num.tries = 5000)
+##     expect_error(samplePop(r1, timeSample = "uniformo"), 
+##                  "Unknown timeSample option")
+##     expect_error(samplePop(r1, timeSample = "uni"), 
+##                  "Unknown timeSample option")
+##     expect_error(samplePop(r1, timeSample = "lasto"), 
+##                  "Unknown timeSample option")
+##     expect_error(samplePop(r1, timeSample = "whole"), 
+##                  "Unknown timeSample option")
+##     expect_error(samplePop(r1, timeSample = "single"), 
+##                  "Unknown timeSample option")
+##     expect_error(samplePop(r1, timeSample = "cucu"), 
+##                  "Unknown timeSample option")
+## })
 
-test_that("check error unknown typeSample", {
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE, max.num.tries = 5000)
-    expect_error(samplePop(r1, typeSample = "uniformo"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "uni"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "lasto"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "uniform"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "last"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "wholo"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "whola"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "singlo"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "cell"), 
-                 "Unknown typeSample option")
-    expect_error(samplePop(r1, typeSample = "cucu"), 
-                 "Unknown typeSample option")
-})
+## test_that("check error unknown typeSample", {
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     r1 <- oncoSimulIndiv(p701, onlyCancer = TRUE, max.num.tries = 5000)
+##     expect_error(samplePop(r1, typeSample = "uniformo"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "uni"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "lasto"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "uniform"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "last"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "wholo"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "whola"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "singlo"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "cell"), 
+##                  "Unknown typeSample option")
+##     expect_error(samplePop(r1, typeSample = "cucu"), 
+##                  "Unknown typeSample option")
+## })
 
 
 test_that("oncosimul sample without drivers", {
@@ -741,77 +741,77 @@ test_that("oncoSimulIndiv miscell C++ warnings", {
 })
 
 
-test_that("using old poset format: Bozic and sh < 0", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              expect_silent(oncoSimulIndiv(p701, sh = -0.3,
-                                           model = "Bozic",
-                                           onlyCancer = FALSE))
-})
+## test_that("using old poset format: Bozic and sh < 0", {
+##               data(examplePosets)
+##               p701 <- examplePosets[["p701"]]
+##               expect_silent(oncoSimulIndiv(p701, sh = -0.3,
+##                                            model = "Bozic",
+##                                            onlyCancer = FALSE))
+## })
 
 
-test_that("using old poset format, extra time", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              expect_silent(oncoSimulIndiv(p701, sh = 0.3,
-                                           initSize = 1000,
-                                           detectionSize = 1100,
-                                           model = "McFL",
-                                           finalTime = 1000,
-                                           extraTime = 3.17,
-                                           onlyCancer = FALSE))
-              expect_silent(oncoSimulIndiv(p701, sh = 0,
-                                           model = "Exp",
-                                           initSize = 1e4,
-                                           detectionSize = 1e6,
-                                           extraTime = 10,
-                                           onlyCancer = FALSE))
-              expect_silent(oncoSimulIndiv(p701, sh = -0.01,
-                                           model = "Bozic",
-                                           initSize = 1e4,
-                                           detectionSize = 1e6,
-                                           extraTime = 10,
-                                           onlyCancer = FALSE))
-})
+## test_that("using old poset format, extra time", {
+##               data(examplePosets)
+##               p701 <- examplePosets[["p701"]]
+##               expect_silent(oncoSimulIndiv(p701, sh = 0.3,
+##                                            initSize = 1000,
+##                                            detectionSize = 1100,
+##                                            model = "McFL",
+##                                            finalTime = 1000,
+##                                            extraTime = 3.17,
+##                                            onlyCancer = FALSE))
+##               expect_silent(oncoSimulIndiv(p701, sh = 0,
+##                                            model = "Exp",
+##                                            initSize = 1e4,
+##                                            detectionSize = 1e6,
+##                                            extraTime = 10,
+##                                            onlyCancer = FALSE))
+##               expect_silent(oncoSimulIndiv(p701, sh = -0.01,
+##                                            model = "Bozic",
+##                                            initSize = 1e4,
+##                                            detectionSize = 1e6,
+##                                            extraTime = 10,
+##                                            onlyCancer = FALSE))
+## })
 
-test_that("using old poset format, no initMutant", {
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    expect_warning(p1 <- oncoSimulIndiv(p701, sh = 0.3,
-                                        initSize = 1000,
-                                        detectionSize = 1100,
-                                        model = "Exp",
-                                        finalTime = 1000,
-                                        extraTime = 3.17,
-                                        initMutant = 2,
-                                        onlyCancer = FALSE),
-                   "With the old poset format you can no longer use initMutant",
-                   fixed = TRUE)
-    expect_warning(p1 <- oncoSimulIndiv(p701, sh = 0.3,
-                                        initSize = 1000,
-                                        detectionSize = 1100,
-                                        model = "Exp",
-                                        finalTime = 1000,
-                                        extraTime = 3.17,
-                                        initMutant = c(2, 5),
-                                        onlyCancer = FALSE),
-                   "With the old poset format you can no longer use initMutant",
-                   fixed = TRUE)
-})
+## test_that("using old poset format, no initMutant", {
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     expect_warning(p1 <- oncoSimulIndiv(p701, sh = 0.3,
+##                                         initSize = 1000,
+##                                         detectionSize = 1100,
+##                                         model = "Exp",
+##                                         finalTime = 1000,
+##                                         extraTime = 3.17,
+##                                         initMutant = 2,
+##                                         onlyCancer = FALSE),
+##                    "With the old poset format you can no longer use initMutant",
+##                    fixed = TRUE)
+##     expect_warning(p1 <- oncoSimulIndiv(p701, sh = 0.3,
+##                                         initSize = 1000,
+##                                         detectionSize = 1100,
+##                                         model = "Exp",
+##                                         finalTime = 1000,
+##                                         extraTime = 3.17,
+##                                         initMutant = c(2, 5),
+##                                         onlyCancer = FALSE),
+##                    "With the old poset format you can no longer use initMutant",
+##                    fixed = TRUE)
+## })
 
-test_that("using old poset format, exercise verbosity", {
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    expect_output(oncoSimulIndiv(p701, sh = 0,
-                                 initSize = 10000,
-                                 detectionSize = 30000,
-                                 model = "Exp",
-                                 finalTime = 2000,
-                                 extraTime = 3.17,
-                                 verbosity = 10,
-                                 onlyCancer = FALSE),
-                  "Looping", fixed = TRUE)
-})
+## test_that("using old poset format, exercise verbosity", {
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     expect_output(oncoSimulIndiv(p701, sh = 0,
+##                                  initSize = 10000,
+##                                  detectionSize = 30000,
+##                                  model = "Exp",
+##                                  finalTime = 2000,
+##                                  extraTime = 3.17,
+##                                  verbosity = 10,
+##                                  onlyCancer = FALSE),
+##                   "Looping", fixed = TRUE)
+## })
 
 
 
@@ -835,22 +835,22 @@ test_that("exercising verbosity, new format", {
 
 
 
-test_that("old format: at most 64 genes", {
-    p1 <- cbind(1L, 2L)
-    expect_error(p1 <- oncoSimulIndiv(p1,
-                        numPassengers = 66,
-                        sh = 0,
-                        initSize = 1e5,
-                        sampleEvery = 0.02,
-                        detectionSize = 1e9,
-                        model = "Exp",
-                        finalTime = 2000,
-                        extraTime = 3.17,
-                        onlyCancer = FALSE,
-                        seed = NULL),
-                 "Largest possible number of genes",
-                 fixed = TRUE)
-})
+## test_that("old format: at most 64 genes", {
+##     p1 <- cbind(1L, 2L)
+##     expect_error(p1 <- oncoSimulIndiv(p1,
+##                         numPassengers = 66,
+##                         sh = 0,
+##                         initSize = 1e5,
+##                         sampleEvery = 0.02,
+##                         detectionSize = 1e9,
+##                         model = "Exp",
+##                         finalTime = 2000,
+##                         extraTime = 3.17,
+##                         onlyCancer = FALSE,
+##                         seed = NULL),
+##                  "Largest possible number of genes",
+##                  fixed = TRUE)
+## })
 
 
 
@@ -921,14 +921,14 @@ test_that("AND_DrvProbExit warnings and errors work" , {
                  fixed = TRUE)
 
 
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    expect_error(u <- oncoSimulIndiv(p701, detectionDrivers = 1,
-                                     detectionProb = "default",
-                                     detectionSize = NA,
-                                     AND_DrvProbExit = TRUE),
-                 "The AND_DrvProbExit = TRUE setting is invalid with the old poset",
-                 fixed = TRUE)
+    ## data(examplePosets)
+    ## p701 <- examplePosets[["p701"]]
+    ## expect_error(u <- oncoSimulIndiv(p701, detectionDrivers = 1,
+    ##                                  detectionProb = "default",
+    ##                                  detectionSize = NA,
+    ##                                  AND_DrvProbExit = TRUE),
+    ##              "The AND_DrvProbExit = TRUE setting is invalid with the old poset",
+    ##              fixed = TRUE)
 }
 )
 
@@ -1024,10 +1024,10 @@ test_that("exercising oncoSimulIndiv, max size warning", {
     p1 <- allFitnessEffects(noIntGenes = rep(.1, 10))
     expect_output(oncoSimulIndiv(p1, initSize = 1.5e15, verbosity = 1,
                                  onlyCancer = FALSE, mu= 1e-7))
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    expect_output(oncoSimulIndiv(p701, initSize = 4.1e15, verbosity = 1,
-                                 onlyCancer = FALSE, mu= 1e-7))
+    ## data(examplePosets)
+    ## p701 <- examplePosets[["p701"]]
+    ## expect_output(oncoSimulIndiv(p701, initSize = 4.1e15, verbosity = 1,
+    ##                              onlyCancer = FALSE, mu= 1e-7))
 })
 
 
