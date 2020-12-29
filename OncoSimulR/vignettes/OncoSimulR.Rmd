@@ -3942,13 +3942,16 @@ numbers), while the values of `s` are much larger positive numbers.
 ### Extended posets
 
 In version 1 of this package we used posets in the sense of
-@Beerenwinkel2007 and @Gerstung2009, as explained in section
-\@ref(poset) and in the help for `poset`. Here, we continue using
-two columns, that specify parents and children, but we add columns
-for the specific values of fitness effects (both s and sh ---i.e.,
-fitness effects for what happens when restrictions are and are not
-satisfied) and for the type of dependency as explained in section
-\@ref(andorxor).
+@Beerenwinkel2007 and @Gerstung2009, as explained in <!-- section -->
+<!-- \@ref(poset) and in  --> the help for `poset`.  The
+functionality for simulating directly from such two column matrices
+has been removed. Instead, we use what we call extended posets.
+
+With the extended posets, we continue using two columns, that
+specify parents and children, but we add columns for the specific
+values of fitness effects (both s and sh ---i.e., fitness effects
+for what happens when restrictions are and are not satisfied) and
+for the type of dependency as explained in section \@ref(andorxor).
 
 
 

@@ -551,8 +551,8 @@ oncoSimulIndiv <- function(fp,
             stop("Unknown model")
     }
 
-    if( (length(mu) > 1) && !inherits(fp, "fitnessEffects"))
-        stop("Per-gene mutation rates cannot be used with the old poset format")
+    ## if( (length(mu) > 1) && !inherits(fp, "fitnessEffects"))
+    ##     stop("Per-gene mutation rates cannot be used with the old poset format")
 
     if(any(mu < 0)) {
         stop("(at least one) mutation rate (mu) is negative")

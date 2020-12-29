@@ -8,7 +8,7 @@
 }
 \description{
   
-  Conver the \code{pops.by.time} component from its "wide" format (with
+  Convert the \code{pops.by.time} component from its "wide" format (with
   one column for time, and as many columns as clones/genotypes) into
   "long" format, so that it can be used with other functions, for
   instance for plots.
@@ -43,16 +43,8 @@ OncoSimulWide2Long(x)
 }
 
 \examples{
-data(examplePosets)
-## An object of class oncosimul
-p705 <- examplePosets[["p705"]]
-p1 <- oncoSimulIndiv(p705)
-class(p1)
-lp1 <- OncoSimulWide2Long(p1)
-head(lp1)
-summary(lp1)
 
-## An object of class oncosimul2
+
 data(examplesFitnessEffects)
 
 sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
