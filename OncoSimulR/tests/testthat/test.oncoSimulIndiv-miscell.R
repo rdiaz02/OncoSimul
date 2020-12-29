@@ -9,7 +9,7 @@ test_that("sampleEvery must have a value", {
                                 c("Root" = "Root",
                                   "F" = "f1, f2, f3",
                                   "D" = "d1, d2") )
-     expect_error(oncoSimulIndiv(pi, sampleEvery = NA),
+     expect_error(oncoSimulIndiv(oi, sampleEvery = NA),
                   "sampleEvery cannot be NULL or NA",
                   fixed = TRUE)
 })
