@@ -1,5 +1,6 @@
-Changes in version 2.99.6 (2020-12-13):
+Changes in version 2.99.6 (2020-12-30):
 	- No longer v.1 functionality.
+	- Slightly faster vignette.
 
 Changes in version 2.99.5 (2020-12-18):
 	- Random timeouts when building in tokay2 (Windows, BioC); fixing
