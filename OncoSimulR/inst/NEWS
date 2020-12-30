@@ -1,3 +1,6 @@
+Changes in version 2.99.7 (2020-12-30):
+	- Vignette: fixed two missing refs and add seed in two examples.
+
 Changes in version 2.99.6 (2020-12-30):
 	- No longer v.1 functionality.
 	- Slightly faster vignette.

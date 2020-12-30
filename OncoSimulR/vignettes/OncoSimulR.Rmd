@@ -458,8 +458,8 @@ This is a question that was addressed, for instance, in
 @Diaz-Uriarte2015: do methods that try to infer restrictions in the
 order of accumulation of mutations [e.g., @Szabo2008; @Gerstung2009;
 @ramazzotti_capri_2015] work well under different evolutionary
-models and with different sampling schemes? (This issue is also
-touched upon in section \@ref(sample-1)).
+models and with different sampling schemes?<!--  (This issue is also -->
+<!-- touched upon in section \@ref(sample-1)). -->
 
 A possible way to examine that question would involve:
 
@@ -1145,16 +1145,18 @@ plot(pancr)
 ``` 
 
 
-```{r}
+```{r theformerunnamed6}
 ## 2. Simulate from it. We change several possible options. 
 
-set.seed(4) ## Fix the seed, so we can repeat it
+set.seed(1) ## Fix the seed, so we can repeat it
+## We set a small finalTime to speed up the vignette
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      mu = 1e-6,
                      sampleEvery = 0.02,
                      keepEvery = 1,
                      initSize = 1000,
-                     finalTime = 10000,
+                     finalTime = 20000,
+                     detectionDrivers = 3,
                      onlyCancer = FALSE)
 ``` 
 
@@ -1164,9 +1166,9 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
 ##    to show only parts of the data. We also aggressively thin
 ##    the data.
 par(cex = 0.7)
-plot(ep2, show = "genotypes", xlim = c(1000, 8000), 
+plot(ep2, show = "genotypes", xlim = c(500, 1800), 
      ylim = c(0, 2400),
-     thinData = TRUE, thinData.keep = 0.03)
+     thinData = TRUE, thinData.keep = 0.3)
 ``` 
 
 
@@ -6347,6 +6349,13 @@ making mistakes).
 <!-- In v.1 you can only give the initial mutant as one with a single -->
 <!-- mutated gene. --> 
 
+
+```{r seedprbau003, echo=FALSE}
+set.seed(2)
+RNGkind("L'Ecuyer-CMRG")
+```
+
+
 ```{r prbau003, fig.height=6}
 
 o3init <- allFitnessEffects(orderEffects = c(
@@ -6378,27 +6387,32 @@ plotClonePhylog(oneI, N = 0)
 
 
 
-```{r hiddeprbau, echo=FALSE}
-set.seed(3)
-RNGkind("L'Ecuyer-CMRG")
-```
+<!-- ```{r hiddeprbau, echo=FALSE} -->
+<!-- set.seed(3) -->
+<!-- RNGkind("L'Ecuyer-CMRG") -->
+<!-- ``` -->
 
 ```{r prbau003bb, fig.height=6}
 ## Note we also disable the stopping stochastically as a function of size
 ## to allow the population to grow large and generate may different
 ## clones.
 
-## For speed, we set a small finalTime
+## For speed, we set a small finalTime and we fix the seed
+## for reproducilibity. Beware: since finalTime is short, sometimes
+## we do not reach cancer 
+set.seed(1)
+RNGkind("L'Ecuyer-CMRG")
 
 ospI <- oncoSimulPop(2, 
                     o3init, model = "Exp",
-                    mu = 5e-5, finalTime = 150,
+                    mu = 5e-5, finalTime = 200,
                     detectionDrivers = 3,
                     onlyCancer = TRUE,
                     initSize = 10,
                     keepPhylog = TRUE,
                     initMutant = c("d > m > z"),
-                    mc.cores = 2
+                    mc.cores = 2,
+                    seed = NULL
                     )
 
 ## Show just one example
@@ -6407,15 +6421,18 @@ plotClonePhylog(ospI[[1]])
 ## plotClonePhylog(ospI[[2]])
 ## par(op)
 
+set.seed(1)
+RNGkind("L'Ecuyer-CMRG")
 ossI <- oncoSimulSample(2, 
                         o3init, model = "Exp",
-                        mu = 5e-5, finalTime = 150,
+                        mu = 5e-5, finalTime = 200,
                         detectionDrivers = 2,
                         onlyCancer = TRUE,
                         initSize = 10,
                         initMutant = c("z > d"),
                         ## check presence of initMutant:
-                        thresholdWhole = 1 
+                        thresholdWhole = 1,
+                        seed = NULL
                     )
 
 ## No phylogeny is kept with oncoSimulSample, but look at the 
@@ -13326,12 +13343,18 @@ There is  an example in Mather et al, p. 1234, section 3.1.1
 	 
 Of course, this only makes sense in models where birth rate changes.	 
 
-## What can you do with the simulations?
 
-This is up to you. In section \@ref(sample-1) we show an example
-where we infer an Oncogenetic tree from simulated data and in
-section \@ref(whatfor) we go over a varied set of scientific
-questions where OncoSimulR could help.
+<!-- FIXME: give references here -->
+
+<!-- ## What can you do with the simulations? -->
+
+<!-- This is up to you. We have used OncoSimulR extensively in several -->
+<!-- papers and it has also been used by other authors -->
+
+<!-- <\!-- In section \@ref(sample-1) we show an example -\-> -->
+<!-- <\!-- where we infer an Oncogenetic tree from simulated data and in -\-> -->
+<!-- <\!-- section \@ref(whatfor) we go over a varied set of scientific -\-> -->
+<!-- <\!-- questions where OncoSimulR could help. -\-> -->
 
 
 \clearpage
