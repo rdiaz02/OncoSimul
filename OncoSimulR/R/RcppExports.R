@@ -5,10 +5,6 @@ nr_BNB_Algo5 <- function(rFE, mu_, death, initSize_, sampleEvery, detectionSize,
     .Call('OncoSimulR_nr_BNB_Algo5', PACKAGE = 'OncoSimulR', rFE, mu_, death, initSize_, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant_, maxWallTime, keepEvery, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime, keepPhylog, MMUEF, full2mutator_, n2, p2, PDBaseline, cPDetect_i, checkSizePEvery, AND_DrvProbExit, fixation_list)
 }
 
-BNB_Algo5 <- function(restrictTable, numDrivers, numGenes, typeCBN_, s, death, mu, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant, maxWallTime, keepEvery, sh, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime) {
-    .Call('OncoSimulR_BNB_Algo5', PACKAGE = 'OncoSimulR', restrictTable, numDrivers, numGenes, typeCBN_, s, death, mu, initSize, sampleEvery, detectionSize, finalTime, initSp, initIt, seed, verbosity, speciesFS, ratioForce, typeFitness_, maxram, mutationPropGrowth, initMutant, maxWallTime, keepEvery, sh, K, detectionDrivers, onlyCancer, errorHitWallTime, maxNumTries, errorHitMaxTries, minDetectDrvCloneSz, extraTime)
-}
-
 evalRGenotype <- function(rG, rFE, spPop, verbose, prodNeg, calledBy_, currentTime) {
     .Call('OncoSimulR_evalRGenotype', PACKAGE = 'OncoSimulR', rG, rFE, spPop, verbose, prodNeg, calledBy_, currentTime)
 }

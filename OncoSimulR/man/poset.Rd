@@ -41,6 +41,10 @@
   This specification of restrictions is for version 1. See
   \code{\link{allFitnessEffects}} for a much more flexible one for
   version 2. Both can be used with  \code{\link{oncoSimulIndiv}}.
+
+
+  Note that simulating using posets directly is no longer
+  supported. This function is left here only for historical purposes.
 }
 
 \references{

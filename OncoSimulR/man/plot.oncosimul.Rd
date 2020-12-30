@@ -324,34 +324,6 @@
   \code{\link{oncoSimulIndiv}}
 }
 \examples{
-\dontrun{
-data(examplePosets)
-p701 <- examplePosets[["p701"]]
-
-## Simulate and plot a single individual, including showing
-## Shannon's diversity index
-b1 <- oncoSimulIndiv(p701)
-plot(b1, addtot = TRUE, plotDiversity = TRUE)
-
-## A stacked area plot
-plot(b1, type = "stacked", plotDiversity = TRUE)
-
-## And what if I show a stream plot?
-plot(b1, type = "stream", plotDiversity = TRUE)
-
-## Simulate and plot 2 individuals
-## (I set mc.cores = 2 to comply with --as-cran checks, but you
-##  should either use a reasonable number for your hardware or
-##  leave it at its default value).
-
-p1 <- oncoSimulPop(2, p701, mc.cores = 2)
-
-par(mfrow = c(1, 2))
-plot(p1, ask = FALSE)
-
-## Stacked; we cannot log here, and harder to see patterns
-plot(p1, ask = FALSE, type = "stacked")
-}
 
 ## Show individual genotypes and drivers for an
 ## epistasis case with at most eight genotypes

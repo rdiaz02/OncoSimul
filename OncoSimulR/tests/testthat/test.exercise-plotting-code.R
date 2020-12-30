@@ -16,12 +16,12 @@ cat(paste("\n Starting exercise-plotting-code at", date()))
 ## fail. Uncomment in the first block to see yourself
 
 test_that("exercising the oncosimul plotting code", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              b1 <- oncoSimulIndiv(p701)
-              plot(b1, addtot = TRUE, plotDiversity = TRUE)
-              p1 <- oncoSimulPop(2, p701, mc.cores = 2)
-              plot(p1, ask = FALSE)
+              ## data(examplePosets)
+              ## p701 <- examplePosets[["p701"]]
+              ## b1 <- oncoSimulIndiv(p701)
+              ## plot(b1, addtot = TRUE, plotDiversity = TRUE)
+              ## p1 <- oncoSimulPop(2, p701, mc.cores = 2)
+              ## plot(p1, ask = FALSE)
               oi <- allFitnessEffects(orderEffects =
                                           c("F > D" = -0.3, "D > F" = 0.4),
                                       noIntGenes = rexp(5, 10),
@@ -43,12 +43,12 @@ test_that("exercising the oncosimul plotting code", {
 
 
 test_that("exercising the oncosimul plotting code, thinning", {
-              data(examplePosets)
-              p701 <- examplePosets[["p701"]]
-              b1 <- oncoSimulIndiv(p701)
-              plot(b1, addtot = TRUE, plotDiversity = TRUE)
-              p1 <- oncoSimulPop(2, p701, mc.cores = 2)
-              plot(p1, ask = FALSE)
+              ## data(examplePosets)
+              ## p701 <- examplePosets[["p701"]]
+              ## b1 <- oncoSimulIndiv(p701)
+              ## plot(b1, addtot = TRUE, plotDiversity = TRUE)
+              ## p1 <- oncoSimulPop(2, p701, mc.cores = 2)
+              ## plot(p1, ask = FALSE)
               oi <- allFitnessEffects(orderEffects =
                                           c("F > D" = -0.3, "D > F" = 0.4),
                                       noIntGenes = rexp(5, 10),
@@ -68,16 +68,16 @@ test_that("exercising the oncosimul plotting code, thinning", {
           })
 
 
-test_that("exercising the poset plotting code", {
-              data(examplePosets)
-              plotPoset(examplePosets[["p1101"]])
-              poset701 <- examplePosets[["p701"]]
-              plotPoset(poset701, addroot = TRUE)
-              plotPoset(poset701, addroot = TRUE,
-                        names = c("Root", "KRAS", "SMAD4", "CDNK2A", "TP53",
-                                  "MLL3","PXDN", "TGFBR2"))
-              expect_true(2 == 2)
-          })
+## test_that("exercising the poset plotting code", {
+##               data(examplePosets)
+##               plotPoset(examplePosets[["p1101"]])
+##               poset701 <- examplePosets[["p701"]]
+##               plotPoset(poset701, addroot = TRUE)
+##               plotPoset(poset701, addroot = TRUE,
+##                         names = c("Root", "KRAS", "SMAD4", "CDNK2A", "TP53",
+##                                   "MLL3","PXDN", "TGFBR2"))
+##               expect_true(2 == 2)
+##           })
 
 
 test_that("exercising plotClonePhylog", {
@@ -320,73 +320,73 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
 })
 
 
-test_that("oncosimul v.1 objects and genotype plotting", {
-    data(examplePosets)
-    ## An object of class oncosimul
-    p705 <- examplePosets[["p705"]]
-    ## Again, Exp model is much more variable and can take long.
-    ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
-    max.tries <- 4
-    for(i in 1:max.tries) {
-    p1 <- oncoSimulIndiv(p705, model = "McFL",
-                         mu = 5e-6,
-                         sampleEvery = 0.02,
-                         keepEvery = 10,
-                         initSize = 2000,
-                         finalTime = 3000,
-                         max.num.tries = 100,
-                         onlyCancer = FALSE)
-    if(nrow(p1$pops.by.time) >= 11) {
-            break
-    } else {
-        cat("\n hummm.. had to run again in the plot")
-        if(i >= max.tries) {
-            print(p1)
-            stop("stream will break")
-        }
-    }
-    }
-    ## class(p1)
-   plot(p1, type = "stacked", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
-   plot(p1, type = "stream", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
-    plot(p1, type = "line", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
-    expect_true(2 == 2)
-})
+## test_that("oncosimul v.1 objects and genotype plotting", {
+##     data(examplePosets)
+##     ## An object of class oncosimul
+##     p705 <- examplePosets[["p705"]]
+##     ## Again, Exp model is much more variable and can take long.
+##     ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+##     max.tries <- 4
+##     for(i in 1:max.tries) {
+##     p1 <- oncoSimulIndiv(p705, model = "McFL",
+##                          mu = 5e-6,
+##                          sampleEvery = 0.02,
+##                          keepEvery = 10,
+##                          initSize = 2000,
+##                          finalTime = 3000,
+##                          max.num.tries = 100,
+##                          onlyCancer = FALSE)
+##     if(nrow(p1$pops.by.time) >= 11) {
+##             break
+##     } else {
+##         cat("\n hummm.. had to run again in the plot")
+##         if(i >= max.tries) {
+##             print(p1)
+##             stop("stream will break")
+##         }
+##     }
+##     }
+##     ## class(p1)
+##    plot(p1, type = "stacked", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
+##    plot(p1, type = "stream", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
+##     plot(p1, type = "line", show = "genotypes", thinData = TRUE, thinData.keep = 0.5)
+##     expect_true(2 == 2)
+## })
 
 
-test_that("passing colors", {
-    data(examplePosets)
-    ## An object of class oncosimul
-    p705 <- examplePosets[["p705"]]
-    ## Again, Exp model is much more variable and can take long.
-    ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
-    max.tries <- 4
-    for(i in 1:max.tries) {
-    p1 <- oncoSimulIndiv(p705, model = "McFL",
-                         mu = 5e-6,
-                         sampleEvery = 0.02,
-                         keepEvery = 10,
-                         initSize = 2000,
-                         finalTime = 3000,
-                         max.num.tries = 100,
-                         onlyCancer = TRUE)
-    if(nrow(p1$pops.by.time) >= 5) {
-            break
-        } else {
-            if(i >= max.tries) {
-                print(p1)
-                stop("stream will break")
-            }
-        }
-    }
-    ## class(p1)
-    suppressWarnings({
-    plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
-    plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
-    plot(p1, type = "line", show = "genotypes", col = rainbow(3))
-    })
-    expect_true(2 == 2)
-})
+## test_that("passing colors", {
+##     data(examplePosets)
+##     ## An object of class oncosimul
+##     p705 <- examplePosets[["p705"]]
+##     ## Again, Exp model is much more variable and can take long.
+##     ## p1 <- oncoSimulIndiv(p705, keepEvery = 5)
+##     max.tries <- 4
+##     for(i in 1:max.tries) {
+##     p1 <- oncoSimulIndiv(p705, model = "McFL",
+##                          mu = 5e-6,
+##                          sampleEvery = 0.02,
+##                          keepEvery = 10,
+##                          initSize = 2000,
+##                          finalTime = 3000,
+##                          max.num.tries = 100,
+##                          onlyCancer = TRUE)
+##     if(nrow(p1$pops.by.time) >= 5) {
+##             break
+##         } else {
+##             if(i >= max.tries) {
+##                 print(p1)
+##                 stop("stream will break")
+##             }
+##         }
+##     }
+##     ## class(p1)
+##     suppressWarnings({
+##     plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
+##     plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
+##     plot(p1, type = "line", show = "genotypes", col = rainbow(3))
+##     })
+##     expect_true(2 == 2)
+## })
 
 
 

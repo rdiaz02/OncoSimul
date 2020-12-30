@@ -148,17 +148,17 @@ test_that("Catch errors", {
                    ),
                  "It makes no sense to pass AND_DrvProbExit and a fixation list",
                  fixed = TRUE)
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    expect_error(oncoSimulIndiv(p701, model = "McFL",
-                                mu = 1e-4, 
-                                onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
-                                initSize = initS, 
-                                keepEvery = NA,
-                                fixation = c("u", "v")
-                                ),
-                 "'fixation' cannot be specified with the old poset format",
-                 fixed = TRUE)
+    ## data(examplePosets)
+    ## p701 <- examplePosets[["p701"]]
+    ## expect_error(oncoSimulIndiv(p701, model = "McFL",
+    ##                             mu = 1e-4, 
+    ##                             onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,
+    ##                             initSize = initS, 
+    ##                             keepEvery = NA,
+    ##                             fixation = c("u", "v")
+    ##                             ),
+    ##              "'fixation' cannot be specified with the old poset format",
+    ##              fixed = TRUE)
     expect_error(oncoSimulIndiv(od, model = "McFL",
                    mu = 1e-4, 
                    onlyCancer = TRUE, finalTime = NA, detectionSize = NA, detectionProb = NA,

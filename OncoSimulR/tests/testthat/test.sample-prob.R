@@ -671,12 +671,12 @@ test_that("Exercise the default option and other substitutions/defaults" , {
 
 ## date()
 test_that("Fails as expected" , {
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    expect_error(oncoSimulIndiv(p701,
-                                detectionProb = "default"),
-                 "detectionProb cannot be used in v.1 objects",
-                 fixed = TRUE)
+    ## data(examplePosets)
+    ## p701 <- examplePosets[["p701"]]
+    ## expect_error(oncoSimulIndiv(p701,
+    ##                             detectionProb = "default"),
+    ##              "detectionProb cannot be used in v.1 objects",
+    ##              fixed = TRUE)
     gi <- rep(0.1, 10)
     names(gi) <- letters[1:10]
     oi <- allFitnessEffects(noIntGenes = gi)

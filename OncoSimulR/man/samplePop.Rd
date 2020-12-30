@@ -168,14 +168,26 @@ sampledGenotypes(y, genes = NULL)
 }
 
 \examples{
-data(examplePosets)
-p705 <- examplePosets[["p705"]]
+######## Using an extended poset for pancreatic cancer from Gerstung et al.
+###      (s and sh are made up for the example; only the structure
+###       and names come from Gerstung et al.)
+
+
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A",
+                                          "TP53", "TP53", "MLL3"),
+                                      child = c("KRAS","SMAD4", "CDNK2A",
+                                          "TP53", "MLL3",
+                                          rep("PXDN", 3), rep("TGFBR2", 2)),
+                                      s = 0.15,
+                                      sh = -0.3,
+                                      typeDep = "MN"))
+
 
 ## (I set mc.cores = 2 to comply with --as-cran checks, but you
 ##  should either use a reasonable number for your hardware or
 ##  leave it at its default value).
 
-p1 <- oncoSimulPop(4, p705, mc.cores = 2)
+p1 <- oncoSimulPop(4, pancr, mc.cores = 2)
 (sp1 <- samplePop(p1))
 sampledGenotypes(sp1)
 
@@ -190,7 +202,7 @@ sampledGenotypes(sp2)
 
 ## Now single cell sampling
 
-r1 <- oncoSimulIndiv(p705)
+r1 <- oncoSimulIndiv(pancr)
 samplePop(r1, typeSample = "single")
 
 sampledGenotypes(samplePop(r1, typeSample = "single"))

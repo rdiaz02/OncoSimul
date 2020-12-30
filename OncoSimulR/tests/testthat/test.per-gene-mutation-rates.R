@@ -61,15 +61,15 @@ test_that("single named gene in mut. fail", {
                   fixed = TRUE)
 } )
 
-test_that("Per-gene mutation rates with old poset format, fail", {
-    ## cat("\n s02: a runif is", runif(1), "\n")
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
-    names(muvar) <- letters[1:7]
-    expect_error(oncoSimulIndiv(p701, mu = muvar),
-                 "Per-gene mutation rates cannot be used with the old poset format")
-} )
+## test_that("Per-gene mutation rates with old poset format, fail", {
+##     ## cat("\n s02: a runif is", runif(1), "\n")
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
+##     names(muvar) <- letters[1:7]
+##     expect_error(oncoSimulIndiv(p701, mu = muvar),
+##                  "Per-gene mutation rates cannot be used with the old poset format")
+## } )
 
 test_that("Only no-int, and sorting", {
     ## cat("\n s03: a runif is", runif(1), "\n")
@@ -183,15 +183,15 @@ test_that("0 or negative mu not allowed", {
 
 #### Repeating above, but with McFL
 
-test_that("McFL: Per-gene mutation rates with old poset format, fail", {
-    ## cat("\n sz01: a runif is", runif(1), "\n")
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
-    names(muvar) <- letters[1:7]
-    expect_error(oncoSimulIndiv(p701, mu = muvar, model = "McFL"),
-                 "Per-gene mutation rates cannot be used with the old poset format")
-} )
+## test_that("McFL: Per-gene mutation rates with old poset format, fail", {
+##     ## cat("\n sz01: a runif is", runif(1), "\n")
+##     data(examplePosets)
+##     p701 <- examplePosets[["p701"]]
+##     muvar <- c(rep(1e-5, 4), rep(1e-6, 3))
+##     names(muvar) <- letters[1:7]
+##     expect_error(oncoSimulIndiv(p701, mu = muvar, model = "McFL"),
+##                  "Per-gene mutation rates cannot be used with the old poset format")
+## } )
 
 
 test_that("McFL: Only no-int, and sorting", {

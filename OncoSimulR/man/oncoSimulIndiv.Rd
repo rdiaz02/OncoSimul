@@ -867,73 +867,12 @@ of the individual done, and the number of attempts and time used.}
 
 
 \seealso{
-  \code{\link{plot.oncosimul}}, \code{\link{examplePosets}},
+  \code{\link{plot.oncosimul}}, 
   \code{\link{samplePop}}, \code{\link{allFitnessEffects}}
   
 
 }
 \examples{
-
-#################################
-#####
-##### Examples using v.1
-#####
-#################################
-
-
-## use poset p701
-data(examplePosets)
-p701 <- examplePosets[["p701"]]
-
-## Exp Model
-
-b1 <- oncoSimulIndiv(p701)
-summary(b1)
-
-plot(b1, addtot = TRUE)
-
-## McFarland; use a small sampleEvery, but also a reasonable
-##   keepEvery.
-## We also modify mutation rate to values similar to those in the
-##   original paper.
-## Note that detectionSize will play no role
-## finalTime is large, since this is a slower process
-## initSize is set to 4000 so the default K is larger and we are likely
-## to reach cancer. Alternatively, set K = 2000.
-
-m1 <- oncoSimulIndiv(p701,
-                     model = "McFL",
-                     mu = 5e-7,
-                     initSize = 4000,
-                     sampleEvery = 0.025,
-                     finalTime = 15000,
-                     keepEvery = 10,
-                     onlyCancer = FALSE)
-plot(m1, addtot = TRUE, log = "")
-
-
-
-
-## Simulating 4 individual trajectories
-## (I set mc.cores = 2 to comply with --as-cran checks, but you
-##  should either use a reasonable number for your hardware or
-##  leave it at its default value).
-
-
-p1 <- oncoSimulPop(4, p701,
-                   keepEvery = 10,
-                   mc.cores = 2)
-summary(p1)
-samplePop(p1)
-
-p2 <- oncoSimulSample(4, p701)
-
-
-#########################################
-######
-###### Examples using v.2:
-######
-#########################################
 
 
 
@@ -1001,7 +940,7 @@ object.size(oiP1)
 
 
 
-######## Using a poset for pancreatic cancer from Gerstung et al.
+######## Using an extended poset for pancreatic cancer from Gerstung et al.
 ###      (s and sh are made up for the example; only the structure
 ###       and names come from Gerstung et al.)
 
@@ -1042,7 +981,7 @@ femuv <- allFitnessEffects(noIntGenes = ni)
 oncoSimulIndiv(femuv, mu = muv)
 }
 
-#########Frequency dependent fitness examples
+######### Frequency dependent fitness examples
 
 ## An example with cooperation. Presence of WT favours all clones
 ## and all clones have a positive effect on themselves

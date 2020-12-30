@@ -499,6 +499,8 @@ oncoSimulIndiv <- function(fp,
     if(inherits(fp, "fitnessEffects")) {
         s <- sh <- NULL ## force it soon!
     }
+    if(!inherits(fp, "fitnessEffects")) 
+        stop("v.1 functionality has been removed. Please use v.2")
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -549,8 +551,8 @@ oncoSimulIndiv <- function(fp,
             stop("Unknown model")
     }
 
-    if( (length(mu) > 1) && !inherits(fp, "fitnessEffects"))
-        stop("Per-gene mutation rates cannot be used with the old poset format")
+    ## if( (length(mu) > 1) && !inherits(fp, "fitnessEffects"))
+    ##     stop("Per-gene mutation rates cannot be used with the old poset format")
 
     if(any(mu < 0)) {
         stop("(at least one) mutation rate (mu) is negative")
@@ -584,83 +586,83 @@ oncoSimulIndiv <- function(fp,
 
     if(is_null_na(sampleEvery)) stop("sampleEvery cannot be NULL or NA")
     
-    if(!inherits(fp, "fitnessEffects")) {
-        if(any(unlist(lapply(list(fp, 
-                                  numPassengers,
-                                  s, sh), is.null)))) {
-            m <- paste("You are using the old poset format.",
-                       "You must specify all of poset, numPassengers",
-                       "s, and sh.")
-            stop(m)
+    ## if(!inherits(fp, "fitnessEffects")) {
+        ## if(any(unlist(lapply(list(fp, 
+        ##                           numPassengers,
+        ##                           s, sh), is.null)))) {
+        ##     m <- paste("You are using the old poset format.",
+        ##                "You must specify all of poset, numPassengers",
+        ##                "s, and sh.")
+        ##     stop(m)
            
-        }
-        if(AND_DrvProbExit) {
-            stop("The AND_DrvProbExit = TRUE setting is invalid",
-                 " with the old poset format.")
-        }
-        if(!is.null(muEF))
-            stop("Mutator effects cannot be specified with the old poset format.")
-        if( length(initMutant) > 0)  
-            warning("With the old poset format you can no longer use initMutant.",
-                    " The initMutant you passed will be ignored.")
-        ## stop("With the old poset, initMutant can only take a single value.")
-        if(!is_null_na(fixation))
-            stop("'fixation' cannot be specified with the old poset format.")
-        ## Seeding C++ is now much better in new version
-        if(is.null(seed) || (seed == "auto")) {## passing a null creates a random seed
-            ## name is a legacy. This is really the seed for the C++ generator.
-            ## Nope, we cannot use 2^32, because as.integer will fail.
-            seed <- as.integer(round(runif(1, min = 0, max = 2^16)))
-        }
-        if(verbosity >= 2)
-            cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
+        ## }
+        ## if(AND_DrvProbExit) {
+        ##     stop("The AND_DrvProbExit = TRUE setting is invalid",
+        ##          " with the old poset format.")
+        ## }
+        ## if(!is.null(muEF))
+        ##     stop("Mutator effects cannot be specified with the old poset format.")
+        ## if( length(initMutant) > 0)  
+        ##     warning("With the old poset format you can no longer use initMutant.",
+        ##             " The initMutant you passed will be ignored.")
+        ## ## stop("With the old poset, initMutant can only take a single value.")
+        ## if(!is_null_na(fixation))
+        ##     stop("'fixation' cannot be specified with the old poset format.")
+        ## ## Seeding C++ is now much better in new version
+        ## if(is.null(seed) || (seed == "auto")) {## passing a null creates a random seed
+        ##     ## name is a legacy. This is really the seed for the C++ generator.
+        ##     ## Nope, we cannot use 2^32, because as.integer will fail.
+        ##     seed <- as.integer(round(runif(1, min = 0, max = 2^16)))
+        ## }
+        ## if(verbosity >= 2)
+        ##     cat(paste("\n Using ", seed, " as seed for C++ generator\n"))
 
-        if(!is_null_na(detectionProb)) stop("detectionProb cannot be used in v.1 objects")
-        ## if(message.v1)
-        ##     message("You are using the old poset format. Consider using the new one.")
+        ## if(!is_null_na(detectionProb)) stop("detectionProb cannot be used in v.1 objects")
+        ## ## if(message.v1)
+        ## ##     message("You are using the old poset format. Consider using the new one.")
    
     
-        ## A simulation stops if cancer or finalTime appear, the first
-        ## one. But if we set onlyCnacer = FALSE, we also accept simuls
-        ## without cancer (or without anything)
+        ## ## A simulation stops if cancer or finalTime appear, the first
+        ## ## one. But if we set onlyCnacer = FALSE, we also accept simuls
+        ## ## without cancer (or without anything)
         
-        op <- try(oncoSimul.internal(poset = fp, ## restrict.table = rt,
-                                     ## numGenes = numGenes,
-                                     numPassengers = numPassengers,
-                                     typeCBN = "CBN",
-                                     birth = birth,
-                                     s = s,
-                                     death = death,  
-                                     mu =  mu,  
-                                     initSize =  initSize, 
-                                     sampleEvery =  sampleEvery,  
-                                     detectionSize =  detectionSize, 
-                                     finalTime = finalTime, 
-                                     initSize_species = 2000, 
-                                     initSize_iter = 500, 
-                                     seed = seed, 
-                                     verbosity = verbosity, 
-                                     speciesFS = 10000,  
-                                     ratioForce = 2,
-                                     typeFitness = typeFitness,
-                                     max.memory = max.memory,
-                                     mutationPropGrowth = mutationPropGrowth,                                   
-                                     initMutant = -1, 
-                                     max.wall.time = max.wall.time,
-                                     max.num.tries = max.num.tries,
-                                     keepEvery = keepEvery,  
-                                     ## alpha = 0.0015,  
-                                     sh = sh,
-                                     K = K, 
-                                     minDetectDrvCloneSz = minDetectDrvCloneSz,
-                                     extraTime = extraTime,
-                                     detectionDrivers = detectionDrivers,
-                                     onlyCancer = onlyCancer,
-                                     errorHitWallTime = errorHitWallTime,
-                                     errorHitMaxTries = errorHitMaxTries),
-                  silent = !verbosity)
-        objClass <- "oncosimul"
-    } else {
+        ## op <- try(oncoSimul.internal(poset = fp, ## restrict.table = rt,
+        ##                              ## numGenes = numGenes,
+        ##                              numPassengers = numPassengers,
+        ##                              typeCBN = "CBN",
+        ##                              birth = birth,
+        ##                              s = s,
+        ##                              death = death,  
+        ##                              mu =  mu,  
+        ##                              initSize =  initSize, 
+        ##                              sampleEvery =  sampleEvery,  
+        ##                              detectionSize =  detectionSize, 
+        ##                              finalTime = finalTime, 
+        ##                              initSize_species = 2000, 
+        ##                              initSize_iter = 500, 
+        ##                              seed = seed, 
+        ##                              verbosity = verbosity, 
+        ##                              speciesFS = 10000,  
+        ##                              ratioForce = 2,
+        ##                              typeFitness = typeFitness,
+        ##                              max.memory = max.memory,
+        ##                              mutationPropGrowth = mutationPropGrowth,                                   
+        ##                              initMutant = -1, 
+        ##                              max.wall.time = max.wall.time,
+        ##                              max.num.tries = max.num.tries,
+        ##                              keepEvery = keepEvery,  
+        ##                              ## alpha = 0.0015,  
+        ##                              sh = sh,
+        ##                              K = K, 
+        ##                              minDetectDrvCloneSz = minDetectDrvCloneSz,
+        ##                              extraTime = extraTime,
+        ##                              detectionDrivers = detectionDrivers,
+        ##                              onlyCancer = onlyCancer,
+        ##                              errorHitWallTime = errorHitWallTime,
+        ##                              errorHitMaxTries = errorHitMaxTries),
+        ##           silent = !verbosity)
+        ## objClass <- "oncosimul"
+    ## } else {
         s <- sh <- NULL ## force it.
         if(numPassengers != 0)
             warning(paste("Specifying numPassengers has no effect",
@@ -728,7 +730,7 @@ oncoSimulIndiv <- function(fp,
                                         fixation = fixation),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
-    }
+    ## }
     if(inherits(op, "try-error")) {
         ##         if(length(grep("BAIL OUT NOW", op)))
         stop(paste("Unrecoverable error:", op ))
@@ -1763,156 +1765,156 @@ get.mut.vector <- function(x, timeSample, typeSample,
 
 
 
-oncoSimul.internal <- function(poset, ## restrict.table,
-                               numPassengers, 
-                               ## numGenes,
-                               typeCBN,
-                               birth, 
-                               s,
-                               death,
-                               mu,
-                               initSize,
-                               sampleEvery,
-                               detectionSize,
-                               finalTime,
-                               initSize_species,
-                               initSize_iter,
-                               seed,
-                               verbosity,
-                               speciesFS,
-                               ratioForce,
-                               typeFitness,
-                               max.memory,
-                               mutationPropGrowth, ## make it explicit
-                               initMutant,
-                               max.wall.time,
-                               keepEvery,
-                               alpha,
-                               sh,                               
-                               K,
-                               ## endTimeEvery,
-                               detectionDrivers,
-                               onlyCancer,
-                               errorHitWallTime,
-                               max.num.tries,
-                               errorHitMaxTries,
-                               minDetectDrvCloneSz,
-                               extraTime) {
+## oncoSimul.internal <- function(poset, ## restrict.table,
+##                                numPassengers, 
+##                                ## numGenes,
+##                                typeCBN,
+##                                birth, 
+##                                s,
+##                                death,
+##                                mu,
+##                                initSize,
+##                                sampleEvery,
+##                                detectionSize,
+##                                finalTime,
+##                                initSize_species,
+##                                initSize_iter,
+##                                seed,
+##                                verbosity,
+##                                speciesFS,
+##                                ratioForce,
+##                                typeFitness,
+##                                max.memory,
+##                                mutationPropGrowth, ## make it explicit
+##                                initMutant,
+##                                max.wall.time,
+##                                keepEvery,
+##                                alpha,
+##                                sh,                               
+##                                K,
+##                                ## endTimeEvery,
+##                                detectionDrivers,
+##                                onlyCancer,
+##                                errorHitWallTime,
+##                                max.num.tries,
+##                                errorHitMaxTries,
+##                                minDetectDrvCloneSz,
+##                                extraTime) {
 
-    ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
+##     ## the value of 20000, in megabytes, for max.memory sets a limit of ~ 20 GB
   
 
-    ## if(keepEvery < sampleEvery)
-    ##     warning("setting keepEvery to sampleEvery")
+##     ## if(keepEvery < sampleEvery)
+##     ##     warning("setting keepEvery to sampleEvery")
 
-    ## a backdoor to allow passing restrictionTables directly
-    if(inherits(poset, "restrictionTable"))
-        restrict.table <- poset
-    else
-        restrict.table <- poset.to.restrictTable(poset)
-    numDrivers <- nrow(restrict.table)
-    numGenes <- (numDrivers + numPassengers)
-    if(numGenes < 2)
-        stop("There must be at least two genes (loci) in the fitness effects.",
-             "If you only care about a degenerate case with just one,",
-             "you can enter a second gene",
-             "with fitness effect of zero.")
-    if(numGenes > 64)
-        stop("Largest possible number of genes (loci) is 64 for version 1.",
-             "You are strongly encouraged to use the new specification",
-             "as in version 2.")
+##     ## a backdoor to allow passing restrictionTables directly
+##     if(inherits(poset, "restrictionTable"))
+##         restrict.table <- poset
+##     else
+##         restrict.table <- poset.to.restrictTable(poset)
+##     numDrivers <- nrow(restrict.table)
+##     numGenes <- (numDrivers + numPassengers)
+##     if(numGenes < 2)
+##         stop("There must be at least two genes (loci) in the fitness effects.",
+##              "If you only care about a degenerate case with just one,",
+##              "you can enter a second gene",
+##              "with fitness effect of zero.")
+##     if(numGenes > 64)
+##         stop("Largest possible number of genes (loci) is 64 for version 1.",
+##              "You are strongly encouraged to use the new specification",
+##              "as in version 2.")
 
-    ## These can never be set by the user
-    ## if(initSize_species < 10) {
-    ##     warning("initSize_species too small?")
-    ## }
-    ## if(initSize_iter < 100) {
-    ##     warning("initSize_iter too small?")
-    ## }
+##     ## These can never be set by the user
+##     ## if(initSize_species < 10) {
+##     ##     warning("initSize_species too small?")
+##     ## }
+##     ## if(initSize_iter < 100) {
+##     ##     warning("initSize_iter too small?")
+##     ## }
 
-    ## numDrivers <- nrow(restrict.table)
-    if(length(unique(restrict.table[, 1])) != numDrivers)
-        stop("BAIL OUT NOW: length(unique(restrict.table[, 1])) != numDrivers)")
-    ddr <- restrict.table[, 1]
-    if(any(diff(ddr) != 1))
-        stop("BAIL OUT NOW:  any(diff(ddr) != 1")
-    ## sanity checks
-    if(max(restrict.table[, 1]) != numDrivers)
-        stop("BAIL OUT NOW: max(restrict.table[, 1]) != numDrivers")
-    if(numDrivers > numGenes)
-        stop("BAIL OUT NOW: numDrivers > numGenes")
+##     ## numDrivers <- nrow(restrict.table)
+##     if(length(unique(restrict.table[, 1])) != numDrivers)
+##         stop("BAIL OUT NOW: length(unique(restrict.table[, 1])) != numDrivers)")
+##     ddr <- restrict.table[, 1]
+##     if(any(diff(ddr) != 1))
+##         stop("BAIL OUT NOW:  any(diff(ddr) != 1")
+##     ## sanity checks
+##     if(max(restrict.table[, 1]) != numDrivers)
+##         stop("BAIL OUT NOW: max(restrict.table[, 1]) != numDrivers")
+##     if(numDrivers > numGenes)
+##         stop("BAIL OUT NOW: numDrivers > numGenes")
     
-    non.dep.drivers <- restrict.table[which(restrict.table[, 2] == 0), 1]
+##     non.dep.drivers <- restrict.table[which(restrict.table[, 2] == 0), 1]
 
 
 
 
-    ## if( (is.null(endTimeEvery) || (endTimeEvery > 0)) &&
-    ##    (typeFitness %in% c("bozic1", "exp") )) {
-    ##     warning(paste("endTimeEvery will take a positive value. ",
-    ##                   "This will make simulations not stop until the next ",
-    ##                   "endTimeEvery has been reached. Thus, in simulations ",
-    ##                   "with very fast growth, simulations can take a long ",
-    ##                   "time to finish, or can hit the wall time limit. "))
-    ## }
-    ## if(is.null(endTimeEvery))
-    ##     endTimeEvery <- keepEvery
-    ## if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
-    ##     warning("!(endTimeEvery %% keepEvery)")
-    ## a sanity check in restricTable, so no neg. indices for the positive deps
-    neg.deps <- function(x) {
-        ## checks a row of restrict.table
-        numdeps <- x[2]
-        if(numdeps) {
-            deps <- x[3:(3+numdeps - 1)]
-            return(any(deps < 0))
-        } else FALSE
-    }
-    if(any(apply(restrict.table, 1, neg.deps)))
-        stop("BAIL OUT NOW: Negative dependencies in restriction table")
+##     ## if( (is.null(endTimeEvery) || (endTimeEvery > 0)) &&
+##     ##    (typeFitness %in% c("bozic1", "exp") )) {
+##     ##     warning(paste("endTimeEvery will take a positive value. ",
+##     ##                   "This will make simulations not stop until the next ",
+##     ##                   "endTimeEvery has been reached. Thus, in simulations ",
+##     ##                   "with very fast growth, simulations can take a long ",
+##     ##                   "time to finish, or can hit the wall time limit. "))
+##     ## }
+##     ## if(is.null(endTimeEvery))
+##     ##     endTimeEvery <- keepEvery
+##     ## if( (endTimeEvery > 0) && (endTimeEvery %% keepEvery) )
+##     ##     warning("!(endTimeEvery %% keepEvery)")
+##     ## a sanity check in restricTable, so no neg. indices for the positive deps
+##     neg.deps <- function(x) {
+##         ## checks a row of restrict.table
+##         numdeps <- x[2]
+##         if(numdeps) {
+##             deps <- x[3:(3+numdeps - 1)]
+##             return(any(deps < 0))
+##         } else FALSE
+##     }
+##     if(any(apply(restrict.table, 1, neg.deps)))
+##         stop("BAIL OUT NOW: Negative dependencies in restriction table")
 
-    ## transpose the table
-    rtC <- convertRestrictTable(restrict.table)
+##     ## transpose the table
+##     rtC <- convertRestrictTable(restrict.table)
 
     
-    return(c(
-        BNB_Algo5(restrictTable = rtC,
-        numDrivers = numDrivers,
-        numGenes = numGenes,
-        typeCBN_= typeCBN,
-        s = s, 
-        death = death,
-        mu = mu,
-        initSize = initSize,
-        sampleEvery = sampleEvery,
-        detectionSize = detectionSize,
-        finalTime = finalTime,
-        initSp = initSize_species,
-        initIt = initSize_iter,
-        seed = seed,
-        verbosity = verbosity,
-        speciesFS = speciesFS,
-        ratioForce = ratioForce,
-        typeFitness_ = typeFitness,
-        maxram = max.memory,
-        mutationPropGrowth = as.integer(mutationPropGrowth),
-        initMutant = initMutant,
-        maxWallTime = max.wall.time,
-        keepEvery = keepEvery,
-        sh = sh,
-        K = K,
-        detectionDrivers = detectionDrivers,
-        onlyCancer = onlyCancer,
-        errorHitWallTime = errorHitWallTime,
-        maxNumTries = max.num.tries,
-        errorHitMaxTries = errorHitMaxTries,
-        minDetectDrvCloneSz = minDetectDrvCloneSz,
-        extraTime = extraTime
-    ),
-    NumDrivers = numDrivers
-             ))
+##     return(c(
+##         BNB_Algo5(restrictTable = rtC,
+##         numDrivers = numDrivers,
+##         numGenes = numGenes,
+##         typeCBN_= typeCBN,
+##         s = s, 
+##         death = death,
+##         mu = mu,
+##         initSize = initSize,
+##         sampleEvery = sampleEvery,
+##         detectionSize = detectionSize,
+##         finalTime = finalTime,
+##         initSp = initSize_species,
+##         initIt = initSize_iter,
+##         seed = seed,
+##         verbosity = verbosity,
+##         speciesFS = speciesFS,
+##         ratioForce = ratioForce,
+##         typeFitness_ = typeFitness,
+##         maxram = max.memory,
+##         mutationPropGrowth = as.integer(mutationPropGrowth),
+##         initMutant = initMutant,
+##         maxWallTime = max.wall.time,
+##         keepEvery = keepEvery,
+##         sh = sh,
+##         K = K,
+##         detectionDrivers = detectionDrivers,
+##         onlyCancer = onlyCancer,
+##         errorHitWallTime = errorHitWallTime,
+##         maxNumTries = max.num.tries,
+##         errorHitMaxTries = errorHitMaxTries,
+##         minDetectDrvCloneSz = minDetectDrvCloneSz,
+##         extraTime = extraTime
+##     ),
+##     NumDrivers = numDrivers
+##              ))
 
-}
+## }
 
 OncoSimulWide2Long <- function(x) {
     ## Put data in long format, for ggplot et al
