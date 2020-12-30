@@ -569,9 +569,17 @@ So we will use `fixation`.
 ```{r exochsb}
 ## Set a small initSize, as o.w. unlikely to pass the valley
 initS <- 10
-## The number of replicates is tiny, 10, for the sake of speed
-## of creation of the vignette
-od_sim <- oncoSimulPop(10, od, muEF = odm,
+## The number of replicates is tiny, for the sake of speed
+## of creation of the vignette. Even fewer in Windows, since we run on a single
+## core
+
+if(.Platform$OS.type == "windows") {
+    nruns <- 4
+} else {
+    nruns <- 10
+}
+
+od_sim <- oncoSimulPop(nruns, od, muEF = odm,
                        fixation = c("u", "i, v"), initSize = initS,
                        model = "McFL",
                        mu = 1e-4, detectionDrivers = NA, 
@@ -6358,7 +6366,7 @@ o3init <- allFitnessEffects(orderEffects = c(
                               "D" = "d") )
 
 oneI <- oncoSimulIndiv(o3init, model = "McFL",
-                       mu = 5e-5, finalTime = 500,
+                       mu = 5e-5, finalTime = 200,
                        detectionDrivers = 3,
                        onlyCancer = FALSE,
                        initSize = 1000,
@@ -6369,13 +6377,22 @@ plotClonePhylog(oneI, N = 0)
 ```
 
 
+
+```{r hiddeprbau, echo=FALSE}
+set.seed(3)
+RNGkind("L'Ecuyer-CMRG")
+```
+
 ```{r prbau003bb, fig.height=6}
 ## Note we also disable the stopping stochastically as a function of size
 ## to allow the population to grow large and generate may different
 ## clones.
+
+## For speed, we set a small finalTime
+
 ospI <- oncoSimulPop(2, 
                     o3init, model = "Exp",
-                    mu = 5e-5, finalTime = 500,
+                    mu = 5e-5, finalTime = 150,
                     detectionDrivers = 3,
                     onlyCancer = TRUE,
                     initSize = 10,
@@ -6392,7 +6409,7 @@ plotClonePhylog(ospI[[1]])
 
 ossI <- oncoSimulSample(2, 
                         o3init, model = "Exp",
-                        mu = 5e-5, finalTime = 500,
+                        mu = 5e-5, finalTime = 150,
                         detectionDrivers = 2,
                         onlyCancer = TRUE,
                         initSize = 10,
@@ -6690,8 +6707,16 @@ the sake of speed when creating the vignette).
 ```{r simul-ochs}
 initS <- 20
 ## We use only a small number of repetitions for the sake
-## of speed.
-od100 <- oncoSimulPop(10, od2,
+## of speed. Even fewer in Windows, since we run on a single
+## core
+
+if(.Platform$OS.type == "windows") {
+    nruns <- 4
+} else {
+    nruns <- 10
+}
+
+od100 <- oncoSimulPop(nruns, od2,
                       fixation = c("u", "v, i"),
                       model = "McFL",
                       mu = 1e-4,
@@ -9588,7 +9613,7 @@ set.seed(1)
 tmp3 <- oncoSimulIndiv(afear3, 
                        model = "McFL", 
                        onlyCancer = FALSE, 
-                       finalTime = 100,
+                       finalTime = 60,
                        mu = 1e-4,
                        initSize = 5000, 
                        keepPhylog = FALSE,
@@ -9619,7 +9644,7 @@ set.seed(1)
 s1fd <- oncoSimulIndiv(afe4, 
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 50,
+                     finalTime = 40,
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = TRUE,
@@ -9636,7 +9661,7 @@ s2fd <- oncoSimulIndiv(afe4,
                      muEF = mtfd,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 50,
+                     finalTime = 40,
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = TRUE,
@@ -13559,6 +13584,11 @@ This is the information about the version of R and packages used:
 ```{r}
 sessionInfo()
 ``` 
+
+<!-- FIXME: rm once we are done with the timeouts -->
+
+## Time it takes to build the vignette and most time consuming chunks
+
 Time to build the vignette:
 
 ```{r last, echo=FALSE}
@@ -13569,7 +13599,8 @@ paste(difftime(Sys.time(), time0, units = "mins"), "minutes")
 <!-- setting at beginning of vignette: search for all_times -->
 
 ```{r timeit}
-sort(unlist(all_times))
+## The 15 most time consuming chunks
+sort(unlist(all_times), decreasing = TRUE)[1:15]
 ```
 
 ```{r sumtimeit}
