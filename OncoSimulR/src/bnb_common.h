@@ -102,9 +102,6 @@ void precissionLoss();
 void init_tmpP(spParamsP& tmpParam);
 
 double returnMFE_new(double& en1,
-		     const std::string& typeFitness);
-
-double returnMFE_new(double& en1,
 		     const TypeModel typeModel);
 
 
@@ -113,14 +110,6 @@ void computeMcFarlandError_new(double& en1,
 			       double& totPopSize_previous,
 			       double& DA_previous,
 			       const TypeModel typeModel,
-			       const double& totPopSize,
-			       const double& K);
-
-void computeMcFarlandError_new(double& en1,
-			       double& en1sc,
-			       double& totPopSize_previous,
-			       double& DA_previous,
-			       const std::string& typeFitness,
 			       const double& totPopSize,
 			       const double& K);
 

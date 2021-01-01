@@ -487,14 +487,6 @@ void init_tmpP(spParamsP& tmpParam) {
 
 // For McF error 
 // Get a -99 where there should be no error because of model
-double returnMFE_new(double& en1,
-		     const std::string& typeFitness) {
-  if( (typeFitness == "mcfarlandlog") ||
-      (typeFitness == "mcfarlandlog_d"))
-    return en1;
-  else
-    return -99;
-}
 
 double returnMFE_new(double& en1,
 		     const TypeModel typeModel) {
@@ -515,7 +507,7 @@ void computeMcFarlandError_new(double& em1,
 			       const double& totPopSize,
 			       const double& K){
   // Simple logic:
-  // Really, simple thing: compute difference between successive death
+  // compute difference between successive death
   // rates, and also scale. Period.
 
   if( (typeModel == TypeModel::mcfarlandlog) ||
@@ -523,48 +515,12 @@ void computeMcFarlandError_new(double& em1,
     double etmp, etmpsc, DC;
     etmp = 0.0;
     etmpsc = 0.0;
+    DC = -999999999; // o.w., we get a warning for possible uninitialized usage
     if(typeModel == TypeModel::mcfarlandlog) {
       DC = log1p(totPopSize/K);
     } else if (typeModel == TypeModel::mcfarlandlog_d) {
       DC = std::max(1.0, log1p(totPopSize/K));
     }
-    if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
-      etmp = 0.0;
-    } else {
-      etmp = std::abs(DC - DA_previous);
-      etmpsc = etmp/DA_previous;
-    }
-    if(etmp > em1) em1 = etmp;
-    if(etmpsc > em1sc) em1sc = etmpsc;
-    DA_previous = DC;
-    totPopSize_previous = totPopSize;
-  }
-}
-
-void computeMcFarlandError_new(double& em1,
-			       double& em1sc, // scaled
-			       double& totPopSize_previous,
-			       double& DA_previous,
-			       const std::string& typeFitness,
-			       const double& totPopSize,
-			       const double& K){
-  // Simple logic:
-  // Really, simple thing: compute difference between successive death
-  // rates, and also scale. Period.
-  if((typeFitness == "mcfarlandlog")  ||
-     (typeFitness == "mcfarlandlog_d")) {
-    double etmp, etmpsc, DC;
-    etmp = 0.0;
-    etmpsc = 0.0;
-    DC = -999999999; // o.w., we get a warning for possible uninitialized usage
-    if(typeFitness == "mcfarlandlog") {
-      DC = log1p(totPopSize/K);
-    } else if (typeFitness == "mcfarlandlog_d") {
-      DC = std::max(1.0, log1p(totPopSize/K));
-    }
-    //  else {
-    //   throw std::out_of_range("Not a valid typeFitness in computeMcFarlandError_new");
-    // }
     if( std::abs(totPopSize - totPopSize_previous) < 1 ) {
       etmp = 0.0;
     } else {
