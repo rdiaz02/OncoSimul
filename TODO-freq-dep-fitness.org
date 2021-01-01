@@ -1,4 +1,6 @@
 * Miscell to-do in freq-dep-fitness branch
+** Do now!
+   - [ ] many long tests will fail without v.1.
 ** urgent
    - [ ] LOD with multiple initmutants
      - might not be defined
@@ -7,11 +9,8 @@
   
 ** first
 
+ - [ ] examples of stopping conditions with FDF: more sophisticated examples. 
  - [ ] fast_peaks and peak_valley: turn into a user usable function
- - [ ] test where FDF crashes when no WT and no initMutant.
- - [ ] vignette: reduce running times
- - [ ] The second predator-prey example sucks. In general, those examples
-   I am not sure are properly parameterized.
  
  - [ ] make onlyCancer = FALSE the default. And ditto for detection
    drivers, etc.
@@ -244,6 +243,10 @@ Note that when calling allFitnessEffects we have to set the paramenter frequency
    see: https://cran.r-project.org/doc/manuals/R-exts.html#Registering-native-routines
 
 ** DONE
+ - [X] test where FDF crashes when no WT and no initMutant.
+ - [X] vignette: reduce running times
+ - [X] The second predator-prey example sucks. In general, those examples
+   I am not sure are properly parameterized.
 
  - [X] Allow for mutation = 0. Yes, exactly 0. See some of the comments
    below, but it should be possible. In addition to the "no positions
