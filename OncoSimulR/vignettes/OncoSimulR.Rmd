@@ -12714,7 +12714,7 @@ whose fitness does not change during the simulation.
 dfT2 <- data.frame(Genotype = c("WT", "A", "B"),
                      Fitness = c(
                        "1",
-                       "if (T>0 and T<50) 0; else if (T>200 and T<300) 0.05; else 1 + 0.35*f_;",
+                       "if (T>0 and T<50) 0; else if (T>100 and T<150) 0.05; else 1.2 + 0.35*f_;",
                        "0.8 + 0.45*(f_)"
                      ),
                      stringsAsFactors = FALSE)
@@ -12723,28 +12723,26 @@ afeT2 <- allFitnessEffects(genotFitness = dfT2,
                              frequencyDependentFitness = TRUE,
                              frequencyType = "rel")
   
-set.seed(2)
+set.seed(1)
 simT2 <- oncoSimulIndiv(afeT2,
                         model = "McFL",
                         mu = 1e-5,
-                        initSize = 5000,
-                        finalTime = 450,
+                        initSize = 10000,
+                        finalTime = 225,
                         onlyCancer = FALSE,
                         seed = NULL)
-  
 plot(simT2, show = "genotypes", thinData = TRUE)
 
-## plot(simT2, show = "genotypes", type = "line", thinData = TRUE)
 ```
 
 In this case, just like above, we can evaluate the fitness in each time interval and observe
 how fitness is differente in each one of them.
 
 ```{r examplesTDec1}
-evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 49)[c(2,3), ]
-evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 51)[c(2,3), ]
-evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 201)[c(2,3), ]
-evalAllGenotypes(afeT2, spPopSizes = c(10,10,10), currentTime = 301)[c(2,3), ]
+evalAllGenotypes(afeT2, spPopSizes = c(100,10,10), currentTime = 49)[c(2,3), ]
+evalAllGenotypes(afeT2, spPopSizes = c(100,10,10), currentTime = 51)[c(2,3), ]
+evalAllGenotypes(afeT2, spPopSizes = c(100,10,10), currentTime = 101)[c(2,3), ]
+evalAllGenotypes(afeT2, spPopSizes = c(100,10,10), currentTime = 201)[c(2,3), ]
 ```
 
 
