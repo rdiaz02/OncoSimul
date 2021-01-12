@@ -1,4 +1,10 @@
 * Miscell to-do in freq-dep-fitness branch
+** Immediate and simple
+   - [ ] finish the README explaining nem
+   - [ ] convert freq-dep into master
+   - [ ] emphasize in a few places (man, vignette) that FDF expressions have to
+     be valid exprTk expressions and give link to page of exprtk.
+
 ** urgent
    - [ ] LOD with multiple initmutants
      - might not be defined
