@@ -233,6 +233,51 @@ test_that("testing output", {
 
 })
 
+
+test_that("Fails if a single gene", {
+    ## an overly ellaborate example
+    cS <- 0.2 # cohabit cost
+    cR <- 0.1 # resistance cost
+
+    S_fitness <- paste0("1 - ", cS, " * (f_R)")
+    R_fitness <- paste0("1 - ", cS, " * (f_R) - ", cR)
+    
+    drug <- 0.01 # drug effect
+    
+    std_df2 <- function(cS, cR, gt = c("WT", "R")) {
+        data.frame(Genotype = gt,
+                   Fitness = c(paste0("if (T > 20) ", drug, "*(", S_fitness, ")",";
+                                else ", S_fitness, ";"),
+                               R_fitness),
+                   stringsAsFactors = FALSE)
+    }
+    expect_error(allFitnessEffects(genotFitness = std_df2(cS, cR), 
+                             frequencyDependentFitness = TRUE, 
+                             frequencyType = "rel"),
+                 "There must be at least two genes",
+                 fixed = TRUE)
+    
+})
+
+test_that("Works with silly workaround for one gene and a dummy gene" ,{
+    ## Yes, you must input a formula or expression of some n or f
+    gg <- data.frame(Genotype = c("A", "B"),
+                     Fitness  = c("1.2", "0 * n_B"))
+    
+    std_eff2 <- allFitnessEffects(genotFitness = gg,
+                                  frequencyDependentFitness = TRUE)
+    
+    expect_silent(std_simul2 <- oncoSimulIndiv(std_eff2, 
+                                 model = "McFL",
+                                 onlyCancer = FALSE, 
+                                 mu = 0.01,
+                                 finalTime = 10,
+                                 initSize = c(500),
+                                 seed = NULL,
+                                 initMutant = c("A")))
+    expect_true(std_simul2$TotalPopSize > 0)
+})
+
 cat(paste("\n Ending test.allFitnessEffectsFDF at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)

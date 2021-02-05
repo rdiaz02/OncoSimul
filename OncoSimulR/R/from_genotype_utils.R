@@ -420,7 +420,13 @@ allGenotypes_to_matrix <- function(x,
     )
 
     all_genes <- sort(unique(unlist(splitted_genots)))
-
+    if(length(all_genes) < 2) stop(paste("There must be at least two genes (loci)",
+                                         "in the fitness effects.",
+                                         "If you only care about a case with",
+                                         "a single one (or none) enter gene(s)",
+                                         "with a fitness effect of zero.",
+                                         "For freq.dep.fitness, create another ",
+                                         "genotype that always has fitness zero."))
     m <- matrix(0, nrow = length(splitted_genots), ncol = length(all_genes))
     the_match <- lapply(
         splitted_genots,
@@ -438,7 +444,7 @@ allGenotypes_to_matrix <- function(x,
     if (frequencyDependentFitness) {
         m <- as.data.frame(m)
         m[, 1:length(all_genes)] <- apply(
-            m[, 1:length(all_genes)],
+            m[, 1:length(all_genes), drop = FALSE],
             2,
             as.numeric
         )
