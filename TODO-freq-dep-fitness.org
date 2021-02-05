@@ -13,6 +13,8 @@
   
 ** first
 
+ - [ ] can we simulate a constant input rate (e.g., a toxin with a constant
+   input flow?)
  - [ ] examples of stopping conditions with FDF: more sophisticated examples. 
  - [ ] fast_peaks and peak_valley: turn into a user usable function
  - [ ] Allow to pass "f_WT" or "n_WT"? But how do you tell if a gene with that
