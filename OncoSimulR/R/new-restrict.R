@@ -1644,7 +1644,7 @@ nr_oncoSimul.internal <- function(rFE,
                    "allFitnessEffects"))
 
     if(countGenesFe(rFE) < 2) {
-        stop("There must be at least two genes (loci) in the fitness effects.",
+        stop("There must be at least two genes (loci) in the fitness effects. ",
              "If you only care about a degenerate case with just one,",
              "you can enter a second gene (locus)",
              "with fitness effect of zero.")
