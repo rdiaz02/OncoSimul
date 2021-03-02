@@ -1,0 +1,238 @@
+	h1 {
+    color: #ffffff;
+    font-family: "Open Sans", sans-serif;
+    font-size: 72px;
+    font-weight: lighter;
+    margin:50px 
+	}
+	
+	h2{
+    color: #cccccc;
+    font-family: "Open Sans", sans-serif;
+    font-weight: lighter;
+    font-size:32px;
+ 	padding:0;
+ 	border:0;
+ 	 margin:50px
+	
+	} 
+
+	h3{
+    color: #111111;
+    font-family: "Open Sans", sans-serif;
+    font-weight: lighter;
+     display:inline;
+/*    background-color:#999999; */
+	} 
+	
+	h5{
+    color: #ffffff;
+    font-family: "Open Sans", sans-serif;
+    font-weight: lighter;
+  	font-size:10px;
+ 	
+ 	padding:0;
+ 	border: 1px solid #aaaaaa;
+ 	margin:16px
+	
+	} 
+	 .wait, .wait * { cursor: wait !important; }
+
+ #vide{
+     background:#FFFFFF;	
+ 
+    }    
+	 .rinit, .rinit * { cursor: default; }
+
+/*	a:link { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: #dddddd;
+        }
+	a:visited { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: #000000;
+        }
+	a:hover, a:active { 
+        text-decoration: none; 
+        color: #cccccc;
+        }*/
+   
+   
+	#haut{
+
+    background: #3f3f3f;
+    font: 1.1em sans-serif;
+    height:30%;
+	}
+	#haut a:link { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: 3f3f3f;
+        }
+	#haut a:visited { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: #000000;
+        }
+	#haut a:hover, a:active { 
+        text-decoration: none; 
+        color: #cccccc;
+        }
+        
+	#haut2{
+
+    background: #3f3f3f;
+/*    font: 1.1em sans-serif;
+    height:100%;*/
+	}
+	#haut2 a:link { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: #dddddd;
+        }
+	#haut2 a:visited { 
+        font-weight: bold; 
+        text-decoration: none; 
+        color: #000000;
+        }
+	#haut2 a:hover, a:active { 
+        text-decoration: none; 
+        color: #cccccc;
+        }        
+        
+        
+        
+/*all stuff for nice menu*/
+	#menu { 
+       margin: 0; 
+       padding: 0; 
+       list-style: none; 
+     } 
+	#menu li { 
+       display: inline; /* affichage horizontal */ 
+         position: relative; 
+     } 
+
+	#menu li a { 
+       padding: 20px 20px; 
+       margin: 0; 
+       
+       background: #3f3f3f; 
+       color: #ffffff; 
+	    text-decoration: none; 
+       -webkit-border-radius: 0 0 10px 10px;  
+       border-radius: 0 0 10px 10px;        
+       -webkit-border-bottom-left-radius: 10px; /* pour Chrome */ 
+       -webkit-border-bottm-right-radius: 10px; /* pour Chrome */ 
+             } 
+            
+	#menu li a:hover, #menu li a:focus { 
+       background: #3f3f3f; 
+       color: #cccccc; 
+     } 
+
+	#menu ul li ul {
+ 	display:none;
+ 	} 
+ 
+	#menu ul li:hover ul {
+ 	display:block;
+ 	}
+
+	#menu li:hover ul li {
+ 	float:none;
+ 	}
+
+	 #menu li ul {
+ 	position:absolute;
+ 	
+	 }    
+	
+	 
+	 .niceMenu
+	 {
+	 	position:absolute;
+		z-index:999999;
+		background: #cccccc; 	
+		right: 0px; 
+		-webkit-border-radius: 10px;
+		-moz-border-radius: 10px;
+		border-radius: 10px;
+	 }
+	 #menu_land
+	 {
+	 position:absolute;
+		z-index:999999;
+		background: #cccccc; 	
+		right: 0px; 
+		-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;
+	 }
+	 #view_land
+	 {
+	 position:absolute;
+		z-index:999997;
+		background: #cccccc; 	
+		right: 0px; 
+		-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;
+	 }
+	#menu_save
+	 {
+		 position:absolute;
+		z-index:999996;
+		background: #cccccc; 	
+		right: 0px; 
+		-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;
+	}
+	#menu_save a:link,#menu_save a:hover,#menu_save a:active
+	 {
+		  padding: 0px 0px; 
+			background: #cccccc; 	
+		   border-radius: 0 0 0px 0px;  
+	}
+			
+		
+	 #LAND_STAT
+	 {
+	 position:absolute;
+	z-index:999998;
+	background: #cccccc; 	
+	right: 30px; 
+	top:120px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+
+	 }
+h4{
+
+color:#59ac2a;
+font-size:20; 
+}	
+#col1{
+float:left;	
+color: #e0141c;
+font-weight: bold; 
+}	
+#col2{
+float:right;	
+text-align:  left ;
+
+}	
+	 
+#bas
+{
+   clear:both;
+}	
+	 
+	
+	 
+	.cache { display: none; }
+	.decache { display: block; }

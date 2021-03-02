@@ -363,27 +363,35 @@ getGeneIDNum <- function(geneModule, geneNoInt, fitnessLandscape_gene_id,
 }
 
 
-## genotFitnes and frequency type -> fitnesLanscapeVariables for FDF and
+## genotFitness and frequency type -> fitnessLanscapeVariables for FDF and
 ##          fitness with numbers, not names
 ##   Done in a single function since both operations make
 ##   the same assumptions
-create_flvars_fitvars <- function(genotFitness, frequencyType) {
-    x <- genotFitness[, -ncol(genotFitness), drop = FALSE]
+create_flvars_fitvars <- function(genotBirthDeath, frequencyTypeBirth,
+                                  frequencyTypeDeath, deathSpec) {
+    if(deathSpec) {
+      x <- genotBirthDeath[, -(ncol(genotBirthDeath)-1), drop = FALSE] #Birth
+      y <- genotBirthDeath[, -ncol(genotBirthDeath), drop = FALSE] # Death
+    }
+    else {
+      x <- genotBirthDeath[, -ncol(genotBirthDeath), drop = FALSE] #Birth
+    }
+  
     pasted <- apply(x, 1, function(z) paste(sort(which(z == 1)), collapse = "_"))
     npasted <- apply(x, 1, function(z) paste(sort(colnames(x)[which(z == 1)]), collapse = "_"))
-    if(frequencyType == "abs") {
+    if(frequencyTypeBirth == "abs") {
         prefix <- "n_"
         prefixre <- "^n_"
     } else {
         prefix <- "f_"
         prefixre <- "^f_"
     }
-    flvars <- paste0(prefix, pasted)
-    names(flvars) <- npasted
+    flvarsb <- paste0(prefix, pasted)
+    names(flvarsb) <- npasted
 
     ## make sure we get f_1_2 and not f_2_1, etc
-    flvars2 <- flvars
-    names(flvars2) <- paste0(prefix, names(flvars))
+    flvars2 <- flvarsb
+    names(flvars2) <- paste0(prefix, names(flvarsb))
 
     rmwt <- which(flvars2 == prefix)
     if(length(rmwt)) flvars2 <- flvars2[-rmwt] ## rm this.
@@ -395,16 +403,66 @@ create_flvars_fitvars <- function(genotFitness, frequencyType) {
     
     if(any(diff(count_seps) > 0)) {
         warning("flvars not ordered?",
-                "Check the conversion of gene names to numbers in fitness spec")
+                "Check the conversion of gene names to numbers in birth spec")
         rflvars2 <- rflvars2[order(count_seps, decreasing = TRUE)]
     }
 
     ## Users can pass in many possible orderings. Get all.
     full_rflvars <- all_orders_fv(rflvars2, prefix, prefixre)
-    Fitness_as_fvars <- stringr::str_replace_all(genotFitness$Fitness,
+    Birth_as_fvars <- stringr::str_replace_all(genotBirthDeath$Birth,
                                                  stringr::fixed(full_rflvars))
-    return(list(flvars = flvars,
-                Fitness_as_fvars = Fitness_as_fvars))
+    
+    if(deathSpec) {
+      
+      pasted <- apply(y, 1, function(z) paste(sort(which(z == 1)), collapse = "_"))
+      npasted <- apply(y, 1, function(z) paste(sort(colnames(y)[which(z == 1)]), collapse = "_"))
+      if(frequencyTypeDeath== "abs") {
+        prefix <- "n_"
+        prefixre <- "^n_"
+      } else {
+        prefix <- "f_"
+        prefixre <- "^f_"
+      }
+      
+      flvarsd <- paste0(prefix, pasted)
+      names(flvarsd) <- npasted
+      
+      ## make sure we get f_1_2 and not f_2_1, etc
+      flvars2 <- flvarsd
+      names(flvars2) <- paste0(prefix, names(flvarsd))
+      
+      rmwt <- which(flvars2 == prefix)
+      if(length(rmwt)) flvars2 <- flvars2[-rmwt] ## rm this.
+      
+      ## Need to rev the vector, to ensure larger patterns come first
+      ## and to place "f_" as last.
+      rflvars2 <- rev(flvars2)
+      count_seps <- stringr::str_count(rflvars2, stringr::fixed("_"))
+      
+      if(any(diff(count_seps) > 0)) {
+        warning("flvars not ordered?",
+                "Check the conversion of gene names to numbers in death spec")
+        rflvars2 <- rflvars2[order(count_seps, decreasing = TRUE)]
+      }
+      
+      ## Users can pass in many possible orderings. Get all.
+      full_rflvars <- all_orders_fv(rflvars2, prefix, prefixre)
+      Death_as_fvars <- stringr::str_replace_all(genotBirthDeath$Death,
+                                                 stringr::fixed(full_rflvars))
+      
+      return(list(flvarsb = flvarsb,
+                  flvarsd = flvarsd,
+                  Birth_as_fvars = Birth_as_fvars,
+                  Death_as_fvars = Death_as_fvars))
+      
+    }
+    
+    else  {
+      
+      return(list(flvarsb = flvarsb,
+                  Birth_as_fvars = Birth_as_fvars))
+    }
+    
 }
 
 
@@ -460,20 +518,23 @@ fVariablesN <- function (g, frequencyType) {
 }
 
 
-allFitnessORMutatorEffects <- function(rT = NULL,
+allBirthDeathORMutatorEffects <- function(rT = NULL,
                                        epistasis = NULL,
                                        orderEffects = NULL,
                                        noIntGenes = NULL,
                                        geneToModule = NULL,
                                        drvNames = NULL,
                                        keepInput = TRUE,
-                                       genotFitness = NULL,
+                                       genotBirthDeath = NULL,
                                        ## refFE = NULL,
                                        calledBy = NULL,
-                                       frequencyDependentFitness = FALSE,
-                                       frequencyType = "freq_dep_not_used"){
+                                       frequencyDependentBirth = FALSE,
+                                       frequencyDependentDeath = FALSE,
+                                       deathSpec = FALSE,
+                                       frequencyTypeBirth = "freq_dep_birth_not_used",
+                                       frequencyTypeDeath = "freq_dep_death_not_used"){
                                        #spPopSizes = NULL) {
-  ## From allFitnessEffects. Generalized so we deal with Fitness
+  ## From allBirthDeathEffects. Generalized so we deal with Fitness
   ## and mutator.
 
   ## restrictions: the usual rt
@@ -495,7 +556,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
   ## (whereas for rT extracting the names is very simple).
 
   ## called appropriately?
-  if( !(calledBy %in% c("allFitnessEffects", "allMutatorEffects") ))
+  if( !(calledBy %in% c("allBirthDeathEffects", "allMutatorEffects") ))
     stop("How did you call this function?. Bug.")
 
   if(calledBy == "allMutatorEffects") {
@@ -506,7 +567,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
            "Is this an attempt to subvert the function?")
   }
 
-  if(!frequencyDependentFitness) {
+  if(!frequencyDependentBirth && !frequencyDependentDeath) {
     rtNames <- NULL
     epiNames <- NULL
     orNames <- NULL
@@ -617,8 +678,8 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       geneNoInt <- data.frame()
     }
 
-    if(is.null(genotFitness)) {
-      genotFitness <- matrix(NA, nrow = 0, ncol = 1)
+    if(is.null(genotBirthDeath)) {
+      genotBirthDeath <- matrix(NA, nrow = 0, ncol = 1)
       fitnessLandscape_df <- data.frame()
       fitnessLandscape_gene_id <- data.frame()
     } else {
@@ -626,27 +687,49 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       ## This makes life simpler in C++:
       ## In the map, the key is the genotype name, as
       ## cnn <- colnames(genotFitness)[-ncol(genotFitness)]
-      cnn <- 1:(ncol(genotFitness) - 1)
-      gfn <- apply(genotFitness[, -ncol(genotFitness), drop = FALSE], 1,
-                   function(x) paste(cnn[as.logical(x)],
-                                     collapse = ", "))
+      if(deathSpec) {
+        cnn <- 1:(ncol(genotBirthDeath) - 2)
+        gfn <- apply(genotBirthDeath[, -c((ncol(genotBirthDeath)-1):ncol(genotBirthDeath)), drop = FALSE], 1,
+                     function(x) paste(cnn[as.logical(x)],
+                                       collapse = ", "))
+      }
+      else {
+        cnn <- 1:(ncol(genotBirthDeath) - 1)
+        gfn <- apply(genotBirthDeath[, -ncol(genotBirthDeath), drop = FALSE], 1,
+                     function(x) paste(cnn[as.logical(x)],
+                                       collapse = ", "))
+      }
+      
       ## rownames(genotFitness) <- gfn
-      fitnessLandscape_df <-
-        data.frame(Genotype = gfn,
-                   Fitness = genotFitness[, ncol(genotFitness)],
-                   stringsAsFactors = FALSE)
-      fitnessLandscape_gene_id <- data.frame(
-        Gene = colnames(genotFitness)[-ncol(genotFitness)],
-        GeneNumID = cnn,
-        stringsAsFactors = FALSE)
+      if(deathSpec) {
+        fitnessLandscape_df <-
+          data.frame(Genotype = gfn,
+                     Birth = genotBirthDeath[, ncol(genotBirthDeath)-1],
+                     Death = genotBirthDeath[, ncol(genotBirthDeath)],
+                     stringsAsFactors = FALSE)
+        fitnessLandscape_gene_id <- data.frame(
+          Gene = colnames(genotBirthDeath)[-c((ncol(genotBirthDeath)-1):ncol(genotBirthDeath))],
+          GeneNumID = cnn,
+          stringsAsFactors = FALSE)
+      }
+      else {
+        fitnessLandscape_df <-
+          data.frame(Genotype = gfn,
+                     Birth = genotBirthDeath[, ncol(genotBirthDeath)-1],
+                     stringsAsFactors = FALSE)
+        fitnessLandscape_gene_id <- data.frame(
+          Gene = colnames(genotBirthDeath)[-ncol(genotBirthDeath)],
+          GeneNumID = cnn,
+          stringsAsFactors = FALSE)
+      }
 
     }
 
     if( (length(long.rt) + length(long.epistasis) + length(long.orderEffects) +
-         nrow(geneNoInt) + nrow(genotFitness)) == 0)
+         nrow(geneNoInt) + nrow(genotBirthDeath)) == 0)
       stop("You have specified nothing!")
 
-    if(calledBy == "allFitnessEffects") {
+    if(calledBy == "allBirthDeathEffects") {
       if((length(long.rt) + length(long.epistasis) + length(long.orderEffects)) > 1) {
         graphE <- fitnessEffectsToIgraph(rT, epistasis, orderEffects)
       } else {
@@ -696,56 +779,98 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
                 fitnessLandscapeVariables = vector(mode = "character", length = 0L),
-                frequencyDependentFitness = frequencyDependentFitness,
-                frequencyType = frequencyType)
+                frequencyDependentBirth = frequencyDependentBirth,
+                frequencyDependentDeath = frequencyDependentDeath,
+                frequencyTypeBirth = frequencyTypeBirth,
+                frequencyTypeDeath = frequencyTypeDeath,
+                deathSpec = deathSpec)
                 #spPopSizes = vector(mode = "integer", length = 0L)
     
-    if(calledBy == "allFitnessEffects") {
+    if(calledBy == "allBirthDeathEffects") {
       class(out) <- c("fitnessEffects")
     } else if(calledBy == "allMutatorEffects") {
       class(out) <- c("mutatorEffects")
     }
   } else { ## Frequency-dependent fitness
 
-    if(is.null(genotFitness)) {
+    if(is.null(genotBirthDeath)) {
       #genotFitness <- matrix(NA, nrow = 0, ncol = 1)
       #fitnessLandscape_df <- data.frame()
       #fitnessLandscape_gene_id <- data.frame()
       stop("You have a null genotFitness in a frequency dependent fitness situation.")
     } else {
-      cnn <- 1:(ncol(genotFitness) - 1)
-      gfn <- apply(genotFitness[, -ncol(genotFitness), drop = FALSE], 1,
-                   function(x) paste(cnn[as.logical(x)],
-                                     collapse = ", "))
-      ## rownames(genotFitness) <- gfn
-      fitnessLandscape_df <-
-        data.frame(Genotype = gfn,
-                   Fitness = genotFitness[, ncol(genotFitness)],
-                   stringsAsFactors = FALSE)
+      if(deathSpec) {
+        cnn <- 1:(ncol(genotBirthDeath) - 2)
+        gfn <- apply(genotBirthDeath[, -c((ncol(genotBirthDeath)-1):ncol(genotBirthDeath)), drop = FALSE], 1,
+                     function(x) paste(cnn[as.logical(x)],
+                                       collapse = ", "))
+        
+        fitnessLandscape_df <-
+          data.frame(Genotype = gfn,
+                     Birth = genotBirthDeath[, ncol(genotBirthDeath)-1],
+                     Death = genotBirthDeath[, ncol(genotBirthDeath)],
+                     stringsAsFactors = FALSE)
+        fitnessLandscape_gene_id <- data.frame(
+          Gene = colnames(genotBirthDeath)[-c((ncol(genotBirthDeath)-1):ncol(genotBirthDeath))],
+          GeneNumID = cnn,
+          stringsAsFactors = FALSE)
+      }
+      else {
+        cnn <- 1:(ncol(genotBirthDeath) - 1)
+        gfn <- apply(genotBirthDeath[, -ncol(genotBirthDeath), drop = FALSE], 1,
+                     function(x) paste(cnn[as.logical(x)],
+                                       collapse = ", "))
+        fitnessLandscape_df <-
+          data.frame(Genotype = gfn,
+                     Birth = genotBirthDeath[, ncol(genotBirthDeath)-1],
+                     stringsAsFactors = FALSE)
+        
+        fitnessLandscape_gene_id <- data.frame(
+          Gene = colnames(genotBirthDeath)[-ncol(genotBirthDeath)],
+          GeneNumID = cnn,
+          stringsAsFactors = FALSE)
+      }
 
       attr(fitnessLandscape_df,'row.names') <-
         as.integer(attr(fitnessLandscape_df,'row.names'))
 
-      fitnessLandscape_gene_id <- data.frame(
-        Gene = colnames(genotFitness)[-ncol(genotFitness)],
-        GeneNumID = cnn,
-        stringsAsFactors = FALSE)
-
-      if(frequencyType == "auto"){
-        ch <- paste(as.character(fitnessLandscape_df[, ncol(fitnessLandscape_df)]), collapse = "")
+      if(frequencyTypeBirth == "auto"){
+        ch <- paste(as.character(fitnessLandscape_df$Birth), collapse = "")
         #print(ch)
         if( grepl("f_", ch, fixed = TRUE) ){
-          frequencyType = "rel"
+          frequencyTypeBirth = "rel"
         } else{
-          frequencyType = "abs"
+          frequencyTypeBirth = "abs"
         }
-      } else { frequencyType = frequencyType }
+      } else { frequencyTypeBirth = frequencyTypeBirth }
+      
+      if(frequencyTypeDeath == "auto"){
+        ch <- paste(as.character(fitnessLandscape_df$Death), collapse = "")
+        #print(ch)
+        if( grepl("f_", ch, fixed = TRUE) ){
+          frequencyTypeDeath = "rel"
+        } else{
+          frequencyTypeDeath = "abs"
+        }
+      } else { frequencyTypeDeath = frequencyTypeDeath }
       ## Wrong: assumes all genotypes in fitness landscape
       ## fitnessLandscapeVariables = fVariablesN(ncol(genotFitness) - 1, frequencyType)
-      stopifnot(identical(genotFitness$Fitness, fitnessLandscape_df$Fitness))
-      flvars_and_fitvars <- create_flvars_fitvars(genotFitness, frequencyType)
-      fitnessLandscapeVariables <- flvars_and_fitvars$flvars
-      Fitness_as_fvars <- flvars_and_fitvars$Fitness_as_fvars
+      stopifnot(identical(genotBirthDeath$Birth, fitnessLandscape_df$Birth))
+      if(deathSpec) {
+        stopifnot(identical(genotBirthDeath$Death, fitnessLandscape_df$Death))
+      }
+      flvars_and_fitvars <- create_flvars_fitvars(genotBirthDeath, 
+                                                  frequencyTypeBirth,
+                                                  frequencyTypeDeath,
+                                                  deathSpec)
+      
+      birthLandscapeVariables <- flvars_and_fitvars$flvarsb
+      Birth_as_fvars <- flvars_and_fitvars$Birth_as_fvars
+      
+      if(deathSpec) {
+        deathLandscapeVariables <- flvars_and_fitvars$flvarsd
+        Death_as_fvars <- flvars_and_fitvars$Death_as_fvars
+      }
     }
 
     if(!is.null(drvNames)) {
@@ -763,17 +888,44 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       ## This is what C++ should consume
      
       ## This ought to allow to pass fitness spec as letters. Preserve original
-      Fitness_original_as_letters <- fitnessLandscape_df$Fitness
-      fitnessLandscape_df$Fitness <- Fitness_as_fvars
+      Birth_original_as_letters <- fitnessLandscape_df$Birth
+      fitnessLandscape_df$Birth <- Birth_as_fvars
+      
+      if(deathSpec) {
+        Death_original_as_letters <- fitnessLandscape_df$Death
+        fitnessLandscape_df$Death <- Death_as_fvars
+      }
+      if(deathSpec) {
+        
+        full_FDF_spec <-
+          cbind(genotBirthDeath[, -c((ncol(genotBirthDeath)-1):ncol(genotBirthDeath))]
+                , Genotype_as_numbers = fitnessLandscape_df$Genotype
+                , Genotype_as_letters = genotype_letterslabel(genotFitness[, -c(ncol(genotFitness)-1:ncol(genotFitness))])
+                , Genotype_as_fvarsb = birthLandscapeVariables ## used in C++
+                , Genotype_as_fvarsd = deathLandscapeVariables
+                , Birth_as_fvars = Birth_as_fvars
+                , Birth_as_letters = Birth_original_as_letters
+                , Death_as_fvars = Death_as_fvars
+                , Death_as_letters = Death_original_as_letters
+          )
 
-      full_FDF_spec <-
-          cbind(genotFitness[, -ncol(genotFitness)]
-              , Genotype_as_numbers = fitnessLandscape_df$Genotype
-              , Genotype_as_letters = genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
-              , Genotype_as_fvars = fitnessLandscapeVariables ## used in C++
-              , Fitness_as_fvars = Fitness_as_fvars
-              , Fitness_as_letters = Fitness_original_as_letters
-                )
+      }
+      
+      else {
+        full_FDF_spec <-
+          cbind(genotBirthDeath[, -ncol(genotBirthDeath)]
+                , Genotype_as_numbers = fitnessLandscape_df$Genotype
+                , Genotype_as_letters = genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
+                , Genotype_as_fvarsb = birthLandscapeVariables ## used in C++
+                , Genotype_as_fvarsd = deathLandscapeVariables
+                , Birth_as_fvars = Birth_as_fvars
+                , Birth_as_letters = Birth_original_as_letters
+                , Death_as_fvars = Death_as_fvars
+                , Death_as_letters = Death_original_as_letters
+          )
+      }
+      
+      
       rownames(full_FDF_spec) <- 1:nrow(full_FDF_spec)
       
       ## fitnessLanscape and fitnessLandscape_df are now redundant given
@@ -782,17 +934,41 @@ allFitnessORMutatorEffects <- function(rT = NULL,
 
       rm(fitnessLandscape_df)
       suppressWarnings(try(rm(fitnessLandscape), silent = TRUE))
-      rm(fitnessLandscapeVariables)
-      rm(Fitness_as_fvars)
-      rm(Fitness_original_as_letters)
+      rm(birthLandscapeVariables)
+      rm(Birth_as_fvars)
+      rm(Birth_original_as_letters)
+      if (deathSpec) {
+        rm(deathLandscapeVariables)
+        rm(Death_as_fvars)
+        rm(Death_original_as_letters)
+      }
       
-      fitnessLandscape <- full_FDF_spec[, c(fitnessLandscape_gene_id$Gene,
-                                            "Fitness_as_fvars")]
-      colnames(fitnessLandscape)[ncol(fitnessLandscape)] <- "Fitness"
+      if(deathSpec) {
+        fitnessLandscape <- full_FDF_spec[, c(fitnessLandscape_gene_id$Gene,
+                                              "Birth_as_fvars",
+                                              "Death_as_fvars")]
+        
+        colnames(fitnessLandscape)[ncol(fitnessLandscape)-1] <- "Birth"
+        colnames(fitnessLandscape)[ncol(fitnessLandscape)] <- "Death"
+        
+        fitnessLandscape_df <- full_FDF_spec[, c("Genotype_as_numbers",
+                                                 "Birth_as_fvars",
+                                                 "Death_as_fvars")]
+        
+        colnames(fitnessLandscape_df) <- c("Genotype", "Birth", "Death")
+        
+      } else {
+        fitnessLandscape <- full_FDF_spec[, c(fitnessLandscape_gene_id$Gene,
+                                              "Birth_as_fvars")]
+        
+        colnames(fitnessLandscape)[ncol(fitnessLandscape)] <- "Birth"
+        
+        fitnessLandscape_df <- full_FDF_spec[, c("Genotype_as_numbers",
+                                                 "Birth_as_fvars")]
+        
+        colnames(fitnessLandscape_df) <- c("Genotype", "Birth")
+      }
       
-      fitnessLandscape_df <- full_FDF_spec[, c("Genotype_as_numbers",
-                                               "Fitness_as_fvars")]
-      colnames(fitnessLandscape_df) <- c("Genotype", "Fitness")
       
       
       out <- list(long.rt = list(),
@@ -808,12 +984,15 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 epistasis = NULL,
                 orderEffects = NULL,
                 noIntGenes = NULL,
-                fitnessLandscape = genotFitness, ## redundant
+                fitnessLandscape = genotBirthDeath, ## redundant
                 fitnessLandscape_df = fitnessLandscape_df, ## redundant
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id, 
                 ## fitnessLandscapeVariables = NULL, ## now part of full_FDF_spec
-                frequencyDependentFitness = frequencyDependentFitness,
-                frequencyType = frequencyType,
+                frequencyDependentBirth = frequencyDependentBirth,
+                frequencyDependentDeath = frequencyDependentDeath,
+                frequencyTypeBirth = frequencyTypeBirth,
+                frequencyTypeDeath = frequencyTypeDeath,
+                deathSpec = deathSpec,
                 full_FDF_spec = full_FDF_spec
                 #spPopSizes = spPopSizes
               )
@@ -823,75 +1002,100 @@ allFitnessORMutatorEffects <- function(rT = NULL,
   return(out)
 }
 
-allFitnessEffects <- function(rT = NULL,
+allBirthDeathEffects <- function(rT = NULL,
                               epistasis = NULL,
                               orderEffects = NULL,
                               noIntGenes = NULL,
                               geneToModule = NULL,
                               drvNames = NULL,
-                              genotFitness = NULL,
+                              genotBirthDeath = NULL,
                               keepInput = TRUE,
-                              frequencyDependentFitness = FALSE,
-                              frequencyType = NA) {
+                              frequencyDependentBirth = FALSE,
+                              frequencyDependentDeath = FALSE,
+                              frequencyTypeBirth = NA,
+                              frequencyTypeDeath = NA,
+                              deathSpec = FALSE) {
                               #spPopSizes = NULL) {
-
-    if(!frequencyDependentFitness) {
+    
+    if(!frequencyDependentBirth && !frequencyDependentDeath) {
         
-        if(!is.na(frequencyType)){
-            warning("frequencyType set to NA")
+        if(!is.na(frequencyTypeBirth)){
+            warning("frequencyTypeBirth set to NA")
         }
         ## this is a kludge, but we must pass something not NA and not NULL
         ## to the C++ code
-        frequencyType = "freq_dep_not_used"
-
-    if(!is.null(genotFitness)) {
-      if(!is.null(rT) || !is.null(epistasis) ||
-         !is.null(orderEffects) || !is.null(noIntGenes) ||
-         !is.null(geneToModule)) {
-        stop("You have a non-null genotFitness.",
-             " If you pass the complete genotype to fitness mapping",
-             " you cannot pass any of rT, epistasis, orderEffects",
-             " noIntGenes or geneToModule.")
-      }
-
-      genotFitness_std <- to_genotFitness_std(genotFitness,
-                                              frequencyDependentFitness = FALSE,
-                                              frequencyType = frequencyType,
-                                              simplify = TRUE)
-      ## epistasis <- from_genotype_fitness(genotFitness)
+        frequencyTypeBirth = "freq_dep_birth_not_used"
+        
+        if(!is.na(frequencyTypeDeath)){
+          warning("frequencyTypeDeath set to NA")
+        }
+        ## this is a kludge, but we must pass something not NA and not NULL
+        ## to the C++ code
+        frequencyTypeDeath = "freq_dep_death_not_used"
+        
+        if(!is.null(genotBirthDeath)) {
+          if(!is.null(rT) || !is.null(epistasis) ||
+             !is.null(orderEffects) || !is.null(noIntGenes) ||
+             !is.null(geneToModule)) {
+            stop("You have a non-null genotBirthDeath.",
+                 " If you pass the complete genotype to fitness mapping",
+                 " you cannot pass any of rT, epistasis, orderEffects",
+                 " noIntGenes or geneToModule.")
+          }
+          
+          genotBirthDeath_std <- to_genotBirthDeath_std(genotBirthDeath,
+                                                        frequencyDependentBirth = FALSE,
+                                                        frequencyDependentDeath = FALSE,
+                                                        frequencyTypeBirth = frequencyTypeBirth,
+                                                        frequencyTypeDeath = frequencyDependentDeath,
+                                                        deathSpec = deathSpec,
+                                                        simplify = TRUE)
+          
+        } else {
+          genotFitness_std <- NULL
+        }
+        
+        allBirthDeathORMutatorEffects(
+          rT = rT,
+          epistasis = epistasis,
+          orderEffects = orderEffects,
+          noIntGenes = noIntGenes,
+          geneToModule = geneToModule,
+          drvNames = drvNames,
+          keepInput = keepInput,
+          genotBirthDeath = genotBirthDeath_std,
+          calledBy = "allBirthDeathEffects",
+          frequencyDependentBirth = FALSE,
+          frequencyDependentDeath = FALSE,
+          frequencyTypeBirth = frequencyTypeBirth,
+          frequencyTypeDeath = frequencyTypeDeath,
+          deathSpec = deathSpec)
+        #spPopSizes = spPopSizes)
+    
     } else {
-      genotFitness_std <- NULL
-    }
-    allFitnessORMutatorEffects(
-      rT = rT,
-      epistasis = epistasis,
-      orderEffects = orderEffects,
-      noIntGenes = noIntGenes,
-      geneToModule = geneToModule,
-      drvNames = drvNames,
-      keepInput = keepInput,
-      genotFitness = genotFitness_std,
-      calledBy = "allFitnessEffects",
-      frequencyDependentFitness = FALSE,
-      frequencyType = frequencyType)
-      #spPopSizes = spPopSizes)
-
-  } else {
-
-    if(!(frequencyType %in% c('abs', 'rel', 'auto'))){
+ 
+    if(frequencyDependentBirth && !(frequencyTypeBirth %in% c('abs', 'rel', 'auto'))){
       #set frequencyType = "auto" in case you did not specify 'rel' or 'abs'
-      frequencyType = "auto"
-      message("frequencyType set to 'auto'")
+      frequencyTypeBirth = "auto"
+      message("frequencyTypeBirth set to 'auto'")
     }
-
-    if(is.null(genotFitness)) {
-      stop("You have a null genotFitness in a frequency dependent fitness situation.")
+    
+    if(frequencyDependentDeath && !(frequencyTypeDeath %in% c('abs', 'rel', 'auto'))){
+      #set frequencyType = "auto" in case you did not specify 'rel' or 'abs'
+      frequencyTypeDeath = "auto"
+      message("frequencyTypeDeath set to 'auto'")
+    }
+    if(is.null(genotBirthDeath)) {
+      stop("You have a null genotBirthDeath in a frequency dependent fitness situation.")
     } else {
-      genotFitness_std <- to_genotFitness_std(genotFitness,
-                                              frequencyDependentFitness = TRUE,
-                                              frequencyType = frequencyType,
+      genotBirthDeath_std <- to_genotBirthDeath_std(genotBirthDeath,
+                                              frequencyDependentBirth= frequencyDependentBirth,
+                                              frequencyDependentDeath= frequencyDependentDeath,
+                                              frequencyTypeBirth = frequencyTypeBirth,
+                                              frequencyTypeDeath = frequencyTypeDeath,
+                                              deathSpec = deathSpec,
                                               simplify = TRUE)
-      allFitnessORMutatorEffects(
+      allBirthDeathORMutatorEffects(
         rT = rT,
         epistasis = epistasis,
         orderEffects = orderEffects,
@@ -899,11 +1103,14 @@ allFitnessEffects <- function(rT = NULL,
         geneToModule = geneToModule,
         drvNames = drvNames,
         keepInput = keepInput,
-        genotFitness = genotFitness_std,
-        calledBy = "allFitnessEffects",
-        frequencyDependentFitness = TRUE,
-        frequencyType = frequencyType)
-        #spPopSizes = spPopSizes)
+        genotBirthDeath = genotBirthDeath_std,
+        calledBy = "allBirthDeathEffects",
+        frequencyDependentBirth = frequencyDependentBirth,
+        frequencyDependentDeath = frequencyDependentDeath,
+        frequencyTypeBirth = frequencyTypeBirth,
+        frequencyTypeDeath = frequencyTypeDeath,
+        deathSpec = deathSpec)
+      #spPopSizes = spPopSizes)
     }
   }
 }
@@ -1641,7 +1848,7 @@ nr_oncoSimul.internal <- function(rFE,
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
-                   "allFitnessEffects"))
+                   "allBirthDeathEffects"))
 
     if(countGenesFe(rFE) < 2) {
         stop("There must be at least two genes (loci) in the fitness effects. ",

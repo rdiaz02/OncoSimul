@@ -1,0 +1,89 @@
+## This is a C++11 package
+CXX_STD = CXX11
+
+# This ain't needed
+# ONCOSIMUL_SRC = BNB_nr.cpp\
+# 	BNB_v1.cpp\
+# 	bnb_common.cpp\
+# 	new_restrict.cpp\
+# 	accessible_genotypes.cpp\
+# 	RcppExports.cpp\
+# 	OncoSimulR_init.c\
+# ONCOSIMUL_OBJECTS_TMP=$(ONCOSIMUL_SRC:.cpp=.o)
+# ONCOSIMUL_OBJECTS=$(ONCOSIMUL_OBJECTS_TMP:.c=.o)
+
+# .PHONY: all liblandscape.a
+# all: $(SHLIB)
+# all: liblandscape.a $(SHLIB)
+
+all: liblandscape.a fl_statistics fl_generate $(SHLIB)
+## all: liblandscape.a fl_statistics fl_generate fl_genchains $(SHLIB)
+
+
+MAGELLAN_SRC = FitnessLandscape/gamma.c\
+        FitnessLandscape/landscape.c \
+        FitnessLandscape/random.c\
+        FitnessLandscape/sort.c\
+        FitnessLandscape/chain.c\
+        FitnessLandscape/input.c\
+        FitnessLandscape/genotypes.c\
+        FitnessLandscape/ordered_pairs.c\
+        FitnessLandscape/calculus.c\
+        FitnessLandscape/vector.c\
+        FitnessLandscape/generalized_chain.c\
+        FitnessLandscape/LinearAlgebra.c\
+        FitnessLandscape/summary_statistics.c\
+        FitnessLandscape/epistasis_type.c\
+        FitnessLandscape/decomposition.c\
+        FitnessLandscape/models.c\
+	FitnessLandscape/verbose.c
+#        FitnessLandscape/common_drawings.c\ ## I do not use it and gives a warning
+MAGELLAN_OBJECTS = $(MAGELLAN_SRC:.c=.o)
+
+liblandscape.a: $(MAGELLAN_OBJECTS)
+	$(AR) -r $@ $+ ;
+	$(RANLIB) $@;
+
+
+
+MAGELLAN_LIBS = liblandscape.a
+MAGELLAN_LIBS_DIR = -L.
+MAGELLAN_LFLAGS = -llandscape
+## MAGELLAN_INCLUDE_DIR = -I. -I/FitnessLandscape/.
+MAGELLAN_INCLUDE_DIR = -I/FitnessLandscape/.
+MAGELLAN_ALLCFLAGS= -O -Wall
+
+fl_statistics: FitnessLandscape/main_fl_statistics.c $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+# # Do we really need this?
+# fl_genchains: FitnessLandscape/main_generalizedchains_test.c $(MAGELLAN_LIBS)
+# 	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm #-g
+
+
+
+
+
+# fl_stats:
+# 	echo "make fl_statistics in FitnessLandscape/ ..."
+# 	(cd MAGELLAN; $(MAKE) fl_statistics)
+
+# fl_gen:
+# 	echo "make fl_generate in FitnessLandscape/ ..."
+# 	(cd MAGELLAN; $(MAKE) fl_generate)
+
+# liblandscape:
+# 	echo "make liblandscape in FitnessLandscape/ ..."
+# 	(cd MAGELLAN; $(MAKE) liblandscape.a)
+
+# magellanall:
+# 	echo "make all MAGELLAN in FitnessLandscape/ ..."
+# 	(cd MAGELLAN; $(MAKE) magellanall)
+# clean:
+# 	echo "mak clean in FitnessLandscape/ ..."
+# 	(cd MAGELLAN; $(MAKE) clean)
+
+

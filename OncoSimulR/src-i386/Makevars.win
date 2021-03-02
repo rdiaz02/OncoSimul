@@ -1,0 +1,284 @@
+CXX_STD = CXX11
+## PKG_CXXFLAGS += -I../inst/miscell
+
+## We have issues under Windoze because of ExprTk, MINGW, etc.
+
+## Trick below from affxparser
+## as suggested by K. D. Hansen
+## on bioc-devel list on 2019-05-24
+
+MYCXXFLAGS = -Wa,-mbig-obj -O3
+## MYCXXFLAGS = -O0
+
+%.o: %.cpp
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
+
+## Just in case, pass to the linker too. No effect?. See below.
+PKG_LIBS = -Wa,-mbig-obj -O3
+## PKG_LIBS = -O3
+
+#####################  MAGELLAN   ####################
+
+all: liblandscape.a fl_statistics fl_generate $(SHLIB)
+## all: liblandscape.a fl_statistics fl_generate fl_genchains $(SHLIB)
+
+
+MAGELLAN_SRC = FitnessLandscape/gamma.c\
+        FitnessLandscape/landscape.c \
+        FitnessLandscape/random.c\
+        FitnessLandscape/sort.c\
+        FitnessLandscape/chain.c\
+        FitnessLandscape/input.c\
+        FitnessLandscape/genotypes.c\
+        FitnessLandscape/ordered_pairs.c\
+        FitnessLandscape/calculus.c\
+        FitnessLandscape/vector.c\
+        FitnessLandscape/generalized_chain.c\
+        FitnessLandscape/LinearAlgebra.c\
+        FitnessLandscape/summary_statistics.c\
+        FitnessLandscape/epistasis_type.c\
+        FitnessLandscape/decomposition.c\
+        FitnessLandscape/models.c\
+	FitnessLandscape/verbose.c
+#        FitnessLandscape/common_drawings.c\ ## I do not use it and gives a warning
+MAGELLAN_OBJECTS = $(MAGELLAN_SRC:.c=.o)
+
+liblandscape.a: $(MAGELLAN_OBJECTS)
+	$(AR) -r $@ $+ ;
+	$(RANLIB) $@;
+
+
+
+MAGELLAN_LIBS = liblandscape.a
+MAGELLAN_LIBS_DIR = -L.
+MAGELLAN_LFLAGS = -llandscape
+## MAGELLAN_INCLUDE_DIR = -I. -I/FitnessLandscape/.
+MAGELLAN_INCLUDE_DIR = -I/FitnessLandscape/.
+MAGELLAN_ALLCFLAGS= -O -Wall
+
+fl_statistics: FitnessLandscape/main_fl_statistics.c $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
+	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm;
+
+# # Do we really need this?
+# fl_genchains: FitnessLandscape/main_generalizedchains_test.c $(MAGELLAN_LIBS)
+# 	$(CC) $(MAGELLAN_ALLCFLAGS) -o $@ $(MAGELLAN_INCLUDE_DIR) $(MAGELLAN_LIBS_DIR) $< $(MAGELLAN_LFLAGS) -lm #-g
+
+
+#################### /MAGELLAN ##########################
+
+
+
+
+#########################################################
+#########################################################
+#########################################################
+
+
+
+
+####### OncoSimulR and ExprTk, Rtools35 (current as of 2019-05-24)
+##      gcc-4.9.3
+
+##### 64 bits: Rtools/mingw_64
+
+## Compiler: -03. Linker:  nothing.                 too many sections error
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:    linker stays there forever 
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:        linker stays there forever
+
+
+##### 32 bits Rtools/mingw_32
+
+## Here it always breaks compiling new_restrict.cpp
+## Compiler: -03. Linker:  nothing.                          too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 too many sections error            
+## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   too many sections error            
+
+
+
+####### OncoSimulR and ExprTk, Rtools40 (current as of 2019-05-24)
+##      gcc-8.3.0
+
+
+##### 64 bits: Rtools/mingw_64
+
+## From a MINGW64 shell do:  /c/R/R-testing/bin/x64/R CMD INSTALL --no-multiarch OncoSimulR
+
+## Compiler: -03. Linker:  nothing.                           linker stays there forever
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:              OK
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                  ??
+## Compiler: -Wa,-mbig-obj -O3; Linker: -Wa,-mbig-obj -O3:    ??
+
+
+
+##### 32 bits Rtools/mingw_32
+
+## From a MINGW32 shell do:  /c/R/R-testing/bin/i386/R CMD INSTALL --no-multiarch OncoSimulR
+
+## Compiler: -03. Linker:  nothing.                          OK
+## Compiler: -Wa,-mbig-obj -O3; Linker: nothing:             OK
+## Compiler: -Wa,-mbig-obj -O3; Linker: -O3:                 ??
+## Compiler: -Wa,-mbig-obj -O3; Linker:  -Wa,-mbig-obj -O3   OK
+
+
+
+
+
+####### Compiling ExprTk directly.
+
+## Download ExprTk and do
+## make exprtk_test
+## (this is in the bug report https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/)
+
+
+## I try, with c:/Rtools/mingw_64/bin/g++
+## compiling ExprTk directly.
+## The makefile has -O1.
+## Without the -Wa,-mibg-obj I get the too many sections error
+## With it, it seems to stay there forever.
+
+
+## Using MSYS2 and gcc version 8.3.0 as provided by Rtools 40 (2019-05-24):
+
+## MINGW32 shell: -O1                          OK
+## MINGW32 shell: -O3, -Wa,-mbig-obj           OK
+## MINGW32 shell: -O1, -Wa,-mbig-obj           ??
+
+## MINGW64 shell: -O1                          nope: eternal
+## MINGW64 shell: -O3, -Wa,-mbig-obj           OK
+## MINGW64 shell: -O1, -Wa,-mbig-obj           OK 
+
+
+
+###### Route not taken (not needed): Check Natron: https://github.com/MrKepzie/Natron
+## as they use ExprTk (see refs above).
+## https://github.com/MrKepzie/Natron/blob/master/global.pri
+## suggests that Natron not using -Wa,-mbig.obj, as linker never returns
+## But
+##  https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
+##  in the text, suggests otherwise.
+## The global.pri file suggests they are usin win32, which as per my table above
+## indicates that with gcc-8 and MSYS2 both would work.
+
+
+
+
+
+
+
+
+
+
+
+#### Older stuff
+
+
+
+
+
+
+## To the left of -O2, so useless
+## PKG_CXXFLAGS = -Wa,-mbig-obj -O3
+
+## To the left of -O2, so useless
+## PKG_CXXFLAGS += -Wa,-mbig-obj -O3  
+
+
+## Also to the left of -O2
+## PKG_CPPFLAGS = -Wa,-mbig-obj -O3
+
+## Also to the left of -O2
+## PKG_CPPFLAGS += -Wa,-mbig-obj -O3
+
+## Ignored
+## PKG_CXX11FLAGS = -Wa,-mbig-obj -O3  
+## Ignored
+## PKG_CXX11FLAGS += -Wa,-mbig-obj -O3  
+
+
+## Ignored for the individual c++ files, of course
+# PKG_CFLAGS = -Wa,-mbig-obj -O3
+# PKG_CFLAGS += -Wa,-mbig-obj -O3
+
+
+
+## -mbig-obj fails, because gcc does not recognize it. gcc version too old?
+## https://github.com/assimp/assimp/issues/2315
+## You have to give them together -Wa,-mbig-obj
+
+
+## All of these are, of course, ignored
+## CXX11FLAGS = Wa, -mbig-obj -O3 ## Ignored
+## CXX11FLAGS += Wa, -mbig-obj -O3 ## Ignored
+## CXX11PICFLAGS= -O3 ## Ignored
+## CXXFLAGS = -O3 ## Ignored
+## CFLAGS =  -Wa,-mbig-obj -O3 ## ignored
+
+
+
+
+## With 32 bits, it fails with the too many sections
+
+
+## Tried installing only the 64-bit version
+## https://stackoverflow.com/a/11298086
+## R CMD INSTALL --no-multiarch
+## The linker stays there forever, as originally reported
+## https://sourceforge.net/p/mingw-w64/discussion/723797/thread/c6b70624/
+## Comments in file 
+## https://github.com/MrKepzie/Natron/blob/master/global.pri
+## suggest that Natron not using -Wa,-mbig.obj, as linker never returns
+
+## Maybe Rtools 40, with MSYS2 will solve it?
+## https://stackoverflow.com/a/31907912
+
+
+## This is a C++11 package
+# PKG_CXXFLAGS = -O3
+# CXX11FLAGS += -Wa,-mbig-obj -O3 
+## PKG_CXXFLAGS = -I../inst/miscell -O3 
+## Do we need the -O3 to prevent mingw failure of too many sections?
+##  https://github.com/MrKepzie/Natron/blob/master/Engine/ExprTk.cpp
+##  https://discourse.mc-stan.org/t/too-many-sections/6261
+## But -O3 not placed after the default -O2:
+## https://stackoverflow.com/questions/23414448/r-makevars-file-to-overwrite-r-cmds-default-g-options
+## tested: -Wa,-mbig-obj does not solve it
+
+
+
+##################### Building the binary package
+##                    here, so I can just copy and paste in a MINGW64 shell
+## https://www.biostat.wisc.edu/~kbroman/Rintro/Rwinpack.html ande BioConductor
+## http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/tokay1-buildsrc.html
+## http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/tokay1-buildbin.html
+
+##    - obtain the tar.gz for Linux or build with Rtools40
+##    - /c/R/R-testing/bin/x64/R CMD INSTALL --build --compile-both  OncoSimulRxyz.tar.gz
+##    - might want to pass other options
+##          /c/R/R-testing/bin/x64/R CMD INSTALL --build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulRxyz.tar.gz
+
+
+## Recall I need pandoc and git
+## Install pandoc at C:/pandoc
+## Git is at C:\Program Files
+## Add them to the path
+## export PATH=$PATH:/c/Pandoc:/c/Program\ Files/git/bin
+## ##now, pdflatex
+## export PATH=$PATH:/c/Users/ramon/AppData/Roaming/TinyTeX/bin/win32
+
+#####    Full, BioC-like
+##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data  OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD check --force-multiarch --no-vignettes --timings OncoSimulR_2.zzz.tar.gz
+##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build OncoSimulR_xyz0.tar.gz
+
+## this next will not work with Rtools40, of course
+##  /c/R/R-testing/bin/x64/R CMD INSTALL OncoSimulR_xyz0.zip
+
+
+#####    Faster, shorter
+##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data --no-build-vignettes OncoSimulR
+##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build --no-build-vignettes --no-manual OncoSimulR_xyz0.tar.gz
+
