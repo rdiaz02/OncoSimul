@@ -128,13 +128,13 @@ to_genotBirthDeath_std <- function(x,
         stop("Input must inherit from matrix or data.frame.")
     
     if (frequencyDependentDeath) {
-        deathSpec <- TRUE
+        deathSpec = TRUE
         warning("Assumming death is being specified. Setting deathSpec to TRUE.")
     }
     # Has to be 0's and 1's specification without freq_dep_birth and no death
     # or without freq_dep_birth and without freq_dep_death.
     
-    if((ncol(x) > 2 && !deathSpec) || ncol > 3) {
+    if((ncol(x) > 2 && !deathSpec) || ncol(x) > 3) {
         if (!frequencyDependentBirth && !frequencyDependentDeath){
             if(inherits(x, "matrix")) {
                 if(!is.numeric(x))

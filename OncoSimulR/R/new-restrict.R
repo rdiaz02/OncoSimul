@@ -534,7 +534,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
                                        frequencyTypeBirth = "freq_dep_birth_not_used",
                                        frequencyTypeDeath = "freq_dep_death_not_used"){
                                        #spPopSizes = NULL) {
-  ## From allBirthDeathEffects. Generalized so we deal with Fitness
+  ## From allFitnessEffects. Generalized so we deal with Fitness
   ## and mutator.
 
   ## restrictions: the usual rt
@@ -556,7 +556,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
   ## (whereas for rT extracting the names is very simple).
 
   ## called appropriately?
-  if( !(calledBy %in% c("allBirthDeathEffects", "allMutatorEffects") ))
+  if( !(calledBy %in% c("allFitnessEffects", "allMutatorEffects") ))
     stop("How did you call this function?. Bug.")
 
   if(calledBy == "allMutatorEffects") {
@@ -729,7 +729,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
          nrow(geneNoInt) + nrow(genotBirthDeath)) == 0)
       stop("You have specified nothing!")
 
-    if(calledBy == "allBirthDeathEffects") {
+    if(calledBy == "allFitnessEffects") {
       if((length(long.rt) + length(long.epistasis) + length(long.orderEffects)) > 1) {
         graphE <- fitnessEffectsToIgraph(rT, epistasis, orderEffects)
       } else {
@@ -786,7 +786,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
                 deathSpec = deathSpec)
                 #spPopSizes = vector(mode = "integer", length = 0L)
     
-    if(calledBy == "allBirthDeathEffects") {
+    if(calledBy == "allFitnessEffects") {
       class(out) <- c("fitnessEffects")
     } else if(calledBy == "allMutatorEffects") {
       class(out) <- c("mutatorEffects")
@@ -1002,7 +1002,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
   return(out)
 }
 
-allBirthDeathEffects <- function(rT = NULL,
+allFitnessEffects <- function(rT = NULL,
                               epistasis = NULL,
                               orderEffects = NULL,
                               noIntGenes = NULL,
@@ -1016,6 +1016,11 @@ allBirthDeathEffects <- function(rT = NULL,
                               frequencyTypeDeath = NA,
                               deathSpec = FALSE) {
                               #spPopSizes = NULL) {
+  
+    if(frequencyDependentDeath && !deathSpec) {
+      deathSpec = TRUE
+      warning("Assumming death is being specified. Setting deathSpec to TRUE.")
+    }
     
     if(!frequencyDependentBirth && !frequencyDependentDeath) {
         
@@ -1064,7 +1069,7 @@ allBirthDeathEffects <- function(rT = NULL,
           drvNames = drvNames,
           keepInput = keepInput,
           genotBirthDeath = genotBirthDeath_std,
-          calledBy = "allBirthDeathEffects",
+          calledBy = "allFitnessEffects",
           frequencyDependentBirth = FALSE,
           frequencyDependentDeath = FALSE,
           frequencyTypeBirth = frequencyTypeBirth,
@@ -1104,7 +1109,7 @@ allBirthDeathEffects <- function(rT = NULL,
         drvNames = drvNames,
         keepInput = keepInput,
         genotBirthDeath = genotBirthDeath_std,
-        calledBy = "allBirthDeathEffects",
+        calledBy = "allFitnessEffects",
         frequencyDependentBirth = frequencyDependentBirth,
         frequencyDependentDeath = frequencyDependentDeath,
         frequencyTypeBirth = frequencyTypeBirth,
@@ -1848,7 +1853,7 @@ nr_oncoSimul.internal <- function(rFE,
     if(!inherits(rFE, "fitnessEffects"))
         stop(paste("rFE must be an object of class fitnessEffects",
                    "as created, for instance, with function",
-                   "allBirthDeathEffects"))
+                   "allFitnessEffects"))
 
     if(countGenesFe(rFE) < 2) {
         stop("There must be at least two genes (loci) in the fitness effects. ",
