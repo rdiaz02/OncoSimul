@@ -562,7 +562,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
   if(calledBy == "allMutatorEffects") {
     ## very paranoid check
     if( !is.null(rT) || !is.null(orderEffects) ||
-        !is.null(drvNames) || !is.null(genotFitness))
+        !is.null(drvNames) || !is.null(genotBirthDeath))
       stop("allMutatorEffects called with forbidden arguments.",
            "Is this an attempt to subvert the function?")
   }
@@ -775,7 +775,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
                 epistasis = epistasis,
                 orderEffects = orderEffects,
                 noIntGenes = noIntGenes,
-                fitnessLandscape = genotFitness,
+                fitnessLandscape = genotBirthDeath,
                 fitnessLandscape_df = fitnessLandscape_df,
                 fitnessLandscape_gene_id = fitnessLandscape_gene_id,
                 fitnessLandscapeVariables = vector(mode = "character", length = 0L),
@@ -900,7 +900,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
         full_FDF_spec <-
           cbind(genotBirthDeath[, -c((ncol(genotBirthDeath)-1):ncol(genotBirthDeath))]
                 , Genotype_as_numbers = fitnessLandscape_df$Genotype
-                , Genotype_as_letters = genotype_letterslabel(genotFitness[, -c(ncol(genotFitness)-1:ncol(genotFitness))])
+                , Genotype_as_letters = genotype_letterslabel(genotBirthDeath[,-c((ncol(genotBirthDeath)-1):ncol(genotBirthDeath))])
                 , Genotype_as_fvarsb = birthLandscapeVariables ## used in C++
                 , Genotype_as_fvarsd = deathLandscapeVariables
                 , Birth_as_fvars = Birth_as_fvars
@@ -915,7 +915,7 @@ allBirthDeathORMutatorEffects <- function(rT = NULL,
         full_FDF_spec <-
           cbind(genotBirthDeath[, -ncol(genotBirthDeath)]
                 , Genotype_as_numbers = fitnessLandscape_df$Genotype
-                , Genotype_as_letters = genotype_letterslabel(genotFitness[, -ncol(genotFitness)])
+                , Genotype_as_letters = genotype_letterslabel(genotBirthDeath[, -ncol(genotBirthDeath)])
                 , Genotype_as_fvarsb = birthLandscapeVariables ## used in C++
                 , Genotype_as_fvarsd = deathLandscapeVariables
                 , Birth_as_fvars = Birth_as_fvars

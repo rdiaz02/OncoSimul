@@ -418,7 +418,8 @@ to_genotBirthDeath_std <- function(x,
         
     }
     
-    class(x) <- c("matrix", "genotype_birth_death_matrix")
+    if (!frequencyDependentBirth && !frequencyDependentDeath)
+        class(x) <- c("matrix", "genotype_birth_death_matrix")
     
     if(frequencyDependentBirth) { ## frequency-dependent fitness
         
@@ -452,9 +453,9 @@ to_genotBirthDeath_std <- function(x,
                                      function(z) {stringr::str_extract_all(string = z,
                                                                            pattern = pattern)})))
             
-            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 2, frequencyType))) |
+            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 2, frequencyTypeBirth))) |
                !(length(intersect(regularExpressionVectorBirth,
-                                  fVariablesN(ncol(x) - 2, frequencyType)) >= 1) )){
+                                  fVariablesN(ncol(x) - 2, frequencyTypeBirth)) >= 1) )){
                 stop("There are some errors in birth column")
             }
         }
@@ -463,9 +464,9 @@ to_genotBirthDeath_std <- function(x,
                 unique(unlist(lapply(x[, ncol(x)],
                                      function(z) {stringr::str_extract_all(string = z,
                                                                            pattern = pattern)})))
-            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 1, frequencyType))) |
+            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 1, frequencyTypeBirth))) |
                !(length(intersect(regularExpressionVectorBirth,
-                                  fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
+                                  fVariablesN(ncol(x) - 1, frequencyTypeBirth)) >= 1) )){
                 stop("There are some errors in fitness column")
             }
         }
@@ -496,9 +497,9 @@ to_genotBirthDeath_std <- function(x,
             unique(unlist(lapply(x[, ncol(x)],
                                  function(z) {stringr::str_extract_all(string = z,
                                                                        pattern = pattern)})))
-        if((!all(regularExpressionVectorDeath %in% fVariablesN(ncol(x) - 1, frequencyType))) |
+        if((!all(regularExpressionVectorDeath %in% fVariablesN(ncol(x) - 1, frequencyTypeDeath))) |
            !(length(intersect(regularExpressionVectorDeath,
-                              fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
+                              fVariablesN(ncol(x) - 1, frequencyTypeDeath)) >= 1) )){
             stop("There are some errors in death column")
         }
     }
