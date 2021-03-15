@@ -426,7 +426,7 @@ object and courier font for the name of the functions.
 
 
 ```{r frelats, eval=TRUE,echo=FALSE, fig.cap="Relationships between the main functions in OncoSimulR."}
-knitr::include_graphics("relfunct.pdf")
+knitr::include_graphics("relfunct.png")
 ```
 
 \clearpage
