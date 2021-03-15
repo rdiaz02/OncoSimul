@@ -1,3 +1,9 @@
+VER=
+CCACHE=ccache
+CC=$(CCACHE) gcc$(VER)
+CXX=$(CCACHE) g++$(VER)
+CXX11=$(CCACHE) g++$(VER)
+
 CXX_STD = CXX11
 ## PKG_CXXFLAGS += -I../inst/miscell
 
@@ -22,14 +28,7 @@ PKG_LIBS = -Wa,-mbig-obj -O3
 all: liblandscape.a fl_statistics fl_generate $(SHLIB)
 ## all: liblandscape.a fl_statistics fl_generate fl_genchains $(SHLIB)
 
-VER=
-CCACHE=ccache
-CC=$(CCACHE) gcc$(VER)
-CXX=$(CCACHE) g++$(VER)
-CXX11=$(CCACHE) g++$(VER)
-CXX14=$(CCACHE) g++$(VER)
-FC=$(CCACHE) gfortran$(VER)
-F77=$(CCACHE) gfortran$(VER)
+
 
 MAGELLAN_SRC = FitnessLandscape/gamma.c\
         FitnessLandscape/landscape.c \

@@ -112,7 +112,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 ## but if we are passed a fitness landscapes as produced by
 ## rfitness, do nothing. Well, it actually does something.
 
-to_genotBirthDeath_std <- function(x,
+to_genotFitness_std <- function(x,
                                 frequencyDependentBirth = FALSE,
                                 frequencyDependentDeath = FALSE,
                                 frequencyTypeBirth = frequencyTypeBirth,
@@ -127,7 +127,7 @@ to_genotBirthDeath_std <- function(x,
     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
         stop("Input must inherit from matrix or data.frame.")
     
-    if (frequencyDependentDeath) {
+    if (frequencyDependentDeath && !deathSpec) {
         deathSpec = TRUE
         warning("Assumming death is being specified. Setting deathSpec to TRUE.")
     }
@@ -273,7 +273,7 @@ to_genotBirthDeath_std <- function(x,
     } else {
 
         if(!inherits(x, "data.frame"))
-            stop("genotBirthDeath: if genotype is specified, it must be data frame")
+            stop("genotFitness: if genotype is specified, it must be data frame")
         if(ncol(x) == 0){
             stop("You have an empty data.frame")
         }
@@ -285,7 +285,7 @@ to_genotBirthDeath_std <- function(x,
         }
         ## Make sure no numbers
         if(any(is.numeric(x[, 1])))
-            stop(paste0("genotBirthDeath: first column of data frame is numeric.",
+            stop(paste0("genotFitness: first column of data frame is numeric.",
                         " Ambiguous and suggests possible error. If sure,",
                         " enter that column as character"))
 
@@ -323,7 +323,7 @@ to_genotBirthDeath_std <- function(x,
             
             
             if((!omarker) && (!emarker) && (!nogoodepi)) {
-                message("All single-gene genotypes as input to to_genotBirthDeath_std")
+                message("All single-gene genotypes as input to to_genotFitness_std")
             }
             ## Yes, we need to do this to  scale the fitness and put the "-"
             if(frequencyDependentBirth || frequencyDependentDeath){
@@ -401,7 +401,7 @@ to_genotBirthDeath_std <- function(x,
     if(any(is.na(x)))
         stop("NAs in fitness matrix")
     
-    if(!frequencyDependentBirth || !frequencyDependentDeath) {
+    if(!frequencyDependentBirth && !frequencyDependentDeath) {
         if(is.data.frame(x)) 
             x <- as.matrix(x)
         stopifnot(inherits(x, "matrix"))
