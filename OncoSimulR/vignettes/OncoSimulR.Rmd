@@ -3841,7 +3841,7 @@ ai1
 ``` 
 
 ```{r}
-all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
+all(ai1[, "Birth"]  == c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
        (1 - .2) * (1 + .1),
@@ -4118,7 +4118,7 @@ You can check the output and verify things are as they should. For instance:
 
 ```{r}
 all.equal(
-        gcbn2[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
+        gcbn2[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Birth"],
         c(1.01, 1.02, 0.1, 1.03, 1.04, 0.05,
           1.01 * c(1.02, 0.1, 1.03, 1.04, 0.05),
           1.02 * c(0.10, 1.03, 1.04, 0.05),
@@ -4139,7 +4139,7 @@ mutated genes "c, d, e, g":
 
 ```{r}
 gcbn2[56, ] 
-all.equal(gcbn2[56, "Fitness"], 1.03 * 1.04 * 1.2 * 0.10)
+all.equal(gcbn2[56, "Birth"], 1.03 * 1.04 * 1.2 * 0.10)
 ``` 
 
 where "g" is taken as if its dependencies are satisfied (as "c",
@@ -4598,7 +4598,7 @@ and they correspond to the values of those order effects, where $F > D =
 (1 - 0.3)$ and $D > F = (1 + 0.4)$:
 
 ```{r}
-ag[c(17, 39, 19, 29), "Fitness"] == c(1.4, 0.7, 1.4, 0.7)
+ag[c(17, 39, 19, 29), "Birth"] == c(1.4, 0.7, 1.4, 0.7)
 ``` 
 
 What if we match several patterns? For example, $d1 > f1 > d2 > f2$ and
@@ -4609,13 +4609,13 @@ fitness, that of pattern $D > F$, as is the case:
 
 ```{r}
 ag[c(43, 44),]
-ag[c(43, 44), "Fitness"] == c(1.4, 1.4)
+ag[c(43, 44), "Birth"] == c(1.4, 1.4)
 ``` 
 More generally, that applies to all the patterns that start with one of
 the "d" genes:
 
 ```{r}
-all(ag[41:52, "Fitness"] == 1.4)
+all(ag[41:52, "Birth"] == 1.4)
 ``` 
 
 Similar arguments apply to the opposite pattern, $F > D$, which apply to
@@ -4623,7 +4623,7 @@ all the possible gene mutation orders that start with one of the "f"
 genes. For example:
 
 ```{r}
-all(ag[53:64, "Fitness"] == 0.7)
+all(ag[53:64, "Birth"] == 0.7)
 ``` 
 
 
@@ -4653,10 +4653,10 @@ genes will have a fitness of $1 - 0.3$.  All other genotypes have a
 fitness of 1:
 
 ```{r}
-all(ag2[grep("^d.*f.*", ag2[, 1]), "Fitness"] == 1.4)
-all(ag2[grep("^f.*d.*", ag2[, 1]), "Fitness"] == 0.7)
+all(ag2[grep("^d.*f.*", ag2[, 1]), "Birth"] == 1.4)
+all(ag2[grep("^f.*d.*", ag2[, 1]), "Birth"] == 0.7)
 oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
-all(ag2[-oe, "Fitness"] == 1)
+all(ag2[-oe, "Birth"] == 1)
 ``` 
 
 
@@ -4698,7 +4698,7 @@ Now:
 rn <- 1:nrow(agoi1)
 names(rn) <- agoi1[, 1]
 
-agoi1[rn[LETTERS[1:5]], "Fitness"] == c(1.05, 1, 0.8, 1, 1.1)
+agoi1[rn[LETTERS[1:5]], "Birth"] == c(1.05, 1, 0.8, 1, 1.1)
 
 ``` 
 
@@ -4708,12 +4708,12 @@ the other is "B" or "D" will have the fitness corresponding to "A", "C" or
 "E", respectively:
 
 ```{r}
-agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 1.05
-agoi1[grep("^C > [BD]$", names(rn)), "Fitness"] == 0.8
-agoi1[grep("^E > [BD]$", names(rn)), "Fitness"] == 1.1
-agoi1[grep("^[BD] > A$", names(rn)), "Fitness"] == 1.05
-agoi1[grep("^[BD] > C$", names(rn)), "Fitness"] == 0.8
-agoi1[grep("^[BD] > E$", names(rn)), "Fitness"] == 1.1
+agoi1[grep("^A > [BD]$", names(rn)), "Birth"] == 1.05
+agoi1[grep("^C > [BD]$", names(rn)), "Birth"] == 0.8
+agoi1[grep("^E > [BD]$", names(rn)), "Birth"] == 1.1
+agoi1[grep("^[BD] > A$", names(rn)), "Birth"] == 1.05
+agoi1[grep("^[BD] > C$", names(rn)), "Birth"] == 0.8
+agoi1[grep("^[BD] > E$", names(rn)), "Birth"] == 1.1
 ``` 
 
 
@@ -4724,7 +4724,7 @@ error, because of floating point arithmetic) to the order effect of "D"
 before "B" times the other effects $(1 - 0.3) * 1.05 * 0.8 * 1.1 = 0.7392$
 
 ```{r}
-all.equal(agoi1[230:253, "Fitness"] ,
+all.equal(agoi1[230:253, "Birth"] ,
           rep((1 - 0.2) * 1.05 * 0.8 * 1.1, 24))
 ``` 
 and that will also be the value of any genotype with the five mutations
@@ -5874,7 +5874,7 @@ are different types of epistasis.
 df1 <- data.frame(x = c(1, 1.2, 1.4), f = c(1, 1.2, 1.2),
                  names = c("wt", "A", "B"))
 plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab= "", 
-     ylab = "Fitness", xaxt = "n", yaxt = "n", ylim = c(1, 1.21))
+     ylab = "Birth", xaxt = "n", yaxt = "n", ylim = c(1, 1.21))
 segments(1, 1, 1.2, 1.2)
 segments(1, 1, 1.4, 1.2)
 text(1, 1, "wt", pos = 4)
@@ -5944,7 +5944,7 @@ This is a specific case of synthetic viability (see also section \@ref(sv)):
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 0.4, 0.3, 1.3),
                  names = c("wt", "A", "B", "AB"))
-plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab= "", ylab = "Fitness",
+plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab= "", ylab = "Birth",
      xaxt = "n", yaxt = "n", ylim = c(0.29, 1.32))
 segments(1, 1, 1.2, 0.4)
 segments(1, 1, 1.2, 0.3)
@@ -5989,7 +5989,7 @@ of the other two.
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 1.2, 0.7, 1.5),
                  names = c("wt", "A", "B", "AB"))
-plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab = "", ylab = "Fitness",
+plot(df1[, 2] ~ df1[, 1], axes = TRUE, xlab = "", ylab = "Birth",
      xaxt = "n", yaxt = "n", ylim = c(0.69, 1.53))
 segments(1, 1, 1.2, 1.2)
 segments(1, 1, 1.2, 0.7)
@@ -6777,7 +6777,7 @@ this code:
 ```{r fixationG1}
 ## Create a simple fitness landscape
 rl1 <- matrix(0, ncol = 6, nrow = 9)
-colnames(rl1) <- c(LETTERS[1:5], "Fitness")
+colnames(rl1) <- c(LETTERS[1:5], "Birth")
 rl1[1, 6] <- 1
 rl1[cbind((2:4), c(1:3))] <- 1
 rl1[2, 6] <- 1.4
@@ -6888,7 +6888,7 @@ An example of using those options:
 ```{r fixationG2}
 ## Create a simple fitness landscape
 rl1 <- matrix(0, ncol = 6, nrow = 9)
-colnames(rl1) <- c(LETTERS[1:5], "Fitness")
+colnames(rl1) <- c(LETTERS[1:5], "Birth")
 rl1[1, 6] <- 1
 rl1[cbind((2:4), c(1:3))] <- 1
 rl1[2, 6] <- 1.4

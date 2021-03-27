@@ -136,7 +136,6 @@ afe6 <- allFitnessEffects(genotFitness = genofit,
                           frequencyDependentBirth = TRUE,
                           frequencyDependentDeath = TRUE)
 
-
 osi <- oncoSimulIndiv(afe3,
                       model = "Arb",
                       onlyCancer = FALSE,

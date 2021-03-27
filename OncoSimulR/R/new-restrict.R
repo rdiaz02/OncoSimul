@@ -1196,9 +1196,20 @@ evalGenotypeORMut <- function(genotype,
         warning("Bozic model passing a fitness landscape will not work",
                 " for now.")
     }
+  
+    if(fmEffects$deathSpec && model != "Arb") {
+      warning("Death is specified in fitnessLandscape. Assuming arbitrary model")
+      model <- "Arb"
+    }
+    
+    if(!fmEffects$deathSpec && model == "Arb") {
+      warning("Death is not specified fitnessLandscape. Cannot be arbitrary model.
+                Changing to Exp model (Death = 1)")
+      model <- "Exp"
+    }
 
     ## This will avoid errors is evalRGenotype where spPopSizes = NULL  
-    if (!fmEffects$frequencyDependentFitness) {
+    if (!fmEffects$frequencyDependentBirth && !fmEffects$frequencyDependentDeath) {
         spPopSizes = 0
     } else {
         spPopSizes <- match_spPopSizes(spPopSizes, fmEffects)
@@ -1238,7 +1249,7 @@ evalGenotypeORMut <- function(genotype,
     ## want to refactor that and turn all those to WT. It would avoid the need for
     ## the if above to catch the WT or ""
     
-    if(!fmEffects$frequencyDependentFitness){
+    if(!fmEffects$frequencyDependentBirth && !fmEffects$frequencyDependentDeath){
         
         if( any(is.na(genotype)) ){
             stop("Genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
@@ -1317,7 +1328,8 @@ evalGenotype <- function(genotype,
          stop("You are trying to get the fitness of a mutator specification. ",
              "You did not pass an object of class fitnessEffects.")
 
-   if (fitnessEffects$frequencyDependentFitness) {
+   if (fitnessEffects$frequencyDependentBirth ||
+       fitnessEffects$frequencyDependentDeath) {
       if (is.null(spPopSizes))
       stop("You have a NULL spPopSizes")
     if (!(length(spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
@@ -1527,12 +1539,12 @@ evalAllGenotypesORMut <- function(fmEffects,
       deathSpec <- FALSE
     }
   
-    if(deathSpec && model != "arbitrary") {
+    if(deathSpec && model != "Arb") {
       warning("Death is specified in fitnessLandscape. Assuming arbitrary model")
       model <- "Arb"
     }
     
-    if(!deathSpec && model == "arbitrary") {
+    if(!deathSpec && model == "Arb") {
       warning("Death is not specified fitnessLandscape. Cannot be arbitrary model.
               Changing to Exp model (Death = 1)")
       model <- "Exp"
