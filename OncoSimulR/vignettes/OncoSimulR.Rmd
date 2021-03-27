@@ -3886,7 +3886,7 @@ that illustrates the three basic different meanings of convergent arrows
 using two parental nodes. We will illustrate it here with three. Suppose
 we focus on node "g" in the following figure (we will create it shortly)
 
-```{r, fig.height=4}
+```{r eval=FALSE, fig.height=4, include=FALSE}
 data(examplesFitnessEffects)
 plot(examplesFitnessEffects[["cbn1"]])
 ``` 
@@ -7179,7 +7179,7 @@ We will use several of the previous examples. Most of them are in file
 `examplesFitnessEffects`, where they are stored inside a list,
 with named components (names the same as in the examples above):
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 data(examplesFitnessEffects)
 names(examplesFitnessEffects)
 ``` 
@@ -7191,7 +7191,7 @@ set.seed(1)
 We will simulate using the simple CBN-like restrictions of
 section \@ref(cbn1) with two different models. 
 
-```{r smmcfls}
+```{r smmcfls, eval=FALSE, include=FALSE}
 data(examplesFitnessEffects)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE)[1:10, ]
 sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
@@ -7209,7 +7209,7 @@ summary(sm)
 
 
 
-```{r smbosb1}
+```{r smbosb1, eval=FALSE, include=FALSE}
 set.seed(1234)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
                  model = "Bozic")[1:10, ]
@@ -7228,34 +7228,34 @@ summary(sb)
 As usual, we will use several plots here.
 
 
-```{r sbx1,fig.width=6.5, fig.height=3.3}
+```{r sbx1, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
 ## Show drivers, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "line", addtot = TRUE,
      plotDiversity = TRUE)
 ``` 
-```{r sbx2,fig.width=6.5, fig.height=3.3}
+```{r sbx2, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
 ## Drivers, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stacked", plotDiversity = TRUE)
 ``` 
-```{r sbx3,fig.width=6.5, fig.height=3.3}
+```{r sbx3, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
 ## Drivers, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stream", plotDiversity = TRUE)
 ``` 
 
-```{r sbx4,fig.width=6.5, fig.height=3.3}
+```{r sbx4, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
 ## Genotypes, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "line", plotDiversity = TRUE)
 ``` 
-```{r sbx5,fig.width=6.5, fig.height=3.3}
+```{r sbx5, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
 ## Genotypes, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stacked", plotDiversity = TRUE)
 ``` 
-```{r sbx6,fig.width=6.5, fig.height=3.3}
+```{r sbx6, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
 ## Genotypes, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stream", plotDiversity = TRUE)
@@ -7276,7 +7276,7 @@ log-transformed y-axis, even if there are other clones/genotypes present.
 runs quickly.)
 
 
-```{r, fig.width=6}
+```{r eval=FALSE, fig.width=6, include=FALSE}
 
 set.seed(4321)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -7296,12 +7296,12 @@ We show a stacked and a line plot of the drivers:
 
 
 
-```{r tmpmx1,fig.width=6.5, fig.height=4.1}
+```{r tmpmx1, eval=FALSE, fig.height=4.1, fig.width=6.5, include=FALSE}
 par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
      thinData = TRUE, thinData.keep = 0.2)
 ``` 
-```{r tmpmx2,fig.width=6.5, fig.height=4.1}
+```{r tmpmx2, eval=FALSE, fig.height=4.1, fig.width=6.5, include=FALSE}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE, 
      ylim = c(0, 5500), legend.ncols = 4,
@@ -7317,14 +7317,14 @@ statistics about number of drivers says little of value, as fitness
 is very different for genotypes with the same number of mutations,
 and does not increase in a simple way with drivers:
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE,
                  order = TRUE)
 ``` 
 
 A few figures could help:
 
-```{r tmpmx3,fig.width=6.5, fig.height=5.5}
+```{r tmpmx3, eval=FALSE, fig.height=5.5, fig.width=6.5, include=FALSE}
 plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3,
      thinData = TRUE, thinData.keep = 0.5)
 ``` 
@@ -7343,7 +7343,7 @@ population with clones with zero drivers to a population made of clones
 with two or three drivers:
 
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
@@ -7363,12 +7363,12 @@ tmp
 
 
 use a drivers plot:
-```{r tmpmdx5,fig.width=6.5, fig.height=4}
+```{r tmpmdx5, eval=FALSE, fig.height=4, fig.width=6.5, include=FALSE}
 par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
      thinData = TRUE, thinData.keep = 0.5)
 ``` 
-```{r tmpmdx6,fig.width=6.5, fig.height=4}
+```{r tmpmdx6, eval=FALSE, fig.height=4, fig.width=6.5, include=FALSE}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE,
      legend.ncols = 4, ylim = c(0, 5200), xlim = c(3400, 5000),
@@ -7378,7 +7378,7 @@ plot(tmp, type = "stacked", plotDiversity = TRUE,
 
 
 Now show the genotypes explicitly:
-```{r tmpmdx7,fig.width=6.5, fig.height=5.3}
+```{r tmpmdx7, eval=FALSE, fig.height=5.3, fig.width=6.5, include=FALSE}
 ## Improve telling apart the most abundant 
 ## genotypes by sorting colors
 ## differently via breakSortColors
@@ -7521,7 +7521,7 @@ gffd0 <- data.frame(
         "1.2 + sqrt(f_A + f_C + f_C_D)"))
 
 afd0 <- allFitnessEffects(genotFitness = gffd0,
-                          frequencyDependentFitness = TRUE)
+                          frequencyDependentBirth = TRUE)
 
 sp <- 1:5
 names(sp) <- c("A", "C", "A, B", "C, D", "C, E")
@@ -7654,11 +7654,11 @@ afmspecF <- evalAllGenotypes(fmspecF,
 
 
 ## Show only viable ones
-afmspecF[afmspecF$Fitness >= 1, ]
+afmspecF[afmspecF$Birth >= 1, ]
 
 ## Expected values of fitness
 exv <- 1 + c(3, 5, 4, 8, 6, 7, 9, 2, 10, 11, 1)/sum(1:11)
-stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Fitness >= 1, ]$Fitness)))
+stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Birth >= 1, ]$Birth)))
 
 muv <- c(1e-10, rep(1e-5, 2), 1e-10, rep(1e-5, 3))
 names(muv) <- c("A", paste0("a", 1:2), "B", paste0("b", 1:3))
@@ -7952,7 +7952,7 @@ parent-child relationships between clones. (This is disabled by default).
 
 Let us re-run a previous example:
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 
 set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -7979,7 +7979,7 @@ We can plot the parent-child relationships^[There are several
   uncertainty about when events occurred.] of every clone ever created
 (with fitness larger than 0 ---clones without viability are never shown):
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 plotClonePhylog(tmp, N = 0)
 ``` 
 
@@ -7988,7 +7988,7 @@ cells $>0$) at a certain time (while of course showing all of their
 ancestors, even if those are now extinct ---i.e., regardless of their
 current numbers).
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 plotClonePhylog(tmp, N = 1)
 ``` 
 
@@ -7996,7 +7996,7 @@ If we set `keepEvents = TRUE` the arrows show how many times each
 clone appeared:
 
 (The next can take a while)
-```{r pcpkeepx1}
+```{r pcpkeepx1, eval=FALSE, include=FALSE}
 plotClonePhylog(tmp, N = 1, keepEvents = TRUE)
 ``` 
 
@@ -8004,13 +8004,13 @@ And we can show the plot so that the vertical axis is proportional to time
 (though you might see overlap of nodes if a child node appeared shortly
 after the parent):
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 plotClonePhylog(tmp, N = 1, timeEvents = TRUE)
 ``` 
 
 We can obtain the adjacency matrix doing
 
-```{r, fig.keep="none"}
+```{r eval=FALSE, fig.keep="none", include=FALSE}
 get.adjacency(plotClonePhylog(tmp, N = 1, returnGraph = TRUE))
 
 ``` 

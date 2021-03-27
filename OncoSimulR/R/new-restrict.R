@@ -1369,7 +1369,8 @@ evalGenotypeFitAndMut <- function(genotype,
                     " for now.")
     }
   
-    if(fitnessEffects$frequencyDependentFitness) {
+    if(fitnessEffects$frequencyDependentBirth ||
+       fitnessEffects$frequencyDependentDeath) {
       if (is.null(spPopSizes))
         stop("You have a NULL spPopSizes")
       if (!(length(spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
@@ -1378,7 +1379,8 @@ evalGenotypeFitAndMut <- function(genotype,
     }
   
     # This will avoid errors is evalRGenotype where spPopSizes = NULL  
-    if (!fitnessEffects$frequencyDependentFitness) {
+    if (!fitnessEffects$frequencyDependentBirth &&
+        !fitnessEffects$frequencyDependentDeath) {
       spPopSizes = 0
     }
   
@@ -1410,7 +1412,8 @@ evalGenotypeFitAndMut <- function(genotype,
       }
     }
     
-    if(!fitnessEffects$frequencyDependentFitness){
+    if(!fitnessEffects$frequencyDependentBirth &&
+       !fitnessEffects$frequencyDependentDeath){
       
       if( any(is.na(genotype)) ){
         stop("Genotype contains NAs or genes not in fitnessEffects/mutatorEffects")
@@ -1463,7 +1466,7 @@ evalGenotypeFitAndMut <- function(genotype,
 }
 
 
-## fitnesEffects from FDF, spPopSizes -> reordered spPopSizes
+## fitnessEffects from FDF, spPopSizes -> reordered spPopSizes
 ##    Verify if named. If not, issue a warning.
 ##    If yes, check matches genotypes and reorder
 match_spPopSizes <- function(sp, fe){

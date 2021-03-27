@@ -517,9 +517,12 @@ oncoSimulIndiv <- function(fp,
             ## K <- 1 ## K is ONLY used for McFarland; set it to 1, to avoid
             ##        ## C++ blowing.
     
-    if(typeFitness != "arbitrary" && fp$deathSpec) {
-        stop("If death is specified in the fitness effects, use Arb model")
+    if(fp$deathSpec) {
+        if (typeFitness != "arbitrary") {
+            stop("If death is specified in the fitness effects, use Arb model")
+        }
     }
+    
     if(typeFitness == "exp") {
         death <- 1
         ## mutationPropGrowth <- 1

@@ -25,7 +25,7 @@ to_Magellan <- function(x, file,
                         max_num_genotypes = 2000) {
     ## Go directly if you have, as entry, an object from
     ## rfitness!! to_Fitness_Matrix can be very slow.
-    ## But often, when we use allBirthDeathEffects, we
+    ## But often, when we use allFitnessEffects, we
     ## obtain the fitness landscape as genotype_fitness_matrix
     ## FIXME: we could use that fact here.
     ## or maybe in to_Fitness_Matrix
@@ -62,7 +62,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
         ## This could use fmatrix_to_afe, above!!!
         ## Major change as of flfast: no longer using from_genotype_fitness
-        afe <- evalAllGenotypes(allBirthDeathEffects(
+        afe <- evalAllGenotypes(allFitnessEffects(
             genotFitness = x
             ##, epistasis = from_genotype_fitness(x)
         ),
@@ -106,7 +106,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         ## vectors and fitness
         if(colnames(x)[2] != "Fitness")
             stop("We cannot guess what you are passing here")
-        afe <- evalAllGenotypes(allBirthDeathEffects(genotFitness = x),
+        afe <- evalAllGenotypes(allFitnessEffects(genotFitness = x),
                                 order = FALSE, addwt = TRUE,
                                 max = max_num_genotypes)
         gfm <- allGenotypes_to_matrix(afe)
@@ -128,7 +128,7 @@ to_genotFitness_std <- function(x,
                                 simplify = TRUE,
                                 min_filter_birth_death = 1e-9,
                                 sort_gene_names = TRUE) {
-    ## Would break with output from allBirthDeathEffects and
+    ## Would break with output from allFitnessEffects and
     ## output from allGenotypeAndMut
 
     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
@@ -304,7 +304,7 @@ to_genotFitness_std <- function(x,
         if(omarker) {
             ## do something. To be completed
             stop("This code not yet ready")
-            ## You can pass to allBirthDeathEffects genotype -> fitness mappings that
+            ## You can pass to allFitnessEffects genotype -> fitness mappings that
             ## involve epistasis and order. But they must have different
             ## genes. Otherwise, it is not manageable.
         }
