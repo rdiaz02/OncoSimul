@@ -85,10 +85,18 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         x <- x[, c(1, 2)]
         if(x[1, "Genotype"] != "WT") {
             ## Yes, because we expect this present below
-            x <- rbind(data.frame(Genotype = "WT",
-                                  Fitness = 1,
-                                  stringsAsFactors = FALSE),
-                       x)
+            if ("Death" %in% colnames(x)) {
+                x <- rbind(data.frame(Genotype = "WT",
+                                      Birth = 1, Death = 1,
+                                      stringsAsFactors = FALSE),
+                           x)
+            } else {
+                x <- rbind(data.frame(Genotype = "WT",
+                                      Birth = 1,
+                                      stringsAsFactors = FALSE),
+                           x)
+            }
+            
         }
         afe <- x
         ## in case we pass an evalAllgenotypesfitandmut

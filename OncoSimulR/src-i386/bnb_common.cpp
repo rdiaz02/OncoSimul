@@ -1004,11 +1004,9 @@ void initPops(
 
       if(popParams[m].death >  99) Rcpp::warning("Init Mutant with death > 99");
     } else if (typeModel == TypeModel::arbitrary) {
-          Rcpp::Rcout << "Entro a evalGenotypeFitness" << std::endl;
           std::vector<double> s = evalGenotypeFitness(Genotypes[m],
 				      fitnessEffects, Genotypes, popParams, currentTime);
 
-          Rcpp::Rcout << "Salgo de evalGenotypeFitness " << s.size() << std::endl;
           // TODO: Preguntar
           if(s.size()) {
             std::vector<double> birth(s.begin(), s.begin()+1);
@@ -1022,12 +1020,9 @@ void initPops(
             
     } else {
       
-      Rcpp::Rcout << "Entro a evalGenotypeFitness" << std::endl;
-      std::vector<double> s = evalGenotypeFitness(Genotypes[m],
+      popParams[m].birth = prodFitness(evalGenotypeFitness(Genotypes[m],
 					fitnessEffects, Genotypes, popParams,
-					currentTime);
-      popParams[m].birth = prodFitness(s);
-      Rcpp::Rcout << "Salgo de evalGenotypeFitness " << s.size() << std::endl;
+					currentTime));
 
       if (typeModel == TypeModel::exp) 
 	      popParams[m].death = death; // passed from R; set at 1
@@ -1121,10 +1116,8 @@ void initPops(
 
   if(verbosity > 2) {
     Rcpp::Rcout << "\n Population right after initialization\n";
-    int tSample = 0;
     for(size_t i = 0; i < popParams.size(); ++i) {
       print_spP(popParams[i]);
-      DEBUG_nr;
     }
   }
 

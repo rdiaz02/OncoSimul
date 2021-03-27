@@ -923,7 +923,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   
   timeNextPopSample = currentTime + sampleEvery;
 
-  Rcpp::Rcout << "Inicio simulación" << std::endl;
   while(!simulsDone) {
     runningWallTime = difftime(time(NULL), start_time);
     if( runningWallTime > maxWallTime ) {
@@ -937,7 +936,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     // Capture use interruptions periodically
     if( !(iter % iterInterrupt)) Rcpp::checkUserInterrupt();
 
-    Rcpp::Rcout << "Empiezo paso 5.2" << std::endl;
     //  Step  5.2 in algorithm
     message1(verbosity, "Looping through 5.2", iter, currentTime, numSpecies,
 	     totPopSize, timeNextPopSample, minNextMutationTime);
@@ -1065,14 +1063,13 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
         newMutations.clear();
 
-        Rcpp::Rcout << "Entro en obtain mutations" << std::endl;
         obtainMutations(Genotypes[nextMutant],
             fitnessEffects,
             numMutablePosParent,
             newMutations,
             ran_gen,
             mu);
-        Rcpp::Rcout << "Salgo de obtain mutations" << std::endl;
+
         // Step 5.6 of algorithm
         newGenotype = createNewGenotype(Genotypes[nextMutant],
                 newMutations,
@@ -1089,12 +1086,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
           DEBUG_1456;
           tmpParam.popSize = 1;
 
-          Rcpp::Rcout << "Entro en nr_fitness" << std::endl;
           nr_fitness(tmpParam, popParams[nextMutant],
               newGenotype,
               fitnessEffects,
               typeModel, Genotypes, popParams, currentTime);
-          Rcpp::Rcout << "Salgo de nr_fitness" << std::endl;
 
           if(tmpParam.birth > 0.0) {
 
@@ -1301,7 +1296,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			Rcpp::List fixation_i) {
 
   
-  Rcpp::Rcout << "Estoy en nr_BNB_Algo5" << std::endl;
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
   const std::vector < std::vector<int> >
@@ -1346,12 +1340,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		    (typeModel ==   TypeModel::mcfarlandlog) ))
     throw std::range_error("K < 1.");
   
-  Rcpp::Rcout << "Empiezo conversion de datos" << std::endl;
   fitnessEffectsAll fitnessEffects =  convertFitnessEffects(rFE);
   //Used at least twice
   std::map<int, std::string> intName = mapGenesIntToNames(fitnessEffects);
   fitness_as_genes genesInFitness = fitnessAsGenes(fitnessEffects);
-  Rcpp::Rcout << "Acabo conversion de datos" << std::endl;
   PhylogName phylog;
   // LOD lod;
   std::map<std::string, std::string> lod;
@@ -1461,7 +1453,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
     try {
       Rcpp::checkUserInterrupt();
-      Rcpp::Rcout << "Entro a nr_innerBNB" << std::endl;
       // it is CRUCIAL that several entries are zeroed (or -1) at the
       // start of innerBNB when we do multiple runs if onlyCancer = true.
       nr_innerBNB(fitnessEffects,
@@ -1521,7 +1512,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  lod,
 		  pom);
 
-      Rcpp::Rcout << "Salgo de nr_innerBNB" << std::endl;
       ++numRuns;
       forceRerun = false;
       accum_ti_dbl_min += ti_dbl_min;

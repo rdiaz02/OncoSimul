@@ -1590,8 +1590,14 @@ evalAllGenotypesORMut <- function(fmEffects,
     ## there are no terms.
 
     if(addwt & !fmEffects$frequencyDependentBirth & !fmEffects$frequencyDependentDeath)
-        df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
+      if(deathSpec) {
+        df <- rbind(data.frame(Genotype = "WT", Birth = 1, Death = 1,
                                stringsAsFactors = FALSE), df)
+      } else {
+        df <- rbind(data.frame(Genotype = "WT", Birth = 1,
+                               stringsAsFactors = FALSE), df)
+      }
+        
 
     if(calledBy_ == "evalGenotype") {
         if(prodNeg)
@@ -1699,7 +1705,14 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
     } else {
         prodNeg <- FALSE
     }
-
+    
+    if(model != "Arb" && fitnessEffects$deathSpec) {
+      stop("If death is specified in the fitness effects, use Arb model")
+    }
+    
+    if(model == "Arb" && !fitnessEffectsp$deathSpec) {
+      stop("Specify death to use arbitrary model.")
+    }
 
     ## Must deal with objects from previous, pre flfast, modifications
     if(!exists("fitnessLandscape_gene_id", where = fitnessEffects)) {
@@ -1711,8 +1724,10 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
         warning("Bozic model passing a fitness landscape will not work",
                     " for now.")
     }
+  
+    if (model == "arbitra")
 
-    if(fitnessEffects$frequencyDependentFitness) {
+    if(fitnessEffects$frequencyDependentBirth || fitnessEffects$frequencyDependentDeath) {
       if (is.null(spPopSizes))
         stop("You have a NULL spPopSizes")
       if (!(length(spPopSizes) == nrow(fitnessEffects$fitnessLandscape)))
@@ -1721,7 +1736,7 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
     }
   
     # This will avoid errors is evalRGenotype where spPopSizes = NULL  
-    if (!fitnessEffects$frequencyDependentFitness) {
+    if (!fitnessEffects$frequencyDependentBirth && !fitnessEffects$frequencyDependentDeath) {
       spPopSizes = 0
     }
   
@@ -1745,7 +1760,8 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
                                                    currentTime = currentTime),
                    c(1.1, 2.2)))
 
-    if(fitnessEffects$frequencyDependentFitness){
+    if(fitnessEffects$frequencyDependentBirth || fitnessEffects$frequencyDependentDeath){
+      
       evalWT <- evalRGenotypeAndMut(vector(mode = "integer", length = 0L),
                                     rFE = fitnessEffects,
                                     muEF = mutatorEffects,
@@ -1761,17 +1777,34 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
       genotypes <- allg$genotNames
     }
     
-    df <- data.frame(Genotype = genotypes, 
-                     Fitness = allf[, 1],
-                     MutatorFactor = allf[, 2],
-                     stringsAsFactors = FALSE)
+    if(fitnessEffects$deathSpec) {
+      df <- data.frame(Genotype = genotypes, 
+                       Birth = allf[, 1],
+                       Death = allf[, 2],
+                       MutatorFactor = allf[, 3],
+                       stringsAsFactors = FALSE)
+    } else {
+      df <- data.frame(Genotype = genotypes, 
+                       Birth = allf[, 1],
+                       MutatorFactor = allf[, 2],
+                       stringsAsFactors = FALSE)
+    }
     
-    if(fitnessEffects$frequencyDependentFitness == FALSE && addwt)
-        df <- rbind(data.frame(Genotype = "WT", Fitness = 1,
-                               MutatorFactor = 1,
-                               stringsAsFactors = FALSE), df)
+    
+    if(!fitnessEffects$frequencyDependentBirth && !fitnessEffects$frequencyDependentDeath && addwt)
+        if(fitnessEffects$deathSpec) {
+          df <- rbind(data.frame(Genotype = "WT", Birth = 1,
+                                 Death = 1,
+                                 MutatorFactor = 1,
+                                 stringsAsFactors = FALSE), df)
+        } else {
+          df <- rbind(data.frame(Genotype = "WT", Birth = 1,
+                                 MutatorFactor = 1,
+                                 stringsAsFactors = FALSE), df)
+        }
+        
     if(prodNeg)
-        colnames(df)[match("Fitness", colnames(df))] <- "Death_rate"
+        colnames(df)[match("Birth", colnames(df))] <- "Death_rate"
     class(df) <- c("evalAllGenotypesFitAndMut", class(df))
     return(df)
 }
@@ -1956,8 +1989,6 @@ nr_oncoSimul.internal <- function(rFE,
     }
 
     namedGenes <- allNamedGenes(rFE)
-    print(namedGenes)
-    print(names(mu))
 
     if( length(mu) > 1) {
         if(is.null(names(mu)))

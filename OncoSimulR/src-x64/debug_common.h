@@ -7,7 +7,7 @@
 
 // #define DEBUGV
 // DEBUGV2 leads to very verbose debugging output
-#define DEBUGV2
+// #define DEBUGV2
 #define DP {Rcpp::Rcout <<"\nHola";		\
     Rcpp::Rcout << "\n A test of DPtest";	\
     Rcpp::Rcout << "     tSample  = " << tSample << "\n";} 

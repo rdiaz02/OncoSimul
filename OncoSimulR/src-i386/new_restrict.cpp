@@ -1327,7 +1327,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // so we want an s s.t. 1 + s = birth rate passed,
   // which is the value in the fitness landscape as interpreted now.
   // i.e., s = birth rate - 1;
-  Rcpp::Rcout << "Punto critico" << std::endl;
   if(F.fitnessLandscape.NumID.size()) {
     std::string gs = concatIntsString(ge.flGenes);
     if(F.frequencyDependentBirth){ //possible also with Genotype.size()==0 and popParams.size==0 ?
@@ -1340,7 +1339,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
       if(F.fitnessLandscape.flbmap.find(gs) == F.fitnessLandscape.flbmap.end()) {
 	      s.push_back(-1.0);
       } else {
-        Rcpp::Rcout << "BIEN 1" << std::endl;
 	      s.push_back(F.fitnessLandscape.flbmap.at(gs) - 1);
       }
     }
@@ -1356,14 +1354,12 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
         if(F.fitnessLandscape.fldmap.find(gs) == F.fitnessLandscape.fldmap.end()) {
                 s.push_back(-1.0);
         } else {
-          Rcpp::Rcout << "BIEN 2" << std::endl;
           s.push_back(F.fitnessLandscape.fldmap.at(gs) - 1);
         }
       }
     }
   }
 
-  Rcpp::Rcout << "Despues de los pushes" << std::endl;
   // Genes without any restriction or epistasis are just genes. No modules.
   // So simple we do it here.
   if(F.genesNoInt.shift > 0) {
@@ -1373,7 +1369,6 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
     }
   }
 
-  Rcpp::Rcout << "Despues de los genesNoInt" << std::endl;
   // For the rest, there might be modules. Three different effects on
   // fitness possible: as encoded in Poset, general epistasis, order effects.
 
@@ -1399,13 +1394,10 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
     mutatedModules = GeneToModule(mutG, F.Gene_Module_tabl, true, true);
   }
 
-  Rcpp::Rcout << "Despues de los gMOneToOne" << std::endl;
   std::vector<double> srt =
     evalPosetConstraints(mutatedModules, F.Poset, F.allPosetG);
   std::vector<double> se =
     evalEpistasis(mutatedModules, F.Epistasis);
-
-  Rcpp::Rcout << "Despues de los eval" << std::endl;
 
   // For order effects we need a new vector of mutatedModules:
   if(F.gMOneToOne) {
@@ -1417,16 +1409,10 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   std::vector<double> so =
     evalOrderEffects(mutatedModules, F.orderE);
 
-  Rcpp::Rcout << "Antes de los insert" << std::endl;
   // I keep s, srt, se, so separate for now for debugging.
   s.insert(s.end(), srt.begin(), srt.end());
   s.insert(s.end(), se.begin(), se.end());
   s.insert(s.end(), so.begin(), so.end());
-  Rcpp::Rcout << "Después de los insert. S:" << std::endl;
-
-  for (auto &i: s) {
-    Rcpp::Rcout << i << " " << std::endl;
-  }
 
   return s;
 }
