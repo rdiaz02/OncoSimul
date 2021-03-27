@@ -1537,13 +1537,16 @@ Rcpp::NumericVector evalRGenotype(Rcpp::IntegerVector rG,
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
   const bool fdb = as<bool>(rFE["frequencyDependentBirth"]);
   const bool fdd = as<bool>(rFE["frequencyDependentDeath"]);
-  Rcpp::NumericVector out(2);
+  const bool deathSpec = as<bool>(rFE["deathSpec"]);
 
   if(rG.size() == 0 && fdb == false && fdd == false) {
     Rcpp::Rcout << "NOTE: you have evaluated fitness/mutator status of a genotype of length zero  (WT?) in non fdf fitness. It is 1 by decree. \n";
-    out[0] = 1.0;
-    out[1] = -1.0;
-    return out;
+    if(deathSpec) {
+      return Rcpp::NumericVector::create(1.0, 1.0);
+    }
+    else {
+      return Rcpp::NumericVector::create(1.0);
+    }
   }
 
   std::vector<Genotype> Genotypes;
@@ -1575,32 +1578,27 @@ Rcpp::NumericVector evalRGenotype(Rcpp::IntegerVector rG,
   }
   if(calledBy == "evalGenotype") {
     if(!prodNeg) //for Bozic models. Comes from R.
-        if (rFE["deathSpec"]) {
+        if (deathSpec) {
           // When death is specified, s is a vector with two elements:
           // the first element is the evaluation of the birth and the
           // second one is the evaluation of the death
           vector<double> birth(s.begin(), s.begin()+1);
           vector<double> death(s.begin()+1, s.end());
 
-          out[0] = prodFitness(birth);
-          out[1] = prodFitness(death);
+          return Rcpp::NumericVector::create(prodFitness(birth), prodFitness(death));
 
         } else {
-          out[0] = prodFitness(s);
-          out[1] = -1.0;
+          return Rcpp::NumericVector::create(prodFitness(s));
         }
          
     else {
-      out[0] = prodDeathFitness(s);
-      out[1] = -1.0;
+      return Rcpp::NumericVector::create(prodDeathFitness(s));
     }
       
   } else { //if (calledBy == "evalGenotypeMut") 
-    out[0] = prodMuts(s);
-    out[1] = -1.0;
+    return Rcpp::NumericVector::create(prodMuts(s));
   }
 
-  return out;
 }
 
 
