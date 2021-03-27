@@ -123,8 +123,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 to_genotFitness_std <- function(x,
                                 frequencyDependentBirth = FALSE,
                                 frequencyDependentDeath = FALSE,
-                                frequencyTypeBirth = frequencyTypeBirth,
-                                frequencyTypeDeath = frequencyTypeDeath,
+                                frequencyType = frequencyType,
                                 deathSpec = FALSE,
                                 simplify = TRUE,
                                 min_filter_birth_death = 1e-9,
@@ -431,7 +430,7 @@ to_genotFitness_std <- function(x,
     
     if(frequencyDependentBirth) { ## frequency-dependent fitness
         
-        if(frequencyTypeBirth == "auto"){
+        if(frequencyType == "auto"){
             if (deathSpec) {
                 ch <- paste(as.character(x[, ncol(x)-1]), collapse = "")
             }
@@ -440,16 +439,16 @@ to_genotFitness_std <- function(x,
             }
             
             if( grepl("f_", ch, fixed = TRUE) ){
-                frequencyTypeBirth = "rel"
+                frequencyType = "rel"
                 pattern <- stringr::regex("f_(\\d*_*)*")
                 
             } else if ( grepl("n_", ch, fixed = TRUE) ){
-                frequencyTypeBirth = "abs"
+                frequencyType = "abs"
                 pattern <- stringr::regex("n_(\\d*_*)*")
                 
-            } else { stop("No pattern found when frequencyTypeBirth set to 'auto'") }
+            } else { stop("No pattern found when frequencyType set to 'auto'") }
             
-        } else if(frequencyTypeBirth == "abs"){
+        } else if(frequencyType == "abs"){
             pattern <- stringr::regex("n_(\\d*_*)*")
         } else {
             pattern <- stringr::regex("f_(\\d*_*)*")
@@ -461,9 +460,9 @@ to_genotFitness_std <- function(x,
                                      function(z) {stringr::str_extract_all(string = z,
                                                                            pattern = pattern)})))
             
-            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 2, frequencyTypeBirth))) |
+            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 2, frequencyType))) |
                !(length(intersect(regularExpressionVectorBirth,
-                                  fVariablesN(ncol(x) - 2, frequencyTypeBirth)) >= 1) )){
+                                  fVariablesN(ncol(x) - 2, frequencyType)) >= 1) )){
                 stop("There are some errors in birth column")
             }
         }
@@ -472,9 +471,9 @@ to_genotFitness_std <- function(x,
                 unique(unlist(lapply(x[, ncol(x)],
                                      function(z) {stringr::str_extract_all(string = z,
                                                                            pattern = pattern)})))
-            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 1, frequencyTypeBirth))) |
+            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 1, frequencyType))) |
                !(length(intersect(regularExpressionVectorBirth,
-                                  fVariablesN(ncol(x) - 1, frequencyTypeBirth)) >= 1) )){
+                                  fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
                 stop("There are some errors in fitness column")
             }
         }
@@ -482,20 +481,20 @@ to_genotFitness_std <- function(x,
     
     if(frequencyDependentDeath) { ## frequency-dependent fitness
         
-        if(frequencyTypeDeath == "auto"){
+        if(frequencyType == "auto"){
             ch <- paste(as.character(x[, ncol(x)]), collapse = "")
             
             if( grepl("f_", ch, fixed = TRUE) ){
-                frequencyTypeDeath = "rel"
+                frequencyType = "rel"
                 pattern <- stringr::regex("f_(\\d*_*)*")
                 
             } else if ( grepl("n_", ch, fixed = TRUE) ){
-                frequencyTypeDeath = "abs"
+                frequencyType = "abs"
                 pattern <- stringr::regex("n_(\\d*_*)*")
                 
             } else { stop("No pattern found when frequencyTypeDeath set to 'auto'") }
             
-        } else if(frequencyTypeDeath == "abs"){
+        } else if(frequencyType == "abs"){
             pattern <- stringr::regex("n_(\\d*_*)*")
         } else {
             pattern <- stringr::regex("f_(\\d*_*)*")
@@ -505,9 +504,9 @@ to_genotFitness_std <- function(x,
             unique(unlist(lapply(x[, ncol(x)],
                                  function(z) {stringr::str_extract_all(string = z,
                                                                        pattern = pattern)})))
-        if((!all(regularExpressionVectorDeath %in% fVariablesN(ncol(x) - 1, frequencyTypeDeath))) |
+        if((!all(regularExpressionVectorDeath %in% fVariablesN(ncol(x) - 1, frequencyType))) |
            !(length(intersect(regularExpressionVectorDeath,
-                              fVariablesN(ncol(x) - 1, frequencyTypeDeath)) >= 1) )){
+                              fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
             stop("There are some errors in death column")
         }
     }

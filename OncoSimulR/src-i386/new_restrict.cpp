@@ -540,8 +540,7 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::IntegerVector drv = rFE["drv"];
   bool fdb = as<bool>(rFE["frequencyDependentBirth"]);
   bool fdd = as<bool>(rFE["frequencyDependentDeath"]);
-  std::string fTypeBirth = as<std::string>(rFE["frequencyTypeBirth"]);
-  std::string fTypeDeath = as<std::string>(rFE["frequencyTypeDeath"]);
+  std::string fType = as<std::string>(rFE["frequencyType"]);
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this: Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
   Rcpp::List fl_df = rFE["fitnessLandscape_df"];
@@ -563,12 +562,12 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
     fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df, full_FDF_spec, fdb, fdd); 
     if (fdb) {
       fe.fVarsb = as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvarsb"]);
-      fe.frequencyTypeBirth = fTypeBirth;
+      fe.frequencyType = fType;
     }
 
     if (fdd) {
       fe.fVarsd = as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvarsd"]);
-      fe.frequencyTypeDeath = fTypeDeath;
+      fe.frequencyType = fType;
     }
   }
 
@@ -1190,14 +1189,13 @@ std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
 
   std::map<std::string, double> mapFvarsValues;
   std::map<std::string, std::string> fvarsmap;
-  std::string freqType;
+  std::string freqType = F.frequencyType;
 
   if(birth) {
     fvarsmap = F.fitnessLandscape.flfVarsBmap;
-    freqType = F.frequencyTypeBirth;
+    
   } else {
     fvarsmap = F.fitnessLandscape.flfVarsDmap;
-    freqType = F.frequencyTypeDeath;
   }
   
   

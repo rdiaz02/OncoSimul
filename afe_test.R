@@ -33,7 +33,7 @@ genofit <- data.frame(A = c(0, 1, 0, 1),
 
 afe1 <- allFitnessEffects(genotFitness = genofit,
                   frequencyDependentBirth = TRUE,
-                  frequencyTypeBirth = "rel")
+                  frequencyType = "rel")
 
 evalAllGenotypes(afe1, spPopSizes = c(5000, 2500, 2500, 500))
 # print(afe)
@@ -49,7 +49,7 @@ genofit <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
 
 afe2 <- allFitnessEffects(genotFitness = genofit,
                           frequencyDependentBirth = TRUE,
-                          frequencyTypeBirth = "rel")
+                          frequencyType = "rel")
 
 evalAllGenotypes(afe2, spPopSizes = c(5000, 2500, 2500, 500))
 
@@ -60,7 +60,7 @@ evalAllGenotypes(afe2, spPopSizes = c(5000, 2500, 2500, 500))
 # is indicated 'abs'
 afe3 <- allFitnessEffects(genotFitness = genofit,
                           frequencyDependentBirth = TRUE,
-                          frequencyTypeBirth = "abs")
+                          frequencyType = "abs")
 
 
 
@@ -77,7 +77,7 @@ genofit <- data.frame(A = c(0, 1, 0, 1),
 
 afe3 <- allFitnessEffects(genotFitness = genofit,
                           frequencyDependentBirth = TRUE,
-                          frequencyTypeBirth = "rel",
+                          frequencyType = "rel",
                           deathSpec=TRUE)
 
 evalAllGenotypes(afe3, spPopSizes = c(5000, 2500, 2500, 500))
@@ -136,7 +136,6 @@ afe6 <- allFitnessEffects(genotFitness = genofit,
                           frequencyDependentBirth = TRUE,
                           frequencyDependentDeath = TRUE)
 
-evalAllGenotypes(afe6, spPopSizes = c(5000, 2500, 2500, 500))
 
 osi <- oncoSimulIndiv(afe3,
                       model = "Arb",
@@ -148,4 +147,4 @@ osi <- oncoSimulIndiv(afe3,
                       keepPhylog = FALSE,
                       seed = NULL,
                       errorHitMaxTries = FALSE,
-                      errorHitWallTime = FALSE, verbosity=5)
+                      errorHitWallTime = FALSE)

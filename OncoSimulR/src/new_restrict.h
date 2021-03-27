@@ -117,8 +117,7 @@ struct fitnessEffectsAll {
   std::vector<std::string> fVarsd; //New line to store fVars of death
   bool frequencyDependentBirth; //New line to discriminate true/false
   bool frequencyDependentDeath; //New line to discriminate true/false
-  std::string frequencyTypeBirth; // New line to store the type of frequency of birth
-  std::string frequencyTypeDeath; // New line to store the type of frequency of death
+  std::string frequencyType; // New line to store the type of frequency
   fitnessLandscape_struct fitnessLandscape;
 };
 
@@ -139,8 +138,7 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.fVarsb.resize(0);//new line to initialize fVarsd
   f.frequencyDependentBirth = false;
   f.frequencyDependentDeath = false;
-  f.frequencyTypeBirth.clear();
-  f.frequencyTypeDeath.clear();
+  f.frequencyType.clear();
   f.genesNoInt.shift = -99L;
   f.genesNoInt.NumID.resize(0);
   f.genesNoInt.names.resize(0);
