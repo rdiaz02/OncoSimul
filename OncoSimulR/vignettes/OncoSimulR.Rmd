@@ -7191,7 +7191,7 @@ set.seed(1)
 We will simulate using the simple CBN-like restrictions of
 section \@ref(cbn1) with two different models. 
 
-```{r smmcfls, eval=FALSE, include=FALSE}
+```{r smmcfls}
 data(examplesFitnessEffects)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE)[1:10, ]
 sm <-  oncoSimulIndiv(examplesFitnessEffects$cbn1,
@@ -7209,7 +7209,7 @@ summary(sm)
 
 
 
-```{r smbosb1, eval=FALSE, include=FALSE}
+```{r smbosb1}
 set.seed(1234)
 evalAllGenotypes(examplesFitnessEffects$cbn1, order = FALSE, 
                  model = "Bozic")[1:10, ]
@@ -7228,34 +7228,34 @@ summary(sb)
 As usual, we will use several plots here.
 
 
-```{r sbx1, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
+```{r sbx1, fig.height=3.3, fig.width=6.5}
 ## Show drivers, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "line", addtot = TRUE,
      plotDiversity = TRUE)
 ``` 
-```{r sbx2, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
+```{r sbx2, fig.height=3.3, fig.width=6.5}
 ## Drivers, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stacked", plotDiversity = TRUE)
 ``` 
-```{r sbx3, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
+```{r sbx3, fig.height=3.3, fig.width=6.5}
 ## Drivers, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "drivers", type = "stream", plotDiversity = TRUE)
 ``` 
 
-```{r sbx4, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
+```{r sbx4, fig.height=3.3, fig.width=6.5}
 ## Genotypes, line plot
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "line", plotDiversity = TRUE)
 ``` 
-```{r sbx5, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
+```{r sbx5, fig.height=3.3, fig.width=6.5}
 ## Genotypes, stacked
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stacked", plotDiversity = TRUE)
 ``` 
-```{r sbx6, eval=FALSE, fig.height=3.3, fig.width=6.5, include=FALSE}
+```{r sbx6, fig.height=3.3, fig.width=6.5}
 ## Genotypes, stream
 par(cex = 0.75, las = 1)
 plot(sb,show = "genotypes", type = "stream", plotDiversity = TRUE)
@@ -7276,7 +7276,7 @@ log-transformed y-axis, even if there are other clones/genotypes present.
 runs quickly.)
 
 
-```{r eval=FALSE, fig.width=6, include=FALSE}
+```{r fig.width=6}
 
 set.seed(4321)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -7296,12 +7296,12 @@ We show a stacked and a line plot of the drivers:
 
 
 
-```{r tmpmx1, eval=FALSE, fig.height=4.1, fig.width=6.5, include=FALSE}
+```{r tmpmx1, fig.height=4.1, fig.width=6.5}
 par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
      thinData = TRUE, thinData.keep = 0.2)
 ``` 
-```{r tmpmx2, eval=FALSE, fig.height=4.1, fig.width=6.5, include=FALSE}
+```{r tmpmx2, fig.height=4.1, fig.width=6.5}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE, 
      ylim = c(0, 5500), legend.ncols = 4,
@@ -7317,14 +7317,14 @@ statistics about number of drivers says little of value, as fitness
 is very different for genotypes with the same number of mutations,
 and does not increase in a simple way with drivers:
 
-```{r eval=FALSE, include=FALSE}
+```{r}
 evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE,
                  order = TRUE)
 ``` 
 
 A few figures could help:
 
-```{r tmpmx3, eval=FALSE, fig.height=5.5, fig.width=6.5, include=FALSE}
+```{r tmpmx3, fig.height=5.5, fig.width=6.5}
 plot(tmp, show = "genotypes", ylim = c(0, 5500), legend.ncols = 3,
      thinData = TRUE, thinData.keep = 0.5)
 ``` 
@@ -7343,7 +7343,7 @@ population with clones with zero drivers to a population made of clones
 with two or three drivers:
 
 
-```{r eval=FALSE, include=FALSE}
+```{r}
 set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
@@ -7363,12 +7363,12 @@ tmp
 
 
 use a drivers plot:
-```{r tmpmdx5, eval=FALSE, fig.height=4, fig.width=6.5, include=FALSE}
+```{r tmpmdx5, fig.height=4, fig.width=6.5}
 par(las = 1, cex = 0.85)
 plot(tmp, addtot = TRUE, log = "", plotDiversity = TRUE,
      thinData = TRUE, thinData.keep = 0.5)
 ``` 
-```{r tmpmdx6, eval=FALSE, fig.height=4, fig.width=6.5, include=FALSE}
+```{r tmpmdx6, fig.height=4, fig.width=6.5}
 par(las = 1, cex = 0.85)
 plot(tmp, type = "stacked", plotDiversity = TRUE,
      legend.ncols = 4, ylim = c(0, 5200), xlim = c(3400, 5000),
@@ -7378,7 +7378,7 @@ plot(tmp, type = "stacked", plotDiversity = TRUE,
 
 
 Now show the genotypes explicitly:
-```{r tmpmdx7, eval=FALSE, fig.height=5.3, fig.width=6.5, include=FALSE}
+```{r tmpmdx7, fig.height=5.3, fig.width=6.5}
 ## Improve telling apart the most abundant 
 ## genotypes by sorting colors
 ## differently via breakSortColors
