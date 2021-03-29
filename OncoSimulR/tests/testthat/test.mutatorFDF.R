@@ -16,7 +16,7 @@ test_that("eval fitness and mut OK", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentFitness = TRUE, 
+                          frequencyDependentBirth = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
@@ -58,13 +58,13 @@ test_that("eval mut genotypes", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentFitness = TRUE, 
+                          frequencyDependentBirth = TRUE, 
                           frequencyType = "rel")
   
   r2 <- rfitness(2)
   
   fe2 <- allFitnessEffects(genotFitness = r2, 
-                           frequencyDependentFitness = FALSE)
+                           frequencyDependentBirth = FALSE)
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
   suppressWarnings({
@@ -139,7 +139,7 @@ test_that("eval mut genotypes, echo", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentFitness = TRUE, 
+                          frequencyDependentBirth = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
@@ -162,7 +162,7 @@ test_that("testing all genes evaluation", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentFitness = TRUE, 
+                          frequencyDependentBirth = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
@@ -206,7 +206,7 @@ test_that("expect output oncoSimulIndiv", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentFitness = TRUE, 
+                          frequencyDependentBirth = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))

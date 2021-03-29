@@ -13,7 +13,7 @@ test_that("testing output classes", {
   
   
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentFitness = TRUE, 
+                           frequencyDependentBirth = TRUE, 
                            frequencyType = "rel")
   
   set.seed(1)
@@ -61,11 +61,11 @@ test_that("testing performance", {
   
   
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentFitness = TRUE, 
+                           frequencyDependentBirth = TRUE, 
                            frequencyType = "rel")
   
   afe_ra <- allFitnessEffects(genotFitness = ra, 
-                              frequencyDependentFitness = TRUE, 
+                              frequencyDependentBirth = TRUE, 
                               frequencyType = "abs")
   
   set.seed(1)
@@ -132,7 +132,7 @@ test_that("testing Bozic failure", {
   
   
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentFitness = TRUE, 
+                           frequencyDependentBirth = TRUE, 
                            frequencyType = "rel")
   
   set.seed(1)

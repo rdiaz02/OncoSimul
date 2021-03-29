@@ -6,7 +6,7 @@ cat(paste("\n Starting all fitness at", date()))
 
 
 test_that("WT named genes give a warning", {
-    m1 <- cbind(WT = c(0, 1), B = c(0, 1), Fitness = c(1, 1e-8))
+    m1 <- cbind(WT = c(0, 1), B = c(0, 1), Birth = c(1, 1e-8))
     expect_warning(s1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
                                        detectionSize = 1, initSize = 100,
                                        keepPhylog = TRUE),
@@ -119,8 +119,8 @@ test_that("Bauer example: correct number of fitness classes", {
                         typeDep = "MN")
     b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
-    expect_equal(length(unique(b1$Fitness)), 11)
-    expect_equal(length(unique(b2$Fitness)), 11)
+    expect_equal(length(unique(b1$Birth)), 11)
+    expect_equal(length(unique(b2$Birth)), 11)
 } )
 
 
@@ -136,7 +136,7 @@ test_that("Bauer example: identical values fitness classes, unorder and ord", {
                         typeDep = "MN")
     b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
     b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
-    expect_equal(unique(b1$Fitness), unique(b2$Fitness))
+    expect_equal(unique(b1$Birth), unique(b2$Birth))
 } )
 
 
@@ -156,7 +156,7 @@ test_that("Bauer example: identical values fitness classes, rename", {
                          sh = c(0, rep(sp, 5)),
                          typeDep = "MN")
     b3 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
-    expect_equal(unique(b1$Fitness), unique(b3$Fitness))
+    expect_equal(unique(b1$Birth), unique(b3$Birth))
 } )
 
 
@@ -176,7 +176,7 @@ test_that("Bauer example: identical values fitness classes, diff. order", {
                          sh = c(0, rep(sp, 5)),
                          typeDep = "MN")
     b3 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
-    expect_equal(unique(b1$Fitness), unique(b3$Fitness))
+    expect_equal(unique(b1$Birth), unique(b3$Birth))
 } )
 
 
@@ -202,10 +202,10 @@ test_that("Order effects, modules 1", {
                                     "F" = "f1, f2",
                                     "D" = "d1, d2") )
     ag <- evalAllGenotypes(ofe1, order = TRUE)
-    expect_true(all.equal(ag[c(17, 39, 19, 29), "Fitness"], c(1.4, 0.7, 1.4, 0.7)))
-    expect_true(all.equal(ag[c(43, 44), "Fitness"], c(1.4, 1.4)))
-    expect_true(all(ag[41:52, "Fitness"] == 1.4))
-    expect_true(all(ag[53:64, "Fitness"] == 0.7))
+    expect_true(all.equal(ag[c(17, 39, 19, 29), "Birth"], c(1.4, 0.7, 1.4, 0.7)))
+    expect_true(all.equal(ag[c(43, 44), "Birth"], c(1.4, 1.4)))
+    expect_true(all(ag[41:52, "Birth"] == 1.4))
+    expect_true(all(ag[53:64, "Birth"] == 0.7))
 })
 
 test_that("Order effects, modules 2", {
@@ -216,9 +216,9 @@ test_that("Order effects, modules 2", {
                                     "D" = "d1, d2") )
     ag2 <- evalAllGenotypes(ofe2, max = 326, order = TRUE)
     oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
-    expect_true(all(ag2[grep("^d.*f.*", ag2[, 1]), "Fitness"] == 1.4))
-    expect_true(all(ag2[grep("^f.*d.*", ag2[, 1]), "Fitness"] == 0.7))
-    expect_true(all(ag2[-oe, "Fitness"] ==  1))
+    expect_true(all(ag2[grep("^d.*f.*", ag2[, 1]), "Birth"] == 1.4))
+    expect_true(all(ag2[grep("^f.*d.*", ag2[, 1]), "Birth"] == 0.7))
+    expect_true(all(ag2[-oe, "Birth"] ==  1))
 })
 
 
@@ -233,7 +233,7 @@ test_that("Order effects, twisted module names", {
     o1s <- o1[order(o1$Genotype),   ]
     o2s <- o2[order(o2$Genotype),   ]
     expect_equal(o1s, o2s)
-    expect_true(all.equal(o1[, "Fitness"], c(1, 1, 0.7, 1.4)))
+    expect_true(all.equal(o1[, "Birth"], c(1, 1, 0.7, 1.4)))
 })
 
 
@@ -252,7 +252,7 @@ test_that("Order effects, three-gene-orders and modules 1", {
                                     "F" = "f",
                                     "D" = "d") )
     ag <- evalAllGenotypes(o3, order = TRUE)
-    expect_true(all.equal(ag[, "Fitness"],
+    expect_true(all.equal(ag[, "Birth"],
                         c(rep(1, 4),
                           1.1,
                           1, 1,
@@ -277,13 +277,13 @@ test_that("No interaction genes, 1", {
         noIntGenes = c(0.05, -.2, .1)), order = TRUE)
 
     
-    expect_true(all.equal(ai1[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai1[, "Birth"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
        (1 - .2) * (1 + .1),
        (1 + .05) * (1 - .2) * (1 + .1))))
 
-    expect_true(all.equal(ai2[, "Fitness"],  c((1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai2[, "Birth"],  c((1 + .05), (1 - .2), (1 + .1),
                            1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
                            1.05 * 1.1, 1.1 * .8,
                            rep(1.05 * .8 * 1.1, 6) )))
@@ -300,13 +300,13 @@ test_that("No interaction genes, 2", {
     ai4 <- evalAllGenotypes(allFitnessEffects(
         noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1)), order = TRUE)
     
-    expect_true(all.equal(ai3[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai3[, "Birth"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
        (1 - .2) * (1 + .1),
        (1 + .05) * (1 - .2) * (1 + .1))))
 
-    expect_true(all.equal(ai4[, "Fitness"], c((1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai4[, "Birth"], c((1 + .05), (1 - .2), (1 + .1),
                            1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
                            1.05 * 1.1, 1.1 * .8,
                            rep(1.05 * .8 * 1.1, 6) )))
@@ -324,13 +324,13 @@ test_that("No interaction genes, 3", {
     ai4 <- evalAllGenotypes(allFitnessEffects(
         noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1)), order = TRUE)
     
-    expect_true(all.equal(ai3[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai3[, "Birth"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
        (1 - .2) * (1 + .1),
        (1 + .05) * (1 - .2) * (1 + .1))))
 
-    expect_true(all.equal(ai4[, "Fitness"],  c((1 + .05), (1 - .2), (1 + .1),
+    expect_true(all.equal(ai4[, "Birth"],  c((1 + .05), (1 - .2), (1 + .1),
                            1.05 * .8, 1.05 * 1.1, .8 * 1.05, .8 * 1.1,
                            1.05 * 1.1, 1.1 * .8,
                            rep(1.05 * .8 * 1.1, 6) )))
@@ -347,25 +347,25 @@ test_that("No interaction genes and order effects, 1", {
     agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
-    expect_true(all.equal(agoi1[rn[LETTERS[1:5]], "Fitness"], c(1.05, 1, 0.8, 1, 1.1)))
+    expect_true(all.equal(agoi1[rn[LETTERS[1:5]], "Birth"], c(1.05, 1, 0.8, 1, 1.1)))
     ## orders that do not involve all. D > A;   B > C;
-    expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 1.05))
-    expect_true(all(agoi1[grep("^C > [BD]$", names(rn)), "Fitness"] == 0.8))
-    expect_true(all(agoi1[grep("^E > [BD]$", names(rn)), "Fitness"] == 1.1))
-    expect_true(all(agoi1[grep("^[BD] > A$", names(rn)), "Fitness"] == 1.05))
-    expect_true(all(agoi1[grep("^[BD] > C$", names(rn)), "Fitness"] == 0.8))
-    expect_true(all(agoi1[grep("^[BD] > E$", names(rn)), "Fitness"] == 1.1))
-    expect_true(all.equal(agoi1[230:253, "Fitness"] ,
+    expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Birth"] == 1.05))
+    expect_true(all(agoi1[grep("^C > [BD]$", names(rn)), "Birth"] == 0.8))
+    expect_true(all(agoi1[grep("^E > [BD]$", names(rn)), "Birth"] == 1.1))
+    expect_true(all(agoi1[grep("^[BD] > A$", names(rn)), "Birth"] == 1.05))
+    expect_true(all(agoi1[grep("^[BD] > C$", names(rn)), "Birth"] == 0.8))
+    expect_true(all(agoi1[grep("^[BD] > E$", names(rn)), "Birth"] == 1.1))
+    expect_true(all.equal(agoi1[230:253, "Birth"] ,
                           rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 24)))
-    expect_true(all.equal(agoi1[c(260:265, 277, 322, 323, 325), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(260:265, 277, 322, 323, 325), "Birth"] ,
               rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 10)))
-    expect_true(all.equal(agoi1[c(206:229, 254:259, 266:267), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(206:229, 254:259, 266:267), "Birth"] ,
               rep((1 + 0.3) * 1.05 * 0.8 * 1.1, 32)))
     ## some of four, one of which either D or B. 
-    expect_true(all.equal(agoi1[c(203:205, 191), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(203:205, 191), "Birth"] ,
               rep(1.05 * 0.8 * 1.1, 4)))
     ##  a few of three, A, C, and ether D or B
-    expect_true(all.equal(agoi1[c(42, 45, 30, 33), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(42, 45, 30, 33), "Birth"] ,
               rep(1.05 * 0.8, 4)))
 })
 
@@ -378,26 +378,26 @@ test_that("No interaction genes and order effects, 2", {
     agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
-    expect_true(all.equal(agoi1[rn[c("B", "D", "M", "A", "J")], "Fitness"],
+    expect_true(all.equal(agoi1[rn[c("B", "D", "M", "A", "J")], "Birth"],
                           c(1, 1, 1.05, 0.8, 1.1)))
     ## orders that do not involve all. D > A;   B > C;
-    expect_true(all(agoi1[grep("^M > [BD]$", names(rn)), "Fitness"] == 1.05))
-    expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 0.8))
-    expect_true(all(agoi1[grep("^J > [BD]$", names(rn)), "Fitness"] == 1.1))
-    expect_true(all(agoi1[grep("^[BD] > M$", names(rn)), "Fitness"] == 1.05))
-    expect_true(all(agoi1[grep("^[BD] > A$", names(rn)), "Fitness"] == 0.8))
-    expect_true(all(agoi1[grep("^[BD] > J$", names(rn)), "Fitness"] == 1.1))
-    expect_true(all.equal(agoi1[230:253, "Fitness"] ,
+    expect_true(all(agoi1[grep("^M > [BD]$", names(rn)), "Birth"] == 1.05))
+    expect_true(all(agoi1[grep("^A > [BD]$", names(rn)), "Birth"] == 0.8))
+    expect_true(all(agoi1[grep("^J > [BD]$", names(rn)), "Birth"] == 1.1))
+    expect_true(all(agoi1[grep("^[BD] > M$", names(rn)), "Birth"] == 1.05))
+    expect_true(all(agoi1[grep("^[BD] > A$", names(rn)), "Birth"] == 0.8))
+    expect_true(all(agoi1[grep("^[BD] > J$", names(rn)), "Birth"] == 1.1))
+    expect_true(all.equal(agoi1[230:253, "Birth"] ,
                           rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 24)))
-    expect_true(all.equal(agoi1[c(260:265, 277, 322, 323, 325), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(260:265, 277, 322, 323, 325), "Birth"] ,
               rep((1 - 0.3) * 1.05 * 0.8 * 1.1, 10)))
-    expect_true(all.equal(agoi1[c(206:229, 254:259, 266:267), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(206:229, 254:259, 266:267), "Birth"] ,
               rep((1 + 0.3) * 1.05 * 0.8 * 1.1, 32)))
     ## some of four, one of which either D or B. 
-    expect_true(all.equal(agoi1[c(203:205, 191), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(203:205, 191), "Birth"] ,
               rep(1.05 * 0.8 * 1.1, 4)))
     ##  a few of three, A, C, and ether D or B
-    expect_true(all.equal(agoi1[c(42, 45, 30, 33), "Fitness"] ,
+    expect_true(all.equal(agoi1[c(42, 45, 30, 33), "Birth"] ,
               rep(1.05 * 0.8, 4)))
 })
 
@@ -411,10 +411,10 @@ test_that("synthetic viability, 1", {
                                 "A:B" = s))
     expect_true( all.equal(
         evalAllGenotypes(sv,
-                         order = FALSE, addwt = TRUE)[, "Fitness"] , c(1, 0, 0, 1.2)))
+                         order = FALSE, addwt = TRUE)[, "Birth"] , c(1, 0, 0, 1.2)))
     expect_true( all.equal(
         evalAllGenotypes(sv,
-                         order = TRUE, addwt = TRUE)[, "Fitness"], c(1, 0, 0, 1.2, 1.2)))
+                         order = TRUE, addwt = TRUE)[, "Birth"], c(1, 0, 0, 1.2, 1.2)))
 })
 
 
@@ -431,11 +431,11 @@ test_that("synthetic viability, with modules, 2", {
                                  "B" = "b"))
     expect_true( all.equal(
         evalAllGenotypes(sv2,
-                         order = FALSE, addwt = TRUE)[, "Fitness"],
+                         order = FALSE, addwt = TRUE)[, "Birth"],
         c(1, 0.9, 0.9, 0.8, 0.9, rep(1.25, 3))))
     expect_true( all.equal(
         evalAllGenotypes(sv2,
-                         order = TRUE, addwt = TRUE)[, "Fitness"],
+                         order = TRUE, addwt = TRUE)[, "Birth"],
         c(1, 0.9, 0.9, 0.8,
           .90, 1.25, .9, rep(1.25, 9)
           )))
@@ -450,10 +450,10 @@ test_that("synthetic mortality, 1", {
                                  "A : -B" = sa,
                                  "A:B" = sab))
     expect_true( all.equal(
-        evalAllGenotypes(sm1, order = FALSE, addwt = TRUE)[, "Fitness"],
+        evalAllGenotypes(sm1, order = FALSE, addwt = TRUE)[, "Birth"],
         c(1, 1.1, 1.2, 1 - 0.8)))
     expect_true( all.equal(
-        evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)[, "Fitness"], 
+        evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)[, "Birth"], 
             c(1, 1.1, 1.2, 1 - 0.8, 1 - 0.8)))
 })
 
@@ -470,7 +470,7 @@ test_that("Epistasis, 1", {
                                   "A : B" = sab))
     expect_true(all.equal(evalAllGenotypes(e2,
                                      order = FALSE,
-                                     addwt = TRUE)[, "Fitness"], 
+                                     addwt = TRUE)[, "Birth"], 
                     c(1, 1.2, 1.3, 1.7)))
 })
 
@@ -490,11 +490,11 @@ test_that("Epistasis, with and without -", {
                                   "A : B" = s2))
     expect_true(all.equal(evalAllGenotypes(e2,
                                      order = FALSE,
-                                     addwt = TRUE)[, "Fitness"],
+                                     addwt = TRUE)[, "Birth"],
                                          c(1, 1.2, 1.3, 1.7)))
     expect_true(all.equal(evalAllGenotypes(e3,
                                      order = FALSE,
-                                     addwt = TRUE)[, "Fitness"], 
+                                     addwt = TRUE)[, "Birth"], 
                                          c(1, 1.2, 1.3, 1.7)))
 })
 
@@ -517,7 +517,7 @@ test_that("Epistasis, with and without -, three terms", {
                                   "A : B : C" = sabc)
                             )
 
-    expect_true(all.equal(evalAllGenotypes(E3, order = FALSE, addwt = FALSE)[, "Fitness"], 
+    expect_true(all.equal(evalAllGenotypes(E3, order = FALSE, addwt = FALSE)[, "Birth"], 
                     c(1.1, 1.15, 1.2, 1.3, (1.1 * 1.2), 0.75, 1.4)))
 
 })
@@ -540,7 +540,7 @@ test_that("Epistasis, three, with and without -, two alternative specs", {
                                    "A:-B:C" = sac,
                                    "A : B : C" = sabc)
                              )
-    expect_true(all.equal(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)[, "Fitness"], 
+    expect_true(all.equal(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)[, "Birth"], 
                         c(1.1, 1.15, 1.2, 1.3, (1.1 * 1.2), 0.75, 1.4)))
     Sab <- ( (1 + sab)/((1 + sa) * (1 + sb))) - 1
     Sbc <- ( (1 + sbc)/((1 + sb) * (1 + sc))) - 1
@@ -601,11 +601,11 @@ test_that("Epistasis, three, with and without -, two alternative specs, order ma
                                                collapse = ", ")))
     ## Verify all of the same name have same value
     ## Beware this could fail for numerical issues.
-    expect_true(all( tapply(ge3ao$Fitness, nnn,
+    expect_true(all( tapply(ge3ao$Birth, nnn,
                             function(x) length(unique(x))) == 1))
     ## Is the value identical to the unordered?
-    mo <- tapply(ge3ao$Fitness, nnn, mean)
-    mu <- tapply(ge3a$Fitness, ge3a[, 1], mean)
+    mo <- tapply(ge3ao$Birth, nnn, mean)
+    mu <- tapply(ge3a$Birth, ge3a[, 1], mean)
     expect_true(all.equal(mo, mu))
 })
 
@@ -638,7 +638,7 @@ test_that("Poset, CBN, values and order no changes", {
     gfc1 <- evalAllGenotypes(fc1, order = FALSE)
     gfc1o <- evalAllGenotypes(fc1, order = TRUE, max = 1956)
     expect_true(all.equal(
-        gfc1[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
+        gfc1[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Birth"],
         c(1.01, 1.02, 0.9, 1.03, 1.04, 0.95,
           1.01 * c(1.02, 0.9, 1.03, 1.04, 0.95),
           1.02 * c(0.90, 1.03, 1.04, 0.95),
@@ -657,10 +657,10 @@ test_that("Poset, CBN, values and order no changes", {
     nn <- gfc1o[, 1]
     nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
                                                collapse = ", ")))
-    expect_true(all( tapply(gfc1o$Fitness, nnn,
+    expect_true(all( tapply(gfc1o$Birth, nnn,
                             function(x) length(unique(x))) == 1))
-    mo <- tapply(gfc1o$Fitness, nnn, mean)
-    mu <- tapply(gfc1$Fitness, gfc1[, 1], mean)
+    mo <- tapply(gfc1o$Birth, nnn, mean)
+    mu <- tapply(gfc1$Birth, gfc1[, 1], mean)
     expect_true(all.equal(mo, mu))
     ## type of dep for those from root does not matter
     c1b <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
@@ -686,7 +686,7 @@ test_that("Poset, OR, values and order no changes", {
     gfs1 <- evalAllGenotypes(fs1, order = FALSE)
     gfs1o <- evalAllGenotypes(fs1, order = TRUE, max = 1956)
     expect_true(all.equal(
-        gfs1[c(1:21, 22, 28, 41, 44, 56, 63, 39 ) , "Fitness"],
+        gfs1[c(1:21, 22, 28, 41, 44, 56, 63, 39 ) , "Birth"],
         c(1.01, 1.02, 0.9, 1.03, 1.04, 0.95,
           1.01 * c(1.02, 1.1, 1.03, 1.04, 0.95),
           1.02 * c(1.1, 1.03, 1.04, 0.95),
@@ -704,10 +704,10 @@ test_that("Poset, OR, values and order no changes", {
     nn <- gfs1o[, 1]
     nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
                                                collapse = ", ")))
-    expect_true(all( tapply(gfs1o$Fitness, nnn,
+    expect_true(all( tapply(gfs1o$Birth, nnn,
                             function(x) length(unique(x))) == 1))
-    mo <- tapply(gfs1o$Fitness, nnn, mean)
-    mu <- tapply(gfs1$Fitness, gfs1[, 1], mean)
+    mo <- tapply(gfs1o$Birth, nnn, mean)
+    mu <- tapply(gfs1$Birth, gfs1[, 1], mean)
     expect_true(all.equal(mo, mu))
     zzz <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                       child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -732,7 +732,7 @@ test_that("Poset, XOR, values and order no changes", {
     gfx1 <- evalAllGenotypes(fx1, order = FALSE)
     gfx1o <- evalAllGenotypes(fx1, order = TRUE, max = 1956)
     expect_true(all.equal(
-        gfx1[c(1:21, 22, 28, 41, 44, 56, 63, 39 ) , "Fitness"],
+        gfx1[c(1:21, 22, 28, 41, 44, 56, 63, 39 ) , "Birth"],
         c(1.01, 1.02, 0.1, 1.03, 1.04, 0.05,
           1.01 * c(1.02, 1.1, 1.03, 1.04, 0.05),
           1.02 * c(1.1, 1.03, 1.04, 0.05),
@@ -750,10 +750,10 @@ test_that("Poset, XOR, values and order no changes", {
     nn <- gfx1o[, 1]
     nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
                                                collapse = ", ")))
-    expect_true(all( tapply(gfx1o$Fitness, nnn,
+    expect_true(all( tapply(gfx1o$Birth, nnn,
                             function(x) length(unique(x))) == 1))
-    mo <- tapply(gfx1o$Fitness, nnn, mean)
-    mu <- tapply(gfx1$Fitness, gfx1[, 1], mean)
+    mo <- tapply(gfx1o$Birth, nnn, mean)
+    mu <- tapply(gfx1$Birth, gfx1[, 1], mean)
     expect_true(all.equal(mo, mu))
     zzz <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                       child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -774,10 +774,10 @@ fouo <- function(fe) {
     nn <- oo[, 1]
     nnn <- unlist(lapply(nn, function(x) paste(sort(unlist(strsplit(x, " > "))),
                                                collapse = ", ")))
-    expect_true(all( tapply(oo$Fitness, nnn,
+    expect_true(all( tapply(oo$Birth, nnn,
                             function(x) length(unique(x))) == 1))
-    mo <- tapply(oo$Fitness, nnn, mean)
-    mu <- tapply(uo$Fitness, uo[, 1], mean)
+    mo <- tapply(oo$Birth, nnn, mean)
+    mu <- tapply(uo$Birth, uo[, 1], mean)
     ## expect_true(all.equal(mo, mu))
     return(list(mu, mo))
 }
@@ -792,7 +792,7 @@ test_that("Poset, all three effects", {
     fp3 <- allFitnessEffects(p3)
     gfp3 <- evalAllGenotypes(fp3, order = FALSE)
     expect_true(all.equal(gfp3[c(9, 24, 29, 59, 60, 66, 119, 120, 126, 127),
-                               "Fitness"],
+                               "Birth"],
                           c(1.01 * 1.1, 1.03 * .05, 1.01 * 1.02 * 0.1, 0.1 * 0.05 * 1.3,
                             1.03 * 1.04 * 1.2, 1.01 * 1.02 * 0.1 * 0.05,
                             0.1 * 1.03 * 1.04 * 1.2 * 1.3,
@@ -818,7 +818,7 @@ test_that("poset with all effects and modules, 1", {
     gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
     expect_true(all.equal(gfp4[c(12, 20, 21, 40, 41, 46,
                                  50, 55, 64, 92, 155, 157,
-                                 163, 372, 632, 828), "Fitness"],
+                                 163, 372, 632, 828), "Birth"],
                           c(1.01 * 1.02, 1.02, 1.02 * 1.1, 0.1 * 1.3, 1.03, 
                             1.03 * 1.04, 1.04 * 0.05, 0.05 * 1.3,  
                             1.01 * 1.02 * 0.1, 1.02 * 1.1, 0.1 * 0.05 * 1.3,
@@ -857,8 +857,8 @@ test_that("Bauer example: exercising drvNames", {
     b2 <- evalAllGenotypes(allFitnessEffects(bauer,
                                              drvNames = c("s2", "s3", "s4")),
                            order = TRUE, max = 2000)
-    expect_equal(length(unique(b1$Fitness)), 11)
-    expect_equal(length(unique(b2$Fitness)), 11)
+    expect_equal(length(unique(b1$Birth)), 11)
+    expect_equal(length(unique(b2$Birth)), 11)
 } )
 
 
@@ -1105,18 +1105,18 @@ test_that("No epistasis, modules", {
                                                "B" = "b1",
                                                "C" = "c1, c2"))
     ea <- evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
-    expect_identical(ea[ea$Genotype == "a1, a2", "Fitness"], 1 + sa)
-    expect_identical(ea[ea$Genotype == "a1, b1", "Fitness"],
+    expect_identical(ea[ea$Genotype == "a1, a2", "Birth"], 1 + sa)
+    expect_identical(ea[ea$Genotype == "a1, b1", "Birth"],
     (1 + sa) * (1 + sb))
-    expect_identical(ea[ea$Genotype == "a2, c1", "Fitness"],
+    expect_identical(ea[ea$Genotype == "a2, c1", "Birth"],
     (1 + sa) * (1 + sc))
-    expect_identical(ea[ea$Genotype == "b1, c2", "Fitness"],
+    expect_identical(ea[ea$Genotype == "b1, c2", "Birth"],
     (1 + sb) * (1 + sc))
-    expect_identical(ea[ea$Genotype == "a1, a2, c1", "Fitness"],
+    expect_identical(ea[ea$Genotype == "a1, a2, c1", "Birth"],
     (1 + sa) * (1 + sc))
-    expect_identical(ea[ea$Genotype == "a1, a2, b1, c1", "Fitness"],
+    expect_identical(ea[ea$Genotype == "a1, a2, b1, c1", "Birth"],
     (1 + sa) * (1 + sb) * (1 + sc))
-    expect_identical(ea[ea$Genotype == "a2, b1, c1", "Fitness"],
+    expect_identical(ea[ea$Genotype == "a2, b1, c1", "Birth"],
     (1 + sa) * (1 + sb) * (1 + sc))
 })
 
@@ -1164,11 +1164,11 @@ test_that("Some same genes in epistasis and order effects", {
                               orderEffects = c("a>b" = s1, "b > a" = s2, "b > m" = s3),
                               epistasis = c("a:c" = s4, "b:e" = s5))
     of <- evalAllGenotypes(o999, order = TRUE, max = 1956)
-    expect_equal(dplyr::filter(of, Genotype == "b > a > f > c")[, "Fitness"],
+    expect_equal(dplyr::filter(of, Genotype == "b > a > f > c")[, "Birth"],
     (1 + s2) * (1 + s0) * (1 + s0) * (1 + s4))
-    expect_equal(dplyr::filter(of, Genotype == "a > f > c > b > m")[, "Fitness"],
+    expect_equal(dplyr::filter(of, Genotype == "a > f > c > b > m")[, "Birth"],
     (1 + s0) * (1 + s0) * (1 + s0) * (1 + s1) * (1 + s4) * (1 + s3))
-    expect_equal(dplyr::filter(of, Genotype == "e > a > b")[, "Fitness"],
+    expect_equal(dplyr::filter(of, Genotype == "e > a > b")[, "Birth"],
     (1 + s0) * (1 + s5) * (1 + s1))
     s1 <- -0.2
     s2 <- 0.3
@@ -1177,15 +1177,15 @@ test_that("Some same genes in epistasis and order effects", {
         orderEffects = c("a>b" = s1, "b > a" = s2),
         epistasis = c("a:c" = s3))
     eo99 <- evalAllGenotypes(o99, order = TRUE, addwt = TRUE)
-    expect_equal(dplyr::filter(eo99, Genotype == "a > c > b")[, "Fitness"],
+    expect_equal(dplyr::filter(eo99, Genotype == "a > c > b")[, "Birth"],
                  (1 + s3) * (1 + s1))
-    expect_equal(dplyr::filter(eo99, Genotype == "c > a > b")[, "Fitness"],
+    expect_equal(dplyr::filter(eo99, Genotype == "c > a > b")[, "Birth"],
                  (1 + s3) * (1 + s1))
-    expect_equal(dplyr::filter(eo99, Genotype == "c > b > a")[, "Fitness"],
+    expect_equal(dplyr::filter(eo99, Genotype == "c > b > a")[, "Birth"],
                  (1 + s3) * (1 + s2))
-    expect_equal(dplyr::filter(eo99, Genotype == "c > a")[, "Fitness"],
+    expect_equal(dplyr::filter(eo99, Genotype == "c > a")[, "Birth"],
                  (1 + s3))
-    expect_equal(dplyr::filter(eo99, Genotype == "a > c")[, "Fitness"],
+    expect_equal(dplyr::filter(eo99, Genotype == "a > c")[, "Birth"],
                  (1 + s3))
 })
 
@@ -1246,7 +1246,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "A, B"),
-                   Fitness = c(1.0, 1.0, 2.0, 0.0), ## 0.0 used to be 1.0
+                   Birth = c(1.0, 1.0, 2.0, 0.0), ## 0.0 used to be 1.0
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A", "B"),
@@ -1256,7 +1256,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
 
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "A, B"),
-                   Fitness = c(1.0, 1.5, 2.9, 0.0),
+                   Birth = c(1.0, 1.5, 2.9, 0.0),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A", "B"),
@@ -1266,7 +1266,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
 
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "E", "A, B", "A, E", "B, E", "A, B, E"),
-                   Fitness = c(1.0, 1.3, 2.4, 3.2, rep(0, 4)),
+                   Birth = c(1.0, 1.3, 2.4, 3.2, rep(0, 4)),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A", "B", "E"),
@@ -1278,7 +1278,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     ## It failed in nr_oncoSimul.internal
     ## expect_true_silent(identical(
     ##     data.frame(Genotype = c("WT", "A"),
-    ##                Fitness = c(1.0, 1.0),
+    ##                Birth = c(1.0, 1.0),
     ##                stringsAsFactors = FALSE),
     ##     as.data.frame(evalAllGenotypes(
     ##         allFitnessEffects(genotFitness = data.frame(g = c("A"),
@@ -1288,7 +1288,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     
     ## expect_true_silent(identical(
     ##     data.frame(Genotype = c("WT", "A"),
-    ##                Fitness = c(1.0, 0.6),
+    ##                Birth = c(1.0, 0.6),
     ##                stringsAsFactors = FALSE),
     ##     as.data.frame(evalAllGenotypes(
     ##         allFitnessEffects(genotFitness = data.frame(g = c("A"),
@@ -1299,7 +1299,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "D", "F", "A, D", "A, F", "D, F",
                                 "A, D, F"),
-                   Fitness = c(1.0, rep(0, 6), 1.7), ## c(rep(1, 7), 1.7),
+                   Birth = c(1.0, rep(0, 6), 1.7), ## c(rep(1, 7), 1.7),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A, D, F"),
@@ -1313,7 +1313,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
 
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "B", "A, B"),
-                   Fitness = c(1.0, 1.2, 2.4, 0.0),
+                   Birth = c(1.0, 1.2, 2.4, 0.0),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = m),
@@ -1325,7 +1325,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
         "No column names", fixed = TRUE)
 
     mcn <- m
-    colnames(mcn) <- c("A", "", "Fitness")
+    colnames(mcn) <- c("A", "", "Birth")
     expect_warning(evalAllGenotypes(
         allFitnessEffects(genotFitness = mcn)),
         "One column named ''", fixed = TRUE)
@@ -1333,10 +1333,10 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     
     m2 <- rbind(c(1, 0, 1.2),
                c(0, 1, 2.4))
-    colnames(m2) <- c("U", "M", "Fitness")
+    colnames(m2) <- c("U", "M", "Birth")
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "M", "U", "M, U"),
-                   Fitness = c(1.0, 2.4, 1.2, 0),
+                   Birth = c(1.0, 2.4, 1.2, 0),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = m2),
@@ -1352,10 +1352,10 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     
     m2df <- data.frame(rbind(c(1, 0, 1.2),
                c(0, 1, 2.4)))
-    colnames(m2df) <- c("U", "M", "Fitness")
+    colnames(m2df) <- c("U", "M", "Birth")
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "M", "U", "M, U"),
-                   Fitness = c(1.0, 2.4, 1.2, 0),
+                   Birth = c(1.0, 2.4, 1.2, 0),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = m2df),
@@ -1363,10 +1363,10 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     ))   
 
     m3 <- matrix(c(1, 1.2), ncol = 2)
-    colnames(m3) <- c("U", "Fitness")
+    colnames(m3) <- c("U", "Birth")
     expect_error(
         allFitnessEffects(genotFitness = m3),
-        "genotFitness: if two-column must be data frame",
+        "if genotype is specified, it must be data frame",
         fixed = TRUE)
 
     ## Stupid
