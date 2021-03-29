@@ -9,7 +9,7 @@ test_that("We can run and equal with letters", {
 
     g1 <- data.frame(
         Genotype = c("WT", "A", "A, B"), 
-        Fitness = c("1",
+        Birth = c("1",
                     "1.3 + 1.2 * n_1_2",
                     "1.1"),
         stringsAsFactors = FALSE)
@@ -18,7 +18,7 @@ test_that("We can run and equal with letters", {
 
     g11 <- data.frame(
         Genotype = c("WT", "A", "A, B"), 
-        Fitness = c("1",
+        Birth = c("1",
                     "1.3 + 1.2 * n_A_B",
                     "1.1"),
         stringsAsFactors = FALSE)
@@ -34,12 +34,12 @@ test_that("We can run and equal with letters", {
 
     expect_identical(efg1, efg11)
     ## is that correct?
-    expect_identical(efg1$Fitness, c(1, 1.3 + 1.2 * 6, 0,  1.1))
+    expect_identical(efg1$Birth, c(1, 1.3 + 1.2 * 6, 0,  1.1))
 
     
     g1b <- data.frame(
         Genotype = c("WT", "A", "A, B", "B"), 
-        Fitness = c("1",
+        Birth = c("1",
                     "1.3 + 1.2 * n_1_2",
                     "1.1",
                     "0"),
@@ -53,7 +53,7 @@ test_that("We can run and equal with letters", {
     
     
     ## is it correct? Yes
-    stopifnot(identical(ea1b[, "Fitness"], c(1, 1.3 + 1.2 * 6, 0, 1.1)))
+    stopifnot(identical(ea1b[, "Birth"], c(1, 1.3 + 1.2 * 6, 0, 1.1)))
     
  
     set.seed(1)
@@ -67,7 +67,7 @@ test_that("We can run and equal with letters", {
     
     g1c <- data.frame(
         Genotype = c("WT", "A", "A, B", "B"), 
-        Fitness = c("1",
+        Birth = c("1",
                 "1.3 + 1.2 * n_A_B",
                 "1.1",
                 "0"),
@@ -92,7 +92,7 @@ test_that("We can run and equal in different order" , {
 
     g2 <- data.frame(
         Genotype = c("WT", "A", "A, B", "B"), 
-        Fitness = c("1",
+        Birth = c("1",
                     "1 + 2 * n_1_2",
                     "1 + 2 * n_2",
                     "1 + 2 * n_1"),
@@ -103,7 +103,7 @@ test_that("We can run and equal in different order" , {
     ## identical, except order of genotypes changes. But the specification is the same
     g2b <- data.frame(
         Genotype = c("WT", "A", "B", "A, B"), 
-        Fitness = c("1",
+        Birth = c("1",
                     "1 + 2 * n_1_2",
                     "1 + 2 * n_1",
                     "1 + 2 * n_2"),
@@ -117,14 +117,14 @@ test_that("We can run and equal in different order" , {
     ## Are they correct?
     expect_identical(ofg2, ofg2b)
     out_expec_ofg2 <- c(1, 1 + 2 * 3 , 1 + 2 * 2, 1 + 2 * 6)
-    expect_identical(ofg2[, "Fitness"], out_expec_ofg2)
+    expect_identical(ofg2[, "Birth"], out_expec_ofg2)
 })
 
 
 
 test_that("Breaks as it should", {
     df1 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                      Fitness = c("1",
+                      Birth = c("1",
                                   "n_1_3", ## BA
                                   "n_2_3", ## CA
                                   "n_1_2",
@@ -137,7 +137,7 @@ test_that("Breaks as it should", {
     expect_error(suppressWarnings(evalAllGenotypes(adf1, spPopSizes = 1:6)))
     ## Breaks in old and new: n_2_3
     df1 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                  Fitness = c("1",
+                  Birth = c("1",
                               "f_1_3", ## BA
                               "f_2_3", ## CA
                               "f_1_2",
@@ -156,7 +156,7 @@ test_that("Breaks as it should", {
 ## Good example of how easy it was to screw up
 test_that("eval fitness gives wrong answer, as misspecified", {
     df2 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                  Fitness = c("1",
+                  Birth = c("1",
                               "n_1_3", ## you want BA
                               "n_3", 
                               "n_3",
@@ -168,7 +168,7 @@ test_that("eval fitness gives wrong answer, as misspecified", {
 
     (adf2)
     suppressWarnings(gg <- evalAllGenotypes(adf2, spPopSizes = 1:6))
-    expect_equal(gg[gg$Genotype == "B", "Fitness"], 6) 
+    expect_equal(gg[gg$Genotype == "B", "Birth"], 6) 
     ## Wrong: gives for B fitness of using CA, not BA (both old and new versions)
 })
 
@@ -176,7 +176,7 @@ test_that("eval fitness gives wrong answer, as misspecified", {
 test_that("Can deal with some user misorderig (and naming spPopSizes)" , {
     ## Older one could not
     df3 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                  Fitness = c("1",
+                  Birth = c("1",
                               "n_B_A", ## you want BA
                               "n_A", 
                               "n_A",
@@ -189,14 +189,14 @@ test_that("Can deal with some user misorderig (and naming spPopSizes)" , {
     spPopSizes <- 1:6
     names(spPopSizes) <- c("WT", "B", "C", "A", "B, A", "C, A")
     gg <- evalAllGenotypes(adf3, spPopSizes = spPopSizes) 
-    expect_equal(gg[gg$Genotype == "B", "Fitness"], 5) 
+    expect_equal(gg[gg$Genotype == "B", "Birth"], 5) 
 })
 
 
 test_that("Correct values of evalAllGenotypes and substitutions", {
     ## Old one gives wrong result
     df3 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                      Fitness = c("1",
+                      Birth = c("1",
                                   "f_A_B", ## you want BA
                                   "f_A", 
                                   "f_A",
@@ -213,14 +213,14 @@ test_that("Correct values of evalAllGenotypes and substitutions", {
     
     ## should give
     ## c(1, c(A = 4, B = 5, C = 4, AB = 2, AC = 3,  BC = 0, ABC = 0)/sum(spPopSizes))
-    expect_equal(gg[, "Fitness"],
+    expect_equal(gg[, "Birth"],
                  c(1, c(4, 5, 4, 2, 3, 0, 0)/sum(spPopSizes))
                  )
 
     r <- data.frame(rfitness(3))
     r <- r[, c(2, 3, 1, 4)]
     r <- r[c(1, 3, 4, 2, 5, 6), ]
-    r$Fitness <- c("1",
+    r$Birth <- c("1",
                    "f_A_B", ## you want BA
                    "f_A", 
                    "f_A_C",
@@ -230,7 +230,7 @@ test_that("Correct values of evalAllGenotypes and substitutions", {
     df3m <- r
 
     df3m2 <- data.frame(rfitness(3))[, c(2, 3, 1, 4)][1:6, ]
-    df3m2$Fitness <- c("1",
+    df3m2$Birth <- c("1",
                        "f_A_C",
                        "f_A_B", ## you want BA
                        "f_A", 
@@ -255,7 +255,7 @@ test_that("Fail if unequal names spPopSizes", {
     r <- data.frame(rfitness(3))
     r <- r[, c(2, 3, 1, 4)]
     r <- r[c(1, 3, 4, 2, 5, 6), ]
-    r$Fitness <- c("1",
+    r$Birth <- c("1",
                    "f_A_B", ## you want BA
                    "f_A", 
                    "f_A_C",
@@ -265,7 +265,7 @@ test_that("Fail if unequal names spPopSizes", {
     df3m <- r
 
     df3m2 <- data.frame(rfitness(3))[, c(2, 3, 1, 4)][1:6, ]
-    df3m2$Fitness <- c("1",
+    df3m2$Birth <- c("1",
                        "f_A_C",
                        "f_A_B", ## you want BA
                        "f_A", 
@@ -287,7 +287,7 @@ test_that("Fail if unequal names spPopSizes", {
 test_that("Correct values of evalAllGenotypes and substitutions, some math and changed order genes in n expression", {
     ## Old one gives wrong result
     df3 <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                      Fitness = c("1",
+                      Birth = c("1",
                                   "log(n_A_B)", ## you want BA
                                   "sqrt(n_A) + 3 * exp(n_C)", 
                                   "-1 * n_A + 7 * (n_C_A > 2)",
@@ -304,7 +304,7 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
     
     ## should give
    
-    expect_equal(gg[, "Fitness"],
+    expect_equal(gg[, "Birth"],
                  c(1, c(-4 + 7,
                         log(5),
                         sqrt(4) + 3 * exp(3),
@@ -316,7 +316,7 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
 
 
     df3x <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                      Fitness = c("n_A + 0.1",
+                      Birth = c("n_A + 0.1",
                                   "log(n_A_B)", ## you want BA
                                   "sqrt(n_A) + 3 * exp(n_C)", 
                                   "-1 * n_A + 7 * (n_C_A > 2)",
@@ -328,7 +328,7 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
     names(spPopSizes) <- c("WT", "B", "C", "A", "B, A", "C, A")
     ggx <- evalAllGenotypes(adf3x, spPopSizes = spPopSizes) 
     
-    expect_equal(ggx[, "Fitness"],
+    expect_equal(ggx[, "Birth"],
                  c(4.1, c(-4 + 7,
                         log(5),
                         sqrt(4) + 3 * exp(3),
@@ -342,11 +342,11 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
     r <- data.frame(rfitness(3))
     r <- r[, c(2, 3, 1, 4)]
     r <- r[c(1, 3, 4, 2, 5, 6), ]
-    r$Fitness <- df3x$Fitness[c(1, 2, 3, 4, 5, 6)]
+    r$Birth <- df3x$Birth[c(1, 2, 3, 4, 5, 6)]
     df3m <- r
 
     df3m2 <- data.frame(rfitness(3))[, c(2, 3, 1, 4)][1:6, ]
-    df3m2$Fitness <- df3x$Fitness[c(1, 4, 2, 3, 5, 6)]
+    df3m2$Birth <- df3x$Birth[c(1, 4, 2, 3, 5, 6)]
     
     ## Note the columns are sorted as per message
     adf3m <- allFitnessEffects(genotFitness = df3m,
@@ -363,7 +363,7 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
 
 test_that("should run", {
     r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
-                    Fitness = c("10*f_", 
+                    Birth = c("10*f_", 
                                 "10*f_1", 
                                 "50*f_2", 
                                 "200*(f_1 + f_2) + 50*f_1_2"))
@@ -381,7 +381,7 @@ test_that("should run", {
         Genotype = c(
             "A", "A, B",
             "C", "C, D", "C, E"),
-        Fitness = c(
+        Birth = c(
             "1.3",
             "1.4",
             "1.4",

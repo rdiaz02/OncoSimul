@@ -2,24 +2,24 @@ inittime <- Sys.time()
 cat(paste("\n Starting exercise-rfitness at", date(), "\n"))
 test_that("Expect output", {
 
-    expect_output(print(rfitness(4)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, reference = "max")), "Fitness",
+    expect_output(print(rfitness(4)), "Birth", fixed = TRUE)
+    expect_output(print(rfitness(4, reference = "max")), "Birth",
                   fixed = TRUE)
-    expect_output(print(rfitness(3, reference = c(1, 0, 1))), "Fitness",
+    expect_output(print(rfitness(3, reference = c(1, 0, 1))), "Birth",
                   fixed = TRUE)
-    expect_output(print(rfitness(5, scale = c(1, 7))), "Fitness", fixed = TRUE)
+    expect_output(print(rfitness(5, scale = c(1, 7))), "Birth", fixed = TRUE)
     expect_output(print(rfitness(5, scale = c(1, 4), wt_is_1 = "no",
-                           log = TRUE)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, reference = "random2")), "Fitness",
+                           log = TRUE)), "Birth", fixed = TRUE)
+    expect_output(print(rfitness(4, reference = "random2")), "Birth",
                   fixed = TRUE)
     expect_output(print(rfitness(4, reference = "random2",
-                                 min_accessible_genotypes = 6)), "Fitness",
+                                 min_accessible_genotypes = 6)), "Birth",
                   fixed = TRUE)
     expect_output(print(rfitness(3, reference = "random2",
-                                 min_accessible_genotypes = 6)), "Fitness",
+                                 min_accessible_genotypes = 6)), "Birth",
                   fixed = TRUE)
     expect_output(print(rfitness(3, reference = "max",
-                                 min_accessible_genotypes = 6)), "Fitness",
+                                 min_accessible_genotypes = 6)), "Birth",
                   fixed = TRUE)
 })
 
@@ -59,27 +59,27 @@ test_that("Error if wrong arguments", {
 
 test_that("Additive, Ising, Eggbox, Full exercising", {
 
-    expect_output(print(rfitness(4, model = "Ising")), "Fitness", fixed = TRUE)
-expect_output(print(rfitness(4, model = "Eggbox")), "Fitness", fixed = TRUE)
-expect_output(print(rfitness(4, model = "Full")), "Fitness", fixed = TRUE)
-expect_output(print(rfitness(4, model = "Additive")), "Fitness", fixed = TRUE)
+    expect_output(print(rfitness(4, model = "Ising")), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Eggbox")), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Full")), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Additive")), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Ising", i = 0.0002, I = 0.5,
-                             circular = TRUE)), "Fitness", fixed = TRUE)
+                             circular = TRUE)), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Ising", i = 2, I = 0,
-                             circular = TRUE)), "Fitness", fixed = TRUE)
+                             circular = TRUE)), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Ising", i = 2, I = -2,
-                             circular = TRUE)), "Fitness", fixed = TRUE)
+                             circular = TRUE)), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Ising", i = 2, I = 0.5,
-                             circular = FALSE)), "Fitness", fixed = TRUE)
+                             circular = FALSE)), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Eggbox", e = 2, E = 0)),
-              "Fitness", fixed = TRUE)
+              "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Eggbox", e = 2, E = 2.4)),
-              "Fitness", fixed = TRUE)
+              "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Eggbox", e = 0, E = 2.4)),
-              "Fitness", fixed = TRUE)
+              "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
                 K = 2, r = TRUE,
-                p = 0.2, P = 0.3, o = 0.3, O = 1)), "Fitness", fixed = TRUE)
+                p = 0.2, P = 0.3, o = 0.3, O = 1)), "Birth", fixed = TRUE)
 expect_error(rfitness(4, model = "Full", K = 5), "It makes no sense",
               fixed = TRUE)
 expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
@@ -87,15 +87,15 @@ expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
                 p = 0.2, P = 0.3, o = 0.3, O = 1,
                 s = 0.5, S=0, d = 0.1,
                 e = 1, E = 1.5,
-                H = 0.5)), "Fitness", fixed = TRUE)
+                H = 0.5)), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Additive", mu = 0, sd = 1)),
-              "Fitness", fixed = TRUE)
+              "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Additive", mu = 1, sd = 0)),
-              "Fitness", fixed = TRUE)
+              "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Additive", mu = 3, sd = 1)),
-              "Fitness", fixed = TRUE)
+              "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Additive", mu = -4, sd = 10)),
-              "Fitness", fixed = TRUE)
+              "Birth", fixed = TRUE)
 
 })
 

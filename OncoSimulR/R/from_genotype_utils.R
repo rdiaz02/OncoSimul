@@ -242,7 +242,7 @@ to_genotFitness_std <- function(x,
             ocnx <- gtools::mixedorder(cnx)
             if(!(identical(cnx[ocnx], cnx))) {
                 message("Sorting gene column names alphabetically")
-                x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
+                x <- cbind(x[, ocnx, drop = FALSE], Birth = x[, (ncx)])
             }
         }
 
