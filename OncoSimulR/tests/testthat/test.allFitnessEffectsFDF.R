@@ -5,15 +5,15 @@ test_that("Errors expectations", {
   r1 <- rfitness(2)
   r2 <- data.frame(r1)
   r3 <- r2
-  r3[, "Fitness"] <- c("1", "2", "3", "4")
+  r3[, "Birth"] <- c("1", "2", "3", "4")
   r4 <- r2
-  r4[, "Fitness"] <- c("F_", "F_1", "F_2", "F_1_2")
+  r4[, "Birth"] <- c("F_", "F_1", "F_2", "F_1_2")
   r5 <- r2
-  r5[, "Fitness"] <- c("f_", "f_1", "f_2", "f_1_2")
+  r5[, "Birth"] <- c("f_", "f_1", "f_2", "f_1_2")
   r6 <- NULL
   r7 <- data.frame()
   r8 <- r2
-  r8[, "Fitness"] <- c("n_", "n_1", "n_2", "n_1_2")
+  r8[, "Birth"] <- c("n_", "n_1", "n_2", "n_1_2")
   
   expect_error(allFitnessEffects(genotFitness = r1, 
                                  frequencyDependentBirth = TRUE, 
@@ -67,7 +67,7 @@ test_that("testing output", {
   
   r1 <- data.frame(rfitness(3))
   
-  r1[, "Fitness"] <- c("max(1, f_)",
+  r1[, "Birth"] <- c("max(1, f_)",
                        "max(1, f_1)", 
                        "max(1, f_2)", 
                        "max(1, f_3)",
@@ -80,32 +80,32 @@ test_that("testing output", {
   
   r3 <- data.frame(A = c(0, 1, 0, 1),
                    B = c(0, 0, 1, 1),
-                   Fitness = c("max(3, 2*f_)",
+                   Birth = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_1))",
                                "max(2, 3*(f_ + f_2))",
                                "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"))
   
   r4 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
-                   Fitness = c("max(3, 2*f_)",
+                   Birth = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_1))",
                                "max(2, 3*(f_ + f_2))",
                                "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"))
   
   r5 <- data.frame(A = c(0, 1, 0, 1),
                    B = c(0, 0, 1, 1),
-                   Fitness = c("max(3, 2*f_)",
+                   Birth = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_A))",
                                "max(2, 3*(f_ + f_B))",
                                "max(2, 5*f_ - 0.5*( f_A + f_B) + 15*f_A_B)"))
   
   r6 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
-                   Fitness = c("max(3, 2*f_)",
+                   Birth = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_A))",
                                "max(2, 3*(f_ + f_B))",
                                "max(2, 5*f_ - 0.5*( f_A + f_B) + 15*f_A_B)"))
   
   r7 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
-                   Fitness = c("max(3, 2*n_)",
+                   Birth = c("max(3, 2*n_)",
                                "max(1.5, 3*(n_ + n_A))",
                                "max(2, 3*(n_ + n_B))",
                                "max(2, 5*n_ - 0.5*( n_A + n_B) + 15*n_A_B)"))
@@ -139,11 +139,11 @@ test_that("testing output", {
   
   expect_true(afe2$gMOneToOne)
   
-  lapply(afe1[c(10:13, 21)],  function(x){
+  lapply(afe1[c(10:13, 22)],  function(x){
     expect_null(x)
   })
   
-  lapply(afe2[c(10:13, 21)],  function(x){
+  lapply(afe2[c(10:13, 22)],  function(x){
     expect_null(x)
   })
   
@@ -151,11 +151,11 @@ test_that("testing output", {
   
   expect_equivalent(afe2$geneToModule, "Root")
   
-  expect_equivalent(afe1$full_FDF_spec[, "Genotype_as_fvars"],
+  expect_equivalent(afe1$full_FDF_spec[, "Genotype_as_fvarsb"],
                    OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 1, 
                                             frequencyType = "rel"))
   
-  expect_equivalent(afe2$full_FDF_spec[, "Genotype_as_fvars"],
+  expect_equivalent(afe2$full_FDF_spec[, "Genotype_as_fvarsb"],
                    OncoSimulR:::fVariablesN(ncol(afe2$fitnessLandscape) - 1, 
                                             frequencyType = "abs"))
   
@@ -198,31 +198,31 @@ test_that("testing output", {
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)], 
+                                     frequencyType = "rel")[-c(14, 21)], 
                    allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)], 
+                                     frequencyType = "rel")[-c(14, 21)], 
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)], 
+                                     frequencyType = "rel")[-c(14, 21)], 
                    allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)], 
+                                     frequencyType = "rel")[-c(14, 21)], 
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentBirth = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentBirth = TRUE, 
@@ -246,7 +246,7 @@ test_that("Fails if a single gene", {
     
     std_df2 <- function(cS, cR, gt = c("WT", "R")) {
         data.frame(Genotype = gt,
-                   Fitness = c(paste0("if (T > 20) ", drug, "*(", S_fitness, ")",";
+                   Birth = c(paste0("if (T > 20) ", drug, "*(", S_fitness, ")",";
                                 else ", S_fitness, ";"),
                                R_fitness),
                    stringsAsFactors = FALSE)
@@ -262,7 +262,7 @@ test_that("Fails if a single gene", {
 test_that("Works with silly workaround for one gene and a dummy gene" ,{
     ## Yes, you must input a formula or expression of some n or f
     gg <- data.frame(Genotype = c("A", "B"),
-                     Fitness  = c("1.2", "0 * n_B"))
+                     Birth  = c("1.2", "0 * n_B"))
     
     std_eff2 <- allFitnessEffects(genotFitness = gg,
                                   frequencyDependentBirth = TRUE)

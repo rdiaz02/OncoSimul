@@ -73,26 +73,26 @@ test_that("testing output when frequencyType = 'auto'", {
                    allFitnessEffects(genotFitness = r4,
                                      frequencyDependentBirth = TRUE))
 
-  ## 20 is where we are storing full_FDF_spec for now. Very brittle
+  ## 21 is where we are storing full_FDF_spec for now. Very brittle
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)],
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)],
                    allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)])
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)],
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)],
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)])
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)],
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)],
                    allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)])
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)],
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)],
                    allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentBirth = TRUE)[-c(14, 19)])
+                                     frequencyDependentBirth = TRUE)[-c(14, 21)])
   
   expect_identical(allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentBirth = TRUE),
