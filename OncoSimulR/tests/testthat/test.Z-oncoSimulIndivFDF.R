@@ -6,7 +6,7 @@ test_that("testing output classes", {
   
   r <- data.frame(rfitness(2))
   
-  r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
+  r[, "Birth"] <- c("f_ - f_1 - f_2 - f_1_2", 
                       "max(100*f_1, 10)", 
                       "max(100*f_2, 10)", 
                       "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
@@ -48,13 +48,13 @@ test_that("testing performance", {
   
   r <- data.frame(rfitness(2))
   
-  r[, "Fitness"] <- c("10*f_", 
+  r[, "Birth"] <- c("10*f_", 
                       "10*f_1", 
                       "50*f_2", 
                       "200*(f_1 + f_2) + 50*f_1_2")
   ra <- r
   
-  ra[, "Fitness"] <- c("10*n_/N", 
+  ra[, "Birth"] <- c("10*n_/N", 
                       "10*n_1/N", 
                       "50*n_2/N", 
                       "200*(n_1/N + n_2/N) + 50*n_1_2/N")
@@ -125,7 +125,7 @@ test_that("testing performance", {
 test_that("testing Bozic failure", {
   r <- data.frame(rfitness(2))
   
-  r[, "Fitness"] <- c("10*f_", 
+  r[, "Birth"] <- c("10*f_", 
                       "10*f_1", 
                       "50*f_2", 
                       "200*(f_1 + f_2) + 50*f_1_2")

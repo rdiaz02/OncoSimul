@@ -5,7 +5,7 @@ cat(paste("\n Starting test.Z-mutatorFDF at", date(), "\n"))
 test_that("Mutator genes missing from fitness", {
   
   r1 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
-                   Fitness = c("max(3, 2*f_)",
+                   Birth = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_1))",
                                "max(1.5, 3*(f_ + f_2))",
                                "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"),
@@ -31,7 +31,7 @@ test_that("fit. mut. eff. values, long ex",  {
     }
     
   r1 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
-                   Fitness = c("max(3, 2*f_)",
+                   Birth = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_1))",
                                "max(1.5, 3*(f_ + f_2))",
                                "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"),

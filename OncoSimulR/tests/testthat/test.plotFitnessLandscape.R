@@ -32,7 +32,7 @@ test_that("Exercise plotting and dealing with different matrix input", {
         evalAllGenotypes(allFitnessEffects(genotFitness = m88),
                                       addwt = TRUE)),
                      data.frame(Genotype = c("WT", "A", "B", "A, B"),
-                                Fitness = c(1, 3, 2, 5.5),
+                                Birth = c(1, 3, 2, 5.5),
                                 stringsAsFactors = FALSE))
     )
     expect_warning(plotFitnessLandscape(m88),

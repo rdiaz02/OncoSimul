@@ -981,19 +981,19 @@ femuv <- allFitnessEffects(noIntGenes = ni)
 oncoSimulIndiv(femuv, mu = muv)
 }
 
-######### Frequency dependent fitness examples
+######### Frequency dependent birth examples
 
 ## An example with cooperation. Presence of WT favours all clones
 ## and all clones have a positive effect on themselves
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
-                      Fitness = c("3 + 5*f_",
+                      Birth = c("3 + 5*f_",
                                   "3 + 5*(f_ + f_A)",
                                   "3 + 5*(f_ + f_B)",
                                   "5 + 6*(f_ + f_A_B)"))
 
 afe <- allFitnessEffects(genotFitness = genofit,
-                         frequencyDependentFitness = TRUE)
+                         frequencyDependentBirth = TRUE)
 
 ## Use gene-specific mutation rates and start the simulation from
 ## 5000 WT and 1000 A mutants.
@@ -1038,13 +1038,13 @@ sp
 
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
-                      Fitness = c("3 + 5*f_",
+                      Birth = c("3 + 5*f_",
                                   "3 + 5*(f_ + f_1 - f_2)",
                                   "3 + 5*(f_ + f_2 - f_1)",
                                   "5 + 6*(f_1 + f_2 + f_1_2)"))
 
 afe <- allFitnessEffects(genotFitness = genofit,
-                         frequencyDependentFitness = TRUE, 
+                         frequencyDependentBirth = TRUE, 
                          frequencyType = "rel")
 
 osi <- oncoSimulIndiv(afe,

@@ -1722,7 +1722,7 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
       stop("If death is specified in the fitness effects, use Arb model")
     }
     
-    if(model == "Arb" && !fitnessEffectsp$deathSpec) {
+    if(model == "Arb" && !fitnessEffects$deathSpec) {
       stop("Specify death to use arbitrary model.")
     }
 

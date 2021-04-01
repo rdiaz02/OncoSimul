@@ -322,16 +322,16 @@ try(evalGenotype("a1, c2", fm2, verbose = TRUE))
 ## Not what you want either
 try(evalGenotypeMut("a1, c2", fe2, verbose = TRUE))
 
-## Frequency dependent fitness example
+## Frequency dependent birth example
 r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
-                Fitness = c("1 + 1.5*f_",
+                Birth = c("1 + 1.5*f_",
                             "5 + 3*(f_A + f_B + f_A_B)",
                             "5 + 3*(f_A + f_B + f_A_B)",
                             "7 + 5*(f_A + f_B + f_A_B)"), 
                 stringsAsFactors = FALSE)
 
 afe <- allFitnessEffects(genotFitness = r, 
-                         frequencyDependentFitness = TRUE, 
+                         frequencyDependentBirth = TRUE, 
                          frequencyType = "rel")
                          
 
