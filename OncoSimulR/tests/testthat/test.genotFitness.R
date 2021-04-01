@@ -44,7 +44,7 @@ test_that("Dividing fitness by wt and missing genot is 1", {
     m7 <- cbind(c(1, 1, 0), c(1, 0, 0), c(2, 3, 5))
     ## No longer that message
     expect_warning(fem7 <- allFitnessEffects(genotFitness = m7),
-                    "Fitness of wildtype != 1. Dividing all fitnesses by fitness of wildtype.",
+                    "Birth of wildtype != 1. Dividing all births by birth of wildtype.",
                     fixed = TRUE)
     ## expect_equivalent(evalAllGenotypes(fem7, order = FALSE, addwt = TRUE)[, 2],
     ##                   c(5, 3, 0, 2))
@@ -58,7 +58,7 @@ test_that("The WT is added if absent, in two cases", {
                    "No wildtype in the fitness landscape",
                    fixed = TRUE)
     ## the WT was added to the fitness landscape
-    expect_identical(fem7$fitnessLandscape[, "Fitness"],
+    expect_identical(fem7$fitnessLandscape[, "Birth"],
                      c(1, 2, 3))
     ag <- evalAllGenotypes(fem7, order = FALSE)
     ## internal call
@@ -111,7 +111,7 @@ test_that("Missing genotypes defaults: WT 1, others 0", {
     exp_m8 <- data.frame(
         Genotype = c("WT", "A", "B", "C", "A, B", "A, C",
                      "B, C", "A, B, C"),
-        Fitness = c(1, 0, 2, rep(0, 4), 3),
+        Birth = c(1, 0, 2, rep(0, 4), 3),
         stringsAsFactors = FALSE)
     
     suppressWarnings(o_m8 <- evalAllGenotypes(allFitnessEffects(genotFitness = m8),
@@ -133,7 +133,7 @@ test_that("Missing genotypes defaults: WT 1, others 0", {
                      "B, C", "B, D", "C, D",
                      "A, B, C", "A, B, D", "A, C, D", "B, C, D",
                      "A, B, C, D"),
-        Fitness = c(1, rep(0, 4),
+        Birth = c(1, rep(0, 4),
                     4, 1.5, 0, 2,
                     rep(0, 7)),
         stringsAsFactors = FALSE)

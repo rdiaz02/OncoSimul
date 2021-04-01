@@ -687,9 +687,9 @@ test_that("initMutant works if == number of genes", {
 })
 
 
-test_that("initMutant with freq-dep-fitness"  , {
+test_that("initMutant with freq-dep-birth"  , {
     r <- data.frame(rfitness(2))
-    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
+    r[, "Birth"] <- c("f_ - f_1 - f_2 - f_1_2", 
                         "max(100*f_1, 10)", 
                         "max(100*f_2, 10)", 
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
@@ -750,7 +750,7 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
 
     set.seed(1)
     r <- data.frame(rfitness(2))
-    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
+    r[, "Birth"] <- c("f_ - f_1 - f_2 - f_1_2", 
                         "max(100*f_1, 10)", 
                         "max(100*f_2, 10)", 
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
@@ -952,7 +952,7 @@ test_that("multiple init mutants: different species", {
                                mu = c(A = 1e-10, C = 1e-10,
                                       B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
                                onlyCancer = FALSE)
-        not_possible <- c("", ag$Genotype[ag$Fitness == 0])
+        not_possible <- c("", ag$Genotype[ag$Birth == 0])
         expect_false(any(not_possible %in%  out1$GenotypesLabels))
     }
 
@@ -984,7 +984,7 @@ test_that("multiple init mutants: different species", {
                    mu = c(A = 1e-10, C = 1e-10,
                           B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
                    onlyCancer = FALSE)
-        not_possible <- c("", ag$Genotype[ag$Fitness == 0])
+        not_possible <- c("", ag$Genotype[ag$Birth == 0])
         expect_false(any(not_possible %in%  out1$GenotypesLabels))
     }
 })
@@ -1088,14 +1088,14 @@ test_that("multiple init mutants: different species, FDF", {
 
 
 
-test_that("multiple init mutants: different species, FDF, check fitness", {
+test_that("multiple init mutants: different species, FDB, check birth", {
     mspecF <- data.frame(
         Genotype = c("A",
                      "A, a1", "A, a2", "A, a1, a2",
                      "B",
                      "B, b1", "B, b2", "B, b3",
                      "B, b1, b2", "B, b1, b3", "B, b1, b2, b3"),
-        Fitness = c("1 + f_A_a1",
+        Birth = c("1 + f_A_a1",
                     "1 + f_A_a2",
                     "1 + f_A_a1_a2",
                     "1 + f_B",
@@ -1117,23 +1117,23 @@ test_that("multiple init mutants: different species, FDF, check fitness", {
     suppressWarnings(afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11))
 
     ## Show only viable ones
-    afmspecF[afmspecF$Fitness >= 1, ]
+    afmspecF[afmspecF$Birth >= 1, ]
 
     ## Expected values
     exv <- 1 + c(3, 5, 4, 8, 6, 7, 9, 2, 10, 11, 1)/sum(1:11)
-    stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Fitness >= 1, ]$Fitness)))
+    stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Birth >= 1, ]$Birth)))
 
 
 })
 
 
-test_that("multiple init mutants: different species, FDF, exprtk crash if not in fitness table", {
+test_that("multiple init mutants: different species, FDF, exprtk crash if not in birth table", {
     ## Crash, as f_2 is not present
     gffd <- data.frame(
         Genotype = c("WT",
                      "A", "A, B",
                      "C", "C, D", "C, E"),
-        Fitness = c("0",
+        Birth = c("0",
                     "1.3",
                     "1.4",
                     "1.4",

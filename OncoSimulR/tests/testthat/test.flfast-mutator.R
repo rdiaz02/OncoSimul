@@ -457,9 +457,9 @@ test_that("Mutator, several modules differences, fitness eval", {
                                     addwt = TRUE)
     e2 <- evalAllGenotypesFitAndMut(fe2fl(f1), mut2, order = FALSE,
                                     addwt = TRUE)
-    expect_identical(e1$Fitness, rep(1, 64))
+    expect_identical(e1$Birth, rep(1, 64))
     expect_identical(e1$MutatorFactor, c(1, rep(5, 63)))
-    expect_identical(e2$Fitness, rep(1, 64))
+    expect_identical(e2$Birth, rep(1, 64))
     expect_identical(
         e2$MutatorFactor,
                     c(1, rep(5, 7),
