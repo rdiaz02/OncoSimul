@@ -917,6 +917,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	   dummyMutationRate, K, death, currentTime, keepEvery, mutationPropGrowth,
 	   typeModel,  verbosity);
   
+  
   // For McFL error. 
   double totPopSize_previous = totPopSize;
   double DA_previous = log1p(totPopSize_previous/K);
@@ -1441,9 +1442,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       Rcpp::Rcout << "\n Hitted maxtries. Exiting.";
       runAgain = false;
       if(errorHitMaxTries) {
-	Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
-	return
-	  List::create(Named("HittedWallTime") = false,
+        Rcpp::Rcout << "\n Hitting max tries is regarded as an error. \n";
+        return List::create(Named("HittedWallTime") = false,
 		       Named("HittedMaxTries") = true,
 		       Named("other") =
 		       List::create(Named("UnrecoverExcept") = false));
@@ -1527,15 +1527,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
     } catch (const std::exception &e) {
       Rcpp::Rcout << "\n Unrecoverable exception: " << e.what()
 		  << ". Aborting. \n";
-      return
-	List::create(Named("other") =
+      return List::create(Named("other") =
 		     List::create(Named("UnrecoverExcept") = true,
 				  Named("ExceptionMessage") = e.what()));
     } catch (...) {
       Rcpp::Rcout << "\n Unknown unrecoverable exception. Aborting."
 		  << "(User interrupts also generate this).\n";
-      return
-	List::create(Named("other") =
+      return List::create(Named("other") =
 		     List::create(Named("UnrecoverExcept") = true,
 				  Named("ExceptionMessage") = "Unknown exception"));
     }
@@ -1543,23 +1541,19 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       Rcpp::Rcout << "\n Hitted wall time. Exiting.";
       runAgain = false;
       if(errorHitWallTime) {
-	Rcpp::Rcout << "\n Hitting wall time is regarded as an error. \n";
-	return
-	  List::create(Named("HittedWallTime") = true,
-		       Named("HittedMaxTries") = false, // yes, for
-							// coherent return
-							// objects
-		       Named("other") =
-		       List::create(Named("UnrecoverExcept") = false));
+	      Rcpp::Rcout << "\n Hitting wall time is regarded as an error. \n";
+	      return List::create(Named("HittedWallTime") = true,
+		       Named("HittedMaxTries") = false, // yes, for coherent return objects
+		       Named("other") = List::create(Named("UnrecoverExcept") = false));
       }
     } else if(forceRerun) {
       runAgain = true;
       forceRerun = false;
     } else {
       if(onlyCancer) {
-	runAgain = !reachDetection;
+	      runAgain = !reachDetection;
       } else {
-	runAgain = false;
+	      runAgain = false;
       }
     }
     DEBUGrrr;

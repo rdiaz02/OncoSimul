@@ -519,7 +519,11 @@ oncoSimulIndiv <- function(fp,
     
     if(fp$deathSpec) {
         if (typeFitness != "arbitrary") {
-            stop("If death is specified in the fitness effects, use Arb model")
+            stop("If death is specified in the fitness effects, use Arb model.")
+        }
+    } else {
+        if (typeFitness == "arbitrary") {
+            stop("To use Arb model specify both birth and death in fitness effects.")
         }
     }
     

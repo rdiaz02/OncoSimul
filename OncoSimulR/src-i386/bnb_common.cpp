@@ -1006,13 +1006,12 @@ void initPops(
     } else if (typeModel == TypeModel::arbitrary) {
           std::vector<double> s = evalGenotypeFitness(Genotypes[m],
 				      fitnessEffects, Genotypes, popParams, currentTime);
+          Rcpp::Rcout << std::endl;
 
           // TODO: Preguntar
-          if(s.size()) {
-            std::vector<double> birth(s.begin(), s.begin()+1);
-            std::vector<double> death(s.begin()+1, s.end());
-            popParams[m].birth = prodFitness(birth);
-            popParams[m].death = prodFitness(death);
+          if(s.size() > 1) {
+            popParams[m].birth = s[0]+1;
+            popParams[m].death = s[1]+1;
           } else {
             popParams[m].birth = prodFitness(s);
             popParams[m].death = prodFitness(s);

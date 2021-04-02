@@ -1314,6 +1314,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   if( ((ge.orderEff.size() + ge.epistRtEff.size() +
 	ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentBirth &&
   !F.frequencyDependentDeath ) {
+    s.push_back(0.0);
     return s; //return 0.0 explicitly?? FIXME
   }
 
