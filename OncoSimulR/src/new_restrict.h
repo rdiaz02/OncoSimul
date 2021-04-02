@@ -188,9 +188,6 @@ struct Genotype {
 };
 
 
-
-
-
 inline Genotype wtGenotype() {
   // Not needed but to make it explicit
   Genotype g;
@@ -310,5 +307,9 @@ void addToPOM(POM& pom,
 
 void addToPOM(POM& pom,
 	      const std::string string);
+
+std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams);
 
 #endif

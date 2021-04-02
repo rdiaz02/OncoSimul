@@ -30,6 +30,10 @@ accessibleGenotypes_former <- function(y, f, numMut, th) {
     .Call('OncoSimulR_accessibleGenotypes_former', PACKAGE = 'OncoSimulR', y, f, numMut, th)
 }
 
+# wrap_rmvhyperconst <- function(nn, n, k) {
+#    .Call('OncoSimulR_wrap_rmvhyperconst', PACKAGE = 'OncoSimulR', nn, n, k)
+#}
+
 ## readFitnessEffects <- function(rFE, echo) {
 ##     invisible(.Call('OncoSimulR_readFitnessEffects', PACKAGE = 'OncoSimulR', rFE, echo))
 ## }

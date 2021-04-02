@@ -21,6 +21,7 @@
 #include "common_classes.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
+#include "intervention.h"
 #include <cfloat>
 #include <limits>
 #include <Rcpp.h>
@@ -350,15 +351,15 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     // fixated plays no role here, and cannot be passed from R
     if(extraTime > 0) {
       if(done_at <  0) {
-	if( (lastMaxDr >= detectionDrivers) &&
-	    (popSizeOverDDr >= minDetectDrvCloneSz) &&
-	    checkSizePNow  &&
-	    detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
-	  done_at = currentTime + extraTime;
-	}
+        if( (lastMaxDr >= detectionDrivers) &&
+            (popSizeOverDDr >= minDetectDrvCloneSz) &&
+            checkSizePNow  &&
+            detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
+          done_at = currentTime + extraTime;
+        }
       } else if (currentTime >= done_at) {
-  	simulsDone = true;
-  	reachDetection = true;
+  	    simulsDone = true;
+  	    reachDetection = true;
       }
     } else if( (lastMaxDr >= detectionDrivers) &&
 	       (popSizeOverDDr >= minDetectDrvCloneSz) &&
@@ -742,10 +743,77 @@ void addToPOM(POM& pom,
   pom.genotypesString.push_back(string);
 }
 
-
-
-
-
+///////////////////////////////////////////////////////////////////////////////////////////
+// Function name: nr_innerBNB
+// Description: This function is an auxiliar function for nr_BNB_Algo5, it is in charge of 
+// updating the birth and death rates of the population and the genotypes in it when a mutation
+// occurs.
+// Parameters: 
+//// fitnessEffectsAll& fitnessEffects: structure that stores all the fitness effects of the population
+//// std::vector<double>& initSize: initial size of the population
+//// double& K: parametro usado para operaciones de McFarland (NOT SURE)
+//// TypeModel typeModel: Models available to simulate (exp, mcfarland, bozic)
+//// int& mutationPropGrowth: parameter that is involved in represented the growth and the propagation
+////                          of a mutation in a population (NOT SURE).
+//// std::vector<double>& mu: parameter that establishes the mutation ratio for a specific species
+//// double& death: tells the probability of death from an specific species or genotype
+//// double& keepEvery: 
+//// double& sampleEvery: the interval of time when samples are gonna be needed, usually specified
+////                      by the user.
+//// std::vector<std::vector<int> >& initMutant: (NOT SURE) maybe a vector that stores some kind of information
+////                                             about how mutations are going to develope in the simulations
+//// time_t& start_time: time where the simulation of the mutation starts
+//// double& maxWallTime: (NOT SURE seems lika a kind of margin time for the algorithm to operate)
+//// double& finalTime: time where the simulation of the mutation ends
+//// double& detectionSize: establishes the size of when an specific genotype of the population
+////                        has grown too much and needs to be detected (like it was a cancer)-
+//// int& detectionDrivers: (NOT SURE) Specifies how many driver mutations are going to be in the 
+////                        simulation to detect
+//// double& minDetectDrvCloneSz: (NOT SURE) the minimun number of clones produced by driver mutations in the simulation
+//// double& extraTime: (NOT SURE)
+//// int& verbosity: if we want the function to print as much info as needed (want it to be "verbose")
+//// double& totPopSize: the total size of the population.
+//// double& em1: needed for computing mcfarland error
+//// double& em1sc: needed for computing mcfarland error
+//// double& ratioForce: (NOT SURE)
+//// double& currentTime: current time in the simulation
+//// int& speciesFS: (NOT SURE)
+//// int& outNS_i:(NOT SURE) some counter related with something called NS (NOT SURE either)
+//// int& iter: current iteration in the algorithm, BNB has a limit on how many iterations
+////            will ber done.
+//// std::vector<Genotype>& genot_out: the output state of the genotypes once the code has been executed
+//// std::vector<double>& popSizes_out: size of the population once the simulation has been done
+//// std::vector<int>& index_out:
+//// std::vector<double>& time_out: time where the periodic call to nr_innerBNB has stopped
+//// std::vector<double>& sampleTotPopSize: variable that stores the total population size of the sample
+////                                        that has been extracted
+//// std::vector<double>& sampleLargestPopSize: variable that stores the largest population size of all samples
+//// std::vector<int>& sampleMaxNDr: the largest number of drivers in any genotype or clone at each  time sample
+//// std::vector<int>& sampleNDrLargestPop: Number of drivers in the clone with largest size (at each time sample)
+//// bool& reachDetection: some kind of flag that allows the BNB_slgo to iterate several times
+//// std::mt19937& ran_gen: (NOT SURE) something related with generate random numbers
+//// double& runningWallTime: (NOT SURE)
+//// bool& hittedWallTime: (NOT SURE)
+//// const std::map<int, std::string>& intName: map from name of the genotype to its id (int)
+//// const fitness_as_genes& genesInFitness:
+//// PhylogName& phylog: (NOT SURE) some kind of Framework used to create graphs or some sort of that thing
+//// bool keepPhylog: (NOT SURE) keep the object generate by Phylog
+//// const fitnessEffectsAll& muEF: structure that stores all the effects that can be applied to the fitness 
+////                                of some genotype
+//// const std::vector<int>& full2mutator:(NOT SURE)
+//// const double& cPDetect: (NOT SURE)
+//// const double& PDBaseline: (NOT SURE)
+//// const double& checkSizePEvery: parameter that tells the periocity of the size of the population
+//// const bool& AND_DrvProbExit: (NOT SURE)
+//// const std::vector< std::vector<int> >& fixation_l: (NOT SURE)
+//// const double& fixation_tolerance: (NOT SURE)
+//// const int& min_successive_fixation: (NOT SURE)
+//// const double& fixation_min_size: (NOT SURE)
+//// int& ti_dbl_min:(NOT SURE)
+//// int& ti_e3:(NOT SURE)
+//// std::map<std::string, std::string>& lod: lines of descent, basically a graph that represents 
+////                                          how an species evolves through the generations
+//// POM& pom: path of the minimum, basically the gentotype that had the better fitness
 static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			 const std::vector<double>& initSize,
 			 const double& K,
@@ -923,7 +991,10 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   timeNextPopSample = currentTime + sampleEvery;
 
   while(!simulsDone) {
+    // (NOT SURE) why this is needed
     runningWallTime = difftime(time(NULL), start_time);
+
+    //stop condition for the loop
     if( runningWallTime > maxWallTime ) {
       hittedWallTime = true;
       forceSample = true;
@@ -954,59 +1025,59 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       // This block is kept outside of initPops as this is very
       // specific to Mather's BNB algorithm
       for(size_t m = 0; m != popParams.size(); ++m ) {
-	// Do I need this pv? Probably not if I called mapTimes_updateP
-	// differently (timeLastUpdate < -1) as .w. it removes the entry.
-	// FIXMEmaybe: change the call?
-	popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
-	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[m],
-					   currentTime,
-					   tSample,
-					   ti_dbl_min, ti_e3);
-	mapTimes_updateP(mapTimes, popParams, m, tmpdouble1);
-	popParams[m].timeLastUpdate = currentTime;
+      	// Do I need this pv? Probably not if I called mapTimes_updateP
+      	// differently (timeLastUpdate < -1) as .w. it removes the entry.
+      	// FIXMEmaybe: change the call?
+      	popParams[m].pv = mapTimes.insert(std::make_pair(-999, m));
+      	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[m],
+      					   currentTime,
+      					   tSample,
+      					   ti_dbl_min, ti_e3);
+      	mapTimes_updateP(mapTimes, popParams, m, tmpdouble1);
+      	popParams[m].timeLastUpdate = currentTime;
       }
     } else { // any other iter
       if(to_update == 1) {
-	// we did not sample or mutate to a different species in previous period
-	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[u_1],
-					   currentTime,
-					   tSample,
-					   ti_dbl_min, ti_e3);
-	mapTimes_updateP(mapTimes, popParams, u_1, tmpdouble1);
-	popParams[u_1].timeLastUpdate = currentTime;
-
-	DEBUG_detect_duplicates(tmpdouble1, u_1);
-	DEBUG_52(tmpdouble1, u_1, "update one");
+      	// we did not sample or mutate to a different species in previous period
+      	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[u_1],
+      					   currentTime,
+      					   tSample,
+      					   ti_dbl_min, ti_e3);
+      	mapTimes_updateP(mapTimes, popParams, u_1, tmpdouble1);
+      	popParams[u_1].timeLastUpdate = currentTime;
+      
+      	DEBUG_detect_duplicates(tmpdouble1, u_1);
+      	DEBUG_52(tmpdouble1, u_1, "update one");
       } else if(to_update == 2) {
-	// we did not sample in previous period.
-	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[u_1],
-					   currentTime,
-					   tSample, ti_dbl_min, ti_e3);
-	mapTimes_updateP(mapTimes, popParams, u_1, tmpdouble1);
-	tmpdouble2 = ti_nextTime_tmax_2_st(popParams[u_2],
-					   currentTime,
-					   tSample, ti_dbl_min, ti_e3);
-	mapTimes_updateP(mapTimes, popParams, u_2, tmpdouble2);
-	popParams[u_1].timeLastUpdate = currentTime;
-	popParams[u_2].timeLastUpdate = currentTime;
-
-	DEBUG_detect_duplicates(tmpdouble1, u_1);
-	DEBUG_detect_duplicates(tmpdouble2, u_2);
-
-	DEBUG_52(tmpdouble2, u_2, "update two, u_1");
-	DEBUG_52(tmpdouble2, u_2, "update two, u_2");
+      	// we did not sample in previous period.
+      	tmpdouble1 = ti_nextTime_tmax_2_st(popParams[u_1],
+      					   currentTime,
+      					   tSample, ti_dbl_min, ti_e3);
+      	mapTimes_updateP(mapTimes, popParams, u_1, tmpdouble1);
+      	tmpdouble2 = ti_nextTime_tmax_2_st(popParams[u_2],
+      					   currentTime,
+      					   tSample, ti_dbl_min, ti_e3);
+      	mapTimes_updateP(mapTimes, popParams, u_2, tmpdouble2);
+      	popParams[u_1].timeLastUpdate = currentTime;
+      	popParams[u_2].timeLastUpdate = currentTime;
+      
+      	DEBUG_detect_duplicates(tmpdouble1, u_1);
+      	DEBUG_detect_duplicates(tmpdouble2, u_2);
+      
+      	DEBUG_52(tmpdouble2, u_2, "update two, u_1");
+      	DEBUG_52(tmpdouble2, u_2, "update two, u_2");
 	
       } else { // we sampled, so update all: i.e. to_update == 3
-	for(size_t i = 0; i < popParams.size(); i++) {
-	  tmpdouble1 = ti_nextTime_tmax_2_st(popParams[i],
-					     currentTime,
-					     tSample, ti_dbl_min, ti_e3);
-	  mapTimes_updateP(mapTimes, popParams, i, tmpdouble1);
-	  popParams[i].timeLastUpdate = currentTime;
-
-	  DEBUG_detect_duplicates(tmpdouble1, i);
-	  DEBUG_52(tmpdouble1, i, "ti_nextTime, update all");
-	}
+      	for(size_t i = 0; i < popParams.size(); i++) {
+      	  tmpdouble1 = ti_nextTime_tmax_2_st(popParams[i],
+      					     currentTime,
+      					     tSample, ti_dbl_min, ti_e3);
+      	  mapTimes_updateP(mapTimes, popParams, i, tmpdouble1);
+      	  popParams[i].timeLastUpdate = currentTime;
+      
+      	  DEBUG_detect_duplicates(tmpdouble1, i);
+      	  DEBUG_52(tmpdouble1, i, "ti_nextTime, update all");
+      	}
       }
     }
     if(forceSample) {
@@ -1033,15 +1104,15 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       currentTime = minNextMutationTime;
       // Step 5.4. in algorithm
       mutantTimeSinceLastUpdate =
-	currentTime -	popParams[nextMutant].timeLastUpdate;
+	    currentTime -	popParams[nextMutant].timeLastUpdate;
 
       popParams[nextMutant].popSize = Algo3_st(popParams[nextMutant],
 					       mutantTimeSinceLastUpdate);
 
       if(popParams[nextMutant].popSize > (ratioForce * detectionSize)) {
-	forceSample = true;
-	ratioForce = std::min(1.0, 2 * ratioForce);
-	DEBUGfs2;
+        forceSample = true;
+        ratioForce = std::min(1.0, 2 * ratioForce);
+        DEBUGfs2;
       }
       // Check also for numSpecies, and force sampling if needed
       // This is very different from the other algos, as we do not yet
@@ -1050,8 +1121,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       // not happen in regular usage.
       if(! (numSpecies % speciesFS )) {
       	forceSample = true;
-	speciesFS *= 2;
-	DEBUGfsnl;
+	      speciesFS *= 2;
+	      DEBUGfsnl;
       }
 
       if(popParams[nextMutant].numMutablePos != 0) {
@@ -1229,6 +1300,13 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 				typeModel, totPopSize, K);
 
       if(simulsDone) break; //skip last updateRates
+      
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      // static void execute_interventions(Rcpp:List interventions, int &totPopSize, double &currentTime, fitnessEffectsAll& fitnessEffects, const Genotype& ge, const std::vector<Genotype>& Genotypes);
+
 
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,
 			    K, totPopSize, currentTime, typeModel);
@@ -1549,9 +1627,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
       forceRerun = false;
     } else {
       if(onlyCancer) {
-	runAgain = !reachDetection;
+	      runAgain = !reachDetection;
       } else {
-	runAgain = false;
+	      runAgain = false;
       }
     }
     DEBUG_rrr;
