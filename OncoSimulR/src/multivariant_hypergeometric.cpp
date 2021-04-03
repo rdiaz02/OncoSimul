@@ -17,12 +17,6 @@ using std::ceil;
 using Rcpp::NumericVector;
 using Rcpp::NumericMatrix;
 
-
-
-static const double SQRT_2_PI    = 2.506628274631000241612;  // sqrt(2*pi)
-static const double PHI_0        = 0.3989422804014327028632; // dnorm(0)
-static const double LOG_2F       = 0.6931471805599452862268; // log(2)
-
 static const double MIN_DIFF_EPS = 1e-8;
 
 // MACROS
