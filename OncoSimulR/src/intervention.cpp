@@ -1,7 +1,7 @@
 #include "intervention.h"
 
 bool isValidEquation(std::string equation);
-bool parseWhatHappens(InterventionsInfo *iif, Intervention intervention, double totPopSize, double currentTime);
+bool parseWhatHappens(InterventionsInfo *iif, Intervention intervention, fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime);
 
 InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i){
     //TODO: controlar que no exista ya una intervención con las mismas caracteristicas
@@ -86,7 +86,7 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i){
 }
 
 //TODO: aclarar los argumentos que se van a pasar a la función, creo que faltan...
-bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &currentTime, fitnessEffectsAll& fitnessEffects, const Genotype& ge, const std::vector<Genotype>& Genotypes, const std::vector<spParamsP>& popParams){
+bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &currentTime, fitnessEffectsAll& fitnessEffects, std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams){
     //create the structure with all the information of the interventions
     InterventionsInfo iif = createInterventionsInfo(interventions, fitnessEffects, popParams, Genotypes);
 
@@ -112,7 +112,7 @@ bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &cu
     expression_t expression;
     expression.register_symbol_table(symbol_table);
 
-    //iteramos sobre las intervenciones
+    //we iterate over the user-specified interventions 
     for(auto& intervention: iif.interventions){
         parser_t parser_trigger;
         //if parser fails to compile, throws exception
@@ -156,7 +156,7 @@ bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &cu
                         }
                         std::string errorMessage = "The expression was imposible to parse.";
                         throw std::invalid_argument(errorMessage);
-                    } else if(!parseWhatHappens(&iif, intervention, N, T)){
+                    } else if(!parseWhatHappens(&iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
                         printf("Something went wrong.\n");
                         return false;
                     }
@@ -183,7 +183,7 @@ bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &cu
                         }
                         std::string errorMessage = "The expression was imposible to parse.";
                         throw std::invalid_argument(errorMessage);
-                        } else if(!parseWhatHappens(&iif, intervention, N, T)){
+                        } else if(!parseWhatHappens(&iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
                             printf("Something went wrong.\n");
                             return false;
                         }
@@ -208,7 +208,7 @@ bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &cu
                         }
                         std::string errorMessage = "The expression was imposible to parse.";
                         throw std::invalid_argument(errorMessage);
-                    } else if(!parseWhatHappens(&iif, intervention, N, T)){
+                    } else if(!parseWhatHappens(&iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
                         printf("Something went wrong.\n");
                         return false;
                     }
@@ -218,13 +218,14 @@ bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &cu
     }
 
     // TODO: Now with the structure storing all the changes, we need to store the data in their own
-    // original structures where the data was sourced from (comes from Fitness or spParams?).
-    
+    // original structures where the data was sourced from 
+    // once the structure is updated, we update the structures that store the info while the simulation is running
+    updatePopulations(&iif, fitnessEffects, Genotypes, popParams);
 
     return true;
 }
 
-bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, double totPopSize, double currentTime){
+bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime){
     
     // now we need to parse the "what_happens" intervention
     // TODO: raise exception, malformed what_happens specification
@@ -295,7 +296,7 @@ bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, double
         // or for some specific-genotype
         double res = expression.value();
         if(totalPopFlag){// reduce total amount of population using hipergeometric distribution
-            reducePopulation(iif, res);
+            reducePopulation(iif, res ,&totPopSize);
         } else { // update new value for genotype
             std::map<std::string, double>::iterator it = iif->mapGenoToPop.find(leftMostWhatHappens); 
             if(it != iif->mapGenoToPop.end()){
@@ -309,23 +310,86 @@ bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, double
 
 
 // This function is needed if what we are trying to descrease is the whole population, and not just the population of 1 genotype
-// Necesitamos N como numero total de la población
-// k pertenecen a la categoría A
-// N-k pertenecen a la B
-// medir la probabilidad de obtener x (0<=x<=k) elementos de una categoría A
-// target es el tamaño objetivo, el n, la muestra que se saca de la población total
-void reducePopulation(InterventionsInfo * iif, double target){
+// nn by default is equal 1
+// n array con las poblaciones de cada genotipo y su ncols(diferentes tipos de genotipos en la población)
+// target is the target size, to which number the population would get reduced to.
+void reducePopulation(InterventionsInfo * iif, double target, double * totPopSize){
     //ERROR CONTROL
     if(iif == NULL){
         printf("La estructura InterventionsInfo está vacía en reducePopulation.\n");
         return;
     }
 
+    // first we take all the population from the structure, and we create a vector with its populations
+    std::vector<double> populations;
+    Rcpp::NumericMatrix rcpp_mhgeo_distribution; 
+    Rcpp::NumericMatrix rcpp_populations_matrix;
+    Rcpp::NumericVector rcpp_populations;
+    Rcpp::NumericVector rcpp_totalPop;
+    double totalPop = 0.0;
+    for(auto map : iif->mapGenoToPop){
+        totalPop += map.second;
+        populations.push_back(map.second);
+    }
+
+    //quick check before creating the matrix
+    if(*totPopSize != totalPop){
+        printf("TotalPop != totPopSize, exiting...");
+        return;
+    }
+    // we convert the vector to something R can understand
+    rcpp_populations = Rcpp::wrap(populations);
+    rcpp_populations.attr("dim") = Dimension(populations.size(), 1);
+
+    rcpp_populations_matrix = Rcpp::wrap(rcpp_populations);
+    rcpp_totalPop = Rcpp::wrap(totalPop);
+    
+    // then, we specify the total genotypes of the populations and we obtain a distribution
+    //TODO: Necesito saber bien que hacer con la distribución que retorna la función.
+    // la idea es obtener cada uno de los números (clones) y devolverlos a la estructura y tenerla actualizada siempre.
+    rcpp_mhgeo_distribution = my_rmvhyper(1, rcpp_populations_matrix, rcpp_totalPop);
+    rcpp_mhgeo_distribution.attr("dim") = Dimension(populations.size(), 0);
+
+    populations = Rcpp::as<std::vector<double>>(rcpp_mhgeo_distribution);
+
+    int i=0;
+    for(auto &map : iif->mapGenoToPop){
+        //check if it goes out of bounds
+        map.second = populations[i];
+        i++;
+    }
     
 }
 
 // funcion que actualiza las poblaciones una vez que las intervenciones han sido ejecutadas
-bool updatePopulations(InterventionsInfo * iif /*, fitnessEffectsAll& fitnessEffects, const std::vector<spParamsP>& popParams*/){
+bool updatePopulations(InterventionsInfo * iif, fitnessEffectsAll& fitnessEffects, std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams){
+
+    std::map<std::string, std::string> fvarsmap = fitnessEffects.fitnessLandscape.flfVarsmap;
+    std::string freqType = fitnessEffects.frequencyType;
+
+    for(auto map : iif->mapGenoToPop){
+        // find the population associated to a genotype
+        for(const auto& iterator : fvarsmap){
+            if(map.first == iterator.second){
+                std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
+                int position = findPositionInGenotypes(Genotypes, genotype);
+
+                //just to make sure...
+                if(position != 0){
+                    int realPos = position - 1;
+                    if(freqType == "abs"){
+                        //TODO: review this, not sure if this will change the structure 
+                        popParams[realPos].popSize = map.second;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+
     return true;
 }
 

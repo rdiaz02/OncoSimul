@@ -6,6 +6,7 @@
 #include "common_classes.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
+#include "multivariant_hypergeometric.h"
 #include <cfloat>
 #include <limits>
 #include <Rcpp.h>
@@ -55,21 +56,10 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i);
 bool executeInterventions(Rcpp::List interventions, int &totPopSize, double &currentTime, fitnessEffectsAll& fitnessEffects, const Genotype& ge, const std::vector<Genotype>& Genotypes);
 
 // function that applies hypergeometric progressions to the reduction of the population 
-void reducePopulation(InterventionsInfo * iif, double target);
+void reducePopulation(InterventionsInfo * iif, double target, double * totPopSize);
 
 // function that compares two interventions
 int compareInterventions(Intervention i1, Intervention i2);
 
-// function that tracks and updates the simulation time depending on the intervention (and its trigger)
-// for example if we have a time sensitive trigger like (each 20 seconds, reduce the poplation by 20%) this function
-// will track the current time and the previous time the intervention was executed to then, update the time.
-// void updateTimeOfSimulation(double &currentTime, Intervention * currentIntervention);
-
-// function that maps every genotype with their own population
-//std::map<std::string, int> mapGenesToPop(const std::vector<spParamsP>& popParams);
-
-//bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, double totPopSize, double currentTime);
-
-bool updatePopulations(InterventionsInfo * iif /*, fitnessEffectsAll& fitnessEffects, const std::vector<spParamsP>& popParams*/);
-
+bool updatePopulations(InterventionsInfo * iif, fitnessEffectsAll& fitnessEffects, std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams);
 #endif
