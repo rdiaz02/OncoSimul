@@ -273,41 +273,41 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     if( fixation_l.size() ) {
       std::vector<double> popSize_fixation(fixation_l.size());
       for(size_t i = 0; i < popParams.size(); ++i) {
-	std::vector<int> thisg = allGenesinGenotype(Genotypes[i]);
-	for(size_t fc = 0; fc != popSize_fixation.size(); ++fc) {
-	  // Yes, fixation_l is sorted in R.
-	  // if fixation_l[fc] starts with a -9, we are asking
-	  // for exact genotype equality
-	  if(fixation_l[fc][0] == -9) {
-	    // // exact genotype identity?
-	    std::vector<int> this_fix(fixation_l[fc].begin() + 1,
-				      fixation_l[fc].end());
-	    if(thisg == this_fix) {
-	      popSize_fixation[fc] = popParams[i].popSize;
-	    }
-	  } else {
-	  // gene combination in fixation element present in genotype?
-	    if(std::includes(thisg.begin(), thisg.end(),
-			     fixation_l[fc].begin(), fixation_l[fc].end()) ) {
-	      popSize_fixation[fc] += popParams[i].popSize;
-	    }
-	  }
-	}
+	      std::vector<int> thisg = allGenesinGenotype(Genotypes[i]);
+        for(size_t fc = 0; fc != popSize_fixation.size(); ++fc) {
+          // Yes, fixation_l is sorted in R.
+          // if fixation_l[fc] starts with a -9, we are asking
+          // for exact genotype equality
+          if(fixation_l[fc][0] == -9) {
+            // // exact genotype identity?
+            std::vector<int> this_fix(fixation_l[fc].begin() + 1,
+                    fixation_l[fc].end());
+            if(thisg == this_fix) {
+              popSize_fixation[fc] = popParams[i].popSize;
+            }
+          } else {
+          // gene combination in fixation element present in genotype?
+            if(std::includes(thisg.begin(), thisg.end(),
+                fixation_l[fc].begin(), fixation_l[fc].end()) ) {
+              popSize_fixation[fc] += popParams[i].popSize;
+            }
+          }
+        }
       }
       // Any fixated? But avoid trivial of totPopSize of 0!
       // Now check of > 0 is redundant as we check totPopSize > 0
       // Do we want tolerance around that value?
       double max_popSize_fixation =
-	*std::max_element(popSize_fixation.begin(), popSize_fixation.end());
-      if( (max_popSize_fixation >= fixation_min_size ) &&
-	  (max_popSize_fixation >= (totPopSize * (1 - fixation_tolerance) )) ) {
-	++num_successive_fixation;
-	if( num_successive_fixation >= min_successive_fixation) fixated = true;
-      } else {
-	num_successive_fixation = 0;
+      *std::max_element(popSize_fixation.begin(), popSize_fixation.end());
+          if( (max_popSize_fixation >= fixation_min_size ) &&
+          (max_popSize_fixation >= (totPopSize * (1 - fixation_tolerance) )) ) {
+            ++num_successive_fixation;
+            if( num_successive_fixation >= min_successive_fixation) fixated = true;
+          } else {
+          num_successive_fixation = 0;
+          }
+        }
       }
-    }
-  }
 
   if (keepEvery < 0) {
     storeThis = false;
@@ -352,15 +352,15 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     // fixated plays no role here, and cannot be passed from R
     if(extraTime > 0) {
       if(done_at <  0) {
-	if( (lastMaxDr >= detectionDrivers) &&
-	    (popSizeOverDDr >= minDetectDrvCloneSz) &&
-	    checkSizePNow  &&
-	    detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
-	  done_at = currentTime + extraTime;
-	}
+        if( (lastMaxDr >= detectionDrivers) &&
+          (popSizeOverDDr >= minDetectDrvCloneSz) &&
+          checkSizePNow  &&
+          detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen) ) {
+            done_at = currentTime + extraTime;
+	      }
       } else if (currentTime >= done_at) {
-  	simulsDone = true;
-  	reachDetection = true;
+        simulsDone = true;
+        reachDetection = true;
       }
     } else if( (lastMaxDr >= detectionDrivers) &&
 	       (popSizeOverDDr >= minDetectDrvCloneSz) &&
@@ -373,17 +373,17 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     // The usual OR mechanism of each option
     if(extraTime > 0) {
       if(done_at <  0) {
-	if( (fixated) ||
-	    (totPopSize >= detectionSize) ||
-	    ( (lastMaxDr >= detectionDrivers) &&
-	      (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
-	    ( checkSizePNow  &&
-	      detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen))) {
-	  done_at = currentTime + extraTime;
-	}
+        if( (fixated) ||
+            (totPopSize >= detectionSize) ||
+            ( (lastMaxDr >= detectionDrivers) &&
+              (popSizeOverDDr >= minDetectDrvCloneSz) ) ||
+            ( checkSizePNow  &&
+              detectedSizeP(totPopSize, cPDetect, PDBaseline, ran_gen))) {
+	          done_at = currentTime + extraTime;
+	      }
       } else if (currentTime >= done_at) {
-	  simulsDone = true;
-	  reachDetection = true;
+        simulsDone = true;
+        reachDetection = true;
       }
     } else if( (fixated) ||
 	       (totPopSize >= detectionSize) ||
@@ -421,9 +421,9 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
       index_out.push_back(outNS_i);
 
       if(popParams[i].popSize > l_pop_s) {
-	l_pop_s = popParams[i].popSize;
-	ndr_lp = getGenotypeDrivers(Genotypes[i], drv).size();
-	largest_clone = i;
+        l_pop_s = popParams[i].popSize;
+        ndr_lp = getGenotypeDrivers(Genotypes[i], drv).size();
+        largest_clone = i;
       }
     }
     sampleTotPopSize.push_back(totPopSize);
@@ -452,8 +452,8 @@ void nr_totPopSize_and_fill_out_crude_P(int& outNS_i,
     int largest_clone = -99;
     for(size_t i = 0; i < popParams.size(); ++i) {
       if(popParams[i].popSize > l_pop_s) {
-	l_pop_s = popParams[i].popSize;
-	largest_clone = i;
+        l_pop_s = popParams[i].popSize;
+        largest_clone = i;
       }
     }
     if(l_pop_s > 0) {
