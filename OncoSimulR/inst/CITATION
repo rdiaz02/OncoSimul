@@ -24,7 +24,6 @@ citEntry(entry="Article",
          )
 
 
-
 citEntry(entry = "Article",
 	author = "R Diaz-Uriarte and C Vasallo",
 	title = "Every which way? On predicting tumor evolution using cancer progression models",
@@ -40,7 +39,6 @@ citEntry(entry = "Article",
                             "PLoS Computational Biology",
                             "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007246")
 )
-
 
 
 citEntry(entry="Article",
