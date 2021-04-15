@@ -495,6 +495,9 @@ oncoSimulIndiv <- function(fp,
     }
     if(!inherits(fp, "fitnessEffects")) 
         stop("v.1 functionality has been removed. Please use v.2")
+    
+    if(!inherits(fp, "fitnessEffects_v3")) 
+        fp <- convertFitnessEffects(fp)
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -517,13 +520,17 @@ oncoSimulIndiv <- function(fp,
             ## K <- 1 ## K is ONLY used for McFarland; set it to 1, to avoid
             ##        ## C++ blowing.
     
-    if(fp$deathSpec) {
-        if (typeFitness != "arbitrary") {
-            stop("If death is specified in the fitness effects, use Arb model.")
+    if("deathSpec" %in% names(fp)) {
+        if (fp$deathSpec) {
+            if (typeFitness != "arbitrary") {
+                stop("If death is specified in the fitness effects, use Arb model.")
+            }
         }
-    } else {
-        if (typeFitness == "arbitrary") {
-            stop("To use Arb model specify both birth and death in fitness effects.")
+        
+        else {
+            if (typeFitness == "arbitrary") {
+                stop("To use Arb model specify both birth and death in fitness effects.")
+            }
         }
     }
     

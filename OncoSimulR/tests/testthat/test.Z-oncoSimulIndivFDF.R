@@ -32,7 +32,7 @@ test_that("testing output classes", {
   
   expect_identical(class(r), "data.frame")
   
-  expect_identical(class(afe), "fitnessEffects")
+  expect_identical(class(afe)[1], "fitnessEffects")
   
   
   expect_identical(class(osi), c("oncosimul", "oncosimul2"))

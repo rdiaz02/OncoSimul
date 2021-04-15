@@ -13,7 +13,7 @@ evalAllGenotypes(afe0, spPopSizes = c(5000, 2500, 2500, 500))
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
                       Birth = c(1, 2, 3, 4),
-                      Death = c(0, 0, 3, 4),
+                      Death = c(1, 2, 3, 4),
                       stringsAsFactors = FALSE)
 
 afe <- allFitnessEffects(genotFitness = genofit, deathSpec=TRUE)

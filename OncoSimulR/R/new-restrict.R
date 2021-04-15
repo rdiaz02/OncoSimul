@@ -793,9 +793,9 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 #spPopSizes = vector(mode = "integer", length = 0L)
     
     if(calledBy == "allFitnessEffects") {
-      class(out) <- c("fitnessEffects")
+      class(out) <- c("fitnessEffects", "fitnessEffects_v3")
     } else if(calledBy == "allMutatorEffects") {
-      class(out) <- c("mutatorEffects")
+      class(out) <- c("mutatorEffects", "mutatorEffects_v3")
     }
   } else { ## Frequency-dependent fitness
 
@@ -1059,7 +1059,7 @@ allFitnessORMutatorEffects <- function(rT = NULL,
                 #spPopSizes = spPopSizes
               )
 
-    class(out) <- c("fitnessEffects")
+    class(out) <- c("fitnessEffects", "fitnessEffects_v3")
   }
   return(out)
 }
@@ -1510,6 +1510,8 @@ evalAllGenotypesORMut <- function(fmEffects,
                                   calledBy_ = "",
                                   currentTime = currentTime) {
 ##                                minimal = FALSE) {
+    
+  
     if( !(calledBy_ %in% c("evalGenotype", "evalGenotypeMut") ))
         stop("How did you call this function?. Bug.")
 
@@ -1641,6 +1643,10 @@ evalAllGenotypes <- function(fitnessEffects,
         warning("Bozic model passing a fitness landscape will not work",
                     " for now.")
     }
+  
+    if(!inherits(fitnessEffects, "fitnessEffects_v3")) 
+      fitnessEffects <- convertFitnessEffects(fitnessEffects)
+  
     evalAllGenotypesORMut(
         fmEffects = fitnessEffects,
         order = order,
@@ -1711,7 +1717,11 @@ evalAllGenotypesFitAndMut <- function(fitnessEffects, mutatorEffects,
                                    spPopSizes = NULL,
                                    currentTime = 0){
 ##                                   minimal = FALSE) {
-
+    
+    
+    if(!inherits(fitnessEffects, "fitnessEffects_v3")) 
+      fitnessEffects <- convertFitnessEffects(fitnessEffects)
+  
     if(model %in% c("Bozic", "bozic1", "bozic2") ) {
         prodNeg <- TRUE
     } else {
@@ -2575,6 +2585,31 @@ genotype_letterslabel <- function(df) {
 }
 
 
+# Make sure that the fitnessEffect object is as expected in last version.
+# This function should be called in every function that uses fitnessEffects.
+convertFitnessEffects <- function(afe) {
+  if (!inherits(afe, "fitnessEffects_v3")) {
+    message("Using old version of fitnessEffects. Transforming fitnessEffects
+            to last version.")
+    
+    
+    # Check if the fitnessEffect object has the new names and columns. If not,
+    # adapt it.
+    if(!is.null(afe$fitnessLandscape_df)) {
+        colnames(afe$fitnessLandscape_df)[which(colnames(afe$fitnessLandscape_df) 
+                                               == "Fitness")] <- "Birth"
+    }
+    names(afe)[which(names(afe) == "frequencyDependentFitness")] <- "frequencyDependentBirth"
+    afe$frequencyDependentDeath = FALSE
+
+    afe$deathSpec = FALSE
+    
+    class(afe) <- c(class(afe), "fitnessEffects_v3")
+    
+    return(afe)
+  }
+  
+}
 
 
 
