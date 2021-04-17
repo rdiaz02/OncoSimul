@@ -475,8 +475,8 @@ oncoSimulIndiv <- function(fp,
                            initMutant = NULL,
                            AND_DrvProbExit = FALSE,
                            fixation = NULL,
-                           seed = NULL
-                           ) {
+                           seed = NULL,
+                           interventions = NULL) {
     call <- match.call()
     if(all(c(is_null_na(detectionProb),
              is_null_na(detectionSize),
@@ -727,7 +727,8 @@ oncoSimulIndiv <- function(fp,
                                         MMUEF = muEF,
                                         detectionProb = detectionProb,
                                         AND_DrvProbExit = AND_DrvProbExit,
-                                        fixation = fixation),
+                                        fixation = fixation,
+                                        interventions = interventions),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     ## }
