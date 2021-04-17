@@ -1,7 +1,8 @@
 #include "intervention.h"
 
 bool isValidEquation(std::string equation);
-bool parseWhatHappens(InterventionsInfo *iif, Intervention intervention, fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime);
+bool parseWhatHappens(InterventionsInfo *iif, Intervention intervention, const fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, const std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime);
+bool updatePopulations(InterventionsInfo * iif, const fitnessEffectsAll& fitnessEffects, const std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams);
 
 InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i){
     //TODO: controlar que no exista ya una intervención con las mismas caracteristicas
@@ -21,7 +22,7 @@ Intervention createIntervention(std::string id, std::string trigger, std::string
     return i;
 }
 
-InterventionsInfo createInterventionsInfo(Rcpp::List interventions, fitnessEffectsAll& fitnessEffects, const std::vector<spParamsP>& popParams, const std::vector<Genotype>& Genotypes){
+InterventionsInfo createInterventionsInfo(Rcpp::List interventions, const fitnessEffectsAll& fitnessEffects, const std::vector<spParamsP>& popParams, const std::vector<Genotype>& Genotypes){
    
     // we declare the variables needed
     InterventionsInfo iif;
@@ -32,15 +33,13 @@ InterventionsInfo createInterventionsInfo(Rcpp::List interventions, fitnessEffec
     std::vector<std::string> auxTriggerIntervention = Rcpp::as<std::vector<std::string> >(interventions["Trigger"]);
     std::vector<std::string> auxWhatHappensIntervention = Rcpp::as<std::vector<std::string> >(interventions["WhatHappens"]);
     std::vector<int> auxRepetitionsIntervention = Rcpp::as<std::vector<int> >(interventions["Repetitions"]);
-    std::vector<float> auxPeriodicty = Rcpp::as<std::vector<float> >(interventions["Periodicity"]);
+    std::vector<float> auxPeriodicity = Rcpp::as<std::vector<float> >(interventions["Periodicity"]);
     std::vector<std::string> auxFlagTimeSensitiveIntervention = Rcpp::as<std::vector<std::string> >(interventions["TimeSensitive"]);
     totalEntries = auxIDIntervention.size();
 
-    //TODO: necesitamos chequear si la intervención tiene algún tipo de periocidad o no
-
     //now we dump the info in the structs created
     for(int i=0; i<totalEntries; i++){
-        iv = createIntervention(auxIDIntervention.at(i), auxTriggerIntervention.at(i), auxWhatHappensIntervention.at(i), auxPeriodicty.at(i), auxRepetitionsIntervention.at(i), auxFlagTimeSensitiveIntervention.at(i));
+        iv = createIntervention(auxIDIntervention.at(i), auxTriggerIntervention.at(i), auxWhatHappensIntervention.at(i), auxPeriodicity.at(i), auxRepetitionsIntervention.at(i), auxFlagTimeSensitiveIntervention.at(i));
         iif = addIntervention(iif, iv);
     }
 
@@ -85,18 +84,11 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i){
     return iif;
 }
 
-//TODO: aclarar los argumentos que se van a pasar a la función, creo que faltan...
-bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &currentTime, fitnessEffectsAll& fitnessEffects, std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams){
+bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams){
     //create the structure with all the information of the interventions
     InterventionsInfo iif = createInterventionsInfo(interventions, fitnessEffects, popParams, Genotypes);
 
-    // TODO: revisar si se refiera a los genotipos por letras o por números
     // Now we add all the info needed for the symbol table so exprtk can operate 
-     // se declaran los objetos necesarios para hacer la tabla de símbolos
-    typedef exprtk::symbol_table<double> symbol_table_t;
-    typedef exprtk::expression<double> expression_t;
-    typedef exprtk::parser<double> parser_t;
-
     symbol_table_t symbol_table;
     for(auto& iterator : iif.mapGenoToPop) {
         symbol_table.add_variable(iterator.first, iterator.second);
@@ -225,7 +217,7 @@ bool execute_interventions(Rcpp::List interventions, int &totPopSize, double &cu
     return true;
 }
 
-bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime){
+bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, const fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, const std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime){
     
     // now we need to parse the "what_happens" intervention
     // TODO: raise exception, malformed what_happens specification
@@ -362,7 +354,7 @@ void reducePopulation(InterventionsInfo * iif, double target, double * totPopSiz
 }
 
 // funcion que actualiza las poblaciones una vez que las intervenciones han sido ejecutadas
-bool updatePopulations(InterventionsInfo * iif, fitnessEffectsAll& fitnessEffects, std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams){
+bool updatePopulations(InterventionsInfo * iif, const fitnessEffectsAll& fitnessEffects, const std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams){
 
     std::map<std::string, std::string> fvarsmap = fitnessEffects.fitnessLandscape.flfVarsmap;
     std::string freqType = fitnessEffects.frequencyType;

@@ -18,7 +18,7 @@
 #ifndef _BNB_COMMON_H_
 #define _BNB_COMMON_H_
 
-#include<Rcpp.h>
+#include <Rcpp.h>
 #include "common_classes.h"
 #include "debug_common.h"
 #include "new_restrict.h" // for the TypeModel enum

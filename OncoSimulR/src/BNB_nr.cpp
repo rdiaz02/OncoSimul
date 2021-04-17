@@ -873,7 +873,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			 int& ti_e3,
 			 std::map<std::string, std::string>& lod,
 			 // LOD& lod,
-			 POM& pom) {
+			 POM& pom,
+       Rcpp::List interventions) {
 
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -1305,9 +1306,13 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      // static void execute_interventions(Rcpp:List interventions, int &totPopSize, double &currentTime, fitnessEffectsAll& fitnessEffects, const Genotype& ge, const std::vector<Genotype>& Genotypes);
-
-
+      // TODO: no quiero que se ejecute a no ser que sea distinto de NULL
+      SEXP s_interventions = interventions;
+      
+      if(!Rf_isNull(s_interventions)){
+        executeInterventions(interventions, totPopSize, currentTime, fitnessEffects, Genotypes, popParams);
+      }
+  
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,
 			    K, totPopSize, currentTime, typeModel);
   
@@ -1365,7 +1370,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double cPDetect_i,
 			double checkSizePEvery,
 			bool AND_DrvProbExit,
-			Rcpp::List fixation_i) {
+			Rcpp::List fixation_i,
+      Rcpp::List interventions) {
 
 
   precissionLoss();
@@ -1581,7 +1587,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  ti_dbl_min,
 		  ti_e3,
 		  lod,
-		  pom);
+		  pom,
+      interventions);
       ++numRuns;
       forceRerun = false;
       accum_ti_dbl_min += ti_dbl_min;

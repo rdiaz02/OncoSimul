@@ -23,6 +23,11 @@
 #include <algorithm>
 #include "exprtk.h"
 
+// we declare the needed symbols for the table
+typedef exprtk::symbol_table<double> symbol_table_t;
+typedef exprtk::expression<double> expression_t;
+typedef exprtk::parser<double> parser_t;
+
 // We define what an intervention might be like
 typedef struct {
     std::string id; // identifier of the intervention
@@ -41,10 +46,10 @@ typedef struct{
 }InterventionsInfo;
 
 // function that creates the InterventionsInfo structure
-InterventionsInfo createInterventionsInfo(Rcpp::List interventions, fitnessEffectsAll& fitnessEffects, const std::vector<spParamsP>& popParams, const Genotype ge);
+InterventionsInfo createInterventionsInfo(Rcpp::List interventions, const fitnessEffectsAll& fitnessEffects, const std::vector<spParamsP>& popParams, const Genotype &ge);
 
 // function that creates an intervention in memory
-Intervention createIntervention(std::string id, std::string trigger, std::string what_happens, float duration, int repetitions);
+Intervention createIntervention(std::string id, std::string trigger, std::string what_happens, float duration, int repetitions, std::string flagTimeSensitiveIntervention);
 
 // Function that add an intervention to the array of interventions
 InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i);
@@ -53,7 +58,7 @@ InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i);
 InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i);
 
 // function that executes the whole list of interventions
-bool executeInterventions(Rcpp::List interventions, int &totPopSize, double &currentTime, fitnessEffectsAll& fitnessEffects, const Genotype& ge, const std::vector<Genotype>& Genotypes);
+bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams);
 
 // function that applies hypergeometric progressions to the reduction of the population 
 void reducePopulation(InterventionsInfo * iif, double target, double * totPopSize);
@@ -61,5 +66,4 @@ void reducePopulation(InterventionsInfo * iif, double target, double * totPopSiz
 // function that compares two interventions
 int compareInterventions(Intervention i1, Intervention i2);
 
-bool updatePopulations(InterventionsInfo * iif, fitnessEffectsAll& fitnessEffects, std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams);
 #endif
