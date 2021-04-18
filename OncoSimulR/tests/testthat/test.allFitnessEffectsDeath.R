@@ -84,7 +84,7 @@ test_that("Errors expectations", {
 	expect_error(allFitnessEffects(genotFitness = r5, 
 					 frequencyDependentDeath = TRUE,
 					 deathSpec = TRUE,
-					 frequencyType = "rel"), 
+					 frequencyType = "rel"),
 	"There are some errors in death column")
   
   expect_error(allFitnessEffects(genotFitness = r6, 
@@ -124,6 +124,202 @@ test_that("Errors expectations", {
 
   
   
+})
+
+test_that("testing output", {
+  
+  r1 <- data.frame(rfitness(3))
+  
+  r1[, "Birth"] <- c("max(1, f_)",
+                       "max(1, f_1)", 
+                       "max(1, f_2)", 
+                       "max(1, f_3)",
+                       "100*f_1_2 + max(max(1, f_1), max(1, f_2))",
+                       "100*f_1_3 + max(max(1, f_1), max(1, f_3))",
+                       "100*f_2_3 + max(max(1, f_2), max(1, f_3))",
+                       "200*f_1_2_3 + 500*(f_1_2 + f_1_3 + f_2_3)") 
+  
+  r2 <- rfitness(2)
+  
+  r3 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                   Birth = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_1))",
+                               "max(2, 3*(f_ + f_2))",
+                               "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"),
+				   Death = c(1, 2, 3, 4))
+  
+  r4 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
+                   Birth = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_1))",
+                               "max(2, 3*(f_ + f_2))",
+                               "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"),
+				   Death = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_1))",
+                               "max(2, 3*(f_ + f_2))",
+                               "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"))
+  
+  r5 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
+				   Birth = c(1, 2, 3, 4),
+                   Death = c(1, 2, 3, 4))
+							   
+  r6 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
+				   Birth = c(1, 2, 3, 4),
+                   Death = c("max(3, 2*f_)",
+                               "max(1.5, 3*(f_ + f_A))",
+                               "max(2, 3*(f_ + f_B))",
+                               "max(2, 5*f_ - 0.5*( f_A + f_B) + 15*f_A_B)"))
+  
+
+  afe1 <- allFitnessEffects(genotFitness = r3, 
+                            frequencyDependentBirth = TRUE,
+							deathSpec = TRUE,
+                            frequencyType = "rel")
+  
+  
+  expect_true(afe1$frequencyDependentBirth)
+  expect_false(afe1$frequencyDependentDeath)
+  expect_true(afe1$deathSpec)
+  
+  lapply(afe1[c(1:3, 8)], function(x){
+    expect_equal(length(x), 0)
+    
+    expect_equal(class(x), "list")
+  })
+  
+  expect_true(afe1$gMOneToOne)
+  
+  lapply(afe1[c(10:13)],  function(x){
+    expect_null(x)
+  })
+
+  expect_equivalent(afe1$geneToModule, "Root")
+  
+  expect_equivalent(afe1$full_FDF_spec[, "Genotype_as_fvarsb"],
+                   OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 2, 
+                                            frequencyType = "rel"))
+  
+  lapply(afe1[c(4, 5, 14:16)], function(x){
+    expect_equal(class(x), "data.frame")
+  })
+  
+  
+  expect_length(afe1$drv, 0)
+  
+  expect_equal(class(afe1$drv), "integer")
+  
+  afe2 <- allFitnessEffects(genotFitness = r4, 
+							frequencyDependentBirth = TRUE,
+							frequencyDependentDeath = TRUE,
+							deathSpec = TRUE,
+							frequencyType = "rel")
+  
+  
+  expect_true(afe2$frequencyDependentBirth)
+  expect_true(afe2$frequencyDependentDeath)
+  expect_true(afe2$deathSpec)
+  
+  lapply(afe2[c(1:3, 8)], function(x){
+    expect_equal(length(x), 0)
+    
+    expect_equal(class(x), "list")
+  })
+  
+  expect_true(afe2$gMOneToOne)
+  
+  lapply(afe2[c(10:13)],  function(x){
+    expect_null(x)
+  })
+
+  expect_equivalent(afe2$geneToModule, "Root")
+  
+  expect_equivalent(afe2$full_FDF_spec[, "Genotype_as_fvarsb"],
+                   OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 2, 
+                                            frequencyType = "rel"))
+											
+  expect_equivalent(afe2$full_FDF_spec[, "Genotype_as_fvarsd"],
+                   OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 2, 
+                                            frequencyType = "rel"))
+  
+  lapply(afe2[c(4, 5, 14:16)], function(x){
+    expect_equal(class(x), "data.frame")
+  })
+  
+  expect_length(afe2$drv, 0)
+  
+  expect_equal(class(afe2$drv), "integer")
+ 
+  expect_warning(afe3 <- allFitnessEffects(genotFitness = r5, 
+							frequencyDependentBirth = FALSE,
+							frequencyDependentDeath = FALSE,
+							deathSpec = TRUE,
+							frequencyType = "rel"), "frequencyType set to NA")
+	
+  
+  expect_false(afe3$frequencyDependentBirth)
+  expect_false(afe3$frequencyDependentDeath)
+  expect_true(afe3$deathSpec)
+  
+  lapply(afe3[c(1:3)], function(x){
+    expect_equal(length(x), 0)
+    
+    expect_equal(class(x), "list")
+  })
+  
+  expect_true(afe3$gMOneToOne)
+  
+  lapply(afe3[c(8, 10:13)],  function(x){
+    expect_null(x)
+  })
+
+  expect_equivalent(afe3$geneToModule, "Root")
+  
+  lapply(afe3[c(4, 5, 15:16)], function(x){
+    expect_equal(class(x), "data.frame")
+  })
+  
+  expect_length(afe3$fitnessLandscapeVariables, 0)
+  expect_equal(class(afe3$fitnessLandscapeVariables), "character")
+  
+  expect_length(afe3$drv, 0)
+  expect_equal(class(afe3$drv), "integer")
+  
+  afe4 <- allFitnessEffects(genotFitness = r6, 
+                            frequencyDependentDeath = TRUE,
+							deathSpec = TRUE,
+                            frequencyType = "rel")
+  
+  
+  expect_false(afe4$frequencyDependentBirth)
+  expect_true(afe4$frequencyDependentDeath)
+  expect_true(afe4$deathSpec)
+  
+  lapply(afe4[c(1:3, 8)], function(x){
+    expect_equal(length(x), 0)
+    
+    expect_equal(class(x), "list")
+  })
+  
+  expect_true(afe4$gMOneToOne)
+  
+  lapply(afe4[c(10:13)],  function(x){
+    expect_null(x)
+  })
+
+  expect_equivalent(afe4$geneToModule, "Root")
+  
+  expect_equivalent(afe4$full_FDF_spec[, "Genotype_as_fvarsd"],
+                   OncoSimulR:::fVariablesN(ncol(afe4$fitnessLandscape) - 2, 
+                                            frequencyType = "rel"))
+  
+  lapply(afe4[c(4, 5, 14:16)], function(x){
+    expect_equal(class(x), "data.frame")
+  })
+  
+  
+  expect_length(afe4$drv, 0)
+  
+  expect_equal(class(afe4$drv), "integer")
+
 })
 
 cat(paste("\n Ending test.allFitnessEffectsDeath at", date(), "\n"))
