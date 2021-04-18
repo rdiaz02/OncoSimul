@@ -30,7 +30,7 @@
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
   genotFitness = NULL,  keepInput = TRUE, frequencyDependentBirth =
-  FALSE, frequencyDependentDeath = FALSE, frequencyType = NA)
+  FALSE, frequencyDependentDeath = FALSE, frequencyType = NA, deathSpec = FALSE)
 
 allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
                    geneToModule = NULL,
@@ -231,6 +231,12 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   frequencies, or "rel", for relative ones. Remember that you must to
   use "f" for relative frequency and "n" for absolute in
   \code{genoFitness}. Set to NA for non-frequency-dependent fitness. }
+  
+  \item{deathSpec}{
+  If FALSE, the default value, all downstream work will be realised in a
+  way in which we assume that death is not specified by the user in \code{genotFitness}.
+  If TRUE, that means that death was specified by the user.
+  }
 
 }
 
@@ -254,26 +260,27 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   no direct effect on fitness, but that affect mutation rate, you MUST
   specify them in the call to \code{allFitnessEffects}, for instance as
   \code{noIntGenes} with an effect of 0. When you run the simulations in
-  \code{frequencyDependentFitness} = TRUE only fitness effects are
-  allowed, and must be codified in \code{genotFitness}.
+  \code{frequencyDependentBirth} = TRUE or \code{frequencyDependentDeath} = TRUE
+  only fitness effects are allowed, and must be codified in \code{genotFitness}.
 
   If you use \code{genotFitness} then you cannot pass modules,
   noIntgenes, epistasis, or rT. This makes sense, because using
   \code{genotFitness} is saying
-  "this is the mapping of genotypes to fitness. Period", so we should
+  "this is the mapping of genotypes to birth and maybe death. Period", so we should
   not allow further modifications from other terms. This is always the
-  case when \code{frequencyDependentFitness} = TRUE.
+  case when \code{frequencyDependentBirth} = TRUE or
+  \code{frequencyDependentDeath} = TRUE.
 
   If you use \code{genotFitness} you need to be careful when you use
   Bozic's model (as you get a death rate of 0).
 
 
   If you use \code{genotFitness} note that we force the WT (wildtype) to
-  always be 1 so fitnesses are rescaled in case of 
-  \code{frequencyDependentFitness = FALSE}. In contrast, when 
-  \code{frequencyDependentFitness = TRUE} you are free to 
-  determine the fitness as a function of the frequencies of the genotypes
-  (see \code{genotFitness} and the vignette).
+  always be 1 so birth rates (death rates) are rescaled in case of 
+  \code{frequencyDependentBirth = FALSE} (\code{frequencyDependentDeath = FALSE}).
+  In contrast, when \code{frequencyDependentBirth = TRUE} (\code{frequencyDependentDeath = TRUE})
+  you are free to determine the birth rate (death rate) as a function of the frequencies of the
+  genotypes (see \code{genotFitness} and the vignette).
 
 }
 
@@ -331,18 +338,26 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   frequency variables necessary for the C++ code. The "fvars".
 }
 
-  \item{frequencyDependentFitness}{TRUE or FALSE as we have explained
+  \item{frequencyDependentBirth}{TRUE or FALSE as we have explained
+  before.
+  }
+  
+  \item{frequencyDependentDeath}{TRUE or FALSE as we have explained
   before.
   }
   
   \item{frequencyType}{A character string "abs" or "rel" (or NULL).
   }
-
-   \item{full_FDF_spec}{For frequency-dependent fitness, a complete
+	
+  \item{deathSpec}{TRUE or FALSE as we have explained
+  before.
+  }
+  
+   \item{full_FDF_spec}{For frequency-dependent birth (death), a complete
   data frame showing the genotypes (as matrix, letters, and "fvars") and the
-  fitness specification, in terms of the original specification
-  (Fitness_as_letters) and with genotypes mapped to numbers according to
-  the "fvars" (Fitness_as_fvars). If fitness was originally specified in
+  birth (death) specification, in terms of the original specification
+  (Birth_as_letters (Death_as_letters) and with genotypes mapped to numbers according to
+  the "fvars" (Birth_as_fvars (Death_as_fvars)). If birth (death) was originally specified in
   terms of numbers, these two columns will be identical. All the
   information in this data frame is implicitly above, but this
   simplifies checking that you are doing what you think you are doing.

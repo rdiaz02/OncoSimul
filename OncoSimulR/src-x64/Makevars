@@ -1,8 +1,7 @@
 VER=
-CCACHE=ccache
-CC=$(CCACHE) gcc$(VER)
-CXX=$(CCACHE) g++$(VER)
-CXX11=$(CCACHE) g++$(VER)
+CC=gcc$(VER)
+CXX=g++$(VER)
+CXX11=g++$(VER)
 
 ## This is a C++11 package
 CXX_STD = CXX11

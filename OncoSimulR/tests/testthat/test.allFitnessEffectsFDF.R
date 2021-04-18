@@ -28,12 +28,12 @@ test_that("Errors expectations", {
   expect_error(allFitnessEffects(genotFitness = r3, 
                                  frequencyDependentBirth = TRUE, 
                                  frequencyType = "rel"), 
-               "There are some errors in fitness column")
+               "There are some errors in birth column")
   
   expect_error(allFitnessEffects(genotFitness = r4, 
                                  frequencyDependentBirth = TRUE, 
                                  frequencyType = "rel"), 
-               "There are some errors in fitness column")
+               "There are some errors in birth column")
   
   expect_error(allFitnessEffects(genotFitness = r5, 
                                  frequencyDependentBirth = FALSE), 
@@ -53,7 +53,7 @@ test_that("Errors expectations", {
   expect_error(allFitnessEffects(genotFitness = r8, 
                                  frequencyDependentBirth = TRUE,
                                  frequencyType = "rel"),  
-               "There are some errors in fitness column")
+               "There are some errors in birth column")
 
   ## Not anymore, thanks to the auto setting for relative or absolute frequencyType
   ## expect_error(allFitnessEffects(genotFitness = r8, 

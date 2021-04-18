@@ -123,7 +123,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 to_genotFitness_std <- function(x,
                                 frequencyDependentBirth = FALSE,
                                 frequencyDependentDeath = FALSE,
-                                frequencyType = frequencyType,
+                                frequencyType = NA,
                                 deathSpec = FALSE,
                                 simplify = TRUE,
                                 min_filter_birth_death = 1e-9,
@@ -474,7 +474,7 @@ to_genotFitness_std <- function(x,
             if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 1, frequencyType))) |
                !(length(intersect(regularExpressionVectorBirth,
                                   fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
-                stop("There are some errors in fitness column")
+                stop("There are some errors in birth column")
             }
         }
     }
