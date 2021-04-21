@@ -141,13 +141,14 @@ oncoSimulSample(Nindiv,
 
 }
 
-\item{model}{ One of "Bozic", "Exp", "McFarlandLog", "McFarlandLogD"
+\item{model}{ One of "Bozic", "Exp", "Arb", "McFarlandLog", "McFarlandLogD"
   (the last two can be abbreviated to "McFL" and "McFLD",
   respectively). The default is "Exp". (See vignette for the difference
   between "McFL" and "McFLD": in the former, death rate = \eqn{\log(1 +
   N/K)} where \eqn{K} is the initial equilibrium population size; when
   using "McFLD", death rate = \eqn{\max(1, \log(1 + N/K))}, so that death
-  rate never goes below 1.)
+  rate never goes below 1.). If "Arb" (arbitrary) model is specified, death
+  must be present in \code{\link{allFitnessEffects}}, and vice versa.
   
 
 }

@@ -114,6 +114,184 @@ test_that("testing single gene evaluation", {
   expect_equal(evge5, evge6)
 })
 
+test_that("testing all genes evaluation", {
+  
+  r <- data.frame(rfitness(3))
+  
+  r1 <- r
+  
+  r1[, "Birth"] <- c("max(2, log(1 + f_))",
+                      "3",
+                      "3",
+                      "3", 
+                      "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+                      "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+                      "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+                      "max(5, (1 + f_1_2 + f_2_3 + f_1_3)^2)")
+					  
+  r1[, "Death"] <- c("max(2, log(1 + f_))",
+					  "3",
+					  "3",
+					  "3", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(5, (1 + f_1_2 + f_2_3 + f_1_3)^2)")
+					  
+  r2 <- r
+  
+  r2[, "Birth"] <- c(1, 2, 3, 4, 5, 6, 7, 8)
+					  
+  r2[, "Death"] <- c("max(2, log(1 + f_))",
+					  "3",
+					  "3",
+					  "3", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(5, (1 + f_1_2 + f_2_3 + f_1_3)^2)")
+	
+  r3 <- r
+  
+  r3[, "Birth"] <- c("max(2, log(1 + f_))",
+					  "3",
+					  "3",
+					  "3", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
+					  "max(5, (1 + f_1_2 + f_2_3 + f_1_3)^2)")
+					  
+  r3[, "Death"] <- c(1, 2, 3, 4, 5, 6, 7, 8)
+  
+  afe1 <- allFitnessEffects(genotFitness = r1, 
+                           frequencyDependentBirth = TRUE,
+						   frequencyDependentDeath = TRUE,
+						   deathSpec = TRUE,
+			                     frequencyType = "rel")
+                           #spPopSizes = c(500, 
+                            #              250, 
+                             #             250, 
+                              #            250, 
+                               #           300,
+                                #          300,
+                                 #         300,
+                                  #        450))
+  
+  genotypes <- c(0, OncoSimulR:::generateAllGenotypes(fitnessEffects = afe1, 
+                                                      order = FALSE, 
+                                                      max = 256)$genotNums)
+
+  suppressWarnings({
+  evalGs_one_by_one <- sapply(genotypes, function(x) evalGenotype(x, afe1,
+                                                                  spPopSizes = c(500,
+                                                                                 250, 
+                                                                                 250, 
+                                                                                 250, 
+                                                                                 300,
+                                                                                 300,
+                                                                                 300,
+                                                                                 450)))
+  
+  aux <- evalAllGenotypes(afe1, spPopSizes = c(500,
+												 250,
+												 250,
+												 250,
+												 300,
+												 300,
+												 300,
+												 450))
+  evalGs_all_together <- rbind(aux$Birth, aux$Death)
+
+  })
+  
+  expect_identical(evalGs_one_by_one, evalGs_all_together)
+  
+  afe2 <- allFitnessEffects(genotFitness = r2, 
+						   frequencyDependentDeath = TRUE,
+						   deathSpec = TRUE,
+			                     frequencyType = "rel")
+                           #spPopSizes = c(500, 
+                            #              250, 
+                             #             250, 
+                              #            250, 
+                               #           300,
+                                #          300,
+                                 #         300,
+                                  #        450))
+  
+  genotypes <- c(0, OncoSimulR:::generateAllGenotypes(fitnessEffects = afe2, 
+                                                      order = FALSE, 
+                                                      max = 256)$genotNums)
+
+  suppressWarnings({
+  evalGs_one_by_one <- sapply(genotypes, function(x) evalGenotype(x, afe2,
+                                                                  spPopSizes = c(500,
+                                                                                 250, 
+                                                                                 250, 
+                                                                                 250, 
+                                                                                 300,
+                                                                                 300,
+                                                                                 300,
+                                                                                 450)))
+  
+  aux <- evalAllGenotypes(afe2, spPopSizes = c(500,
+												 250,
+												 250,
+												 250,
+												 300,
+												 300,
+												 300,
+												 450))
+  evalGs_all_together <- rbind(aux$Birth, aux$Death)
+
+  })
+  
+  expect_identical(evalGs_one_by_one, evalGs_all_together)
+  
+  afe3 <- allFitnessEffects(genotFitness = r3, 
+                           frequencyDependentBirth = TRUE,
+						   deathSpec = TRUE,
+			                     frequencyType = "rel")
+                           #spPopSizes = c(500, 
+                            #              250, 
+                             #             250, 
+                              #            250, 
+                               #           300,
+                                #          300,
+                                 #         300,
+                                  #        450))
+  
+  genotypes <- c(0, OncoSimulR:::generateAllGenotypes(fitnessEffects = afe3, 
+                                                      order = FALSE, 
+                                                      max = 256)$genotNums)
+
+  suppressWarnings({
+  evalGs_one_by_one <- sapply(genotypes, function(x) evalGenotype(x, afe3,
+                                                                  spPopSizes = c(500,
+                                                                                 250, 
+                                                                                 250, 
+                                                                                 250, 
+                                                                                 300,
+                                                                                 300,
+                                                                                 300,
+                                                                                 450)))
+  
+  aux <- evalAllGenotypes(afe3, spPopSizes = c(500,
+												 250,
+												 250,
+												 250,
+												 300,
+												 300,
+												 300,
+												 450))
+  evalGs_all_together <- rbind(aux$Birth, aux$Death)
+
+  })
+  
+  expect_identical(evalGs_one_by_one, evalGs_all_together)
+  
+})
 
 
 cat(paste("\n Ending test.evaluatingGenotypesDeath at", date(), "\n"))
