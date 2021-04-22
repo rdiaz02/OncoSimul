@@ -1,3 +1,8 @@
+Changes in version 2.99.9 (2021-04-22):
+	- Fixed date typo in one citation.
+	- We were inconsistent, allowing some examples of one gene.
+	- Readme: nem.
+	
 Changes in version 2.99.8 (2021-01-01):
 	- Removing unused code.
 	- Long tests: no longer using v.1.
