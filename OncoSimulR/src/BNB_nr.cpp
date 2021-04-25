@@ -1311,6 +1311,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       
       if(!Rf_isNull(s_interventions)){
         executeInterventions(interventions, totPopSize, currentTime, fitnessEffects, Genotypes, popParams);
+      } else {
+        std::cout << "executeInterventions not running";
       }
   
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,

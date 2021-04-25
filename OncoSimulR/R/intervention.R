@@ -60,7 +60,7 @@ interventions <- list(
         WhatHappens   = "n_A = n_A * 0,3 / n_C",
         Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
         TimeSensitive = "No",
-        Periodicty    = Inf
+        Periodicity    = Inf
     )
 )
 
@@ -149,7 +149,7 @@ verify_interventions <- function(interventions){
         if(exists("Repetitions", interventions[[i]])){
             if(ts != "No" && ts != "no" && ts != "N" && ts != "n"){
                 stop("If Repetitions are specified, then TimeSensitive should be No(N)")
-            } else { # since there is no periocity but we need to pass some number to the list so the structure in C++ undestands, periocity in this case will be Inf(MAX_INT)
+            } else { # since there is no periodicity but we need to pass some number to the list so the structure in C++ undestands, periodicity in this case will be Inf(MAX_INT)
                 interventions[[i]][["Periodicity"]] <- Inf
             }
         } else if(exists("Periodicity", interventions[[i]])){ # If the user specifies the periodicity instead of the reps, then TimeSensitive should be setted to "Yes"

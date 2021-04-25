@@ -126,10 +126,10 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
             std::string errorMessage = "The expression was imposible to parse.";
             throw std::invalid_argument(errorMessage);
         } else {
-            //a trigger is just a TRUE/FALSE condition
             parser_t parser_wh;
+            //a trigger is just a TRUE/FALSE condition
             if(expression.value()){
-                if(intervention.repetitions > 0){ // caso de que sean intervenciones basadas en repeticiones
+                if(intervention.repetitions > 0 && (intervention.flagTimeSensitiveIntervention == "No" || intervention.flagTimeSensitiveIntervention == "N")){ // if interventions are based in repetitions
                     //if parser fails to compile, throws exception
                     if (!parser_wh.compile(intervention.what_happens, expression)){
                         // error control, just in case the parsing it's not correct
@@ -156,25 +156,25 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
                     intervention.lastTimeExecuted = T;
                     intervention.repetitions--;
 
-                } else if(intervention.flagTimeSensitiveIntervention == "Yes" || intervention.flagTimeSensitiveIntervention == "Y") { // case there are time-based interventions (each 5 seconds, do this)
+                } else if(intervention.flagTimeSensitiveIntervention == "Yes" || intervention.flagTimeSensitiveIntervention == "Y") { // case there are time-based interventions (each 5 seconds, do "this")
                     if((T - intervention.lastTimeExecuted) >= intervention.periodicity){ // with condition satisfied we execute the intervention
 
                         if (!parser_wh.compile(intervention.what_happens, expression)){
                             Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
 
-                        for (std::size_t i = 0; i < parser_wh.error_count(); ++i){
-                            typedef exprtk::parser_error::type error_t;
-                            error_t error = parser_wh.get_error(i);
-                            // FIXMEmaybe: Use warning or error to capture it easily in tests?
-                            REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
-                                i,
-                                error.token.position,
-                                exprtk::parser_error::to_str(error.mode).c_str(),
-                                error.diagnostic.c_str(),
-                                intervention.what_happens.c_str());
-                        }
-                        std::string errorMessage = "The expression was imposible to parse.";
-                        throw std::invalid_argument(errorMessage);
+                            for (std::size_t i = 0; i < parser_wh.error_count(); ++i){
+                                typedef exprtk::parser_error::type error_t;
+                                error_t error = parser_wh.get_error(i);
+                                // FIXMEmaybe: Use warning or error to capture it easily in tests?
+                                REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
+                                    i,
+                                    error.token.position,
+                                    exprtk::parser_error::to_str(error.mode).c_str(),
+                                    error.diagnostic.c_str(),
+                                    intervention.what_happens.c_str());
+                            }
+                            std::string errorMessage = "The expression was imposible to parse.";
+                            throw std::invalid_argument(errorMessage);
                         } else if(!parseWhatHappens(&iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
                             printf("Something went wrong.\n");
                             return false;
@@ -209,7 +209,7 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
         }
     }
 
-    // TODO: Now with the structure storing all the changes, we need to store the data in their own
+    // Now with the structure storing all the changes, we need to store the data in their own
     // original structures where the data was sourced from 
     // once the structure is updated, we update the structures that store the info while the simulation is running
     updatePopulations(&iif, fitnessEffects, Genotypes, popParams);
@@ -227,10 +227,6 @@ bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, const 
         return false;
     }
 
-     // se declaran los objetos necesarios para hacer la tabla de símbolos
-    typedef exprtk::symbol_table<double> symbol_table_t;
-    typedef exprtk::expression<double> expression_t;
-    typedef exprtk::parser<double> parser_t;
     bool totalPopFlag = false;
 
     symbol_table_t symbol_table;
@@ -285,7 +281,7 @@ bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, const 
         throw std::invalid_argument(errorMessage);
     } else{
         // once the value is calculated, we must assure if the operation is for the total population
-        // or for some specific-genotype
+        // or for som      e specific-genotype
         double res = expression.value();
         if(totalPopFlag){// reduce total amount of population using hipergeometric distribution
             reducePopulation(iif, res ,&totPopSize);
@@ -337,7 +333,6 @@ void reducePopulation(InterventionsInfo * iif, double target, double * totPopSiz
     rcpp_totalPop = Rcpp::wrap(totalPop);
     
     // then, we specify the total genotypes of the populations and we obtain a distribution
-    //TODO: Necesito saber bien que hacer con la distribución que retorna la función.
     // la idea es obtener cada uno de los números (clones) y devolverlos a la estructura y tenerla actualizada siempre.
     rcpp_mhgeo_distribution = my_rmvhyper(1, rcpp_populations_matrix, rcpp_totalPop);
     rcpp_mhgeo_distribution.attr("dim") = Dimension(populations.size(), 0);
