@@ -1,6 +1,58 @@
 inittime <- Sys.time()
-cat(paste("\n Starting test.Z-oncoSimulIndivFDF at", date(), "\n"))
+cat(paste("\n Starting test.Z-oncoSimulIndivDeath at", date(), "\n"))
 
+
+test_that("testing model and afe compatibility", {
+	
+  r <- data.frame(rfitness(2))
+  
+  r[, "Birth"] <- c("f_ - f_1 - f_2 - f_1_2", 
+                      "max(100*f_1, 10)", 
+                      "max(100*f_2, 10)", 
+                      "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
+					  
+
+  afe <- allFitnessEffects(genotFitness = r, 
+                           frequencyDependentBirth = TRUE,
+                           frequencyType = "rel")
+
+  expect_error(oncoSimulIndiv(afe, 
+                        model = "Arb", 
+                        onlyCancer = FALSE, 
+                        finalTime = 20, 
+                        verbosity = 0, 
+                        mu = 1e-6,
+                        initSize = 5000, 
+                        keepPhylog = FALSE,
+                        seed = NULL, 
+                        errorHitMaxTries = TRUE, 
+                        errorHitWallTime = TRUE),
+	"To use Arb model specify both birth and death in fitness effects.")
+	
+  r[, "Death"] <- c("f_ - f_1 - f_2 - f_1_2", 
+                      "max(100*f_1, 10)", 
+                      "max(100*f_2, 10)", 
+                      "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
+	
+  afe <- allFitnessEffects(genotFitness = r, 
+					   frequencyDependentBirth = TRUE,
+					   frequencyDependentDeath = TRUE,
+					   deathSpec = TRUE,
+					   frequencyType = "rel")
+  
+  expect_error(oncoSimulIndiv(afe, 
+                        model = "McFL", 
+                        onlyCancer = FALSE, 
+                        finalTime = 20, 
+                        verbosity = 0, 
+                        mu = 1e-6,
+                        initSize = 5000, 
+                        keepPhylog = FALSE,
+                        seed = NULL, 
+                        errorHitMaxTries = TRUE, 
+                        errorHitWallTime = TRUE),
+	"If death is specified in the fitness effects, use Arb model.")
+})
 
 test_that("testing output classes", {
   
@@ -11,15 +63,22 @@ test_that("testing output classes", {
                       "max(100*f_2, 10)", 
                       "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
   
+  r[, "Death"] <- c("f_ - f_1 - f_2 - f_1_2", 
+                      "max(100*f_1, 10)", 
+                      "max(100*f_2, 10)", 
+                      "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
+  
   
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentBirth = TRUE, 
+                           frequencyDependentBirth = TRUE,
+						   frequencyDependentDeath = TRUE,
+						   deathSpec = TRUE,
                            frequencyType = "rel")
   
   set.seed(1)
   
   osi <- oncoSimulIndiv(afe, 
-                        model = "McFL", 
+                        model = "Arb", 
                         onlyCancer = FALSE, 
                         finalTime = 20, 
                         verbosity = 0, 
@@ -32,7 +91,7 @@ test_that("testing output classes", {
   
   expect_identical(class(r), "data.frame")
   
-  expect_identical(class(afe)[1], c("fitnessEffects", "fitnessEffects_v3"))
+  expect_identical(class(afe), c("fitnessEffects", "fitnessEffects_v3"))
   
   
   expect_identical(class(osi), c("oncosimul", "oncosimul2"))
@@ -52,6 +111,8 @@ test_that("testing performance", {
                       "10*f_1", 
                       "50*f_2", 
                       "200*(f_1 + f_2) + 50*f_1_2")
+
+  r[, "Death"] <- c(1, 1, 1, 1)
   ra <- r
   
   ra[, "Birth"] <- c("10*n_/N", 
@@ -59,19 +120,24 @@ test_that("testing performance", {
                       "50*n_2/N", 
                       "200*(n_1/N + n_2/N) + 50*n_1_2/N")
   
-  
+  ra[, "Death"] <- c(1, 1, 1, 1)
+					  
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentBirth = TRUE, 
+                           frequencyDependentBirth = TRUE,
+						   frequencyDependentDeath = FALSE,
+						   deathSpec = TRUE,
                            frequencyType = "rel")
   
   afe_ra <- allFitnessEffects(genotFitness = ra, 
-                              frequencyDependentBirth = TRUE, 
-                              frequencyType = "abs")
+                           frequencyDependentBirth = TRUE,
+						   frequencyDependentDeath = FALSE,
+						   deathSpec = TRUE,
+                           frequencyType = "abs")
   
   set.seed(1)
   
   null <- capture.output(osi <- oncoSimulIndiv(afe, 
-                        model = "Exp", 
+                        model = "Arb", 
                         onlyCancer = FALSE, 
                         finalTime = 5000, 
                         verbosity = 0, 
@@ -85,7 +151,7 @@ test_that("testing performance", {
   set.seed(1)
   
   null <- capture.output(osi_ra <- oncoSimulIndiv(afe_ra, 
-                        model = "Exp", 
+                        model = "Arb", 
                         onlyCancer = FALSE, 
                         finalTime = 5000, 
                         verbosity = 0, 
@@ -122,39 +188,8 @@ test_that("testing performance", {
   expect_equal(osi$NumIter, 458)
 })
 
-test_that("testing Bozic failure", {
-  r <- data.frame(rfitness(2))
-  
-  r[, "Birth"] <- c("10*f_", 
-                      "10*f_1", 
-                      "50*f_2", 
-                      "200*(f_1 + f_2) + 50*f_1_2")
-  
-  
-  afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentBirth = TRUE, 
-                           frequencyType = "rel")
-  
-  set.seed(1)
-  
-  st <- capture.output(suppressWarnings(osi <- oncoSimulIndiv(afe, 
-                                             model = "Bozic", 
-                                             onlyCancer = FALSE, 
-                                             finalTime = 5000, 
-                                             verbosity = 0, 
-                                             mu = 1e-6,
-                                             initSize = 500, 
-                                             keepPhylog = FALSE,
-                                             seed = NULL, 
-                                             errorHitMaxTries = TRUE, 
-                                             errorHitWallTime = TRUE)))
-  expect_true(st[22] == " Unrecoverable exception: Algo 2: retval not finite. Aborting. ")
-
-})
-
-
 set.seed(NULL)
 
-cat(paste("\n Ending test.Z-oncoSimulIndivFDF at", date(), "\n"))
+cat(paste("\n Ending test.Z-oncoSimulIndivDeath at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
