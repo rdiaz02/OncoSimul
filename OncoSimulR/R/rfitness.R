@@ -202,33 +202,43 @@ rfitness <- function(g, c= 0.5,
             ## rm(m1)
             ## rm(fl1)
         }
-
-        if(!is.null(scale)) {
-            fi <- (fi - min(fi))/(max(fi) - min(fi))
-            fi <- scale[1] + fi * (scale[2] - scale[1])
-        }
-        if(wt_is_1 == "divide") {
-            ## We need to shift to avoid ratios involving negative numbers and
-            ## we need to avoid having any fitness at 0, specially the wt.  If
-            ## any negative value, add the min, and shift by the magnitude of
-            ## the min to avoid any at 0.
-
-            ## If you use scale and wt_is_1, this will move the scale. It is
-            ## not possible to obtain a linear transformation that will keep
-            ## the min and max of the scale, and wt at 1.
-            min_fi <- min(fi)
-            if(min_fi < 0)
-                fi <- fi + 2 * abs(min(fi))
-            fi <- fi/fi[1]
-        } else if (wt_is_1 == "subtract") {
-            fi <- fi - fi[1] + 1.0
-        } else if(wt_is_1 == "force") {
-            fi[1] <- 1.0
+        if(!(length(scale) == 3)) {
             if(!is.null(scale)) {
-                if( (1 > scale[2]) || (1 < scale[1]))
-                    warning("Using wt_is_1 = force and scale, but scale does ",
-                            "not include 1")
+                fi <- (fi - min(fi))/(max(fi) - min(fi))
+                fi <- scale[1] + fi * (scale[2] - scale[1])
             }
+            if(wt_is_1 == "divide") {
+                ## We need to shift to avoid ratios involving negative numbers and
+                ## we need to avoid having any fitness at 0, specially the wt.  If
+                ## any negative value, add the min, and shift by the magnitude of
+                ## the min to avoid any at 0.
+
+                ## If you use scale and wt_is_1, this will move the scale. It is
+                ## not possible to obtain a linear transformation that will keep
+                ## the min and max of the scale, and wt at 1.
+                min_fi <- min(fi)
+                if(min_fi < 0)
+                    fi <- fi + 2 * abs(min(fi))
+                fi <- fi/fi[1]
+            } else if (wt_is_1 == "subtract") {
+                fi <- fi - fi[1] + 1.0
+            } else if(wt_is_1 == "force") {
+                fi[1] <- 1.0
+                if(!is.null(scale)) {
+                    if( (1 > scale[2]) || (1 < scale[1]))
+                        warning("Using wt_is_1 = force and scale, but scale does ",
+                                "not include 1")
+                }
+            }
+        } else { ## a length-3 scale
+            fiwt <- fi[1]
+            prod_above <- (scale[1] - scale[3]) / (max(fi) - fiwt)
+            prod_below <- (scale[3] - scale[2]) / (fiwt - min(fi))
+            fi_above <- which(fi >= fiwt)
+            fi_below <- which(fi < fiwt)
+            fi[fi_above] <- ((fi[fi_above] - fiwt) * prod_above) + scale[3]
+            fi[fi_below] <- ((fi[fi_below] - fiwt) * prod_below) + scale[3]
+                fi[1] <- scale[3]
         }
         if(log) {
             ## If you want logs, you certainly do not want
@@ -236,14 +246,14 @@ rfitness <- function(g, c= 0.5,
             fi[fi < 0] <- 0
             if(wt_is_1 == "no") {
                 fi <- log(fi)
-            } else {
-                ## by decree, fitness of wt is 1. So shift everything
-                fi <- log(fi) + 1
-            }
-            ## former expression, but it was more confusing
+                } else {
+                    ## by decree, fitness of wt is 1. So shift everything
+                    fi <- log(fi) + 1
+                }
+                ## former expression, but it was more confusing
             ## fi <- log(fi/fi[1]) + 1
-            
         }
+        
         if(truncate_at_0) {
             ## yes, truncate but add noise to prevent identical
             fi[fi <= 0] <- runif(sum(fi <= 0),
