@@ -1005,7 +1005,7 @@ be available, though.
 
 Many studies about evolutionary predictability (among other topics)
 focus on the strong selection, weak mutation regime, SSWM
-[@gillespie1984; orr_population_2002] (see overview in
+[@gillespie1984; @orr_population_2002] (see overview in
 @krug2019). In this regime, mutations are rare (much smaller than
 the mutation rate times the population size) and selection is strong
 (much larger than 1/population size), so that the population
