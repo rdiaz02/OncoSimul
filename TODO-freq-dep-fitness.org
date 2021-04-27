@@ -8,6 +8,7 @@
 ** urgent
    - [ ] LOD with multiple initmutants
      - might not be defined
+     - Why not? Just go back all the way.
    - [ ] and check POM too
      - yes, this is well defined
   

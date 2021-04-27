@@ -29,7 +29,7 @@ sed -i 's/hurlbut.png/hurlbut.pdf/' OncoSimulR-tex.Rmd
 ## Using xelatex lead to problems in other places, like tables: \blandscape
 ## Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR-tex.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, latex_engine = "lualatex"))'
 ## Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR-tex.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE, latex_engine = "xelatex"))'
-Rscript -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR-tex.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))'
+Rscript-devel -e 'library(rmarkdown); library(BiocStyle); library(bookdown); render("OncoSimulR-tex.Rmd", output_format = bookdown::pdf_document2(toc = TRUE, toc_depth = 4, keep_tex = TRUE))'
 
 cp OncoSimulR-tex.pdf OncoSimulR.pdf
 
