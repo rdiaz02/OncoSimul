@@ -231,6 +231,7 @@ rfitness <- function(g, c= 0.5,
                 }
             }
         } else { ## a length-3 scale
+            if(scale[2] > scale[3]) warning("In scale, minimum fitness > wildtype")
             fiwt <- fi[1]
             prod_above <- (scale[1] - scale[3]) / (max(fi) - fiwt)
             prod_below <- (scale[3] - scale[2]) / (fiwt - min(fi))
@@ -238,8 +239,9 @@ rfitness <- function(g, c= 0.5,
             fi_below <- which(fi < fiwt)
             fi[fi_above] <- ((fi[fi_above] - fiwt) * prod_above) + scale[3]
             fi[fi_below] <- ((fi[fi_below] - fiwt) * prod_below) + scale[3]
-                fi[1] <- scale[3]
+            fi[1] <- scale[3]
         }
+        
         if(log) {
             ## If you want logs, you certainly do not want
             ## the log of a negative number
