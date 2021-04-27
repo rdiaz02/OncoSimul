@@ -116,8 +116,9 @@ additive models.}
   If you pass a three-element vector for scale, you will want to pass
   \code{exp(desired_max)}, \code{exp(desired_min)}, and
   \code{exp(desired_wildtype)} to the \code{scale} argument. (We first
-  scale values in the original scale and then log them).
-}
+  scale values in the original scale and then log them). In this case,
+  we ignore whatever you passed as \code{wt_is_1}, setting \code{wt_is_1
+  = "no"} to avoid modifying your requested value for the wildtype.}
 
 \item{min_accessible_genotypes}{If not NULL, the minimum number of
   accessible genotypes in the fitness landscape. A genotype is
