@@ -243,6 +243,12 @@ rfitness <- function(g, c= 0.5,
         }
         
         if(log) {
+            if(length(scale == 3)) {
+                wt_is_1 <- "no"
+                message("You passed a three-element scale argument. ",
+                        "Setting wt_is_1 to no ",
+                        "to avoid modifying your requested value for WT.")
+            }
             ## If you want logs, you certainly do not want
             ## the log of a negative number
             fi[fi < 0] <- 0
