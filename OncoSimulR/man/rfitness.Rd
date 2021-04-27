@@ -64,14 +64,23 @@ additive models.}
 
   If you pass a three element vector, fitness is re-scaled so that the
   new maximum fitness is \code{scale[1]}, the new minimum is
-  \code{scale[2]} and the new wildtype is \code{scale[3]}. None of the
-  \code{wt_is_1} options apply in this case, to ensure you obtain the
-  range you want. If you want the wildtype to be one, pass it as the
-  third element of the vector. This argument allows you to change the
-  spread of the positive and negative fitness values (and you can make
-  it extreme by using a huge negative number --huge in absolute value--
-  for \code{scale[2]} if you then truncate at 0 --see
-  \code{truncate_at_9}).
+  \code{scale[2]} and the new wildtype is \code{scale[3]}. If you pass a
+  three element vector, none of the \code{wt_is_1} options apply in this
+  case, to ensure you obtain the range you want. If you want the
+  wildtype to be one, pass it as the third element of the vector.
+
+  As a consequence of using a three element vector, the amount of
+  stretching/compressing (i.e., scaling) of fitness values larger than
+  that of the wildtype will likely be different from the scaling of
+  fitness values smaller than that of the wildtype.  In other words,
+  this argument allows you to change the spread of the positive and
+  negative fitness values (and you can make this difference extreme and
+  make most fitness values less than wildtype be 0 by using a huge
+  negative number --huge in absolute value-- for \code{scale[2]} if you
+  then truncate at 0 --see \code{truncate_at_9}).
+
+  Using a three element vector is probably the most natural way of
+  changing the scale and range of fitness.
 
   See also \code{log} if you want the log-transformed values to respect
   the scale.
@@ -103,7 +112,11 @@ additive models.}
 
   If "no", the fitness of the wildtype is not modified.
 
-  This option has no effect if you pass a three-element vector for \code{scale}.
+  This option has no effect if you pass a three-element vector for
+  \code{scale}. Using a three-element vector for \code{scale} is
+  probably the most natural way of changing the scale and range of
+  fitness while setting the wildtype to value of your choice.
+  
 }
 
 
