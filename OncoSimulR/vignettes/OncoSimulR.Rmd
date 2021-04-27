@@ -13773,8 +13773,12 @@ paste("Sum times of chunks = ", sum(unlist(all_times))/60, " minutes")
 
 # Funding
 
-Supported by BFU2015-67302-R (MINECO/FEDER, EU) to
-RDU. S. Sanchez-Carrillo partially supported by a "Beca de Colaboración" from Universidad Autónoma de Madrid (2017-2018); J. Antonio Miguel supported by PEJ-2019-AI/BMD-13961 from Comunidad de Madrid.
+Supported by BFU2015-67302-R (MINECO/FEDER, EU) and
+PID2019-111256RB-I00/AEI/10.13039/501100011033 to
+RDU. S. Sanchez-Carrillo partially supported by a "Beca de
+Colaboración" from Universidad Autónoma de Madrid (2017-2018);
+J. Antonio Miguel supported by PEJ-2019-AI/BMD-13961 from Comunidad
+de Madrid.
 
 
 ```{r, echo=FALSE, eval=TRUE}
