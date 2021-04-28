@@ -26,14 +26,14 @@ InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i){
     return iif;
 }
 
-Intervention createIntervention(std::string id, std::string trigger, std::string what_happens, float periodicity, int repetitions, std::string flagTimeSensitiveIntervention){
+Intervention createIntervention(std::string id, std::string trigger, std::string what_happens, float periodicity, int repetitions){
     Intervention i;
     i.id = id;
     i.trigger = trigger;
     i.what_happens = what_happens;
     i.periodicity = periodicity;
     i.repetitions = repetitions;
-    i.flagTimeSensitiveIntervention = flagTimeSensitiveIntervention;
+    i.lastTimeExecuted = 0.0;
     return i;
 }
 
@@ -49,12 +49,11 @@ InterventionsInfo createInterventionsInfo(Rcpp::List interventions, const fitnes
     std::vector<std::string> auxWhatHappensIntervention = Rcpp::as<std::vector<std::string> >(interventions["WhatHappens"]);
     std::vector<int> auxRepetitionsIntervention = Rcpp::as<std::vector<int> >(interventions["Repetitions"]);
     std::vector<float> auxPeriodicity = Rcpp::as<std::vector<float> >(interventions["Periodicity"]);
-    std::vector<std::string> auxFlagTimeSensitiveIntervention = Rcpp::as<std::vector<std::string> >(interventions["TimeSensitive"]);
     totalEntries = auxIDIntervention.size();
 
     //now we dump the info in the structs created
     for(int i=0; i<totalEntries; i++){
-        iv = createIntervention(auxIDIntervention.at(i), auxTriggerIntervention.at(i), auxWhatHappensIntervention.at(i), auxPeriodicity.at(i), auxRepetitionsIntervention.at(i), auxFlagTimeSensitiveIntervention.at(i));
+        iv = createIntervention(auxIDIntervention.at(i), auxTriggerIntervention.at(i), auxWhatHappensIntervention.at(i), auxPeriodicity.at(i), auxRepetitionsIntervention.at(i));
         iif = addIntervention(iif, iv);
     }
 
@@ -88,10 +87,6 @@ int compareInterventions(Intervention i1, Intervention i2){
     }
     
     if(i1.lastTimeExecuted != i2.lastTimeExecuted){
-        return -1;
-    }
-    
-    if (i1.flagTimeSensitiveIntervention == i2.flagTimeSensitiveIntervention){
         return -1;
     }
     // if they are equal in all aspects, then returns 0
@@ -156,7 +151,7 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
             //a trigger is just a TRUE/FALSE condition
             if(expression.value()){
                 parser_t parser_wh;
-                if(intervention.repetitions > 0 && (intervention.flagTimeSensitiveIntervention == "No" || intervention.flagTimeSensitiveIntervention == "N")){ // if interventions are based in repetitions
+                if(intervention.repetitions > 0 && intervention.periodicity == NOT_PERIODICITY){ // case where interventions are based only in repetitions
                     //if parser fails to compile, throws exception
                     if (!parser_wh.compile(intervention.what_happens, expression)){
                         // error control, just in case the parsing it's not correct
@@ -181,8 +176,10 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
                     }
                     // we reduce by one the number of interventions
                     intervention.repetitions--;
+                    // we update the last time it was executed (debugging purposes)
+                    intervention.lastTimeExecuted = T;
 
-                } else if(intervention.flagTimeSensitiveIntervention == "Yes" || intervention.flagTimeSensitiveIntervention == "Y") { // case there are time-based interventions (each 5 seconds, do "this")
+                } else if(intervention.repetitions > 0 && intervention.periodicity > 0) { // case there is periodicity but also repetitions
                     if((T - intervention.lastTimeExecuted) >= intervention.periodicity){ // with condition satisfied we execute the intervention
 
                         if (!parser_wh.compile(intervention.what_happens, expression)){
@@ -207,7 +204,34 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
                         }
                         // update new lastTimeExecuted
                         intervention.lastTimeExecuted = T;
+                        //  update amount of repetitions
+                        intervention.repetitions--;
                     } 
+                } else if (intervention.periodicity > 0 && intervention.repetitions == NOT_REPS) { // case where only periodicty is specified
+                    if((T - intervention.lastTimeExecuted) >= intervention.periodicity){
+                        if (!parser_wh.compile(intervention.what_happens, expression)){
+                            Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
+
+                            for (std::size_t i = 0; i < parser_wh.error_count(); ++i){
+                                typedef exprtk::parser_error::type error_t;
+                                error_t error = parser_wh.get_error(i);
+                                // FIXMEmaybe: Use warning or error to capture it easily in tests?
+                                REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
+                                    i,
+                                    error.token.position,
+                                    exprtk::parser_error::to_str(error.mode).c_str(),
+                                    error.diagnostic.c_str(),
+                                    intervention.what_happens.c_str());
+                            }
+                            std::string errorMessage = "The expression was imposible to parse.";
+                            throw std::invalid_argument(errorMessage);
+                        } else if(!parseWhatHappens(&iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
+                            printf("Something went wrong.\n");
+                            return false;
+                        }
+                        // update new lastTimeExecuted
+                        intervention.lastTimeExecuted = T;
+                    }
                 } else if (intervention.repetitions == 0) { // case where just an intervention needs to be executed just one time
                     if (!parser_wh.compile(intervention.what_happens, expression)){
                         // error control, just in case the parsing it's not correct
@@ -230,6 +254,7 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
                         printf("Something went wrong.\n");
                         return false;
                     }
+                    intervention.lastTimeExecuted = T;
                 }
             }
         }
@@ -423,7 +448,6 @@ void printIntervention(Intervention i){
     std::cout << "\t Repetitions: " << i.repetitions << "\n";
     std::cout << "\t Periodicity: " << i.periodicity << "\n";
     std::cout << "\t Last Time Executed: " << i.lastTimeExecuted << "\n";
-    std::cout << "\t Is time sensitive? " << i.flagTimeSensitiveIntervention << "\n";
 }
 
 void printInterventionsInfo(InterventionsInfo iif){

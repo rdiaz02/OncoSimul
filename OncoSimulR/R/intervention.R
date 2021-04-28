@@ -45,21 +45,18 @@ interventions <- list(
         Trigger       = "(N > 1e6) & (T > 100)",
         WhatHappens   = "N = 0.001 * N",
         Repetitions   = 7,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
-        TimeSensitive = "No",
         Periodicty    = Inf
     ),
     list(ID           = "i2",
         Trigger       = "(N > 1e9)",
         WhatHappens   = "N = 0.3 * N",
         Periodicity   = 10,
-        TimeSensitive = "Yes",
         Repetitions   = 0
     ),
     list(ID           = "i3",
         Trigger       = "(N > 1e9)",
         WhatHappens   = "n_A = n_A * 0,3 / n_C",
         Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
-        TimeSensitive = "No",
         Periodicity    = Inf
     )
 )
@@ -113,7 +110,7 @@ transformIntervention <- function(sentence, genotInfo){
                                     stringr::fixed(full_rflvars)))
 }
 
-## función que busca inconsistencias en la especificación de las intervenciones del usuario
+## this function checks for inconsistencies in the specification of interventions
 verify_interventions <- function(interventions){
 
     ## TODO: he de verificar que no se especifican dos intervenciones con mismo ID.
@@ -132,37 +129,48 @@ verify_interventions <- function(interventions){
             stop("Attribute Trigger was not specified.");
         } else if(!exists("WhatHappens", interventions[[i]])){
             stop("Attribute WhatHappens was not specified.");
-        } else if(!exists("TimeSensitive", interventions[[i]])){
-            stop("Attribute TimeSensitive was not specified.");
+        } else if(!exists("Repetitions", interventions[[i]]) || !exists("Periodicity", interventions[[i]]) ){
+            stop("Either repetitions or Periodicity must be specified for the intervention")
         }
         
         ## check the data-type of the interventions[[i]]s
         if(!is.character(interventions[[i]]$Trigger) || !is.character(interventions[[i]]$WhatHappens) || !is.character(interventions[[i]]$ID)){
             stop("Las intervenciones no están especificadas correctamente.")
         }
-        
-        ## check that in the field "TimeSensitive" the values may be "Yes" "yes" or "y" to express afirmation or "No" "no" or "n"
-        ts <- interventions[[i]][["TimeSensitive"]]
-        if(ts != "Yes" && ts != "yes" && ts != "Y" && ts != "y" && ts != "No" && ts != "no" && ts != "N" && ts != "n"){
-            stop("no se ha especificado correctamente el campo TimeSensitive, los valores aceptado son: Yes, yes, Y, y ó No, no, N, n")
+
+         ## case where user specifies negative periodicity of repetitions
+        if (interventions[[i]]$Periodicity > 0){
+            stop("The periodicity is negative in the intervention")
+        }
+        if(interventions[[i]]$Repetitions > 0){
+            stop("The repetitions are negative in the intervention")
         }
         
-        # The user can specify reps, but then periodicity can be specified and TimeSensitive should be setted to "No"
-        if(exists("Repetitions", interventions[[i]])){
-            if(ts != "No" && ts != "no" && ts != "N" && ts != "n"){
-                stop("If Repetitions are specified, then TimeSensitive should be No(N)")
-            } else { # since there is no periodicity but we need to pass some number to the list so the structure in C++ undestands, periodicity in this case will be Inf(MAX_INT)
-                interventions[[i]][["Periodicity"]] <- Inf
-            }
-        } else if(exists("Periodicity", interventions[[i]])){ # If the user specifies the periodicity instead of the reps, then TimeSensitive should be setted to "Yes"
-            if(ts != "Yes" && ts != "yes" && ts != "Y" && ts != "y"){
-                stop("If Periodicity is specified, then TimeSensitive should be Yes(Y)")
-            } else { # since there are no repetitions but we need to pass some number to the list so the structure in C++ undestands, repetitions in this case will be Inf(MAX_INT)
-                interventions[[i]][["Repetitions"]] <- 0
-            }
+        ## contemplate the case where only repetitions or only periodicity is specified.
+        if(exists("Repetitions", interventions[[i]]) && !(exists("Periodicity", interventions[[i]])) ){
+            interventions[[i]]$Periodicity = -1
+        } else if(exists("Periodicity", interventions[[i]]) && !(exists("Repetitions", interventions[[i]])) ){ # If the user specifies the periodicity instead of the reps, then TimeSensitive should be setted to "Yes"
+            interventions[[i]]$Repetitions = -1
         }
+
+        ## in case user specifies periodicity or reps to infinity, we "cast" it to INT_MAX so C++ understands
+        if (interventions[[i]]$Periodicity == Inf){
+            interventions[[i]]$Periodicity = -1
+        }
+        if(interventions[[i]]$Repetitions == Inf){
+            interventions[[i]]$Repetitions = 2^32
+        }
+
         print("OK")
     }
     return(TRUE)
+}
+
+check_trigger <- function(trigger){
+
+}
+
+check_what_happens <- function(what_happens){
+
 }
 

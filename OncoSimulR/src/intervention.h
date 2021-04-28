@@ -24,6 +24,9 @@
 #include <exception>
 #include "exprtk.h"
 
+#define NOT_PERIODICITY -1
+#define NOT_REPS -1
+
 // we declare the needed symbols for the table
 typedef exprtk::symbol_table<double> symbol_table_t;
 typedef exprtk::expression<double> expression_t;
@@ -37,7 +40,6 @@ typedef struct {
     int repetitions; // how many repetitions to apply on the set
     float periodicity; // periodicity of the intervention (each 10 u.t.)
     float lastTimeExecuted; // last time from the current time it was executed
-    std::string flagTimeSensitiveIntervention; // flag that determines if the intervention dependes on some periodicity "Yes(Y)" o "No(N)"
 } Intervention;
 
 //Define a structure with all info asociated with interventions
