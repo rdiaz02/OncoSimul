@@ -3,9 +3,24 @@
 bool isValidEquation(std::string equation);
 bool parseWhatHappens(InterventionsInfo *iif, Intervention intervention, const fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, const std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime);
 bool updatePopulations(InterventionsInfo * iif, const fitnessEffectsAll& fitnessEffects, const std::vector<Genotype>& Genotypes, std::vector<spParamsP>& popParams);
+// functions for debugging
+void printIntervention(Intervention i);
+void printInterventionsInfo(InterventionsInfo iif);
+// function that applies hypergeometric progressions to the reduction of the population 
+void reducePopulation(InterventionsInfo * iif, double target, double * totPopSize);
 
 InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i){
     //TODO: controlar que no exista ya una intervención con las mismas caracteristicas
+
+    for(int k=0; k<iif.interventions.size(); k++){
+        if(compareInterventions(iif.interventions[k], i) == 0){
+            std::cout << "There are two interventions that are the same:";
+            printIntervention(iif.interventions[k]);
+            printIntervention(i);
+            return iif;
+        }
+    }
+
     iif.interventions.push_back(i);
     
     return iif;
@@ -51,20 +66,32 @@ InterventionsInfo createInterventionsInfo(Rcpp::List interventions, const fitnes
 
 int compareInterventions(Intervention i1, Intervention i2){
 
-    // comparamos todos los casos, si falla en alguno retorna negativo
-    if(i1.id != i2.id){
+    // it is not allowed to have 2 interventions with the same ID.
+    if(i1.id == i2.id){
+        return 1;
+    } 
+
+    if (i1.trigger != i2.trigger) {
         return -1;
-    } else if (i1.trigger != i2.trigger) {
+    }
+    
+    if (i1.what_happens != i2.what_happens){
         return -1;
-    } else if (i1.what_happens != i2.what_happens){
+    }
+    
+    if(i1.repetitions != i2.repetitions){
         return -1;
-    }  else if(i1.repetitions != i2.repetitions){
+    } 
+    
+    if(i1.periodicity != i2.periodicity){
         return -1;
-    } else if(i1.periodicity != i2.periodicity){
+    }
+    
+    if(i1.lastTimeExecuted != i2.lastTimeExecuted){
         return -1;
-    } else if(i1.lastTimeExecuted != i2.lastTimeExecuted){
-        return -1;
-    } else if (i1.flagTimeSensitiveIntervention == i2.flagTimeSensitiveIntervention){
+    }
+    
+    if (i1.flagTimeSensitiveIntervention == i2.flagTimeSensitiveIntervention){
         return -1;
     }
     // if they are equal in all aspects, then returns 0
@@ -126,9 +153,9 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
             std::string errorMessage = "The expression was imposible to parse.";
             throw std::invalid_argument(errorMessage);
         } else {
-            parser_t parser_wh;
             //a trigger is just a TRUE/FALSE condition
             if(expression.value()){
+                parser_t parser_wh;
                 if(intervention.repetitions > 0 && (intervention.flagTimeSensitiveIntervention == "No" || intervention.flagTimeSensitiveIntervention == "N")){ // if interventions are based in repetitions
                     //if parser fails to compile, throws exception
                     if (!parser_wh.compile(intervention.what_happens, expression)){
@@ -153,7 +180,6 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
                         return false;
                     }
                     // we reduce by one the number of interventions
-                    intervention.lastTimeExecuted = T;
                     intervention.repetitions--;
 
                 } else if(intervention.flagTimeSensitiveIntervention == "Yes" || intervention.flagTimeSensitiveIntervention == "Y") { // case there are time-based interventions (each 5 seconds, do "this")
@@ -182,7 +208,7 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
                         // update new lastTimeExecuted
                         intervention.lastTimeExecuted = T;
                     } 
-                } else { // case where just an intervention needs to be executed just one time
+                } else if (intervention.repetitions == 0) { // case where just an intervention needs to be executed just one time
                     if (!parser_wh.compile(intervention.what_happens, expression)){
                         // error control, just in case the parsing it's not correct
                         Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
@@ -216,6 +242,10 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
 
     return true;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////// PRIVATE FUNCTIONS ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, const fitnessEffectsAll& fitnessEffects, std::vector<spParamsP>& popParams, const std::vector<Genotype>& Genotypes, double &totPopSize, double currentTime){
     
@@ -281,10 +311,16 @@ bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, const 
         throw std::invalid_argument(errorMessage);
     } else{
         // once the value is calculated, we must assure if the operation is for the total population
-        // or for som      e specific-genotype
+        // or for some specific-genotype
         double res = expression.value();
-        if(totalPopFlag){// reduce total amount of population using hipergeometric distribution
+        if(res == N){ // this case is absurd, but it might happen, we just return true.
+            return true;
+        } else if(totalPopFlag && (res < N)){// reduce total amount of population using hipergeometric distribution
             reducePopulation(iif, res ,&totPopSize);
+        } else if (totalPopFlag && (res > N)) {
+            // TODO: Throw exception of some kind, this CANNOT happen by any means
+            throw std::runtime_error("Operation involving totalPopulation not correct.");
+            return false;
         } else { // update new value for genotype
             std::map<std::string, double>::iterator it = iif->mapGenoToPop.find(leftMostWhatHappens); 
             if(it != iif->mapGenoToPop.end()){
@@ -295,7 +331,6 @@ bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, const 
 
     return true;
 }
-
 
 // This function is needed if what we are trying to descrease is the whole population, and not just the population of 1 genotype
 // nn by default is equal 1
@@ -380,7 +415,6 @@ bool updatePopulations(InterventionsInfo * iif, const fitnessEffectsAll& fitness
     return true;
 }
 
-// functions for debugging
 void printIntervention(Intervention i){
 
     std::cout << "Intervention " << i.id << " info:\n";
@@ -403,11 +437,6 @@ void printInterventionsInfo(InterventionsInfo iif){
         std::cout << "Genotype: " << map.first << " Population: " << map.second;
     } 
 }
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// PRIVATE FUNCTIONS ////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
 
 // private function that checks that the equations specified by the user are correctly specified
 // if no "=" or two "0" are found, returns false, if just one "=" is found, the returns true.

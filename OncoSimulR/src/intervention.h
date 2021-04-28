@@ -21,6 +21,7 @@
 #include <sys/time.h>
 #include <vector>
 #include <algorithm>
+#include <exception>
 #include "exprtk.h"
 
 // we declare the needed symbols for the table
@@ -59,9 +60,6 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i);
 
 // function that executes the whole list of interventions
 bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams);
-
-// function that applies hypergeometric progressions to the reduction of the population 
-void reducePopulation(InterventionsInfo * iif, double target, double * totPopSize);
 
 // function that compares two interventions
 int compareInterventions(Intervention i1, Intervention i2);

@@ -115,6 +115,8 @@ transformIntervention <- function(sentence, genotInfo){
 
 ## función que busca inconsistencias en la especificación de las intervenciones del usuario
 verify_interventions <- function(interventions){
+
+    ## TODO: he de verificar que no se especifican dos intervenciones con mismo ID.
     
     for(i in 1:length(interventions)){
         ## check that the interventions are lists
