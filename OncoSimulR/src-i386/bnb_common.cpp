@@ -687,6 +687,9 @@ void updateRatesConstant(std::vector<spParamsP>& popParams,
   
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].death = sum/N + (N-cte)/(N*sampleEvery);
+    if (popParams[i].death < 0.1) {
+      popParams[i].death = 0.1;
+    }
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
@@ -1045,7 +1048,6 @@ void initPops(
 				      fitnessEffects, Genotypes, popParams, currentTime);
           Rcpp::Rcout << std::endl;
 
-          // TODO: Preguntar
           if(s.size() > 1) {
             popParams[m].birth = s[0]+1;
             popParams[m].death = s[1]+1;
@@ -1097,7 +1099,7 @@ void initPops(
   if (typeModel == TypeModel::constant) {
 
     for(size_t m = 0; m != popParams.size(); ++m ) {
-      popParams[m].death = sum/N; //TODO
+      popParams[m].death = sum/N;
       W_f_st(popParams[m]);
       R_f_st(popParams[m]);
     }
