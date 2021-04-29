@@ -115,7 +115,7 @@ additive models.}
   This option has no effect if you pass a three-element vector for
   \code{scale}. Using a three-element vector for \code{scale} is
   probably the most natural way of changing the scale and range of
-  fitness while setting the wildtype to value of your choice.
+  fitness while setting the wildtype to a value of your choice.
   
 }
 
