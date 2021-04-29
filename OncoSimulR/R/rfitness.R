@@ -232,14 +232,28 @@ rfitness <- function(g, c= 0.5,
             }
         } else { ## a length-3 scale
             if(scale[2] > scale[3]) warning("In scale, minimum fitness > wildtype")
+            if(scale[1] < scale[3]) warning("In scale, maximum fitness < wildtype")
             fiwt <- fi[1]
-            prod_above <- (scale[1] - scale[3]) / (max(fi) - fiwt)
-            prod_below <- (scale[3] - scale[2]) / (fiwt - min(fi))
-            fi_above <- which(fi >= fiwt)
-            fi_below <- which(fi < fiwt)
-            fi[fi_above] <- ((fi[fi_above] - fiwt) * prod_above) + scale[3]
-            fi[fi_below] <- ((fi[fi_below] - fiwt) * prod_below) + scale[3]
-            fi[1] <- scale[3]
+            new_fi <- rep(NA, length(fi))
+            mode(new_fi) <- "numeric"
+            ## If WT is min or max, there are no below or above
+            if(max(fi) == fiwt)
+                warning("WT has maximum fitness. Range will be from scale[2] to scale[3]")
+            if(min(fi) == fiwt)
+                warning("WT has minimum fitness. Range will be from scale[3] to scale[1]")
+            if(max(fi) > fiwt) {
+                prod_above <- (scale[1] - scale[3]) / (max(fi) - fiwt)
+                fi_above <- which(fi >= fiwt)
+                new_fi[fi_above]  <- ((fi[fi_above] - fiwt) * prod_above) + scale[3]
+            }
+            if(min(fi) < fiwt) {
+                prod_below <- (scale[3] - scale[2]) / (fiwt - min(fi))
+                fi_below <- which(fi < fiwt)
+                new_fi[fi_below] <- ((fi[fi_below] - fiwt) * prod_below) + scale[3]
+            }
+            new_fi[1] <- scale[3]
+            fi <- new_fi
+            rm(new_fi)
         }
         
         if(log) {
