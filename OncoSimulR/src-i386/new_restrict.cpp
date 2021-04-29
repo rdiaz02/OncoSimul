@@ -142,6 +142,8 @@ TypeModel stringToModel(const std::string& mod) {
     return TypeModel::mcfarlandlog_d;
   else if (mod == "arbitrary")
     return TypeModel::arbitrary;
+  else if (mod == "constant")
+    return TypeModel::constant;
   else
     throw std::out_of_range("Not a valid TypeModel");
 }

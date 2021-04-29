@@ -663,6 +663,35 @@ void updateRatesArbitrary(std::vector<spParamsP>& popParams,
   }
 }
 
+void updateRatesConstant(std::vector<spParamsP>& popParams,
+		       const std::vector<Genotype>& Genotypes,
+		       const fitnessEffectsAll& fitnessEffects,
+           const double& cte,
+           const double& sampleEvery,
+		       const double& currentTime) {
+  
+  const std::vector<spParamsP>& lastPopParams = popParams;
+
+  double N = 0.0;
+  double sum = 0.0;
+  for(size_t i = 0; i < popParams.size(); ++i) {
+
+    if(fitnessEffects.frequencyDependentBirth) {
+        popParams[i].birth = prodFitness(evalGenotypeFitness(Genotypes[i],
+                      fitnessEffects, Genotypes, lastPopParams, currentTime));
+    }
+    
+    N += popParams[i].popSize;
+    sum += popParams[i].popSize*popParams[i].birth;   
+  }
+  
+  for(size_t i = 0; i < popParams.size(); ++i) {
+    popParams[i].death = sum/N + (N-cte)/(N*sampleEvery);
+    W_f_st(popParams[i]);
+    R_f_st(popParams[i]);
+  }
+}
+
 // Update birth or death rates as appropriate
 // Exp and Bozic are not updated, unless FDF
 void updateBirthDeathRates(std::vector<spParamsP>& popParams,
@@ -671,11 +700,15 @@ void updateBirthDeathRates(std::vector<spParamsP>& popParams,
 			   double& adjust_fitness_MF,
 			   const double& K,
 			   const double& totPopSize,
+         const double& cteSize,
+         const double& sampleEvery,
 			   const double& currentTime,
 			   const TypeModel typeModel) {
   
   if(typeModel == TypeModel::arbitrary) {
     updateRatesArbitrary(popParams, Genotypes, fitnessEffects, currentTime);
+  } else if (typeModel == TypeModel::constant){
+    updateRatesConstant(popParams, Genotypes, fitnessEffects, cteSize, sampleEvery, currentTime);
   } else { 
     // In theory if death is specified (fitness dependent or not) the model
     // must be arbitrary and that is checked in R
@@ -985,7 +1018,11 @@ void initPops(
   }
 
   tmpInitMutant.clear();
-   
+  
+  // Only used in constant model
+  double sum = 0.0;
+  double N = 0.0;
+
   // Assign fitness, mutation, W, R. In that order. Then pv and add to POM.
   // The last two are specific of BNB. Beware if using a different algorithm
   for(size_t m = 0; m != popParams.size(); ++m ) {
@@ -1022,7 +1059,7 @@ void initPops(
       popParams[m].birth = prodFitness(evalGenotypeFitness(Genotypes[m],
 					fitnessEffects, Genotypes, popParams,
 					currentTime));
-
+      
       if (typeModel == TypeModel::exp) 
 	      popParams[m].death = death; // passed from R; set at 1
       if (typeModel == TypeModel::mcfarlandlog)
@@ -1046,8 +1083,24 @@ void initPops(
 						Genotypes, popParams,
 						currentTime,
 						dummyMutationRate);
-    W_f_st(popParams[m]);
-    R_f_st(popParams[m]);
+
+    if (typeModel != TypeModel::constant) {
+        W_f_st(popParams[m]);
+        R_f_st(popParams[m]);
+    } else {
+        sum += popParams[m].birth*popParams[m].popSize;
+        N += popParams[m].popSize;
+    }
+
+  }
+
+  if (typeModel == TypeModel::constant) {
+
+    for(size_t m = 0; m != popParams.size(); ++m ) {
+      popParams[m].death = sum/N; //TODO
+      W_f_st(popParams[m]);
+      R_f_st(popParams[m]);
+    }
   }
 
   // POM and storing output

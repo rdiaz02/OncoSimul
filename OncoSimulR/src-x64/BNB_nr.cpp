@@ -916,8 +916,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	   fitnessEffects, mu, muEF, full2mutator, intName, genesInFitness,
 	   dummyMutationRate, K, death, currentTime, keepEvery, mutationPropGrowth,
 	   typeModel,  verbosity);
-  
-  
+
+
+  double cteSize = totPopSize;
   // For McFL error. 
   double totPopSize_previous = totPopSize;
   double DA_previous = log1p(totPopSize_previous/K);
@@ -1238,7 +1239,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       if(simulsDone) break; //skip last updateRates
 
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,
-			    K, totPopSize, currentTime, typeModel);
+			    K, totPopSize, cteSize, sampleEvery, currentTime, typeModel);
   
       // could go inside sample_all_pop but here we are sure death, etc, are current
       // But I catch them when they are created. Is this really needed?
