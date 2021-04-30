@@ -45,7 +45,7 @@ interventions <- list(
         Trigger       = "(N > 1e6) & (T > 100)",
         WhatHappens   = "N = 0.001 * N",
         Repetitions   = 7,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
-        Periodicty    = Inf
+        Periodicity    = Inf
     ),
     list(ID           = "i2",
         Trigger       = "(N > 1e9)",
@@ -61,20 +61,28 @@ interventions <- list(
     )
 )
 
+## despues crearemos el objeto tipo "genotFitness" 
+#df3x <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
+#                      Fitness = c("n_A + 0.1",
+#                                  "log(n_A_B)",
+#                                  "sqrt(n_A) + 3 * exp(n_C)",
+#                                  "-1 * n_A + 7 * (n_C_A > 2)",
+#                                  "2 - 0.1/n_B",
+#                                  "min(n_C, n_B) - 1 * (n_B_A > 2)"))
+
+#adf3x <- allFitnessEffects(genotFitness = df3x,frequencyDependentFitness = TRUE)
+
 # función que crea las intervenciones, verifica su correcta espcificación y retorna dichas intervenciones
 # preparadas para que sea consumibles por C++
 create_interventions <- function(interventions, frequencyType, genotFitness){
-    if(verify_interventions(interventions) == TRUE){
-        return (adaptInterventionsToCpp(interventions, frequencyType, genotFitness))
-    } else
-        return(NULL)
+    return (adaptInterventionsToCpp(verify_interventions(interventions), frequencyType, genotFitness))
 }
 
 adaptInterventionsToCpp <- function(interventions, frequencyType, genotFitness) {
 
-    if(frequencyType != "abs") {
-        stop("You shouldn't be here. Exiting.")
-    } 
+    #if(frequencyType != "abs") {
+    #    stop("You shouldn't be here. Exiting.")
+    #} 
 
     for(i in 1:length(interventions)){
         interventions[[i]]$Trigger <- transformIntervention(as.character(interventions[[i]]$Trigger), genotFitness)
@@ -139,10 +147,10 @@ verify_interventions <- function(interventions){
         }
 
          ## case where user specifies negative periodicity of repetitions
-        if (interventions[[i]]$Periodicity > 0){
+        if (!exists("Periodicity", interventions[[i]]) && interventions[[i]]$Periodicity < 0){
             stop("The periodicity is negative in the intervention")
         }
-        if(interventions[[i]]$Repetitions > 0){
+        if(!exists("Repetitions", interventions[[i]]) && interventions[[i]]$Repetitions < 0){
             stop("The repetitions are negative in the intervention")
         }
         
@@ -154,16 +162,19 @@ verify_interventions <- function(interventions){
         }
 
         ## in case user specifies periodicity or reps to infinity, we "cast" it to INT_MAX so C++ understands
-        if (interventions[[i]]$Periodicity == Inf){
-            interventions[[i]]$Periodicity = -1
+        if (exists("Periodicity", interventions[[i]]) && interventions[[i]]$Periodicity == Inf){
+            interventions[[i]]$Periodicity <- -1
         }
-        if(interventions[[i]]$Repetitions == Inf){
-            interventions[[i]]$Repetitions = 2^32
+        if(exists("Repetitions", interventions[[i]]) && interventions[[i]]$Repetitions == Inf){
+            interventions[[i]]$Repetitions <- 2^32
         }
 
         print("OK")
     }
-    return(TRUE)
+
+    print(interventions)
+
+    return(interventions)
 }
 
 check_trigger <- function(trigger){

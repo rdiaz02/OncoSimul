@@ -44,16 +44,32 @@ InterventionsInfo createInterventionsInfo(Rcpp::List interventions, const fitnes
     Intervention iv;
     int totalEntries;
     //we use auxiliar variables to store the values from R
-    std::vector<std::string> auxIDIntervention = Rcpp::as<std::vector<std::string> >(interventions["ID"]);
-    std::vector<std::string> auxTriggerIntervention = Rcpp::as<std::vector<std::string> >(interventions["Trigger"]);
-    std::vector<std::string> auxWhatHappensIntervention = Rcpp::as<std::vector<std::string> >(interventions["WhatHappens"]);
-    std::vector<int> auxRepetitionsIntervention = Rcpp::as<std::vector<int> >(interventions["Repetitions"]);
-    std::vector<float> auxPeriodicity = Rcpp::as<std::vector<float> >(interventions["Periodicity"]);
-    totalEntries = auxIDIntervention.size();
+    std::vector<Rcpp::List> vectorOfList;
+    std::vector<std::string> auxIDIntervention;
+    std::vector<std::string> auxTriggerIntervention;
+    std::vector<std::string> auxWhatHappensIntervention;
+    std::vector<int> auxRepetitionsIntervention;
+    std::vector<float> auxPeriodicityIntervention;
+
+    for(int i=0; i<interventions.length(); i++){
+        vectorOfList.push_back(Rcpp::as<Rcpp::List>(interventions[i]));
+    }
+
+    for(int i=0; i<interventions.length(); i++){
+        Rcpp::List listItem = vectorOfList[i];
+
+        auxIDIntervention.push_back(Rcpp::as<std::string>(listItem["ID"]));
+        auxTriggerIntervention.push_back(Rcpp::as<std::string>(listItem["Trigger"]));
+        auxWhatHappensIntervention.push_back(Rcpp::as<std::string>(listItem["WhatHappens"]));
+        auxRepetitionsIntervention.push_back(Rcpp::as<int>(listItem["Repetitions"]));
+        auxPeriodicityIntervention.push_back(Rcpp::as<float>(listItem["Repetitions"]));
+    }
+
+    totalEntries = interventions.length();
 
     //now we dump the info in the structs created
     for(int i=0; i<totalEntries; i++){
-        iv = createIntervention(auxIDIntervention.at(i), auxTriggerIntervention.at(i), auxWhatHappensIntervention.at(i), auxPeriodicity.at(i), auxRepetitionsIntervention.at(i));
+        iv = createIntervention(auxIDIntervention.at(i), auxTriggerIntervention.at(i), auxWhatHappensIntervention.at(i), auxPeriodicityIntervention.at(i), auxRepetitionsIntervention.at(i));
         iif = addIntervention(iif, iv);
     }
 
