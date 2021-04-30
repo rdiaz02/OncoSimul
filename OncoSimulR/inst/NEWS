@@ -1,3 +1,7 @@
+Changes in version 2.99.93 (2021-04-30):
+	- Fixed bugs and improved testing of rfitness with
+	three-element scale vector.
+	
 Changes in version 2.99.92 (2021-04-27):
 	- rfitness: scale can take a three-element vector.
 	- Vignette: examples (not run) for deviations from SSWM.
