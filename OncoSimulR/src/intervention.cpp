@@ -62,7 +62,7 @@ InterventionsInfo createInterventionsInfo(Rcpp::List interventions, const fitnes
         auxTriggerIntervention.push_back(Rcpp::as<std::string>(listItem["Trigger"]));
         auxWhatHappensIntervention.push_back(Rcpp::as<std::string>(listItem["WhatHappens"]));
         auxRepetitionsIntervention.push_back(Rcpp::as<int>(listItem["Repetitions"]));
-        auxPeriodicityIntervention.push_back(Rcpp::as<float>(listItem["Repetitions"]));
+        auxPeriodicityIntervention.push_back(Rcpp::as<float>(listItem["Periodicity"]));
     }
 
     totalEntries = interventions.length();
@@ -165,7 +165,7 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
             throw std::invalid_argument(errorMessage);
         } else {
             //a trigger is just a TRUE/FALSE condition
-            if(expression.value()){
+            if(expression.value() == 1){
                 parser_t parser_wh;
                 if(intervention.repetitions > 0 && intervention.periodicity == NOT_PERIODICITY){ // case where interventions are based only in repetitions
                     //if parser fails to compile, throws exception
@@ -354,7 +354,7 @@ bool parseWhatHappens(InterventionsInfo * iif, Intervention intervention, const 
         // once the value is calculated, we must assure if the operation is for the total population
         // or for some specific-genotype
         double res = expression.value();
-        if(res == N){ // this case is absurd, but it might happen, we just return true.
+        if(totalPopFlag && res == N){ // this case is absurd, but it might happen, we just return true.
             return true;
         } else if(totalPopFlag && (res < N)){// reduce total amount of population using hipergeometric distribution
             reducePopulation(iif, res ,&totPopSize);

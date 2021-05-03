@@ -24,7 +24,7 @@
 #include <exception>
 #include "exprtk.h"
 
-#define NOT_PERIODICITY -1
+#define NOT_PERIODICITY -1.0
 #define NOT_REPS -1
 
 // we declare the needed symbols for the table
