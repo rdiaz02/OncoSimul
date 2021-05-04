@@ -846,6 +846,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			 std::vector<double>& popSizes_out,
 			 std::vector<int>& index_out,
 			 std::vector<double>& time_out,
+       std::vector<Intervention>& interventions_out,
 			 std::vector<double>& sampleTotPopSize,
 			 std::vector<double>& sampleLargestPopSize,
 			 std::vector<int>& sampleMaxNDr,
@@ -1255,7 +1256,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       // in the phylogeny things that never get reflected in the pops.by.time
       // object.
       if(sp_to_remove.size())
-	remove_zero_sp_nr(sp_to_remove, Genotypes, popParams, mapTimes);
+	      remove_zero_sp_nr(sp_to_remove, Genotypes, popParams, mapTimes);
 
       numSpecies = popParams.size();
 
@@ -1306,13 +1307,15 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      // TODO: no quiero que se ejecute a no ser que sea distinto de NULL
-      SEXP s_interventions = interventions;
-      
-      if(!Rf_isNull(s_interventions)){
-        executeInterventions(interventions, totPopSize, currentTime, fitnessEffects, Genotypes, popParams);
+      // in case interventions are specified, we create the proper structure
+      int interventions_len = (int)interventions.length();
+      if(interventions_len > 0){
+        // we need structures Genotypes, PopParams and FitnessEffects
+        if(!executeInterventions(interventions, totPopSize, currentTime, fitnessEffects, Genotypes, popParams, interventions_out)){
+          Rcout << "Something went wrong while executeInterventions was running";
+        }
       } else {
-        std::cout << "executeInterventions not running";
+        Rcpp::Rcout << "executeInterventions not running";
       }
   
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,
@@ -1321,11 +1324,11 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       // could go inside sample_all_pop but here we are sure death, etc, are current
       // But I catch them when they are created. Is this really needed?
       for(size_t i = 0; i < popParams.size(); i++) {
-	g_tmp1_nr = popParams[i].birth/popParams[i].mutation;
-	if(g_tmp1_nr < g_min_birth_mut_ratio_nr) g_min_birth_mut_ratio_nr = g_tmp1_nr;
+        g_tmp1_nr = popParams[i].birth/popParams[i].mutation;
+        if(g_tmp1_nr < g_min_birth_mut_ratio_nr) g_min_birth_mut_ratio_nr = g_tmp1_nr;
 
-	g_tmp1_nr = popParams[i].death/popParams[i].mutation;
-	if(g_tmp1_nr < g_min_death_mut_ratio_nr) g_min_death_mut_ratio_nr = g_tmp1_nr;
+        g_tmp1_nr = popParams[i].death/popParams[i].mutation;
+        if(g_tmp1_nr < g_min_death_mut_ratio_nr) g_min_death_mut_ratio_nr = g_tmp1_nr;
       }
 
       forceSample = false;
@@ -1463,15 +1466,20 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 
   bool runAgain = true;
   bool reachDetection = false;
-  //Output
+  //Output parameters, this info will be needed for the main algorithm to be returned in order
+  // to update the status of the simulation (populations, genotypes... etc)
   std::vector<Genotype> genot_out;
   std::vector<double> popSizes_out;
   std::vector<int> index_out;
   std::vector<double> time_out; //only one entry per period!
+  // we do not care if parameter interventions has length 0, it will be handled later.
+  std::vector<Intervention> interventions_out;
+
   genot_out.reserve(initSp);
   popSizes_out.reserve(initSp);
   index_out.reserve(initSp);
   time_out.reserve(initIt);
+  interventions_out.reserve((int)interventions.length());
 
   double totPopSize = 0;
   std::vector<double> sampleTotPopSize;
@@ -1564,6 +1572,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  popSizes_out,
 		  index_out,
 		  time_out,
+      interventions_out,
 		  sampleTotPopSize,
 		  sampleLargestPopSize,
 		  sampleMaxNDr,
@@ -1691,6 +1700,22 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
     lod_parent.push_back(l.second);
   }
 
+  // Interventions: we create a list of lists (just as user specifies them) to return it to the R part of the code
+  List ret_interventions(interventions.length());
+  int interventions_len = (int)interventions.length();
+  if(interventions_len == 0){
+    ret_interventions = List::create();
+  } else if(interventions_len > 0){
+    R_xlen_t i_len;
+    for(int i=0, i_len = 0; i_len<interventions.length(); i++, i_len++){
+      ret_interventions[i_len] = List::create(Named("ID")          = interventions_out[i].id,
+                                              Named("Trigger")     = interventions_out[i].trigger,
+                                              Named("WhatHappens") = interventions_out[i].what_happens,
+                                              Named("Periodicity") = interventions_out[i].periodicity,
+                                              Named("Repetitions") = interventions_out[i].repetitions);
+    }
+  }
+
   return
     List::create(Named("pops.by.time") = outNS,
 		 Named("NumClones") = uniqueGenotypes_vector_nr.size(),
@@ -1711,6 +1736,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		 Named("CountByDriver") = countByDriver,
 		 Named("OccurringDrivers") = driversAsString,
 		 Named("PerSampleStats") = perSampleStats,
+     //Named("Interventions") = ret_interventions,
 		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
 					       Named("errorMF") =
 					       returnMFE_new(em1sc, typeModel),

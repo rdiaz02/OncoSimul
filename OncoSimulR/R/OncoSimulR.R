@@ -694,6 +694,12 @@ oncoSimulIndiv <- function(fp,
             if(AND_DrvProbExit)
                 stop("It makes no sense to pass AND_DrvProbExit and a fixation list.")
         }
+
+        #if interventions is null, we create an empty list, cos' it will be easier to handle by C++
+        if(is_null_na(interventions)){
+            interventions = list()
+        }
+
         op <- try(nr_oncoSimul.internal(rFE = fp, 
                                         birth = birth,
                                         death = death,  

@@ -122,7 +122,7 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i){
     return iif;
 }
 
-bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams){
+bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams, std::vector<Intervention>& interventions_out){
     //create the structure with all the information of the interventions
     InterventionsInfo iif = createInterventionsInfo(interventions, fitnessEffects, popParams, Genotypes);
 
@@ -280,6 +280,11 @@ bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &
     // original structures where the data was sourced from 
     // once the structure is updated, we update the structures that store the info while the simulation is running
     updatePopulations(&iif, fitnessEffects, Genotypes, popParams);
+
+    // now we need to fill the output parameter interventions_ou
+    for(int i=0; i<iif.interventions.size(); i++){
+        interventions_out.push_back(iif.interventions[i]);
+    }
 
     return true;
 }

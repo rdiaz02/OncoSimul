@@ -61,7 +61,7 @@ InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i);
 InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i);
 
 // function that executes the whole list of interventions
-bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams);
+bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams, std::vector<Intervention>& interventions_out);
 
 // function that compares two interventions
 int compareInterventions(Intervention i1, Intervention i2);

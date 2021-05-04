@@ -72,12 +72,15 @@ interventions <- list(
 
 #adf3x <- allFitnessEffects(genotFitness = df3x,frequencyDependentFitness = TRUE)
 
-# función que crea las intervenciones, verifica su correcta espcificación y retorna dichas intervenciones
-# preparadas para que sea consumibles por C++
+# this function create the interventions, verifies its correct  specification and returns those interventions
+# so they can be processed correctly by C++
 create_interventions <- function(interventions, frequencyType, genotFitness){
     return (adaptInterventionsToCpp(verify_interventions(interventions), frequencyType, genotFitness))
 }
 
+# this intervention transforms the genotype specification from the user-specified to the C++ one.
+# transformIntervention will give more detail about how this works. This "transformation" is done for 
+# trigger and what_happens attributes from the intervention.
 adaptInterventionsToCpp <- function(interventions, frequencyType, genotFitness) {
 
     #if(frequencyType != "abs") {
@@ -92,6 +95,10 @@ adaptInterventionsToCpp <- function(interventions, frequencyType, genotFitness) 
     return(interventions)
 }
 
+# this function is the one in charge to trabsform the genotypes. The user will specify genotypes as A, B, "A,B,C"... etc.
+# but in the C++ side, that processes operations, there is no "A", because when fitness is specified, there is an that changes n_A
+# to n_1 or n_A_B_C to n_1_2_3. The function that does those "transformations", is all_orders_fv, we just reverse engineered this function
+# and borrowed some funcionality so when the user specifies interventions that involve genotypes fitness's, the transformation can be made
 transformIntervention <- function(sentence, genotInfo){
     
     prefix <- "n_"
@@ -172,15 +179,23 @@ verify_interventions <- function(interventions){
         print("OK")
     }
 
+    # just for debugging...
     print(interventions)
 
     return(interventions)
 }
 
+# this function checks that there are no interventions with the same ID.
+check_double_id <- function(){
+
+}
+
+# this function checks that the trigger is correctly specified
 check_trigger <- function(trigger){
 
 }
 
+# this function checks that the what_happens is correctly specified.
 check_what_happens <- function(what_happens){
 
 }
