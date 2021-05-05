@@ -41,19 +41,31 @@
 
 ## imaginar la especificación de las intervenciones como:
 interventions <- list(
-    list(ID           = "i1",
+    list(ID           = "i2",
         Trigger       = "(N > 1e6) & (T > 100)",
         WhatHappens   = "N = 0.001 * N",
         Repetitions   = 7,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
         Periodicity    = Inf
     ),
-    list(ID           = "i2",
+    list(ID           = "i1",
         Trigger       = "(N > 1e9)",
         WhatHappens   = "N = 0.3 * N",
         Periodicity   = 10,
         Repetitions   = 0
     ),
     list(ID           = "i3",
+        Trigger       = "(N > 1e9)",
+        WhatHappens   = "n_A = n_A * 0,3 / n_C",
+        Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
+        Periodicity    = Inf
+    ),
+    list(ID           = "i5",
+        Trigger       = "(N > 1e9)",
+        WhatHappens   = "n_A = n_A * 0,3 / n_C",
+        Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
+        Periodicity    = Inf
+    ),
+    list(ID           = "i4",
         Trigger       = "(N > 1e9)",
         WhatHappens   = "n_A = n_A * 0,3 / n_C",
         Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
@@ -128,7 +140,8 @@ transformIntervention <- function(sentence, genotInfo){
 ## this function checks for inconsistencies in the specification of interventions
 verify_interventions <- function(interventions){
 
-    ## TODO: he de verificar que no se especifican dos intervenciones con mismo ID.
+    ## we check if there are interventions with the same ID.
+    check_double_id(interventions)
     
     for(i in 1:length(interventions)){
         ## check that the interventions are lists
@@ -176,6 +189,8 @@ verify_interventions <- function(interventions){
             interventions[[i]]$Repetitions <- 2^32
         }
 
+        check_what_happens(interventions[[i]]$WhatHappens)
+
         print("OK")
     }
 
@@ -186,17 +201,43 @@ verify_interventions <- function(interventions){
 }
 
 # this function checks that there are no interventions with the same ID.
-check_double_id <- function(){
+check_double_id <- function(interventions){
 
-}
+    if(!is.list(interventions)){
+        stop("This should be a list")
+    }
 
-# this function checks that the trigger is correctly specified
-check_trigger <- function(trigger){
-
+    i <- 1
+    buffer <- list()
+    while(i <= length(interventions)){
+        index_l <- i
+        buffer[[i]] <- interventions[[i]]
+        j <- 1
+        while(j <= length(buffer)){
+            if(j!= index_l){
+                if(buffer[[j]]$ID == interventions[[i]]$ID){
+                    stop("Check the interventions, there are 2 or more that have same IDs")
+                }
+            }
+            j <- j + 1
+        } 
+        i <- i + 1
+    }
 }
 
 # this function checks that the what_happens is correctly specified.
 check_what_happens <- function(what_happens){
+    # what happens has this form:
+    # <genotype_to_apply_some_operation> = <some_operation>
+    # we need to assure that the left part is just before the "="
 
+    string1 <- what_happens
+    str_split = strsplit(string1, "\\s+")[[1]]
+    #now we check that str_split[[2]] is "="
+
+    if(str_split[[2]] != "="){
+        stop("The specification of WhatHappens is wrong.\n It should be: 
+        <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
+    }
 }
 
