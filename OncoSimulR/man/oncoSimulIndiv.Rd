@@ -41,6 +41,7 @@
                 errorHitMaxTries = TRUE,
                 verbosity = 0,
                 initMutant = NULL,
+				constantPop = FALSE,
                 AND_DrvProbExit = FALSE,
                 fixation = NULL,
                 seed = NULL)
@@ -459,6 +460,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 %%   is to start the simulation from the wildtype genotype with nothing
 %%   mutated.}
 
+\item{constantPop}{Indicates if the total population must be constant or not.}
 
 \item{max.num.tries}{Only applies when \code{onlyCancer = TRUE}. What is
   the maximum number of times, for an individual simulation, we can

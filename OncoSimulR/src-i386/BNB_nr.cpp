@@ -914,8 +914,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	   sampleTotPopSize, sampleLargestPopSize, sampleMaxNDr,
 	   sampleNDrLargestPop, pom, ran_gen, initMutant, initSize,
 	   fitnessEffects, mu, muEF, full2mutator, intName, genesInFitness,
-	   dummyMutationRate, K, death, currentTime, keepEvery, mutationPropGrowth,
-	   typeModel,  verbosity);
+	   dummyMutationRate, K, death, currentTime, keepEvery, mutationPropGrowth, 
+     typeModel,  verbosity);
 
 
   double cteSize = totPopSize;

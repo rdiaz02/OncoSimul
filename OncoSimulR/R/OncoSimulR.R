@@ -508,7 +508,7 @@ oncoSimulIndiv <- function(fp,
                           "McFarlandLogD" = "mcfarlandlogd",
                           "McFLD" = "mcfarlandlogd",
                           "Arb" = "arbitrary",
-                          "Cte" = "constant",
+                          "Const" = "constant",
                           stop("No valid value for model")
                           )
     if(max(initSize) < 1)
@@ -523,14 +523,16 @@ oncoSimulIndiv <- function(fp,
     
     if("deathSpec" %in% names(fp)) {
         if (fp$deathSpec) {
-            if (typeFitness != "arbitrary") {
-                stop("If death is specified in the fitness effects, use Arb model.")
+            if (typeFitness != "arbitrary" && typeFitness != "constant") {
+                stop("If death is specified in the fitness effects, use Arb
+                     or Const model.")
             }
         }
         
         else {
             if (typeFitness == "arbitrary") {
-                stop("To use Arb model specify both birth and death in fitness effects.")
+                stop("To use Arb model specify both birth and death in fitness
+                     effects or use constant populations.")
             }
         }
     }
@@ -550,7 +552,7 @@ oncoSimulIndiv <- function(fp,
     }
 
     if(minDetectDrvCloneSz == "auto") {
-        if(model %in% c("Bozic", "Exp", "Arb", "Cte") )
+        if(model %in% c("Bozic", "Exp", "Arb", "Const") )
             minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog",
                               "McFLD", "McFarlandLogD")) {

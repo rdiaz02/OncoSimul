@@ -547,7 +547,6 @@ void updateRatesMcFarlandLog(std::vector<spParamsP>& popParams,
   }
 }
 
-
 // Yes, identical to previous one, but with death rate a minimal value of 1
 void updateRatesMcFarlandLog_D(std::vector<spParamsP>& popParams,
 			       double& adjust_fitness_MF,
@@ -561,7 +560,6 @@ void updateRatesMcFarlandLog_D(std::vector<spParamsP>& popParams,
     R_f_st(popParams[i]);
   }
 }
-
 
 
 void updateRatesFDFMcFarlandLog(std::vector<spParamsP>& popParams,
@@ -609,14 +607,13 @@ void updateRatesFDFMcFarlandLog_D(std::vector<spParamsP>& popParams,
 
 }
 
-
 void updateRatesFDFExp(std::vector<spParamsP>& popParams,
 		       const std::vector<Genotype>& Genotypes,
 		       const fitnessEffectsAll& fitnessEffects,
 		       const double& currentTime) {
   
   const std::vector<spParamsP>& lastPopParams = popParams;
-
+  
   for(size_t i = 0; i < popParams.size(); ++i) {
     popParams[i].birth =
       prodFitness(evalGenotypeFitness(Genotypes[i],
@@ -642,6 +639,7 @@ void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
   }
 
 }
+
 
 void updateRatesArbitrary(std::vector<spParamsP>& popParams,
 		       const std::vector<Genotype>& Genotypes,
@@ -674,6 +672,60 @@ void updateRatesConstant(std::vector<spParamsP>& popParams,
 
   double N = 0.0;
   double sum = 0.0;
+  bool deathSpec = false;
+  if (fitnessEffects.fitnessLandscape.fldmap.size()) {
+    deathSpec = true;
+  }
+  for(size_t i = 0; i < popParams.size(); ++i) {
+
+    std::vector<double> s = evalGenotypeFitness(Genotypes[i],
+				      fitnessEffects, Genotypes, lastPopParams, currentTime);
+
+    if (deathSpec) {
+      std::vector<double> birth(s.begin(), s.begin()+1);
+      std::vector<double> death(s.begin()+1, s.end());
+      popParams[i].birth = prodFitness(birth);
+      popParams[i].death = prodFitness(death);
+      sum += popParams[i].popSize*(popParams[i].birth-popParams[i].death);  
+    }
+
+    else {
+      popParams[i].birth = prodFitness(s);
+      sum += popParams[i].popSize*popParams[i].birth;
+    }
+    
+    N += popParams[i].popSize;
+    
+  }
+  
+  for(size_t i = 0; i < popParams.size(); ++i) {
+    if (deathSpec) {
+      popParams[i].death += sum/N + (N-cte)/(N*sampleEvery);
+    } else {
+      popParams[i].death = sum/N + (N-cte)/(N*sampleEvery);
+    }
+    
+    if (popParams[i].death < 1e-5) {
+      popParams[i].death = 1e-5;
+      Rcpp::Rcout << "Death too low. Readjusting to 1e-5." << std::endl;
+    }
+    W_f_st(popParams[i]);
+    R_f_st(popParams[i]);
+  }
+}
+
+
+/* void updateRatesConstant(std::vector<spParamsP>& popParams,
+		       const std::vector<Genotype>& Genotypes,
+		       const fitnessEffectsAll& fitnessEffects,
+           const double& cte,
+           const double& sampleEvery,
+		       const double& currentTime) {
+  
+  const std::vector<spParamsP>& lastPopParams = popParams;
+
+  double N = 0.0;
+  double sum = 0.0;
   for(size_t i = 0; i < popParams.size(); ++i) {
 
     if(fitnessEffects.frequencyDependentBirth) {
@@ -693,7 +745,7 @@ void updateRatesConstant(std::vector<spParamsP>& popParams,
     W_f_st(popParams[i]);
     R_f_st(popParams[i]);
   }
-}
+} */
 
 // Update birth or death rates as appropriate
 // Exp and Bozic are not updated, unless FDF
@@ -707,11 +759,11 @@ void updateBirthDeathRates(std::vector<spParamsP>& popParams,
          const double& sampleEvery,
 			   const double& currentTime,
 			   const TypeModel typeModel) {
-  
-  if(typeModel == TypeModel::arbitrary) {
-    updateRatesArbitrary(popParams, Genotypes, fitnessEffects, currentTime);
-  } else if (typeModel == TypeModel::constant){
+
+  if(typeModel == TypeModel::constant) {
     updateRatesConstant(popParams, Genotypes, fitnessEffects, cteSize, sampleEvery, currentTime);
+  } else if(typeModel == TypeModel::arbitrary) {
+    updateRatesArbitrary(popParams, Genotypes, fitnessEffects, currentTime);
   } else { 
     // In theory if death is specified (fitness dependent or not) the model
     // must be arbitrary and that is checked in R
@@ -737,6 +789,7 @@ void updateBirthDeathRates(std::vector<spParamsP>& popParams,
       else throw std::invalid_argument("this ain't a valid typeModel");
     } 
   }
+  
 }
   
 
@@ -948,7 +1001,7 @@ void initPops(
 	     const double& death,
 	     const double& currentTime,	     
 	     const double& keepEvery,
-	     const int& mutationPropGrowth,	     
+	     const int& mutationPropGrowth, 
 	     const TypeModel typeModel,
 	     const int& verbosity
 	     ) {
@@ -1043,7 +1096,7 @@ void initPops(
         (initMutant.size() != 0)) Rcpp::Rcout << "Init Mutant with death == 1.0\n";
 
       if(popParams[m].death >  99) Rcpp::warning("Init Mutant with death > 99");
-    } else if (typeModel == TypeModel::arbitrary) {
+    } else if (typeModel == TypeModel::arbitrary || typeModel == TypeModel::constant) {
           std::vector<double> s = evalGenotypeFitness(Genotypes[m],
 				      fitnessEffects, Genotypes, popParams, currentTime);
           Rcpp::Rcout << std::endl;
@@ -1053,7 +1106,13 @@ void initPops(
             popParams[m].death = s[1]+1;
           } else {
             popParams[m].birth = prodFitness(s);
-            popParams[m].death = prodFitness(s);
+
+            if (typeModel == TypeModel::arbitrary) {
+              popParams[m].death = prodFitness(s);
+            } else {
+              popParams[m].death = 0;
+            }
+            
           }
             
     } else {
@@ -1068,7 +1127,6 @@ void initPops(
 	      popParams[m].death = log1p(totPopSize/K);
       if (typeModel == TypeModel::mcfarlandlog_d)
 	      popParams[m].death = std::max(1.0, log1p(totPopSize/K));
-      
       if(!fitnessEffects.frequencyDependentBirth && !fitnessEffects.frequencyDependentDeath &&
         (popParams[m].numMutablePos == numLoci ) &&
         (popParams[m].birth != 1.0) ) throw std::logic_error("WT initMutant in non-FDF must have birth rate 1 with this model");
@@ -1090,7 +1148,7 @@ void initPops(
         W_f_st(popParams[m]);
         R_f_st(popParams[m]);
     } else {
-        sum += popParams[m].birth*popParams[m].popSize;
+        sum += (popParams[m].birth-popParams[m].death)*popParams[m].popSize;
         N += popParams[m].popSize;
     }
 
@@ -1099,7 +1157,7 @@ void initPops(
   if (typeModel == TypeModel::constant) {
 
     for(size_t m = 0; m != popParams.size(); ++m ) {
-      popParams[m].death = sum/N;
+      popParams[m].death += sum/N;
       W_f_st(popParams[m]);
       R_f_st(popParams[m]);
     }

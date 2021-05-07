@@ -1074,9 +1074,21 @@ allFitnessEffects <- function(rT = NULL,
                               keepInput = TRUE,
                               frequencyDependentBirth = FALSE,
                               frequencyDependentDeath = FALSE,
+                              frequencyDependentFitness = NULL,
                               frequencyType = NA,
                               deathSpec = FALSE) {
                               #spPopSizes = NULL) {
+    
+    # Version compatibility
+    if (!is.null(frequencyDependentFitness)) {
+      if (frequencyDependentBirth || frequencyDependentDeath || deathSpec) {
+        stop("You are mixing v2 functionality with v3 functionality.")
+      }
+      else {
+        frequencyDependentBirth = frequencyDependentFitness;
+        warning("v2 functionality detected. Adapting to v3 functionality.")
+      }
+    }
   
     if(frequencyDependentDeath && !deathSpec) {
       deathSpec = TRUE

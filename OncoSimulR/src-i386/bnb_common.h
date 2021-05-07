@@ -247,7 +247,7 @@ void initPops(
 	     const double& death,
 	     const double& currentTime,	     
 	     const double& keepEvery,
-	     const int& mutationPropGrowth,	     
+	     const int& mutationPropGrowth,
 	     const TypeModel typeModel,
 	     const int& verbosity
 	      );
