@@ -32,7 +32,7 @@ typedef exprtk::symbol_table<double> symbol_table_t;
 typedef exprtk::expression<double> expression_t;
 typedef exprtk::parser<double> parser_t;
 
-// We define what an intervention might be like
+// We define what an intervention is
 typedef struct {
     std::string id; // identifier of the intervention
     std::string trigger; // condition for the intervention to be executed
@@ -49,10 +49,17 @@ typedef struct{
 }InterventionsInfo;
 
 // function that creates the InterventionsInfo structure
-InterventionsInfo createInterventionsInfo(Rcpp::List interventions, const fitnessEffectsAll& fitnessEffects, const std::vector<spParamsP>& popParams, const Genotype &ge);
+InterventionsInfo createInterventionsInfo(Rcpp::List interventions, 
+                                          const fitnessEffectsAll& fitnessEffects, 
+                                          const std::vector<spParamsP>& popParams, 
+                                          std::vector<Genotype> Genotypes);
 
 // function that creates an intervention in memory
-Intervention createIntervention(std::string id, std::string trigger, std::string what_happens, float duration, int repetitions, std::string flagTimeSensitiveIntervention);
+Intervention createIntervention(std::string id, 
+                                std::string trigger, 
+                                std::string what_happens, 
+                                float periodicity, 
+                                int repetitions);
 
 // Function that add an intervention to the array of interventions
 InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i);
@@ -61,7 +68,13 @@ InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i);
 InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i);
 
 // function that executes the whole list of interventions
-bool executeInterventions(Rcpp::List interventions, double &totPopSize, double &currentTime, const fitnessEffectsAll& fitnessEffects, std::vector<Genotype> Genotypes, std::vector<spParamsP>& popParams, std::vector<Intervention>& interventions_out);
+bool executeInterventions(Rcpp::List interventions, 
+                         double &totPopSize, 
+                         double &currentTime, 
+                         const fitnessEffectsAll& fitnessEffects, 
+                         std::vector<Genotype> Genotypes, 
+                         std::vector<spParamsP>& popParams, 
+                         std::vector<Intervention>& interventions_out);
 
 // function that compares two interventions
 int compareInterventions(Intervention i1, Intervention i2);

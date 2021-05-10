@@ -1315,7 +1315,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
           Rcout << "Something went wrong while executeInterventions was running";
         }
       } else {
-        Rcpp::Rcout << "executeInterventions not running";
+        Rcpp::Rcout << "executeInterventions not running\n";
       }
   
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,

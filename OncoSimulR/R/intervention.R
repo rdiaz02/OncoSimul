@@ -1,39 +1,4 @@
-## deberé de tocar las funciones oncosimul*, debido a que las intervenciones serán especificadas
-## por los usuarios y llamar esta función de R para verificar que la lista está correctamente formada
-
-#oncoSimulPop <- function(..., *interventions*)
-#oncoSimulSample <- function(..., *interventions*)
- 
-## En oncoSimulIndiv no hace falta realizar la llamada a la función pero he de pasar el argumento "interventions"
-# oncoSimulIndiv <- function(..., *interventions*)
-
-
-# cambiar también las funciones, donde añadiremos el siguiente parámetro
-#nr_oncoSimul.internal <- function(..., *interventions*)
-
-#--------------------------------------------------------------------------------------------------
-#------------------------------------------- C++ --------------------------------------------------
-#--------------------------------------------------------------------------------------------------
-#// tendremos que modificar el paso del argumento, de tal manera que pueda ser especificado
-#// por parte del usuario y procesado por la parte del código en C++.
-
-#// se modificará la definición de nr_innerBNB:
-#static void nr_innerBNB (..., *interventions*)
-
-#//tendremos por tanto que modificar también la definición de nr_BNB_Algo5 a:
-#Rcpp::List nr_BNB_Algo5(..., *interventions*)
-
-#// y cambiar las definiciones en los ficheros como OncoSimulR_init.c
-#SEXP OncoSimulR_nr_BNB_Algo5(..., SEXP interventionsSEXP) // meter 38 como numero de argumentos en el vector de punteros a función
-
-#// y en RcppExports.cpp
-#Rcpp::List nr_BNB_Algo5(..., *interventions*)
-#    // añadir en BEGIN_RCPP
-#    Rcpp::traits::input_parameter< Rcpp::List >::type interventions(interventionsSEXP);
-#    // y añadir el argumento *interventions* en el wrap (__result)
-
-
-# Interventions es un vector que almacena: 
+# Interventions es lista de listas, donde una lista almacena: 
 # - ID intervención
 # - Trigger (que situación la dispara), ojo por que es una expresión (exprTK).
 # - WhatHappens: que acciones a realizar.
@@ -44,7 +9,7 @@ interventions <- list(
     list(ID           = "i2",
         Trigger       = "(N > 1e6) & (T > 100)",
         WhatHappens   = "N = 0.001 * N",
-        Repetitions   = 7,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
+        Repetitions   = 7,  
         Periodicity    = Inf
     ),
     list(ID           = "i1",
@@ -56,20 +21,20 @@ interventions <- list(
     list(ID           = "i3",
         Trigger       = "(N > 1e9)",
         WhatHappens   = "n_A = n_A * 0,3 / n_C",
-        Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
-        Periodicity    = Inf
+        Repetitions   = Inf,  
+        Periodicity    = 10
     ),
     list(ID           = "i5",
         Trigger       = "(N > 1e9)",
-        WhatHappens   = "n_A = n_A * 0,3 / n_C",
-        Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
+        WhatHappens   = "n_A_B = n_B * 0,3 / n_SRL",
+        Repetitions   = 0,   
         Periodicity    = Inf
     ),
     list(ID           = "i4",
         Trigger       = "(N > 1e9)",
-        WhatHappens   = "n_A = n_A * 0,3 / n_C",
-        Repetitions   = Inf,   ## Recordar en C++ esto es un entero; pensar si se mapea al max_INT
-        Periodicity    = Inf
+        WhatHappens   = "n_B   = (n_A * 0,3 / n_C)/N",
+        Repetitions   = 4,  
+        Periodicity    = 10
     )
 )
 
@@ -93,11 +58,9 @@ create_interventions <- function(interventions, frequencyType, genotFitness){
 # this intervention transforms the genotype specification from the user-specified to the C++ one.
 # transformIntervention will give more detail about how this works. This "transformation" is done for 
 # trigger and what_happens attributes from the intervention.
-adaptInterventionsToCpp <- function(interventions, frequencyType, genotFitness) {
 
-    #if(frequencyType != "abs") {
-    #    stop("You shouldn't be here. Exiting.")
-    #} 
+
+adaptInterventionsToCpp <- function(interventions, frequencyType, genotFitness) {
 
     for(i in 1:length(interventions)){
         interventions[[i]]$Trigger <- transformIntervention(as.character(interventions[[i]]$Trigger), genotFitness)
@@ -225,7 +188,7 @@ check_double_id <- function(interventions){
     }
 }
 
-# this function checks that the what_happens is correctly specified.
+# check that the what_happens is correctly specified.
 check_what_happens <- function(what_happens){
     # what happens has this form:
     # <genotype_to_apply_some_operation> = <some_operation>
