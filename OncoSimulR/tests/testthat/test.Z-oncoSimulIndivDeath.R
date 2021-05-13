@@ -51,7 +51,7 @@ test_that("testing model and afe compatibility", {
                         seed = NULL, 
                         errorHitMaxTries = TRUE, 
                         errorHitWallTime = TRUE),
-	"If death is specified in the fitness effects, use Arb model.")
+	"If death is specified in the fitness effects, use Arb or Const model.")
 })
 
 test_that("testing output classes", {

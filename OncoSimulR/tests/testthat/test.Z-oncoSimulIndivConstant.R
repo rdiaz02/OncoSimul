@@ -26,8 +26,8 @@ test_that("testing models", {
 						errorHitMaxTries = TRUE, 
 						errorHitWallTime = TRUE))
 	
-	expect_true(osi1$TotalPopSizes >= 1800)
-	expect_true(osi1$TotalPopSizes <= 2200)	
+	expect_true(osi1$TotalPopSize >= 1800)
+	expect_true(osi1$TotalPopSize <= 2200)	
 	
 	r[, "Death"] <- c("f_1", "f_1 + f_", "f_2+f_1_2", "f_2")
 	
@@ -49,8 +49,8 @@ test_that("testing models", {
 						errorHitMaxTries = TRUE, 
 						errorHitWallTime = TRUE))
 	
-	expect_true(osi2$TotalPopSizes >= 1800)
-	expect_true(osi2$TotalPopSizes <= 2200)	
+	expect_true(osi2$TotalPopSize >= 1800)
+	expect_true(osi2$TotalPopSize <= 2200)	
 })
 
 set.seed(NULL)

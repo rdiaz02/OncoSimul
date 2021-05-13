@@ -524,15 +524,13 @@ oncoSimulIndiv <- function(fp,
     if("deathSpec" %in% names(fp)) {
         if (fp$deathSpec) {
             if (typeFitness != "arbitrary" && typeFitness != "constant") {
-                stop("If death is specified in the fitness effects, use Arb
-                     or Const model.")
+                stop("If death is specified in the fitness effects, use Arb or Const model.")
             }
         }
         
         else {
             if (typeFitness == "arbitrary") {
-                stop("To use Arb model specify both birth and death in fitness
-                     effects or use constant populations.")
+                stop("To use Arb model specify both birth and death in fitness effects.")
             }
         }
     }
