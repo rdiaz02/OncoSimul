@@ -82,20 +82,11 @@ simOGraph <- function(n, h = ifelse(n >= 4, 4, n),
 
     ## Prune to remove indirect connections
     if(multilevelParent & removeDirectIndirect) {
-        ## adjMat <- transitiveReduction(adjMat)
-        ## calling transitive.closure not necessary, as that
-        ## is called inside transitive.reduction
-        ## trm <- nem::transitive.reduction(nem::transitive.closure(adjMat))
-
         ## could use relations package as
-        ## r1 <- relations::transitive_reduction(
-        ##       relations::transitive_closure(relations::as.relation(adjMat2)))
-        ## trm <- relation_incidence(r1)
         ## but storage mode is double, etc, etc.
         ## And would need to double check it is working as I think it is.
         ## For now, trying to use nem's code directly
-        
-        trm <- nem_transitive.reduction(adjMat)
+         trm <- nem_transitive.reduction(adjMat)
         stopifnot(all(trm %in% c(0L, 1L) ))
         storage.mode(trm) <- "integer"
         adjMat <- trm
@@ -164,72 +155,15 @@ connectIndiv <- function(parents, nparents, n) {
     return(c(0L,v)) ## added root
 }
 
-## Not used
-## findSuperParents <- function(x, adjMat) {
-##     parents <- which(adjMat[, x + 1]  == 1) - 1
-##     allP <- findAllParents(x, adjMat)
-##     return(setdiff(allP, parents))
-## }
-
-## findAllParents <- function(x, adjMat) {
-##     if(x == 0)
-##         return(NULL)
-##     else{
-##         p <- which(adjMat[, x + 1] == 1) - 1
-##         p1 <- unlist(lapply(p, function(x) findAllParents(x, adjMat)))
-##         return(c(p, p1))
-##     }
-## }
-
-## repeatedParents <- function(x, adjMat) {
-##     ap <- findAllParents(x, adjMat)
-##     dups <- duplicated(ap)
-##     dupP <- setdiff(ap[dups], 0)
-##     dupP
-## }
-
-
-## ## ## But this only works if a special order in the rows and columns
-## ## ## and will not work with the root row.
-## ## m1 <- matrix(0, ncol = 5, nrow = 5); colnames(m1) <- rownames(m1) <- LETTERS[1:5]
-## ## for(i in 1:4) m1[i, i+1] <- 1
-## ## library(ggm)
-## ## m1tc <- ggm::transClos(m1)
-## ## transitiveReduction(m1tc)
-
-
 ## ## Other R and BioC packages that will do transitive reduction:
 ## ## nem (BioC): works with adjacency matrices directly
 ## ## rBiopaxParser (BioC): a wrapper to nem
 ## ## rPref
 ## ## relations
 ## ## hasseDiagram
-
-## transitiveReduction <- function(adjMat) {
-##     ## Return the transitive reduction
-
 ## But note my bug report to BioC,
-
 ## https://support.bioconductor.org/p/91695/
-
 ## See discussion and comments on
 ## http://stackoverflow.com/a/6702198 
 ## and comments on http://stackoverflow.com/a/2372202
 ## So one need to do the transitive closure first.
-    
-##     ## We remove the direct connections. How? We search, for each node,
-##     ## for the set of all parents/grandparents/grandgrandparents/etc. If
-##     ## any of those ancestors is repeated, it means you go from that
-##     ## ancestor to the node in question through at least two different
-##     ## routes. Thus, ensure the direct is 0 (it might already be, no
-##     ## problem). Once you do that, you know there are not both indirect
-##     ## AND direct connections and thus you have the transitive reduction.
-##     for(i in ncol(adjMat):2) {
-##         dp <- repeatedParents( i - 1, adjMat)
-##         if(length(dp))
-##             adjMat[cbind(dp + 1, i)] <- 0L
-##     }
-##     return(adjMat)
-## }
-
-

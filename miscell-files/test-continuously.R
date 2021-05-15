@@ -74,7 +74,9 @@ while(TRUE) {
 
     
     ## devtools, checks vignette and also catches other errors. ALWAYS
-    ## commit changes before as devtools can change files!!!  But the
+    ## commit changes before as devtools can change files!!!
+    ## See this: https://github.com/r-lib/devtools/issues/1248
+    ## But the
     ## changing of files is way too dangerous for a check.
     ## devtools::check(pkg = "../OncoSimulR", document = FALSE)
 

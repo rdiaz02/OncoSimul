@@ -1,4 +1,4 @@
 #!/bin/bash
 ## simplify my workflow.
-Rscript -e 'library(rmarkdown); library(BiocStyle); render("OncoSimulR.Rmd")'
+Rscript-devel -e 'library(rmarkdown); library(BiocStyle); render("OncoSimulR.Rmd")'
 

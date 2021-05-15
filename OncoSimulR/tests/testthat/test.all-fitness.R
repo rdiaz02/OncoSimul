@@ -1274,26 +1274,27 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
             addwt = TRUE))
     ))
 
-
-    expect_true_silent(identical(
-        data.frame(Genotype = c("WT", "A"),
-                   Fitness = c(1.0, 1.0),
-                   stringsAsFactors = FALSE),
-        as.data.frame(evalAllGenotypes(
-            allFitnessEffects(genotFitness = data.frame(g = c("A"),
-                                                        y = c(1))),
-            addwt = TRUE))
-    ))
+    ## Single gene. Could evaluate fitness effects, but not simulate.
+    ## It failed in nr_oncoSimul.internal
+    ## expect_true_silent(identical(
+    ##     data.frame(Genotype = c("WT", "A"),
+    ##                Fitness = c(1.0, 1.0),
+    ##                stringsAsFactors = FALSE),
+    ##     as.data.frame(evalAllGenotypes(
+    ##         allFitnessEffects(genotFitness = data.frame(g = c("A"),
+    ##                                                     y = c(1))),
+    ##         addwt = TRUE))
+    ## ))
     
-    expect_true_silent(identical(
-        data.frame(Genotype = c("WT", "A"),
-                   Fitness = c(1.0, 0.6),
-                   stringsAsFactors = FALSE),
-        as.data.frame(evalAllGenotypes(
-            allFitnessEffects(genotFitness = data.frame(g = c("A"),
-                                                        y = c(0.6))),
-            addwt = TRUE))
-    ))
+    ## expect_true_silent(identical(
+    ##     data.frame(Genotype = c("WT", "A"),
+    ##                Fitness = c(1.0, 0.6),
+    ##                stringsAsFactors = FALSE),
+    ##     as.data.frame(evalAllGenotypes(
+    ##         allFitnessEffects(genotFitness = data.frame(g = c("A"),
+    ##                                                     y = c(0.6))),
+    ##         addwt = TRUE))
+    ## ))
 
     expect_true_silent(identical(
         data.frame(Genotype = c("WT", "A", "D", "F", "A, D", "A, F", "D, F",

@@ -97,6 +97,7 @@ void nr_fitness(spParamsP& tmpP,
       tmpP.death = 1.0;
       tmpP.birth = 0.0;
     } else{
+      // FIXME: this is twisted. We should use same logic as updateBirthDate rates.
       // Set appropriate model-specific defaults and change only as needed
       tmpP.death = parentP.death; // will use 1 for exp, log whatever for McF
       tmpP.absfitness = parentP.absfitness; // was used for old Beerenwinkel model
