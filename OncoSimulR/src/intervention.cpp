@@ -443,7 +443,7 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
     Rcpp::NumericMatrix rcpp_mhgeo_distribution; 
     Rcpp::NumericMatrix rcpp_populations_matrix;
     Rcpp::NumericVector rcpp_populations;
-    Rcpp::NumericVector rcpp_totalPop;
+    Rcpp::NumericVector rcpp_target;
     //auxiliar variable to check the structure (and the atribute mapGenoToPop) is well populated
     double totalPop = 0.0;
     for(auto map : iif.mapGenoToPop){
@@ -461,11 +461,11 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
     rcpp_populations.attr("dim") = Dimension(populations.size(), 1);
 
     rcpp_populations_matrix = Rcpp::wrap(rcpp_populations);
-    rcpp_totalPop = Rcpp::wrap(totalPop);
+    rcpp_target = Rcpp::wrap(target);
     
     // then, we specify the total genotypes of the populations and we obtain a distribution
     // la idea es obtener cada uno de los números (clones) y devolverlos a la estructura y tenerla actualizada siempre.
-    rcpp_mhgeo_distribution = my_rmvhyper(1, rcpp_populations_matrix, rcpp_totalPop);
+    rcpp_mhgeo_distribution = my_rmvhyper(1, rcpp_populations_matrix, rcpp_target);
     rcpp_mhgeo_distribution.attr("dim") = Dimension(populations.size(), 0);
 
     populations = Rcpp::as<std::vector<double>>(rcpp_mhgeo_distribution);
