@@ -72,49 +72,49 @@ test_that("exercising the fitnessEffects plotting code", {
 date()
 
 test_that("xlab, ylab, ylim, xlim can be passed", {
-    data(examplePosets)
-    p701 <- examplePosets[["p701"]]
-    max.tries <- 4
-    for(i in 1:max.tries) {
-        b1 <- oncoSimulIndiv(p701)
-        if(b1$FinalTime >= 90) {
-            break
-        } else {
-            cat("\n hummm.. had to run again in the plot")
-            if(i >= max.tries) {
-                print(b1)
-                stop("stream might break")
-            }
-        }
-    }
-    plot(b1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000), log = "",
-         plotDrivers = TRUE, xlim = c(20, 70))
-    plot(b1, show = "drivers", type = "stacked",
-         xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000),
-         xlim = c(20, 70),
-         plotDrivers = TRUE)
-    plot(b1, show = "drivers", type = "stream",
-         addtot = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(-100, 1000),
-         xlim = c(20, 70),
-         plotDrivers = TRUE)
-    plot(b1, show = "genotypes",
-         addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(1, 1000),
-         xlim = c(20, 70),
-         plotDrivers = TRUE)
-    plot(b1, show = "genotypes", type = "stacked",
-         xlab = "xlab",
-         ylab = "ylab", ylim = c(-1000, 1000),
-         xlim = c(20, 70),
-         plotDrivers = TRUE)
-    plot(b1, show = "genotypes", type = "stream",
-         addtot = TRUE, xlab = "xlab",
-         ylab = "ylab", ylim = c(-100, 1000),
-         xlim = c(-20, 70),
-         plotDrivers = TRUE)
+    ## data(examplePosets)
+    ## p701 <- examplePosets[["p701"]]
+    ## max.tries <- 4
+    ## for(i in 1:max.tries) {
+    ##     b1 <- oncoSimulIndiv(p701)
+    ##     if(b1$FinalTime >= 90) {
+    ##         break
+    ##     } else {
+    ##         cat("\n hummm.. had to run again in the plot")
+    ##         if(i >= max.tries) {
+    ##             print(b1)
+    ##             stop("stream might break")
+    ##         }
+    ##     }
+    ## }
+    ## plot(b1, addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-1000, 1000), log = "",
+    ##      plotDrivers = TRUE, xlim = c(20, 70))
+    ## plot(b1, show = "drivers", type = "stacked",
+    ##      xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-1000, 1000),
+    ##      xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "drivers", type = "stream",
+    ##      addtot = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-100, 1000),
+    ##      xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "genotypes",
+    ##      addtot = TRUE, plotDiversity = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(1, 1000),
+    ##      xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "genotypes", type = "stacked",
+    ##      xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-1000, 1000),
+    ##      xlim = c(20, 70),
+    ##      plotDrivers = TRUE)
+    ## plot(b1, show = "genotypes", type = "stream",
+    ##      addtot = TRUE, xlab = "xlab",
+    ##      ylab = "ylab", ylim = c(-100, 1000),
+    ##      xlim = c(-20, 70),
+    ##      plotDrivers = TRUE)
     sa <- 0.1
     sb <- -0.2
     sab <- 0.25
@@ -184,45 +184,45 @@ test_that("xlab, ylab, ylim, xlim can be passed", {
 })
 
 
-date()
-test_that("oncosimul v.1 objects and genotype plotting", {
-    data(examplePosets)
-    ## An object of class oncosimul
-    p705 <- examplePosets[["p705"]]
-    max.tries <- 4
-    for(i in 1:max.tries) {
-    p1 <- oncoSimulIndiv(p705, keepEvery = 1.1) ## if keepEvery is too
-                                                ## large, from time to
-                                                ## time you end up with
-                                                ## less than 4 sample
-                                                ## points and the stream
-                                                ## plot breaks
+## date()
+## test_that("oncosimul v.1 objects and genotype plotting", {
+##     data(examplePosets)
+##     ## An object of class oncosimul
+##     p705 <- examplePosets[["p705"]]
+##     max.tries <- 4
+##     for(i in 1:max.tries) {
+##     p1 <- oncoSimulIndiv(p705, keepEvery = 1.1) ## if keepEvery is too
+##                                                 ## large, from time to
+##                                                 ## time you end up with
+##                                                 ## less than 4 sample
+##                                                 ## points and the stream
+##                                                 ## plot breaks
 
-    if(nrow(p1$pops.by.time) >= 5) {
-            break
-    } else {
-        cat("\n hummm.. had to run again in the plot")
-        if(i >= max.tries) {
-            print(p1)
-            stop("stream will break")
-        }
-    }
-    }
-    ## p1 <- oncoSimulIndiv(p705, model = "McFL",
-    ##                      mu = 5e-6,
-    ##                      sampleEvery = 0.02,
-    ##                      keepEvery = 10,
-    ##                      initSize = 2000,
-    ##                      finalTime = 3000,
-    ##                      onlyCancer = FALSE)
-    class(p1)
-    plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
-    plot(p1, type = "stream", show = "genotypes", thinData = TRUE)
-    plot(p1, type = "line", show = "genotypes", thinData = TRUE)
-    expect_true(TRUE) 
-    expect_error(plot(tmp, type = "linito"))
-})
-date()
+##     if(nrow(p1$pops.by.time) >= 5) {
+##             break
+##     } else {
+##         cat("\n hummm.. had to run again in the plot")
+##         if(i >= max.tries) {
+##             print(p1)
+##             stop("stream will break")
+##         }
+##     }
+##     }
+##     ## p1 <- oncoSimulIndiv(p705, model = "McFL",
+##     ##                      mu = 5e-6,
+##     ##                      sampleEvery = 0.02,
+##     ##                      keepEvery = 10,
+##     ##                      initSize = 2000,
+##     ##                      finalTime = 3000,
+##     ##                      onlyCancer = FALSE)
+##     class(p1)
+##     plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
+##     plot(p1, type = "stream", show = "genotypes", thinData = TRUE)
+##     plot(p1, type = "line", show = "genotypes", thinData = TRUE)
+##     expect_true(TRUE) 
+##     expect_error(plot(tmp, type = "linito"))
+## })
+## date()
 
 
 ## The following are not run because of the weird issue
@@ -231,33 +231,33 @@ date()
 
 
 
-test_that("passing colors", {
-    data(examplePosets)
-    ## An object of class oncosimul
-    p705 <- examplePosets[["p705"]]
-    max.tries <- 4
-    for(i in 1:max.tries) {
-    p1 <- oncoSimulIndiv(p705)
-    if(nrow(p1$pops.by.time) >= 11) {
-            break
-    } else {
-        cat("\n hummm.. had to run again in the plot")
-        if(i >= max.tries) {
-            print(p1)
-            stop("stream will break")
-        }
-    }
-    }
-    ## class(p1)
-    plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
-    ## with newest testthat, the next make if fail with test_dir, but
-    ## not if run from REPL. Go figure
-    plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
-    plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
-    plot(p1, type = "line", show = "genotypes", col = rainbow(3))
-    expect_true(TRUE) 
-    expect_error(plot(p1, type = "linito"))
-})
+## test_that("passing colors", {
+##     data(examplePosets)
+##     ## An object of class oncosimul
+##     p705 <- examplePosets[["p705"]]
+##     max.tries <- 4
+##     for(i in 1:max.tries) {
+##     p1 <- oncoSimulIndiv(p705)
+##     if(nrow(p1$pops.by.time) >= 11) {
+##             break
+##     } else {
+##         cat("\n hummm.. had to run again in the plot")
+##         if(i >= max.tries) {
+##             print(p1)
+##             stop("stream will break")
+##         }
+##     }
+##     }
+##     ## class(p1)
+##     plot(p1, type = "stacked", show = "genotypes", thinData = TRUE)
+##     ## with newest testthat, the next make if fail with test_dir, but
+##     ## not if run from REPL. Go figure
+##     plot(p1, type = "stacked", show = "genotypes", col = rainbow(8))
+##     plot(p1, type = "stream", show = "genotypes", col = rainbow(18))
+##     plot(p1, type = "line", show = "genotypes", col = rainbow(3))
+##     expect_true(TRUE) 
+##     expect_error(plot(p1, type = "linito"))
+## })
 
 
 

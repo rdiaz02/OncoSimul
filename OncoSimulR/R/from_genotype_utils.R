@@ -307,90 +307,6 @@ to_genotFitness_std <- function(x,
     return(x)
 }
 
-## Deprecated after flfast
-## to_genotFitness_std is faster and has better error checking
-## and is very similar and does not use
-## the genot_fitness_to_epistasis, which is not reasonable anymore.
-
-## from_genotype_fitness <- function(x) {
-##     ## Would break with output from allFitnessEffects and
-##     ## output from allGenotypeAndMut
-
-##     ## For the very special and weird case of
-##     ## a matrix but only a single gene so with a 0 and 1
-##     ## No, this is a silly and meaningless case.
-##     ## if( ( ncol(x) == 2 ) && (nrow(x) == 1) && (x[1, 1] == 1) ) {
-
-##     ## } else  blabla:
-
-##     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
-##         stop("Input must inherit from matrix or data.frame.")
-
-##     ## if((ncol(x) > 2) && !(inherits(x, "matrix"))
-##     ##     stop(paste0("Genotype fitness input either two-column data frame",
-##     ##          " or a numeric matrix with > 2 columns."))
-##     ## if( (ncol(x) > 2) && (nrow(x) == 1) )
-##     ##     stop(paste0("It looks like you have a matrix for a single genotype",
-##     ##                 " of a single gene. For this degenerate cases use",
-##     ##                 " a data frame specification."))
-
-##     if(ncol(x) > 2) {
-##         if(inherits(x, "matrix")) {
-##             if(!is.numeric(x))
-##                 stop("A genotype fitness matrix/data.frame must be numeric.")
-##         } else if(inherits(x, "data.frame")) {
-##             if(!all(unlist(lapply(x, is.numeric))))
-##                 stop("A genotype fitness matrix/data.frame must be numeric.")
-##         }
-
-##         ## We are expecting here a matrix of 0/1 where columns are genes
-##         ## except for the last column, that is Fitness
-##         ## Of course, can ONLY work with epistastis, NOT order
-##         return(genot_fitness_to_epistasis(x))
-##     } else {
-##         if(!inherits(x, "data.frame"))
-##             stop("genotFitness: if two-column must be data frame")
-##         ## Make sure no factors
-##         if(is.factor(x[, 1])) x[, 1] <- as.character(x[, 1])
-##         ## Make sure no numbers
-##         if(any(is.numeric(x[, 1])))
-##             stop(paste0("genotFitness: first column of data frame is numeric.",
-##                         " Ambiguous and suggests possible error. If sure,",
-##                         " enter that column as character"))
-
-##         omarker <- any(grepl(">", x[, 1], fixed = TRUE))
-##         emarker <- any(grepl(",", x[, 1], fixed = TRUE))
-##         nogoodepi <- any(grepl(":", x[, 1], fixed = TRUE))
-##         ## if(omarker && emarker) stop("Specify only epistasis or order, not both.")
-##         if(nogoodepi && emarker) stop("Specify the genotypes separated by a ',', not ':'.")
-##         if(nogoodepi && !emarker) stop("Specify the genotypes separated by a ',', not ':'.")
-##         ## if(nogoodepi && omarker) stop("If you want order, use '>' and if epistasis ','.")
-##         ## if(!omarker && !emarker) stop("You specified neither epistasis nor order")
-##         if(omarker) {
-##             ## do something. To be completed
-##             stop("This code not yet ready")
-##             ## You can pass to allFitnessEffects genotype -> fitness mappings that
-##             ## involve epistasis and order. But they must have different
-##             ## genes. Otherwise, it is not manageable.
-##         }
-##         if( emarker || ( (!omarker) && (!emarker) && (!nogoodepi)) ) {
-##             ## the second case above corresponds to passing just single letter genotypes
-##             ## as there is not a single marker
-##             x <- x[, c(1, 2), drop = FALSE]
-##             if(!all(colnames(x) == c("Genotype", "Fitness"))) {
-##                 message("Column names of object not Genotype and Fitness.",
-##                         " Renaming them assuming that is what you wanted")
-##                 colnames(x) <- c("Genotype", "Fitness")
-##             }
-##             if((!omarker) && (!emarker) && (!nogoodepi)) {
-##                 message("All single-gene genotypes as input to from_genotype_fitness")
-##             }
-##             ## Yes, we need to do this to  scale the fitness and put the "-"
-##             return(genot_fitness_to_epistasis(allGenotypes_to_matrix(x)))
-##         }
-##     }
-## }
-
 
 
 
@@ -504,7 +420,13 @@ allGenotypes_to_matrix <- function(x,
     )
 
     all_genes <- sort(unique(unlist(splitted_genots)))
-
+    if(length(all_genes) < 2) stop(paste("There must be at least two genes (loci)",
+                                         "in the fitness effects.",
+                                         "If you only care about a case with",
+                                         "a single one (or none) enter gene(s)",
+                                         "with a fitness effect of zero.",
+                                         "For freq.dep.fitness, create another ",
+                                         "genotype that always has fitness zero."))
     m <- matrix(0, nrow = length(splitted_genots), ncol = length(all_genes))
     the_match <- lapply(
         splitted_genots,
@@ -522,7 +444,7 @@ allGenotypes_to_matrix <- function(x,
     if (frequencyDependentFitness) {
         m <- as.data.frame(m)
         m[, 1:length(all_genes)] <- apply(
-            m[, 1:length(all_genes)],
+            m[, 1:length(all_genes), drop = FALSE],
             2,
             as.numeric
         )
@@ -607,78 +529,6 @@ Magellan_stats <- function(x, max_num_genotypes = 2000,
 }
 
 
-## Former version, that always tries to give a vector
-## and that uses an external executable.
-## Magellan_stats and Magellan_draw cannot be tested
-## routinely, as they depend on external software
-Magellan_stats_former <- function(x, max_num_genotypes = 2000,
-                           verbose = FALSE,
-                           use_log = TRUE,
-                           short = TRUE,
-                           fl_statistics = "fl_statistics",
-                           replace_missing = FALSE) { # nocov start
-    ## I always use
-    ## if(!is.null(x) && is.null(file))
-    ##     stop("one of object or file name")
-    ## if(is.null(file))
-    fn <- tempfile()
-    fnret <- tempfile()
-    if(verbose)
-        cat("\n Using input file", fn, " and output file ", fnret, "\n")
-
-    if(use_log) {
-        logarg <- "-l"
-    } else {
-        logarg <- NULL
-    }
-    if(short) {
-        shortarg <- "-s"
-    } else {
-        shortarg <- NULL
-    }
-
-    if(replace_missing) {
-        zarg <- "-z"
-    } else {
-        zarg <- NULL
-    }
-
-    to_Magellan(x, fn, max_num_genotypes = max_num_genotypes)
-    ## newer versions of Magellan provide some extra values to standard output
-    call_M <- system2(fl_statistics,
-                      args = paste(fn, shortarg, logarg, zarg, "-o", fnret),
-                      stdout = NULL)
-    if(short) {
-        ## tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[-1])
-
-        tmp <- as.vector(read.table(fnret, skip = 1, header = TRUE)[c(-1)])
-        ## Make names more explicit, but check we have what we think we have
-        ## New versions of Magellan produce different output apparently of variable length
-        stopifnot(length(tmp) >= 23) ## 23) ## variable length
-        stopifnot(identical(names(tmp)[1:13], ## only some
-                            c("ngeno", "npeaks", "nsinks", "gamma", "gamma.", "r.s",
-                              "nchains", "nsteps", "nori", "depth", "magn", "sign",
-                              "rsign"))) ## , "w.1.", "w.2.", "w.3..", "mode_w", "s.1.",
-        ## "s.2.", "s.3..", "mode_s", "pairs_s", "outD_v")))
-        if(length(tmp) >= 24) ## the new version
-            stopifnot(identical(names(tmp)[c(20, 24)],
-                                c("steps_m", "mProbOpt_0")))
-        ## steps_m: the mean number of steps over the entire landscape to
-        ## reach the global optimum
-        ## mProbOpt_0: The mean probability to
-        ## reach that optimum (again averaged over the entire landscape).
-        ## but if there are multiple optima, there are many of these
-        names(tmp)[1:13] <- c("n_genotypes", "n_peaks", "n_sinks", "gamma", "gamma_star",
-                        "r/s","n_chains", "n_steps", "n_origins", "max_depth",
-                        "epist_magn", "epist_sign", "epist_rsign")## ,
-                        ## "walsh_coef_1", "walsh_coef_2", "walsh_coef_3", "mode_walsh",
-                        ## "synerg_coef_1", "synerg_coef_2", "synerg_coef_3", "mode_synerg",
-        ## "std_dev_pairs", "var_outdegree")
-    } else {
-        tmp <- readLines(fnret)
-    }
-    return(tmp)
-} # nocov end
 
 Magellan_draw <- function(x, max_num_genotypes = 2000,
                           verbose = FALSE,

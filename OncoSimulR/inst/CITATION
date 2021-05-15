@@ -24,7 +24,6 @@ citEntry(entry="Article",
          )
 
 
-
 citEntry(entry = "Article",
 	author = "R Diaz-Uriarte and C Vasallo",
 	title = "Every which way? On predicting tumor evolution using cancer progression models",
@@ -42,12 +41,11 @@ citEntry(entry = "Article",
 )
 
 
-
 citEntry(entry="Article",
          author = "R Diaz-Uriarte",
          title = "Cancer progression models and fitness landscapes: a many-to-many relationship",
          journal = "Bioinformatics",
-         year = "2017",
+         year = "2018",
          doi = "10.1093/bioinformatics/btx663",
          url = "https://academic.oup.com/bioinformatics/article/34/5/836/4557185",
          volume = "34",

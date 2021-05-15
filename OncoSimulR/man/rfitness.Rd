@@ -55,9 +55,36 @@ additive models.}
   genotypes with that number of mutations have equal probability of
   being the reference). }
 
-\item{scale}{Either NULL (nothing is done) or a two-element vector. If a
-  two-element vector, fitness is re-scaled between \code{scale[1]} (the
-  minimum) and \code{scale[2]} (the maximum).}
+\item{scale}{Either NULL (nothing is done) or a two- or three-element
+  vector.
+
+  If a two-element vector, fitness is re-scaled between
+  \code{scale[1]} (the minimum) and \code{scale[2]} (the maximum) and,
+  later, if you have selected it, \code{wt_is_1} will be enforced.
+
+  If you pass a three element vector, fitness is re-scaled so that the
+  new maximum fitness is \code{scale[1]}, the new minimum is
+  \code{scale[2]} and the new wildtype is \code{scale[3]}. If you pass a
+  three element vector, none of the \code{wt_is_1} options apply in this
+  case, to ensure you obtain the range you want. If you want the
+  wildtype to be one, pass it as the third element of the vector.
+
+  As a consequence of using a three element vector, the amount of
+  stretching/compressing (i.e., scaling) of fitness values larger than
+  that of the wildtype will likely be different from the scaling of
+  fitness values smaller than that of the wildtype.  In other words,
+  this argument allows you to change the spread of the positive and
+  negative fitness values (and you can make this difference extreme and
+  make most fitness values less than wildtype be 0 by using a huge
+  negative number --huge in absolute value-- for \code{scale[2]} if you
+  then truncate at 0 --see \code{truncate_at_9}).
+
+  Using a three element vector is probably the most natural way of
+  changing the scale and range of fitness.
+
+  See also \code{log} if you want the log-transformed values to respect
+  the scale.
+}
 
 \item{wt_is_1}{If "divide" the fitness of all genotypes is
   divided by the fitness of the wildtype (after possibly adding a value
@@ -83,14 +110,28 @@ additive models.}
   option can easily lead to landscapes with no accessible genotypes
   (even if you also use \code{scale}).
 
-  If "no", the fitness of the wildtype is not modified.  }
+  If "no", the fitness of the wildtype is not modified.
+
+  This option has no effect if you pass a three-element vector for
+  \code{scale}. Using a three-element vector for \code{scale} is
+  probably the most natural way of changing the scale and range of
+  fitness while setting the wildtype to a value of your choice.
+  
+}
 
 
 \item{log}{If TRUE, log-transform fitness. Actually, there are two
   cases: if \code{wt_is_1 = "no"} we simply log the fitness values;
   otherwise, we log the fitness values and add a 1, thus shifting all
   fitness values, because by decree the fitness (birth rate) of the
-  wildtype must be 1.}
+  wildtype must be 1.
+
+  If you pass a three-element vector for scale, you will want to pass
+  \code{exp(desired_max)}, \code{exp(desired_min)}, and
+  \code{exp(desired_wildtype)} to the \code{scale} argument. (We first
+  scale values in the original scale and then log them). In this case,
+  we ignore whatever you passed as \code{wt_is_1}, setting \code{wt_is_1
+  = "no"} to avoid modifying your requested value for the wildtype.}
 
 \item{min_accessible_genotypes}{If not NULL, the minimum number of
   accessible genotypes in the fitness landscape. A genotype is

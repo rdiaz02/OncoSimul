@@ -1,17 +1,27 @@
 * Miscell to-do in freq-dep-fitness branch
+** Immediate and simple
+   - [ ] finish the README explaining nem
+   - [ ] convert freq-dep into master
+   - [ ] emphasize in a few places (man, vignette) that FDF expressions have to
+     be valid exprTk expressions and give link to page of exprtk.
+
 ** urgent
    - [ ] LOD with multiple initmutants
      - might not be defined
+     - Why not? Just go back all the way.
    - [ ] and check POM too
      - yes, this is well defined
   
 ** first
 
+ - [ ] can we simulate a constant input rate (e.g., a toxin with a constant
+   input flow?)
+ - [ ] examples of stopping conditions with FDF: more sophisticated examples. 
  - [ ] fast_peaks and peak_valley: turn into a user usable function
- - [ ] test where FDF crashes when no WT and no initMutant.
- - [ ] vignette: reduce running times
- - [ ] The second predator-prey example sucks. In general, those examples
-   I am not sure are properly parameterized.
+ - [ ] Allow to pass "f_WT" or "n_WT"? But how do you tell if a gene with that
+   name? Well, you should not use a gene named WT
+   - So: stop if any gene named WT
+   - Probably do not allow for f_WT (besides, "f_" is shorter; but f_WT is more explicit)
  
  - [ ] make onlyCancer = FALSE the default. And ditto for detection
    drivers, etc.
@@ -244,6 +254,11 @@ Note that when calling allFitnessEffects we have to set the paramenter frequency
    see: https://cran.r-project.org/doc/manuals/R-exts.html#Registering-native-routines
 
 ** DONE
+ - [X] many long tests will fail without v.1.
+ - [X] test where FDF crashes when no WT and no initMutant.
+ - [X] vignette: reduce running times
+ - [X] The second predator-prey example sucks. In general, those examples
+   I am not sure are properly parameterized.
 
  - [X] Allow for mutation = 0. Yes, exactly 0. See some of the comments
    below, but it should be possible. In addition to the "no positions

@@ -372,6 +372,14 @@ and is under the LaTeX Project Public License 1.3, which is
 this file is not part of the OncoSimulR BioConductor package.
 
 
+Functions `nem_transitive.reduction` and `nem_transitive.closure` are from the
+`nem` package, which was last available for version 3.11 of BioConductor
+(https://www.bioconductor.org/packages/3.11/bioc/html/nem.html). The authors of
+the package are Holger Froehlich, Florian Markowetz, Achim Tresch, Theresa
+Niederberger, Christian Bender, Matthias Maneck, Claudio Lottaz, Tim Beissbarth,
+and the package
+
+
 The files under miscell-files/AParramon_discrete_time are copyright
 Alberto Parramon, unless otherwise specified. This is an implementation of
 a discrete-time version of OncoSimulR.

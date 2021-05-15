@@ -1,0 +1,67 @@
+Sorry, in Spanish for now. (Exchange with Alberto Gonzalez Klein, 2021-05-13)
+
+
+Sí, justo, era eso, gracias. Es que no estoy seguro de que esto lo haya
+resuelto satisfactoriamente y/o hay algún poltergeist.  Este fue código que
+re-escribí en diciembre y pensé y repensé bastante.
+
+Poltergeist resuelto. Si tienes curiosidad, esto es el asunto, registrado
+como lo he ido escribiendo.
+
+
+
+Pero el otro día me descolocó. Este mensaje lo genera la función
+mutationFromScratch, la función que asigna mutation rate a nuevos
+genotipos.
+
+Esta función se llama solo en un sitio (a menos que ag me esté engañando):
+la línea 1099 de BNB_nr.cpp (en tu branch de constante).
+
+Sí, 1e-11 = 1e-6 (mutation) * 1e-5 (birht)
+
+Pero, ¿por qué se generan mutantes? 
+
+  - Tú empiezas con H y D y no hay WT. Por tanto, nada muta hacia H ni
+    hacia D. Los H dan Hs (no mutan, se dividen) y los D dan Ds (tampoco
+    mutan). Porque si alguno fuera a mutar ...
+
+  - ... el doble mutante HD tiene birth rate 0. O sea, ni se llega a crear,
+    y por tanto no se le asigna una mutation rate (no se llama a esa
+    función)
+
+
+
+Compilo y corro el código (acabo de actualizar el repo).
+
+##############################
+set.seed(1)
+osi_doves <- oncoSimulIndiv(HD_doves,
+                            model = "Const",
+                            onlyCancer = FALSE,
+                            finalTime = 0.05,
+                            mu = 1e-6,
+                            initSize = c(2000, 2000),
+                            initMutant = c("H", "D"),
+                            keepPhylog = TRUE,
+                            seed = NULL,
+                            verbosity = 5,
+                            errorHitMaxTries = FALSE,
+                            errorHitWallTime = FALSE)
+
+osi_doves
+
+##############################
+
+Anda!!!!
+
+El mensaje es justo en la inicialización. O sea, había olvidado que
+mutationFromScratch se llama ahí (y no, ag no me ha engañado, pero he
+mirado yo mal).
+
+Claro, tiene todo el sentido. Se inicializan los Hawks con una mutation
+rate proporcional al birth rate, y eso me da 1e-11.
+
+
+##############################
+
+Guardo esto para la posteridad en el repo. Muchas gracias.

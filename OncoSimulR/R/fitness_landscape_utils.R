@@ -319,65 +319,6 @@ faster_accessible_genotypes_R <- function(x, th) {
 }
 
 
-## ## This uses slam, but that is actually slower because
-## ## of the assignment
-## faster_accessible_genots_slam <- function(x, th = 0) {
-
-##     ## Given a genotype matrix, return the genotypes that are accessible
-##     ## via creating a directed adjacency matrix between genotypes
-##     ## connected (i.e., those that differ by gaining one mutation). 0
-##     ## means not connected, 1 means connected.
-    
-##     ## There is a more general function in OncoSimulR that will give the
-##     ## fitness difference. But not doing the difference is faster than
-##     ## just setting a value, say 1, if all we want is to keep track of
-##     ## accessible ones. And by using only 0/1 we can store only an
-##     ## integer. And no na.omits, etc. Is too restricted? Yes. But for
-##     ## simulations and computing just accessible genotypes, probably a
-##     ## hell of a lot faster.
-
-##     ## Well, this is not incredibly fast either.
-    
-##     ## Make sure sorted, so ancestors always before descendants
-##     rs0 <- rowSums(x[, -ncol(x)])
-##     x <- x[order(rs0), ]
-##     rm(rs0)
-    
-##     y <- x[, -ncol(x)]
-##     f <- x[, ncol(x)]
-##     rs <- rowSums(y)
-
-##     ## If 0, not accessible
-##     adm <- slam::simple_triplet_zero_matrix(nrow = length(rs), ncol = length(rs),
-##                                       mode = "integer")
-##     for(i in 1:length(rs)) { ## i is the current genotype
-##         candidates <- which(rs == (rs[i] + 1))
-##         for(j in candidates) {
-##             ## sumdiff <- sum(abs(y[j, ] - y[i, ]))
-##             ## if(sumdiff == 1)
-##             if( (sum(abs(y[j, ] - y[i, ])) == 1) &&
-##                 ( (f[j] - f[i]) >= th ) )
-##                 adm[i, j] <- 1L
-##         }
-##     }
-
-##     colnames(adm) <- rownames(adm) <- 1:ncol(adm)
-##     admtmp <- adm[, -1, drop = FALSE] ## we do not want the root column.
-##     while(TRUE) {
-##         ## We remove inaccessible cols (genotypes) and the corresponding
-##         ## rows repeatedly until nothing left to remove; any column left
-##         ## is therefore accessible throw at least one path.
-
-##         ## inacc_col <- which(slam::colapply_simple_triplet_matrix(admtmp, FUN = sum) == 0L)
-##         inacc_col <- which(slam::col_sums(admtmp) == 0L)
-##         if(length(inacc_col) == 0) break;
-##         inacc_row <- inacc_col + 1 ## recall root row is left
-##         admtmp <- admtmp[-inacc_row, -inacc_col, drop = FALSE]
-##     }
-##     return(as.numeric(c(colnames(adm)[1], colnames(admtmp))))
-## }
-
-
 generate_matrix_genotypes <- function(g) {
     ## FIXME future: do this for order too? Only if rfitness for order.
     ## Given a number of genes, generate all possible genotypes.
@@ -468,25 +409,6 @@ genot_to_adj_mat <- function(x) {
     colnames(adm) <- rownames(adm) <- original_pos
     return(adm)
 }
-
-
-## ## to move above to C++ note that loop can be
-## for(i in 1:length(rs)) { ## i is the current genotype
-##     for(j in (i:length(rs))) {
-##         if(rs[j] > (rs[i] + 1)) break;
-##         else if(rs[j] == (rs[i] + 1)) {
-##             ## and use here my HammingDistance function
-##             ## sumdiff <- sum(abs(y[j, ] - y[i, ]))
-##             ## if(sumdiff == 1) adm[i, j] <- (f[j] - f[i])
-##             if(HammingDistance(y[j, ], y[i, ]) == 1) adm[i, j] = (f[j] - f[i]);
-##             }
-##     }
-## }
-
-## actually, all that is already in accessibleGenotypes except for the
-## filling up of adm.
-
-
 
 
 
