@@ -1,57 +1,22 @@
-# Interventions es lista de listas, donde una lista almacena: 
-# - ID intervención
-# - Trigger (que situación la dispara), ojo por que es una expresión (exprTK).
-# - WhatHappens: que acciones a realizar.
-# - Repeticiones a hacer de la intervención.
 
-## imaginar la especificación de las intervenciones como:
-interventions <- list(
-    list(ID           = "i2",
-        Trigger       = "(N > 1e6) & (T > 100)",
-        WhatHappens   = "N = 0.001 * N",
-        Repetitions   = 7,  
-        Periodicity    = Inf
-    ),
-    list(ID           = "i1",
-        Trigger       = "(N > 1e9)",
-        WhatHappens   = "N = 0.3 * N",
-        Periodicity   = 10,
-        Repetitions   = 0
-    ),
-    list(ID           = "i3",
-        Trigger       = "(N > 1e9)",
-        WhatHappens   = "n_A = n_A * 0,3 / n_C",
-        Repetitions   = Inf,  
-        Periodicity    = 10
-    ),
-    list(ID           = "i5",
-        Trigger       = "(N > 1e9)",
-        WhatHappens   = "n_A_B = n_B * 0,3 / n_SRL",
-        Repetitions   = 0,   
-        Periodicity    = Inf
-    ),
-    list(ID           = "i4",
-        Trigger       = "(N > 1e9)",
-        WhatHappens   = "n_B   = (n_A * 0,3 / n_C)/N",
-        Repetitions   = 4,  
-        Periodicity    = 10
-    )
-)
+## Copyright 2013-2021 Ramon Diaz-Uriarte
 
-## despues crearemos el objeto tipo "genotFitness" 
-#df3x <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-#                      Fitness = c("n_A + 0.1",
-#                                  "log(n_A_B)",
-#                                  "sqrt(n_A) + 3 * exp(n_C)",
-#                                  "-1 * n_A + 7 * (n_C_A > 2)",
-#                                  "2 - 0.1/n_B",
-#                                  "min(n_C, n_B) - 1 * (n_B_A > 2)"))
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
 
-#adf3x <- allFitnessEffects(genotFitness = df3x,frequencyDependentFitness = TRUE)
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # this function create the interventions, verifies its correct  specification and returns those interventions
 # so they can be processed correctly by C++
-create_interventions <- function(interventions, frequencyType, genotFitness){
+create_interventions <- function(interventions, frequencyType = "auto", genotFitness){
     return (adaptInterventionsToCpp(verify_interventions(interventions), frequencyType, genotFitness))
 }
 
@@ -60,7 +25,7 @@ create_interventions <- function(interventions, frequencyType, genotFitness){
 # trigger and what_happens attributes from the intervention.
 
 
-adaptInterventionsToCpp <- function(interventions, frequencyType, genotFitness) {
+adapt_interventions_to_cpp <- function(interventions, frequencyType, genotFitness) {
 
     for(i in 1:length(interventions)){
         interventions[[i]]$Trigger <- transformIntervention(as.character(interventions[[i]]$Trigger), genotFitness)
@@ -74,7 +39,7 @@ adaptInterventionsToCpp <- function(interventions, frequencyType, genotFitness) 
 # but in the C++ side, that processes operations, there is no "A", because when fitness is specified, there is an that changes n_A
 # to n_1 or n_A_B_C to n_1_2_3. The function that does those "transformations", is all_orders_fv, we just reverse engineered this function
 # and borrowed some funcionality so when the user specifies interventions that involve genotypes fitness's, the transformation can be made
-transformIntervention <- function(sentence, genotInfo){
+transform_intervention <- function(sentence, genotInfo){
     
     prefix <- "n_"
     prefixre <- "^n_"
