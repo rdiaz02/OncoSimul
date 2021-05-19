@@ -15,8 +15,8 @@ sudo: required
 
 cache: packages
 
-r_github_packages:
-  - r-lib/covr
+## r_github_packages:
+##   - r-lib/covr
 
 
 
