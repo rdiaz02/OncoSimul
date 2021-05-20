@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <exception>
 #include "exprtk.h"
+#include <cmath>
 
 #define NOT_PERIODICITY -1.0
 #define NOT_REPS -1
@@ -93,5 +94,8 @@ bool executeInterventions(Rcpp::List interventions,
 
 // function that compares two interventions
 int compareInterventions(Intervention i1, Intervention i2);
+
+void printInterventionsInfo(InterventionsInfo iif);
+void printIntervention(Intervention i);
 
 #endif

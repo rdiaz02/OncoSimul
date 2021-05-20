@@ -27,8 +27,8 @@ bool updatePopulations(InterventionsInfo& iif,
                        const std::vector<Genotype>& Genotypes, 
                        std::vector<spParamsP>& popParams);
 // functions for debugging
-void printIntervention(Intervention i);
-void printInterventionsInfo(InterventionsInfo iif);
+//void printIntervention(Intervention i);
+//void printInterventionsInfo(InterventionsInfo iif);
 // function that applies hypergeometric progressions to the reduction of the population 
 void reduceTotalPopulation(InterventionsInfo& iif, 
                            double target, 
@@ -205,8 +205,9 @@ bool executeInterventions(Rcpp::List interventions,
         } else {
             //a trigger is just a TRUE/FALSE condition
             if(expression.value() == 1){
+                Rcpp::Rcout << "Trigger Activated.\n";
                 parser_t parser_wh;
-                if(intervention.repetitions > 0 && intervention.periodicity == NOT_PERIODICITY){ // case where interventions are based only in repetitions
+                if(intervention.repetitions >= 0 && intervention.periodicity == NOT_PERIODICITY){ // case where interventions are based only in repetitions
                     //if parser fails to compile, throws exception
                     if (!parser_wh.compile(intervention.what_happens, expression)){
                         // error control, just in case the parsing it's not correct
@@ -234,7 +235,7 @@ bool executeInterventions(Rcpp::List interventions,
                     // we update the last time it was executed (debugging purposes)
                     intervention.lastTimeExecuted = T;
 
-                } else if(intervention.repetitions > 0 && intervention.periodicity > 0) { // case there is periodicity but also repetitions
+                } else if(intervention.repetitions >= 0 && intervention.periodicity > 0) { // case there is periodicity but also repetitions
                     if((T - intervention.lastTimeExecuted) >= intervention.periodicity){ // with condition satisfied we execute the intervention
 
                         if (!parser_wh.compile(intervention.what_happens, expression)){
@@ -287,29 +288,6 @@ bool executeInterventions(Rcpp::List interventions,
                         // update new lastTimeExecuted
                         intervention.lastTimeExecuted = T;
                     }
-                } else if (intervention.repetitions == 0) { // case where just an intervention needs to be executed just one time
-                    if (!parser_wh.compile(intervention.what_happens, expression)){
-                        // error control, just in case the parsing it's not correct
-                        Rcpp::Rcout << "\nexprtk parser error: \n" << std::endl;
-
-                        for (std::size_t i = 0; i < parser_wh.error_count(); ++i){
-                            typedef exprtk::parser_error::type error_t;
-                            error_t error = parser_wh.get_error(i);
-                            // FIXMEmaybe: Use warning or error to capture it easily in tests?
-                            REprintf("Error[%02zu] Position: %02zu Type: [%14s] Msg: %s Expression: %s\n",
-                                i,
-                                error.token.position,
-                                exprtk::parser_error::to_str(error.mode).c_str(),
-                                error.diagnostic.c_str(),
-                                intervention.what_happens.c_str());
-                        }
-                        std::string errorMessage = "The expression was imposible to parse.";
-                        throw std::invalid_argument(errorMessage);
-                    } else if(!parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
-                        printf("Something went wrong.\n");
-                        return false;
-                    }
-                    intervention.lastTimeExecuted = T;
                 }
             }
         }
@@ -320,7 +298,7 @@ bool executeInterventions(Rcpp::List interventions,
     // once the structure is updated, we update the structures that store the info while the simulation is running
     updatePopulations(iif, fitnessEffects, Genotypes, popParams);
 
-    // now we need to fill the output parameter interventions_ou
+    // now we need to fill the output parameter interventions_out
     for(int i=0; i<iif.interventions.size(); i++){
         interventions_out.push_back(iif.interventions[i]);
     }
@@ -401,10 +379,11 @@ bool parseWhatHappens(InterventionsInfo& iif,
         std::string errorMessage = "The expression was imposible to parse.";
         throw std::invalid_argument(errorMessage);
     } else{
+        // value cant have decimals (can't exist a half-cell)
+        double res = floor(expression.value());
+
         // once the value is calculated, we must assure if the operation is for the total population
         // or for some specific-genotype
-        double res = expression.value();
-
         if (totalPopFlag && (res > N)) {
             // TODO: Throw exception of some kind, this CANNOT happen by any means
             throw std::runtime_error("You have specified an intervention that is not allowed.");
@@ -419,11 +398,9 @@ bool parseWhatHappens(InterventionsInfo& iif,
                     throw std::runtime_error("You have specified an intervention that is not allowed.");
                     return false;
                 }
-                // TODO: Handle the element found.
             }
             catch (const std::out_of_range&) {
-                std::cout << "Key \"" << leftMostWhatHappens.c_str() << "\" not found" << std::endl;
-                // TODO: Deal with the missing element.
+                Rcpp::Rcout << "Key \"" << leftMostWhatHappens.c_str() << "\" not found" << std::endl;
             }
         }
 
@@ -447,12 +424,7 @@ bool parseWhatHappens(InterventionsInfo& iif,
 // n array con las poblaciones de cada genotipo y su ncols(diferentes tipos de genotipos en la población)
 // target is the target size, to which number the population would get reduced to.
 void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopSize){
-    //ERROR CONTROL
-    /*if(iif == NULL){
-        printf("La estructura InterventionsInfo está vacía en reducePopulation.\n");
-        return;
-    }*/
-
+    
     // first we take all the population from the structure, and we create a vector with its populations
     std::vector<double> populations;
     Rcpp::NumericMatrix rcpp_mhgeo_distribution; 
@@ -464,26 +436,33 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
     for(auto map : iif.mapGenoToPop){
         totalPop += map.second;
         populations.push_back(map.second);
+        Rcpp::Rcout << map.first << " - " << map.second << "\n";
     }
 
     //quick check before creating the matrix
     if(totPopSize != totalPop){
-        printf("TotalPop != totPopSize, exiting...");
+        Rcpp::Rcout << "TotalPop != totPopSize, exiting...";
         return;
     }
+
+    Rcpp::Rcout << "Total Population Size: " << totPopSize << "| Target: " << target << "\n";
+    Rcpp::Rcout << "Kinds of genotypes:" << populations.size() << "\n";
+
     // we convert the vector to something R can understand
     rcpp_populations = Rcpp::wrap(populations);
-    rcpp_populations.attr("dim") = Dimension(populations.size(), 1);
+    rcpp_populations.attr("dim") = Dimension(1, populations.size());
 
     rcpp_populations_matrix = Rcpp::wrap(rcpp_populations);
     rcpp_target = Rcpp::wrap(target);
     
     // then, we specify the total genotypes of the populations and we obtain a distribution
-    // la idea es obtener cada uno de los números (clones) y devolverlos a la estructura y tenerla actualizada siempre.
     rcpp_mhgeo_distribution = my_rmvhyper(1, rcpp_populations_matrix, rcpp_target);
-    rcpp_mhgeo_distribution.attr("dim") = Dimension(populations.size(), 0);
 
     populations = Rcpp::as<std::vector<double>>(rcpp_mhgeo_distribution);
+
+    for(int i=0; i < populations.size(); i++){
+        Rcpp::Rcout << "Pop " << i+1 << ": " << populations[i] << "\n";
+    }
 
     int i=0;
     for(auto &map : iif.mapGenoToPop){
@@ -547,7 +526,7 @@ void printInterventionsInfo(InterventionsInfo iif){
 
     // print the info associated with genotypes and their population
     for(auto map : iif.mapGenoToPop) {
-        std::cout << "Genotype: " << map.first << " Population: " << map.second;
+        std::cout << "Genotype: " << map.first << " Population: " << map.second << "\n";
     } 
 }
 

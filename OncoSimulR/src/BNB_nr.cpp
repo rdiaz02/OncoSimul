@@ -1310,15 +1310,42 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
       // in case interventions are specified, we create the proper structure
       int interventions_len = (int)interventions.length();
+      bool interventionsRestIterationsFlag = false;
       if(interventions_len > 0){
+        
+        Rcpp::Rcout << "Interventions IN:\n";
+        Rcpp::print(interventions);
         // we need structures Genotypes, PopParams and FitnessEffects
         if(!executeInterventions(interventions, totPopSize, currentTime, fitnessEffects, Genotypes, popParams, interventions_out)){
           Rcout << "Something went wrong while executeInterventions was running";
         }
-      } else {
-        Rcpp::Rcout << "executeInterventions not running\n";
-      }
-  
+        /*Rcpp::Rcout << "Interventions OUT:" << "\n";
+        for(int i=0; i<interventions_len; i++){
+          printIntervention(interventions_out[i]);
+        }*/
+        
+        // now interventions_out has the interventions with the fields updated
+        // in the first execution, we execute with the R specified Interventions, 
+        // in the rest of the iterations, we execute the updated ones (obtained by interventions_out).
+        if(!interventionsRestIterationsFlag) interventionsRestIterationsFlag = true;
+        // Interventions: we create a list of lists (copying all the information from the execution) 
+        if(interventionsRestIterationsFlag){
+          List ret_interventions(interventions.length());
+          R_xlen_t i_len;
+          for(int i=0, i_len = 0; i_len<interventions.length(); i++, i_len++){
+            ret_interventions[i_len] = List::create(Named("ID")          = interventions_out[i].id,
+                                                    Named("Trigger")     = interventions_out[i].trigger,
+                                                    Named("WhatHappens") = interventions_out[i].what_happens,
+                                                    Named("Periodicity") = interventions_out[i].periodicity,
+                                                    Named("Repetitions") = interventions_out[i].repetitions);
+            interventions[i_len] = ret_interventions[i_len];
+          }
+        }  
+
+        Rcpp::Rcout << "Interventions OUT:\n";
+        Rcpp::print(interventions);
+      } 
+      
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,
 			    K, totPopSize, currentTime, typeModel);
   
@@ -1336,7 +1363,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     }
   }
 }
-
 
 
 // [[Rcpp::export]]
@@ -1699,22 +1725,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   for (const auto &l : lod) {
     lod_child.push_back(l.first);
     lod_parent.push_back(l.second);
-  }
-
-  // Interventions: we create a list of lists (just as user specifies them) to return it to the R part of the code
-  List ret_interventions(interventions.length());
-  int interventions_len = (int)interventions.length();
-  if(interventions_len == 0){
-    ret_interventions = List::create();
-  } else if(interventions_len > 0){
-    R_xlen_t i_len;
-    for(int i=0, i_len = 0; i_len<interventions.length(); i++, i_len++){
-      ret_interventions[i_len] = List::create(Named("ID")          = interventions_out[i].id,
-                                              Named("Trigger")     = interventions_out[i].trigger,
-                                              Named("WhatHappens") = interventions_out[i].what_happens,
-                                              Named("Periodicity") = interventions_out[i].periodicity,
-                                              Named("Repetitions") = interventions_out[i].repetitions);
-    }
   }
 
   return

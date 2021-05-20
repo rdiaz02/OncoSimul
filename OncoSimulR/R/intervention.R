@@ -14,10 +14,13 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# we load some functions that are needed to compile
+source("./R/new-restrict.R")
+
 # this function create the interventions, verifies its correct  specification and returns those interventions
 # so they can be processed correctly by C++
-create_interventions <- function(interventions, frequencyType = "auto", genotFitness){
-    return (adaptInterventionsToCpp(verify_interventions(interventions), frequencyType, genotFitness))
+createInterventions <- function(interventions, genotFitness, frequencyType = "auto"){
+    return (adapt_interventions_to_cpp(verify_interventions(interventions), frequencyType, genotFitness))
 }
 
 # this intervention transforms the genotype specification from the user-specified to the C++ one.
@@ -28,14 +31,14 @@ create_interventions <- function(interventions, frequencyType = "auto", genotFit
 adapt_interventions_to_cpp <- function(interventions, frequencyType, genotFitness) {
 
     for(i in 1:length(interventions)){
-        interventions[[i]]$Trigger <- transformIntervention(as.character(interventions[[i]]$Trigger), genotFitness)
-        interventions[[i]]$WhatHappens <- transformIntervention(as.character(interventions[[i]]$WhatHappens), genotFitness)
+        interventions[[i]]$Trigger <- transform_intervention(as.character(interventions[[i]]$Trigger), genotFitness)
+        interventions[[i]]$WhatHappens <- transform_intervention(as.character(interventions[[i]]$WhatHappens), genotFitness)
     }
     
     return(interventions)
 }
 
-# this function is the one in charge to trabsform the genotypes. The user will specify genotypes as A, B, "A,B,C"... etc.
+# this function is the one in charge to transform the genotypes. The user will specify genotypes as A, B, "A,B,C"... etc.
 # but in the C++ side, that processes operations, there is no "A", because when fitness is specified, there is an that changes n_A
 # to n_1 or n_A_B_C to n_1_2_3. The function that does those "transformations", is all_orders_fv, we just reverse engineered this function
 # and borrowed some funcionality so when the user specifies interventions that involve genotypes fitness's, the transformation can be made
@@ -80,11 +83,11 @@ verify_interventions <- function(interventions){
         
         ## check that exists ID, Trigger, WhatHappens and TimeSensitive in the list 
         if(!exists("ID", interventions[[i]])){
-            stop("Attribute ID was not specified.");
+            stop("Attribute ID was not specified.")
         } else if(!exists("Trigger", interventions[[i]])){
-            stop("Attribute Trigger was not specified.");
+            stop("Attribute Trigger was not specified.")
         } else if(!exists("WhatHappens", interventions[[i]])){
-            stop("Attribute WhatHappens was not specified.");
+            stop("Attribute WhatHappens was not specified.")
         } else if(!exists("Repetitions", interventions[[i]]) || !exists("Periodicity", interventions[[i]]) ){
             stop("Either repetitions or Periodicity must be specified for the intervention")
         }
@@ -114,16 +117,11 @@ verify_interventions <- function(interventions){
             interventions[[i]]$Periodicity <- -1
         }
         if(exists("Repetitions", interventions[[i]]) && interventions[[i]]$Repetitions == Inf){
-            interventions[[i]]$Repetitions <- 2^32
+            interventions[[i]]$Repetitions <- .Machine$integer.max
         }
 
         check_what_happens(interventions[[i]]$WhatHappens)
-
-        print("OK")
     }
-
-    # just for debugging...
-    print(interventions)
 
     return(interventions)
 }
