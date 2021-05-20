@@ -155,15 +155,12 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i){
     return iif;
 }
 
-bool executeInterventions(Rcpp::List interventions, 
+bool executeInterventions(InterventionsInfo& iif, 
                          double &totPopSize, 
                          double &currentTime, 
                          const fitnessEffectsAll& fitnessEffects, 
                          std::vector<Genotype> Genotypes, 
-                         std::vector<spParamsP>& popParams, 
-                         std::vector<Intervention>& interventions_out){
-    //create the structure with all the information of the interventions
-    InterventionsInfo iif = createInterventionsInfo(interventions, fitnessEffects, popParams, Genotypes);
+                         std::vector<spParamsP>& popParams){
 
     // Now we add all the info needed for the symbol table so exprtk can operate 
     symbol_table_t symbol_table;
@@ -297,12 +294,7 @@ bool executeInterventions(Rcpp::List interventions,
     // original structures where the data was sourced from 
     // once the structure is updated, we update the structures that store the info while the simulation is running
     updatePopulations(iif, fitnessEffects, Genotypes, popParams);
-
-    // now we need to fill the output parameter interventions_out
-    for(int i=0; i<iif.interventions.size(); i++){
-        interventions_out.push_back(iif.interventions[i]);
-    }
-
+ 
     return true;
 }
 
@@ -436,18 +428,7 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
     for(auto map : iif.mapGenoToPop){
         totalPop += map.second;
         populations.push_back(map.second);
-        Rcpp::Rcout << map.first << " - " << map.second << "\n";
     }
-
-    //quick check before creating the matrix
-    if(totPopSize != totalPop){
-        Rcpp::Rcout << "TotalPop != totPopSize, exiting...";
-        return;
-    }
-
-    Rcpp::Rcout << "Total Population Size: " << totPopSize << "| Target: " << target << "\n";
-    Rcpp::Rcout << "Kinds of genotypes:" << populations.size() << "\n";
-
     // we convert the vector to something R can understand
     rcpp_populations = Rcpp::wrap(populations);
     rcpp_populations.attr("dim") = Dimension(1, populations.size());
@@ -462,6 +443,12 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
 
     for(int i=0; i < populations.size(); i++){
         Rcpp::Rcout << "Pop " << i+1 << ": " << populations[i] << "\n";
+    }
+
+    //quick check before creating the matrix
+    if(totPopSize != totalPop){
+        throw std::runtime_error("TotalPop != totPopSize, exiting...");
+        return;
     }
 
     int i=0;
