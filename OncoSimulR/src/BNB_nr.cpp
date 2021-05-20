@@ -1731,7 +1731,6 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		 Named("CountByDriver") = countByDriver,
 		 Named("OccurringDrivers") = driversAsString,
 		 Named("PerSampleStats") = perSampleStats,
-     //Named("Interventions") = ret_interventions,
 		 Named("other") = List::create(Named("attemptsUsed") = numRuns,
 					       Named("errorMF") =
 					       returnMFE_new(em1sc, typeModel),
