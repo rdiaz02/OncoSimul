@@ -151,7 +151,6 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i){
         }
     }
 
-    printf("The intervention you are trying to destroy hasn't been found.\n");
     return iif;
 }
 
@@ -224,7 +223,7 @@ bool executeInterventions(InterventionsInfo& iif,
                         std::string errorMessage = "The expression was imposible to parse.";
                         throw std::invalid_argument(errorMessage);
                     } else if(!parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
-                        printf("Something went wrong.\n");
+                        throw std::runtime_error("Something went wrong.\n");
                         return false;
                     }
                     // we reduce by one the number of interventions
@@ -252,7 +251,7 @@ bool executeInterventions(InterventionsInfo& iif,
                             std::string errorMessage = "The expression was imposible to parse.";
                             throw std::invalid_argument(errorMessage);
                         } else if(!parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
-                            printf("Something went wrong.\n");
+                            throw std::runtime_error("Something went wrong.\n");
                             return false;
                         }
                         // update new lastTimeExecuted
@@ -279,7 +278,7 @@ bool executeInterventions(InterventionsInfo& iif,
                             std::string errorMessage = "The expression was imposible to parse.";
                             throw std::invalid_argument(errorMessage);
                         } else if(!parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
-                            printf("Something went wrong.\n");
+                            throw std::runtime_error("Something went wrong.\n");
                             return false;
                         }
                         // update new lastTimeExecuted
@@ -313,8 +312,7 @@ bool parseWhatHappens(InterventionsInfo& iif,
     // now we need to parse the "what_happens" intervention
     // TODO: raise exception, malformed what_happens specification
     if(!isValidEquation(intervention.what_happens)){
-        // por el momento printf y return
-        printf("The intervention was wrongfully specified.\n");
+        throw std::runtime_error("The intervention was wrongfully specified.\n");
         return false;
     }
 

@@ -1323,7 +1323,6 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       if(interventions_len > 0){
         // we need structures Genotypes, PopParams and FitnessEffects
         // we update the map with the current population data
-        printInterventionsInfo(iif);
         iif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams);
         if(!executeInterventions(iif, totPopSize, currentTime, fitnessEffects, Genotypes, popParams)){
           Rcout << "Something went wrong while executeInterventions was running";

@@ -64,7 +64,8 @@ oncoSimulSample <- function(Nindiv,
                             fixation = NULL,
                             verbosity  = 1,
                             showProgress = FALSE,
-                            seed = "auto"){
+                            seed = "auto",
+                            interventions = NULL){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
     
@@ -192,7 +193,8 @@ oncoSimulSample <- function(Nindiv,
                                mutationPropGrowth = mutationPropGrowth,
                                detectionProb = detectionProb,
                                AND_DrvProbExit = AND_DrvProbExit,
-                               fixation = fixation)        
+                               fixation = fixation,
+                               interventions = interventions)        
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
         }
@@ -383,7 +385,8 @@ oncoSimulPop <- function(Nindiv,
                          fixation = NULL,
                          verbosity  = 0,
                          mc.cores = detectCores(),
-                         seed = "auto") {
+                         seed = "auto",
+                         interventions = NULL) {
 
     if(Nindiv < 1)
         stop("Nindiv must be >= 1")
@@ -424,7 +427,8 @@ oncoSimulPop <- function(Nindiv,
                         mutationPropGrowth = mutationPropGrowth,
                         detectionProb = detectionProb,
                         AND_DrvProbExit = AND_DrvProbExit,
-                        fixation = fixation),
+                        fixation = fixation,
+                        interventions = interventions),
                     mc.cores = mc.cores)
     ## mc.allow.recursive = FALSE ## FIXME: remove?
                     ## done for covr issue
