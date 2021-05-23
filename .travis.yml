@@ -23,7 +23,7 @@ cache: packages
 
 #######  x22
 install:
-- Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander", "knitr")); BiocManager::install("BiocStyle", ask = FALSE); devtools::install_deps("OncoSimulR")'; devtools::install_github("r-lib/covr")'
+- Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander", "knitr")); BiocManager::install("BiocStyle", ask = FALSE); devtools::install_deps("OncoSimulR"); devtools::install_github("r-lib/covr")'
 
 
 
