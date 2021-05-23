@@ -1511,8 +1511,15 @@ fitnessEffectsToIgraph <- function(rT, epistasis, orderEffects) {
     g1 <- graph.data.frame(df)
 
     E(g1)$color <- "black"
+
     E(g1)$color[E(g1)$typeDep == "SM"] <- "blue"
+    E(g1)$color[E(g1)$typeDep == "OR"] <- "blue"
+    E(g1)$color[E(g1)$typeDep == "semimonotone"] <- "blue"    
+    
     E(g1)$color[E(g1)$typeDep == "XMPN"] <- "red"
+    E(g1)$color[E(g1)$typeDep == "XOR"] <- "red"
+    E(g1)$color[E(g1)$typeDep == "xmpn"] <- "red"        
+    
     E(g1)$color[E(g1)$typeDep == "epistasis"] <- "orange"
     E(g1)$color[E(g1)$typeDep == "orderEffect"] <- "orange"
     E(g1)$lty <- 1

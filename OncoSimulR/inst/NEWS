@@ -1,3 +1,6 @@
+Changes in version 3.1.1 (2021-05-23):
+	- XOR, AND, OR dependencies: plots of DAGs honor all possible values.
+
 Changes in version 3.0 (for BioC 3.13):
 	- MAJOR change: frequency dependent fitness available.
 	- Removed v.1 functionality.
