@@ -1,5 +1,6 @@
 * Miscell to-do in freq-dep-fitness branch
 ** Immediate and simple
+   - [ ] Make sampleEvery = 0.25 whenever freq-dep-fitness
    - [ ] finish the README explaining nem
    - [ ] convert freq-dep into master
    - [ ] emphasize in a few places (man, vignette) that FDF expressions have to
