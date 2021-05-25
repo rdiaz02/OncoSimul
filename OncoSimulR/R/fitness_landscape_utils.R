@@ -230,6 +230,9 @@ fast_peaks <- function(x, th) {
                           th)]))
 }
 
+## FIXME! Unclear if we need the complete fitness matrix or if it will work with
+## pieces (say, after removing those with fitness < WT, to try to make it faster
+## and for general use in other cases)
 
 ## wrapper to the C++ code
 wrap_accessibleGenotypes <- function(x, th) {
