@@ -7695,7 +7695,7 @@ small number of children via mutation to non-viable
 "hybrids". Factor this into your equations for death rate, but this
 should be negligible if death rate $\gg$ mutation rate. (You can
 ameliorate this problem slightly by making mutation to the "species
-indicator" locus very small, say $10^{10}$ ---do not set it to 0, as
+indicator" locus very small, say $10^{-10}$ ---do not set it to 0, as
 you will get an error).
 
 Of course, you can extend the scheme above to arbitrary numbers of
