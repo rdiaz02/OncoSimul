@@ -1,5 +1,51 @@
 * Miscell to-do in freq-dep-fitness branch
 ** Immediate and simple
+   - [ ] plot of onocoSimulIndiv: default for show should be genotypes.
+   - [ ] Using a constant for fitness should work. See this: the first fails, the
+     second does not. And the second and third are correct.
+#+BEGIN_EXAMPLE
+df3x <- data.frame(Genotype = c("A", "B", "C", "A, C"),
+                       Fitness = c("1",
+                                   "1",
+                                   "1.5",
+                                   "2"))
+
+afd3 <- allFitnessEffects(genotFitness = df3x,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "abs")
+
+
+df4x <- data.frame(Genotype = c("A", "B", "C", "A, C"),
+                       Fitness = c("1 + 0 * n_A",
+                                   "1",
+                                   "1.5",
+                                   "2"))
+
+afd4 <- allFitnessEffects(genotFitness = df4x,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "abs")
+
+afd4$full_FDF_spec
+
+
+
+df5x <- data.frame(Genotype = c("WT", "A", "B", "C", "A, C"),
+                   Fitness = c(
+                       "0*n_",
+                       "1",
+                       "1",
+                       "1.5",
+                       "2"))
+
+afd5 <- allFitnessEffects(genotFitness = df5x,
+                          frequencyDependentFitness = TRUE)
+
+afd5$full_FDF_spec
+
+
+#+END_EXAMPLE
+
+   
    - [ ] Make sampleEvery = 0.25 whenever freq-dep-fitness
    - [ ] finish the README explaining nem
    - [ ] convert freq-dep into master
