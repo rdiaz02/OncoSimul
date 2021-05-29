@@ -41,7 +41,7 @@
 #include <cmath>
 
 #define NOT_PERIODICITY -1.0
-#define NOT_REPS -1
+#define NOT_REPS -0.5
 
 // we declare the needed symbols for the table
 typedef exprtk::symbol_table<double> symbol_table_t;

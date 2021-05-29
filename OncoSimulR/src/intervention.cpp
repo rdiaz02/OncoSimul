@@ -168,6 +168,11 @@ bool executeInterventions(InterventionsInfo& iif,
     } 
 
     double N = totPopSize;
+
+    if(N == 0){
+        throw std::invalid_argument("Total Population = 0. There is nothing to intervene.\n");
+    }
+
     double T = currentTime;
 
     symbol_table.add_constant("N", N);//We reserve N to total population size
@@ -201,7 +206,6 @@ bool executeInterventions(InterventionsInfo& iif,
         } else {
             //a trigger is just a TRUE/FALSE condition
             if(expression.value() == 1){
-                Rcpp::Rcout << "Trigger Activated.\n";
                 parser_t parser_wh;
                 if(intervention.repetitions >= 0 && intervention.periodicity == NOT_PERIODICITY){ // case where interventions are based only in repetitions
                     //if parser fails to compile, throws exception
@@ -292,7 +296,10 @@ bool executeInterventions(InterventionsInfo& iif,
     // Now with the structure storing all the changes, we need to store the data in their own
     // original structures where the data was sourced from 
     // once the structure is updated, we update the structures that store the info while the simulation is running
-    updatePopulations(iif, fitnessEffects, Genotypes, popParams);
+    if(!updatePopulations(iif, fitnessEffects, Genotypes, popParams)){
+        throw std::runtime_error("There was an issue updating the populations while intervening.\n");
+        return false;
+    }
  
     return true;
 }
@@ -439,10 +446,6 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
 
     populations = Rcpp::as<std::vector<double>>(rcpp_mhgeo_distribution);
 
-    for(int i=0; i < populations.size(); i++){
-        Rcpp::Rcout << "Pop " << i+1 << ": " << populations[i] << "\n";
-    }
-
     //quick check before creating the matrix
     if(totPopSize != totalPop){
         throw std::runtime_error("TotalPop != totPopSize, exiting...");
@@ -458,7 +461,7 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
     
 }
 
-// funcion que actualiza las poblaciones una vez que las intervenciones han sido ejecutadas
+// this function updates the population by genotypes
 bool updatePopulations(InterventionsInfo& iif, 
                        const fitnessEffectsAll& fitnessEffects, 
                        const std::vector<Genotype>& Genotypes, 
@@ -473,18 +476,15 @@ bool updatePopulations(InterventionsInfo& iif,
             if(map.first == iterator.second){
                 std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
                 int position = findPositionInGenotypes(Genotypes, genotype);
-
                 //just to make sure...
                 if(position != 0){
                     int realPos = position - 1;
                     if(freqType == "abs"){
-                        //TODO: review this, not sure if this will change the structure 
                         popParams[realPos].popSize = map.second;
+                        // maybe add "rel" in the future?
                     } else {
                         return false;
                     }
-                } else {
-                    return false;
                 }
             }
         }
@@ -495,24 +495,25 @@ bool updatePopulations(InterventionsInfo& iif,
 
 void printIntervention(Intervention i){
 
-    std::cout << "Intervention " << i.id << " info:\n";
-    std::cout << "\t Trigger: " << i.trigger << "\n";
-    std::cout << "\t What Happens: " << i.what_happens << "\n";
-    std::cout << "\t Repetitions: " << i.repetitions << "\n";
-    std::cout << "\t Periodicity: " << i.periodicity << "\n";
-    std::cout << "\t Last Time Executed: " << i.lastTimeExecuted << "\n";
+    Rcpp::Rcout << i.id << " info:\n";
+    Rcpp::Rcout << "\t Trigger: " << i.trigger << "\n";
+    Rcpp::Rcout << "\t What Happens: " << i.what_happens << "\n";
+    Rcpp::Rcout << "\t Repetitions: " << i.repetitions << "\n";
+    Rcpp::Rcout << "\t Periodicity: " << i.periodicity << "\n";
+    Rcpp::Rcout << "\t Last Time Executed: " << i.lastTimeExecuted << "\n";
 }
 
 void printInterventionsInfo(InterventionsInfo iif){
 
     for(auto intervention: iif.interventions){
         printIntervention(intervention);
+        // print the info associated with genotypes and their population 
     }
 
-    // print the info associated with genotypes and their population
     for(auto map : iif.mapGenoToPop) {
-        std::cout << "Genotype: " << map.first << " Population: " << map.second << "\n";
-    } 
+            Rcpp::Rcout << "Genotype: " << map.first << " Population: " << map.second << "\n";
+    }
+
 }
 
 // private function that checks that the equations specified by the user are correctly specified

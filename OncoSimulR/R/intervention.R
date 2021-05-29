@@ -109,7 +109,7 @@ verify_interventions <- function(interventions){
         if(exists("Repetitions", interventions[[i]]) && !(exists("Periodicity", interventions[[i]])) ){
             interventions[[i]]$Periodicity = -1
         } else if(exists("Periodicity", interventions[[i]]) && !(exists("Repetitions", interventions[[i]])) ){ # If the user specifies the periodicity instead of the reps, then TimeSensitive should be setted to "Yes"
-            interventions[[i]]$Repetitions = -1
+            interventions[[i]]$Repetitions = -0.5
         }
 
         ## in case user specifies periodicity or reps to infinity, we "cast" it to INT_MAX so C++ understands
