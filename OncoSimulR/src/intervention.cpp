@@ -39,7 +39,7 @@ InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i){
 
     for(int k=0; k<iif.interventions.size(); k++){
         if(compareInterventions(iif.interventions[k], i) == 0){
-            std::cout << "There are two interventions that are the same:";
+            Rcpp::Rcout << "There are two interventions that are the same:";
             printIntervention(iif.interventions[k]);
             printIntervention(i);
             return iif;

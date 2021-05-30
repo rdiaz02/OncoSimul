@@ -26,8 +26,6 @@ createInterventions <- function(interventions, genotFitness, frequencyType = "au
 # this intervention transforms the genotype specification from the user-specified to the C++ one.
 # transformIntervention will give more detail about how this works. This "transformation" is done for 
 # trigger and what_happens attributes from the intervention.
-
-
 adapt_interventions_to_cpp <- function(interventions, frequencyType, genotFitness) {
 
     for(i in 1:length(interventions)){
@@ -47,8 +45,7 @@ transform_intervention <- function(sentence, genotInfo){
     prefix <- "n_"
     prefixre <- "^n_"
 
-    #use functions that handle the change of identifiers, from A -> 1, B->2, A,B -> 1_2
-    #functions that help us:
+    # use functions that handle the change of identifiers, from A -> 1, B->2, A,B -> 1_2
     # functionality "borrowed" by all_orders_fv
     x <- genotInfo$fitnessLandscape[, -ncol(genotInfo$fitnessLandscape), drop = FALSE]
     pasted <- apply(x, 1, function(z) paste(sort(which(z == 1)), collapse = "_"))
@@ -94,7 +91,7 @@ verify_interventions <- function(interventions){
         
         ## check the data-type of the interventions[[i]]s
         if(!is.character(interventions[[i]]$Trigger) || !is.character(interventions[[i]]$WhatHappens) || !is.character(interventions[[i]]$ID)){
-            stop("Las intervenciones no están especificadas correctamente.")
+            stop("Interventions are wrongfully specified. Exit...")
         }
 
          ## case where user specifies negative periodicity of repetitions
@@ -159,7 +156,7 @@ check_what_happens <- function(what_happens){
 
     string1 <- what_happens
     str_split = strsplit(string1, "\\s+")[[1]]
-    #now we check that str_split[[2]] is "="
+    # now we check that str_split[[2]] is "="
 
     if(str_split[[2]] != "="){
         stop("The specification of WhatHappens is wrong.\n It should be: 
