@@ -20,7 +20,13 @@ source("./R/new-restrict.R")
 # this function create the interventions, verifies its correct  specification and returns those interventions
 # so they can be processed correctly by C++
 createInterventions <- function(interventions, genotFitness, frequencyType = "auto"){
-    return (adapt_interventions_to_cpp(verify_interventions(interventions), frequencyType, genotFitness))
+    if((frequencyType == "abs") || (frequencyType == "auto")){
+        return (adapt_interventions_to_cpp(verify_interventions(interventions), frequencyType, genotFitness))
+    } else if(frequencyType == "rel"){
+        stop("Frequency type as relative is not implemented... yet.")
+    } else {
+        stop("You have specified the freqType wrong. Review it please.")
+    }
 }
 
 # this intervention transforms the genotype specification from the user-specified to the C++ one.
@@ -161,6 +167,19 @@ check_what_happens <- function(what_happens){
     if(str_split[[2]] != "="){
         stop("The specification of WhatHappens is wrong.\n It should be: 
         <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
+    }
+
+    flag = FALSE
+
+    for(s in str_split){
+        if(s == "="){
+            if(flag == TRUE){
+                stop("The specification of WhatHappens is wrong.\n It should be: 
+        <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
+            } else if(flag == FALSE){
+                flag = TRUE
+            }
+        }
     }
 }
 

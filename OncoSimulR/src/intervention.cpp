@@ -392,6 +392,7 @@ bool parseWhatHappens(InterventionsInfo& iif,
             try { //check with the left part of the equation finding the value for the n_*
                 const double& value = iif.mapGenoToPop.at(leftMostWhatHappens);
                 if(res > value){
+                    Rcpp::Rcerr << "In intervention:" << intervention.id << " with WhatHappens: " << intervention.what_happens << ". You cannot intervene to generate more population.";
                     throw std::runtime_error("You have specified an intervention that is not allowed.");
                     return false;
                 }
