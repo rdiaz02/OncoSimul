@@ -61,8 +61,9 @@ catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 
 # Installation 
 
-
-To use the most recent code in BioConductor, install the devel version.
+The frequency-dependent fitness functionality became available in BioConductor
+starting with version 3.13 and is now available in both the stable and devel
+versions. To use the most recent code in BioConductor, install the devel version.
 
 ```r
 if (!require("BiocManager"))
@@ -70,6 +71,10 @@ if (!require("BiocManager"))
 BiocManager::install("OncoSimulR", version = "devel")
 
 ```
+
+If you want to use the stable BioConductor version, remove the `version =
+"devel"` part of the invocation. 
+
 
 
 <!-- <\!-- that I regard as stable you first need to [use -\-> -->
@@ -98,17 +103,18 @@ To start using it:
 library(OncoSimulR)
 ```
 
-The above, however, **will not install the version with frequency
-dependent fitness**. 
-**To use the frequency-dependent fitness version** read the following.
+<!-- The above, however, **will not install the version with frequency -->
+<!-- dependent fitness**.  -->
+<!-- **To use the frequency-dependent fitness version** read the following. -->
 
 
-## Installing the frequency-dependent fitness branch
+<!-- ## Installing the frequency-dependent fitness branch -->
 
-The code is available from BioConductor, in the
-development version. So the above instructions
-(`BiocManager::install("OncoSimulR", version = "devel")`) are likely to
-work. If not, or if you want to install from sources, read on.
+<!-- The code is available from BioConductor. To use the development version from -->
+<!-- BioConductor, do (`BiocManager::install("OncoSimulR", version = "devel")`);; -->
+
+This should work for all operating systems.  If not, or if you want to install
+from sources, read on.
 
 ### If you use Linux and other Unixes (Macs)
 
