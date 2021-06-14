@@ -257,7 +257,7 @@ test_that("7. Intervening over total population (McFL) | Trigger depends on T", 
         list(
             ID            = "intOverTotPop",
             Trigger       = "T > 40",
-            WhatHappens   = "N = N * 0.4",
+            WhatHappens   = "N = N * 0.6",
             Repetitions   = 2,   
             Periodicity   = 20
         )
@@ -335,11 +335,11 @@ test_that("7. Intervening over total population (McFL) | Trigger depends on T", 
     testthat::expect_gt(tot_pop_t_before80_int, tot_pop_t_80_int)
 
     # finally we check that the population is in range within the specified in WhatHappens
-    # since the intervention reduces all the population to thee 40% of its original value, we will check
+    # since the intervention reduces all the population to the 60% of its original value, we will check
     # that in fact the population reduces (aprox) in that percentage
-    testthat::expect_gt(tot_pop_t_before40_int * 0.41, tot_pop_t_40_int)
-    testthat::expect_gt(tot_pop_t_before60_int * 0.41, tot_pop_t_60_int)
-    testthat::expect_gt(tot_pop_t_before80_int * 0.41, tot_pop_t_80_int)
+    testthat::expect_gt(tot_pop_t_before40_int * 0.61, tot_pop_t_40_int)
+    testthat::expect_gt(tot_pop_t_before60_int * 0.61, tot_pop_t_60_int)
+    testthat::expect_gt(tot_pop_t_before80_int * 0.61, tot_pop_t_80_int)
     
 })
 
@@ -359,7 +359,7 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
         list(
             ID            = "intOverTotPop",
             Trigger       = "T > 10",
-            WhatHappens   = "N = N * 0.4",
+            WhatHappens   = "N = N * 0.8",
             Repetitions   = 2,   
             Periodicity   = 10
         )
@@ -370,13 +370,16 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
     sfd3 <- oncoSimulIndiv( afd3,
                             model = "Exp",
                             onlyCancer = FALSE,
-                            finalTime = 60,
+                            finalTime = 40,
                             mu = 1e-4,
                             initSize = 5000,
                             sampleEvery = 0.001,
                             interventions = interventions)
 
-        # we can check genotype by genotype that when an intervention ocurs, their population lowers
+    # it may happen that, in some simulations, the population collapses, in that case, 
+    # pops by time is null, and cannot be checked
+
+    # we can check genotype by genotype that when an intervention ocurs, their population lowers
     # when T = 10:
         #Genotype WT
     if((sfd3$pops.by.time[9997:9997, 2:2] > 0) & (sfd3$pops.by.time[10005:10005, 2:2] > 0)){
@@ -437,14 +440,14 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
     testthat::expect_gt(tot_pop_t_before30_int, tot_pop_t_30_int)
 
     # finally we check that the population is in range within the specified in WhatHappens
-    # since the intervention reduces all the population to thee 40% of its original value, we will check
+    # since the intervention reduces all the population to thee 80% of its original value, we will check
     # that in fact the population reduces (aprox) in that percentage
-    testthat::expect_gt(tot_pop_t_before10_int * 0.41, tot_pop_t_10_int)
-    testthat::expect_gt(tot_pop_t_before20_int * 0.41, tot_pop_t_20_int)
-    testthat::expect_gt(tot_pop_t_before30_int * 0.41, tot_pop_t_30_int)
+    testthat::expect_gt(tot_pop_t_before10_int * 0.81, tot_pop_t_10_int)
+    testthat::expect_gt(tot_pop_t_before20_int * 0.81, tot_pop_t_20_int)
+    testthat::expect_gt(tot_pop_t_before30_int * 0.81, tot_pop_t_30_int)
 })
 
-
+# test 9 and 10 found in test.Z-intervention.R
 
 test_that("11. Intervening over 4 genotypes both over specific genotype and total population (McFL) | Trigger depends on N",{
     df3x <- data.frame(Genotype = c("A", "B", "C", "D", "E"),
