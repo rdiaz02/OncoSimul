@@ -266,9 +266,9 @@ test_that("7. Intervening over total population (McFL) | Trigger depends on T", 
     interventions <- createInterventions(interventions, afd3)
 
     sfd3 <- oncoSimulIndiv( afd3,
-                            model = "McFL",
+                            model = "McFLD",
                             onlyCancer = FALSE,
-                            finalTime = 200,
+                            finalTime = 100,
                             mu = 1e-4,
                             initSize = 5000,
                             sampleEvery = 0.001,
@@ -370,7 +370,7 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
     sfd3 <- oncoSimulIndiv( afd3,
                             model = "Exp",
                             onlyCancer = FALSE,
-                            finalTime = 200,
+                            finalTime = 60,
                             mu = 1e-4,
                             initSize = 5000,
                             sampleEvery = 0.001,
@@ -446,159 +446,54 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
 
 
 
-test_that("9. Drastically reducing a high-fitness genotype population (Exp) | Trigger depends on T", {
-    df3x <- data.frame(Genotype = c("WT", "B", "A", "B, A", "C, A"),
-                       Fitness = c("0*n_",
-                                    "1.5",
-                                    "1.002",
-                                    "1.003",
-                                    "1.004"))
-
-    afd3 <- allFitnessEffects(genotFitness = df3x,
-                          frequencyDependentFitness = TRUE,
-                          frequencyType = "abs")
-
-    ep1 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "McFL",
-                    mu = 1e-4,
-                    sampleEvery = 0.01,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 10,
-                    onlyCancer = FALSE
-                    )
-
-    # we plot the simulation when no interventions are specified.
-    #plot(ep1, show = "genotypes", type = "line")
-
-    interventions <- list(
-    list(ID           = "intOverB",
-        Trigger       = "(n_B >= 20000)",
-        WhatHappens   = "n_B = n_B * 0.88",
-        Repetitions   = Inf,
-        Periodicity   = 0.5
-    ))
-
-    interventions <- createInterventions(interventions, afd3)
-
-    ep2 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "McFL",
-                    mu = 1e-4,
-                    sampleEvery = 0.01,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 10,
-                    onlyCancer = FALSE,
-                    interventions = interventions
-                    )
-})
-
-
-
-
-
-
-test_that("10. Drastically reducing a high-fitness genotype population (Exp) | Trigger depends on n_*", {
-    df3x <- data.frame(Genotype = c("WT", "B", "C", "A", "B, A", "C, A"),
-                       Fitness = c("0*n_",
-                                    "1.5",
-                                    "1.001",
-                                    "1.002",
-                                    "1.003",
-                                    "1.004"))
-
-    afd3 <- allFitnessEffects(genotFitness = df3x,
-                          frequencyDependentFitness = TRUE,
-                          frequencyType = "abs")
-
-    ep1 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "Exp",
-                    mu = 1e-4,
-                    sampleEvery = 0.01,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 200,
-                    onlyCancer = FALSE
-                    )
-
-    #plot(ep1, show = "genotypes", type = "line")
-
-    interventions <- list(
-    list(ID           = "intOverB",
-        Trigger       = "(n_B >= n_)",
-        WhatHappens   = "n_B = n_B * 0.001",
-        Repetitions   = 0,
-        Periodicity   = 0.001
-    ))
-
-    interventions <- createInterventions(interventions, afd3)
-
-    ep2 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "Exp",
-                    mu = 1e-4,
-                    finalTime = 200,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    interventions = interventions
-                    )
-})
-
-
-
-
-
-
 test_that("11. Intervening over 4 genotypes both over specific genotype and total population (McFL) | Trigger depends on N",{
     df3x <- data.frame(Genotype = c("A", "B", "C", "D", "E"),
                       Fitness = c("1",
-                                  "1.0001 + (0.0001 * n_A)",
+                                  "1.01 + (0 * n_A)",
                                   "1.1",
                                   "1.09", 
-                                  "1.7 - (0.00002 * n_B)"))
+                                  "1.07"))
 
     afd3 <- allFitnessEffects(genotFitness = df3x,
                             frequencyDependentFitness = TRUE, frequencyType = "abs")
 
-    sfd3 <- oncoSimulIndiv( afd3,
-                            model = "McFL",
-                            onlyCancer = FALSE,
-                            finalTime = 5,
-                            mu = 1e-4,
-                            sampleEvery = 0.01,
-                            keepPhylog = FALSE,
-                            seed = NULL,
-                            errorHitMaxTries = FALSE,
-                            errorHitWallTime = FALSE,
-                            initMutant = c("A", "B", "C", "D", "E"),
-                            initSize = c(20000, 20000, 30, 10, 200))
-
     interventions = list(
         list(
-            ID            = "intOverTotPop",
-            Trigger       = "N >= 45000",
-            WhatHappens   = "N = N * 0.5",
-            Repetitions   = 1,   
-            Periodicity   = 20
+            ID            = "intOverA",
+            Trigger       = "T >= 1.2",
+            WhatHappens   = "n_A = n_A * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
         ),
         list(
-            ID            = "intOverA",
-            Trigger       = "(n_B > n_A) and (n_A > 10) and (T > 30)",
-            WhatHappens   = "n_A = 0.97 * n_A",
-            Repetitions   = 20,   
-            Periodicity   = 10
+            ID            = "intOverB",
+            Trigger       = "T >= 2.2",
+            WhatHappens   = "n_B = n_B * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
+        ),
+        list(
+            ID            = "intOverC",
+            Trigger       = "T >= 3.2",
+            WhatHappens   = "n_C = n_C * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
+        ),
+        list(
+            ID            = "intOverD",
+            Trigger       = "T >= 4.2",
+            WhatHappens   = "n_D = n_D * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
         )
     )
 
     interventions = createInterventions(interventions, afd3)
 
     sfd3_with_ints <- oncoSimulIndiv( afd3,
-                            model = "McFL",
+                            model = "McFLD",
                             onlyCancer = FALSE,
-                            finalTime = 200,
+                            finalTime = 6,
                             mu = 1e-4,
                             sampleEvery = 0.01,
                             keepPhylog = FALSE,
@@ -608,52 +503,69 @@ test_that("11. Intervening over 4 genotypes both over specific genotype and tota
                             initMutant = c("A", "B", "C", "D", "E"),
                             initSize = c(20000, 20000, 30, 10, 200),
                             interventions = interventions)
+
+    
+    # when T = 1.2 population of genotype A is intervened
+    if((sfd3_with_ints$pops.by.time[118:118, 2:2] > 0) & (sfd3_with_ints$pops.by.time[123:123, 2:2] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[118:118, 2:2]), (sfd3_with_ints$pops.by.time[125:125, 2:2]))
+    }
+
+    # when T = 2.2 population of genotype B is intervened
+    if((sfd3_with_ints$pops.by.time[218:218, 3:3] > 0) & (sfd3_with_ints$pops.by.time[225:225, 3:3] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[218:218, 3:3]), (sfd3_with_ints$pops.by.time[225:225, 3:3]))
+    }
+    # when T = 3.2 population of genotype C is intervened
+    if((sfd3_with_ints$pops.by.time[318:318, 4:4] > 0) & (sfd3_with_ints$pops.by.time[323:323, 4:4] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[318:318, 4:4]), (sfd3_with_ints$pops.by.time[323:323, 4:4]))
+    }
+    # when T = 4.2 population of genotype D is intervened
+    if((sfd3_with_ints$pops.by.time[418:418, 5:5] > 0) & (sfd3_with_ints$pops.by.time[425:425, 5:5] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[418:418, 5:5]), (sfd3_with_ints$pops.by.time[425:425, 5:5]))
+    }
 })
-
-
 
 
 
 test_that("12. Intervening over 4 genotypes both over specific and total population (Exp) | Trigger depends on T", {
 
-    df3x <- data.frame(Genotype = c("A", "B", "C", "D"),
+    df3x <- data.frame(Genotype = c("A", "B", "C", "D", "E"),
                       Fitness = c("1",
-                                  "0.93 + (0.0001 * n_A)",
-                                  "1.4 - (0.000031 * n_B)",
-                                  "1.09 + 0.2 * (n_B > n_A)"))
+                                  "1.01 + (0 * n_A)",
+                                  "1.1",
+                                  "1.09", 
+                                  "1.07"))
 
     afd3 <- allFitnessEffects(genotFitness = df3x,
                             frequencyDependentFitness = TRUE, frequencyType = "abs")
 
-    sfd3 <- oncoSimulIndiv( afd3,
-                            model = "Exp",
-                            onlyCancer = FALSE,
-                            finalTime = 5.2,
-                            mu = 1e-4,
-                            sampleEvery = 0.01,
-                            keepPhylog = FALSE,
-                            seed = NULL,
-                            errorHitMaxTries = FALSE,
-                            errorHitWallTime = FALSE,
-                            initMutant = c("A", "B", "C", "D"),
-                            initSize = c(2500, 2000, 3000, 1000))
-
-    #plot(sfd3, show = "genotypes", type = "line")
-
     interventions = list(
         list(
-            ID            = "intOverTotPop",
-            Trigger       = "T > 3",
-            WhatHappens   = "N = N * 0.5",
-            Repetitions   = 1,   ## This will be translated to MAX_INT
-            Periodicity   = 0.09
+            ID            = "intOverA",
+            Trigger       = "T >= 1.2",
+            WhatHappens   = "n_A = n_A * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
         ),
         list(
-            ID            = "intOverA",
-            Trigger       = "(N == 2000) and (n_A > n_B)",
-            WhatHappens   = "n_A = 0.92 * n_A",
-            Repetitions   = 20,   ## This will be translated to MAX_INT
-            Periodicity   = 0.3
+            ID            = "intOverB",
+            Trigger       = "T >= 2.2",
+            WhatHappens   = "n_B = n_B * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
+        ),
+        list(
+            ID            = "intOverC",
+            Trigger       = "T >= 3.2",
+            WhatHappens   = "n_C = n_C * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
+        ),
+        list(
+            ID            = "intOverD",
+            Trigger       = "T >= 4.2",
+            WhatHappens   = "n_D = n_D * 0.5",
+            Repetitions   = 0,   
+            Periodicity   = Inf
         )
     )
 
@@ -662,16 +574,36 @@ test_that("12. Intervening over 4 genotypes both over specific and total populat
     sfd3_with_ints <- oncoSimulIndiv( afd3,
                             model = "Exp",
                             onlyCancer = FALSE,
-                            finalTime = 5.2,
+                            finalTime = 6,
                             mu = 1e-4,
                             sampleEvery = 0.01,
                             keepPhylog = FALSE,
                             seed = NULL,
                             errorHitMaxTries = FALSE,
                             errorHitWallTime = FALSE,
-                            initMutant = c("A", "B", "C", "D"),
-                            initSize = c(2500, 2000, 3000, 1000),
+                            initMutant = c("A", "B", "C", "D", "E"),
+                            initSize = c(20000, 20000, 30, 10, 200),
                             interventions = interventions)
+
+    #plot(sfd3, show = "genotypes", type = "line")
+
+    # when T = 1.2 population of genotype A is intervened
+    if((sfd3_with_ints$pops.by.time[118:118, 2:2] > 0) & (sfd3_with_ints$pops.by.time[123:123, 2:2] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[118:118, 2:2]), (sfd3_with_ints$pops.by.time[125:125, 2:2]))
+    }
+
+    # when T = 2.2 population of genotype B is intervened
+    if((sfd3_with_ints$pops.by.time[218:218, 3:3] > 0) & (sfd3_with_ints$pops.by.time[225:225, 3:3] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[218:218, 3:3]), (sfd3_with_ints$pops.by.time[225:225, 3:3]))
+    }
+    # when T = 3.2 population of genotype C is intervened
+    if((sfd3_with_ints$pops.by.time[318:318, 4:4] > 0) & (sfd3_with_ints$pops.by.time[323:323, 4:4] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[318:318, 4:4]), (sfd3_with_ints$pops.by.time[323:323, 4:4]))
+    }
+    # when T = 4.2 population of genotype D is intervened
+    if((sfd3_with_ints$pops.by.time[418:418, 5:5] > 0) & (sfd3_with_ints$pops.by.time[425:425, 5:5] > 0)){
+        testthat::expect_gt((sfd3_with_ints$pops.by.time[418:418, 5:5]), (sfd3_with_ints$pops.by.time[425:425, 5:5]))
+    }
 })
 
 
@@ -690,20 +622,9 @@ test_that("13. Intervening in the Rock-Paper-Scissors model for bacterial commun
     frequencyDependentFitness = TRUE,
     frequencyType = "abs")
 
-    resultscrs1 <- oncoSimulIndiv(afcrs1,
-                                model = "McFL",
-                                onlyCancer = FALSE,
-                                finalTime = 100,
-                                mu = 1e-2,
-                                initSize = 4000,
-                                keepPhylog = TRUE,
-                                seed = NULL,
-                                errorHitMaxTries = FALSE,
-                                errorHitWallTime = FALSE)
-
     lista_intervenciones = list(
         list(
-            ID = "Intervención to affect Afectar a WT",
+            ID = "Bothering R strain, by reducing C",
             Trigger = "n_C >= 500",
             WhatHappens = "n_C = n_C * 0.1",
             Periodicity = 3,
@@ -725,8 +646,15 @@ test_that("13. Intervening in the Rock-Paper-Scissors model for bacterial commun
                                 errorHitWallTime = FALSE,
                                 interventions = final_interventions)
 
-    #plot(resultscrs1, show = "genotypes", type = "line", cex.lab=1.1,
-    #las = 1)
+    # by reducing C, R wont spread in the population. This will mean that, with the apropiate 
+    # periodicty in the intervention, C will never surpass WT. We try to check this in these tests.
+    i <- 1
+    while(i <= nrow(resultscrs1$pops.by.time)){
+        cur_nWT = resultscrs1$pops.by.time[i, 2:2]
+        cur_nR = resultscrs1$pops.by.time[i, 4:4]
+        testthat::expect_gt(cur_nWT, cur_nR)
+        i <- i + 1
+    }
 })
 
 cat(paste("\n Ending interventions tests", date(), "\n"))

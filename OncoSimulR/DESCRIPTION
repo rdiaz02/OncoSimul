@@ -92,7 +92,9 @@ Authors@R: c(
 	      person("Silvia", "Talavera Marcos", role = "ctb",
 	             comment = "vignette examples"),
 	      person("Niklas", "Endres", role = "ctb",
-	             comment = "vignette examples, freq-dep-fitness time")
+	             comment = "vignette examples, freq-dep-fitness time"),
+	      person("Tymoteusz", "Wolodzko", role = "ctb",
+	             comment = "extraDistr")
 	      )  
 Author: Ramon Diaz-Uriarte [aut, cre],
 	Sergio Sanchez-Carrillo [aut],
