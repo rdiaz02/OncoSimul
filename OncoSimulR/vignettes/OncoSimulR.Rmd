@@ -12311,7 +12311,7 @@ evaluation, meaning this will give a TRUE or FALSE result.
 
 Here we have an example of how the user can specify a list of interventions:
 
-````{r interventionExample}
+````{r interventionListExample}
 interventions <- list(
     list(ID           = "i2",
         Trigger       = "(N > 1e6) & (T > 100)",
@@ -12355,7 +12355,7 @@ In order to specify interventions, the user must call `createInterventions`
 function. This function will adapt the different attributes specified to something
 C++ will understand. But first, a `fitnessEffects` object must be defined, for example:
 
-```{r interventionExample}
+```{r interventionEscenario1Example}
 fa1 <- data.frame(Genotype = c("WT", "A", "B"),
                     Fitness = c("n_*0",
                                 "1.5",
@@ -12371,7 +12371,7 @@ Note that, for now, the fitness must have `frequencyDependentFitness` as TRUE an
 
 Once this is specified, we call `createInterventions`: 
 
-```{r interventionsExample}
+```{r interventionsCreateInterventionExample}
 interventions <- createInterventions(interventions, afd3)
 ```
 
@@ -12382,7 +12382,7 @@ Finally, once the intervention is "created" by the `createInterventions` functio
 the object returned can be passed as an argument to the `oncoSimul*` function, 
 like this example below: 
 
-```{r interventionsExample}
+```{r interventionsOncoSimulIndivExample}
 ep2 <- oncoSimulIndiv(
                     afd3, 
                     model = "Exp",
@@ -12404,7 +12404,7 @@ simulation develops. First, we define (as usual) the dataframe that associates t
 genotypes with their fitness. In this case in particular, we will define an scenario
 where the genotype B has a higher fitness than the other genotypes in the population:
 
-```{r interventionsExample1}
+```{r interventionsSimpleExampleNoInts}
 df3x <- data.frame(Genotype = c("WT", "B", "A", "B, A", "C, A"),
                        Fitness = c("0*n_",
                                     "1.5",
@@ -12435,7 +12435,7 @@ start to decrement the dominant genotype?
 First, we define that intervention, in this case, the intervention will decrement 
 the B population by 88% each 0.07 time units:
 
-```{r interventionsExample1}
+```{r create_interventionsSimpleExample}
 interventions <- list(
     list(ID           = "intOverB",
         Trigger       = "(T >= 5)",
@@ -12455,7 +12455,7 @@ simulation T reaches 5 time units, the intervention will not execute over the si
 
 Then, we run the simulation again, but this time with the interventions specified:
 
-```{r interventionsExample1}
+```{r interventionsSimpleExampleWithInts}
 
 ex1_with_ints <- oncoSimulIndiv(
                     afd3, 
@@ -12503,13 +12503,13 @@ osi <- oncoSimulIndiv( afd3,
                         sampleEvery = 0.001)
 ``` 
 Then, we plot the result:
-```{r intex2}
+```{r plotintex2}
 plot(osi, show = "genotypes", type = "line")
 ```
 
 Now, we want to intervene over the total population, so we define the following intervention:
 
-```{r intex2}
+```{r intforintex2}
 intervention_tot_pop = list(
         list(
             ID            = "intOverTotPop",
@@ -12528,7 +12528,7 @@ Where the intervention will start at T > 40, reducing the total population to th
 (3 in total if the conditions are given) with a periodicity of 20 time units. Now, we re-run 
 the simulation, but this time specifying the interventions:
 
-```{r intex2}
+```{r simulationwithinterventionsintex2}
 osi_with_ints <- oncoSimulIndiv( afd3,
                         model = "McFLD",
                         onlyCancer = FALSE,
@@ -12546,7 +12546,7 @@ plot(osi_with_ints, show = "genotypes", type = "line")
 As it can be seen, when T=40, T=60 and T=80, the total population decrements, but let's 
 take a closer look and see what `pops.by.time` in those instants:
 
-```{r intex2}
+```{r popsbytimeintex2}
 osi_with_ints$pops.by.time[40002:40003, 1:4]
 ```
 
@@ -12556,7 +12556,7 @@ of genotype A for a given time and the forth column represents the population fo
 As it can be seen, when the current time of the simulation is really close to 40, the intervention
 happens, reducing the population to the 20%. 
 
-```{r intex2proof}
+```{r popsbytimeintex2_proof}
 pre_int_tot_pop = osi_with_ints$pops.by.time[40002:40002,1:1] + osi_with_ints$pops.by.time[40002:40002,2:2] + osi_with_ints$pops.by.time[40002:40002,3:3]+ osi_with_ints$pops.by.time[40002:40002,4:4]
 post_int_tot_pop = osi_with_ints$pops.by.time[40003:40003,1:1] + osi_with_ints$pops.by.time[40003:40003,2:2] + osi_with_ints$pops.by.time[40003:40003,3:3] + osi_with_ints$pops.by.time[40003:40003, 4:4]
 
@@ -12586,7 +12586,7 @@ the strain that is resistant to the colicin.
 
 We create the equations and run the simulation: 
 
-```{r rpswithints}
+```{r rpswithnoints}
 crs <- function (a, b, c){
         data.frame(Genotype = c("WT", "C", "R"),
         Fitness = c(paste0("1 + ", a, " * n_R/N - ", b, " * n_C/N"),
@@ -12624,7 +12624,7 @@ Let's say for example, that we do not want the R strain to proliferate, since th
 define that the R genotype needs the C genotype to exist and grow, if we cut the progression 
 of C, R will never dominate the population. First, we define the intervention: 
 
-```{r rpswithints}
+```{r interventionforrps}
 int_over_C = list(
         list(
             ID = "Bothering R strain, by reducing C",
@@ -12662,6 +12662,9 @@ plot(resultscrs1_noints, show="genotypes", type = "line")
 The peaks seen on the graphic representation of the population of strain C, are an effect of the intervention acting on strain C, reducing it to 10% of the initial population. As it is logical, since the WT strain continues to dominate the simulation, in the time interval that is created between intervention and intervention, the C strain invades the WT strain, in such a way that the population of the WT strain is reduced . Once the intervention happens, WT grows back, but not for long, as the growth of strain C reoccurs. On the other hand, the population of the R strain can never take off, because C cannot proliferate.
 
 It can be seen in the graph that, from the intervention on the population of C, the population of R decreases, but, on the other hand, when the population C grows, R also does, since the strain C is not allowed to proliferating at a frequency greater than 500 never dominates the simulation.
+
+As it can be seen, interventions are flexible, and as complex as the user wants them to be. 
+They can also be scheduled as the user wants. so they can be executed in key parts of the simulation when certain conditions are given. In conclusion, by using interventions the user can affect how the outcome of a simulation might be.
 
 \clearpage
 
