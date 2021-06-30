@@ -1,6 +1,7 @@
 * Miscell to-do in freq-dep-fitness branch
 ** Immediate and simple
    - [ ] plot of onocoSimulIndiv: default for show should be genotypes.
+   - [ ] McFL or McFLD: give message if using McFL instead of McFLD.
    - [ ] Using a constant for fitness should work. See this: the first fails, the
      second does not. And the second and third are correct.
 #+BEGIN_EXAMPLE
