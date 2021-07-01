@@ -5,25 +5,27 @@ test_that("testing single gene evaluation", {
   
   r1 <- data.frame(rfitness(2))
   
-  r1[, "Birth"] <- c("max(3, 2*f_)",
+  colnames(r1)[which(colnames(r1) == "Birth")] <- "Fitness"
+  r1[, "Fitness"] <- c("max(3, 2*f_)",
                       "max(1.5, 3*(f_ + f_1))",
                       "max(1.5, 3*(f_ + f_2))",
                       "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)")
   
   r2 <- rfitness(2)
   
-  afe1 <- allFitnessEffects(genotFitness = r1, 
-                            frequencyDependentBirth = TRUE, 
-			                      frequencyType = "rel")
+  colnames(r2)[which(colnames(r2) == "Birth")] <- "Fitness"
+  suppressWarnings(afe1 <- allFitnessEffects(genotFitness = r1, 
+                            frequencyDependentFitness = TRUE, 
+			                      frequencyType = "rel"))
                             #spPopSizes = c(5000, 2500, 2500, 7500))
   
-  afe2 <- allFitnessEffects(genotFitness = r2, 
-                            frequencyDependentBirth = FALSE)
+  suppressWarnings(afe2 <- allFitnessEffects(genotFitness = r2, 
+                            frequencyDependentFitness = FALSE))
                             #spPopSizes = c(5000, 2500, 2500, 7500))
   
-  afe3 <- allFitnessEffects(genotFitness = r1, 
-                            frequencyDependentBirth = TRUE, 
-			    frequencyType = "rel")
+  suppressWarnings(afe3 <- allFitnessEffects(genotFitness = r1, 
+                            frequencyDependentFitness = TRUE, 
+			    frequencyType = "rel"))
   suppressWarnings({
   evge1 <- evalGenotype(genotype = "Root", fitnessEffects = afe1,
                         spPopSizes = c(5000, 2500, 2500, 7500))
@@ -79,7 +81,9 @@ test_that("testing all genes evaluation", {
   
   r <- data.frame(rfitness(3))
   
-  r[, "Birth"] <- c("max(2, log(1 + f_))",
+  colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+  
+  r[, "Fitness"] <- c("max(2, log(1 + f_))",
                       "3",
                       "3",
                       "3", 
@@ -88,9 +92,9 @@ test_that("testing all genes evaluation", {
                       "max(3, log(1 + f_ + f_1 + f_2 + f_3))", 
                       "max(5, (1 + f_1_2 + f_2_3 + f_1_3)^2)")
   
-  afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentBirth = TRUE, 
-			                     frequencyType = "rel")
+  suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
+                           frequencyDependentFitness = TRUE, 
+			                     frequencyType = "rel"))
                            #spPopSizes = c(500, 
                             #              250, 
                              #             250, 
@@ -123,7 +127,7 @@ test_that("testing all genes evaluation", {
                                                          300,
                                                          300,
                                                          300,
-                                                         450))$Birth
+                                                         450))$Fitness
 
   })                                     
   expect_identical(evalGs_one_by_one, evalGs_all_together)
@@ -134,12 +138,15 @@ test_that("testing all genes evaluation", {
 test_that("eval single WT genotype with FDF" , {
 
     r <- data.frame(rfitness(2))
-    r[, "Birth"] <- c("100 - n_1 - 2 * n_2 - 3 * n_1_2", 
+	
+	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+    r[, "Fitness"] <- c("100 - n_1 - 2 * n_2 - 3 * n_1_2", 
                         "max(10*n_1, 4)", 
                         "max(10*n_2, 4)", 
                         "max((200*(n_1 + n_2) + 50*n_1_2), 1)")
-    afe <- allFitnessEffects(genotFitness = r, 
-                             frequencyDependentBirth = TRUE)
+						
+    suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
+                             frequencyDependentFitness = TRUE))
 
 
     suppressWarnings({

@@ -687,14 +687,14 @@ test_that("initMutant works if == number of genes", {
 })
 
 
-test_that("initMutant with freq-dep-birth"  , {
+test_that("initMutant with freq-dep-fitness"  , {
     r <- data.frame(rfitness(2))
-    r[, "Birth"] <- c("f_ - f_1 - f_2 - f_1_2", 
+    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
                         "max(100*f_1, 10)", 
                         "max(100*f_2, 10)", 
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
     afe <- allFitnessEffects(genotFitness = r, 
-                             frequencyDependentBirth = TRUE)
+                             frequencyDependentFitness = TRUE)
 
     expect_s3_class(
         os1 <- oncoSimulIndiv(afe, 
@@ -750,12 +750,12 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
 
     set.seed(1)
     r <- data.frame(rfitness(2))
-    r[, "Birth"] <- c("f_ - f_1 - f_2 - f_1_2", 
+    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
                         "max(100*f_1, 10)", 
                         "max(100*f_2, 10)", 
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
     afe <- allFitnessEffects(genotFitness = r, 
-                             frequencyDependentBirth = TRUE)
+                             frequencyDependentFitness = TRUE)
     null <- capture.output({
     set.seed(1)
     of1 <- oncoSimulIndiv(afe, 
@@ -952,7 +952,7 @@ test_that("multiple init mutants: different species", {
                                mu = c(A = 1e-10, C = 1e-10,
                                       B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
                                onlyCancer = FALSE)
-        not_possible <- c("", ag$Genotype[ag$Birth == 0])
+        not_possible <- c("", ag$Genotype[ag$Fitness == 0])
         expect_false(any(not_possible %in%  out1$GenotypesLabels))
     }
 
@@ -984,7 +984,7 @@ test_that("multiple init mutants: different species", {
                    mu = c(A = 1e-10, C = 1e-10,
                           B = 1e-5, D = 1e-5, E = 1e-5, F = 1e-5),
                    onlyCancer = FALSE)
-        not_possible <- c("", ag$Genotype[ag$Birth == 0])
+        not_possible <- c("", ag$Genotype[ag$Fitness == 0])
         expect_false(any(not_possible %in%  out1$GenotypesLabels))
     }
 })
@@ -1030,7 +1030,7 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.2 + sqrt(f_A + f_C + f_C_D)"),        
     stringsAsFactors = FALSE)
     afd0 <- allFitnessEffects(genotFitness = gffd0,
-                             frequencyDependentBirth = TRUE)
+                             frequencyDependentFitness = TRUE)
 
     suppressWarnings(eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5))
 
@@ -1048,7 +1048,7 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
     stringsAsFactors = FALSE)
     afd <- allFitnessEffects(genotFitness = gffd, 
-                             frequencyDependentBirth = TRUE)
+                             frequencyDependentFitness = TRUE)
 
     suppressWarnings(eag1 <- evalAllGenotypes(afd, spPopSizes = 0:5))
 
@@ -1063,7 +1063,7 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
     stringsAsFactors = FALSE)
     afd2 <- allFitnessEffects(genotFitness = gffd2, 
-                             frequencyDependentBirth = TRUE)
+                             frequencyDependentFitness = TRUE)
 
     suppressWarnings(eag2 <- evalAllGenotypes(afd2, spPopSizes = 1:5))
     expect_identical(eag1, eag2)
@@ -1088,14 +1088,14 @@ test_that("multiple init mutants: different species, FDF", {
 
 
 
-test_that("multiple init mutants: different species, FDB, check birth", {
+test_that("multiple init mutants: different species, FDF, check fitness", {
     mspecF <- data.frame(
         Genotype = c("A",
                      "A, a1", "A, a2", "A, a1, a2",
                      "B",
                      "B, b1", "B, b2", "B, b3",
                      "B, b1, b2", "B, b1, b3", "B, b1, b2, b3"),
-        Birth = c("1 + f_A_a1",
+        Fitness = c("1 + f_A_a1",
                     "1 + f_A_a2",
                     "1 + f_A_a1_a2",
                     "1 + f_B",
@@ -1108,7 +1108,7 @@ test_that("multiple init mutants: different species, FDB, check birth", {
                     "1 + f_A")
     )
     fmspecF <- allFitnessEffects(genotFitness = mspecF,
-                                 frequencyDependentBirth = TRUE)
+                                 frequencyDependentFitness = TRUE)
     ## Remeber, spPopSizes correspond to the genotypes
     ## shown in
     fmspecF$full_FDF_spec
@@ -1117,23 +1117,23 @@ test_that("multiple init mutants: different species, FDB, check birth", {
     suppressWarnings(afmspecF <- evalAllGenotypes(fmspecF, spPopSizes = 1:11))
 
     ## Show only viable ones
-    afmspecF[afmspecF$Birth >= 1, ]
+    afmspecF[afmspecF$Fitness >= 1, ]
 
     ## Expected values
     exv <- 1 + c(3, 5, 4, 8, 6, 7, 9, 2, 10, 11, 1)/sum(1:11)
-    stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Birth >= 1, ]$Birth)))
+    stopifnot(isTRUE(all.equal(exv, afmspecF[afmspecF$Fitness >= 1, ]$Fitness)))
 
 
 })
 
 
-test_that("multiple init mutants: different species, FDF, exprtk crash if not in birth table", {
+test_that("multiple init mutants: different species, FDF, exprtk crash if not in fitness table", {
     ## Crash, as f_2 is not present
     gffd <- data.frame(
         Genotype = c("WT",
                      "A", "A, B",
                      "C", "C, D", "C, E"),
-        Birth = c("0",
+        Fitness = c("0",
                     "1.3",
                     "1.4",
                     "1.4",
@@ -1141,7 +1141,7 @@ test_that("multiple init mutants: different species, FDF, exprtk crash if not in
                     "1.2 + sqrt(f_1 + f_3 + f_2)"),        
     stringsAsFactors = FALSE)
     afd <- allFitnessEffects(genotFitness = gffd, 
-                             frequencyDependentBirth = TRUE)
+                             frequencyDependentFitness = TRUE)
         suppressWarnings(expect_error(evalAllGenotypes(afd, spPopSizes = rep(10, 6))))
     ### FIXME: catch this exact string"Undefined symbol: 'f_2'", fixed = TRUE)
 })

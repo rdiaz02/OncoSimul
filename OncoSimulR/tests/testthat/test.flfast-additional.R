@@ -4,54 +4,54 @@ date()
 
 
 test_that("Issue warnings and messages", {
-    df1 <- data.frame(Genotype = c("A", "B, C"), Birth = c(1.3, 2),
+    df1 <- data.frame(Genotype = c("A", "B, C"), Fitness = c(1.3, 2),
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df1),
                    "No WT genotype. Setting its birth to 1.", fixed = TRUE)
     if(as.character(version$major) < 4) {
-    df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Birth = c(5, 1.3, 2))
+    df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df2),
                    "First column of genotype fitness is a factor.",
                    fixed = TRUE)
     }
-    df1 <- data.frame(Genotype = c("A", "B, C"), Birth = c(1.3, 2),
+    df1 <- data.frame(Genotype = c("A", "B, C"), Fitness = c(1.3, 2),
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::to_genotFitness_std(df1),
                    "No WT genotype. Setting its birth to 1.", fixed = TRUE)
     
     if(as.character(version$major) < 4) {    
-    df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Birth = c(5, 1.3, 2))
+    df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::to_genotFitness_std(df2),
-                   "First column of genotype fitness is a factor.",
+                   "First column of genotype birth is a factor.",
                    fixed = TRUE)
     }
 })
 
 test_that("Equality of fitness including allFitnessEffects", {
 
-    df3 <- data.frame(Genotype = c("WT", "A", "B, C"), Birth = c(1, 2, 0),
+    df3 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(1, 2, 0),
                       stringsAsFactors = FALSE)
 
     m3 <- rbind(c(0, 0, 0, 1), c(1, 0, 0, 2.0))
-    colnames(m3) <- c("A", "B", "C", "Birth")
+    colnames(m3) <- c("A", "B", "C", "Fitness")
     m4 <- rbind(c(0, 0, 0, 1), c(1, 0, 0, 2.0), c(0, 1, 1, 0))
-    colnames(m4) <- c("A", "B", "C", "Birth")
+    colnames(m4) <- c("A", "B", "C", "Fitness")
     ## yes, m3 and m3 missing the attributes
     expect_equivalent(OncoSimulR:::to_genotFitness_std(df3), m3)
     expect_equivalent(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4)
 
     ## now, scale by fitness of WT
     df3 <- data.frame(Genotype = c("WT", "A", "B, C"),
-                      Birth = c(1.3, 2, 0),
+                      Fitness = c(1.3, 2, 0),
                       stringsAsFactors = FALSE)
 
     m3 <- rbind(c(0, 0, 0, 1.3), c(1, 0, 0, 2.0))
-    colnames(m3) <- c("A", "B", "C", "Birth")
-    m3[, "Birth"] <- m3[, "Birth"]/1.3
+    colnames(m3) <- c("A", "B", "C", "Fitness")
+    m3[, "Fitness"] <- m3[, "Fitness"]/1.3
 
     m4 <- rbind(c(0, 0, 0, 1.3), c(1, 0, 0, 2.0), c(0, 1, 1, 0))
-    colnames(m4) <- c("A", "B", "C", "Birth")
-    m4[, "Birth"] <- m4[, "Birth"]/1.3
+    colnames(m4) <- c("A", "B", "C", "Fitness")
+    m4[, "Fitness"] <- m4[, "Fitness"]/1.3
 
     suppressWarnings(expect_equivalent(OncoSimulR:::to_genotFitness_std(df3), m3))
     suppressWarnings(expect_equivalent(OncoSimulR:::to_genotFitness_std(df3, simplify = FALSE), m4))
@@ -110,12 +110,14 @@ test_that("Bozic and fitness landscape spec will throw exception", {
 test_that("fitness evaluation what we expect", {
     for(i in 1:10) {
         rxx <- rfitness(5)
+		
+		colnames(rxx)[which(colnames(rxx) == "Birth")] <- "Fitness"
         ## allFitnessEffects(genotFitness = rxx)
-        eag <- evalAllGenotypes(allFitnessEffects(genotFitness = rxx),
-                                addwt = TRUE)
-        rxxf <- rxx[, "Birth"]
+        suppressWarnings(eag <- evalAllGenotypes(allFitnessEffects(genotFitness = rxx, frequencyDependentFitness = FALSE),
+                                addwt = TRUE))
+        rxxf <- rxx[, "Fitness"]
         rxxf[rxxf <= 1e-09] <- 0
-        expect_equal(rxxf, eag[, "Birth"])
+        expect_equal(rxxf, eag[, "Fitness"])
     }
 })
 
@@ -160,9 +162,9 @@ test_that("rt and fl specifications are the same", {
     names(s1v) <- uc
     rt$s <- s1v[rt$child]
 
-    rtf <- evalAllGenotypes(allFitnessEffects(rt), addwt = TRUE)
-    fl <- OncoSimulR:::allGenotypes_to_matrix(rtf)
-    fl[fl[, "Birth"] == 0, "Birth"] <- 1e-9
+    suppressWarnings(rtf <- evalAllGenotypes(allFitnessEffects(rt, frequencyDependentFitness = FALSE), addwt = TRUE))
+    fl <- OncoSimulR:::allGenotypes_to_matrix(rtf, frequencyDependentFitness = FALSE)
+    fl[fl[, "Fitness"] == 0, "Fitness"] <- 1e-9
     return(list(rt = rt, fl = fl))
 }
 

@@ -6,14 +6,14 @@ test_that("testing output classes", {
   
   r <- data.frame(rfitness(2))
   
-  r[, "Birth"] <- c("f_ - f_1 - f_2 - f_1_2", 
+  r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
                       "max(100*f_1, 10)", 
                       "max(100*f_2, 10)", 
                       "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
   
   
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentBirth = TRUE, 
+                           frequencyDependentFitness = TRUE, 
                            frequencyType = "rel")
   
   set.seed(1)
@@ -32,7 +32,7 @@ test_that("testing output classes", {
   
   expect_identical(class(r), "data.frame")
   
-  expect_identical(class(afe), c("fitnessEffects", "fitnessEffects_v3"))
+  expect_identical(class(afe), "fitnessEffects")
   
   
   expect_identical(class(osi), c("oncosimul", "oncosimul2"))
@@ -48,24 +48,24 @@ test_that("testing performance", {
   
   r <- data.frame(rfitness(2))
   
-  r[, "Birth"] <- c("10*f_", 
+  r[, "Fitness"] <- c("10*f_", 
                       "10*f_1", 
                       "50*f_2", 
                       "200*(f_1 + f_2) + 50*f_1_2")
   ra <- r
   
-  ra[, "Birth"] <- c("10*n_/N", 
+  ra[, "Fitness"] <- c("10*n_/N", 
                       "10*n_1/N", 
                       "50*n_2/N", 
                       "200*(n_1/N + n_2/N) + 50*n_1_2/N")
   
   
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentBirth = TRUE, 
+                           frequencyDependentFitness = TRUE, 
                            frequencyType = "rel")
   
   afe_ra <- allFitnessEffects(genotFitness = ra, 
-                              frequencyDependentBirth = TRUE, 
+                              frequencyDependentFitness = TRUE, 
                               frequencyType = "abs")
   
   set.seed(1)
@@ -125,14 +125,14 @@ test_that("testing performance", {
 test_that("testing Bozic failure", {
   r <- data.frame(rfitness(2))
   
-  r[, "Birth"] <- c("10*f_", 
+  r[, "Fitness"] <- c("10*f_", 
                       "10*f_1", 
                       "50*f_2", 
                       "200*(f_1 + f_2) + 50*f_1_2")
   
   
   afe <- allFitnessEffects(genotFitness = r, 
-                           frequencyDependentBirth = TRUE, 
+                           frequencyDependentFitness = TRUE, 
                            frequencyType = "rel")
   
   set.seed(1)

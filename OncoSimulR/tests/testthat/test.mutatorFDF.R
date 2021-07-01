@@ -16,7 +16,7 @@ test_that("eval fitness and mut OK", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentBirth = TRUE, 
+                          frequencyDependentFitness = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
@@ -58,13 +58,13 @@ test_that("eval mut genotypes", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentBirth = TRUE, 
+                          frequencyDependentFitness = TRUE, 
                           frequencyType = "rel")
   
   r2 <- rfitness(2)
   
   fe2 <- allFitnessEffects(genotFitness = r2, 
-                           frequencyDependentBirth = FALSE)
+                           frequencyDependentFitness = FALSE)
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
   suppressWarnings({
@@ -139,7 +139,7 @@ test_that("eval mut genotypes, echo", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentBirth = TRUE, 
+                          frequencyDependentFitness = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
@@ -155,14 +155,14 @@ test_that("eval mut genotypes, echo", {
 test_that("testing all genes evaluation", {
   
   r1 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
-                   Birth = c("max(3, 2*f_)",
+                   Fitness = c("max(3, 2*f_)",
                                "max(1.5, 3*(f_ + f_1))",
                                "max(1.5, 3*(f_ + f_2))",
                                "max(2, 5*f_ - 0.5*( f_1 + f_2) + 15*f_1_2)"),
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentBirth = TRUE, 
+                          frequencyDependentFitness = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
@@ -180,7 +180,7 @@ test_that("testing all genes evaluation", {
   evalGs_all_together1 <- evalAllGenotypesFitAndMut(fitnessEffects = fe,
                                                     mutatorEffects = mt,
                                                     spPopSizes = c(5000, 2500, 2500, 7500),
-                                                    )$Birth
+                                                    )$Fitness
   
   evalGs_one_by_one2 <- sapply(genotypes, function(x) evalGenotypeFitAndMut(x,
                                                                             fitnessEffects = fe,
@@ -206,7 +206,7 @@ test_that("expect output oncoSimulIndiv", {
                    stringsAsFactors = FALSE)
   
   fe <- allFitnessEffects(genotFitness = r1, 
-                          frequencyDependentBirth = TRUE, 
+                          frequencyDependentFitness = TRUE, 
                           frequencyType = "rel")
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))

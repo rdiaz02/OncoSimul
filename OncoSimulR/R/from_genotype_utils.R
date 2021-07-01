@@ -123,6 +123,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 to_genotFitness_std <- function(x,
                                 frequencyDependentBirth = FALSE,
                                 frequencyDependentDeath = FALSE,
+                                frequencyDependentFitness = NULL,
                                 frequencyType = NA,
                                 deathSpec = FALSE,
                                 simplify = TRUE,
@@ -242,7 +243,13 @@ to_genotFitness_std <- function(x,
             ocnx <- gtools::mixedorder(cnx)
             if(!(identical(cnx[ocnx], cnx))) {
                 message("Sorting gene column names alphabetically")
-                x <- cbind(x[, ocnx, drop = FALSE], Birth = x[, (ncx)])
+                
+                if(!is.null(frequencyDependentFitness)) {
+                    x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
+                } else {
+                    x <- cbind(x[, ocnx, drop = FALSE], Birth = x[, (ncx)])
+                }
+                
             }
         }
 
@@ -263,7 +270,13 @@ to_genotFitness_std <- function(x,
             }
             
             else {
-                colnames(x) <- c(LETTERS[1:ncx], "Birth")
+                
+                if (!is.null(frequencyDependentFitness)) {
+                    colnames(x) <- c(LETTERS[1:ncx], "Fitness")
+                } else {
+                    colnames(x) <- c(LETTERS[1:ncx], "Birth")
+                }
+                    
             }
             
         }
@@ -321,11 +334,21 @@ to_genotFitness_std <- function(x,
             }
             else {
                 x <- x[, c(1, 2), drop = FALSE]
-                if(!all(colnames(x) == c("Genotype", "Birth"))) {
-                    message("Column names of object not Genotype and Birth",
-                            " Renaming them assuming that is what you wanted")
-                    colnames(x) <- c("Genotype", "Birth")
+                if (!is.null(frequencyDependentFitness)) {
+                    if(!all(colnames(x) == c("Genotype", "Fitness"))) {
+                        message("Column names of object not Genotype and Birth",
+                                " Renaming them assuming that is what you wanted")
+                        colnames(x) <- c("Genotype", "Fitness")
+                    }
+                    
+                } else {
+                    if(!all(colnames(x) == c("Genotype", "Birth"))) {
+                        message("Column names of object not Genotype and Birth",
+                                " Renaming them assuming that is what you wanted")
+                        colnames(x) <- c("Genotype", "Birth")
+                    }
                 }
+                
             }
             
             
@@ -357,7 +380,8 @@ to_genotFitness_std <- function(x,
             }
 
             x <- allGenotypes_to_matrix(x, frequencyDependentBirth,
-                                        frequencyDependentDeath, deathSpec)
+                                        frequencyDependentDeath, 
+                                        frequencyDependentFitness, deathSpec)
         }
     }
     ## And, yes, scale all births and deaths by that of the WT
@@ -402,7 +426,10 @@ to_genotFitness_std <- function(x,
                 vwt <- x[whichroot, ncol(x)-1]
                 x[, ncol(x)-1] <- x[, ncol(x)-1]/vwt
             }
-        } 
+        }
+        
+        if(!is.null(frequencyDependentFitness))
+            colnames(x)[which(colnames(x) == "Birth")] <- "Fitness"
     }
 
     if(any(is.na(x)))
@@ -581,6 +608,7 @@ genot_fitness_to_epistasis <- function(x) {
 allGenotypes_to_matrix <- function(x,
                                    frequencyDependentBirth = FALSE,
                                    frequencyDependentDeath = FALSE,
+                                   frequencyDependentFitness = NULL,
                                    deathSpec = FALSE) {
     ## Makes no sense to allow passing order: the matrix would have
     ## repeated rows. A > B and B > A both have exactly A and B
@@ -588,7 +616,10 @@ allGenotypes_to_matrix <- function(x,
     ## Take output of evalAllGenotypes or identical data frame and return
     ## a matrix with 0/1 in a column for each gene and a final column of
     ## Fitness
-
+    
+    if(!is.null(frequencyDependentFitness))
+        frequencyDependentBirth <- frequencyDependentFitness
+    
     if (is.factor(x[, 1])) {
         warning(
             "First column of genotype birth-death is a factor. ",
@@ -675,7 +706,12 @@ allGenotypes_to_matrix <- function(x,
     }
     else {
         m <- cbind(m, x[, 2])
-        colnames(m) <- c(all_genes, "Birth")
+        
+        if (!is.null(frequencyDependentFitness)) {
+            colnames(m) <- c(all_genes, "Fitness")
+        } else {
+            colnames(m) <- c(all_genes, "Birth")
+        }
     }
     
     

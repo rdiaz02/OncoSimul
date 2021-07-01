@@ -15,16 +15,16 @@ test_that("genot_fitness_to_epistasis works minimally", {
     afe2 <- evalAllGenotypes(fem6b, addwt = TRUE)
 
     ## recall breaking change!
-    expect_true(!identical(afe1[, "Birth"], afe2[, "Birth"]))
+    expect_true(!identical(afe1[, "Fitness"], afe2[, "Fitness"]))
 
-    expect_true(identical(afe1[c(1, 2, 4), "Birth"],
-                          afe2[c(1, 2, 4), "Birth"]))
+    expect_true(identical(afe1[c(1, 2, 4), "Fitness"],
+                          afe2[c(1, 2, 4), "Fitness"]))
 
     afe1mm <- afe1
-    afe1mm$Birth[3] <- 0
+    afe1mm$Fitness[3] <- 0
     
-    expect_true(identical(afe1mm[, "Birth"],
-                          afe2[, "Birth"]))
+    expect_true(identical(afe1mm[, "Fitness"],
+                          afe2[, "Fitness"]))
 })
 
 cat(paste("\n Ending genot_fitness_to_epistasis at", date(), "\n"))
