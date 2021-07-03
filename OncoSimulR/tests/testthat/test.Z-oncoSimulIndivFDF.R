@@ -6,15 +6,17 @@ test_that("testing output classes", {
   
   r <- data.frame(rfitness(2))
   
+  colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+
   r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
                       "max(100*f_1, 10)", 
                       "max(100*f_2, 10)", 
                       "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
   
   
-  afe <- allFitnessEffects(genotFitness = r, 
+  suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
                            frequencyDependentFitness = TRUE, 
-                           frequencyType = "rel")
+                           frequencyType = "rel"))
   
   set.seed(1)
   
@@ -48,6 +50,8 @@ test_that("testing performance", {
   
   r <- data.frame(rfitness(2))
   
+  colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+
   r[, "Fitness"] <- c("10*f_", 
                       "10*f_1", 
                       "50*f_2", 
@@ -60,13 +64,13 @@ test_that("testing performance", {
                       "200*(n_1/N + n_2/N) + 50*n_1_2/N")
   
   
-  afe <- allFitnessEffects(genotFitness = r, 
+  suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
                            frequencyDependentFitness = TRUE, 
-                           frequencyType = "rel")
+                           frequencyType = "rel"))
   
-  afe_ra <- allFitnessEffects(genotFitness = ra, 
+  suppressWarnings(afe_ra <- allFitnessEffects(genotFitness = ra, 
                               frequencyDependentFitness = TRUE, 
-                              frequencyType = "abs")
+                              frequencyType = "abs"))
   
   set.seed(1)
   
@@ -125,15 +129,17 @@ test_that("testing performance", {
 test_that("testing Bozic failure", {
   r <- data.frame(rfitness(2))
   
+  colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+
   r[, "Fitness"] <- c("10*f_", 
                       "10*f_1", 
                       "50*f_2", 
                       "200*(f_1 + f_2) + 50*f_1_2")
   
   
-  afe <- allFitnessEffects(genotFitness = r, 
+  suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
                            frequencyDependentFitness = TRUE, 
-                           frequencyType = "rel")
+                           frequencyType = "rel"))
   
   set.seed(1)
   

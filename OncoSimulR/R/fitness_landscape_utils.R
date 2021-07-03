@@ -72,7 +72,10 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
   
     x_from <- y_from <- x_to <- y_to <- Change <- muts <-
         label <- birth <- Type <- NULL
-                
+    
+    if ("Fitness" %in% colnames(tfm$afe)) {
+      colnames(tfm$afe)[which(colnames(tfm$afe) == "Fitness")] <- "Birth"
+    }
                 
     dd <- data.frame(muts = mutated,
                      birth = tfm$afe$Birth,

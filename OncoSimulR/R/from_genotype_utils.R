@@ -50,10 +50,27 @@ to_Magellan <- function(x, file,
 to_Fitness_Matrix <- function(x, max_num_genotypes) {
     ## A general converter. Ready to be used by plotFitnessLandscape and
     ## Magellan exporter.
-
+    
+    ## Very bad, but there is no other way
+    
+    
     ## FIXME: really, some of this is inefficient. Very. Fix it.
     if( (inherits(x, "genotype_fitness_matrix")) ||
         ( (is.matrix(x) || is.data.frame(x)) && (ncol(x) > 2) ) ) {
+        
+        if("Fitness" %in% colnames(x)) {
+            afe <- evalAllGenotypes(allFitnessEffects(
+                genotFitness = x, frequencyDependentFitness = FALSE
+                ##, epistasis = from_genotype_fitness(x)
+            ),
+            order = FALSE, addwt = TRUE, max = max_num_genotypes)
+        } else {
+            afe <- evalAllGenotypes(allFitnessEffects(
+                genotFitness = x
+                ##, epistasis = from_genotype_fitness(x)
+            ),
+            order = FALSE, addwt = TRUE, max = max_num_genotypes)
+        }
         ## Why this? We go back and forth twice. We need both things. We
         ## could construct the afe below by appropriately pasting the
         ## columns names
@@ -62,11 +79,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
         ## This could use fmatrix_to_afe, above!!!
         ## Major change as of flfast: no longer using from_genotype_fitness
-        afe <- evalAllGenotypes(allFitnessEffects(
-            genotFitness = x
-            ##, epistasis = from_genotype_fitness(x)
-        ),
-            order = FALSE, addwt = TRUE, max = max_num_genotypes)
+        
 
         ## Might not be needed with the proper gfm object (so gmf <- x)
         ## but is needed if arbitrary matrices.
@@ -91,10 +104,18 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
                                       stringsAsFactors = FALSE),
                            x)
             } else {
-                x <- rbind(data.frame(Genotype = "WT",
-                                      Birth = 1,
-                                      stringsAsFactors = FALSE),
-                           x)
+                
+                if("Fitness" %in% colnames(x)) {
+                    x <- rbind(data.frame(Genotype = "WT",
+                                          Fitness = 1,
+                                          stringsAsFactors = FALSE),
+                               x)
+                } else {
+                    x <- rbind(data.frame(Genotype = "WT",
+                                          Birth = 1,
+                                          stringsAsFactors = FALSE),
+                               x)
+                }
             }
             
         }

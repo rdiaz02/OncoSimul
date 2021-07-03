@@ -29,7 +29,7 @@ test_that("Exercise plotting and dealing with different matrix input", {
 
     m88 <- cbind(B = c(0, 1, 0, 1), c(0, 0, 1, 1), F = c(1, 2, 3, 5.5))
     suppressWarnings(expect_identical(as.data.frame(
-        evalAllGenotypes(allFitnessEffects(genotFitness = m88),
+        evalAllGenotypes(allFitnessEffects(genotFitness = m88, frequencyDependentFitness = FALSE),
                                       addwt = TRUE)),
                      data.frame(Genotype = c("WT", "A", "B", "A, B"),
                                 Fitness = c(1, 3, 2, 5.5),
