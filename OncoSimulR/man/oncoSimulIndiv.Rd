@@ -41,7 +41,6 @@
                 errorHitMaxTries = TRUE,
                 verbosity = 0,
                 initMutant = NULL,
-				constantPop = FALSE,
                 AND_DrvProbExit = FALSE,
                 fixation = NULL,
                 seed = NULL)
