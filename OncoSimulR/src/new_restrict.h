@@ -188,9 +188,6 @@ struct Genotype {
 };
 
 
-
-
-
 inline Genotype wtGenotype() {
   // Not needed but to make it explicit
   Genotype g;
@@ -310,5 +307,15 @@ void addToPOM(POM& pom,
 
 void addToPOM(POM& pom,
 	      const std::string string);
+
+//Right now, I need these functions to be public
+std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams);
+
+std::vector<int> stringVectorToIntVector(const std::string str);
+
+int findPositionInGenotypes(const std::vector<Genotype>& Genotypes,
+	const std::vector<int> genotype);
 
 #endif

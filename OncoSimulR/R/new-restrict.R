@@ -844,54 +844,25 @@ allFitnessEffects <- function(rT = NULL,
         ## to the C++ code
         frequencyType = "freq_dep_not_used"
 
-    if(!is.null(genotFitness)) {
-      if(!is.null(rT) || !is.null(epistasis) ||
-         !is.null(orderEffects) || !is.null(noIntGenes) ||
-         !is.null(geneToModule)) {
-        stop("You have a non-null genotFitness.",
-             " If you pass the complete genotype to fitness mapping",
-             " you cannot pass any of rT, epistasis, orderEffects",
-             " noIntGenes or geneToModule.")
-      }
+        if(!is.null(genotFitness)) {
+        if(!is.null(rT) || !is.null(epistasis) ||
+            !is.null(orderEffects) || !is.null(noIntGenes) ||
+            !is.null(geneToModule)) {
+            stop("You have a non-null genotFitness.",
+                " If you pass the complete genotype to fitness mapping",
+                " you cannot pass any of rT, epistasis, orderEffects",
+                " noIntGenes or geneToModule.")
+        }
 
-      genotFitness_std <- to_genotFitness_std(genotFitness,
-                                              frequencyDependentFitness = FALSE,
-                                              frequencyType = frequencyType,
-                                              simplify = TRUE)
-      ## epistasis <- from_genotype_fitness(genotFitness)
-    } else {
-      genotFitness_std <- NULL
-    }
-    allFitnessORMutatorEffects(
-      rT = rT,
-      epistasis = epistasis,
-      orderEffects = orderEffects,
-      noIntGenes = noIntGenes,
-      geneToModule = geneToModule,
-      drvNames = drvNames,
-      keepInput = keepInput,
-      genotFitness = genotFitness_std,
-      calledBy = "allFitnessEffects",
-      frequencyDependentFitness = FALSE,
-      frequencyType = frequencyType)
-      #spPopSizes = spPopSizes)
-
-  } else {
-
-    if(!(frequencyType %in% c('abs', 'rel', 'auto'))){
-      #set frequencyType = "auto" in case you did not specify 'rel' or 'abs'
-      frequencyType = "auto"
-      message("frequencyType set to 'auto'")
-    }
-
-    if(is.null(genotFitness)) {
-      stop("You have a null genotFitness in a frequency dependent fitness situation.")
-    } else {
-      genotFitness_std <- to_genotFitness_std(genotFitness,
-                                              frequencyDependentFitness = TRUE,
-                                              frequencyType = frequencyType,
-                                              simplify = TRUE)
-      allFitnessORMutatorEffects(
+        genotFitness_std <- to_genotFitness_std(genotFitness,
+                                                frequencyDependentFitness = FALSE,
+                                                frequencyType = frequencyType,
+                                                simplify = TRUE)
+        ## epistasis <- from_genotype_fitness(genotFitness)
+        } else {
+            genotFitness_std <- NULL
+        }
+        allFitnessORMutatorEffects(
         rT = rT,
         epistasis = epistasis,
         orderEffects = orderEffects,
@@ -901,11 +872,40 @@ allFitnessEffects <- function(rT = NULL,
         keepInput = keepInput,
         genotFitness = genotFitness_std,
         calledBy = "allFitnessEffects",
-        frequencyDependentFitness = TRUE,
+        frequencyDependentFitness = FALSE,
         frequencyType = frequencyType)
         #spPopSizes = spPopSizes)
+
+    } else {
+
+        if(!(frequencyType %in% c('abs', 'rel', 'auto'))){
+        #set frequencyType = "auto" in case you did not specify 'rel' or 'abs'
+        frequencyType = "auto"
+        message("frequencyType set to 'auto'")
+        }
+
+        if(is.null(genotFitness)) {
+        stop("You have a null genotFitness in a frequency dependent fitness situation.")
+        } else {
+        genotFitness_std <- to_genotFitness_std(genotFitness,
+                                                frequencyDependentFitness = TRUE,
+                                                frequencyType = frequencyType,
+                                                simplify = TRUE)
+        allFitnessORMutatorEffects(
+            rT = rT,
+            epistasis = epistasis,
+            orderEffects = orderEffects,
+            noIntGenes = noIntGenes,
+            geneToModule = geneToModule,
+            drvNames = drvNames,
+            keepInput = keepInput,
+            genotFitness = genotFitness_std,
+            calledBy = "allFitnessEffects",
+            frequencyDependentFitness = TRUE,
+            frequencyType = frequencyType)
+            #spPopSizes = spPopSizes)
+        }
     }
-  }
 }
 
 
@@ -1640,7 +1640,8 @@ nr_oncoSimul.internal <- function(rFE,
                                   detectionProb,
                                   AND_DrvProbExit,
                                   MMUEF = NULL, ## avoid partial matching, and set default
-                                  fixation = NULL ## avoid partial matching
+                                  fixation = NULL, ## avoid partial matching
+                                  interventions
                                   ) {
 
     default_min_successive_fixation <- 50 ## yes, set at this for now
@@ -1947,7 +1948,8 @@ nr_oncoSimul.internal <- function(rFE,
                      cPDetect_i= dpr["cPDetect"],
                      checkSizePEvery = dpr["checkSizePEvery"],
                      AND_DrvProbExit = AND_DrvProbExit,
-                     fixation_list = fixation_list),
+                     fixation_list = fixation_list, 
+                     interventions = interventions),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE))),
         InitMutant = initMutantString

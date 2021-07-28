@@ -874,25 +874,25 @@ Genotype convertGenotypeFromInts(const std::vector<int>& gg,
     // its correct place, which needs to look at module mapping.
     for(auto const &g : gg) {
       if(fe.fitnessLandscape.NumID.size()) {
-	newGenot.flGenes.push_back(g);
+	      newGenot.flGenes.push_back(g);
       } else {
-	if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
-	  // We can be dealing with modules
-	  int m;
-	  if(fe.gMOneToOne) {
-	    m = g;
-	  } else {
-	    m = fe.Gene_Module_tabl[g].ModuleNumID;
-	  }
-	  if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
-	    newGenot.epistRtEff.push_back(g);
-	  } else {
-	    newGenot.orderEff.push_back(g);
-	  }
-	} else {
-	  // No interaction genes so no module stuff
-	  newGenot.rest.push_back(g);
-	}
+        if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+          // We can be dealing with modules
+          int m;
+          if(fe.gMOneToOne) {
+            m = g;
+          } else {
+            m = fe.Gene_Module_tabl[g].ModuleNumID;
+          }
+          if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
+            newGenot.epistRtEff.push_back(g);
+          } else {
+            newGenot.orderEff.push_back(g);
+          }
+        } else {
+          // No interaction genes so no module stuff
+          newGenot.rest.push_back(g);
+	      }
       }
     }
 
@@ -1134,11 +1134,11 @@ std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
     if(position != 0){
       int realPos = position - 1;
       if(freqType == "abs"){
-	double freqAbs = popParams[realPos].popSize;
-	mapFvarsValues.insert({var, freqAbs});
+        double freqAbs = popParams[realPos].popSize;
+        mapFvarsValues.insert({var, freqAbs});
       } else {
-	double freqRel = frequency(realPos, popParams);
-	mapFvarsValues.insert({var, freqRel});
+	      double freqRel = frequency(realPos, popParams);
+	      mapFvarsValues.insert({var, freqRel});
       }
     } else {
       double freq = 0.0;
@@ -1674,7 +1674,7 @@ std::vector < std::vector<int> > list_to_vector_of_int_vectors(Rcpp::List vlist,
     for(int i = 0; i != vlist.size(); ++i) {
       vv[i] = Rcpp::as<std::vector<int> >(vlist[i]);
       if( check_ordered && (! is_sorted(vv[i].begin(), vv[i].end())) )
-	throw std::logic_error("Fixation genotypes not sorted. Bug in R code.");
+	      throw std::logic_error("Fixation genotypes not sorted. Bug in R code.");
     }
   } else {
     vv.resize(0);

@@ -20,3 +20,5 @@ src/TAGS
 src/.ccls-root
 ^doc$
 ^Meta$
+^.*\.Rproj$
+^\.Rproj\.user$

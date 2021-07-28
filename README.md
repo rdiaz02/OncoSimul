@@ -351,7 +351,7 @@ https://github.com/ArashPartow/exprtk/commit/9fad72832c70348725c073e369a33217810
 The file was originally named `exprtk.hpp`; to conform to R's
 requirements, it was renamed as `exprt.h`
 
-
+The code under `OncoSimulR/src/multivariant_hypergeometric.cpp` is from [Additional Univariate and Multivariate Distributions (extraDistr)] (https://github.com/twolodzko/extraDistr). This code is copyright Tymoteusz Wolodzko, and is licensed under "GNU GENERAL PUBLIC LICENSE Version 2 (GPL-2)" (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html). The file extracts functionality from https://github.com/twolodzko/extraDistr/blob/master/src/multivariate-hypergeometric-distribution.cpp file. 
 
 The code in `miscell-files/randutils.h` is copyright Melissa E. O'Neill,
 and is licensed under "The MIT License (MIT)" in the terms explained in
