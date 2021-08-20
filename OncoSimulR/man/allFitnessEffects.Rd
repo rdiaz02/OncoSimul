@@ -30,7 +30,8 @@
 allFitnessEffects(rT = NULL, epistasis = NULL, orderEffects = NULL,
   noIntGenes = NULL, geneToModule = NULL, drvNames = NULL,
   genotFitness = NULL,  keepInput = TRUE, frequencyDependentBirth =
-  FALSE, frequencyDependentDeath = FALSE, frequencyType = NA, deathSpec = FALSE)
+  FALSE, frequencyDependentDeath = FALSE, frequencyDependentFitness,
+  frequencyType = NA, deathSpec = FALSE)
 
 allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
                    geneToModule = NULL,
@@ -344,6 +345,10 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   
   \item{frequencyDependentDeath}{TRUE or FALSE as we have explained
   before.
+  }
+  
+  \item{frequencyDependentFitness}{DEPRECATED. Use instead of \code{frequencyDependentFitness} for
+  old nomenclature.
   }
   
   \item{frequencyType}{A character string "abs" or "rel" (or NULL).

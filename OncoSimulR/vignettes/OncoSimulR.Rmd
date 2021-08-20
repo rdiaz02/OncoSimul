@@ -12152,6 +12152,135 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 \clearpage
 
+# Death and Birth specification
+
+With the new version of the package the user is allowed to specify arbitrary
+death rates in the same way fitness could be specified, instead of using the
+fixed death rate given by the chosen model. However, the introduction of
+explicit death rates makes the fitness nomenclature confusing and inconsistent.
+Because of this, fitness has been renamed to birth.
+
+## Changes in nomenclature
+
+The changes only concern the explicit mapping. The `Fitness` column in the
+mapping has been renamed to `Birth`. Also, the parameter
+`frequencyDependentFitness` in the function `allFitnessEffects` has been
+renamed to `frequencyDependentBirth`. The next example will illustrate the new
+nomentaclature.
+
+```{r exampleBirthNom}
+
+m4 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), Birth = c(1, 2, 3, 4))
+
+fem4 <- allFitnessEffects(genotFitness = m4, frequencyDependentBirth = FALSE)
+
+evalAllGenotypes(fem4)
+
+```
+
+Note that the parameter `frequencyDependentBirth` has been specified in order
+to show the changes. However, it continues to default as FALSE.
+
+Despite this change, the old nomenclature continues to be valid and it will work
+in every function of the package. Users can use already created objects using
+the fitness nomenclature and can also create new objects with the old
+nomenclature.
+
+## Explicit mapping of genotypes to death rates
+
+The mapping is done analogously to the genotypes to birth rates. However, death
+rates cannot be mapped if birth rates are not being mapped as well. This is to
+make it compatible with the pre-existing behavior. Either we specify the death
+rates ourselves or the model we choose will determine the death rates. A new
+parameter has been introduced to indicate the `allFitnessEffects` function that
+death rates are being specified. This parameter is `deathSpec`.
+
+Also, the death rates can be frequency dependent or not. This is determined by the new
+parameter `frequencyDependentDeath` in the function `allFitnessEffects. The
+following example shows how to explicitly map genotypes to death rates.
+
+```{r exampleDeath}
+m4 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
+                 Birth = c(1, 2, 3, 4),
+                 Death = c(1, 2, 3, 4))
+
+fem4 <- allFitnessEffects(genotFitness = m4,
+                          frequencyDependentBirth = FALSE,
+                          frequencyDependentDeath = FALSE,
+                          deathSpec = TRUE)
+
+evalAllGenotypes(fem4)
+
+```
+
+In order to simulate using `oncoSimulIndiv`, we must specify a model. A new
+model has been introduced to indicate the simulation that the death rates are
+present in the mapping and that we do not use any of the already existing
+models. The new model is `Arb`. The next example will show a simulation using
+the `Arb` model.
+
+```{r exampleSimulDeath}
+G_fe_LVm <- function(r1, r2, K1, K2, a_12, a_21, gt = c("S1", "S2")) {
+    data.frame(Genotype = gt,
+               Birth = c(paste0(r1, "-", r1, "*(", a_12, "*n_", gt[2], ")/", K1), r2),
+               Death = c(paste0(r1, "*(n_", gt[1], ")/", K1),
+                         paste0(r2, "*(n_", gt[2], "+", a_21, "*n_", gt[1], ")/", K2)))
+}
+fe_pred_prey <- allFitnessEffects(
+		genotFitness = G_fe_LVm(1.4, 1.5, 4000, 10000, -0.5, 1.1, gt = c("Predator", "Prey")),
+		frequencyDependentBirth = TRUE, 
+		frequencyDependentDeath = TRUE,
+		deathSpec = TRUE)
+
+s_pred_preym <- oncoSimulIndiv(fe_pred_prey, model = "Arb",
+                                initMutant = c("Predator", "Prey"),
+                                initSize = c(1000, 1000), 
+                                onlyCancer = FALSE, 
+                                finalTime = 200, mu = 1e-3,
+                                keepPhylog = TRUE, seed = NULL,
+                                errorHitMaxTries = FALSE,
+                                errorHitWallTime = FALSE)
+
+plot(s_pred_preym, show="genotypes", type="line", log = "")
+
+```
+
+\clearpage
+
+# Simulating with constant total population size
+
+There are some models in which is necessary to maintain the total size of the
+population constant, such as Moran models @Moran. In order to allow this types
+of models to be simulated, the `Const` model must be used, as shown in the
+example below.
+
+``` {r exampleConst}
+H_D_fitness <- function(c, v, gt = c("H", "D")) {
+                  data.frame(Genotype = gt,
+                             Birth = c(
+                    			    paste0("max(1e-5, f_H *", (v-c)/2, "+ f_D *", v, ")"),
+                              paste0("f_D *", v/2)))
+}
+
+HD_eq <- allFitnessEffects(
+	             genotFitness = H_D_fitness(10, 4, gt = c("H", "D")),
+	             frequencyDependentBirth = TRUE,
+	              frequencyType = "rel")
+	
+osi_eq <- oncoSimulIndiv(HD_eq, model = "Const",
+                           onlyCancer = FALSE, finalTime = 50,
+                           mu = 1e-6, initSize = c(2000, 2000),
+						               initMutant = c("H", "D"), keepPhylog = TRUE,
+                           seed = NULL, errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+                           
+plot(osi_eq, show="genotypes", ylim=c(1, 5000))
+```
+When using this model, we can either specify the death rates or not. In the
+case that we specify them, the death rates will be corrected in order to
+maintain the desired size of population (which is the initial size of the
+population). On the other hand, if we do not specify the death rates they will
+be set to the required value.
 
 # Simulating therapeutic interventions that depend on time {#timefdf}
 
