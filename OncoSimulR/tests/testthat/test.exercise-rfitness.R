@@ -1,3 +1,4 @@
+## This does test some options, but mainly exercises others
 inittime <- Sys.time()
 cat(paste("\n Starting exercise-rfitness at", date(), "\n"))
 test_that("Expect output", {
@@ -59,6 +60,7 @@ test_that("Error if wrong arguments", {
 
 test_that("Additive, Ising, Eggbox, Full exercising", {
 
+
     expect_output(print(rfitness(4, model = "Ising")), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Eggbox")), "Birth", fixed = TRUE)
 expect_output(print(rfitness(4, model = "Full")), "Birth", fixed = TRUE)
@@ -98,7 +100,242 @@ expect_output(print(rfitness(4, model = "Additive", mu = -4, sd = 10)),
               "Birth", fixed = TRUE)
 
 })
+ 
+test_that("Testing the three-element scale argument", {
+    jj <- 0
+    for(j in 1:100) {
+    ## while(TRUE) {
+        ## jj <- jj + 1; cat(paste("\n ######### Doing jj = ", jj, "\n"))
+        ## First, WT not equal to 1
+        ## Don't use too stupid arguments
+        scalev <- sort(runif(3, -2, 5), decreasing = TRUE)
+        scalev <- scalev[c(1, 3, 2)]
+        
+        wt_min <- wt_max <- FALSE
 
+        i <- round(runif(1, 1, .Machine$integer.max - 1))
+        ## cat(paste("    i = "), i, "\n")
+
+        set.seed(i)
+        ra <- rfitness(7, truncate_at_0 = FALSE, wt_is_1 = "no")
+        
+        if(max(ra[, "Fitness"]) == ra[1, "Fitness"]) {
+            set.seed(i)
+            expect_warning(rb <- rfitness(7, scale = scalev,
+                                          truncate_at_0 = FALSE),
+                           "WT has maximum fitness. Range will be from scale[2] to scale[3]",
+                           fixed = TRUE)
+            wt_max <- TRUE
+            wt_min <- FALSE
+        } else if(min(ra[, "Fitness"]) == ra[1, "Fitness"]) {
+            set.seed(i)
+            expect_warning(rb <- rfitness(7, scale = scalev,
+                                          truncate_at_0 = FALSE),
+                           "WT has minimum fitness. Range will be from scale[3] to scale[1]",
+                           fixed = TRUE)
+            wt_min <- TRUE
+            wt_max <- FALSE
+        } else {
+            set.seed(i)
+            rb <- rfitness(7, scale = scalev,
+                       truncate_at_0 = FALSE)
+        }
+        
+        rap <- ra[-1, "Fitness"][ra[-1, "Fitness"] > ra[1, "Fitness"]]
+        ran <- ra[-1, "Fitness"][ra[-1, "Fitness"] < ra[1, "Fitness"]]
+        rbp <- rb[-1, "Fitness"][rb[-1, "Fitness"] > scalev[3]]
+        rbn <- rb[-1, "Fitness"][rb[-1, "Fitness"] < scalev[3]]
+
+        ## Numerical issues with equality comparisons
+        rap <- c(ra[1, "Fitness"], rap)
+        rbp <- c(scalev[3], rbp)
+        ran <- c(ra[1, "Fitness"], ran)
+        rbn <- c(scalev[3], rbn)        
+
+        expect_true(abs(length(rap) - length(rbp)) < 2)
+        expect_true(abs(length(ran) - length(rbn)) < 2)
+
+        if((length(rap) > 1) && (length(rap) == length(rbp)))
+            expect_equivalent(cor(rap, rbp), 1)
+        if((length(ran) > 1) && (length(ran) == length(rbn)))
+            expect_equivalent(cor(ran, rbn), 1)
+
+        expect_true( (length(ran) + length(rap)) == (2^7 + 1) )
+        expect_true( (length(rbn) + length(rbp)) == (2^7 + 1) )
+                    
+        
+        if(!wt_max) {
+            expect_equivalent(max(rb[, "Fitness"]), scalev[1])
+        } else {
+            expect_equivalent(max(rb[, "Fitness"]), scalev[3])
+        }
+        if(!wt_min) {
+            expect_equivalent(min(rb[, "Fitness"]), scalev[2])
+        } else {
+            expect_equivalent(min(rb[, "Fitness"]), scalev[3])            
+        }
+
+        expect_equivalent(rb[1, "Fitness"], scalev[3])
+
+        ## X, Y, Z: X: original, Y: after scaling
+        ## Just dealing with the positive
+        ## Do not assume WT to be 1
+        ## Write as original * slope + intercept
+        ## so you can compare against
+        ## lm(rbp ~ rap)
+
+        xM <- max(ra[, "Fitness"])
+        xW <- ra[1, "Fitness"]
+        if(!wt_max) {    
+            y <- rap * (scalev[1] - scalev[3])/(xM - xW) +
+                (scalev[3] - xW * ((scalev[1] - scalev[3])/(xM - xW)))
+            expect_equivalent(rbp, y)
+            rm(y)
+        } else {
+            expect_equivalent(scalev[3], rbp)
+        }
+
+        xm <- min(ra[, "Fitness"])
+        if(!wt_min) {
+            y <- ran * (scalev[3] - scalev[2])/(xW - xm) +
+                (scalev[3] - xW * ((scalev[3] - scalev[2])/(xW - xm)))
+            expect_equivalent(rbn, y)
+            rm(y)
+        } else {
+            expect_equivalent(scalev[3], rbn)
+        }
+
+        ## log transformation
+        set.seed(i)
+        suppressWarnings(
+            rc <- rfitness(7, scale = exp(scalev), truncate_at_0 = FALSE,
+                           log = TRUE))
+        rcp <- rc[-1, "Fitness"][rc[-1, "Fitness"] > scalev[3]]
+        rcn <- rc[-1, "Fitness"][rc[-1, "Fitness"] < scalev[3]]
+        
+        ## Numerical issues with equality comparisons
+        rcp <- c(scalev[3], rcp)
+        rcn <- c(scalev[3], rcn)
+        
+        expect_true(abs(length(rap) - length(rcp)) < 2)
+        expect_true(abs(length(ran) - length(rcn)) < 2)
+        
+        if((length(rap) > 1) && (length(rap) == length(rcp)))
+            expect_equivalent(cor(rap, exp(rcp)), 1)
+        if((length(ran) > 1) && (length(ran) == length(rcn)))
+            expect_equivalent(cor(ran, exp(rcn)), 1)
+        
+        ## X, U, Z: X: original, U: after scaling; Z: after log
+        ## Just dealing with the positive
+        ## Do not assume WT to be 1
+        ## can compare against lm(exp(rcp) ~ rap)
+        ## if(!isTRUE(all.equal(xM, xW, check.attributes = FALSE))) {
+        if(!wt_max) {
+            u <- rap * (exp(scalev[1]) - exp(scalev[3]))/(xM - xW) +
+                (exp(scalev[3]) - xW * ((exp(scalev[1]) - exp(scalev[3]))/(xM - xW)))
+            expect_equivalent(u, exp(rcp))
+        } else {
+            expect_equivalent(scalev[3], rcp)
+        }
+
+        ## if(!isTRUE(all.equal(xm, xW, check.attributes = FALSE))) {
+        if(!wt_min) {
+            v <- ran * (exp(scalev[3]) - exp(scalev[2]))/(xW - xm) +
+                (exp(scalev[3]) - xW * ((exp(scalev[3]) - exp(scalev[2]))/(xW - xm)))
+            expect_equivalent(exp(rcn), v)
+        } else {
+            expect_equivalent(scalev[3], rcn)
+        }
+        
+        ## This shows, by the way, that the log-transformed ain't linear function of
+        ## log of original
+        if(!isTRUE(all.equal(xM, xW, check.attributes = FALSE))) {
+            z <- log( (rap - xW) * ((exp(scalev[1]) - exp(scalev[3]))/(xM - xW)) + exp(scalev[3]))
+            expect_equivalent(z, rcp)
+        }
+        
+        ############################################
+        ## Repeat setting WT = 1
+        set.seed(i)
+        rax <- rfitness(7, truncate_at_0 = FALSE, wt_is_1 = "subtract")
+        rapx <- rax[-1, "Fitness"][rax[-1, "Fitness"] > 1]
+        ranx <- rax[-1, "Fitness"][rax[-1, "Fitness"] < 1]
+        rapx <- c(rax[1, "Fitness"], rapx)
+        ranx <- c(rax[1, "Fitness"], ranx)
+        
+        expect_true(abs(length(rapx) - length(rbp)) < 2)
+        expect_true(abs(length(ranx) - length(rbn)) < 2)
+        
+        if((length(rapx) > 1) && (length(rapx) == length(rbp)))
+            expect_equivalent(cor(rapx, rbp), 1)
+        if((length(ranx) > 1) && (length(ranx) == length(rbn)))
+            expect_equivalent(cor(ranx, rbn), 1)
+
+        if(length(rapx) < 2) expect_true(length(ranx) > 2)
+        
+        xMx <- max(rax[, "Fitness"])
+        xWx <- rax[1, "Fitness"]
+        
+        if(!isTRUE(all.equal(xMx, xWx, check.attributes = FALSE))) {
+            yx <- rapx * (scalev[1] - scalev[3])/(xMx - xWx) +
+                (scalev[3] - xWx * ((scalev[1] - scalev[3])/(xMx - xWx)))
+            expect_equivalent(rbp, yx)
+            rm(yx)
+        } else {
+            expect_equivalent(scalev[3], rbp)
+        }
+
+        xmx <- min(rax[, "Fitness"])
+        if(!isTRUE(all.equal(xmx, xWx, check.attributes = FALSE))) {
+            yx <- ran * (scalev[3] - scalev[2])/(xWx - xmx) +
+                (scalev[3] - xW * ((scalev[3] - scalev[2])/(xWx - xmx)))
+            expect_equivalent(rbn, yx)
+            rm(yx)
+        } else {
+            expect_equivalent(scalev[3], rbn)
+        }
+        
+        expect_true(abs(length(rapx) - length(rcp)) < 2)
+        expect_true(abs(length(ranx) - length(rcn)) < 2)
+        
+        ## log
+        if((length(rapx) > 1) && (length(rapx) == length(rcp)))
+            expect_equivalent(cor(rapx, exp(rcp)), 1)
+        if((length(ranx) > 1) && (length(ranx) == length(rcn)))
+            expect_equivalent(cor(ranx, exp(rcn)), 1)
+        if(!isTRUE(all.equal(xMx, xWx, check.attributes = FALSE))) {
+            ux <- rapx * (exp(scalev[1]) - exp(scalev[3]))/(xMx - xWx) +
+                (exp(scalev[3]) - xWx * ((exp(scalev[1]) - exp(scalev[3]))/(xMx - xWx)))
+            expect_equivalent(ux, exp(rcp))
+        } else {
+            expect_equivalent(scalev[3], rcp)
+        }
+
+         if(!isTRUE(all.equal(xm, xW, check.attributes = FALSE))) {
+            vx <- ran * (exp(scalev[3]) - exp(scalev[2]))/(xW - xm) +
+                (exp(scalev[3]) - xW * ((exp(scalev[3]) - exp(scalev[2]))/(xW - xm)))
+            expect_equivalent(exp(rcn), vx)
+        } else {
+            expect_equivalent(scalev[3], rcn)
+        }
+        
+        ## This shows, by the way, that the log-transformed ain't linear function of
+        ## log of original
+        if(!isTRUE(all.equal(xMx, xWx, check.attributes = FALSE))) {
+            zx <- log( (rapx - xWx) *
+                       ((exp(scalev[1]) - exp(scalev[3]))/(xMx - xWx)) +
+                       exp(scalev[3]))
+            expect_equivalent(zx, rcp)
+        } else {
+            expect_equivalent(scalev[3], rcp)
+        }
+        
+        suppressWarnings(
+            rm(scalev, ra, rb, rap, ran, rbp, rbn, rc, rcp, rcn, u, v, y, z,
+           rapx, ranx, rax, yx, ux, zx, vx, xmx, xWx, xMx, xW, xM, xm))
+    }
+
+})
 
 cat(paste("\n Ending exercise-rfitness at", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))

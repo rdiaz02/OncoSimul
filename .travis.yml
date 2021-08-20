@@ -5,6 +5,7 @@
 ## april to mid october: https://www.bioconductor.org/developers/how-to/useDevel/
 
 ## Broken now: https://travis-ci.community/t/r-bioc-devel-is-broken-bioconductor-version-3-11-requires-r-version-4-0/5745
+## https://github.com/travis-ci/travis-build/pull/1966
 language: r
 r: bioc-devel
 
@@ -15,14 +16,14 @@ sudo: required
 
 cache: packages
 
-r_github_packages:
-  - r-lib/covr
+## r_github_packages:
+##   - r-lib/covr
 
 
 
 #######  x22
 install:
-- Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander", "knitr")); BiocManager::install("BiocStyle", ask = FALSE); devtools::install_deps("OncoSimulR")'; devtools::install_github("r-lib/covr")'
+- Rscript -e 'install.packages("BiocManager"); BiocManager::install(version="devel", ask = FALSE); install.packages(c("devtools","testthat","roxygen2","Oncotree","rmarkdown","bookdown", "withr", "covr", "ggplot2", "ggrepel", "pander", "knitr")); BiocManager::install("BiocStyle", ask = FALSE); devtools::install_deps("OncoSimulR"); devtools::install_github("r-lib/covr")'
 
 
 
