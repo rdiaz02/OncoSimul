@@ -53,7 +53,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // evalRGenotype
-double evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, Rcpp::IntegerVector spPop, bool verbose, bool prodNeg, Rcpp::CharacterVector calledBy_, double currentTime);
+Rcpp::NumericVector evalRGenotype(Rcpp::IntegerVector rG, Rcpp::List rFE, Rcpp::IntegerVector spPop, bool verbose, bool prodNeg, Rcpp::CharacterVector calledBy_, double currentTime);
 RcppExport SEXP OncoSimulR_evalRGenotype(SEXP rGSEXP, SEXP rFESEXP, SEXP spPopSEXP, SEXP verboseSEXP, SEXP prodNegSEXP, SEXP calledBy_SEXP, SEXP currentTimeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;

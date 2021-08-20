@@ -495,6 +495,9 @@ oncoSimulIndiv <- function(fp,
     }
     if(!inherits(fp, "fitnessEffects")) 
         stop("v.1 functionality has been removed. Please use v.2")
+    
+    if(!inherits(fp, "fitnessEffects_v3")) 
+        fp <- convertFitnessEffects(fp)
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -504,6 +507,8 @@ oncoSimulIndiv <- function(fp,
                           "McFL" = "mcfarlandlog",
                           "McFarlandLogD" = "mcfarlandlogd",
                           "McFLD" = "mcfarlandlogd",
+                          "Arb" = "arbitrary",
+                          "Const" = "constant",
                           stop("No valid value for model")
                           )
     if(max(initSize) < 1)
@@ -515,7 +520,21 @@ oncoSimulIndiv <- function(fp,
     }       ##  if ( !(model %in% c("McFL", "McFarlandLog") )) {
             ## K <- 1 ## K is ONLY used for McFarland; set it to 1, to avoid
             ##        ## C++ blowing.
-
+    
+    if("deathSpec" %in% names(fp)) {
+        if (fp$deathSpec) {
+            if (typeFitness != "arbitrary" && typeFitness != "constant") {
+                stop("If death is specified in the fitness effects, use Arb or Const model.")
+            }
+        }
+        
+        else {
+            if (typeFitness == "arbitrary") {
+                stop("To use Arb model specify both birth and death in fitness effects.")
+            }
+        }
+    }
+    
     if(typeFitness == "exp") {
         death <- 1
         ## mutationPropGrowth <- 1
@@ -531,7 +550,7 @@ oncoSimulIndiv <- function(fp,
     }
 
     if(minDetectDrvCloneSz == "auto") {
-        if(model %in% c("Bozic", "Exp") )
+        if(model %in% c("Bozic", "Exp", "Arb", "Const") )
             minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog",
                               "McFLD", "McFarlandLogD")) {

@@ -5,6 +5,8 @@ test_that("testing output when frequencyType = 'auto'", {
   
   r1 <- data.frame(rfitness(3))
   
+  colnames(r1)[which(colnames(r1) == "Birth")] <- "Fitness"
+  
   r1[, "Fitness"] <- c("max(1, f_)",
                        "max(1, f_1)", 
                        "max(1, f_2)", 
@@ -15,6 +17,7 @@ test_that("testing output when frequencyType = 'auto'", {
                        "200*f_1_2_3 + 500*(f_1_2 + f_1_3 + f_2_3)") 
   
   r2 <- rfitness(2)
+  colnames(r2)[which(colnames(r2) == "Birth")] <- "Fitness"
   
   r3 <- data.frame(A = c(0, 1, 0, 1),
                    B = c(0, 0, 1, 1),
@@ -54,50 +57,50 @@ test_that("testing output when frequencyType = 'auto'", {
                    stringsAsFactors = FALSE)
   
   
-  afe1 <- allFitnessEffects(genotFitness = r1, 
-                            frequencyDependentFitness = TRUE)
+  suppressWarnings(afe1 <- allFitnessEffects(genotFitness = r1, 
+                            frequencyDependentFitness = TRUE))
   
-  afe2 <- allFitnessEffects(genotFitness = r7, 
-                            frequencyDependentFitness = TRUE)
+  suppressWarnings(afe2 <- allFitnessEffects(genotFitness = r7, 
+                            frequencyDependentFitness = TRUE))
   
-  expect_message(allFitnessEffects(genotFitness = r1,
-                                   frequencyDependentFitness = TRUE),
+  expect_message(suppressWarnings(allFitnessEffects(genotFitness = r1,
+                                   frequencyDependentFitness = TRUE)),
                  "frequencyType set to 'auto'")
   
-  expect_message(allFitnessEffects(genotFitness = r7, 
-                                   frequencyDependentFitness = TRUE),
+  expect_message(suppressWarnings(allFitnessEffects(genotFitness = r7, 
+                                   frequencyDependentFitness = TRUE)),
                  "frequencyType set to 'auto'")
   
-  expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE),
-                   allFitnessEffects(genotFitness = r4,
-                                     frequencyDependentFitness = TRUE))
+  expect_identical(suppressWarnings(allFitnessEffects(genotFitness = r3, 
+                                     frequencyDependentFitness = TRUE)),
+                   suppressWarnings(allFitnessEffects(genotFitness = r4,
+                                     frequencyDependentFitness = TRUE)))
 
   ## 20 is where we are storing full_FDF_spec for now. Very brittle
-  expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
-                   allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
+  expect_identical(suppressWarnings(allFitnessEffects(genotFitness = r3, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]),
+                   suppressWarnings(allFitnessEffects(genotFitness = r5, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r3, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
-                   allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
+  expect_identical(suppressWarnings(allFitnessEffects(genotFitness = r3, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]),
+                   suppressWarnings(allFitnessEffects(genotFitness = r6, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
-                   allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
+  expect_identical(suppressWarnings(allFitnessEffects(genotFitness = r4, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]),
+                   suppressWarnings(allFitnessEffects(genotFitness = r5, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r4, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)],
-                   allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE)[-c(14, 19)])
+  expect_identical(suppressWarnings(allFitnessEffects(genotFitness = r4, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]),
+                   suppressWarnings(allFitnessEffects(genotFitness = r6, 
+                                     frequencyDependentFitness = TRUE)[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r5, 
-                                     frequencyDependentFitness = TRUE),
-                   allFitnessEffects(genotFitness = r6, 
-                                     frequencyDependentFitness = TRUE))
+  expect_identical(suppressWarnings(allFitnessEffects(genotFitness = r5, 
+                                     frequencyDependentFitness = TRUE)),
+                   suppressWarnings(allFitnessEffects(genotFitness = r6, 
+                                     frequencyDependentFitness = TRUE)))
 
 })
 

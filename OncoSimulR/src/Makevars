@@ -1,3 +1,8 @@
+VER=
+CC=gcc$(VER)
+CXX=g++$(VER)
+CXX11=g++$(VER)
+
 ## This is a C++11 package
 CXX_STD = CXX11
 
@@ -18,6 +23,7 @@ CXX_STD = CXX11
 
 all: liblandscape.a fl_statistics fl_generate $(SHLIB)
 ## all: liblandscape.a fl_statistics fl_generate fl_genchains $(SHLIB)
+
 
 
 MAGELLAN_SRC = FitnessLandscape/gamma.c\

@@ -1,3 +1,8 @@
+VER=
+CC=gcc$(VER)
+CXX=g++$(VER)
+CXX11=g++$(VER)
+
 CXX_STD = CXX11
 ## PKG_CXXFLAGS += -I../inst/miscell
 
@@ -21,6 +26,7 @@ PKG_LIBS = -Wa,-mbig-obj -O3
 
 all: liblandscape.a fl_statistics fl_generate $(SHLIB)
 ## all: liblandscape.a fl_statistics fl_generate fl_genchains $(SHLIB)
+
 
 
 MAGELLAN_SRC = FitnessLandscape/gamma.c\

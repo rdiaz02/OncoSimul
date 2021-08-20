@@ -3,6 +3,8 @@ cat(paste("\n Starting test.allFitnessEffectsFDF at", date(), "\n"))
 
 test_that("Errors expectations", {
   r1 <- rfitness(2)
+  
+  colnames(r1)[which(colnames(r1) == "Birth")] <- "Fitness"
   r2 <- data.frame(r1)
   r3 <- r2
   r3[, "Fitness"] <- c("1", "2", "3", "4")
@@ -15,45 +17,45 @@ test_that("Errors expectations", {
   r8 <- r2
   r8[, "Fitness"] <- c("n_", "n_1", "n_2", "n_1_2")
   
-  expect_error(allFitnessEffects(genotFitness = r1, 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r1, 
                                  frequencyDependentFitness = TRUE, 
-                                 frequencyType = "rel"), 
+                                 frequencyType = "rel")), 
                "Input must inherit from data.frame.")
   
-  expect_error(allFitnessEffects(genotFitness = r2, 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r2, 
                                  frequencyDependentFitness = TRUE, 
-                                 frequencyType = "rel"), 
+                                 frequencyType = "rel")), 
                "All elements in last column must be character.")
   
-  expect_error(allFitnessEffects(genotFitness = r3, 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r3, 
                                  frequencyDependentFitness = TRUE, 
-                                 frequencyType = "rel"), 
-               "There are some errors in fitness column")
+                                 frequencyType = "rel")), 
+               "There are some errors in birth column")
   
-  expect_error(allFitnessEffects(genotFitness = r4, 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r4, 
                                  frequencyDependentFitness = TRUE, 
-                                 frequencyType = "rel"), 
-               "There are some errors in fitness column")
+                                 frequencyType = "rel")), 
+               "There are some errors in birth column")
   
-  expect_error(allFitnessEffects(genotFitness = r5, 
-                                 frequencyDependentFitness = FALSE), 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r5, 
+                                 frequencyDependentFitness = FALSE)), 
                "A genotype fitness matrix/data.frame must be numeric.")
   
   
-  expect_error(allFitnessEffects(genotFitness = r6, 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r6, 
                                  frequencyDependentFitness = TRUE,
-                                 frequencyType = "rel"),  
+                                 frequencyType = "rel")),  
                "You have a null genotFitness in a frequency dependent fitness situation.")
   
-  expect_error(allFitnessEffects(genotFitness = r7, 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r7, 
                                  frequencyDependentFitness = TRUE,
-                                 frequencyType = "rel"),  
+                                 frequencyType = "rel")),  
                "You have an empty data.frame")
   
-  expect_error(allFitnessEffects(genotFitness = r8, 
+  expect_error(suppressWarnings(allFitnessEffects(genotFitness = r8, 
                                  frequencyDependentFitness = TRUE,
-                                 frequencyType = "rel"),  
-               "There are some errors in fitness column")
+                                 frequencyType = "rel")),  
+               "There are some errors in birth column")
 
   ## Not anymore, thanks to the auto setting for relative or absolute frequencyType
   ## expect_error(allFitnessEffects(genotFitness = r8, 
@@ -67,6 +69,8 @@ test_that("testing output", {
   
   r1 <- data.frame(rfitness(3))
   
+  colnames(r1)[which(colnames(r1) == "Birth")] <- "Fitness"
+  
   r1[, "Fitness"] <- c("max(1, f_)",
                        "max(1, f_1)", 
                        "max(1, f_2)", 
@@ -77,6 +81,8 @@ test_that("testing output", {
                        "200*f_1_2_3 + 500*(f_1_2 + f_1_3 + f_2_3)") 
   
   r2 <- rfitness(2)
+  
+  colnames(r2)[which(colnames(r2) == "Birth")] <- "Fitness"
   
   r3 <- data.frame(A = c(0, 1, 0, 1),
                    B = c(0, 0, 1, 1),
@@ -110,13 +116,13 @@ test_that("testing output", {
                                "max(2, 3*(n_ + n_B))",
                                "max(2, 5*n_ - 0.5*( n_A + n_B) + 15*n_A_B)"))
 
-  afe1 <- allFitnessEffects(genotFitness = r1, 
+  suppressWarnings(afe1 <- allFitnessEffects(genotFitness = r1, 
                             frequencyDependentFitness = TRUE,
-                            frequencyType = "rel")
+                            frequencyType = "rel"))
   
-  afe2 <- allFitnessEffects(genotFitness = r7, 
+  suppressWarnings(afe2 <- allFitnessEffects(genotFitness = r7, 
                             frequencyDependentFitness = TRUE,
-                            frequencyType = "abs")
+                            frequencyType = "abs"))
   
   
   expect_true(afe1$frequencyDependentFitness)
@@ -151,11 +157,11 @@ test_that("testing output", {
   
   expect_equivalent(afe2$geneToModule, "Root")
   
-  expect_equivalent(afe1$full_FDF_spec[, "Genotype_as_fvars"],
+  expect_equivalent(afe1$full_FDF_spec[, "Genotype_as_fvarsb"],
                    OncoSimulR:::fVariablesN(ncol(afe1$fitnessLandscape) - 1, 
                                             frequencyType = "rel"))
   
-  expect_equivalent(afe2$full_FDF_spec[, "Genotype_as_fvars"],
+  expect_equivalent(afe2$full_FDF_spec[, "Genotype_as_fvarsb"],
                    OncoSimulR:::fVariablesN(ncol(afe2$fitnessLandscape) - 1, 
                                             frequencyType = "abs"))
   
@@ -189,47 +195,47 @@ test_that("testing output", {
                  "Last column of genotype fitness is a factor. Converting to character.")
   }
 
-  expect_identical(allFitnessEffects(genotFitness = r3, 
+  suppressWarnings(expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentFitness = TRUE, 
                                      frequencyType = "rel"), 
                allFitnessEffects(genotFitness = r4, 
                                  frequencyDependentFitness = TRUE, 
-                                 frequencyType = "rel"))
+                                 frequencyType = "rel")))
   
-  expect_identical(allFitnessEffects(genotFitness = r3, 
+  suppressWarnings(expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentFitness = TRUE, 
                                      frequencyType = "rel")[-c(14, 19)], 
                    allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r3, 
+  suppressWarnings(expect_identical(allFitnessEffects(genotFitness = r3, 
                                      frequencyDependentFitness = TRUE, 
                                      frequencyType = "rel")[-c(14, 19)], 
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r4, 
+  suppressWarnings(expect_identical(allFitnessEffects(genotFitness = r4, 
                                      frequencyDependentFitness = TRUE, 
                                      frequencyType = "rel")[-c(14, 19)], 
                    allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r4, 
+  suppressWarnings(expect_identical(allFitnessEffects(genotFitness = r4, 
                                      frequencyDependentFitness = TRUE, 
                                      frequencyType = "rel")[-c(14, 19)], 
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel")[-c(14, 19)])
+                                     frequencyType = "rel")[-c(14, 19)]))
   
-  expect_identical(allFitnessEffects(genotFitness = r5, 
+  suppressWarnings(expect_identical(allFitnessEffects(genotFitness = r5, 
                                      frequencyDependentFitness = TRUE, 
                                      frequencyType = "rel"), 
                    allFitnessEffects(genotFitness = r6, 
                                      frequencyDependentFitness = TRUE, 
-                                     frequencyType = "rel"))
+                                     frequencyType = "rel")))
 
 })
 
@@ -251,9 +257,9 @@ test_that("Fails if a single gene", {
                                R_fitness),
                    stringsAsFactors = FALSE)
     }
-    expect_error(allFitnessEffects(genotFitness = std_df2(cS, cR), 
+    expect_error(suppressWarnings(allFitnessEffects(genotFitness = std_df2(cS, cR), 
                              frequencyDependentFitness = TRUE, 
-                             frequencyType = "rel"),
+                             frequencyType = "rel")),
                  "There must be at least two genes",
                  fixed = TRUE)
     
@@ -264,17 +270,17 @@ test_that("Works with silly workaround for one gene and a dummy gene" ,{
     gg <- data.frame(Genotype = c("A", "B"),
                      Fitness  = c("1.2", "0 * n_B"))
     
-    std_eff2 <- allFitnessEffects(genotFitness = gg,
-                                  frequencyDependentFitness = TRUE)
+    suppressWarnings(std_eff2 <- allFitnessEffects(genotFitness = gg,
+                                  frequencyDependentFitness = TRUE))
     
-    expect_silent(std_simul2 <- oncoSimulIndiv(std_eff2, 
+    std_simul2 <- oncoSimulIndiv(std_eff2, 
                                  model = "McFL",
                                  onlyCancer = FALSE, 
                                  mu = 0.01,
                                  finalTime = 10,
                                  initSize = c(500),
                                  seed = NULL,
-                                 initMutant = c("A")))
+                                 initMutant = c("A"))
     expect_true(std_simul2$TotalPopSize > 0)
 })
 

@@ -9,19 +9,20 @@ test_that("exercise accessible genotypes code", {
     set.seed(3)
     r1 <- rfitness(4, reference = rep(0, 4), c = 2.1,
                    min_accessible_genotypes = 1)
-    expect_true(max(r1[-1, "Fitness"]) >= 1.0)
+				   
+    expect_true(max(r1[-1, "Birth"]) >= 1.0)
     
     set.seed(3)
     r1 <- rfitness(4, reference = rep(0, 4), c = 2.1,
                    min_accessible_genotypes = 1,
                    accessible_th = 0.06)
-    expect_true(max(r1[-1, "Fitness"]) >= 1.06)
+    expect_true(max(r1[-1, "Birth"]) >= 1.06)
 
     set.seed(3)
     r2 <- rfitness(4, reference = rep(0, 4), c = 2.1,
                    min_accessible_genotypes = 2,
                    accessible_th = 0.06)
-    expect_true(max(r2[-1, "Fitness"]) >= 1.06)
+    expect_true(max(r2[-1, "Birth"]) >= 1.06)
 
     ## Exercising plotting code
     plot(r2)

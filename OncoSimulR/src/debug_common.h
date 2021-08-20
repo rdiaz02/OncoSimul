@@ -2,11 +2,12 @@
 #define _DEBUG_COMMON_H__
 
 #include<Rcpp.h>
+
 #define DEBUGW
 
 // #define DEBUGV
 // DEBUGV2 leads to very verbose debugging output
-//#define DEBUGV2
+// #define DEBUGV2
 #define DP {Rcpp::Rcout <<"\nHola";		\
     Rcpp::Rcout << "\n A test of DPtest";	\
     Rcpp::Rcout << "     tSample  = " << tSample << "\n";} 
@@ -94,8 +95,7 @@
  		<< "  tSample " << tSample	       \
  		<< "  currentTime " << currentTime; }
 // We always warn about this, since interaction with ti==0
-#define DEBUGfs2 {
-	Rcpp::Rcout << "\n Forced sampling triggered for next loop: \n    " \
+#define DEBUGfs2 { Rcpp::Rcout << "\n Forced sampling triggered for next loop: \n    " \
 	<< " popParams[nextMutant].popSize = " \
 	<< popParams[nextMutant].popSize \
 	<< " > ratioForce * detectionSize \n"; \
@@ -258,7 +258,6 @@
 		<< popParams[i].popSize << "\n";			\
 }
 #define DEBUG_ti {Rcpp::Rcout << "\n\n\n WARNING: ti == 0. Setting it to DBL_MIN \n"; \
-	double eq12 = pow( (spP.R - spP.W + 2.0 * spP.death) /  (spP.R + spP.W - 2.0 * spP.birth) , spP.p \opSize);
 	Rcpp::Rcout << "\n tmp2 = " << tmp2; \
 	Rcpp::Rcout << "\n tmp = " << tmp; \
 	Rcpp::Rcout << "\n invspr = " << invspr; \
@@ -274,7 +273,7 @@
 	Rcpp::Rcout << "\n is oneminusr == 0? " << (oneminusr == 0.0L); \
 	Rcpp::Rcout << "\n r1 = " << r1; \
 	Rcpp::Rcout << "\n is r1 == 1? " << (r1 == 1.0); \
-	Rcpp::Rcout << "\n is eq12 < r? " << (eq12 < r); \
+	Rcpp::Rcout << "\n is eq12 < r? " << (pow( (spP.R - spP.W + 2.0 * spP.death) /  (spP.R + spP.W - 2.0 * spP.birth) , spP.popSize) < r); \
 }
 #else
 #define DEBUGfs {} do {} while(0)
@@ -284,7 +283,7 @@
 #define DEBUGfsnl {} do {} while(0)
 #define DEBUG_1456 {} do {} while(0)
 #define DEBUG_1536 {} do {} while(0)
-#define DEBUG_rrr {} do {} while(0)
+#define DEBUGrrr {} do {} while(0)
 #define DEBUG_nr {} do {} while(0)
 #define DEBUG_nr2 {} do {} while(0)
 #define DEBUG_nr3 {} do {} while(0)
