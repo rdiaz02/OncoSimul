@@ -4,8 +4,13 @@
    - In BNB a mutation is not just a mutation but also a creation:
    - Recall "Thus the mutation is simply defined as the creation and
       subsequent departure of a single individual from the class" (p. 1232).
-     - That explains that right before the mutation the class that mutates
-       cannot be extint (p. 1233)
+     - Also, in p. 1233, at end "the mutating population generating and then
+       contributing a single member to another species class"
+     - Also, in p. 1234, at end "During a mutation of species with index m, a new
+       member of species with index m−1 or m+1 is created,"
+
+   - That explains that right before the mutation the class that mutates
+     cannot be extint (p. 1233)
    - In other words, with how mutation is defined,
      genotypes/clones/populations that have the same mutation rate are
      "emiting" mutants at the same rate, regardless of birth rate.
@@ -13,17 +18,33 @@
        mutants because they achieve a larger population size, but if we
        follow individuals with same mu, they emit the same number of mutants
        regardless of birth rate)
-   - Again: mutation in BNB is not something that happens after a birth,
-     it is birth + mutate. If it was something that happened with a
-     constant rate per birth, then we would automatically have mutation
-     proportional to birth rate (as total rate of mutants would be
-     mutation per birth rate * birth rate). But it is not.
+   - Again: mutation in BNB is not something that happens after a birth, it is
+     birth + mutate. If it was something that happened with a constant rate per
+     birth (e.g., something akin to a "probability of changing given that you
+     have been now created"), then we would automatically have mutation
+     proportional to birth rate (as total rate of mutants would be mutation per
+     birth rate ---prob. of changing at birth--- * birth rate). But it is not.
    - Thus, if we want those individuals that emit more new individuals to
      also emit more mutated individuals, we need to make mutation rate
      proportional to birth rate.
    - And recall that Mather itself uses examples with mutation birth
      proportional to birth: In p. 1234, section 3.1.1 "Mutation rate is
      proportional to growth rate (faster growing species also mutate faster), μ m = ηg m"
+   - You can think of what is happening in that section as:
+     - Rate of creation of a different type from type i = Rate of division of
+       type i * Probability of mutating|division
+     - It is that "Probability of mutating|division" that we can very naturally
+       set to, say, 1e-5 (if we are thinking of a specific gene)
+     - We make that Probability of mutating|division common to all
+       species/genotypes. And then, the mutation rate as defined by Mather
+       (creation and subsequent departure) is the product of birth rate * Prob
+       mutating|division. 
+   - Minor: if we use the reasoning above (birth rate * prob. mutation|birth),
+     and mutation is not made to be proportional to birth rate, then in fact it
+     is like if probability of mutation|division is smaller in the fastest
+     growing (so as to keep the product constant). If you just think of a
+     mutation rate as "creation and departure", well, then it is just that
+     "creation and departure" is the same regardless of birth rate.
 ** Technically, then, mutations do happen at birth in BNB.
 
   
