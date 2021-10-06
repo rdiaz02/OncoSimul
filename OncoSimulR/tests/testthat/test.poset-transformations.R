@@ -163,14 +163,14 @@ test_that("to rT from poset, through adjmat with and w.o. root",
               ##     OncoSimulR:::adjmat.to.restrictTable(
               ##         OncoSimulR:::posetToGraph(p5, names = 0:5, addroot = TRUE, type = "adjmat"),
               ##         root = TRUE))
-              expect_true(all.equal(
-                  OncoSimulR:::adjmat.to.restrictTable(
-                      OncoSimulR:::posetToGraph(p5, names = 1:5, addroot = FALSE, type = "adjmat"),
-                      root = FALSE),
-                  OncoSimulR:::adjmat.to.restrictTable(
-                      OncoSimulR:::posetToGraph(p5, names = 0:5, addroot = TRUE, type = "adjmat"),
-                      root = TRUE)
-              ))
+              ## cleaner
+              aa <- OncoSimulR:::adjmat.to.restrictTable(
+                                     OncoSimulR:::posetToGraph(p5, names = 1:5, addroot = FALSE, type = "adjmat"),
+                                     root = FALSE)
+              bb <- OncoSimulR:::adjmat.to.restrictTable(
+                                     OncoSimulR:::posetToGraph(p5, names = 0:5, addroot = TRUE, type = "adjmat"),
+                                     root = TRUE)
+              expect_equal(aa, bb)
           })
 
 
