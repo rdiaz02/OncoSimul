@@ -151,13 +151,26 @@ test_that("simple correct poset -> graph, 5 nodes, no root", {
 
 test_that("to rT from poset, through adjmat with and w.o. root",
           {
-              expect_equal(
+              ## Now, this fails with
+              ## Error in `name %in% base || grepl("^%.*%$", name)`: 'length(x) = 3 > 1' in coercion to 'logical(1)'
+              ## But all.equal does not break. So me thinks this is a problem in expect_equal
+              ## and the new expect_waldo_equal.
+              ## So I'll use all.equal.
+              ## expect_equal(
+              ##     OncoSimulR:::adjmat.to.restrictTable(
+              ##         OncoSimulR:::posetToGraph(p5, names = 1:5, addroot = FALSE, type = "adjmat"),
+              ##         root = FALSE),
+              ##     OncoSimulR:::adjmat.to.restrictTable(
+              ##         OncoSimulR:::posetToGraph(p5, names = 0:5, addroot = TRUE, type = "adjmat"),
+              ##         root = TRUE))
+              expect_true(all.equal(
                   OncoSimulR:::adjmat.to.restrictTable(
                       OncoSimulR:::posetToGraph(p5, names = 1:5, addroot = FALSE, type = "adjmat"),
                       root = FALSE),
                   OncoSimulR:::adjmat.to.restrictTable(
                       OncoSimulR:::posetToGraph(p5, names = 0:5, addroot = TRUE, type = "adjmat"),
-                      root = TRUE))
+                      root = TRUE)
+              ))
           })
 
 
