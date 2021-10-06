@@ -77,22 +77,22 @@ fi
 ## We always do this, though it should not be necessary
 sed -i 's/^};$/}/' ./OncoSimulR/src/FitnessLandscape/generalized_chain.c 
 
-export R_CHECK_ENVIRON="~/.R/check.Renviron"
+export R_CHECK_ENVIRON="~/.R/Renviron.bioc"
 echo " ************************************** "
 echo " **********   R CMD build --vanilla  *********** "
 echo ""
-time R_ENVIRON_USER="~/.R/check.Renviron" $V_R --vanilla CMD build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulR
+time R_ENVIRON_USER="~/.R/Renviron.bioc" $V_R --vanilla CMD build --no-build-vignettes --no-manual --no-resave-data --keep-empty-dirs OncoSimulR
 echo " "
 echo " =======      done R CMD build --vanilla  ======= "
 echo " "
 echo " ************************************** "
 echo " *********     R CMD check --vanilla  ********** "
 echo " "
-time R_ENVIRON_USER="~/.R/check.Renviron" $V_R --vanilla CMD check --no-vignettes --no-build-vignettes --ignore-vignettes --no-manual --timings OncoSimulR_$V_ADA.tar.gz
+time R_ENVIRON_USER="~/.R/Renviron.bioc" $V_R --vanilla CMD check --no-vignettes --no-build-vignettes --ignore-vignettes --no-manual --timings OncoSimulR_$V_ADA.tar.gz
 echo " "
 echo " =======      done R CMD check --vanilla  =======  "
 echo " "
 echo " =======  installing with tests "
-R_ENVIRON_USER="~/.R/check.Renviron" $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
+R_ENVIRON_USER="~/.R/Renviron.bioc" $V_R --vanilla  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 
     

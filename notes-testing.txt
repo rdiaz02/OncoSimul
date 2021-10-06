@@ -2,4 +2,4 @@ Set
 
 Sys.setenv("_R_CHECK_LENGTH_1_LOGIC2_" = TRUE)
 
-and recall settings in ~/.R/check.Renviron.
+and recall settings in ~/.R/check.Renviron (or Renviron.bioc)

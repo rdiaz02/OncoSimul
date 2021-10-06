@@ -109,23 +109,23 @@ sed -i 's/^};$/}/' ./OncoSimulR/src/FitnessLandscape/generalized_chain.c
 # echo " "
 
 ## Remember we can also import Renviron in .Rprofile
-export R_CHECK_ENVIRON="~/.R/check.Renviron" ## see https://bioconductor.org/checkResults/devel/bioc-LATEST/Renviron.bioc
+export R_CHECK_ENVIRON="~/.R/Renviron.bioc" ## see https://bioconductor.org/checkResults/devel/bioc-LATEST/Renviron.bioc
 echo " ************************************** "
 echo " **********   R CMD build --vanilla  *********** "
 echo ""
-time R_ENVIRON_USER="~/.R/check.Renviron" $V_R --no-site-file --no-init-file --no-save --no-restore CMD build --keep-empty-dirs --no-resave-data OncoSimulR
+time R_ENVIRON_USER="~/.R/Renviron.bioc" $V_R --no-site-file --no-init-file --no-save --no-restore CMD build --keep-empty-dirs --no-resave-data OncoSimulR
 echo " "
 echo " =======      done R CMD build --vanilla  ======= "
 echo " "
 echo " ************************************** "
 echo " *********     R CMD check --vanilla  ********** "
 echo " "
-time R_ENVIRON_USER="~/.R/check.Renviron" $V_R --no-site-file --no-init-file --no-save --no-restore CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
+time R_ENVIRON_USER="~/.R/Renviron.bioc" $V_R --no-site-file --no-init-file --no-save --no-restore CMD check --no-vignettes --timings OncoSimulR_$V_ADA.tar.gz
 echo " "
 echo " =======      done R CMD check --vanilla  =======  "
 echo " "
 echo " =======  installing with tests "
-R_ENVIRON_USER="~/.R/check.Renviron" $V_R --no-site-file --no-init-file --no-save --no-restore  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
+R_ENVIRON_USER="~/.R/Renviron.bioc" $V_R --no-site-file --no-init-file --no-save --no-restore  CMD INSTALL --install-tests OncoSimulR_$V_ADA.tar.gz
 
 
 # echo " ******************************************* "
