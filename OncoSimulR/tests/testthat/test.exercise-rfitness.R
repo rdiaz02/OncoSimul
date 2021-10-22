@@ -119,7 +119,7 @@ test_that("Testing the three-element scale argument", {
         set.seed(i)
         ra <- rfitness(7, truncate_at_0 = FALSE, wt_is_1 = "no")
         
-        if(max(ra[, "Fitness"]) == ra[1, "Fitness"]) {
+        if(max(ra[, "Birth"]) == ra[1, "Birth"]) {
             set.seed(i)
             expect_warning(rb <- rfitness(7, scale = scalev,
                                           truncate_at_0 = FALSE),
@@ -127,7 +127,7 @@ test_that("Testing the three-element scale argument", {
                            fixed = TRUE)
             wt_max <- TRUE
             wt_min <- FALSE
-        } else if(min(ra[, "Fitness"]) == ra[1, "Fitness"]) {
+        } else if(min(ra[, "Birth"]) == ra[1, "Birth"]) {
             set.seed(i)
             expect_warning(rb <- rfitness(7, scale = scalev,
                                           truncate_at_0 = FALSE),
@@ -141,15 +141,15 @@ test_that("Testing the three-element scale argument", {
                        truncate_at_0 = FALSE)
         }
         
-        rap <- ra[-1, "Fitness"][ra[-1, "Fitness"] > ra[1, "Fitness"]]
-        ran <- ra[-1, "Fitness"][ra[-1, "Fitness"] < ra[1, "Fitness"]]
-        rbp <- rb[-1, "Fitness"][rb[-1, "Fitness"] > scalev[3]]
-        rbn <- rb[-1, "Fitness"][rb[-1, "Fitness"] < scalev[3]]
+        rap <- ra[-1, "Birth"][ra[-1, "Birth"] > ra[1, "Birth"]]
+        ran <- ra[-1, "Birth"][ra[-1, "Birth"] < ra[1, "Birth"]]
+        rbp <- rb[-1, "Birth"][rb[-1, "Birth"] > scalev[3]]
+        rbn <- rb[-1, "Birth"][rb[-1, "Birth"] < scalev[3]]
 
         ## Numerical issues with equality comparisons
-        rap <- c(ra[1, "Fitness"], rap)
+        rap <- c(ra[1, "Birth"], rap)
         rbp <- c(scalev[3], rbp)
-        ran <- c(ra[1, "Fitness"], ran)
+        ran <- c(ra[1, "Birth"], ran)
         rbn <- c(scalev[3], rbn)        
 
         expect_true(abs(length(rap) - length(rbp)) < 2)
@@ -165,17 +165,17 @@ test_that("Testing the three-element scale argument", {
                     
         
         if(!wt_max) {
-            expect_equivalent(max(rb[, "Fitness"]), scalev[1])
+            expect_equivalent(max(rb[, "Birth"]), scalev[1])
         } else {
-            expect_equivalent(max(rb[, "Fitness"]), scalev[3])
+            expect_equivalent(max(rb[, "Birth"]), scalev[3])
         }
         if(!wt_min) {
-            expect_equivalent(min(rb[, "Fitness"]), scalev[2])
+            expect_equivalent(min(rb[, "Birth"]), scalev[2])
         } else {
-            expect_equivalent(min(rb[, "Fitness"]), scalev[3])            
+            expect_equivalent(min(rb[, "Birth"]), scalev[3])            
         }
 
-        expect_equivalent(rb[1, "Fitness"], scalev[3])
+        expect_equivalent(rb[1, "Birth"], scalev[3])
 
         ## X, Y, Z: X: original, Y: after scaling
         ## Just dealing with the positive
@@ -184,8 +184,8 @@ test_that("Testing the three-element scale argument", {
         ## so you can compare against
         ## lm(rbp ~ rap)
 
-        xM <- max(ra[, "Fitness"])
-        xW <- ra[1, "Fitness"]
+        xM <- max(ra[, "Birth"])
+        xW <- ra[1, "Birth"]
         if(!wt_max) {    
             y <- rap * (scalev[1] - scalev[3])/(xM - xW) +
                 (scalev[3] - xW * ((scalev[1] - scalev[3])/(xM - xW)))
@@ -195,7 +195,7 @@ test_that("Testing the three-element scale argument", {
             expect_equivalent(scalev[3], rbp)
         }
 
-        xm <- min(ra[, "Fitness"])
+        xm <- min(ra[, "Birth"])
         if(!wt_min) {
             y <- ran * (scalev[3] - scalev[2])/(xW - xm) +
                 (scalev[3] - xW * ((scalev[3] - scalev[2])/(xW - xm)))
@@ -210,8 +210,8 @@ test_that("Testing the three-element scale argument", {
         suppressWarnings(
             rc <- rfitness(7, scale = exp(scalev), truncate_at_0 = FALSE,
                            log = TRUE))
-        rcp <- rc[-1, "Fitness"][rc[-1, "Fitness"] > scalev[3]]
-        rcn <- rc[-1, "Fitness"][rc[-1, "Fitness"] < scalev[3]]
+        rcp <- rc[-1, "Birth"][rc[-1, "Birth"] > scalev[3]]
+        rcn <- rc[-1, "Birth"][rc[-1, "Birth"] < scalev[3]]
         
         ## Numerical issues with equality comparisons
         rcp <- c(scalev[3], rcp)
@@ -258,10 +258,10 @@ test_that("Testing the three-element scale argument", {
         ## Repeat setting WT = 1
         set.seed(i)
         rax <- rfitness(7, truncate_at_0 = FALSE, wt_is_1 = "subtract")
-        rapx <- rax[-1, "Fitness"][rax[-1, "Fitness"] > 1]
-        ranx <- rax[-1, "Fitness"][rax[-1, "Fitness"] < 1]
-        rapx <- c(rax[1, "Fitness"], rapx)
-        ranx <- c(rax[1, "Fitness"], ranx)
+        rapx <- rax[-1, "Birth"][rax[-1, "Birth"] > 1]
+        ranx <- rax[-1, "Birth"][rax[-1, "Birth"] < 1]
+        rapx <- c(rax[1, "Birth"], rapx)
+        ranx <- c(rax[1, "Birth"], ranx)
         
         expect_true(abs(length(rapx) - length(rbp)) < 2)
         expect_true(abs(length(ranx) - length(rbn)) < 2)
@@ -273,8 +273,8 @@ test_that("Testing the three-element scale argument", {
 
         if(length(rapx) < 2) expect_true(length(ranx) > 2)
         
-        xMx <- max(rax[, "Fitness"])
-        xWx <- rax[1, "Fitness"]
+        xMx <- max(rax[, "Birth"])
+        xWx <- rax[1, "Birth"]
         
         if(!isTRUE(all.equal(xMx, xWx, check.attributes = FALSE))) {
             yx <- rapx * (scalev[1] - scalev[3])/(xMx - xWx) +
@@ -285,7 +285,7 @@ test_that("Testing the three-element scale argument", {
             expect_equivalent(scalev[3], rbp)
         }
 
-        xmx <- min(rax[, "Fitness"])
+        xmx <- min(rax[, "Birth"])
         if(!isTRUE(all.equal(xmx, xWx, check.attributes = FALSE))) {
             yx <- ran * (scalev[3] - scalev[2])/(xWx - xmx) +
                 (scalev[3] - xW * ((scalev[3] - scalev[2])/(xWx - xmx)))

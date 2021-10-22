@@ -135,7 +135,7 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.allGenes.resize(0);
   f.drv.resize(0);
   f.fVarsb.resize(0);//new line to initialize fVarsb
-  f.fVarsb.resize(0);//new line to initialize fVarsd
+  f.fVarsd.resize(0);//new line to initialize fVarsd
   f.frequencyDependentBirth = false;
   f.frequencyDependentDeath = false;
   f.frequencyType.clear();
