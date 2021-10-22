@@ -76,7 +76,7 @@ sed -i 's/^};$/}/' ../BioConductor-git/OncoSimulR/src/FitnessLandscape/generaliz
 
 
 ## should we run the tests?
-export R_CHECK_ENVIRON="~/.R/check.Renviron" ## see https://bioconductor.org/checkResults/devel/bioc-LATEST/Renviron.bioc
+export R_CHECK_ENVIRON="~/.R/Renviron.bioc" ## see https://bioconductor.org/checkResults/devel/bioc-LATEST/Renviron.bioc
 if [[ $# == 1 ]]; then
     V_R=$1
     cd ~/Proyectos/BioConductor-git
