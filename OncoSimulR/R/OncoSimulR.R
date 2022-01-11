@@ -64,7 +64,8 @@ oncoSimulSample <- function(Nindiv,
                             fixation = NULL,
                             verbosity  = 1,
                             showProgress = FALSE,
-                            seed = "auto"){
+                            seed = "auto",
+                            interventions = NULL){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
     
@@ -192,7 +193,8 @@ oncoSimulSample <- function(Nindiv,
                                mutationPropGrowth = mutationPropGrowth,
                                detectionProb = detectionProb,
                                AND_DrvProbExit = AND_DrvProbExit,
-                               fixation = fixation)        
+                               fixation = fixation,
+                               interventions = interventions)        
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
         }
@@ -383,7 +385,8 @@ oncoSimulPop <- function(Nindiv,
                          fixation = NULL,
                          verbosity  = 0,
                          mc.cores = detectCores(),
-                         seed = "auto") {
+                         seed = "auto",
+                         interventions = NULL) {
 
     if(Nindiv < 1)
         stop("Nindiv must be >= 1")
@@ -424,7 +427,8 @@ oncoSimulPop <- function(Nindiv,
                         mutationPropGrowth = mutationPropGrowth,
                         detectionProb = detectionProb,
                         AND_DrvProbExit = AND_DrvProbExit,
-                        fixation = fixation),
+                        fixation = fixation,
+                        interventions = interventions),
                     mc.cores = mc.cores)
     ## mc.allow.recursive = FALSE ## FIXME: remove?
                     ## done for covr issue
@@ -469,8 +473,8 @@ oncoSimulIndiv <- function(fp,
                            initMutant = NULL,
                            AND_DrvProbExit = FALSE,
                            fixation = NULL,
-                           seed = NULL
-                           ) {
+                           seed = NULL,
+                           interventions = NULL) {
     call <- match.call()
     if(all(c(is_null_na(detectionProb),
              is_null_na(detectionSize),
@@ -629,6 +633,12 @@ oncoSimulIndiv <- function(fp,
             if(AND_DrvProbExit)
                 stop("It makes no sense to pass AND_DrvProbExit and a fixation list.")
         }
+
+        #if interventions is null, we create an empty list, cos' it will be easier to handle by C++
+        if(is_null_na(interventions)){
+            interventions = list()
+        }
+
         op <- try(nr_oncoSimul.internal(rFE = fp, 
                                         birth = birth,
                                         death = death,  
@@ -662,7 +672,8 @@ oncoSimulIndiv <- function(fp,
                                         MMUEF = muEF,
                                         detectionProb = detectionProb,
                                         AND_DrvProbExit = AND_DrvProbExit,
-                                        fixation = fixation),
+                                        fixation = fixation,
+                                        interventions = interventions),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     ## }

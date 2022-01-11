@@ -2192,7 +2192,8 @@ nr_oncoSimul.internal <- function(rFE,
                                   detectionProb,
                                   AND_DrvProbExit,
                                   MMUEF = NULL, ## avoid partial matching, and set default
-                                  fixation = NULL ## avoid partial matching
+                                  fixation = NULL, ## avoid partial matching
+                                  interventions
                                   ) {
 
     default_min_successive_fixation <- 50 ## yes, set at this for now
@@ -2499,7 +2500,8 @@ nr_oncoSimul.internal <- function(rFE,
                      cPDetect_i= dpr["cPDetect"],
                      checkSizePEvery = dpr["checkSizePEvery"],
                      AND_DrvProbExit = AND_DrvProbExit,
-                     fixation_list = fixation_list),
+                     fixation_list = fixation_list,
+                     interventions = interventions),
         Drivers = list(rFE$drv), ## but when doing pops, these will be repeated
         geneNames = list(names(getNamesID(rFE))),
         InitMutant = initMutantString

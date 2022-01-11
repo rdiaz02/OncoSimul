@@ -21,6 +21,7 @@
 #include "common_classes.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
+#include "intervention.h"
 #include <cfloat>
 #include <limits>
 #include <Rcpp.h>
@@ -44,6 +45,11 @@ using std::vector;
 double g_min_birth_mut_ratio_nr = DBL_MAX;
 double g_min_death_mut_ratio_nr = DBL_MAX;
 double g_tmp1_nr = DBL_MAX;
+
+// To track intervention time Yes:
+// global vars. FIXMEmaybe: turn them into non-globals. This is ugly as
+// hell.
+std::vector<double> interventionTimes;
 
 
 
@@ -780,6 +786,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			 std::vector<double>& popSizes_out,
 			 std::vector<int>& index_out,
 			 std::vector<double>& time_out,
+       std::vector<Intervention>& interventions_out,
 			 std::vector<double>& sampleTotPopSize,
 			 std::vector<double>& sampleLargestPopSize,
 			 std::vector<int>& sampleMaxNDr,
@@ -807,7 +814,8 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			 int& ti_e3,
 			 std::map<std::string, std::string>& lod,
 			 // LOD& lod,
-			 POM& pom) {
+			 POM& pom,
+       Rcpp::List interventions) {
 
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -925,6 +933,15 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   
   timeNextPopSample = currentTime + sampleEvery;
 
+// Interventions initialization
+  int interventions_len = (int)interventions.length();
+  InterventionsInfo iif;
+  if(interventions_len > 0){
+    //Rcpp::Rcout << "Interventions IN:\n";
+    //Rcpp::print(interventions);
+    //create the structure with all the information of the interventions
+    iif = createInterventionsInfo(interventions, fitnessEffects, popParams, Genotypes);
+  }
   while(!simulsDone) {
     runningWallTime = difftime(time(NULL), start_time);
     if( runningWallTime > maxWallTime ) {
@@ -1238,6 +1255,21 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
       if(simulsDone) break; //skip last updateRates
 
+ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      // in case interventions are specified, we create the proper structure
+      if(interventions_len > 0){
+        // we need structures Genotypes, PopParams and FitnessEffects
+        // we update the map with the current population data
+        iif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
+        if(!executeInterventions(iif, totPopSize, currentTime, fitnessEffects, Genotypes, popParams, interventionTimes)){
+          Rcout << "Something went wrong while executeInterventions was running";
+        } 
+      } 
+      
+
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,
 			    K, totPopSize, cteSize, sampleEvery, currentTime, typeModel);
   
@@ -1295,9 +1327,10 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double cPDetect_i,
 			double checkSizePEvery,
 			bool AND_DrvProbExit,
-			Rcpp::List fixation_i) {
+			Rcpp::List fixation_i,
+      Rcpp::List interventions) {
 
-  
+  interventionTimes = {};
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
   const std::vector < std::vector<int> >
@@ -1391,10 +1424,13 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
   std::vector<double> popSizes_out;
   std::vector<int> index_out;
   std::vector<double> time_out; //only one entry per period!
+  // we do not care if parameter interventions has length 0, it will be handled later.
+  std::vector<Intervention> interventions_out;
   genot_out.reserve(initSp);
   popSizes_out.reserve(initSp);
   index_out.reserve(initSp);
   time_out.reserve(initIt);
+  interventions_out.reserve((int)interventions.length());
 
   double totPopSize = 0;
   std::vector<double> sampleTotPopSize;
@@ -1486,6 +1522,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  popSizes_out,
 		  index_out,
 		  time_out,
+      interventions_out,
 		  sampleTotPopSize,
 		  sampleLargestPopSize,
 		  sampleMaxNDr,
@@ -1511,7 +1548,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  ti_dbl_min,
 		  ti_e3,
 		  lod,
-		  pom);
+		  pom,
+      interventions);
 
       ++numRuns;
       forceRerun = false;
@@ -1650,6 +1688,7 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 										   Named("parent") = lod_parent, 
 										   Named("child") = lod_child 
 										   ),
+                 Named("interventionTimes") = interventionTimes,
 					       Named("POM") = Rcpp::wrap(pom.genotypesString)
 					       )
 		 );

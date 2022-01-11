@@ -43,7 +43,8 @@
                 initMutant = NULL,
                 AND_DrvProbExit = FALSE,
                 fixation = NULL,
-                seed = NULL)
+                seed = NULL,
+                interventions = NULL)
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 muEF = NULL,
@@ -68,7 +69,8 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 fixation = NULL,
                 verbosity = 0,
                 mc.cores = detectCores(),
-                seed = "auto")
+                seed = "auto",
+                interventions = NULL)
 
 
 oncoSimulSample(Nindiv,
@@ -117,7 +119,8 @@ oncoSimulSample(Nindiv,
                 fixation = NULL,
                 verbosity  = 1,
                 showProgress = FALSE,
-                seed = "auto")
+                seed = "auto",
+                interventions = NULL)
 
 
 }
@@ -633,6 +636,31 @@ of the individual done, and the number of attempts and time used.}
   \code{\link{mclapply}}; look at the vignette of
   \pkg{parallel}.
 
+}
+
+\item{interventions}{
+
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
+  \code{allFitnessEffects} function. Also, you must use \code{createInterventions} 
+  function to create the correct type of parameter for the function \code{oncoSimulPop} ,
+  \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly.
+
+  Use this argument in case you want to intervene in the simulation. With interventions, 
+  you can affect the total population size, or just some genotype-specific
+  population. You can complicate it as much as you want, or keep it simple, 
+  it is really up to you.
+
+  Formally, interventions must be a list of lists, where each 
+  "sub-list" must have the following fields:
+
+  * ID: The identifier of the intervention, must be unique.
+  * Trigger: The situation in the simulation that triggers/activates 
+             the intervention.
+  * What Happens: "What happens" in the simulation. Basically, once the trigger 
+                  is satisfied, this defines how the population is affected by 
+                  the intervention.
+  * Periodicity: Defines the periodicity of the intervention.
+  * Repetitions: Defines the maximum repetitions of each intervention in the simulation.
 }
 
 
