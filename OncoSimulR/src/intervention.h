@@ -89,8 +89,7 @@ bool executeInterventions(InterventionsInfo& iif,
                          double &currentTime, 
                          const fitnessEffectsAll& fitnessEffects, 
                          std::vector<Genotype> Genotypes, 
-                         std::vector<spParamsP>& popParams,
-                         std::vector<double>& interventionTimes);
+                         std::vector<spParamsP>& popParams);
 
 // function that compares two interventions
 int compareInterventions(Intervention i1, Intervention i2);

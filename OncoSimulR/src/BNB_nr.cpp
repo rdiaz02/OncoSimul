@@ -1211,7 +1211,33 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	      remove_zero_sp_nr(sp_to_remove, Genotypes, popParams, mapTimes);
 
       numSpecies = popParams.size();
+      
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+      // in case interventions are specified, we create the proper structure
+      if(interventions_len > 0){
+        // we need structures Genotypes, PopParams and FitnessEffects
+        // we update the map with the current population data
+        iif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
+        if(executeInterventions(iif, totPopSize, currentTime, fitnessEffects, Genotypes, popParams)){
+          interventionTimes.push_back(currentTime);
+          // removing genotypes with 0 population
+          sp_to_remove.clear();
+          for(size_t i = 0; i < popParams.size(); i++) {
+            if( popParams[i].popSize <=  0.0 ) {
+              sp_to_remove.push_back(i);
+              DEBUG_nr2;
+            }
+          }
+          if(sp_to_remove.size())
+            remove_zero_sp_nr(sp_to_remove, Genotypes, popParams, mapTimes);
+          numSpecies = popParams.size();
+        } 
+      } 
+
+      
       // Check stopping conditions and fill up output structures
       nr_totPopSize_and_fill_out_crude_P(outNS_i, totPopSize,
 					 lastStoredSample,
@@ -1255,21 +1281,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 
       if(simulsDone) break; //skip last updateRates
 
- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      // in case interventions are specified, we create the proper structure
-      if(interventions_len > 0){
-        // we need structures Genotypes, PopParams and FitnessEffects
-        // we update the map with the current population data
-        iif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
-        if(!executeInterventions(iif, totPopSize, currentTime, fitnessEffects, Genotypes, popParams, interventionTimes)){
-          Rcout << "Something went wrong while executeInterventions was running";
-        } 
-      } 
       
-
       updateBirthDeathRates(popParams, Genotypes, fitnessEffects, adjust_fitness_MF,
 			    K, totPopSize, cteSize, sampleEvery, currentTime, typeModel);
   

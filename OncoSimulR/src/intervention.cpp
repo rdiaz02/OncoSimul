@@ -16,7 +16,7 @@
 #include "intervention.h"
 
 bool isValidEquation(std::string equation);
-bool parseWhatHappens(InterventionsInfo& iif, 
+void parseWhatHappens(InterventionsInfo& iif, 
                      Intervention intervention, 
                      const fitnessEffectsAll& fitnessEffects, 
                      std::vector<spParamsP>& popParams, 
@@ -159,8 +159,7 @@ bool executeInterventions(InterventionsInfo& iif,
                          double &currentTime, 
                          const fitnessEffectsAll& fitnessEffects, 
                          std::vector<Genotype> Genotypes, 
-                         std::vector<spParamsP>& popParams,
-                         std::vector<double>& interventionTimes){
+                         std::vector<spParamsP>& popParams){
 
     // Now we add all the info needed for the symbol table so exprtk can operate 
     symbol_table_t symbol_table;
@@ -182,6 +181,8 @@ bool executeInterventions(InterventionsInfo& iif,
 
     expression_t expression;
     expression.register_symbol_table(symbol_table);
+
+    bool interventionDone = false;
 
     //we iterate over the user-specified interventions 
     for(auto& intervention: iif.interventions){
@@ -227,16 +228,14 @@ bool executeInterventions(InterventionsInfo& iif,
                         }
                         std::string errorMessage = "The expression was imposible to parse.";
                         throw std::invalid_argument(errorMessage);
-                    } else if(!parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
-                        throw std::runtime_error("Something went wrong.\n");
-                        return false;
-                    }
+                    } else 
+                        parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T);
                     // we reduce by one the number of interventions
                     intervention.repetitions--;
                     // we update the last time it was executed (debugging purposes)
                     intervention.lastTimeExecuted = T;
-                    // we update interventionTimes vector
-                    interventionTimes.push_back(T);
+                    // we update interventionDone flag
+                    interventionDone = true;
 
                 } else if(intervention.repetitions >= 0 && intervention.periodicity > 0) { // case there is periodicity but also repetitions
                     if((T - intervention.lastTimeExecuted) >= intervention.periodicity){ // with condition satisfied we execute the intervention
@@ -257,16 +256,14 @@ bool executeInterventions(InterventionsInfo& iif,
                             }
                             std::string errorMessage = "The expression was imposible to parse.";
                             throw std::invalid_argument(errorMessage);
-                        } else if(!parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
-                            throw std::runtime_error("Something went wrong.\n");
-                            return false;
-                        }
+                        } else 
+                            parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T);
                         // update new lastTimeExecuted
                         intervention.lastTimeExecuted = T;
                         //  update amount of repetitions
                         intervention.repetitions--;
-                        // we update interventionTimes vector
-                        interventionTimes.push_back(T);
+                        // we update interventionDone flag
+                        interventionDone = true;
                     } 
                 } else if (intervention.periodicity > 0 && intervention.repetitions == NOT_REPS) { // case where only periodicty is specified
                     if((T - intervention.lastTimeExecuted) >= intervention.periodicity){
@@ -286,14 +283,12 @@ bool executeInterventions(InterventionsInfo& iif,
                             }
                             std::string errorMessage = "The expression was imposible to parse.";
                             throw std::invalid_argument(errorMessage);
-                        } else if(!parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T)){
-                            throw std::runtime_error("Something went wrong.\n");
-                            return false;
-                        }
+                        } else 
+                            parseWhatHappens(iif, intervention, fitnessEffects, popParams, Genotypes, N, T);
                         // update new lastTimeExecuted
                         intervention.lastTimeExecuted = T;
-                        // we update interventionTimes vector
-                        interventionTimes.push_back(T);
+                        // we update interventionDone flag
+                        interventionDone = true;
                     }
                 }
             }
@@ -303,19 +298,20 @@ bool executeInterventions(InterventionsInfo& iif,
     // Now with the structure storing all the changes, we need to store the data in their own
     // original structures where the data was sourced from 
     // once the structure is updated, we update the structures that store the info while the simulation is running
-    if(!updatePopulations(iif, fitnessEffects, Genotypes, popParams)){
-        throw std::runtime_error("There was an issue updating the populations while intervening.\n");
-        return false;
+    if(interventionDone){
+        if(!updatePopulations(iif, fitnessEffects, Genotypes, popParams)){
+                throw std::runtime_error("There was an issue updating the populations while intervening.\n");
+        }
+        return true;
     }
- 
-    return true;
+    return false;   
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////// PRIVATE FUNCTIONS ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool parseWhatHappens(InterventionsInfo& iif, 
+void parseWhatHappens(InterventionsInfo& iif, 
                      Intervention intervention, 
                      const fitnessEffectsAll& fitnessEffects, 
                      std::vector<spParamsP>& popParams, 
@@ -327,7 +323,6 @@ bool parseWhatHappens(InterventionsInfo& iif,
     // TODO: raise exception, malformed what_happens specification
     if(!isValidEquation(intervention.what_happens)){
         throw std::runtime_error("The intervention was wrongfully specified.\n");
-        return false;
     }
 
     bool totalPopFlag = false;
@@ -391,7 +386,6 @@ bool parseWhatHappens(InterventionsInfo& iif,
         if (totalPopFlag && (res > N)) {
             // TODO: Throw exception of some kind, this CANNOT happen by any means
             throw std::runtime_error("You have specified an intervention that is not allowed.");
-            return false;
         } 
 
         // check that user does not create a WhatHappens that creates population: n_A = n_A * 2
@@ -401,7 +395,6 @@ bool parseWhatHappens(InterventionsInfo& iif,
                 if(res > value){
                     Rcpp::Rcerr << "In intervention:" << intervention.id << " with WhatHappens: " << intervention.what_happens << ". You cannot intervene to generate more population.";
                     throw std::runtime_error("You have specified an intervention that is not allowed.");
-                    return false;
                 }
             }
             catch (const std::out_of_range&) {
@@ -409,8 +402,8 @@ bool parseWhatHappens(InterventionsInfo& iif,
             }
         }
 
-        if(totalPopFlag && res == N){ // this case is absurd, but it might happen, we just return true.
-            return true;
+        if(totalPopFlag && res == N){ // this case is absurd, but it might happen, we just return.
+            return;
         } else if(totalPopFlag && (res < N)){// reduce total amount of population using hipergeometric distribution
             reduceTotalPopulation(iif, res, totPopSize);
         } else { // update new value for genotype
@@ -420,8 +413,6 @@ bool parseWhatHappens(InterventionsInfo& iif,
             }
         }
     }
-
-    return true;
 }
 
 // This function is needed if what we are trying to descrease is the whole population, and not just the population of 1 genotype
@@ -454,11 +445,10 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target, double totPopS
 
     populations = Rcpp::as<std::vector<double>>(rcpp_mhgeo_distribution);
 
-    //quick check before creating the matrix
-    if(totPopSize != totalPop){
-        throw std::runtime_error("TotalPop != totPopSize, exiting...");
-        return;
-    }
+    //quick check before creating the matrix CANT BE DONE HERE (totPopSize is not updated until crude is filled)
+    //if(totPopSize != totalPop){
+    //    throw std::runtime_error("TotalPop != totPopSize, exiting...");
+    //}
 
     int i=0;
     for(auto &map : iif.mapGenoToPop){
