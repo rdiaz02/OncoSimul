@@ -2,6 +2,7 @@
 ** Immediate and simple
    - [ ] plot of onocoSimulIndiv: default for show should be genotypes.
    - [ ] McFL or McFLD: give message if using McFL instead of McFLD.
+   - [ ] initSizes: give clear error message if any initSize <= 0 and explain that initSizes not specified are taken as 0.
    - [ ] Using a constant for fitness should work. See this: the first fails, the
      second does not. And the second and third are correct.
 #+BEGIN_EXAMPLE
