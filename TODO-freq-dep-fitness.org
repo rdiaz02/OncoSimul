@@ -3,6 +3,20 @@
    - [ ] plot of onocoSimulIndiv: default for show should be genotypes.
    - [ ] McFL or McFLD: give message if using McFL instead of McFLD.
    - [ ] initSizes: give clear error message if any initSize <= 0 and explain that initSizes not specified are taken as 0.
+   - [ ] explain why this is not a problem. It seems it is (you cannot say the WT is 1000) but it is not (WT is not in the model, so it is assumed a fitness of 0). But clarify this in examples:
+     #+begin_src
+       r4 <- function(a, b, c, n, k, gt = c("AG", "INV", "GLY", "INV, GLY")){
+  data.frame(Genotype = gt,
+             Fitness = c(paste0("(", b, " + ", a, ") / 2 + f_INV * (", b, " - ", a, ") / 2 + (f_GLY + f_INV_GLY) * ((", a, " / 2) - ", n, ")"),
+                         paste0(b, " - ", c, " + f_INV * (", c, " / 2) + f_GLY * (2 / 3) * ", c, " + f_INV_GLY * (2 / 3) * ", c),
+                         paste0("((",b, " / 2) - ", k, " + ", n, " + ", a, ") + f_INV * (((", b, " - ", a, ") / 2) - ", n, ") - f_GLY * (", n, " + (3 / 4) * ", a, ") + f_INV_GLY * (((", b, " - ", a, ") / 2) - ", n, ")"),
+                         paste0("((", b, " / 2) - ", k, " + ", n, " + ", a, ") + f_INV * (((", b, " - ", a, ") / 2) - ", n, ") + f_GLY * (((", b, " - ", a, ") / 2) - (", c, " / 3) - ", n, ") + f_INV_GLY * (((", b," - ", a, ") / 2) - (", c, " / 6) - ", n, ")")),
+             stringsAsFactors = FALSE)
+}
+
+       afe4 <- allFitnessEffects(genotFitness = r4(1, 1, 0.1, 0.02, 0.01), frequencyDependentFitness = TRUE, frequencyType = "rel")
+       evalAllGenotypes(fitnessEffects = afe4, spPopSizes = c("WT" = 1000, "AG" = 1000, "INV" = 0, "GLY" = 0, "GLY, INV" = 0))
+     #+end_src
    - [ ] Using a constant for fitness should work. See this: the first fails, the
      second does not. And the second and third are correct.
 #+BEGIN_EXAMPLE
