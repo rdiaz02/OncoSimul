@@ -1,3 +1,6 @@
+Changes in version 3.3.0 (2021-10-27):
+	- Bump version number for BioC
+		
 Changes in version 3.1.2 (2021-10-06):
 	- Better test of poset transformation
 	
