@@ -65,7 +65,9 @@ oncoSimulSample <- function(Nindiv,
                             verbosity  = 1,
                             showProgress = FALSE,
                             seed = "auto",
-                            interventions = NULL){
+                            interventions = NULL,
+                            userVars = NULL,
+                            rules = NULL){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
     
@@ -194,7 +196,9 @@ oncoSimulSample <- function(Nindiv,
                                detectionProb = detectionProb,
                                AND_DrvProbExit = AND_DrvProbExit,
                                fixation = fixation,
-                               interventions = interventions)        
+                               interventions = interventions,
+                                userVars = userVars,
+                                rules = rules)        
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
         }
@@ -386,7 +390,9 @@ oncoSimulPop <- function(Nindiv,
                          verbosity  = 0,
                          mc.cores = detectCores(),
                          seed = "auto",
-                         interventions = NULL) {
+                         interventions = NULL,
+                         userVars = NULL,
+                         rules = NULL) {
 
     if(Nindiv < 1)
         stop("Nindiv must be >= 1")
@@ -428,7 +434,9 @@ oncoSimulPop <- function(Nindiv,
                         detectionProb = detectionProb,
                         AND_DrvProbExit = AND_DrvProbExit,
                         fixation = fixation,
-                        interventions = interventions),
+                        interventions = interventions,
+                        userVars = userVars,
+                        rules = rules),
                     mc.cores = mc.cores)
     ## mc.allow.recursive = FALSE ## FIXME: remove?
                     ## done for covr issue
@@ -474,7 +482,9 @@ oncoSimulIndiv <- function(fp,
                            AND_DrvProbExit = FALSE,
                            fixation = NULL,
                            seed = NULL,
-                           interventions = NULL) {
+                           interventions = NULL,
+                           userVars = NULL,
+                           rules = NULL) {
     call <- match.call()
     if(all(c(is_null_na(detectionProb),
              is_null_na(detectionSize),
@@ -673,7 +683,9 @@ oncoSimulIndiv <- function(fp,
                                         detectionProb = detectionProb,
                                         AND_DrvProbExit = AND_DrvProbExit,
                                         fixation = fixation,
-                                        interventions = interventions),
+                                        interventions = interventions,
+                                        userVars = userVars,
+                                        rules = rules),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     ## }

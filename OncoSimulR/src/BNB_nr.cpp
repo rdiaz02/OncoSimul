@@ -22,6 +22,7 @@
 #include "bnb_common.h"
 #include "new_restrict.h"
 #include "intervention.h"
+#include "user_var.h"
 #include <cfloat>
 #include <limits>
 #include <Rcpp.h>
@@ -35,6 +36,7 @@
 #include <ctime>
 #include <sys/time.h>
 #include <stdexcept>
+#include <tuple>
 
 using namespace Rcpp;
 using std::vector;
@@ -50,6 +52,8 @@ double g_tmp1_nr = DBL_MAX;
 // global vars. FIXMEmaybe: turn them into non-globals. This is ugly as
 // hell.
 std::vector<double> interventionTimes;
+std::vector<std::string> userVarNames;
+std::vector<std::vector<double>> userVarValues;
 
 
 
@@ -815,7 +819,9 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 			 std::map<std::string, std::string>& lod,
 			 // LOD& lod,
 			 POM& pom,
-       Rcpp::List interventions) {
+       Rcpp::List interventions,
+       Rcpp::List userVars,
+       Rcpp::List rules) {
 
   double nextCheckSizeP = checkSizePEvery;
   const int numGenes = fitnessEffects.genomeSize;
@@ -942,6 +948,22 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
     //create the structure with all the information of the interventions
     iif = createInterventionsInfo(interventions, fitnessEffects, popParams, Genotypes);
   }
+
+  // User variables initialization
+  int userVars_length = (int)userVars.length();
+  int rules_length = (int)rules.length();
+  UserVarsInfo uvif;
+  if(userVars_length > 0){
+    //create the structure with all the information of the interventions
+    uvif = createUserVarsInfo(rules, userVars);
+  }
+  //Temporary list to store user variable values after each iteration
+  std::vector<double> auxValues;
+  //We fill up the user var names output list
+  for(auto &item : uvif.userVars){
+    userVarNames.push_back(item.first);
+  }
+
   while(!simulsDone) {
     runningWallTime = difftime(time(NULL), start_time);
     if( runningWallTime > maxWallTime ) {
@@ -1211,7 +1233,22 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
 	      remove_zero_sp_nr(sp_to_remove, Genotypes, popParams, mapTimes);
 
       numSpecies = popParams.size();
-      
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ///////////////////////////////////// We execute user variable modification rules ////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // There has to be both rules and variables
+      // TODO: check if we can add variables on the go without declaring them previous to the rule execution
+      if(rules_length > 0 && userVars_length > 0){
+        executeRules(uvif, totPopSize, currentTime);
+      } 
+      auxValues = {};
+      for (auto &item : uvif.userVars){
+        auxValues.push_back(item.second);
+      }
+      auxValues.push_back(currentTime);
+      userVarValues.push_back(auxValues);
+
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1340,9 +1377,12 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 			double checkSizePEvery,
 			bool AND_DrvProbExit,
 			Rcpp::List fixation_i,
-      Rcpp::List interventions) {
+      Rcpp::List interventions,
+      Rcpp::List userVars,
+      Rcpp::List rules) {
 
   interventionTimes = {};
+  userVarValues = {};
   precissionLoss();
   const std::vector<double> mu = Rcpp::as<std::vector<double> >(mu_);
   const std::vector < std::vector<int> >
@@ -1561,7 +1601,9 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 		  ti_e3,
 		  lod,
 		  pom,
-      interventions);
+      interventions,
+      userVars,
+      rules);
 
       ++numRuns;
       forceRerun = false;
@@ -1701,6 +1743,8 @@ Rcpp::List nr_BNB_Algo5(Rcpp::List rFE,
 										   Named("child") = lod_child 
 										   ),
                  Named("interventionTimes") = interventionTimes,
+                 Named("userVarNames") = userVarNames,
+                 Named("userVarValues") = userVarValues,
 					       Named("POM") = Rcpp::wrap(pom.genotypesString)
 					       )
 		 );
