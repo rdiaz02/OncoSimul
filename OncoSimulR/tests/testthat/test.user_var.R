@@ -68,50 +68,50 @@ test_that("4. Two rules cannot have the same ID (check_double_id)", {
     testthat::expect_error(createRules(rules, afd3), "Check the rules, there are 2 or more that have same IDs")    
 })
 
-test_that("5. Rules change user vars corectly (depending on T)", {
-    userVars <- list(
-        list(Name = "user_var_1",
-            Value = 0
-        ),
-        list(Name = "user_var_2",
-            Value = 0
-        ),
-        list(Name = "user_var_3",
-            Value = 0
-        )
-    )
+# test_that("5. Rules change user vars corectly (depending on T)", {
+#     userVars <- list(
+#         list(Name = "user_var_1",
+#             Value = 0
+#         ),
+#         list(Name = "user_var_2",
+#             Value = 0
+#         ),
+#         list(Name = "user_var_3",
+#             Value = 0
+#         )
+#     )
 
-    userVars <- createUserVars(userVars)
+#     userVars <- createUserVars(userVars)
 
-    rules <- list(
-        list(ID = "rule_1",
-            Condition = "T > 20",
-            Action = "user_var_1 = 1"
-        ),list(ID = "rule_2",
-            Condition = "T > 30",
-            Action = "user_var_2 = 2"
-        ),list(ID = "rule_3",
-            Condition = "T > 40",
-            Action = "user_var_2 = 1"
-        )
-    )
+#     rules <- list(
+#         list(ID = "rule_1",
+#             Condition = "T > 20",
+#             Action = "user_var_1 = 1"
+#         ),list(ID = "rule_2",
+#             Condition = "T > 30",
+#             Action = "user_var_2 = 2"
+#         ),list(ID = "rule_3",
+#             Condition = "T > 40",
+#             Action = "user_var_2 = 1"
+#         )
+#     )
 
-    rules <- createRules(rules, afd3)
+#     rules <- createRules(rules, afd3)
 
-    sfd3 <- oncoSimulIndiv( afd3,
-                            model = "McFLD",
-                            onlyCancer = FALSE,
-                            finalTime = 100,
-                            mu = 1e-4,
-                            initSize = 5000,
-                            sampleEvery = 0.001,
-                            userVars = userVars,
-                            rules = rules)
+#     sfd3 <- oncoSimulIndiv( afd3,
+#                             model = "McFLD",
+#                             onlyCancer = FALSE,
+#                             finalTime = 100,
+#                             mu = 1e-4,
+#                             initSize = 5000,
+#                             sampleEvery = 0.001,
+#                             userVars = userVars,
+#                             rules = rules)
 
-    testthat::expect_equal(interventions[[1]]$WhatHappens, 1)
-    testthat::expect_equal(interventions[[1]]$WhatHappens, 2)
-    testthat::expect_equal(interventions[[1]]$WhatHappens, 3)
-})
+#     testthat::expect_equal(interventions[[1]]$WhatHappens, 1)
+#     testthat::expect_equal(interventions[[1]]$WhatHappens, 2)
+#     testthat::expect_equal(interventions[[1]]$WhatHappens, 3)
+# })
 
 cat(paste("\n Ending interventions tests", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
