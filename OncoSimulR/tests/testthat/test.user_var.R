@@ -92,7 +92,7 @@ test_that("4. Two rules cannot have the same ID (check_double_id)", {
 #             Action = "user_var_2 = 2"
 #         ),list(ID = "rule_3",
 #             Condition = "T > 40",
-#             Action = "user_var_2 = 1"
+#             Action = "user_var_3 = 3;user_var_2 = 1"
 #         )
 #     )
 

@@ -243,6 +243,8 @@ void parseAction(UserVarsInfo& uvif,
     }
 
     for(std::string token: tokens){
+        assingmentTokens.clear();
+        check2.clear();
         check2 << token; 
         // We check that each of the assgnments of the rule's action is correctly specified
         if(!isValid(token)){
