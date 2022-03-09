@@ -1240,7 +1240,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       // There has to be both rules and variables
       // TODO: check if we can add variables on the go without declaring them previous to the rule execution
       if(rules_length > 0 && userVars_length > 0){
-        executeRules(uvif, totPopSize, currentTime);
+        executeRules(uvif, totPopSize, currentTime, fitnessEffects, popParams, Genotypes);
       } 
       auxValues = {};
       for (auto &item : uvif.userVars){

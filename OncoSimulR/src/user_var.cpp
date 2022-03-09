@@ -130,13 +130,21 @@ UserVarsInfo destroyRule(UserVarsInfo uvif, Rule r){
 
 void executeRules(UserVarsInfo& uvif, 
                          double &totPopSize, 
-                         double &currentTime){
+                         double &currentTime,
+                         const fitnessEffectsAll& fitnessEffects, 
+                         const std::vector<spParamsP>& popParams, 
+                         std::vector<Genotype> Genotypes){
 
     // Now we add all the info needed for the symbol table so exprtk can operate 
     symbol_table_t symbol_table;
     for(auto& iterator : uvif.userVars) {
         symbol_table.add_variable(iterator.first, iterator.second);
     } 
+
+    std::map<std::string, double> popsmap = evalFVars(fitnessEffects, Genotypes, popParams, true);
+    for(auto& iterator : popsmap) {
+        symbol_table.add_variable(iterator.first, iterator.second);
+    }
 
     double N = totPopSize;
 

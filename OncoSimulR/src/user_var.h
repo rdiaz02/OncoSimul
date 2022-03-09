@@ -78,7 +78,10 @@ UserVarsInfo destroyRule(UserVarsInfo uvif, Rule r);
 // function that executes the whole list of rules for the user variables
 void executeRules (UserVarsInfo& uvif, 
                     double &totPopSize, 
-                    double &currentTime);
+                    double &currentTime,
+                    const fitnessEffectsAll& fitnessEffects, 
+                    const std::vector<spParamsP>& popParams, 
+                    std::vector<Genotype> Genotypes);
 
 // function that compares two rules
 int compareRules(Rule r1, Rule r2);

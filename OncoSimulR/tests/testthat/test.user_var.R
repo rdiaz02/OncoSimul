@@ -68,50 +68,143 @@ test_that("4. Two rules cannot have the same ID (check_double_id)", {
     testthat::expect_error(createRules(rules, afd3), "Check the rules, there are 2 or more that have same IDs")    
 })
 
-# test_that("5. Rules change user vars corectly (depending on T)", {
-#     userVars <- list(
-#         list(Name = "user_var_1",
-#             Value = 0
-#         ),
-#         list(Name = "user_var_2",
-#             Value = 0
-#         ),
-#         list(Name = "user_var_3",
-#             Value = 0
-#         )
-#     )
+test_that("5. Rules change user vars corectly (depending on T)", {
+    userVars <- list(
+        list(Name = "user_var_1",
+            Value = 0
+        ),
+        list(Name = "user_var_2",
+            Value = 0
+        ),
+        list(Name = "user_var_3",
+            Value = 0
+        )
+    )
 
-#     userVars <- createUserVars(userVars)
+    userVars <- createUserVars(userVars)
 
-#     rules <- list(
-#         list(ID = "rule_1",
-#             Condition = "T > 20",
-#             Action = "user_var_1 = 1"
-#         ),list(ID = "rule_2",
-#             Condition = "T > 30",
-#             Action = "user_var_2 = 2"
-#         ),list(ID = "rule_3",
-#             Condition = "T > 40",
-#             Action = "user_var_3 = 3;user_var_2 = 1"
-#         )
-#     )
+    rules <- list(
+        list(ID = "rule_1",
+            Condition = "T > 20",
+            Action = "user_var_1 = 1"
+        ),list(ID = "rule_2",
+            Condition = "T > 30",
+            Action = "user_var_2 = 2"
+        ),list(ID = "rule_3",
+            Condition = "T > 40",
+            Action = "user_var_3 = 3;user_var_2 = 1"
+        )
+    )
 
-#     rules <- createRules(rules, afd3)
+    rules <- createRules(rules, afd3)
 
-#     sfd3 <- oncoSimulIndiv( afd3,
-#                             model = "McFLD",
-#                             onlyCancer = FALSE,
-#                             finalTime = 100,
-#                             mu = 1e-4,
-#                             initSize = 5000,
-#                             sampleEvery = 0.001,
-#                             userVars = userVars,
-#                             rules = rules)
+    sfd3 <- oncoSimulIndiv( afd3,
+                            model = "McFLD",
+                            onlyCancer = FALSE,
+                            finalTime = 100,
+                            mu = 1e-4,
+                            initSize = 5000,
+                            sampleEvery = 0.001,
+                            userVars = userVars,
+                            rules = rules)
 
-#     testthat::expect_equal(interventions[[1]]$WhatHappens, 1)
-#     testthat::expect_equal(interventions[[1]]$WhatHappens, 2)
-#     testthat::expect_equal(interventions[[1]]$WhatHappens, 3)
-# })
+    for(line in sfd3$other$userVarValues){
+        if(line[4] < 20){
+            testthat::expect_equal(line[1], 0)
+            testthat::expect_equal(line[2], 0)
+            testthat::expect_equal(line[3], 0)
+        }else if(line[4] < 30){
+            testthat::expect_equal(line[1], 1)
+            testthat::expect_equal(line[2], 0)
+            testthat::expect_equal(line[3], 0)
+        }else if(line[4] < 40){
+            testthat::expect_equal(line[1], 1)
+            testthat::expect_equal(line[2], 2)
+            testthat::expect_equal(line[3], 0)
+        }else{
+            testthat::expect_equal(line[1], 1)
+            testthat::expect_equal(line[2], 1)
+            testthat::expect_equal(line[3], 3)
+        }
+    }
+})
+
+test_that("5. Rules change user vars corectly (depending on N)", {
+    userVars <- list(
+        list(Name = "user_var_1",
+            Value = 0
+        ),
+        list(Name = "user_var_2",
+            Value = 0
+        ),
+        list(Name = "user_var_3",
+            Value = 0
+        )
+    )
+
+    userVars <- createUserVars(userVars)
+
+    rules <- list(
+        list(ID = "rule_1",
+            Condition = "N > 5000",
+            Action = "user_var_1 = 1"
+        ),list(ID = "rule_2",
+            Condition = "N <= 5000",
+            Action = "user_var_1 = 2"
+        ),list(ID = "rule_3",
+            Condition = "N > 4000",
+            Action = "user_var_2 = 1;user_var_3 = 1"
+        ),list(ID = "rule_3",
+            Condition = "N <= 4000",
+            Action = "user_var_2 = 2;user_var_3 = 3"
+        )
+    )
+
+    rules <- createRules(rules, afd3)
+
+    sfd3 <- oncoSimulIndiv( afd3,
+                            model = "McFLD",
+                            onlyCancer = FALSE,
+                            finalTime = 100,
+                            mu = 1e-4,
+                            initSize = 5000,
+                            sampleEvery = 0.001,
+                            userVars = userVars,
+                            rules = rules)
+
+    for(i in 1:(nrow(sfd3$pops.by.time)-1)){
+        line <- sfd3$pops.by.time[i,]
+        population <- line[2] + line[3] + line[4]
+        time <- line[1] + 0.001
+        varIndex <- 0
+        for(aux in sfd3$other$userVarValues){
+            varIndex <- varIndex + 1
+            if(aux[4] == time){
+                break
+            }
+        }
+        vars <- sfd3$other$userVarValues[[varIndex]]
+        cat("time:", vars[4])
+        cat(" population: ", population)
+        cat(" vars: ", vars[1])
+        cat(" vars: ", vars[2])
+        cat(" vars: ", vars[3])
+        cat("\n")
+        if(population <= 4000){
+            testthat::expect_equal(vars[1], 2)
+            testthat::expect_equal(vars[2], 2)
+            testthat::expect_equal(vars[3], 3)
+        }else if(population <= 5000){
+            testthat::expect_equal(vars[1], 2)
+            testthat::expect_equal(vars[2], 1)
+            testthat::expect_equal(vars[3], 1)
+        }else{
+            testthat::expect_equal(vars[1], 1)
+            testthat::expect_equal(vars[2], 1)
+            testthat::expect_equal(vars[3], 1)
+        }
+    }
+})
 
 cat(paste("\n Ending interventions tests", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
