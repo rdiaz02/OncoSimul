@@ -1223,7 +1223,46 @@ std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
   return mapFvarsValues;
 }
 
+//This function produces the map that links fVars (keys) to its fitness/birth/death/mutation (values)
+// std::map<std::string, double> evalFVarsFitness(const fitnessEffectsAll& F,
+// 					const std::vector<Genotype>& Genotypes,
+// 					const std::vector<spParamsP>& popParams,
+//           std::string value){
+  
+//   // Added birth, to indicate if you want the fvars of birth if true or the fvars of death
+//   // if false
 
+//   std::map<std::string, double> mapFvarsValues;
+//   std::map<std::string, std::string> fvarsmap;
+
+//   fvarsmap = F.fitnessLandscape.flfVarsBmap;  
+  
+//   for(const auto& iterator : fvarsmap) {
+//     std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
+//     std::string var = iterator.second;//variable associated to genotype
+//     int position = findPositionInGenotypes(Genotypes, genotype);
+    
+//     if(position != 0){
+//       int realPos = position - 1;
+//       if(value == "birth"){
+//         double value = popParams[realPos].birth;
+//       }else if(value == "death"){
+//         double value = popParams[realPos].birth;
+//       }else if(value == "mutation"){
+//         double value = popParams[realPos].birth;
+//       }else{
+//         std::string errorMessage = "Invalid value to evalFVarsFitness";
+//         throw std::invalid_argument(errorMessage);
+//       }
+      
+//       mapFvarsValues.insert({var, value});
+//     } else {
+//       double value = 0.0;
+//       mapFvarsValues.insert({var, value});
+//     }
+//   }
+//   return mapFvarsValues;
+// }
 
 
 double totalPop(const std::vector<spParamsP>& popParams){

@@ -55,11 +55,15 @@ typedef struct {
 typedef struct{
     std::map<std::string, double> userVars; // maps a user variable name to its current value
     std::vector<Rule> rules; // rules that apply to the group of user variables
+    std::map<std::string, double> mapGenoToPop; // variable that maps a genotype to its population
 }UserVarsInfo;
 
 // function that creates the UserVarsInfo structure
 UserVarsInfo createUserVarsInfo(Rcpp::List Rules,
-                                Rcpp::List userVars);
+                                Rcpp::List userVars,
+                                const fitnessEffectsAll& fitnessEffects, 
+                                const std::vector<spParamsP>& popParams, 
+                                std::vector<Genotype> Genotypes);
 
 // function that creates a rule in memory
 Rule createRule(std::string id, 
@@ -76,8 +80,7 @@ UserVarsInfo addRule(UserVarsInfo uvif, Rule r);
 UserVarsInfo destroyRule(UserVarsInfo uvif, Rule r);
 
 // function that executes the whole list of rules for the user variables
-void executeRules (UserVarsInfo& uvif, 
-                    double &totPopSize, 
+void executeRules (UserVarsInfo& uvif,
                     double &currentTime,
                     const fitnessEffectsAll& fitnessEffects, 
                     const std::vector<spParamsP>& popParams, 

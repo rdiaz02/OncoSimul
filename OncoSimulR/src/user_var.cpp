@@ -18,7 +18,7 @@
 bool isValid(std::string equation);
 void parseAction(UserVarsInfo& uvif, 
                     Rule rule,  
-                    double &totPopSize, double currentTime);
+                    double currentTime);
 
 UserVarsInfo addRule(UserVarsInfo uvif, Rule r){
 
@@ -47,7 +47,11 @@ Rule createRule(std::string id,
     return r;
 }
 
-UserVarsInfo createUserVarsInfo(Rcpp::List rules, Rcpp::List userVars){
+UserVarsInfo createUserVarsInfo(Rcpp::List rules,
+                                Rcpp::List userVars,
+                                const fitnessEffectsAll& fitnessEffects, 
+                                const std::vector<spParamsP>& popParams, 
+                                std::vector<Genotype> Genotypes){
    
     // we declare the variables needed
     UserVarsInfo uvif;
@@ -93,6 +97,9 @@ UserVarsInfo createUserVarsInfo(Rcpp::List rules, Rcpp::List userVars){
         auxValue = Rcpp::as<double>(listItem["Value"]);
         uvif.userVars.insert({auxName, auxValue});
     }
+
+    // mapping for the genes and their population
+    uvif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
     
     return uvif;
 }
@@ -128,8 +135,7 @@ UserVarsInfo destroyRule(UserVarsInfo uvif, Rule r){
     return uvif;
 }
 
-void executeRules(UserVarsInfo& uvif, 
-                         double &totPopSize, 
+void executeRules(UserVarsInfo& uvif,
                          double &currentTime,
                          const fitnessEffectsAll& fitnessEffects, 
                          const std::vector<spParamsP>& popParams, 
@@ -137,16 +143,15 @@ void executeRules(UserVarsInfo& uvif,
 
     // Now we add all the info needed for the symbol table so exprtk can operate 
     symbol_table_t symbol_table;
+    double N = 0;
     for(auto& iterator : uvif.userVars) {
         symbol_table.add_variable(iterator.first, iterator.second);
     } 
 
-    std::map<std::string, double> popsmap = evalFVars(fitnessEffects, Genotypes, popParams, true);
-    for(auto& iterator : popsmap) {
+    for(auto& iterator : uvif.mapGenoToPop) {
         symbol_table.add_variable(iterator.first, iterator.second);
-    }
-
-    double N = totPopSize;
+        N += iterator.second;
+    } 
 
     if(N == 0){
         throw std::invalid_argument("Total Population = 0.\n");
@@ -205,7 +210,7 @@ void executeRules(UserVarsInfo& uvif,
                     std::string errorMessage = "The expression was imposible to parse.";
                     throw std::invalid_argument(errorMessage);
                 } else 
-                    parseAction(uvif, rule, N, T);
+                    parseAction(uvif, rule, T);
             }
         }
     } 
@@ -217,17 +222,21 @@ void executeRules(UserVarsInfo& uvif,
 
 void parseAction(UserVarsInfo& uvif, 
                     Rule rule, 
-                    double &totPopSize, 
                     double currentTime){
     
     // now we need to parse the "action" rule
 
     symbol_table_t symbol_table;
+    double N = 0;
     for(auto& iterator : uvif.userVars) {
         symbol_table.add_variable(iterator.first, iterator.second);
     } 
 
-    double N = totPopSize;
+    for(auto& iterator : uvif.mapGenoToPop) {
+        symbol_table.add_variable(iterator.first, iterator.second);
+        N += iterator.second;
+    } 
+
     double T = currentTime;
 
     symbol_table.add_constant("N", N);//We reserve N to total population size

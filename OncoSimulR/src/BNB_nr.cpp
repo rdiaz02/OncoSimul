@@ -955,7 +955,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
   UserVarsInfo uvif;
   if(userVars_length > 0){
     //create the structure with all the information of the interventions
-    uvif = createUserVarsInfo(rules, userVars);
+    uvif = createUserVarsInfo(rules, userVars, fitnessEffects, popParams, Genotypes);
   }
   //Temporary list to store user variable values after each iteration
   std::vector<double> auxValues;
@@ -1238,16 +1238,17 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       ///////////////////////////////////// We execute user variable modification rules ////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // There has to be both rules and variables
-      // TODO: check if we can add variables on the go without declaring them previous to the rule execution
       if(rules_length > 0 && userVars_length > 0){
-        executeRules(uvif, totPopSize, currentTime, fitnessEffects, popParams, Genotypes);
+        uvif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
+        executeRules(uvif, currentTime, fitnessEffects, popParams, Genotypes);
+        auxValues = {};
+        for (auto &item : uvif.userVars){
+          auxValues.push_back(item.second);
+        }
+        auxValues.push_back(currentTime);
+        userVarValues.push_back(auxValues);
       } 
-      auxValues = {};
-      for (auto &item : uvif.userVars){
-        auxValues.push_back(item.second);
-      }
-      auxValues.push_back(currentTime);
-      userVarValues.push_back(auxValues);
+      
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ///////////////////////////////////////// Here goes execute_interventions C++/////////////////////////////////////////////
@@ -1258,7 +1259,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
         // we need structures Genotypes, PopParams and FitnessEffects
         // we update the map with the current population data
         iif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
-        if(executeInterventions(iif, totPopSize, currentTime, fitnessEffects, Genotypes, popParams)){
+        if(executeInterventions(iif, uvif, totPopSize, currentTime, fitnessEffects, Genotypes, popParams)){
           interventionTimes.push_back(currentTime);
           // removing genotypes with 0 population
           sp_to_remove.clear();

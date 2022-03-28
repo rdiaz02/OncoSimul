@@ -21,6 +21,7 @@
 #include "common_classes.h"
 #include "bnb_common.h"
 #include "new_restrict.h"
+#include "user_var.h"
 #include "multivariant_hypergeometric.h"
 #include <cfloat>
 #include <limits>
@@ -85,6 +86,7 @@ InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i);
 
 // function that executes the whole list of interventions
 bool executeInterventions(InterventionsInfo& iif, 
+                         UserVarsInfo& uvif,
                          double &totPopSize, 
                          double &currentTime, 
                          const fitnessEffectsAll& fitnessEffects, 
