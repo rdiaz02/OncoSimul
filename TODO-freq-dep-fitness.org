@@ -2,6 +2,7 @@
 ** rfitness: generate representable and local max fitness landscapes
 - as it says
 - can use the OncoSimul to  Using_OncoSimulR_to_get_accessible_genotypes_trans_mats.pdf for some of it, as well as code used in Diaz-Uriarte 2018 and Diaz-Uriarte and Vasallo
+  - See notes in : prstr/2022-2023/Notas-trabajo.org
 ** Immediate and simple
    - [ ] plot of onocoSimulIndiv: default for show should be genotypes.
    - [ ] McFL or McFLD: give message if using McFL instead of McFLD.
