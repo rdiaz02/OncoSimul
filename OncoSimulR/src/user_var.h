@@ -84,7 +84,10 @@ void executeRules (UserVarsInfo& uvif,
                     double &currentTime,
                     const fitnessEffectsAll& fitnessEffects, 
                     const std::vector<spParamsP>& popParams, 
-                    std::vector<Genotype> Genotypes);
+                    std::vector<Genotype> Genotypes,
+                    std::map<std::string, double> birthMap,
+                    std::map<std::string, double> deathMap,
+                    std::map<std::string, double> mutationMap);
 
 // function that compares two rules
 int compareRules(Rule r1, Rule r2);

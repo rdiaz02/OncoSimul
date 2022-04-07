@@ -327,10 +327,10 @@ std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
 	const std::vector<spParamsP>& popParams,
     bool birth);
 
-// std::map<std::string, double> evalFVarsFitness(const fitnessEffectsAll& F,
-// 					const std::vector<Genotype>& Genotypes,
-// 					const std::vector<spParamsP>& popParams,
-//           std::string value);
+std::map<std::string, double> evalFVarsFitness(const fitnessEffectsAll& F,
+					const std::vector<Genotype>& Genotypes,
+					const std::vector<spParamsP>& popParams,
+          std::string value);
 
 std::vector<int> stringVectorToIntVector(const std::string str);
 

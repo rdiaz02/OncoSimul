@@ -18,7 +18,10 @@
 bool isValid(std::string equation);
 void parseAction(UserVarsInfo& uvif, 
                     Rule rule,  
-                    double currentTime);
+                    double currentTime,
+                    std::map<std::string, double> birthMap,
+                    std::map<std::string, double> deathMap,
+                    std::map<std::string, double> mutationMap);
 
 UserVarsInfo addRule(UserVarsInfo uvif, Rule r){
 
@@ -139,7 +142,10 @@ void executeRules(UserVarsInfo& uvif,
                          double &currentTime,
                          const fitnessEffectsAll& fitnessEffects, 
                          const std::vector<spParamsP>& popParams, 
-                         std::vector<Genotype> Genotypes){
+                         std::vector<Genotype> Genotypes,
+                         std::map<std::string, double> birthMap,
+                         std::map<std::string, double> deathMap,
+                         std::map<std::string, double> mutationMap){
 
     // Now we add all the info needed for the symbol table so exprtk can operate 
     symbol_table_t symbol_table;
@@ -156,6 +162,32 @@ void executeRules(UserVarsInfo& uvif,
     if(N == 0){
         throw std::invalid_argument("Total Population = 0.\n");
     }
+
+    std::string name = "";
+    std::string prefix = "b_";
+    for(auto& iterator : birthMap) {
+        name = "";
+        name.insert(0, iterator.first);
+        name.insert(0, prefix);
+        symbol_table.add_variable(name, iterator.second);
+    } 
+
+    prefix = "d_";
+    for(auto& iterator : deathMap) {
+        name = "";
+        name.insert(0, iterator.first);
+        name.insert(0, prefix);
+        symbol_table.add_variable(name, iterator.second);
+    } 
+
+    prefix = "m_";
+    for(auto& iterator : mutationMap) {
+        name = "";
+        name.insert(0, iterator.first);
+        name.insert(0, prefix);
+        symbol_table.add_variable(name, iterator.second);
+    
+    } 
 
     double T = currentTime;
 
@@ -210,7 +242,7 @@ void executeRules(UserVarsInfo& uvif,
                     std::string errorMessage = "The expression was imposible to parse.";
                     throw std::invalid_argument(errorMessage);
                 } else 
-                    parseAction(uvif, rule, T);
+                    parseAction(uvif, rule, T, birthMap, deathMap, mutationMap);
             }
         }
     } 
@@ -222,7 +254,10 @@ void executeRules(UserVarsInfo& uvif,
 
 void parseAction(UserVarsInfo& uvif, 
                     Rule rule, 
-                    double currentTime){
+                    double currentTime,
+                    std::map<std::string, double> birthMap,
+                    std::map<std::string, double> deathMap,
+                    std::map<std::string, double> mutationMap){
     
     // now we need to parse the "action" rule
 
@@ -235,6 +270,32 @@ void parseAction(UserVarsInfo& uvif,
     for(auto& iterator : uvif.mapGenoToPop) {
         symbol_table.add_variable(iterator.first, iterator.second);
         N += iterator.second;
+    }
+
+    std::string name = "";
+    std::string prefix = "b_";
+    for(auto& iterator : birthMap) {
+        name = "";
+        name.insert(0, iterator.first);
+        name.insert(0, prefix);
+        symbol_table.add_variable(name, iterator.second);
+    } 
+
+    prefix = "d_";
+    for(auto& iterator : deathMap) {
+        name = "";
+        name.insert(0, iterator.first);
+        name.insert(0, prefix);
+        symbol_table.add_variable(name, iterator.second);
+    } 
+
+    prefix = "m_";
+    for(auto& iterator : mutationMap) {
+        name = "";
+        name.insert(0, iterator.first);
+        name.insert(0, prefix);
+        symbol_table.add_variable(name, iterator.second);
+    
     } 
 
     double T = currentTime;

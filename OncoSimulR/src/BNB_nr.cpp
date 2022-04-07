@@ -1238,9 +1238,12 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       ///////////////////////////////////// We execute user variable modification rules ////////////////////////////////////////
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // There has to be both rules and variables
+      std::map<std::string, double> birthMap = evalFVarsFitness(fitnessEffects, Genotypes, popParams, "birth");
+      std::map<std::string, double> deathMap = evalFVarsFitness(fitnessEffects, Genotypes, popParams, "death");
+      std::map<std::string, double> mutationMap = evalFVarsFitness(fitnessEffects, Genotypes, popParams, "mutation");
       if(rules_length > 0 && userVars_length > 0){
         uvif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
-        executeRules(uvif, currentTime, fitnessEffects, popParams, Genotypes);
+        executeRules(uvif, currentTime, fitnessEffects, popParams, Genotypes, birthMap, deathMap, mutationMap);
         auxValues = {};
         for (auto &item : uvif.userVars){
           auxValues.push_back(item.second);
