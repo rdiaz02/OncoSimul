@@ -41,7 +41,7 @@ sampledGenotypes(y, genes = NULL)
     "last" means to sample each individual in the very last time period
     of the simulation. "unif" (or "uniform") means sampling each
     individual at a time choosen uniformly from all the times recorded
-    in the simulation between the time when the first driver appeared
+    in the simulation with at least one driver between the time when the first driver appeared
     and the final time period. "unif" means that it is almost sure that
     different individuals will be sampled at different times. "last"
     does not guarantee that different individuals will be sampled at the
@@ -50,6 +50,12 @@ sampledGenotypes(y, genes = NULL)
 
     You can, alternatively, specify the population size at which you
     want the sample to be taken. See argument \code{popSizeSample}.
+
+    Further clarification about "unif": suppose in a given simulation we have recorded times
+  1, 2, 3, 4, 5. And at times 2, 4, 5, there were clones with at least a
+  mutant but at time 3 there were none (maybe they went extinct); the
+  set of times to consider for sampling are 2, 4, 5, and time 3 is not
+  considered. This might not always be what you want.
   } 
   
   \item{typeSample}{

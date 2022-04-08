@@ -1494,7 +1494,11 @@ get.the.time.for.sample <- function(tmp, timeSample, popSizeSample) {
           } else if (length(candidate.time) == 1) {
                 message("Only one sampled time period with mutants.")
                 the.time <- candidate.time
-            } else {
+          } else {
+              ## If we have drivers at t = 2, t= 4, t= 5, ... but not at t=3
+              ## because at t=3 there were no clones with drivers,
+              ## t = 3 is not among the candidate times.
+              
                   the.time <- sample(candidate.time, 1)
               }
     } else {
