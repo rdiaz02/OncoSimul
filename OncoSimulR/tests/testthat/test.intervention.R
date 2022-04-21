@@ -728,6 +728,113 @@ test_that("14. Intervening over total population (Exp) | Trigger depends on user
     testthat::expect_lt(sfd3$other$interventionTimes[3], 30.001)
 })
 
+
+test_that("14. Intervening over total population (Exp) | WhatHappens uses user variables", {
+    gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
+                    Fitness = c("1",
+                    "1 + 0.2 * (n_B > 0)",
+                    ".9 + 0.4 * (n_A > 0)"
+                    ))
+    afd3 <- allFitnessEffects(genotFitness = gffd3,
+                            frequencyDependentFitness = TRUE,
+                            frequencyType = "abs")
+    
+    userVars <- list(
+        list(Name = "user_var_1",
+            Value = 0
+        )
+    )
+
+    userVars <- createUserVars(userVars)
+
+    rules <- list(
+        list(ID = "rule_1",
+            Condition = "T >= 10",
+            Action = "user_var_1 = 0.5"
+        ),list(ID = "rule_2",
+            Condition = "T >= 20",
+            Action = "user_var_1 = 0.8"
+        ),list(ID = "rule_3",
+            Condition = "T >= 30",
+            Action = "user_var_1 = 0.3"
+        )
+    )
+
+    rules <- createRules(rules, afd3)
+    interventions = list(
+        list(
+            ID            = "intOverTotPop",
+            Trigger       = "T = 15",
+            WhatHappens   = "N = N * user_var_1",
+            Repetitions   = 2,
+            Periodicity   = 10
+        )
+    )
+
+    interventions <- createInterventions(interventions, afd3)
+
+    sfd3 <- oncoSimulIndiv( afd3,
+                            model = "Exp",
+                            onlyCancer = FALSE,
+                            finalTime = 40,
+                            mu = 1e-4,
+                            initSize = 5000,
+                            sampleEvery = 0.001,
+                            interventions = interventions,
+                            userVars = userVars,
+                            rules = rules)
+
+    # it may happen that, in some simulations, the population collapses, in that case, 
+    # pops by time is null, and cannot be checked
+
+    # we can check genotype by genotype that when an intervention ocurs, their population lowers
+    indexes <- vector()
+    # We get the indexes that match the intervention times in pops.by.time
+    for(time in sfd3$other$interventionTimes){
+        indexes <- append(indexes, which(sfd3$pops.by.time[,1] == time))
+    }
+
+    # For each intervention time (T = 15, 25, 35)
+    for(index in indexes){
+        line <- sfd3$pops.by.time[index,]
+        prev_line <- sfd3$pops.by.time[index-1,]
+            #Total
+        total <- line[2] + line[3] + line[4]
+        prev_total <- prev_line[2] + prev_line[3] + prev_line[4]
+        # T = 15
+        if(index = 1){ 
+            testthat::expect_gt(total, prev_total*0.5 - 0.2*prev_total)
+            testthat::expect_lt(total, prev_total*0.5 + 0.2*prev_total)
+        # T = 25
+        }else if(index = 2){
+            testthat::expect_gt(total, prev_total*0.8 - 0.2*prev_total)
+            testthat::expect_lt(total, prev_total*0.8 + 0.2*prev_total)
+        # T = 35
+        }else{
+            testthat::expect_gt(total, prev_total*0.3 - 0.2*prev_total)
+            testthat::expect_lt(total, prev_total*0.3 + 0.2*prev_total)
+        }
+            #Genotype WT
+        if((prev_line[2] > 0) & (line[2] > 0)){
+            testthat::expect_gte(prev_line[2], line[2])
+        }
+            #Genotype A
+        if((prev_line[3] > 0) & (line[3] > 0)){
+            testthat::expect_gte(prev_line[3], line[3])
+        }
+            #Genotype B
+        if((prev_line[4] > 0) & (line[4] > 0)){
+            testthat::expect_gte(prev_line[4], line[4])
+        }
+    }
+    testthat::expect_gt(sfd3$other$interventionTimes[1], 10.000)
+    testthat::expect_lt(sfd3$other$interventionTimes[1], 10.001)
+    testthat::expect_gt(sfd3$other$interventionTimes[2], 20.000)
+    testthat::expect_lt(sfd3$other$interventionTimes[2], 20.001)
+    testthat::expect_gt(sfd3$other$interventionTimes[3], 30.000)
+    testthat::expect_lt(sfd3$other$interventionTimes[3], 30.001)
+})
+
 cat(paste("\n Ending interventions tests", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
