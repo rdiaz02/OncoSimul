@@ -1739,22 +1739,22 @@ double mutationFromScratch(const std::vector<double>& mu,
     if(mutationPropGrowth) {
       tmp = mumult * mu[0] * spP.numMutablePos * spP.birth;
       if(tmp <= dummyMutationRate) {
-	Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
-	if(mumult == 1.0) {
-	  // letters match codes for varmutrate
-	  Rcpp::Rcout << "mFS-message-2-B:  constant mut rate "
-		      << "no mutator and mutationPropGrowth "
-		      << ". birth rate = " << spP.birth << "\n";
-	} else {
-	  Rcpp::Rcout << "mFS-message-2-C:  constant mut rate "
-		      << " mutator and mutationPropGrowth "
-		      << ". birth rate = " << spP.birth
-		      << ". mumult = " << mumult << "\n";
-	}
-	Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
-		    << dummyMutationRate
-		    << ". Expect numerical problems.\n";
-	// Remember genotypes of birth rate 0 never created
+        Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
+        if(mumult == 1.0) {
+          // letters match codes for varmutrate
+          Rcpp::Rcout << "mFS-message-2-B:  constant mut rate "
+                << "no mutator and mutationPropGrowth "
+                << ". birth rate = " << spP.birth << "\n";
+        } else {
+          Rcpp::Rcout << "mFS-message-2-C:  constant mut rate "
+                << " mutator and mutationPropGrowth "
+                << ". birth rate = " << spP.birth
+                << ". mumult = " << mumult << "\n";
+        }
+        Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
+              << dummyMutationRate
+              << ". Expect numerical problems.\n";
+        // Remember genotypes of birth rate 0 never created
       }
       return(tmp);
     } else {

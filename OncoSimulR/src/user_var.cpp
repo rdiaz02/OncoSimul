@@ -143,9 +143,9 @@ void executeRules(UserVarsInfo& uvif,
                          const fitnessEffectsAll& fitnessEffects, 
                          const std::vector<spParamsP>& popParams, 
                          std::vector<Genotype> Genotypes,
-                         std::map<std::string, double> birthMap,
-                         std::map<std::string, double> deathMap,
-                         std::map<std::string, double> mutationMap){
+                         const std::map<std::string, double> birthMap,
+                         const std::map<std::string, double> deathMap,
+                         const std::map<std::string, double> mutationMap){
 
     // Now we add all the info needed for the symbol table so exprtk can operate 
     symbol_table_t symbol_table;
@@ -255,9 +255,9 @@ void executeRules(UserVarsInfo& uvif,
 void parseAction(UserVarsInfo& uvif, 
                     Rule rule, 
                     double currentTime,
-                    std::map<std::string, double> birthMap,
-                    std::map<std::string, double> deathMap,
-                    std::map<std::string, double> mutationMap){
+                    const std::map<std::string, double> birthMap,
+                    const std::map<std::string, double> deathMap,
+                    const std::map<std::string, double> mutationMap){
     
     // now we need to parse the "action" rule
 

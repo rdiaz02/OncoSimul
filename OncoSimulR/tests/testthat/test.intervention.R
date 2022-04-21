@@ -729,7 +729,7 @@ test_that("14. Intervening over total population (Exp) | Trigger depends on user
 })
 
 
-test_that("14. Intervening over total population (Exp) | WhatHappens uses user variables", {
+test_that("15. Intervening over total population (Exp) | WhatHappens uses user variables", {
     gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
                     Fitness = c("1",
                     "1 + 0.2 * (n_B > 0)",
@@ -756,7 +756,7 @@ test_that("14. Intervening over total population (Exp) | WhatHappens uses user v
             Action = "user_var_1 = 0.8"
         ),list(ID = "rule_3",
             Condition = "T >= 30",
-            Action = "user_var_1 = 0.3"
+            Action = "user_var_1 = 0.7"
         )
     )
 
@@ -764,7 +764,7 @@ test_that("14. Intervening over total population (Exp) | WhatHappens uses user v
     interventions = list(
         list(
             ID            = "intOverTotPop",
-            Trigger       = "T = 15",
+            Trigger       = "T >= 15",
             WhatHappens   = "N = N * user_var_1",
             Repetitions   = 2,
             Periodicity   = 10
@@ -795,24 +795,25 @@ test_that("14. Intervening over total population (Exp) | WhatHappens uses user v
     }
 
     # For each intervention time (T = 15, 25, 35)
-    for(index in indexes){
+    for(i in 1:length(indexes)){
+        index <- indexes[i]
         line <- sfd3$pops.by.time[index,]
         prev_line <- sfd3$pops.by.time[index-1,]
             #Total
         total <- line[2] + line[3] + line[4]
         prev_total <- prev_line[2] + prev_line[3] + prev_line[4]
         # T = 15
-        if(index = 1){ 
+        if(i == 1){ 
             testthat::expect_gt(total, prev_total*0.5 - 0.2*prev_total)
             testthat::expect_lt(total, prev_total*0.5 + 0.2*prev_total)
         # T = 25
-        }else if(index = 2){
+        }else if(i == 2){
             testthat::expect_gt(total, prev_total*0.8 - 0.2*prev_total)
             testthat::expect_lt(total, prev_total*0.8 + 0.2*prev_total)
         # T = 35
         }else{
-            testthat::expect_gt(total, prev_total*0.3 - 0.2*prev_total)
-            testthat::expect_lt(total, prev_total*0.3 + 0.2*prev_total)
+            testthat::expect_gt(total, prev_total*0.7 - 0.2*prev_total)
+            testthat::expect_lt(total, prev_total*0.7 + 0.2*prev_total)
         }
             #Genotype WT
         if((prev_line[2] > 0) & (line[2] > 0)){
@@ -827,12 +828,6 @@ test_that("14. Intervening over total population (Exp) | WhatHappens uses user v
             testthat::expect_gte(prev_line[4], line[4])
         }
     }
-    testthat::expect_gt(sfd3$other$interventionTimes[1], 10.000)
-    testthat::expect_lt(sfd3$other$interventionTimes[1], 10.001)
-    testthat::expect_gt(sfd3$other$interventionTimes[2], 20.000)
-    testthat::expect_lt(sfd3$other$interventionTimes[2], 20.001)
-    testthat::expect_gt(sfd3$other$interventionTimes[3], 30.000)
-    testthat::expect_lt(sfd3$other$interventionTimes[3], 30.001)
 })
 
 cat(paste("\n Ending interventions tests", date(), "\n"))

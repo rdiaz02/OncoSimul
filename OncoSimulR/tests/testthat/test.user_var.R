@@ -319,7 +319,7 @@ test_that("8. Rules change user vars corectly (depending on other user vars)", {
         ),
         list(Name = "user_var_2",
             Value = 0
-        ),
+        )
     )
 
     userVars <- createUserVars(userVars)
@@ -351,7 +351,7 @@ test_that("8. Rules change user vars corectly (depending on other user vars)", {
 
 
     for(line in sfd3$other$userVarValues){
-        if(line[3] = 0){
+        if(line[3] == 0){
             testthat::expect_equal(line[1], 0)
             testthat::expect_equal(line[2], 0)
         }else if(line[3] < 10){
