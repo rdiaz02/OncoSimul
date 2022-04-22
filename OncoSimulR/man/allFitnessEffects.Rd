@@ -264,6 +264,9 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   determine the fitness as a function of the frequencies of the genotypes
   (see \code{genotFitness} and the vignette).
 
+
+  When using \code{genotFitness}, any genotype with a fitness <= 1e-9 is removed from the table of genotypes, thus 
+    making it a non-viable genotype during simulations. 
 }
 
 

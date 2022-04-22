@@ -167,7 +167,9 @@ additive models.}
   routines can have trouble (specially if you log) with values <=0. Or
   we might have trouble if we want to log the fitness. This is done
   after possibly taking logs. Noise is added to prevent creating several
-  identical minimal fitness values.}
+  identical minimal fitness values.  Note that \code{\link{allFitnessEffects}} will remove from the table
+  of genotypes any genotype with a fitness <= 1e-9, thus 
+    making it a non-viable genotype during simulations. }
 
 \item{K}{K for NK model; K is the number of loci with which each locus
   interacts, and the larger the K the larger the ruggedness of the
@@ -288,6 +290,9 @@ Optimum model component.}
   of the data can be large, specially if \code{g} (the number of genes)
   is large.
 
+  Note that \code{\link{allFitnessEffects}} will remove from the table
+  of genotypes any genotype with a fitness <= 1e-9, thus 
+    making it a non-viable genotype during simulations.   
   
 } 
 
