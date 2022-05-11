@@ -140,12 +140,9 @@ UserVarsInfo destroyRule(UserVarsInfo uvif, Rule r){
 
 void executeRules(UserVarsInfo& uvif,
                          double &currentTime,
-                         const fitnessEffectsAll& fitnessEffects, 
-                         const std::vector<spParamsP>& popParams, 
-                         std::vector<Genotype> Genotypes,
-                         const std::map<std::string, double> birthMap,
-                         const std::map<std::string, double> deathMap,
-                         const std::map<std::string, double> mutationMap){
+                         std::map<std::string, double> birthMap,
+                         std::map<std::string, double> deathMap,
+                         std::map<std::string, double> mutationMap){
 
     // Now we add all the info needed for the symbol table so exprtk can operate 
     symbol_table_t symbol_table;
@@ -255,9 +252,9 @@ void executeRules(UserVarsInfo& uvif,
 void parseAction(UserVarsInfo& uvif, 
                     Rule rule, 
                     double currentTime,
-                    const std::map<std::string, double> birthMap,
-                    const std::map<std::string, double> deathMap,
-                    const std::map<std::string, double> mutationMap){
+                    std::map<std::string, double> birthMap,
+                    std::map<std::string, double> deathMap,
+                    std::map<std::string, double> mutationMap){
     
     // now we need to parse the "action" rule
 

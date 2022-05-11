@@ -1243,7 +1243,7 @@ static void nr_innerBNB (const fitnessEffectsAll& fitnessEffects,
       std::map<std::string, double> mutationMap = evalFVarsFitness(fitnessEffects, Genotypes, popParams, "mutation");
       if(rules_length > 0 && userVars_length > 0){
         uvif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
-        executeRules(uvif, currentTime, fitnessEffects, popParams, Genotypes, birthMap, deathMap, mutationMap);
+        executeRules(uvif, currentTime, birthMap, deathMap, mutationMap);
         auxValues = {};
         for (auto &item : uvif.userVars){
           auxValues.push_back(item.second);

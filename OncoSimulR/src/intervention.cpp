@@ -18,10 +18,7 @@
 bool isValidEquation(std::string equation);
 void parseWhatHappens(InterventionsInfo& iif, 
                      UserVarsInfo& uvif,
-                     Intervention intervention, 
-                     const fitnessEffectsAll& fitnessEffects, 
-                     std::vector<spParamsP>& popParams, 
-                     const std::vector<Genotype>& Genotypes, 
+                     Intervention intervention,
                      double &totPopSize, double currentTime);
 bool updatePopulations(InterventionsInfo& iif, 
                        const fitnessEffectsAll& fitnessEffects, 
@@ -236,7 +233,7 @@ bool executeInterventions(InterventionsInfo& iif,
                         std::string errorMessage = "The expression was imposible to parse.";
                         throw std::invalid_argument(errorMessage);
                     } else 
-                        parseWhatHappens(iif, uvif, intervention, fitnessEffects, popParams, Genotypes, N, T);
+                        parseWhatHappens(iif, uvif, intervention, N, T);
                     // we reduce by one the number of interventions
                     intervention.repetitions--;
                     // we update the last time it was executed (debugging purposes)
@@ -264,7 +261,7 @@ bool executeInterventions(InterventionsInfo& iif,
                             std::string errorMessage = "The expression was imposible to parse.";
                             throw std::invalid_argument(errorMessage);
                         } else 
-                            parseWhatHappens(iif, uvif, intervention, fitnessEffects, popParams, Genotypes, N, T);
+                            parseWhatHappens(iif, uvif, intervention, N, T);
                         // update new lastTimeExecuted
                         intervention.lastTimeExecuted = T;
                         //  update amount of repetitions
@@ -291,7 +288,7 @@ bool executeInterventions(InterventionsInfo& iif,
                             std::string errorMessage = "The expression was imposible to parse.";
                             throw std::invalid_argument(errorMessage);
                         } else 
-                            parseWhatHappens(iif, uvif, intervention, fitnessEffects, popParams, Genotypes, N, T);
+                            parseWhatHappens(iif, uvif, intervention, N, T);
                         // update new lastTimeExecuted
                         intervention.lastTimeExecuted = T;
                         // we update interventionDone flag
@@ -321,9 +318,6 @@ bool executeInterventions(InterventionsInfo& iif,
 void parseWhatHappens(InterventionsInfo& iif,
                      UserVarsInfo& uvif,
                      Intervention intervention, 
-                     const fitnessEffectsAll& fitnessEffects, 
-                     std::vector<spParamsP>& popParams, 
-                     const std::vector<Genotype>& Genotypes, 
                      double &totPopSize, 
                      double currentTime){
     
