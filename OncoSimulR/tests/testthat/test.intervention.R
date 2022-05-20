@@ -40,7 +40,7 @@ test_that("2. Two interventions cannot have the same ID (check_double_id)", {
         ),list(
             ID          = "intOverA",
             Trigger     = "(n_B >= 5) and (T > 4)",
-            WhatHappens = "n_ = n_ * 0.4",
+            WhatHappens = "n_A = n_A * 0.4",
             Repetitions = Inf,
             Periodicity = Inf
         )   
