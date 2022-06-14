@@ -44,7 +44,10 @@
                 AND_DrvProbExit = FALSE,
                 fixation = NULL,
                 seed = NULL,
-                interventions = NULL)
+                interventions = NULL,
+                userVars = NULL,
+                rules = NULL)
+
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 muEF = NULL,
@@ -70,7 +73,9 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 verbosity = 0,
                 mc.cores = detectCores(),
                 seed = "auto",
-                interventions = NULL)
+                interventions = NULL,
+                userVars = NULL,
+                rules = NULL)
 
 
 oncoSimulSample(Nindiv,
@@ -120,7 +125,9 @@ oncoSimulSample(Nindiv,
                 verbosity  = 1,
                 showProgress = FALSE,
                 seed = "auto",
-                interventions = NULL)
+                interventions = NULL,
+                userVars = NULL,
+                rules = NULL)
 
 
 }
@@ -462,7 +469,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 %%   is to start the simulation from the wildtype genotype with nothing
 %%   mutated.}
 
-\item{constantPop}{Indicates if the total population must be constant or not.}
+%%\item{constantPop}{Indicates if the total population must be constant or not.}
 
 \item{max.num.tries}{Only applies when \code{onlyCancer = TRUE}. What is
   the maximum number of times, for an individual simulation, we can
@@ -661,6 +668,48 @@ of the individual done, and the number of attempts and time used.}
                   the intervention.
   * Periodicity: Defines the periodicity of the intervention.
   * Repetitions: Defines the maximum repetitions of each intervention in the simulation.
+}
+
+\item{userVars}{
+
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
+  \code{allFitnessEffects} function. Also, you must use \code{createuserVars} 
+  function to create the correct type of parameter for the function \code{oncoSimulPop} ,
+  \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly.
+
+  Use this argument in case you want to define arbitrary variables that depend on other simulation values. 
+  With the yser Variables you can simulate Adaptive therapy by using this defined variables in the intervention's
+  whatHappens definition, or simply get more detailed insight by defining some interesting values you desire as an output.
+
+  Formally, userVars must be a list of lists, where each 
+  "sub-list" must have the following fields:
+
+  * Name: The name that identifies the new variable, must be unique.
+  * Value: The initial numeric value of the variable.
+
+  You must define the \code{rules} in order to determine how this variables will be modified.
+}
+
+\item{rules}{
+
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
+  \code{allFitnessEffects} function. Also, you must use \code{createRules} 
+  function to create the correct type of parameter for the function \code{oncoSimulPop} ,
+  \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly. This also requires you to use
+  \code{userVars} as these rules operate on them and will not have any effect if thses do not exist.
+
+  Use this argument in order to determine how the defined user variebles will be modified during the simulation.
+  You can use any arbitrarily complex expression depending on other simulation parameters such as T, N, Genotype
+  populations or genotype rates.
+
+  Formally, rules must be a list of lists, where each 
+  "sub-list" must have the following fields:
+
+  * ID: The identifier of the rule, must be unique.
+  * Condition: The situation in the simulation that triggers/activates 
+             the user variable modification.
+  * Action:  The action that will take place once the condition is true. This defines wich user variables will be 
+    modified and the expression that defines the new values for them.
 }
 
 

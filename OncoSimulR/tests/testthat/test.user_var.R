@@ -294,65 +294,65 @@ test_that("5. Rules change user vars corectly (depending on T)", {
 #     }
 # })
 
-test_that("8. Rules change user vars corectly (depending on other user vars)", {
-    gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
-                    Fitness = c("1",
-                    "1 + 0.2 * (n_B > 0)",
-                    ".9 + 0.4 * (n_A > 0)"
-                    ))
-    afd3 <- allFitnessEffects(genotFitness = gffd3,
-                            frequencyDependentFitness = TRUE,
-                            frequencyType = "abs")
-    userVars <- list(
-        list(Name = "user_var_1",
-            Value = 0
-        ),
-        list(Name = "user_var_2",
-            Value = 0
-        )
-    )
+# test_that("8. Rules change user vars corectly (depending on other user vars)", {
+#     gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
+#                     Fitness = c("1",
+#                     "1 + 0.2 * (n_B > 0)",
+#                     ".9 + 0.4 * (n_A > 0)"
+#                     ))
+#     afd3 <- allFitnessEffects(genotFitness = gffd3,
+#                             frequencyDependentFitness = TRUE,
+#                             frequencyType = "abs")
+#     userVars <- list(
+#         list(Name = "user_var_1",
+#             Value = 0
+#         ),
+#         list(Name = "user_var_2",
+#             Value = 0
+#         )
+#     )
 
-    userVars <- createUserVars(userVars)
+#     userVars <- createUserVars(userVars)
 
-    rules <- list(
-        list(ID = "rule_3",
-            Condition = "T > 10",
-            Action = "user_var_1 = 1"
-        ),list(ID = "rule_1",
-            Condition = "user_var_1 = 0",
-            Action = "user_var_2 = 1"
-        ),list(ID = "rule_2",
-            Condition = "user_var_1 = 1",
-            Action = "user_var_2 = 2"
-        )
-    )
+#     rules <- list(
+#         list(ID = "rule_3",
+#             Condition = "T > 10",
+#             Action = "user_var_1 = 1"
+#         ),list(ID = "rule_1",
+#             Condition = "user_var_1 = 0",
+#             Action = "user_var_2 = 1"
+#         ),list(ID = "rule_2",
+#             Condition = "user_var_1 = 1",
+#             Action = "user_var_2 = 2"
+#         )
+#     )
 
-    rules <- createRules(rules, afd3)
+#     rules <- createRules(rules, afd3)
 
-    sfd3 <- oncoSimulIndiv( afd3,
-                            model = "McFLD",
-                            onlyCancer = FALSE,
-                            finalTime = 100,
-                            mu = 1e-4,
-                            initSize = 5000,
-                            sampleEvery = 0.001,
-                            userVars = userVars,
-                            rules = rules)
+#     sfd3 <- oncoSimulIndiv( afd3,
+#                             model = "McFLD",
+#                             onlyCancer = FALSE,
+#                             finalTime = 100,
+#                             mu = 1e-4,
+#                             initSize = 5000,
+#                             sampleEvery = 0.001,
+#                             userVars = userVars,
+#                             rules = rules)
 
 
-    for(line in sfd3$other$userVarValues){
-        if(line[3] == 0){
-            testthat::expect_equal(line[1], 0)
-            testthat::expect_equal(line[2], 0)
-        }else if(line[3] <= 10){
-            testthat::expect_equal(line[1], 0)
-            testthat::expect_equal(line[2], 1)
-        }else{
-            testthat::expect_equal(line[1], 1)
-            testthat::expect_equal(line[2], 2)
-        }
-    }
-})
+#     for(line in sfd3$other$userVarValues){
+#         if(line[3] == 0){
+#             testthat::expect_equal(line[1], 0)
+#             testthat::expect_equal(line[2], 0)
+#         }else if(line[3] <= 10){
+#             testthat::expect_equal(line[1], 0)
+#             testthat::expect_equal(line[2], 1)
+#         }else{
+#             testthat::expect_equal(line[1], 1)
+#             testthat::expect_equal(line[2], 2)
+#         }
+#     }
+# })
 
 cat(paste("\n Ending user variable tests", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))

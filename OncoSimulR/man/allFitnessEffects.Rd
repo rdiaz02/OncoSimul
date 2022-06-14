@@ -219,6 +219,8 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   specification ecuations must be passed as characters at 
   \code{genotFitness}.}
 
+  \item{frequencyDependentFitness}{NA.}
+
 
   %% \item{frequencyType}{frequencyType is a character that specify wether 
   %%   we are using absolute or relatives frequecies and can take tree values
