@@ -13330,6 +13330,145 @@ plot(atex2, show = "genotypes", type = "line")
 We clearley see here how the therapy adapts to the circumstances cutting genotype B when it starts to grow rapidly, 
 and then making a major intervention once A grows so big that the total mutated cell exceed the set amount.
 
+# Adaptive therapy canonical example from Hansen papers
+We now simulate a canonical adaptive therapy example as those shown in Hansens papers.
+We start by creating the scenario with 2 types of cells, A will be treatment-resistant and slow growing whereas B will be faster growing but treatment susceptible.
+```{r HansenExample1}
+dfat4 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("n_/n_",
+                               "1.005",
+                               "1.1"
+                               ))
+afat4 <- allFitnessEffects(genotFitness = dfat4, 
+                         frequencyDependentFitness = TRUE)
+```
+
+We first execute this scenario without adaptive therapy to check what the outcome would be. We therefore set the standard treatment by defining the following intervention:
+```{r HansenExample2}
+interventions <- list(
+    list(ID           = "i1",
+        Trigger       = "T > 10",
+        WhatHappens   = "n_B = n_B*0.8",
+        Periodicity   = 1,
+        Repetitions   = Inf
+    )
+)
+
+interventions <- createInterventions(interventions, afat4)
+```
+
+We run the simulation and plot the results.
+
+```{r HansenExample3}
+
+set.seed(1) ## for reproducibility
+atex4 <- oncoSimulIndiv(afat4,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 2000,
+                       mu = 1e-4,
+                       initSize = c(10000, 50, 1000), 
+                       initMutant = c("WT", "A", "B"),
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE,
+                       interventions = interventions)
+
+plot(atex4, show = "genotypes", type = "line")
+```
+
+We now set the same initial scenario but this time we apply adaptive therapy.
+
+```{r HansenExampleAT1}
+dfat5 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("n_/n_",
+                               "1.005",
+                               "1.1"
+                               ))
+afat5 <- allFitnessEffects(genotFitness = dfat5, 
+                         frequencyDependentFitness = TRUE)
+```
+
+In order to apply adaptive therapy we set the following variables and rules
+
+```{r HansenExampleAT2}
+userVars <- list(
+    list(Name           = "measure",
+        Value       = 0
+    ),list(Name           = "lastTime",
+        Value       = 0
+    ),list(Name           = "treatment",
+        Value       = 0
+    ),list(Name           = "totalPopMeasured",
+        Value       = 0
+    )
+)
+
+userVars <- createUserVars(userVars)
+
+rules <- list(
+        list(ID = "rule_1",
+            Condition = "T - lastTime < 10",
+            Action = "measure = 0"
+        ),list(ID = "rule_2",
+            Condition = "T - lastTime >= 10",
+            Action = "measure = 1;lastTime = T"
+        ),list(ID = "rule_3",
+            Condition = "measure == 1",
+            Action = "totalPopMeasured = n_A + n_B"
+        ),list(ID = "rule_4",
+            Condition = "totalPopMeasured < 2000",
+            Action = "treatment = 0"
+        ),list(ID = "rule_5",
+            Condition = "totalPopMeasured >= 2000",
+            Action = "treatment = 1"
+        )
+    )
+
+rules <- createRules(rules, afat5)
+```
+
+We define the same intervention as before but we apply it only when the adaptive therapy determines so.
+
+```{r HansenExampleAT3}
+interventions <- list(
+    list(ID           = "i1",
+        Trigger       = "treatment == 1",
+        WhatHappens   = "n_B = n_B*0.8",
+        Periodicity   = 1,
+        Repetitions   = Inf
+    )
+)
+
+interventions <- createInterventions(interventions, afat5)
+```
+
+We run the simulation and plot the results.
+
+```{r HansenExampleAT4}
+
+set.seed(1) ## for reproducibility
+atex5 <- oncoSimulIndiv(afat5,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 2000,
+                       mu = 1e-4,
+                       initSize = c(10000, 50, 1000), 
+                       initMutant = c("WT", "A", "B"),
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE,
+                       userVars = userVars,
+                       rules = rules,
+                       interventions = interventions)
+
+plot(atex5, show = "genotypes", type = "line")
+```
+
+Comparing these results with the ones without adaptive therapy we see that by interrupting the treatment before the complete elimination of the susceptible treatment we achieve
+the desired effect, that is the control of the resistant genotype by maintaining certain degree of cellular competition between genotypes.
 
 \clearpage
 
