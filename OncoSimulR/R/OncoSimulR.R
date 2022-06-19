@@ -64,7 +64,10 @@ oncoSimulSample <- function(Nindiv,
                             fixation = NULL,
                             verbosity  = 1,
                             showProgress = FALSE,
-                            seed = "auto"){
+                            seed = "auto",
+                            interventions = NULL,
+                            userVars = NULL,
+                            rules = NULL){
     ## No longer using mclapply, because of the way we use the limit on
     ## the number of tries.
     
@@ -192,7 +195,10 @@ oncoSimulSample <- function(Nindiv,
                                mutationPropGrowth = mutationPropGrowth,
                                detectionProb = detectionProb,
                                AND_DrvProbExit = AND_DrvProbExit,
-                               fixation = fixation)        
+                               fixation = fixation,
+                               interventions = interventions,
+                                userVars = userVars,
+                                rules = rules)        
         if(tmp$other$UnrecoverExcept) {
             return(f.out.unrecover.except(tmp))
         }
@@ -383,7 +389,10 @@ oncoSimulPop <- function(Nindiv,
                          fixation = NULL,
                          verbosity  = 0,
                          mc.cores = detectCores(),
-                         seed = "auto") {
+                         seed = "auto",
+                         interventions = NULL,
+                         userVars = NULL,
+                         rules = NULL) {
 
     if(Nindiv < 1)
         stop("Nindiv must be >= 1")
@@ -424,7 +433,10 @@ oncoSimulPop <- function(Nindiv,
                         mutationPropGrowth = mutationPropGrowth,
                         detectionProb = detectionProb,
                         AND_DrvProbExit = AND_DrvProbExit,
-                        fixation = fixation),
+                        fixation = fixation,
+                        interventions = interventions,
+                        userVars = userVars,
+                        rules = rules),
                     mc.cores = mc.cores)
     ## mc.allow.recursive = FALSE ## FIXME: remove?
                     ## done for covr issue
@@ -469,8 +481,10 @@ oncoSimulIndiv <- function(fp,
                            initMutant = NULL,
                            AND_DrvProbExit = FALSE,
                            fixation = NULL,
-                           seed = NULL
-                           ) {
+                           seed = NULL,
+                           interventions = NULL,
+                           userVars = NULL,
+                           rules = NULL) {
     call <- match.call()
     if(all(c(is_null_na(detectionProb),
              is_null_na(detectionSize),
@@ -495,6 +509,9 @@ oncoSimulIndiv <- function(fp,
     }
     if(!inherits(fp, "fitnessEffects")) 
         stop("v.1 functionality has been removed. Please use v.2")
+    
+    if(!inherits(fp, "fitnessEffects_v3")) 
+        fp <- convertFitnessEffects(fp)
 
     ## legacies from poor name choices
     typeFitness <- switch(model,
@@ -504,6 +521,8 @@ oncoSimulIndiv <- function(fp,
                           "McFL" = "mcfarlandlog",
                           "McFarlandLogD" = "mcfarlandlogd",
                           "McFLD" = "mcfarlandlogd",
+                          "Arb" = "arbitrary",
+                          "Const" = "constant",
                           stop("No valid value for model")
                           )
     if(max(initSize) < 1)
@@ -515,7 +534,21 @@ oncoSimulIndiv <- function(fp,
     }       ##  if ( !(model %in% c("McFL", "McFarlandLog") )) {
             ## K <- 1 ## K is ONLY used for McFarland; set it to 1, to avoid
             ##        ## C++ blowing.
-
+    
+    if("deathSpec" %in% names(fp)) {
+        if (fp$deathSpec) {
+            if (typeFitness != "arbitrary" && typeFitness != "constant") {
+                stop("If death is specified in the fitness effects, use Arb or Const model.")
+            }
+        }
+        
+        else {
+            if (typeFitness == "arbitrary") {
+                stop("To use Arb model specify both birth and death in fitness effects.")
+            }
+        }
+    }
+    
     if(typeFitness == "exp") {
         death <- 1
         ## mutationPropGrowth <- 1
@@ -531,7 +564,7 @@ oncoSimulIndiv <- function(fp,
     }
 
     if(minDetectDrvCloneSz == "auto") {
-        if(model %in% c("Bozic", "Exp") )
+        if(model %in% c("Bozic", "Exp", "Arb", "Const") )
             minDetectDrvCloneSz <- 0
         else if (model %in% c("McFL", "McFarlandLog",
                               "McFLD", "McFarlandLogD")) {
@@ -610,6 +643,12 @@ oncoSimulIndiv <- function(fp,
             if(AND_DrvProbExit)
                 stop("It makes no sense to pass AND_DrvProbExit and a fixation list.")
         }
+
+        #if interventions is null, we create an empty list, cos' it will be easier to handle by C++
+        if(is_null_na(interventions)){
+            interventions = list()
+        }
+
         op <- try(nr_oncoSimul.internal(rFE = fp, 
                                         birth = birth,
                                         death = death,  
@@ -643,7 +682,10 @@ oncoSimulIndiv <- function(fp,
                                         MMUEF = muEF,
                                         detectionProb = detectionProb,
                                         AND_DrvProbExit = AND_DrvProbExit,
-                                        fixation = fixation),
+                                        fixation = fixation,
+                                        interventions = interventions,
+                                        userVars = userVars,
+                                        rules = rules),
                   silent = !verbosity)
         objClass <- c("oncosimul", "oncosimul2")
     ## }

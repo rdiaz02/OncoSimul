@@ -22,13 +22,14 @@ test_that("exercising the oncosimul plotting code", {
               ## plot(b1, addtot = TRUE, plotDiversity = TRUE)
               ## p1 <- oncoSimulPop(2, p701, mc.cores = 2)
               ## plot(p1, ask = FALSE)
-              oi <- allFitnessEffects(orderEffects =
+              suppressWarnings(oi <- allFitnessEffects(orderEffects =
                                           c("F > D" = -0.3, "D > F" = 0.4),
                                       noIntGenes = rexp(5, 10),
                                       geneToModule =
                                           c("Root" = "Root",
                                             "F" = "f1, f2, f3",
-                                            "D" = "d1, d2") )
+                                            "D" = "d1, d2"),
+									  frequencyDependentFitness = FALSE))
               out <- oncoSimulPop(4,
                                   oi,
                                   sampleEvery = 0.03,
@@ -49,13 +50,14 @@ test_that("exercising the oncosimul plotting code, thinning", {
               ## plot(b1, addtot = TRUE, plotDiversity = TRUE)
               ## p1 <- oncoSimulPop(2, p701, mc.cores = 2)
               ## plot(p1, ask = FALSE)
-              oi <- allFitnessEffects(orderEffects =
+              suppressWarnings(oi <- allFitnessEffects(orderEffects =
                                           c("F > D" = -0.3, "D > F" = 0.4),
                                       noIntGenes = rexp(5, 10),
                                       geneToModule =
                                           c("Root" = "Root",
                                             "F" = "f1, f2, f3",
-                                            "D" = "d1, d2") )
+                                            "D" = "d1, d2"),
+									  frequencyDependentFitness = FALSE))
               out <- oncoSimulPop(4,
                                   oi,
                                   sampleEvery = 0.03,
@@ -82,7 +84,7 @@ test_that("exercising the oncosimul plotting code, thinning", {
 
 test_that("exercising plotClonePhylog", {
     data(examplesFitnessEffects)
-    tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+    suppressWarnings(tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                            model = "McFL", 
                            mu = 5e-6,
                            detectionSize = 1e8, 
@@ -93,7 +95,7 @@ test_that("exercising plotClonePhylog", {
                            initSize = 2000,
                            finalTime = 3000,
                            onlyCancer = FALSE,
-                           keepPhylog = TRUE)
+                           keepPhylog = TRUE))
     ## Show only those with N > 10 at end
     plotClonePhylog(tmp, N = 10)
     ## Show only those with N > 1 between times 5 and 1000
@@ -119,7 +121,7 @@ test_that("exercising the fitnessEffects plotting code", {
                       s = 0.1,
                       sh = -0.9,
                       typeDep = "MN")
-    cbn1 <- allFitnessEffects(cs)
+    suppressWarnings(cbn1 <- allFitnessEffects(cs, frequencyDependentFitness = FALSE))
     plot(cbn1)
     plot(cbn1, "igraph")
     p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
@@ -128,11 +130,12 @@ test_that("exercising the fitnessEffects plotting code", {
                      sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
                      typeDep = c(rep("--", 4), 
                                  "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
-    fp4m <- allFitnessEffects(p4,
+    suppressWarnings(fp4m <- allFitnessEffects(p4,
                               geneToModule = c("Root" = "Root", "A" = "a1",
                                                "B" = "b1, b2", "C" = "c1",
                                                "D" = "d1, d2", "E" = "e1",
-                                               "F" = "f1, f2", "G" = "g1"))
+                                               "F" = "f1, f2", "G" = "g1"),
+							  frequencyDependentFitness = FALSE))
     plot(fp4m, expandModules = TRUE)
     plot(fp4m, "igraph", layout = igraph::layout.reingold.tilford,
          expandModules = TRUE)
@@ -165,7 +168,7 @@ test_that("stacked, stream, genotypes and some colors", {
     ## stream plots
     max.tries <- 4
     for(i in 1:max.tries) {
-        tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
+        suppressWarnings(tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                                model = "McFL", 
                                mu = 5e-5,
                                detectionSize = 1e8, 
@@ -176,7 +179,7 @@ test_that("stacked, stream, genotypes and some colors", {
                                initSize = 2000,
                                finalTime = 3000,
                                onlyCancer = TRUE, ## make sure there is data to plot!
-                               keepPhylog = TRUE)
+                               keepPhylog = TRUE))
         if(nrow(tmp$pops.by.time) >= 5) {
             break
         } else {

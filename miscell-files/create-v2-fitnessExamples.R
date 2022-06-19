@@ -59,7 +59,8 @@ o3 <- allFitnessEffects(orderEffects = c(
                             c("Root" = "Root",
                               "M" = "m",
                               "F" = "f",
-                              "D" = "d") )
+                              "D" = "d"),
+                        drvNames = c("d", "f", "m"))
 
 ofe1 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
                           geneToModule =

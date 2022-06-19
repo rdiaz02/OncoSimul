@@ -689,12 +689,15 @@ test_that("initMutant works if == number of genes", {
 
 test_that("initMutant with freq-dep-fitness"  , {
     r <- data.frame(rfitness(2))
+	
+	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+
     r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
                         "max(100*f_1, 10)", 
                         "max(100*f_2, 10)", 
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
-    afe <- allFitnessEffects(genotFitness = r, 
-                             frequencyDependentFitness = TRUE)
+    suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
+                             frequencyDependentFitness = TRUE))
 
     expect_s3_class(
         os1 <- oncoSimulIndiv(afe, 
@@ -750,12 +753,15 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
 
     set.seed(1)
     r <- data.frame(rfitness(2))
+	
+	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+
     r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
                         "max(100*f_1, 10)", 
                         "max(100*f_2, 10)", 
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
-    afe <- allFitnessEffects(genotFitness = r, 
-                             frequencyDependentFitness = TRUE)
+    suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
+                             frequencyDependentFitness = TRUE))
     null <- capture.output({
     set.seed(1)
     of1 <- oncoSimulIndiv(afe, 
@@ -1029,8 +1035,8 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.1 + 0.7*((f_1 + f_A_B) > 0.3)",
                     "1.2 + sqrt(f_A + f_C + f_C_D)"),        
     stringsAsFactors = FALSE)
-    afd0 <- allFitnessEffects(genotFitness = gffd0,
-                             frequencyDependentFitness = TRUE)
+    suppressWarnings(afd0 <- allFitnessEffects(genotFitness = gffd0,
+                             frequencyDependentFitness = TRUE))
 
     suppressWarnings(eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5))
 
@@ -1047,8 +1053,8 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.1 + 0.7*((f_1 + f_1_2) > 0.3)",
                     "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
     stringsAsFactors = FALSE)
-    afd <- allFitnessEffects(genotFitness = gffd, 
-                             frequencyDependentFitness = TRUE)
+    suppressWarnings(afd <- allFitnessEffects(genotFitness = gffd, 
+                             frequencyDependentFitness = TRUE))
 
     suppressWarnings(eag1 <- evalAllGenotypes(afd, spPopSizes = 0:5))
 
@@ -1062,8 +1068,8 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.1 + 0.7*((f_1 + f_1_2) > 0.3)",
                     "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
     stringsAsFactors = FALSE)
-    afd2 <- allFitnessEffects(genotFitness = gffd2, 
-                             frequencyDependentFitness = TRUE)
+    suppressWarnings(afd2 <- allFitnessEffects(genotFitness = gffd2, 
+                             frequencyDependentFitness = TRUE))
 
     suppressWarnings(eag2 <- evalAllGenotypes(afd2, spPopSizes = 1:5))
     expect_identical(eag1, eag2)
@@ -1107,8 +1113,8 @@ test_that("multiple init mutants: different species, FDF, check fitness", {
                     "1 + f_B_b1_b2_b3",
                     "1 + f_A")
     )
-    fmspecF <- allFitnessEffects(genotFitness = mspecF,
-                                 frequencyDependentFitness = TRUE)
+    suppressWarnings(fmspecF <- allFitnessEffects(genotFitness = mspecF,
+                                 frequencyDependentFitness = TRUE))
     ## Remeber, spPopSizes correspond to the genotypes
     ## shown in
     fmspecF$full_FDF_spec
@@ -1140,9 +1146,10 @@ test_that("multiple init mutants: different species, FDF, exprtk crash if not in
                     "1.1 + 0.7*((f_1 + f_2) > 0.3)",
                     "1.2 + sqrt(f_1 + f_3 + f_2)"),        
     stringsAsFactors = FALSE)
-    afd <- allFitnessEffects(genotFitness = gffd, 
-                             frequencyDependentFitness = TRUE)
-        suppressWarnings(expect_error(evalAllGenotypes(afd, spPopSizes = rep(10, 6))))
+    suppressWarnings(afd <- allFitnessEffects(genotFitness = gffd, 
+                             frequencyDependentFitness = TRUE))
+							 
+    suppressWarnings(expect_error(evalAllGenotypes(afd, spPopSizes = rep(10, 6))))
     ### FIXME: catch this exact string"Undefined symbol: 'f_2'", fixed = TRUE)
 })
 

@@ -18,7 +18,7 @@
 #ifndef _BNB_COMMON_H_
 #define _BNB_COMMON_H_
 
-#include<Rcpp.h>
+#include <Rcpp.h>
 #include "common_classes.h"
 #include "debug_common.h"
 #include "new_restrict.h" // for the TypeModel enum
@@ -156,12 +156,27 @@ void updateRatesFDFBozic(std::vector<spParamsP>& popParams,
 			 const double& currentTime);
 
 
+void updateRatesArbitrary(std::vector<spParamsP>& popParams,
+		       const std::vector<Genotype>& Genotypes,
+		       const fitnessEffectsAll& fitnessEffects,
+		       const double& currentTime);
+
+
+void updateRatesConstant(std::vector<spParamsP>& popParams,
+		       const std::vector<Genotype>& Genotypes,
+		       const fitnessEffectsAll& fitnessEffects,
+               const double& cte,
+           	   const double& sampleEvery,
+		       const double& currentTime);
+
 void updateBirthDeathRates(std::vector<spParamsP>& popParams,
 			   const std::vector<Genotype>& Genotypes,
 			   const fitnessEffectsAll& fitnessEffects,
 			   double& adjust_fitness_MF,
 			   const double& K,
 			   const double& totPopSize,
+			   const double& cteSize,
+			   const double& sampleEvery,
 			   const double& currentTime,
 			   const TypeModel typeModel);
 
@@ -232,7 +247,7 @@ void initPops(
 	     const double& death,
 	     const double& currentTime,	     
 	     const double& keepEvery,
-	     const int& mutationPropGrowth,	     
+	     const int& mutationPropGrowth,
 	     const TypeModel typeModel,
 	     const int& verbosity
 	      );

@@ -13,8 +13,8 @@ test_that("We can run and equal with letters", {
                     "1.3 + 1.2 * n_1_2",
                     "1.1"),
         stringsAsFactors = FALSE)
-    fg1 <- allFitnessEffects(genotFitness = g1, 
-                             frequencyDependentFitness = TRUE)
+    suppressWarnings(fg1 <- allFitnessEffects(genotFitness = g1, 
+                             frequencyDependentFitness = TRUE))
 
     g11 <- data.frame(
         Genotype = c("WT", "A", "A, B"), 
@@ -22,8 +22,8 @@ test_that("We can run and equal with letters", {
                     "1.3 + 1.2 * n_A_B",
                     "1.1"),
         stringsAsFactors = FALSE)
-    fg11 <- allFitnessEffects(genotFitness = g11, 
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(fg11 <- allFitnessEffects(genotFitness = g11, 
+                              frequencyDependentFitness = TRUE))
 
     ## So, what does spPopSizes refer to ?? that is ambiguous here. 
     ## It seems it is the Genotypes in the original Genotype spec.
@@ -44,8 +44,8 @@ test_that("We can run and equal with letters", {
                     "1.1",
                     "0"),
         stringsAsFactors = FALSE)
-    fg1b <- allFitnessEffects(genotFitness = g1b, 
-                         frequencyDependentFitness = TRUE)
+    suppressWarnings(fg1b <- allFitnessEffects(genotFitness = g1b, 
+                         frequencyDependentFitness = TRUE))
     ## it thinks n_1_2 is 6. This is right
 
     (ea1b <- suppressWarnings(evalAllGenotypes(fg1b,
@@ -72,8 +72,8 @@ test_that("We can run and equal with letters", {
                 "1.1",
                 "0"),
         stringsAsFactors = FALSE)
-    fg1c <- allFitnessEffects(genotFitness = g1c,
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(fg1c <- allFitnessEffects(genotFitness = g1c,
+                              frequencyDependentFitness = TRUE))
     set.seed(1)
     rfg1c <- oncoSimulIndiv(fg1c, initMutant = "A", onlyCancer = FALSE,
                             finalTime = 500, seed = NULL)
@@ -97,8 +97,8 @@ test_that("We can run and equal in different order" , {
                     "1 + 2 * n_2",
                     "1 + 2 * n_1"),
         stringsAsFactors = FALSE)
-    fg2 <- allFitnessEffects(genotFitness = g2, 
-                             frequencyDependentFitness = TRUE)
+    suppressWarnings(fg2 <- allFitnessEffects(genotFitness = g2, 
+                             frequencyDependentFitness = TRUE))
 
     ## identical, except order of genotypes changes. But the specification is the same
     g2b <- data.frame(
@@ -108,8 +108,8 @@ test_that("We can run and equal in different order" , {
                     "1 + 2 * n_1",
                     "1 + 2 * n_2"),
         stringsAsFactors = FALSE)
-    fg2b <- allFitnessEffects(genotFitness = g2b, 
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(fg2b <- allFitnessEffects(genotFitness = g2b, 
+                              frequencyDependentFitness = TRUE))
 
     ## spPopSizes are for genotypes AT, A, B, AB
     ofg2 <- suppressWarnings(evalAllGenotypes(fg2, spPopSizes = c(9, 2, 6, 3)))
@@ -131,8 +131,8 @@ test_that("Breaks as it should", {
                                   "n_1",
                                   "n_2"
                                   ))
-    suppressMessages(adf1 <- allFitnessEffects(genotFitness = df1,
-                              frequencyDependentFitness = TRUE))
+    suppressWarnings(suppressMessages(adf1 <- allFitnessEffects(genotFitness = df1,
+                              frequencyDependentFitness = TRUE)))
     ## (adf1)
     expect_error(suppressWarnings(evalAllGenotypes(adf1, spPopSizes = 1:6)))
     ## Breaks in old and new: n_2_3
@@ -144,8 +144,8 @@ test_that("Breaks as it should", {
                               "f_1",
                               "f_2"
                               ))
-    suppressMessages(adf1 <- allFitnessEffects(genotFitness = df1,
-                              frequencyDependentFitness = TRUE))
+    suppressWarnings(suppressMessages(adf1 <- allFitnessEffects(genotFitness = df1,
+                              frequencyDependentFitness = TRUE)))
     
     ## (adf1)
     expect_error(suppressWarnings(evalAllGenotypes(adf1, spPopSizes = 1:6))) ## Breaks in old
@@ -163,8 +163,8 @@ test_that("eval fitness gives wrong answer, as misspecified", {
                               "n_1",
                               "n_2"
                               ))
-    adf2 <- allFitnessEffects(genotFitness = df2,
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(adf2 <- allFitnessEffects(genotFitness = df2,
+                              frequencyDependentFitness = TRUE))
 
     (adf2)
     suppressWarnings(gg <- evalAllGenotypes(adf2, spPopSizes = 1:6))
@@ -183,8 +183,8 @@ test_that("Can deal with some user misorderig (and naming spPopSizes)" , {
                               "n_B",
                               "n_C"
                               ))
-    adf3 <- allFitnessEffects(genotFitness = df3,
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(adf3 <- allFitnessEffects(genotFitness = df3,
+                              frequencyDependentFitness = TRUE))
     (adf3)
     spPopSizes <- 1:6
     names(spPopSizes) <- c("WT", "B", "C", "A", "B, A", "C, A")
@@ -203,8 +203,8 @@ test_that("Correct values of evalAllGenotypes and substitutions", {
                                   "f_B",
                                   "f_C"
                                   ))
-    adf3 <- allFitnessEffects(genotFitness = df3,
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(adf3 <- allFitnessEffects(genotFitness = df3,
+                              frequencyDependentFitness = TRUE))
     spPopSizes <- 1:6
     names(spPopSizes) <- c("WT", "B", "C", "A", "B, A", "C, A")
     ## spPopSizes <- c(WT = 1, B = 2, C = 3, A = 4, AB=5, CA = 6)
@@ -220,6 +220,8 @@ test_that("Correct values of evalAllGenotypes and substitutions", {
     r <- data.frame(rfitness(3))
     r <- r[, c(2, 3, 1, 4)]
     r <- r[c(1, 3, 4, 2, 5, 6), ]
+	
+	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
     r$Fitness <- c("1",
                    "f_A_B", ## you want BA
                    "f_A", 
@@ -230,6 +232,8 @@ test_that("Correct values of evalAllGenotypes and substitutions", {
     df3m <- r
 
     df3m2 <- data.frame(rfitness(3))[, c(2, 3, 1, 4)][1:6, ]
+	
+	colnames(df3m2)[which(colnames(df3m2) == "Birth")] <- "Fitness"
     df3m2$Fitness <- c("1",
                        "f_A_C",
                        "f_A_B", ## you want BA
@@ -238,10 +242,10 @@ test_that("Correct values of evalAllGenotypes and substitutions", {
                        "f_C"
                        )
     ## Note the columns are sorted as per message
-    adf3m <- allFitnessEffects(genotFitness = df3m,
-                               frequencyDependentFitness = TRUE)
-    adf3m2 <- allFitnessEffects(genotFitness = df3m2,
-                                frequencyDependentFitness = TRUE)
+    suppressWarnings(adf3m <- allFitnessEffects(genotFitness = df3m,
+                               frequencyDependentFitness = TRUE))
+    suppressWarnings(adf3m2 <- allFitnessEffects(genotFitness = df3m2,
+                                frequencyDependentFitness = TRUE))
 
     o1 <- evalAllGenotypes(adf3m, spPopSizes = spPopSizes)
 
@@ -255,6 +259,8 @@ test_that("Fail if unequal names spPopSizes", {
     r <- data.frame(rfitness(3))
     r <- r[, c(2, 3, 1, 4)]
     r <- r[c(1, 3, 4, 2, 5, 6), ]
+	
+	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
     r$Fitness <- c("1",
                    "f_A_B", ## you want BA
                    "f_A", 
@@ -265,6 +271,8 @@ test_that("Fail if unequal names spPopSizes", {
     df3m <- r
 
     df3m2 <- data.frame(rfitness(3))[, c(2, 3, 1, 4)][1:6, ]
+	colnames(df3m2)[which(colnames(df3m2) == "Birth")] <- "Fitness"
+	
     df3m2$Fitness <- c("1",
                        "f_A_C",
                        "f_A_B", ## you want BA
@@ -273,8 +281,8 @@ test_that("Fail if unequal names spPopSizes", {
                        "f_C"
                        )
     ## Note the columns are sorted as per message
-    adf3m <- allFitnessEffects(genotFitness = df3m,
-                               frequencyDependentFitness = TRUE)
+    suppressWarnings(adf3m <- allFitnessEffects(genotFitness = df3m,
+                               frequencyDependentFitness = TRUE))
     spPopSizes <- 1:6
     names(spPopSizes) <- c("WT", "B", "C", "A", "B, A", "B, C")
     expect_error(evalAllGenotypes(adf3m, spPopSizes = spPopSizes),
@@ -294,8 +302,8 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
                                   "2 - 1/n_B",
                                   "min(n_C, n_B) - 0.1 * (n_B_A > 2)"))
                                   
-    adf3 <- allFitnessEffects(genotFitness = df3,
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(adf3 <- allFitnessEffects(genotFitness = df3,
+                              frequencyDependentFitness = TRUE))
     spPopSizes <- 1:6
     names(spPopSizes) <- c("WT", "B", "C", "A", "B, A", "C, A")
     
@@ -322,8 +330,8 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
                                   "-1 * n_A + 7 * (n_C_A > 2)",
                                   "2 - 0.1/n_B",
                                   "min(n_C, n_B) - 1 * (n_B_A > 2)"))
-    adf3x <- allFitnessEffects(genotFitness = df3x,
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(adf3x <- allFitnessEffects(genotFitness = df3x,
+                              frequencyDependentFitness = TRUE))
     spPopSizes <- 1:6
     names(spPopSizes) <- c("WT", "B", "C", "A", "B, A", "C, A")
     ggx <- evalAllGenotypes(adf3x, spPopSizes = spPopSizes) 
@@ -342,17 +350,21 @@ test_that("Correct values of evalAllGenotypes and substitutions, some math and c
     r <- data.frame(rfitness(3))
     r <- r[, c(2, 3, 1, 4)]
     r <- r[c(1, 3, 4, 2, 5, 6), ]
+	
+	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
     r$Fitness <- df3x$Fitness[c(1, 2, 3, 4, 5, 6)]
     df3m <- r
 
     df3m2 <- data.frame(rfitness(3))[, c(2, 3, 1, 4)][1:6, ]
+	colnames(df3m2)[which(colnames(df3m2) == "Birth")] <- "Fitness"
+	
     df3m2$Fitness <- df3x$Fitness[c(1, 4, 2, 3, 5, 6)]
     
     ## Note the columns are sorted as per message
-    adf3m <- allFitnessEffects(genotFitness = df3m,
-                               frequencyDependentFitness = TRUE)
-    adf3m2 <- allFitnessEffects(genotFitness = df3m2,
-                                frequencyDependentFitness = TRUE)
+    suppressWarnings(adf3m <- allFitnessEffects(genotFitness = df3m,
+                               frequencyDependentFitness = TRUE))
+    suppressWarnings(adf3m2 <- allFitnessEffects(genotFitness = df3m2,
+                                frequencyDependentFitness = TRUE))
 
     o1 <- evalAllGenotypes(adf3m, spPopSizes = spPopSizes)
 
@@ -368,9 +380,9 @@ test_that("should run", {
                                 "50*f_2", 
                                 "200*(f_1 + f_2) + 50*f_1_2"))
 
-    afe <- allFitnessEffects(genotFitness = r, 
+    suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
                              frequencyDependentFitness = TRUE,
-                             frequencyType = "rel")
+                             frequencyType = "rel"))
 
     evalAllGenotypes(afe,
                      spPopSizes = c(WT = 2500, A = 2000,
@@ -388,8 +400,8 @@ test_that("should run", {
             "1.1 + 0.7*((f_1 + f_A_B) > 0.3)",
             "1.2 + sqrt(f_A + f_C + f_C_D)"))
 
-    afd0 <- allFitnessEffects(genotFitness = gffd0,
-                              frequencyDependentFitness = TRUE)
+    suppressWarnings(afd0 <- allFitnessEffects(genotFitness = gffd0,
+                              frequencyDependentFitness = TRUE))
 
     sp <- 1:5
     names(sp) <- c("A", "C", "A, B", "C, D", "C, E")

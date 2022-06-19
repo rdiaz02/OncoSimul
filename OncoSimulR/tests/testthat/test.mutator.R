@@ -431,7 +431,7 @@ test_that("Mutator, several modules differences, fitness eval", {
                               geneToModule = c("A" = gna,
                                                "B" = gnb,
                                                "C" = gnc))
-    f1 <- allFitnessEffects(noIntGenes = ni)
+    suppressWarnings(f1 <- allFitnessEffects(noIntGenes = ni, frequencyDependentFitness = FALSE))
     e1 <- evalAllGenotypesFitAndMut(f1, mut1, order = FALSE,
                                     addwt = TRUE)
     e2 <- evalAllGenotypesFitAndMut(f1, mut2, order = FALSE,

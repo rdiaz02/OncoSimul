@@ -13,7 +13,10 @@ export("oncoSimulPop", "oncoSimulIndiv", "samplePop",
        "Magellan_stats",
        "sampledGenotypes"
      , "POM", "LOD"
-     , "diversityPOM", "diversityLOD"
+     , "diversityPOM", "diversityLOD",
+     "createInterventions",
+     "createUserVars",
+     "createRules"
 ##     , "meanCompositionPop", "compositionPop2"
        )
 

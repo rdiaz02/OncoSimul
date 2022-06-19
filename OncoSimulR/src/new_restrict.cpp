@@ -140,6 +140,10 @@ TypeModel stringToModel(const std::string& mod) {
     return TypeModel::mcfarlandlog;
   else if(mod == "mcfarlandlogd")
     return TypeModel::mcfarlandlog_d;
+  else if (mod == "arbitrary")
+    return TypeModel::arbitrary;
+  else if (mod == "constant")
+    return TypeModel::constant;
   else
     throw std::out_of_range("Not a valid TypeModel");
 }
@@ -348,28 +352,8 @@ std::vector<int> GeneToModule(const std::vector<int>& Drv,
 
 
 fitnessLandscape_struct convertFitnessLandscape(Rcpp::List flg,
-						Rcpp::List fl_df) {
-
-  fitnessLandscape_struct flS;
-  flS.names = Rcpp::as<std::vector<std::string> >(flg["Gene"]);
-  flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
-  flS.flFDFmap.clear();//Set to 0 flFDFmap
-  flS.flfVarsmap.clear();//Set to 0 flfVarsmap
-
-  std::vector<std::string> genotNames =
-    Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
-  Rcpp::NumericVector fitness = fl_df["Fitness"];
-
-  // Fill up the map genotypes(as string) to fitness
-  for(size_t i = 0; i != genotNames.size(); ++i) {
-    flS.flmap.insert({genotNames[i], fitness[i]});
-  }
-
-  return flS;
-}
-
-fitnessLandscape_struct convertFitnessLandscape_fdf(Rcpp::List flg,
-						    Rcpp::List full_FDF_spec){
+                Rcpp::List fl_df, Rcpp::List full_FDF_spec,
+                bool fdb, bool fdd){
 
 
   // We assume this:
@@ -383,37 +367,105 @@ fitnessLandscape_struct convertFitnessLandscape_fdf(Rcpp::List flg,
 
   flS.names = Rcpp::as<std::vector<std::string> >(flg["Gene"]);
   flS.NumID = Rcpp::as<std::vector<int> >(flg["GeneNumID"]);
-  flS.flmap.clear(); //Set to 0 flmap
 
+  if (fdb) {
 
-  std::vector<std::string> fvarsvect =
-    Rcpp::as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvars"]);
-  
+    flS.flbmap.clear(); //Set to 0 flmap
+    std::vector<std::string> genotNames =
+      Rcpp::as<std::vector<std::string> >(full_FDF_spec["Genotype_as_numbers"]);
 
-  std::vector<std::string> genotNames =
-    Rcpp::as<std::vector<std::string> >(full_FDF_spec["Genotype_as_numbers"]);
+    std::vector<std::string> fvarsbvect =
+    Rcpp::as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvarsb"]);
 
-  std::vector<std::string> fitness =
-    Rcpp::as<std::vector<std::string> > (full_FDF_spec["Fitness_as_fvars"]);
+    std::vector<std::string> birth =
+      Rcpp::as<std::vector<std::string> > (full_FDF_spec["Birth_as_fvars"]);
 
+    if(fvarsbvect.size() != genotNames.size() )
+      throw std::logic_error("fvarsbvect (fitnessLandscapeVariables) and "
+          "genotNames (fitnessLandscape_df$Genotypes) "
+          "are of different lenght. Should have been caught in R");
+    
+    // Fill up the map genotypes (as string of ints) to fitness (as string:
+    // the expression that exprTk will evaluate).
+    // Length given by number of genotypes in fitness landscape
+    for(size_t i = 0; i != genotNames.size(); ++i) {
+      flS.flFDBmap.insert({genotNames[i], birth[i]});
+    }
 
-  if(fvarsvect.size() != genotNames.size() )
-    throw std::logic_error("fvarsvect (fitnessLandscapeVariables) and "
-			   "genotNames (fitnessLandscape_df$Genotypes) "
-			   "are of different lenght. Should have been caught in R");
-  
-  // Fill up the map genotypes (as string of ints) to fitness (as string:
-  // the expression that exprTk will evaluate).
-  // Length given by number of genotypes in fitness landscape
-  for(size_t i = 0; i != genotNames.size(); ++i) {
-    flS.flFDFmap.insert({genotNames[i], fitness[i]});
+    // Fill up the map genotypes (as string of ints) to fVars (as string)
+    // If a mismatch in $fitnessLandscape_df and
+    // $fitnessLandscapeVariables, this does silly things.
+    for(size_t i = 0; i != genotNames.size(); ++i) {
+      flS.flfVarsBmap.insert({genotNames[i], fvarsbvect[i]});
+    }
+  } else {
+
+    flS.flFDBmap.clear();//Set to 0 flFDBmap
+    flS.flfVarsBmap.clear();//Set to 0 flfVarsBmap
+
+    std::vector<std::string> genotNames =
+      Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
+    Rcpp::NumericVector birth = fl_df["Birth"];
+
+    for(size_t i = 0; i != genotNames.size(); ++i) {
+      flS.flbmap.insert({genotNames[i], birth[i]});
+    }
   }
 
-  // Fill up the map genotypes (as string of ints) to fVars (as string)
-  // If a mismatch in $fitnessLandscape_df and
-  // $fitnessLandscapeVariables, this does silly things.
-  for(size_t i = 0; i != genotNames.size(); ++i) {
-    flS.flfVarsmap.insert({genotNames[i], fvarsvect[i]});
+  // Check if death is specified
+  if (fl_df.containsElementNamed("Death")) {
+
+    if(fdd) {
+
+      flS.fldmap.clear(); //Set to 0 fldmap
+
+      std::vector<std::string> genotNames =
+      Rcpp::as<std::vector<std::string> >(full_FDF_spec["Genotype_as_numbers"]);
+
+      std::vector<std::string> fvarsdvect =
+      Rcpp::as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvarsd"]);
+
+      std::vector<std::string> death =
+        Rcpp::as<std::vector<std::string> > (full_FDF_spec["Death_as_fvars"]);
+
+
+      if(fvarsdvect.size() != genotNames.size() )
+        throw std::logic_error("fvarsdvect (fitnessLandscapeVariables) and "
+            "genotNames (fitnessLandscape_df$Genotypes) "
+            "are of different lenght. Should have been caught in R");
+      
+      // Fill up the map genotypes (as string of ints) to fitness (as string:
+      // the expression that exprTk will evaluate).
+      // Length given by number of genotypes in fitness landscape
+      for(size_t i = 0; i != genotNames.size(); ++i) {
+        flS.flFDDmap.insert({genotNames[i], death[i]});
+      }
+
+      // Fill up the map genotypes (as string of ints) to fVars (as string)
+      // If a mismatch in $fitnessLandscape_df and
+      // $fitnessLandscapeVariables, this does silly things.
+      for(size_t i = 0; i != genotNames.size(); ++i) {
+        flS.flfVarsDmap.insert({genotNames[i], fvarsdvect[i]});
+      }
+    } else {
+
+      flS.flFDDmap.clear();//Set to 0 flFDDmap
+      flS.flfVarsDmap.clear();//Set to 0 flfVarsDmap
+
+      std::vector<std::string> genotNames =
+        Rcpp::as<std::vector<std::string> >(fl_df["Genotype"]);
+
+      Rcpp::NumericVector death = fl_df["Death"];
+
+      for(size_t i = 0; i != genotNames.size(); ++i) {
+        flS.fldmap.insert({genotNames[i], death[i]});
+      }
+    }
+
+  } else {
+    flS.flFDDmap.clear();//Set to 0 flFDDmap
+    flS.flfVarsDmap.clear();//Set to 0 flfVarsDmap
+    flS.fldmap.clear(); //Set to 0 fldmap
   }
 
   return flS;
@@ -488,7 +540,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   Rcpp::List rgm = rFE["geneModule"];
   bool rone = as<bool>(rFE["gMOneToOne"]);
   Rcpp::IntegerVector drv = rFE["drv"];
-  bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+  bool fdb = as<bool>(rFE["frequencyDependentBirth"]);
+  bool fdd = as<bool>(rFE["frequencyDependentDeath"]);
   std::string fType = as<std::string>(rFE["frequencyType"]);
   Rcpp::List flg = rFE["fitnessLandscape_gene_id"];
   // clang does not like this: Rcpp::DataFrame fl_df = rFE["fitnessLandscape_df"];
@@ -501,13 +554,22 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   //<std::vector<std::string> > fvariables = as<std::vector<std::string> > (fvars);
   // if(fl_df.nrows()) {
   if(fl_df.size()) {
-    if(fdf){
-      Rcpp::List full_FDF_spec = rFE["full_FDF_spec"];
-      fe.fitnessLandscape = convertFitnessLandscape_fdf(flg, full_FDF_spec);
-      fe.fVars = as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvars"]);
+    
+    Rcpp::List full_FDF_spec;
+    if (fdb || fdd) {
+      // Should not be used in convertFitnessLandscape if not fdb and not fdd
+      full_FDF_spec = rFE["full_FDF_spec"];
+    }
+
+    fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df, full_FDF_spec, fdb, fdd); 
+    if (fdb) {
+      fe.fVarsb = as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvarsb"]);
       fe.frequencyType = fType;
-    } else {
-      fe.fitnessLandscape = convertFitnessLandscape(flg, fl_df);
+    }
+
+    if (fdd) {
+      fe.fVarsd = as<std::vector<std::string> > (full_FDF_spec["Genotype_as_fvarsd"]);
+      fe.frequencyType = fType;
     }
   }
 
@@ -550,7 +612,8 @@ fitnessEffectsAll convertFitnessEffects(Rcpp::List rFE) {
   sort(fe.drv.begin(), fe.drv.end()); //should not be needed, but just in case
   // cannot trust R gives it sorted
 
-  fe.frequencyDependentFitness = fdf;//new line to insert frequencyDependentFitness
+  fe.frequencyDependentBirth = fdb; //new line to insert frequencyDependentBirth
+  fe.frequencyDependentDeath = fdd; //new line to insert frequencyDependentDeath
 
   if(fe.genomeSize != static_cast<int>(fe.allGenes.size())) {
     throw std::logic_error("\n genomeSize != allGenes.size(). Bug in R code.");
@@ -874,25 +937,25 @@ Genotype convertGenotypeFromInts(const std::vector<int>& gg,
     // its correct place, which needs to look at module mapping.
     for(auto const &g : gg) {
       if(fe.fitnessLandscape.NumID.size()) {
-	newGenot.flGenes.push_back(g);
+	      newGenot.flGenes.push_back(g);
       } else {
-	if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
-	  // We can be dealing with modules
-	  int m;
-	  if(fe.gMOneToOne) {
-	    m = g;
-	  } else {
-	    m = fe.Gene_Module_tabl[g].ModuleNumID;
-	  }
-	  if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
-	    newGenot.epistRtEff.push_back(g);
-	  } else {
-	    newGenot.orderEff.push_back(g);
-	  }
-	} else {
-	  // No interaction genes so no module stuff
-	  newGenot.rest.push_back(g);
-	}
+        if( (fe.genesNoInt.shift < 0) || (g < fe.genesNoInt.shift) ) { // Gene with int
+          // We can be dealing with modules
+          int m;
+          if(fe.gMOneToOne) {
+            m = g;
+          } else {
+            m = fe.Gene_Module_tabl[g].ModuleNumID;
+          }
+          if( !binary_search(fe.allOrderG.begin(), fe.allOrderG.end(), m) ) {
+            newGenot.epistRtEff.push_back(g);
+          } else {
+            newGenot.orderEff.push_back(g);
+          }
+        } else {
+          // No interaction genes so no module stuff
+          newGenot.rest.push_back(g);
+        }
       }
     }
 
@@ -1120,11 +1183,23 @@ std::vector<int> stringVectorToIntVector(const std::string str){
 //This function produces the map that links fVars (keys) to its frequencies (values)
 std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
 					const std::vector<Genotype>& Genotypes,
-					const std::vector<spParamsP>& popParams){
+					const std::vector<spParamsP>& popParams,
+          bool birth){
   
+  // Added birth, to indicate if you want the fvars of birth if true or the fvars of death
+  // if false
+
   std::map<std::string, double> mapFvarsValues;
-  std::map<std::string, std::string> fvarsmap = F.fitnessLandscape.flfVarsmap;
+  std::map<std::string, std::string> fvarsmap;
   std::string freqType = F.frequencyType;
+
+  if(birth) {
+    fvarsmap = F.fitnessLandscape.flfVarsBmap;
+    
+  } else {
+    fvarsmap = F.fitnessLandscape.flfVarsDmap;
+  }
+  
   
   for(const auto& iterator : fvarsmap) {
     std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
@@ -1134,11 +1209,11 @@ std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
     if(position != 0){
       int realPos = position - 1;
       if(freqType == "abs"){
-	double freqAbs = popParams[realPos].popSize;
-	mapFvarsValues.insert({var, freqAbs});
+          double freqAbs = popParams[realPos].popSize;
+          mapFvarsValues.insert({var, freqAbs});
       } else {
-	double freqRel = frequency(realPos, popParams);
-	mapFvarsValues.insert({var, freqRel});
+          double freqRel = frequency(realPos, popParams);
+          mapFvarsValues.insert({var, freqRel});
       }
     } else {
       double freq = 0.0;
@@ -1148,7 +1223,47 @@ std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
   return mapFvarsValues;
 }
 
+//This function produces the map that links fVars (keys) to its fitness/birth/death/mutation (values)
+std::map<std::string, double> evalFVarsFitness(const fitnessEffectsAll& F,
+					const std::vector<Genotype>& Genotypes,
+					const std::vector<spParamsP>& popParams,
+          std::string value){
+  
+  // Added birth, to indicate if you want the fvars of birth if true or the fvars of death
+  // if false
 
+  std::map<std::string, double> mapFvarsValues;
+  std::map<std::string, std::string> fvarsmap;
+
+  fvarsmap = F.fitnessLandscape.flfVarsBmap;  
+  
+  for(const auto& iterator : fvarsmap) {
+    std::vector<int> genotype = stringVectorToIntVector(iterator.first);//genotype (as int vector)
+    std::string var = iterator.second;//variable associated to genotype
+    double val = 0.0;
+    int position = findPositionInGenotypes(Genotypes, genotype);
+    
+    if(position != 0){
+      int realPos = position - 1;
+      if(value == "birth"){
+        val = popParams[realPos].birth;
+      }else if(value == "death"){
+        val = popParams[realPos].death;
+      }else if(value == "mutation"){
+        val = popParams[realPos].mutation;
+      }else{
+        std::string errorMessage = "Invalid value to evalFVarsFitness";
+        throw std::invalid_argument(errorMessage);
+      }  
+    } 
+
+    var = var.substr(2);
+
+    mapFvarsValues.insert({var, val});
+  }
+
+  return mapFvarsValues;
+}
 
 
 double totalPop(const std::vector<spParamsP>& popParams){
@@ -1163,13 +1278,23 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
 				     const fitnessEffectsAll& F,
 				     const std::vector<Genotype>& Genotypes,
                                      const std::vector<spParamsP>& popParams,
-                                     const double& currentTime){
+                                     const double& currentTime,
+                                     bool birth){
 
   double f;
-  std::map<std::string, double> mapFvarsValues = evalFVars(F, Genotypes, popParams);
+
+  std::map<std::string, double> mapFvarsValues = evalFVars(F, Genotypes, popParams, birth);
 
   std::string gs = concatIntsString(ge.flGenes);
-  std::string expr_string = F.fitnessLandscape.flFDFmap.at(gs);
+  std::string expr_string;
+
+  if(birth) {
+    expr_string = F.fitnessLandscape.flFDBmap.at(gs);
+  }
+  else {
+    expr_string = F.fitnessLandscape.flFDDmap.at(gs);
+  }
+  
 
   double N = totalPop(popParams);
   double T = currentTime;
@@ -1213,19 +1338,25 @@ double evalGenotypeFDFitnessEcuation(const Genotype& ge,
   return f;
 }
 
+// Now that death can be specified, if death is specified it
+// will return a tuple of numbers with the birth evaluation and
+// the death evaluation. Otherwise, it will return a list with
+// just the birth evaluation
 std::vector<double> evalGenotypeFitness(const Genotype& ge,
 	const fitnessEffectsAll& F,
 	const std::vector<Genotype>& Genotypes,
 	const std::vector<spParamsP>& popParams,
 	const double& currentTime){
-
+  
   // should we disabe this check? check_disable_later
   checkLegitGenotype(ge, F);
-  
+
   std::vector<double> s;
-  
+
   if( ((ge.orderEff.size() + ge.epistRtEff.size() +
-	ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentFitness ) {
+	ge.rest.size() + ge.flGenes.size() ) == 0) && !F.frequencyDependentBirth &&
+  !F.frequencyDependentDeath ) {
+    s.push_back(0.0);
     return s; //return 0.0 explicitly?? FIXME
   }
 
@@ -1237,20 +1368,35 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   // so we want an s s.t. 1 + s = birth rate passed,
   // which is the value in the fitness landscape as interpreted now.
   // i.e., s = birth rate - 1;
-
   if(F.fitnessLandscape.NumID.size()) {
     std::string gs = concatIntsString(ge.flGenes);
-    if(F.frequencyDependentFitness){ //possible also with Genotype.size()==0 and popParams.size==0 ?
-      if(F.fitnessLandscape.flFDFmap.find(gs) == F.fitnessLandscape.flFDFmap.end()) {
-	s.push_back(-1.0);
+    if(F.frequencyDependentBirth){ //possible also with Genotype.size()==0 and popParams.size==0 ?
+      if(F.fitnessLandscape.flFDBmap.find(gs) == F.fitnessLandscape.flFDBmap.end()) {
+	      s.push_back(-1.0);
       } else {
-	      s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams, currentTime) - 1);
+	      s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams, currentTime, true) - 1);
       }
     } else {
-      if(F.fitnessLandscape.flmap.find(gs) == F.fitnessLandscape.flmap.end()) {
-	s.push_back(-1.0);
+      if(F.fitnessLandscape.flbmap.find(gs) == F.fitnessLandscape.flbmap.end()) {
+	      s.push_back(-1.0);
       } else {
-	s.push_back(F.fitnessLandscape.flmap.at(gs) - 1);
+	      s.push_back(F.fitnessLandscape.flbmap.at(gs) - 1);
+      }
+    }
+
+    if(F.frequencyDependentDeath){ 
+      if(F.fitnessLandscape.flFDDmap.find(gs) == F.fitnessLandscape.flFDDmap.end()) {
+	      s.push_back(-1.0);
+      } else {
+	      s.push_back(evalGenotypeFDFitnessEcuation(ge, F, Genotypes, popParams, currentTime, false) - 1);
+      }
+    } else {
+      if (F.fitnessLandscape.fldmap.size()) { // Check if death was specified. If not, dont do anything
+        if(F.fitnessLandscape.fldmap.find(gs) == F.fitnessLandscape.fldmap.end()) {
+                s.push_back(-1.0);
+        } else {
+          s.push_back(F.fitnessLandscape.fldmap.at(gs) - 1);
+        }
       }
     }
   }
@@ -1288,6 +1434,7 @@ std::vector<double> evalGenotypeFitness(const Genotype& ge,
   } else {
     mutatedModules = GeneToModule(mutG, F.Gene_Module_tabl, true, true);
   }
+
   std::vector<double> srt =
     evalPosetConstraints(mutatedModules, F.Poset, F.allPosetG);
   std::vector<double> se =
@@ -1420,7 +1567,7 @@ std::vector<spParamsP> popParamsFromScratch(const std::vector<int>& spPopSizes){
 }
 
 // [[Rcpp::export]]
-double evalRGenotype(Rcpp::IntegerVector rG,
+Rcpp::NumericVector evalRGenotype(Rcpp::IntegerVector rG,
 	Rcpp::List rFE,
 	Rcpp::IntegerVector spPop,
 	bool verbose,
@@ -1431,16 +1578,23 @@ double evalRGenotype(Rcpp::IntegerVector rG,
   // time. Use evalRGenotypeAndMut for that.
 
   const std::string calledBy = Rcpp::as<std::string>(calledBy_);
-  const bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+  const bool fdb = as<bool>(rFE["frequencyDependentBirth"]);
+  const bool fdd = as<bool>(rFE["frequencyDependentDeath"]);
+  const bool deathSpec = as<bool>(rFE["deathSpec"]);
 
-  if(rG.size() == 0 && fdf == false) {
+  if(rG.size() == 0 && fdb == false && fdd == false) {
     Rcpp::Rcout << "NOTE: you have evaluated fitness/mutator status of a genotype of length zero  (WT?) in non fdf fitness. It is 1 by decree. \n";
-    return 1;
+    if(deathSpec) {
+      return Rcpp::NumericVector::create(1.0, 1.0);
+    }
+    else {
+      return Rcpp::NumericVector::create(1.0);
+    }
   }
 
   std::vector<Genotype> Genotypes;
   std::vector<spParamsP> popParams;
-  if(fdf){
+  if(fdb || fdd){
     std::vector<int> spPopSizes = as<std::vector<int> > (spPop);
     // fitnessLandscape_df is the same as columns "Genotype_as_numbers" and "Fitness_as_fvars"
     // in full_FDF_spec
@@ -1453,7 +1607,7 @@ double evalRGenotype(Rcpp::IntegerVector rG,
   fitnessEffectsAll F = convertFitnessEffects(rFE);
   Genotype g = convertGenotypeFromR(rG, F);
   vector<double> s = evalGenotypeFitness(g, F, Genotypes, popParams, currentTime);
-
+  
   if(verbose) {
     std::string sprod;
     if(calledBy == "evalGenotype") {
@@ -1467,12 +1621,27 @@ double evalRGenotype(Rcpp::IntegerVector rG,
   }
   if(calledBy == "evalGenotype") {
     if(!prodNeg) //for Bozic models. Comes from R.
-      return prodFitness(s);
-    else
-      return prodDeathFitness(s);
+        if (deathSpec) {
+          // When death is specified, s is a vector with two elements:
+          // the first element is the evaluation of the birth and the
+          // second one is the evaluation of the death
+          vector<double> birth(s.begin(), s.begin()+1);
+          vector<double> death(s.begin()+1, s.end());
+
+          return Rcpp::NumericVector::create(prodFitness(birth), prodFitness(death));
+
+        } else {
+          return Rcpp::NumericVector::create(prodFitness(s));
+        }
+         
+    else {
+      return Rcpp::NumericVector::create(prodDeathFitness(s));
+    }
+      
   } else { //if (calledBy == "evalGenotypeMut") 
-    return prodMuts(s);
+    return Rcpp::NumericVector::create(prodMuts(s));
   }
+
 }
 
 
@@ -1488,13 +1657,14 @@ Rcpp::NumericVector evalRGenotypeAndMut(Rcpp::IntegerVector rG,
   // Basically to test evalMutator. We repeat the conversion to genotype,
   // but that is unavoidable here.
 
-  const bool fdf = as<bool>(rFE["frequencyDependentFitness"]);
+  const bool fdb = as<bool>(rFE["frequencyDependentBirth"]);
+  const bool fdd = as<bool>(rFE["frequencyDependentDeath"]);
   
-   NumericVector out(2);
+  NumericVector out(2);
   std::vector<Genotype> Genotypes;
   std::vector<spParamsP> popParams;
   
-  if(fdf){
+  if(fdb || fdd){
     std::vector<int> spPopSizes = as<std::vector<int> > (spPop);
     // fitnessLandscape_df is the same as columns "Genotype_as_numbers" and "Fitness_as_fvars"
     // in full_FDF_spec
@@ -1569,22 +1739,22 @@ double mutationFromScratch(const std::vector<double>& mu,
     if(mutationPropGrowth) {
       tmp = mumult * mu[0] * spP.numMutablePos * spP.birth;
       if(tmp <= dummyMutationRate) {
-	Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
-	if(mumult == 1.0) {
-	  // letters match codes for varmutrate
-	  Rcpp::Rcout << "mFS-message-2-B:  constant mut rate "
-		      << "no mutator and mutationPropGrowth "
-		      << ". birth rate = " << spP.birth << "\n";
-	} else {
-	  Rcpp::Rcout << "mFS-message-2-C:  constant mut rate "
-		      << " mutator and mutationPropGrowth "
-		      << ". birth rate = " << spP.birth
-		      << ". mumult = " << mumult << "\n";
-	}
-	Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
-		    << dummyMutationRate
-		    << ". Expect numerical problems.\n";
-	// Remember genotypes of birth rate 0 never created
+        Rcpp::Rcout << "mFS-messagesMPL: Mutable positions left: ";
+        if(mumult == 1.0) {
+          // letters match codes for varmutrate
+          Rcpp::Rcout << "mFS-message-2-B:  constant mut rate "
+                << "no mutator and mutationPropGrowth "
+                << ". birth rate = " << spP.birth << "\n";
+        } else {
+          Rcpp::Rcout << "mFS-message-2-C:  constant mut rate "
+                << " mutator and mutationPropGrowth "
+                << ". birth rate = " << spP.birth
+                << ". mumult = " << mumult << "\n";
+        }
+        Rcpp::Rcout << "\n mutation rate = " << tmp << " < dummyMutationRate "
+              << dummyMutationRate
+              << ". Expect numerical problems.\n";
+        // Remember genotypes of birth rate 0 never created
       }
       return(tmp);
     } else {

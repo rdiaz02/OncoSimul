@@ -117,8 +117,9 @@ test_that("Bauer example: correct number of fitness classes", {
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
                         typeDep = "MN")
-    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
-    b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
+	
+	suppressWarnings(b1 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness=FALSE), order = FALSE))
+    suppressWarnings(b2 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness=FALSE), order = TRUE, max = 2000))
     expect_equal(length(unique(b1$Fitness)), 11)
     expect_equal(length(unique(b2$Fitness)), 11)
 } )
@@ -134,8 +135,8 @@ test_that("Bauer example: identical values fitness classes, unorder and ord", {
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
                         typeDep = "MN")
-    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
-    b2 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
+    suppressWarnings(b1 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness = FALSE), order = FALSE))
+    suppressWarnings(b2 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness = FALSE), order = TRUE, max = 2000))
     expect_equal(unique(b1$Fitness), unique(b2$Fitness))
 } )
 
@@ -149,13 +150,13 @@ test_that("Bauer example: identical values fitness classes, rename", {
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
                         typeDep = "MN")
-    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
+    suppressWarnings(b1 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness = FALSE), order = FALSE))
     bauer3 <- data.frame(parent = c("Root", rep("u", 5)),
                          child = c("u", paste0("s", 1:5)),
                          s = c(sd, rep(sdp, 5)),
                          sh = c(0, rep(sp, 5)),
                          typeDep = "MN")
-    b3 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
+    suppressWarnings(b3 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness = FALSE), order = TRUE, max = 2000))
     expect_equal(unique(b1$Fitness), unique(b3$Fitness))
 } )
 
@@ -169,13 +170,13 @@ test_that("Bauer example: identical values fitness classes, diff. order", {
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
                         typeDep = "MN")
-    b1 <- evalAllGenotypes(allFitnessEffects(bauer), order = FALSE)
+    suppressWarnings(b1 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness=FALSE), order = FALSE))
     bauer3 <- data.frame(parent = c(rep("u", 5), "Root"),
                          child = c(paste0("s", 1:5), "u"),
                          s = c(sd, rep(sdp, 5)),
                          sh = c(0, rep(sp, 5)),
                          typeDep = "MN")
-    b3 <- evalAllGenotypes(allFitnessEffects(bauer), order = TRUE, max = 2000)
+    suppressWarnings(b3 <- evalAllGenotypes(allFitnessEffects(bauer, frequencyDependentFitness=FALSE), order = TRUE, max = 2000))
     expect_equal(unique(b1$Fitness), unique(b3$Fitness))
 } )
 
@@ -184,23 +185,23 @@ test_that("Bauer example: identical values fitness classes, diff. order", {
 
 
 test_that("Order effects, entry of labels and separation", {
-    o1 <- evalAllGenotypes(allFitnessEffects(
-        orderEffects = c("d>f" = 0.4, "f > d" = -0.3) ),
-        order = TRUE)
-    o2 <- evalAllGenotypes(allFitnessEffects(
-        orderEffects = c("f > d" = -0.3, "d > f" = 0.4) ),
-        order = TRUE)
+    suppressWarnings(o1 <- evalAllGenotypes(allFitnessEffects(
+        orderEffects = c("d>f" = 0.4, "f > d" = -0.3), frequencyDependentFitness = FALSE ),
+        order = TRUE))
+    suppressWarnings(o2 <- evalAllGenotypes(allFitnessEffects(
+        orderEffects = c("f > d" = -0.3, "d > f" = 0.4), frequencyDependentFitness = FALSE ),
+        order = TRUE))
     o1s <- o1[order(o1$Genotype),   ]
     o2s <- o2[order(o2$Genotype),   ]
     expect_equal(o1s, o2s)
 })
 
 test_that("Order effects, modules 1", {
-    ofe1 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
+    suppressWarnings(ofe1 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
                               geneToModule =
                                   c("Root" = "Root",
                                     "F" = "f1, f2",
-                                    "D" = "d1, d2") )
+                                    "D" = "d1, d2"), frequencyDependentFitness = FALSE ))
     ag <- evalAllGenotypes(ofe1, order = TRUE)
     expect_true(all.equal(ag[c(17, 39, 19, 29), "Fitness"], c(1.4, 0.7, 1.4, 0.7)))
     expect_true(all.equal(ag[c(43, 44), "Fitness"], c(1.4, 1.4)))
@@ -209,11 +210,11 @@ test_that("Order effects, modules 1", {
 })
 
 test_that("Order effects, modules 2", {
-    ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
+    suppressWarnings(ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
                               geneToModule =
                                   c("Root" = "Root",
                                     "F" = "f1, f2, f3",
-                                    "D" = "d1, d2") )
+                                    "D" = "d1, d2"), frequencyDependentFitness=FALSE ))
     ag2 <- evalAllGenotypes(ofe2, max = 326, order = TRUE)
     oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
     expect_true(all(ag2[grep("^d.*f.*", ag2[, 1]), "Fitness"] == 1.4))
@@ -224,12 +225,12 @@ test_that("Order effects, modules 2", {
 
 
 test_that("Order effects, twisted module names", {
-    o1 <- evalAllGenotypes(allFitnessEffects(
+    suppressWarnings(o1 <- evalAllGenotypes(allFitnessEffects(
       orderEffects = c("F > D" = -0.3, "D > F" = 0.4),  
-        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")), order = TRUE)
-    o2 <- evalAllGenotypes(allFitnessEffects(
+        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f"), frequencyDependentFitness=FALSE), order = TRUE))
+    suppressWarnings(o2 <- evalAllGenotypes(allFitnessEffects(
       orderEffects = c("D>F" = 0.4, "F >D" = -0.3),  
-        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f")), order = TRUE)
+        geneToModule = c("Root" = "Root", "F" = "d", "D" = "f"), frequencyDependentFitness=FALSE), order = TRUE))
     o1s <- o1[order(o1$Genotype),   ]
     o2s <- o2[order(o2$Genotype),   ]
     expect_equal(o1s, o2s)
@@ -239,7 +240,7 @@ test_that("Order effects, twisted module names", {
 
 
 test_that("Order effects, three-gene-orders and modules 1", {
-    o3 <- allFitnessEffects(orderEffects = c(
+    suppressWarnings(o3 <- allFitnessEffects(orderEffects = c(
                                   "F > D > M" = -0.3,
                                   "D > F > M" = 0.4,
                                   "D > M > F" = 0.2,
@@ -250,7 +251,7 @@ test_that("Order effects, three-gene-orders and modules 1", {
                                   c("Root" = "Root",
                                     "M" = "m",
                                     "F" = "f",
-                                    "D" = "d") )
+                                    "D" = "d"), frequencyDependentFitness = FALSE ))
     ag <- evalAllGenotypes(o3, order = TRUE)
     expect_true(all.equal(ag[, "Fitness"],
                         c(rep(1, 4),
@@ -270,11 +271,11 @@ test_that("Order effects, three-gene-orders and modules 1", {
 
 
 test_that("No interaction genes, 1", {
-    ai1 <- evalAllGenotypes(allFitnessEffects(
-        noIntGenes = c(0.05, -.2, .1)), order = FALSE)
+    suppressWarnings(ai1 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c(0.05, -.2, .1), frequencyDependentFitness = FALSE), order = FALSE))
     
-    ai2 <- evalAllGenotypes(allFitnessEffects(
-        noIntGenes = c(0.05, -.2, .1)), order = TRUE)
+    suppressWarnings(ai2 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c(0.05, -.2, .1), frequencyDependentFitness = FALSE), order = TRUE))
 
     
     expect_true(all.equal(ai1[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
@@ -294,11 +295,11 @@ test_that("No interaction genes, 1", {
 
 test_that("No interaction genes, 2", {
     
-    ai3 <- evalAllGenotypes(allFitnessEffects(
-        noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1)), order = FALSE)
+    suppressWarnings(ai3 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1), frequencyDependentFitness = FALSE), order = FALSE))
     
-    ai4 <- evalAllGenotypes(allFitnessEffects(
-        noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1)), order = TRUE)
+    suppressWarnings(ai4 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c("a" = 0.05, "b" = -.2, "c" = .1), frequencyDependentFitness = FALSE), order = TRUE))
     
     expect_true(all.equal(ai3[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
@@ -318,11 +319,11 @@ test_that("No interaction genes, 2", {
 
 test_that("No interaction genes, 3", {
     
-    ai3 <- evalAllGenotypes(allFitnessEffects(
-        noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1)), order = FALSE)
+    suppressWarnings(ai3 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1), frequencyDependentFitness = FALSE), order = FALSE))
     
-    ai4 <- evalAllGenotypes(allFitnessEffects(
-        noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1)), order = TRUE)
+    suppressWarnings(ai4 <- evalAllGenotypes(allFitnessEffects(
+        noIntGenes = c("m" = 0.05, "b" = -.2, "f" = .1), frequencyDependentFitness = FALSE), order = TRUE))
     
     expect_true(all.equal(ai3[, "Fitness"],  c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
@@ -341,9 +342,9 @@ test_that("No interaction genes, 3", {
 
 
 test_that("No interaction genes and order effects, 1", {
-    foi1 <- allFitnessEffects(
+    suppressWarnings(foi1 <- allFitnessEffects(
         orderEffects = c("D>B" = -0.3, "B > D" = 0.3),
-        noIntGenes = c("A" = 0.05, "C" = -.2, "E" = .1))
+        noIntGenes = c("A" = 0.05, "C" = -.2, "E" = .1), frequencyDependentFitness = FALSE))
     agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
@@ -372,9 +373,9 @@ test_that("No interaction genes and order effects, 1", {
 
 ## like above, but change order of names
 test_that("No interaction genes and order effects, 2", {
-    foi1 <- allFitnessEffects(
+    suppressWarnings(foi1 <- allFitnessEffects(
         orderEffects = c("D>B" = -0.3, "B > D" = 0.3),
-        noIntGenes = c("M" = 0.05, "A" = -.2, "J" = .1))
+        noIntGenes = c("M" = 0.05, "A" = -.2, "J" = .1), frequencyDependentFitness = FALSE))
     agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
     rn <- 1:nrow(agoi1)
     names(rn) <- agoi1[, 1]
@@ -406,9 +407,9 @@ test_that("No interaction genes and order effects, 2", {
 ### synthetic viability and mortality
 test_that("synthetic viability, 1", {
     s <- 0.2
-    sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
+    suppressWarnings(sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
                                 "A : -B" = -1,
-                                "A:B" = s))
+                                "A:B" = s), frequencyDependentFitness = FALSE))
     expect_true( all.equal(
         evalAllGenotypes(sv,
                          order = FALSE, addwt = TRUE)[, "Fitness"] , c(1, 0, 0, 1.2)))
@@ -422,13 +423,13 @@ test_that("synthetic viability, with modules, 2", {
     sa <- -0.1
     sb <- -0.2
     sab <- 0.25
-    sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+    suppressWarnings(sv2 <- allFitnessEffects(epistasis = c("-A : B" = sb,
                                 "A : -B" = sa,
                                  "A:B" = sab),
                              geneToModule = c(
                                  "Root" = "Root",
                                  "A" = "a1, a2",
-                                 "B" = "b"))
+                                 "B" = "b"), frequencyDependentFitness = FALSE))
     expect_true( all.equal(
         evalAllGenotypes(sv2,
                          order = FALSE, addwt = TRUE)[, "Fitness"],
@@ -446,9 +447,9 @@ test_that("synthetic mortality, 1", {
     sa <- 0.1
     sb <- 0.2
     sab <- -0.8
-    sm1 <- allFitnessEffects(epistasis = c("-A : B" = sb,
+    suppressWarnings(sm1 <- allFitnessEffects(epistasis = c("-A : B" = sb,
                                  "A : -B" = sa,
-                                 "A:B" = sab))
+                                 "A:B" = sab), frequencyDependentFitness = FALSE))
     expect_true( all.equal(
         evalAllGenotypes(sm1, order = FALSE, addwt = TRUE)[, "Fitness"],
         c(1, 1.1, 1.2, 1 - 0.8)))
@@ -464,10 +465,10 @@ test_that("Epistasis, 1", {
     sa <- 0.2
     sb <- 0.3
     sab <- 0.7
-    e2 <- allFitnessEffects(epistasis =
+    suppressWarnings(e2 <- allFitnessEffects(epistasis =
                                 c("A: -B" = sa,
                                   "-A:B" = sb,
-                                  "A : B" = sab))
+                                  "A : B" = sab), frequencyDependentFitness = FALSE))
     expect_true(all.equal(evalAllGenotypes(e2,
                                      order = FALSE,
                                      addwt = TRUE)[, "Fitness"], 
@@ -480,14 +481,14 @@ test_that("Epistasis, with and without -", {
     sb <- 0.3
     sab <- 0.7
     s2 <- ((1 + sab)/((1 + sa) * (1 + sb))) - 1
-    e2 <- allFitnessEffects(epistasis =
+    suppressWarnings(e2 <- allFitnessEffects(epistasis =
                                 c("A: -B" = sa,
                                   "-A:B" = sb,
-                                  "A : B" = sab))
-    e3 <- allFitnessEffects(epistasis =
+                                  "A : B" = sab), frequencyDependentFitness = FALSE))
+    suppressWarnings(e3 <- allFitnessEffects(epistasis =
                                 c("A" = sa,
                                   "B" = sb,
-                                  "A : B" = s2))
+                                  "A : B" = s2), frequencyDependentFitness = FALSE))
     expect_true(all.equal(evalAllGenotypes(e2,
                                      order = FALSE,
                                      addwt = TRUE)[, "Fitness"],
@@ -507,15 +508,15 @@ test_that("Epistasis, with and without -, three terms", {
     sbc <- -0.25
     sabc <- 0.4
     sac <- (1 + sa) * (1 + sc) - 1
-    E3 <- allFitnessEffects(epistasis =
+    suppressWarnings(E3 <- allFitnessEffects(epistasis =
                                 c("A:-B:-C" = sa,
                                   "-A:B:-C" = sb,
                                   "-A:-B:C" = sc,
                                   "A:B:-C" = sab,
                                   "-A:B:C" = sbc,
                                   "A:-B:C" = sac,
-                                  "A : B : C" = sabc)
-                            )
+                                  "A : B : C" = sabc), frequencyDependentFitness = FALSE
+                            ))
 
     expect_true(all.equal(evalAllGenotypes(E3, order = FALSE, addwt = FALSE)[, "Fitness"], 
                     c(1.1, 1.15, 1.2, 1.3, (1.1 * 1.2), 0.75, 1.4)))
@@ -531,29 +532,29 @@ test_that("Epistasis, three, with and without -, two alternative specs", {
     sbc <- -0.25
     sabc <- 0.4
     sac <- (1 + sa) * (1 + sc) - 1
-    E3A <- allFitnessEffects(epistasis =
+    suppressWarnings(E3A <- allFitnessEffects(epistasis =
                                  c("A:-B:-C" = sa,
                                    "-A:B:-C" = sb,
                                    "-A:-B:C" = sc,
                                    "A:B:-C" = sab,
                                    "-A:B:C" = sbc,
                                    "A:-B:C" = sac,
-                                   "A : B : C" = sabc)
-                             )
+                                   "A : B : C" = sabc), frequencyDependentFitness = FALSE
+								   ))
     expect_true(all.equal(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)[, "Fitness"], 
                         c(1.1, 1.15, 1.2, 1.3, (1.1 * 1.2), 0.75, 1.4)))
     Sab <- ( (1 + sab)/((1 + sa) * (1 + sb))) - 1
     Sbc <- ( (1 + sbc)/((1 + sb) * (1 + sc))) - 1
     Sabc <- ( (1 + sabc)/( (1 + sa) * (1 + sb) * (1 + sc) * (1 + Sab) * (1 + Sbc) ) ) - 1
-    E3B <- allFitnessEffects(epistasis =
+    suppressWarnings(E3B <- allFitnessEffects(epistasis =
                                  c("A" = sa,
                                    "B" = sb,
                                    "C" = sc,
                                    "A:B" = Sab,
                                    "B:C" = Sbc,
                                    ## "A:C" = sac,
-                                   "A : B : C" = Sabc)
-                             )
+                                   "A : B : C" = Sabc), frequencyDependentFitness = FALSE
+                             ))
     expect_true(all.equal(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE),  
                         evalAllGenotypes(E3B, order = FALSE, addwt = FALSE)))
 })
@@ -569,29 +570,29 @@ test_that("Epistasis, three, with and without -, two alternative specs, order ma
     sbc <- -0.25
     sabc <- 0.4
     sac <- (1 + sa) * (1 + sc) - 1
-    E3A <- allFitnessEffects(epistasis =
+    suppressWarnings(E3A <- allFitnessEffects(epistasis =
                                  c("A:-B:-C" = sa,
                                    "-A:B:-C" = sb,
                                    "-A:-B:C" = sc,
                                    "A:B:-C" = sab,
                                    "-A:B:C" = sbc,
                                    "A:-B:C" = sac,
-                                   "A : B : C" = sabc)
-                             )
+                                   "A : B : C" = sabc), frequencyDependentFitness = FALSE
+                             ))
     ge3a <- evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
     ge3ao <- evalAllGenotypes(E3A, order = TRUE, addwt = FALSE)
     Sab <- ( (1 + sab)/((1 + sa) * (1 + sb))) - 1
     Sbc <- ( (1 + sbc)/((1 + sb) * (1 + sc))) - 1
     Sabc <- ( (1 + sabc)/( (1 + sa) * (1 + sb) * (1 + sc) * (1 + Sab) * (1 + Sbc) ) ) - 1
-    E3B <- allFitnessEffects(epistasis =
+    suppressWarnings(E3B <- allFitnessEffects(epistasis =
                                  c("A" = sa,
                                    "B" = sb,
                                    "C" = sc,
                                    "A:B" = Sab,
                                    "B:C" = Sbc,
                                    ## "A:C" = sac,
-                                   "A : B : C" = Sabc)
-                             )
+                                   "A : B : C" = Sabc), frequencyDependentFitness = FALSE
+                             ))
     ge3b <- evalAllGenotypes(E3A, order = FALSE, addwt = FALSE)
     ge3bo <- evalAllGenotypes(E3A, order = TRUE, addwt = FALSE)
     expect_true(identical(ge3ao, ge3bo))
@@ -620,7 +621,7 @@ test_that("Error if not same sh within child", {
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                      sh = c(rep(0, 4), c(-.1, -.2), c(-.05, -.06, -.07)),
                      typeDep = "MN")
-    expect_error(allFitnessEffects(c1))
+    expect_error(suppressWarnings(allFitnessEffects(c1, frequencyDependentFitness = FALSE)))
 })
 
 
@@ -634,7 +635,7 @@ test_that("Poset, CBN, values and order no changes", {
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                      sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
                      typeDep = "MN")
-    fc1 <- allFitnessEffects(c1)
+    suppressWarnings(fc1 <- allFitnessEffects(c1, frequencyDependentFitness = FALSE))
     gfc1 <- evalAllGenotypes(fc1, order = FALSE)
     gfc1o <- evalAllGenotypes(fc1, order = TRUE, max = 1956)
     expect_true(all.equal(
@@ -668,7 +669,7 @@ test_that("Poset, CBN, values and order no changes", {
                       s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                       sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
                       typeDep = c("-", "--", "SM", "XMPN", rep("MN",5)))
-    fc1b <- allFitnessEffects(c1b)
+    suppressWarnings(fc1b <- allFitnessEffects(c1b, frequencyDependentFitness = FALSE))
     gfc1b <- evalAllGenotypes(fc1b, order = FALSE)
     expect_true(all.equal(gfc1, gfc1b))
 })
@@ -682,7 +683,7 @@ test_that("Poset, OR, values and order no changes", {
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                      sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
                      typeDep = "SM")
-    fs1 <- allFitnessEffects(s1)
+    suppressWarnings(fs1 <- allFitnessEffects(s1, frequencyDependentFitness = FALSE))
     gfs1 <- evalAllGenotypes(fs1, order = FALSE)
     gfs1o <- evalAllGenotypes(fs1, order = TRUE, max = 1956)
     expect_true(all.equal(
@@ -714,7 +715,7 @@ test_that("Poset, OR, values and order no changes", {
                       s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                       sh = c(rep(0, 4), c(-.1, -.1), rep(-.05, 3)),
                       typeDep = c("-", "--", "SM", "XMPN", rep("SM", 5)))
-    zzz <- allFitnessEffects(zzz)
+    suppressWarnings(zzz <- allFitnessEffects(zzz, frequencyDependentFitness = FALSE))
     zzz <- evalAllGenotypes(zzz, order = FALSE)
     expect_true(all.equal(gfs1, zzz))
 })
@@ -728,7 +729,7 @@ test_that("Poset, XOR, values and order no changes", {
                      s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                      sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
                      typeDep = "XMPN")
-    fx1 <- allFitnessEffects(x1)
+    suppressWarnings(fx1 <- allFitnessEffects(x1, frequencyDependentFitness = FALSE))
     gfx1 <- evalAllGenotypes(fx1, order = FALSE)
     gfx1o <- evalAllGenotypes(fx1, order = TRUE, max = 1956)
     expect_true(all.equal(
@@ -760,7 +761,7 @@ test_that("Poset, XOR, values and order no changes", {
                       s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
                       sh = c(rep(0, 4), c(-.9, -.9), rep(-.95, 3)),
                       typeDep = c("SM", "-", "--", "XMPN", rep("XMPN", 5))) 
-    zzz <- allFitnessEffects(zzz)
+    suppressWarnings(zzz <- allFitnessEffects(zzz, frequencyDependentFitness = FALSE))
     zzz <- evalAllGenotypes(zzz, order = FALSE)
     expect_true(all.equal(gfx1, zzz))
 })
@@ -789,7 +790,7 @@ test_that("Poset, all three effects", {
                   sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
                   typeDep = c(rep("--", 4), 
                       "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
-    fp3 <- allFitnessEffects(p3)
+    suppressWarnings(fp3 <- allFitnessEffects(p3, frequencyDependentFitness = FALSE))
     gfp3 <- evalAllGenotypes(fp3, order = FALSE)
     expect_true(all.equal(gfp3[c(9, 24, 29, 59, 60, 66, 119, 120, 126, 127),
                                "Fitness"],
@@ -810,11 +811,11 @@ test_that("poset with all effects and modules, 1", {
                   sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
                   typeDep = c(rep("--", 4), 
                       "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
-    fp4m <- allFitnessEffects(p4,
+    suppressWarnings(fp4m <- allFitnessEffects(p4,
                               geneToModule = c("Root" = "Root", "A" = "a1",
                               "B" = "b1, b2", "C" = "c1",
                               "D" = "d1, d2", "E" = "e1",
-                              "F" = "f1, f2", "G" = "g1"))
+                              "F" = "f1, f2", "G" = "g1"), frequencyDependentFitness = FALSE))
     gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
     expect_true(all.equal(gfp4[c(12, 20, 21, 40, 41, 46,
                                  50, 55, 64, 92, 155, 157,
@@ -835,11 +836,11 @@ test_that("breaks if not all modules", {
                      sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
                      typeDep = c(rep("--", 4), 
                          "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
-    expect_error(allFitnessEffects(p4,
+    expect_error(suppressWarnings(allFitnessEffects(p4,
                                    geneToModule = c("Root" = "Root", "A" = "a1",
                                        "B" = "b1, b2", "C" = "c1",
                                        "D" = "d1, d2", "E" = "e1",
-                                       "F" = "f1, f2")))
+                                       "F" = "f1, f2"), frequencyDependentFitness = FALSE)))
 })
 
 
@@ -852,28 +853,28 @@ test_that("Bauer example: exercising drvNames", {
                         s = c(sd, rep(sdp, 5)),
                         sh = c(0, rep(sp, 5)),
                         typeDep = "MN")
-    b1 <- evalAllGenotypes(allFitnessEffects(bauer, drvNames = c("s1", "s5")),
-                           order = FALSE)
-    b2 <- evalAllGenotypes(allFitnessEffects(bauer,
-                                             drvNames = c("s2", "s3", "s4")),
-                           order = TRUE, max = 2000)
+	suppressWarnings(b1 <- evalAllGenotypes(allFitnessEffects(bauer, drvNames = c("s1", "s5"), frequencyDependentFitness = FALSE),
+                           order = FALSE))
+    suppressWarnings(b2 <- evalAllGenotypes(allFitnessEffects(bauer,
+                                             drvNames = c("s2", "s3", "s4"), frequencyDependentFitness = FALSE),
+                           order = TRUE, max = 2000))
     expect_equal(length(unique(b1$Fitness)), 11)
     expect_equal(length(unique(b2$Fitness)), 11)
 } )
 
 
 test_that("non distinct gene names per module caught", {
-    expect_error(ofe1 <-
+    expect_error(suppressWarnings(ofe1 <-
                      allFitnessEffects(
                          orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
                          geneToModule =
                              c("Root" = "Root",
                                "F" = "f1, f2",
-                               "D" = "d1, d2, f1") ),
+                               "D" = "d1, d2, f1"), frequencyDependentFitness = FALSE)),
                  "Are there identical gene names in different modules?")
     s <- 0.2
     expect_error(
-        m1 <- allFitnessEffects(data.frame(
+        suppressWarnings(m1 <- allFitnessEffects(data.frame(
             parent = c("Root", "A"),
             child = c("A", "B"),
             s = s,
@@ -881,13 +882,13 @@ test_that("non distinct gene names per module caught", {
             typeDep = "OR"),
             geneToModule = c("Root" = "Root",
                              "A" = "a1, b1, a2",
-                             "B" = "b1")),
+                             "B" = "b1"), frequencyDependentFitness = FALSE)),
         "Are there identical gene names in different modules?")
 })
 
 
 test_that("gene by itself and in module", {
-    expect_error(ofe1 <- allFitnessEffects(data.frame(parent = c("Root", "Root", "A"),
+    expect_error(suppressWarnings(ofe1 <- allFitnessEffects(data.frame(parent = c("Root", "Root", "A"),
                                                       child = c("A", "e", "B"),
                                  s = .1,
                                  sh = .1,
@@ -896,7 +897,7 @@ test_that("gene by itself and in module", {
                           c("Root" = "Root",
                             "e" = "e",
                             "A" = "a1, e, a2",
-                            "B" = "b1"))
+                            "B" = "b1"), frequencyDependentFitness = FALSE))
                 ,
                  "Are there identical gene names in different modules?")
     ## I think the "Is a gene part of two ... cannot be reached anymore"
@@ -906,9 +907,9 @@ test_that("gene by itself and in module", {
 
 test_that("a silly epistasis example", {
     ## make sure we exercise the nrow(df) == 0L
-    expect_silent(sv <- allFitnessEffects(
+    expect_silent(suppressWarnings(sv <- allFitnessEffects(
                      orderEffects = c("A > B" = 0.1),
-                     epistasis = c("A" = 1)))
+                     epistasis = c("A" = 1), frequencyDependentFitness = FALSE)))
     expect_output(print(evalAllGenotypes(sv, order = TRUE)), "Genotype")
 })
 
@@ -918,18 +919,18 @@ test_that("can run without keeping input", {
                  s = 0.1,
                  sh = -0.9,
                  typeDep = "MN")
-    expect_silent(cbn1 <- allFitnessEffects(cs, keepInput = FALSE))
+    expect_silent(suppressWarnings(cbn1 <- allFitnessEffects(cs, keepInput = FALSE, frequencyDependentFitness = FALSE)))
 })
 
 
 
 test_that("we are exercising evalGenotype with a comma, echo, and proNeg", {
     ## we do this in the vignette already
-    ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
+    suppressWarnings(ofe2 <- allFitnessEffects(orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
                               geneToModule =
                                   c("Root" = "Root",
                                     "F" = "f1, f2, f3",
-                                    "D" = "d1, d2") )
+                                    "D" = "d1, d2"), frequencyDependentFitness = FALSE ))
     null <- capture.output({
     expect_equal(evalGenotype("d1 , d2, f3", ofe2, verbose = TRUE, echo = TRUE),
                  1.4)
@@ -943,11 +944,11 @@ test_that("we are exercising evalGenotype with a comma, echo, and proNeg", {
 
 
 test_that("We limit number of genotypes in eval", {
-    expect_error(evalAllGenotypes(
+    expect_error(suppressWarnings(evalAllGenotypes(
         allFitnessEffects(
-            noIntGenes = runif(10)), order = FALSE),
+            noIntGenes = runif(10), frequencyDependentFitness = FALSE), order = FALSE),
         "There are 1024 genotypes. This is larger than max.",
-        fixed = TRUE)
+        fixed = TRUE))
 })
 
 ## how is table geneModule with no ints? are they there?
@@ -960,13 +961,13 @@ test_that("We limit number of genotypes in eval", {
 
 test_that("Bozic limit cases handled consistently", {
 
-    sv <- allFitnessEffects(data.frame(
+    suppressWarnings(sv <- allFitnessEffects(data.frame(
         parent = c("Root", "Root", "a1", "a2"),
         child = c("a1", "a2", "b", "b"),
         s = 1.2,
         sh = 0.1,
         typeDep = "OR"),
-        noIntGenes = c("E" = 0.85, "F" = 1))
+        noIntGenes = c("E" = 0.85, "F" = 1), frequencyDependentFitness = FALSE))
 
     null <- capture.output({
     expect_output(print(evalAllGenotypes(sv, order = FALSE, addwt = TRUE,
@@ -975,112 +976,112 @@ test_that("Bozic limit cases handled consistently", {
     expect_error(oncoSimulIndiv(sv, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
                  ) 
-    sv2 <- allFitnessEffects(epistasis = c("-A : B" = 1.5,
+    suppressWarnings(sv2 <- allFitnessEffects(epistasis = c("-A : B" = 1.5,
                                            "A : -B" = 1.5,
-                                           "A:B" = 2.5))
+                                           "A:B" = 2.5), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(sv2, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_error(oncoSimulIndiv(sv2, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
                  ) 
-    sv3 <- allFitnessEffects(epistasis = c("-A : B" = 0.1,
+    suppressWarnings(sv3 <- allFitnessEffects(epistasis = c("-A : B" = 0.1,
                                            "A : -B" = 1,
-                                           "A:B" = 0.1))
+                                           "A:B" = 0.1), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(sv3, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_warning(oncoSimulIndiv(sv3, model = "Bozic"),
                    "You are using a Bozic model with the new restriction specification, and you have at least one s of 1."
                    ) 
-    sv4 <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+    suppressWarnings(sv4 <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
                                            "A : -B" = 0.95,
                                            "A:B" = 0.5),
                              orderEffects = c("G > H" = 1.1),
-                             noIntGenes = c("E" = 0.85, "F" = 1.35))
+                             noIntGenes = c("E" = 0.85, "F" = 1.35), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(sv4, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_error(oncoSimulIndiv(sv4, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
                  ) 
-    sv5 <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+    suppressWarnings(sv5 <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
                                            "A : -B" = 0.95,
                                            "A:B" = 1),
                              orderEffects = c("G > H" = 1),
-                             noIntGenes = c("E" = 0.85, "F" = 1))
+                             noIntGenes = c("E" = 0.85, "F" = 1), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(sv5, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_warning(oncoSimulIndiv(sv5, model = "Bozic"),
                    "You are using a Bozic model with the new restriction specification, and you have at least one s of 1."
                    ) 
-    sv4c <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+    suppressWarnings(sv4c <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
                                            "A : -B" = 1.5,
                                            "A:B" = 0.5),
                              orderEffects = c("G > H" = 1),
-                             noIntGenes = c("E" = 0.85, "F" = 1.35))
+                             noIntGenes = c("E" = 0.85, "F" = 1.35), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(sv4c, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_error(oncoSimulIndiv(sv4c, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
                  ) 
-    sv4d <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+    suppressWarnings(sv4d <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
                                            "A : -B" = 0.95,
                                            "A:B" = 0.5),
                              orderEffects = c("G > H" = 1.1),
-                             noIntGenes = c("E" = 0.85, "F" = 0.35))
+                             noIntGenes = c("E" = 0.85, "F" = 0.35), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(sv4d, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_error(oncoSimulIndiv(sv4d, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
                  ) 
-    sv4d <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
+    suppressWarnings(sv4d <- allFitnessEffects(epistasis = c("-A : B" = 0.99,
                                            "A : -B" = 0.95,
                                            "A:B" = 0.5),
                              orderEffects = c("G > H" = 0.1),
-                             noIntGenes = c("E" = 0.85, "F" = 1.3))
+                             noIntGenes = c("E" = 0.85, "F" = 1.3), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(sv4d, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_error(oncoSimulIndiv(sv4d, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one s > 1."
                  )
-    svff <- allFitnessEffects(data.frame(
+    suppressWarnings(svff <- allFitnessEffects(data.frame(
         parent = c("Root", "Root", "a1", "a2"),
         child = c("a1", "a2", "b", "b"),
         s = 0.2,
         sh = -1,
         typeDep = "OR"),
-        noIntGenes = c("E" = 0.85, "F" = .1))
+        noIntGenes = c("E" = 0.85, "F" = .1), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(svff, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_warning(oncoSimulIndiv(svff, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one sh <= -1."
                  ) 
-    svff2 <- allFitnessEffects(data.frame(
+    suppressWarnings(svff2 <- allFitnessEffects(data.frame(
         parent = c("Root", "Root", "a1", "a2"),
         child = c("a1", "a2", "b", "b"),
         s = 0.2,
         sh = -1.5,
         typeDep = "OR"),
-        noIntGenes = c("E" = 0.85, "F" = .1))
+        noIntGenes = c("E" = 0.85, "F" = .1), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(svff2, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
     expect_warning(oncoSimulIndiv(svff2, model = "Bozic"),
                  "You are using a Bozic model with the new restriction specification, and you have at least one sh <= -1."
                  ) 
-    svff3 <- allFitnessEffects(data.frame(
+    suppressWarnings(svff3 <- allFitnessEffects(data.frame(
         parent = c("Root", "Root", "a1", "a2"),
         child = c("a1", "a2", "b", "b"),
         s = 0.2,
         sh = -Inf,
         typeDep = "OR"),
-        noIntGenes = c("E" = 0.85, "F" = .1))
+        noIntGenes = c("E" = 0.85, "F" = .1), frequencyDependentFitness = FALSE))
     expect_output(print(evalAllGenotypes(svff3, order = FALSE, addwt = TRUE,
                                    model = "Bozic")), ## this works
                   "Death_rate", fixed = TRUE, all = FALSE)
@@ -1098,12 +1099,12 @@ test_that("No epistasis, modules", {
     sa <- 0.01
     sb <- 0.02
     sc <- 0.03
-    fnme <- allFitnessEffects(epistasis = c("A" = sa,
+    suppressWarnings(fnme <- allFitnessEffects(epistasis = c("A" = sa,
                                             "B" = sb,
                                             "C" = sc),
                               geneToModule = c("A" = "a1, a2",
                                                "B" = "b1",
-                                               "C" = "c1, c2"))
+                                               "C" = "c1, c2"), frequencyDependentFitness = FALSE))
     ea <- evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
     expect_identical(ea[ea$Genotype == "a1, a2", "Fitness"], 1 + sa)
     expect_identical(ea[ea$Genotype == "a1, b1", "Fitness"],
@@ -1122,12 +1123,12 @@ test_that("No epistasis, modules", {
 
 
 test_that("noIntGenes, two common errors: character vector and ,>:", {
-    expect_error(allFitnessEffects(noIntGenes =
-                                       c("a1, a2, b1, b2, b3, c1, c2")),
+    expect_error(suppressWarnings(allFitnessEffects(noIntGenes =
+                                       c("a1, a2, b1, b2, b3, c1, c2"), frequencyDependentFitness = FALSE)),
                  "noIntGenes is a character vector", fixed = TRUE)
 
-    expect_error(allFitnessEffects(noIntGenes =
-                                       c("a1", "a2")),
+    expect_error(suppressWarnings(allFitnessEffects(noIntGenes =
+                                       c("a1", "a2"), frequencyDependentFitness = FALSE)),
                  "noIntGenes is a character vector", fixed = TRUE)
     u <- 0.3
     names(u) <- "a,b"
@@ -1136,13 +1137,13 @@ test_that("noIntGenes, two common errors: character vector and ,>:", {
     w <- 0.3
     names(w) <- "a : b"
 
-    expect_error(allFitnessEffects(noIntGenes = u),
+    expect_error(suppressWarnings(allFitnessEffects(noIntGenes = u, frequencyDependentFitness = FALSE)),
                  "The name of some noIntGenes contain a ',' or a '>' or a ':'",
                  fixed = TRUE)
-    expect_error(allFitnessEffects(noIntGenes = v),
+    expect_error(suppressWarnings(allFitnessEffects(noIntGenes = v, frequencyDependentFitness = FALSE)),
                  "The name of some noIntGenes contain a ',' or a '>' or a ':'",
                  fixed = TRUE)
-    expect_error(allFitnessEffects(noIntGenes = w),
+    expect_error(suppressWarnings(allFitnessEffects(noIntGenes = w, frequencyDependentFitness = FALSE)),
                  "The name of some noIntGenes contain a ',' or a '>' or a ':'",
                  fixed = TRUE)
 })
@@ -1156,13 +1157,13 @@ test_that("Some same genes in epistasis and order effects", {
     s5 <- 0.7
     s0 <- 0.33
     sh <- -Inf
-    o999 <- allFitnessEffects(rT = data.frame(parent = c("Root", "a", "f"),
+    suppressWarnings(o999 <- allFitnessEffects(rT = data.frame(parent = c("Root", "a", "f"),
                                               child  = c("a", "f", "m"),
                                               s = s0,
                                               sh = sh,
                                               typeDep = "MN"),
                               orderEffects = c("a>b" = s1, "b > a" = s2, "b > m" = s3),
-                              epistasis = c("a:c" = s4, "b:e" = s5))
+                              epistasis = c("a:c" = s4, "b:e" = s5), frequencyDependentFitness = FALSE))
     of <- evalAllGenotypes(o999, order = TRUE, max = 1956)
     expect_equal(dplyr::filter(of, Genotype == "b > a > f > c")[, "Fitness"],
     (1 + s2) * (1 + s0) * (1 + s0) * (1 + s4))
@@ -1173,9 +1174,9 @@ test_that("Some same genes in epistasis and order effects", {
     s1 <- -0.2
     s2 <- 0.3
     s3 <- 0.9
-    o99 <- allFitnessEffects(
+    suppressWarnings(o99 <- allFitnessEffects(
         orderEffects = c("a>b" = s1, "b > a" = s2),
-        epistasis = c("a:c" = s3))
+        epistasis = c("a:c" = s3), frequencyDependentFitness = FALSE))
     eo99 <- evalAllGenotypes(o99, order = TRUE, addwt = TRUE)
     expect_equal(dplyr::filter(eo99, Genotype == "a > c > b")[, "Fitness"],
                  (1 + s3) * (1 + s1))
@@ -1192,7 +1193,7 @@ test_that("Some same genes in epistasis and order effects", {
 
 test_that("noIntGenes errors", {
     expect_error(
-        pancrr <- allFitnessEffects(
+        suppressWarnings(pancrr <- allFitnessEffects(
         data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
                               "TP53", "TP53", "MLL3"),
                    child = c("KRAS","SMAD4", "CDNK2A", 
@@ -1201,12 +1202,12 @@ test_that("noIntGenes errors", {
                    s = .2,
                    sh = .3,
                    typeDep = "MN"),
-        noIntGenes = c("TP53" = 0.1)),
+        noIntGenes = c("TP53" = 0.1), frequencyDependentFitness = FALSE)),
         "A gene in noIntGenes also present in the other terms",
         fixed = TRUE)
     expect_error(
-        nr <- allFitnessEffects(
-            noIntGenes = c("A" = 0.1, "B" = 0.2, "A" = 0.05)),
+        suppressWarnings(nr <- allFitnessEffects(
+            noIntGenes = c("A" = 0.1, "B" = 0.2, "A" = 0.05), frequencyDependentFitness = FALSE)),
         "Duplicated gene names in geneNoInt",
         fixed = TRUE)
 })
@@ -1215,7 +1216,7 @@ test_that("noIntGenes errors", {
 test_that("not all genes named", {
     gg <- rep(0.01, 3)
     names(gg) <- letters[1:2]
-    expect_error(allFitnessEffects(noIntGenes = gg),
+    expect_error(suppressWarnings(allFitnessEffects(noIntGenes = gg, frequencyDependentFitness = FALSE)),
                  "In noIntGenes some genes have names, some don't.",
                  fixed = TRUE)
 })
@@ -1240,7 +1241,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
     ## we get the message
     expect_message_silent(allFitnessEffects(
         genotFitness = data.frame(g = c("A", "B"),
-                                  y = c(1, 2))), "All single-gene genotypes",
+                                  y = c(1, 2)), frequencyDependentFitness = FALSE), "All single-gene genotypes",
         fixed = TRUE)
 
     
@@ -1250,7 +1251,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A", "B"),
-                                                        y = c(1, 2))),
+                                                        y = c(1, 2)), frequencyDependentFitness = FALSE),
             addwt = TRUE))
     ))
 
@@ -1260,7 +1261,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A", "B"),
-                                                        y = c(1.5, 2.9))),
+                                                        y = c(1.5, 2.9)), frequencyDependentFitness = FALSE),
             addwt = TRUE))
     ))
 
@@ -1270,7 +1271,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A", "B", "E"),
-                                                        y = c(1.3, 2.4, 3.2))),
+                                                        y = c(1.3, 2.4, 3.2)), frequencyDependentFitness = FALSE),
             addwt = TRUE))
     ))
 
@@ -1303,7 +1304,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
             allFitnessEffects(genotFitness = data.frame(g = c("A, D, F"),
-                                                        y = c(1.7))),
+                                                        y = c(1.7)), frequencyDependentFitness = FALSE),
             addwt = TRUE))
     ))    
 
@@ -1316,18 +1317,18 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
                    Fitness = c(1.0, 1.2, 2.4, 0.0),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
-            allFitnessEffects(genotFitness = m),
+            allFitnessEffects(genotFitness = m, frequencyDependentFitness = FALSE),
             addwt = TRUE))
     ))    
 
     expect_message_silent(evalAllGenotypes(
-        allFitnessEffects(genotFitness = m)),
+        allFitnessEffects(genotFitness = m, frequencyDependentFitness = FALSE)),
         "No column names", fixed = TRUE)
 
     mcn <- m
     colnames(mcn) <- c("A", "", "Fitness")
     expect_warning(evalAllGenotypes(
-        allFitnessEffects(genotFitness = mcn)),
+        allFitnessEffects(genotFitness = mcn, frequencyDependentFitness = FALSE)),
         "One column named ''", fixed = TRUE)
     rm(mcn)
     
@@ -1339,13 +1340,13 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
                    Fitness = c(1.0, 2.4, 1.2, 0),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
-            allFitnessEffects(genotFitness = m2),
+            allFitnessEffects(genotFitness = m2, frequencyDependentFitness = FALSE),
             addwt = TRUE))
     ))
 
     expect_message_silent(
         evalAllGenotypes(
-            allFitnessEffects(genotFitness = m2)),
+            allFitnessEffects(genotFitness = m2, frequencyDependentFitness = FALSE)),
         "Sorting gene column names", fixed = TRUE
     )
 
@@ -1358,35 +1359,35 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
                    Fitness = c(1.0, 2.4, 1.2, 0),
                    stringsAsFactors = FALSE),
         as.data.frame(evalAllGenotypes(
-            allFitnessEffects(genotFitness = m2df),
+            allFitnessEffects(genotFitness = m2df, frequencyDependentFitness = FALSE),
             addwt = TRUE))
     ))   
 
     m3 <- matrix(c(1, 1.2), ncol = 2)
     colnames(m3) <- c("U", "Fitness")
     expect_error(
-        allFitnessEffects(genotFitness = m3),
-        "genotFitness: if two-column must be data frame",
+        suppressWarnings(allFitnessEffects(genotFitness = m3, frequencyDependentFitness = FALSE)),
+        "genotFitness: if genotype is specified, it must be data frame",
         fixed = TRUE)
 
     ## Stupid
     m5 <- data.frame(x = 1, y = 2, stringsAsFactors= FALSE)
-    expect_error(evalAllGenotypes(allFitnessEffects(genotFitness = m5)),
+    expect_error(suppressWarnings(evalAllGenotypes(allFitnessEffects(genotFitness = m5, frequencyDependentFitness = FALSE))),
                  "genotFitness: first column of data frame is numeric.",
                  fixed = TRUE)
 
     m6 <- matrix(letters[1:4], ncol = 4)
-    expect_error(allFitnessEffects(genotFitness = m6),
+    expect_error(suppressWarnings(allFitnessEffects(genotFitness = m6, frequencyDependentFitness = FALSE)),
                  "A genotype fitness matrix/data.frame must be numeric",
                  fixed = TRUE)
 
     m7 <- as.data.frame(matrix(letters[1:4], ncol = 4))
-    expect_error(allFitnessEffects(genotFitness = m7),
+    expect_error(suppressWarnings(allFitnessEffects(genotFitness = m7, frequencyDependentFitness = FALSE)),
                  "A genotype fitness matrix/data.frame must be numeric",
                  fixed = TRUE)
 
     m8 <- 1:9
-    expect_error(allFitnessEffects(genotFitness = m8),
+    expect_error(suppressWarnings(allFitnessEffects(genotFitness = m8, frequencyDependentFitness = FALSE)),
                  "Input must inherit from matrix or data.frame",
                  fixed = TRUE)
 })
@@ -1396,7 +1397,7 @@ test_that("We can deal with single-gene genotypes and trivial cases" ,{
 test_that("eval single WT genotype" , {
     set.seed(1)
     rf2 <- rfitness(2)
-    o2 <- allFitnessEffects(genotFitness = rf2)
+    suppressWarnings(o2 <- allFitnessEffects(genotFitness = rf2, frequencyDependentFitness = FALSE))
     ## This all break on a true WT
     expect_error(evalGenotype(0, o2),
                  "We do not handle WT on its own in non-freq-dep",

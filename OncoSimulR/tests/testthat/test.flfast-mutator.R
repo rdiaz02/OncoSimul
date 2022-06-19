@@ -10,10 +10,10 @@ inittime <- Sys.time()
 ## but with many genes cannot be run as looooooots of genotypes
 
 fe2fl <- function(x) {
-    allFitnessEffects(
+    suppressWarnings(allFitnessEffects(
         genotFitness =
             OncoSimulR:::allGenotypes_to_matrix(
-                             evalAllGenotypes(x, addwt = TRUE)))
+                             evalAllGenotypes(x, addwt = TRUE)), frequencyDependentFitness = FALSE))
 }
 
 ### This test takes about 10 seconds
@@ -111,10 +111,11 @@ date()
 test_that("This should not crash", {
     
     ## This used to crash because of not nulling the empty mutator effects
-    fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
+    suppressWarnings(fe <- allFitnessEffects(epistasis = c("a : b" = 0.3,
                                           "b : c" = 0.5),
                             noIntGenes = c("e" = 0.1),
-                            drvNames = c("a", "b", "c"))
+                            drvNames = c("a", "b", "c"),
+							frequencyDependentFitness = FALSE))
     moo <- rep(1e-5, 4)
     names(moo) <- c("a", "b", "c", "e")
     
@@ -129,7 +130,7 @@ test_that("This should not crash", {
     muvar2 <- c("U" = 1e-5, "z" = 1e-5, "e" = 1e-5, "m" = 1e-5, "D" = 1e-5)
     ni1 <- rep(0.02, 5)
     names(ni1) <- names(muvar2)
-    fe1 <- allFitnessEffects(noIntGenes = ni1)
+    suppressWarnings(fe1 <- allFitnessEffects(noIntGenes = ni1, frequencyDependentFitness = FALSE))
     no <- 1e5
     reps <- 10
     bb <- oncoSimulIndiv(fe2fl(fe1),
@@ -303,7 +304,7 @@ test_that("we evaluate the WT", {
     null <- capture.output(
         ou <- OncoSimulR:::evalRGenotype(vector(mode = "integer",
                                                            length = 0),
-                                                    fe2fl(fe),
+                                                    fe,
                                                     0,
                                                     TRUE, 
                                                     FALSE,
@@ -326,7 +327,7 @@ test_that("we evaluate the WT, 2", {
     null <- capture.output(
         ou2 <- OncoSimulR:::evalRGenotypeAndMut(
                        vector(mode = "integer", length = 0),#rG
-                       fe2fl(fe),#rFE
+                       fe,#rFE
                        fm,#muEF
                        0,#spPop
                        OncoSimulR:::matchGeneIDs(fm, fe)$Reduced,#fullmutator_
@@ -452,7 +453,7 @@ test_that("Mutator, several modules differences, fitness eval", {
                               geneToModule = c("A" = gna,
                                                "B" = gnb,
                                                "C" = gnc))
-    f1 <- allFitnessEffects(noIntGenes = ni)
+    suppressWarnings(f1 <- allFitnessEffects(noIntGenes = ni, frequencyDependentFitness = FALSE))
     e1 <- evalAllGenotypesFitAndMut(fe2fl(f1), mut1, order = FALSE,
                                     addwt = TRUE)
     e2 <- evalAllGenotypesFitAndMut(fe2fl(f1), mut2, order = FALSE,

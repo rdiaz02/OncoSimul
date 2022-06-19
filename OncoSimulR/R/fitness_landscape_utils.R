@@ -71,18 +71,21 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     
   
     x_from <- y_from <- x_to <- y_to <- Change <- muts <-
-        label <- fitness <- Type <- NULL
-                
+        label <- birth <- Type <- NULL
+    
+    if ("Fitness" %in% colnames(tfm$afe)) {
+      colnames(tfm$afe)[which(colnames(tfm$afe) == "Fitness")] <- "Birth"
+    }
                 
     dd <- data.frame(muts = mutated,
-                     fitness = tfm$afe$Fitness,
+                     birth = tfm$afe$Birth,
                      label = tfm$afe$Genotype,
                      stringsAsFactors = TRUE)
     cl <- gaj[vv]
     sg <- data.frame(x_from = mutated[vv[, 1]],
-                     y_from = tfm$afe$Fitness[vv[, 1]],
+                     y_from = tfm$afe$Birth[vv[, 1]],
                      x_to = mutated[vv[, 2]],
-                     y_to = tfm$afe$Fitness[vv[, 2]],
+                     y_to = tfm$afe$Birth[vv[, 2]],
                      Change = factor(ifelse(cl == 0, "Neutral",
                                      ifelse(cl > 0, "Gain", "Loss")),
                                      levels = c("Gain", "Loss", "Neutral")),
@@ -91,7 +94,7 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     number_ticks <- function(n) {function(limits) pretty(limits, n)}
     
     p <- ggplot() +
-        xlab("") + ylab("Fitness") + 
+        xlab("") + ylab("Birth") + 
         theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(),
               panel.grid.minor.x = element_blank()) +
         geom_segment(data = sg,
@@ -121,9 +124,9 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
     
     if(show_labels && use_ggrepel) {
         p <- p + geom_text_repel(data = dd[-c(minF, maxF), ],
-                                 aes(x = muts, y = fitness, label = label)) +
+                                 aes(x = muts, y = birth, label = label)) +
             geom_label_repel(data = ddMM,
-                             aes(x = muts, y = fitness, label = label, fill = Type),
+                             aes(x = muts, y = birth, label = label, fill = Type),
                              color = "black",
                              fontface = "bold")
             ## geom_label_repel(data = dd[maxF, ], aes(x = muts, y = fitness, label = label),
@@ -141,10 +144,10 @@ plotFitnessLandscape <- function(x, show_labels = TRUE,
         }
             
         p <- p + geom_text(data = dd[-c(minF, maxF), ],
-                           aes(x = muts, y = fitness, label = label),
+                           aes(x = muts, y = birth, label = label),
                            vjust = -0.2, hjust = "inward") +
             geom_label(data = ddMM,
-                       aes(x = muts, y = fitness, label = label, fill = Type),
+                       aes(x = muts, y = birth, label = label, fill = Type),
                        vjust = -0.2, hjust = "inward", color = "black",
                        fontface = "bold")
             ## geom_label(data = dd[maxF, ], aes(x = muts, y = fitness, label = label),

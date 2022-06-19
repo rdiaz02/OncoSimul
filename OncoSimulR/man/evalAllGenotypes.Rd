@@ -129,8 +129,9 @@ For \code{evalGenotype} either the value of fitness or (if \code{verbose
 = TRUE}) the value of fitness and its individual components.
 
 For \code{evalAllGenotypes} a data frame with two columns, the Genotype
-and the Fitness (or Death Rate, if Bozic). The notation for the Genotype
-colum is a follows: when order does not matter, a comma "," separates
+,the Birth Rate (or Death Rate, if Bozic) and the Death Rate (if \code{deathSpec = TRUE}
+in \code{fitnessEffects}. The notation for the Genotype
+column is a follows: when order does not matter, a comma "," separates
 the identifiers of mutated genes. When order matters, a genotype shown
 as ``x > y _ z'' means that a mutation in ``x'' happened before a
 mutation in ``y''; there is also a mutation in ``z'' (which could have
@@ -148,9 +149,9 @@ call,  all the genes specified in
   \code{noIntGenes} with an effect of 0.  
 
 When you are in a frequency dependent fitness situation you must set 
-\code{frequencydependentFitness = TRUE} and \code{spPopSizes} must not 
-be NULL and its length must be equal to the number of possible genotypes. 
-Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
+\code{frequencydependentBirth = TRUE} and/or \code{frequencydependentDeath = TRUE}
+and \code{spPopSizes} must not be NULL and its length must be equal to the number
+of possible genotypes. Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
 
 %% \strong{evalAllGenotypesFitAndMut does not (yet) work with frequency-dependent
 %%   fitness specifications.} (The value returned for fitness is incorrect.)
@@ -160,13 +161,15 @@ Here only \code{evalGenotype} and \code{evalAllGenotypes} make sense.
 Ramon Diaz-Uriarte, Sergio Sanchez Carrillo, Juan Antonio Miguel Gonzalez
 }
 
-\note{ Fitness is used in a slight abuse of the language. Right now,
-  mutations contribute to the birth rate for all models except Bozic,
-  where they modify the death rate. The general expression for fitness
-  is the usual multiplicative one of \eqn{\prod (1 + s_i)}{(1 + s1) (1 +
-  s2) .. (1 + sn)}, where each \eqn{s_i}{s1,s2} refers to the fitness
-  effect of the given gene. When dealing with death rates, we use
-  \eqn{\prod (1 - s_i)}{(1 - s1) (1 - s2) .. (1 - sn)}.
+\note{
+
+%% Fitness is used in a slight abuse of the language. Right now,
+%% mutations contribute to the birth rate for all models except Bozic,
+%% where they modify the death rate. The general expression for fitness
+%% is the usual multiplicative one of \eqn{\prod (1 + s_i)}{(1 + s1) (1 +
+%% s2) .. (1 + sn)}, where each \eqn{s_i}{s1,s2} refers to the fitness
+%% effect of the given gene. When dealing with death rates, we use
+%% \eqn{\prod (1 - s_i)}{(1 - s1) (1 - s2) .. (1 - sn)}.
 
   Modules are, of course, taken into account if present (i.e., fitness
   is specified in terms of modules, but the genotype is specified in
@@ -322,16 +325,16 @@ try(evalGenotype("a1, c2", fm2, verbose = TRUE))
 ## Not what you want either
 try(evalGenotypeMut("a1, c2", fe2, verbose = TRUE))
 
-## Frequency dependent fitness example
+## Frequency dependent birth example
 r <- data.frame(Genotype = c("WT", "A", "B", "A, B"), 
-                Fitness = c("1 + 1.5*f_",
+                Birth = c("1 + 1.5*f_",
                             "5 + 3*(f_A + f_B + f_A_B)",
                             "5 + 3*(f_A + f_B + f_A_B)",
                             "7 + 5*(f_A + f_B + f_A_B)"), 
                 stringsAsFactors = FALSE)
 
 afe <- allFitnessEffects(genotFitness = r, 
-                         frequencyDependentFitness = TRUE, 
+                         frequencyDependentBirth = TRUE, 
                          frequencyType = "rel")
                          
 

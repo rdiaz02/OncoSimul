@@ -7,7 +7,7 @@ test_that("Issue warnings and messages", {
     df1 <- data.frame(Genotype = c("A", "B, C"), Fitness = c(1.3, 2),
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df1),
-                   "No WT genotype. Setting its fitness to 1.", fixed = TRUE)
+                   "No WT genotype. Setting its birth to 1.", fixed = TRUE)
     if(as.character(version$major) < 4) {
     df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::allGenotypes_to_matrix(df2),
@@ -17,12 +17,12 @@ test_that("Issue warnings and messages", {
     df1 <- data.frame(Genotype = c("A", "B, C"), Fitness = c(1.3, 2),
                       stringsAsFactors = FALSE)
     expect_warning(OncoSimulR:::to_genotFitness_std(df1),
-                   "No WT genotype. Setting its fitness to 1.", fixed = TRUE)
+                   "No WT genotype. Setting its birth to 1.", fixed = TRUE)
     
     if(as.character(version$major) < 4) {    
     df2 <- data.frame(Genotype = c("WT", "A", "B, C"), Fitness = c(5, 1.3, 2))
     expect_warning(OncoSimulR:::to_genotFitness_std(df2),
-                   "First column of genotype fitness is a factor.",
+                   "First column of genotype birth is a factor.",
                    fixed = TRUE)
     }
 })
@@ -110,9 +110,11 @@ test_that("Bozic and fitness landscape spec will throw exception", {
 test_that("fitness evaluation what we expect", {
     for(i in 1:10) {
         rxx <- rfitness(5)
+		
+		colnames(rxx)[which(colnames(rxx) == "Birth")] <- "Fitness"
         ## allFitnessEffects(genotFitness = rxx)
-        eag <- evalAllGenotypes(allFitnessEffects(genotFitness = rxx),
-                                addwt = TRUE)
+        suppressWarnings(eag <- evalAllGenotypes(allFitnessEffects(genotFitness = rxx, frequencyDependentFitness = FALSE),
+                                addwt = TRUE))
         rxxf <- rxx[, "Fitness"]
         rxxf[rxxf <= 1e-09] <- 0
         expect_equal(rxxf, eag[, "Fitness"])
@@ -160,8 +162,8 @@ test_that("rt and fl specifications are the same", {
     names(s1v) <- uc
     rt$s <- s1v[rt$child]
 
-    rtf <- evalAllGenotypes(allFitnessEffects(rt), addwt = TRUE)
-    fl <- OncoSimulR:::allGenotypes_to_matrix(rtf)
+    suppressWarnings(rtf <- evalAllGenotypes(allFitnessEffects(rt, frequencyDependentFitness = FALSE), addwt = TRUE))
+    fl <- OncoSimulR:::allGenotypes_to_matrix(rtf, frequencyDependentFitness = FALSE)
     fl[fl[, "Fitness"] == 0, "Fitness"] <- 1e-9
     return(list(rt = rt, fl = fl))
 }

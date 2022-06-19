@@ -43,7 +43,11 @@
                 initMutant = NULL,
                 AND_DrvProbExit = FALSE,
                 fixation = NULL,
-                seed = NULL)
+                seed = NULL,
+                interventions = NULL,
+                userVars = NULL,
+                rules = NULL)
+
 
 oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 muEF = NULL,
@@ -68,7 +72,10 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 fixation = NULL,
                 verbosity = 0,
                 mc.cores = detectCores(),
-                seed = "auto")
+                seed = "auto",
+                interventions = NULL,
+                userVars = NULL,
+                rules = NULL)
 
 
 oncoSimulSample(Nindiv,
@@ -117,7 +124,10 @@ oncoSimulSample(Nindiv,
                 fixation = NULL,
                 verbosity  = 1,
                 showProgress = FALSE,
-                seed = "auto")
+                seed = "auto",
+                interventions = NULL,
+                userVars = NULL,
+                rules = NULL)
 
 
 }
@@ -141,13 +151,14 @@ oncoSimulSample(Nindiv,
 
 }
 
-\item{model}{ One of "Bozic", "Exp", "McFarlandLog", "McFarlandLogD"
+\item{model}{ One of "Bozic", "Exp", "Arb", "McFarlandLog", "McFarlandLogD"
   (the last two can be abbreviated to "McFL" and "McFLD",
   respectively). The default is "Exp". (See vignette for the difference
   between "McFL" and "McFLD": in the former, death rate = \eqn{\log(1 +
   N/K)} where \eqn{K} is the initial equilibrium population size; when
   using "McFLD", death rate = \eqn{\max(1, \log(1 + N/K))}, so that death
-  rate never goes below 1.)
+  rate never goes below 1.). If "Arb" (arbitrary) model is specified, death
+  must be present in \code{\link{allFitnessEffects}}, and vice versa.
   
 
 }
@@ -458,6 +469,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 %%   is to start the simulation from the wildtype genotype with nothing
 %%   mutated.}
 
+%%\item{constantPop}{Indicates if the total population must be constant or not.}
 
 \item{max.num.tries}{Only applies when \code{onlyCancer = TRUE}. What is
   the maximum number of times, for an individual simulation, we can
@@ -631,6 +643,73 @@ of the individual done, and the number of attempts and time used.}
   \code{\link{mclapply}}; look at the vignette of
   \pkg{parallel}.
 
+}
+
+\item{interventions}{
+
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
+  \code{allFitnessEffects} function. Also, you must use \code{createInterventions} 
+  function to create the correct type of parameter for the function \code{oncoSimulPop} ,
+  \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly.
+
+  Use this argument in case you want to intervene in the simulation. With interventions, 
+  you can affect the total population size, or just some genotype-specific
+  population. You can complicate it as much as you want, or keep it simple, 
+  it is really up to you.
+
+  Formally, interventions must be a list of lists, where each 
+  "sub-list" must have the following fields:
+
+  * ID: The identifier of the intervention, must be unique.
+  * Trigger: The situation in the simulation that triggers/activates 
+             the intervention.
+  * What Happens: "What happens" in the simulation. Basically, once the trigger 
+                  is satisfied, this defines how the population is affected by 
+                  the intervention.
+  * Periodicity: Defines the periodicity of the intervention.
+  * Repetitions: Defines the maximum repetitions of each intervention in the simulation.
+}
+
+\item{userVars}{
+
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
+  \code{allFitnessEffects} function. Also, you must use \code{createuserVars} 
+  function to create the correct type of parameter for the function \code{oncoSimulPop} ,
+  \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly.
+
+  Use this argument in case you want to define arbitrary variables that depend on other simulation values. 
+  With the yser Variables you can simulate Adaptive therapy by using this defined variables in the intervention's
+  whatHappens definition, or simply get more detailed insight by defining some interesting values you desire as an output.
+
+  Formally, userVars must be a list of lists, where each 
+  "sub-list" must have the following fields:
+
+  * Name: The name that identifies the new variable, must be unique.
+  * Value: The initial numeric value of the variable.
+
+  You must define the \code{rules} in order to determine how this variables will be modified.
+}
+
+\item{rules}{
+
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
+  \code{allFitnessEffects} function. Also, you must use \code{createRules} 
+  function to create the correct type of parameter for the function \code{oncoSimulPop} ,
+  \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly. This also requires you to use
+  \code{userVars} as these rules operate on them and will not have any effect if thses do not exist.
+
+  Use this argument in order to determine how the defined user variebles will be modified during the simulation.
+  You can use any arbitrarily complex expression depending on other simulation parameters such as T, N, Genotype
+  populations or genotype rates.
+
+  Formally, rules must be a list of lists, where each 
+  "sub-list" must have the following fields:
+
+  * ID: The identifier of the rule, must be unique.
+  * Condition: The situation in the simulation that triggers/activates 
+             the user variable modification.
+  * Action:  The action that will take place once the condition is true. This defines wich user variables will be 
+    modified and the expression that defines the new values for them.
 }
 
 
@@ -981,19 +1060,19 @@ femuv <- allFitnessEffects(noIntGenes = ni)
 oncoSimulIndiv(femuv, mu = muv)
 }
 
-######### Frequency dependent fitness examples
+######### Frequency dependent birth examples
 
 ## An example with cooperation. Presence of WT favours all clones
 ## and all clones have a positive effect on themselves
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
-                      Fitness = c("3 + 5*f_",
+                      Birth = c("3 + 5*f_",
                                   "3 + 5*(f_ + f_A)",
                                   "3 + 5*(f_ + f_B)",
                                   "5 + 6*(f_ + f_A_B)"))
 
 afe <- allFitnessEffects(genotFitness = genofit,
-                         frequencyDependentFitness = TRUE)
+                         frequencyDependentBirth = TRUE)
 
 ## Use gene-specific mutation rates and start the simulation from
 ## 5000 WT and 1000 A mutants.
@@ -1038,13 +1117,13 @@ sp
 
 genofit <- data.frame(A = c(0, 1, 0, 1),
                       B = c(0, 0, 1, 1),
-                      Fitness = c("3 + 5*f_",
+                      Birth = c("3 + 5*f_",
                                   "3 + 5*(f_ + f_1 - f_2)",
                                   "3 + 5*(f_ + f_2 - f_1)",
                                   "5 + 6*(f_1 + f_2 + f_1_2)"))
 
 afe <- allFitnessEffects(genotFitness = genofit,
-                         frequencyDependentFitness = TRUE, 
+                         frequencyDependentBirth = TRUE, 
                          frequencyType = "rel")
 
 osi <- oncoSimulIndiv(afe,

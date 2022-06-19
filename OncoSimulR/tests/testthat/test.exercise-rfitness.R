@@ -3,24 +3,24 @@ inittime <- Sys.time()
 cat(paste("\n Starting exercise-rfitness at", date(), "\n"))
 test_that("Expect output", {
 
-    expect_output(print(rfitness(4)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, reference = "max")), "Fitness",
+    expect_output(print(rfitness(4)), "Birth", fixed = TRUE)
+    expect_output(print(rfitness(4, reference = "max")), "Birth",
                   fixed = TRUE)
-    expect_output(print(rfitness(3, reference = c(1, 0, 1))), "Fitness",
+    expect_output(print(rfitness(3, reference = c(1, 0, 1))), "Birth",
                   fixed = TRUE)
-    expect_output(print(rfitness(5, scale = c(1, 7))), "Fitness", fixed = TRUE)
+    expect_output(print(rfitness(5, scale = c(1, 7))), "Birth", fixed = TRUE)
     expect_output(print(rfitness(5, scale = c(1, 4), wt_is_1 = "no",
-                           log = TRUE)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, reference = "random2")), "Fitness",
+                           log = TRUE)), "Birth", fixed = TRUE)
+    expect_output(print(rfitness(4, reference = "random2")), "Birth",
                   fixed = TRUE)
     expect_output(print(rfitness(4, reference = "random2",
-                                 min_accessible_genotypes = 6)), "Fitness",
+                                 min_accessible_genotypes = 6)), "Birth",
                   fixed = TRUE)
     expect_output(print(rfitness(3, reference = "random2",
-                                 min_accessible_genotypes = 6)), "Fitness",
+                                 min_accessible_genotypes = 6)), "Birth",
                   fixed = TRUE)
     expect_output(print(rfitness(3, reference = "max",
-                                 min_accessible_genotypes = 6)), "Fitness",
+                                 min_accessible_genotypes = 6)), "Birth",
                   fixed = TRUE)
 })
 
@@ -60,43 +60,44 @@ test_that("Error if wrong arguments", {
 
 test_that("Additive, Ising, Eggbox, Full exercising", {
 
-    expect_output(print(rfitness(4, model = "Ising")), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Eggbox")), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Full")), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Additive")), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Ising", i = 0.0002, I = 0.5,
-                                 circular = TRUE)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Ising", i = 2, I = 0,
-                                 circular = TRUE)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Ising", i = 2, I = -2,
-                                 circular = TRUE)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Ising", i = 2, I = 0.5,
-                                 circular = FALSE)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Eggbox", e = 2, E = 0)),
-                  "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Eggbox", e = 2, E = 2.4)),
-                  "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Eggbox", e = 0, E = 2.4)),
-                  "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
-                                 K = 2, r = TRUE,
-                                 p = 0.2, P = 0.3, o = 0.3, O = 1)), "Fitness", fixed = TRUE)
-    expect_error(rfitness(4, model = "Full", K = 5), "It makes no sense",
-                 fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
-                                 K = 2, r = TRUE,
-                                 p = 0.2, P = 0.3, o = 0.3, O = 1,
-                                 s = 0.5, S=0, d = 0.1,
-                                 e = 1, E = 1.5,
-                                 H = 0.5)), "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Additive", mu = 0, sd = 1)),
-                  "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Additive", mu = 1, sd = 0)),
-                  "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Additive", mu = 3, sd = 1)),
-                  "Fitness", fixed = TRUE)
-    expect_output(print(rfitness(4, model = "Additive", mu = -4, sd = 10)),
-                  "Fitness", fixed = TRUE)
+
+    expect_output(print(rfitness(4, model = "Ising")), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Eggbox")), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Full")), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Additive")), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Ising", i = 0.0002, I = 0.5,
+                             circular = TRUE)), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Ising", i = 2, I = 0,
+                             circular = TRUE)), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Ising", i = 2, I = -2,
+                             circular = TRUE)), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Ising", i = 2, I = 0.5,
+                             circular = FALSE)), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Eggbox", e = 2, E = 0)),
+              "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Eggbox", e = 2, E = 2.4)),
+              "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Eggbox", e = 0, E = 2.4)),
+              "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
+                K = 2, r = TRUE,
+                p = 0.2, P = 0.3, o = 0.3, O = 1)), "Birth", fixed = TRUE)
+expect_error(rfitness(4, model = "Full", K = 5), "It makes no sense",
+              fixed = TRUE)
+expect_output(print(rfitness(4, model = "Full", i = 0.002, I = 2,
+                K = 2, r = TRUE,
+                p = 0.2, P = 0.3, o = 0.3, O = 1,
+                s = 0.5, S=0, d = 0.1,
+                e = 1, E = 1.5,
+                H = 0.5)), "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Additive", mu = 0, sd = 1)),
+              "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Additive", mu = 1, sd = 0)),
+              "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Additive", mu = 3, sd = 1)),
+              "Birth", fixed = TRUE)
+expect_output(print(rfitness(4, model = "Additive", mu = -4, sd = 10)),
+              "Birth", fixed = TRUE)
 
 })
  
@@ -118,7 +119,7 @@ test_that("Testing the three-element scale argument", {
         set.seed(i)
         ra <- rfitness(7, truncate_at_0 = FALSE, wt_is_1 = "no")
         
-        if(max(ra[, "Fitness"]) == ra[1, "Fitness"]) {
+        if(max(ra[, "Birth"]) == ra[1, "Birth"]) {
             set.seed(i)
             expect_warning(rb <- rfitness(7, scale = scalev,
                                           truncate_at_0 = FALSE),
@@ -126,7 +127,7 @@ test_that("Testing the three-element scale argument", {
                            fixed = TRUE)
             wt_max <- TRUE
             wt_min <- FALSE
-        } else if(min(ra[, "Fitness"]) == ra[1, "Fitness"]) {
+        } else if(min(ra[, "Birth"]) == ra[1, "Birth"]) {
             set.seed(i)
             expect_warning(rb <- rfitness(7, scale = scalev,
                                           truncate_at_0 = FALSE),
@@ -140,15 +141,15 @@ test_that("Testing the three-element scale argument", {
                        truncate_at_0 = FALSE)
         }
         
-        rap <- ra[-1, "Fitness"][ra[-1, "Fitness"] > ra[1, "Fitness"]]
-        ran <- ra[-1, "Fitness"][ra[-1, "Fitness"] < ra[1, "Fitness"]]
-        rbp <- rb[-1, "Fitness"][rb[-1, "Fitness"] > scalev[3]]
-        rbn <- rb[-1, "Fitness"][rb[-1, "Fitness"] < scalev[3]]
+        rap <- ra[-1, "Birth"][ra[-1, "Birth"] > ra[1, "Birth"]]
+        ran <- ra[-1, "Birth"][ra[-1, "Birth"] < ra[1, "Birth"]]
+        rbp <- rb[-1, "Birth"][rb[-1, "Birth"] > scalev[3]]
+        rbn <- rb[-1, "Birth"][rb[-1, "Birth"] < scalev[3]]
 
         ## Numerical issues with equality comparisons
-        rap <- c(ra[1, "Fitness"], rap)
+        rap <- c(ra[1, "Birth"], rap)
         rbp <- c(scalev[3], rbp)
-        ran <- c(ra[1, "Fitness"], ran)
+        ran <- c(ra[1, "Birth"], ran)
         rbn <- c(scalev[3], rbn)        
 
         expect_true(abs(length(rap) - length(rbp)) < 2)
@@ -164,17 +165,17 @@ test_that("Testing the three-element scale argument", {
                     
         
         if(!wt_max) {
-            expect_equivalent(max(rb[, "Fitness"]), scalev[1])
+            expect_equivalent(max(rb[, "Birth"]), scalev[1])
         } else {
-            expect_equivalent(max(rb[, "Fitness"]), scalev[3])
+            expect_equivalent(max(rb[, "Birth"]), scalev[3])
         }
         if(!wt_min) {
-            expect_equivalent(min(rb[, "Fitness"]), scalev[2])
+            expect_equivalent(min(rb[, "Birth"]), scalev[2])
         } else {
-            expect_equivalent(min(rb[, "Fitness"]), scalev[3])            
+            expect_equivalent(min(rb[, "Birth"]), scalev[3])            
         }
 
-        expect_equivalent(rb[1, "Fitness"], scalev[3])
+        expect_equivalent(rb[1, "Birth"], scalev[3])
 
         ## X, Y, Z: X: original, Y: after scaling
         ## Just dealing with the positive
@@ -183,8 +184,8 @@ test_that("Testing the three-element scale argument", {
         ## so you can compare against
         ## lm(rbp ~ rap)
 
-        xM <- max(ra[, "Fitness"])
-        xW <- ra[1, "Fitness"]
+        xM <- max(ra[, "Birth"])
+        xW <- ra[1, "Birth"]
         if(!wt_max) {    
             y <- rap * (scalev[1] - scalev[3])/(xM - xW) +
                 (scalev[3] - xW * ((scalev[1] - scalev[3])/(xM - xW)))
@@ -194,7 +195,7 @@ test_that("Testing the three-element scale argument", {
             expect_equivalent(scalev[3], rbp)
         }
 
-        xm <- min(ra[, "Fitness"])
+        xm <- min(ra[, "Birth"])
         if(!wt_min) {
             y <- ran * (scalev[3] - scalev[2])/(xW - xm) +
                 (scalev[3] - xW * ((scalev[3] - scalev[2])/(xW - xm)))
@@ -209,8 +210,8 @@ test_that("Testing the three-element scale argument", {
         suppressWarnings(
             rc <- rfitness(7, scale = exp(scalev), truncate_at_0 = FALSE,
                            log = TRUE))
-        rcp <- rc[-1, "Fitness"][rc[-1, "Fitness"] > scalev[3]]
-        rcn <- rc[-1, "Fitness"][rc[-1, "Fitness"] < scalev[3]]
+        rcp <- rc[-1, "Birth"][rc[-1, "Birth"] > scalev[3]]
+        rcn <- rc[-1, "Birth"][rc[-1, "Birth"] < scalev[3]]
         
         ## Numerical issues with equality comparisons
         rcp <- c(scalev[3], rcp)
@@ -257,10 +258,10 @@ test_that("Testing the three-element scale argument", {
         ## Repeat setting WT = 1
         set.seed(i)
         rax <- rfitness(7, truncate_at_0 = FALSE, wt_is_1 = "subtract")
-        rapx <- rax[-1, "Fitness"][rax[-1, "Fitness"] > 1]
-        ranx <- rax[-1, "Fitness"][rax[-1, "Fitness"] < 1]
-        rapx <- c(rax[1, "Fitness"], rapx)
-        ranx <- c(rax[1, "Fitness"], ranx)
+        rapx <- rax[-1, "Birth"][rax[-1, "Birth"] > 1]
+        ranx <- rax[-1, "Birth"][rax[-1, "Birth"] < 1]
+        rapx <- c(rax[1, "Birth"], rapx)
+        ranx <- c(rax[1, "Birth"], ranx)
         
         expect_true(abs(length(rapx) - length(rbp)) < 2)
         expect_true(abs(length(ranx) - length(rbn)) < 2)
@@ -272,8 +273,8 @@ test_that("Testing the three-element scale argument", {
 
         if(length(rapx) < 2) expect_true(length(ranx) > 2)
         
-        xMx <- max(rax[, "Fitness"])
-        xWx <- rax[1, "Fitness"]
+        xMx <- max(rax[, "Birth"])
+        xWx <- rax[1, "Birth"]
         
         if(!isTRUE(all.equal(xMx, xWx, check.attributes = FALSE))) {
             yx <- rapx * (scalev[1] - scalev[3])/(xMx - xWx) +
@@ -284,7 +285,7 @@ test_that("Testing the three-element scale argument", {
             expect_equivalent(scalev[3], rbp)
         }
 
-        xmx <- min(rax[, "Fitness"])
+        xmx <- min(rax[, "Birth"])
         if(!isTRUE(all.equal(xmx, xWx, check.attributes = FALSE))) {
             yx <- ran * (scalev[3] - scalev[2])/(xWx - xmx) +
                 (scalev[3] - xW * ((scalev[3] - scalev[2])/(xWx - xmx)))

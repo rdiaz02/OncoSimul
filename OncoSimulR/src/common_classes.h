@@ -27,7 +27,7 @@ public:
     std::runtime_error(s) {}
 };
 
-enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarlandlog_d};
+enum class TypeModel {exp, bozic1, mcfarlandlog, mcfarlandlog_d, arbitrary, constant};
 
 
 struct spParamsP {

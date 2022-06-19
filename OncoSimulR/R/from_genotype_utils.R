@@ -50,10 +50,27 @@ to_Magellan <- function(x, file,
 to_Fitness_Matrix <- function(x, max_num_genotypes) {
     ## A general converter. Ready to be used by plotFitnessLandscape and
     ## Magellan exporter.
-
+    
+    ## Very bad, but there is no other way
+    
+    
     ## FIXME: really, some of this is inefficient. Very. Fix it.
     if( (inherits(x, "genotype_fitness_matrix")) ||
         ( (is.matrix(x) || is.data.frame(x)) && (ncol(x) > 2) ) ) {
+        
+        if("Fitness" %in% colnames(x)) {
+            afe <- evalAllGenotypes(allFitnessEffects(
+                genotFitness = x, frequencyDependentFitness = FALSE
+                ##, epistasis = from_genotype_fitness(x)
+            ),
+            order = FALSE, addwt = TRUE, max = max_num_genotypes)
+        } else {
+            afe <- evalAllGenotypes(allFitnessEffects(
+                genotFitness = x
+                ##, epistasis = from_genotype_fitness(x)
+            ),
+            order = FALSE, addwt = TRUE, max = max_num_genotypes)
+        }
         ## Why this? We go back and forth twice. We need both things. We
         ## could construct the afe below by appropriately pasting the
         ## columns names
@@ -62,11 +79,7 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 
         ## This could use fmatrix_to_afe, above!!!
         ## Major change as of flfast: no longer using from_genotype_fitness
-        afe <- evalAllGenotypes(allFitnessEffects(
-            genotFitness = x
-            ##, epistasis = from_genotype_fitness(x)
-        ),
-            order = FALSE, addwt = TRUE, max = max_num_genotypes)
+        
 
         ## Might not be needed with the proper gfm object (so gmf <- x)
         ## but is needed if arbitrary matrices.
@@ -85,10 +98,26 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
         x <- x[, c(1, 2)]
         if(x[1, "Genotype"] != "WT") {
             ## Yes, because we expect this present below
-            x <- rbind(data.frame(Genotype = "WT",
-                                  Fitness = 1,
-                                  stringsAsFactors = FALSE),
-                       x)
+            if ("Death" %in% colnames(x)) {
+                x <- rbind(data.frame(Genotype = "WT",
+                                      Birth = 1, Death = 1,
+                                      stringsAsFactors = FALSE),
+                           x)
+            } else {
+                
+                if("Fitness" %in% colnames(x)) {
+                    x <- rbind(data.frame(Genotype = "WT",
+                                          Fitness = 1,
+                                          stringsAsFactors = FALSE),
+                               x)
+                } else {
+                    x <- rbind(data.frame(Genotype = "WT",
+                                          Birth = 1,
+                                          stringsAsFactors = FALSE),
+                               x)
+                }
+            }
+            
         }
         afe <- x
         ## in case we pass an evalAllgenotypesfitandmut
@@ -113,19 +142,29 @@ to_Fitness_Matrix <- function(x, max_num_genotypes) {
 ## rfitness, do nothing. Well, it actually does something.
 
 to_genotFitness_std <- function(x,
-                                frequencyDependentFitness = FALSE,
-                                frequencyType = frequencyType,
+                                frequencyDependentBirth = FALSE,
+                                frequencyDependentDeath = FALSE,
+                                frequencyDependentFitness = NULL,
+                                frequencyType = NA,
+                                deathSpec = FALSE,
                                 simplify = TRUE,
-                                min_filter_fitness = 1e-9,
+                                min_filter_birth_death = 1e-9,
                                 sort_gene_names = TRUE) {
     ## Would break with output from allFitnessEffects and
     ## output from allGenotypeAndMut
 
     if(! (inherits(x, "matrix") || inherits(x, "data.frame")) )
         stop("Input must inherit from matrix or data.frame.")
-
-    if(ncol(x) > 2) {
-        if (!frequencyDependentFitness){
+    
+    if (frequencyDependentDeath && !deathSpec) {
+        deathSpec = TRUE
+        warning("Assumming death is being specified. Setting deathSpec to TRUE.")
+    }
+    # Has to be 0's and 1's specification without freq_dep_birth and no death
+    # or without freq_dep_birth and without freq_dep_death.
+    
+    if((ncol(x) > 2 && !deathSpec) || ncol(x) > 3) {
+        if (!frequencyDependentBirth && !frequencyDependentDeath){
             if(inherits(x, "matrix")) {
                 if(!is.numeric(x))
                     stop("A genotype fitness matrix/data.frame must be numeric.")
@@ -139,16 +178,57 @@ to_genotFitness_std <- function(x,
             if(ncol(x) == 0){
                 stop("You have an empty data.frame")
             }
-            if(!all(unlist(lapply(x[,-ncol(x)], is.numeric)))){
-                stop("All columns except last one must be numeric.")
+            if (frequencyDependentBirth && frequencyDependentDeath) {
+                if(!all(unlist(lapply(x[,-c((ncol(x)-1):ncol(x))], is.numeric)))){
+                    stop("All columns except from the last two must be numeric.")
+                }
+                
+                if(is.factor(x[, ncol(x)])) {
+                    warning("Last column of genotype birth-death is a factor. ",
+                            "Converting to character.")
+                    x[, ncol(x)] <- as.character(x[, ncol(x)])
+                }
+                
+                if(is.factor(x[, ncol(x)-1])) {
+                    warning("Second last column of genotype birth-death is a factor. ",
+                            "Converting to character.")
+                    x[, ncol(x)-1] <- as.character(x[, ncol(x)-1])
+                }
+                if(!all(unlist(lapply(x[, ncol(x)], is.character)))){
+                    stop("All elements in last column must be character.")
+                }
+                
+                if(!all(unlist(lapply(x[, ncol(x)-1], is.character)))){
+                    stop("All elements in second last column must be character.")
+                }
             }
-            if(is.factor(x[, ncol(x)])) {
-                warning("Last column of genotype fitness is a factor. ",
-                        "Converting to character.")
-                x[, ncol(x)] <- as.character(x[, ncol(x)])
+            
+            else if(frequencyDependentBirth && deathSpec) {
+                if(!all(unlist(lapply(x[,-(ncol(x)-1)], is.numeric)))){
+                    stop("All columns except from the second last must be numeric.")
+                }
+                if(is.factor(x[, ncol(x)-1])) {
+                    warning("Second last column of genotype birth-death is a factor. ",
+                            "Converting to character.")
+                    x[, ncol(x)-1] <- as.character(x[, ncol(x)-1])
+                }
+                if(!all(unlist(lapply(x[, ncol(x)-1], is.character)))){
+                    stop("All elements in second last column must be character.")
+                }
             }
-            if(!all(unlist(lapply(x[, ncol(x)], is.character)))){
-                stop("All elements in last column must be character.")
+            
+            else if(frequencyDependentDeath || (frequencyDependentBirth && !deathSpec)) {
+                if(!all(unlist(lapply(x[,-ncol(x)], is.numeric)))){
+                    stop("All columns except from the last one must be numeric.")
+                }
+                if(is.factor(x[, ncol(x)])) {
+                    warning("Last column of genotype birth-death is a factor. ",
+                            "Converting to character.")
+                    x[, ncol(x)] <- as.character(x[, ncol(x)])
+                }
+                if(!all(unlist(lapply(x[, ncol(x)], is.character)))){
+                    stop("All elements in last column must be character.")
+                }
             }
         }
 
@@ -158,8 +238,14 @@ to_genotFitness_std <- function(x,
         ## return(genot_fitness_to_epistasis(x))
         if(any(duplicated(colnames(x))))
             stop("duplicated column names")
-
-        cnfl <- which(colnames(x)[-ncol(x)] == "")
+        
+        if(deathSpec) {
+            cnfl <- which(colnames(x)[-c((ncol(x)-1):ncol(x))] == "")
+        }
+        else {
+            cnfl <- which(colnames(x)[-ncol(x)] == "")
+        }
+        
         if(length(cnfl)) {
             freeletter <- setdiff(LETTERS, colnames(x))[1]
             if(length(freeletter) == 0) stop("Renaiming failed")
@@ -168,35 +254,73 @@ to_genotFitness_std <- function(x,
         }
         if(!is.null(colnames(x)) && sort_gene_names) {
             ncx <- ncol(x)
-            cnx <- colnames(x)[-ncx]
+            if(deathSpec) {
+                cnx <- colnames(x)[-c((ncx-1):ncx)]
+            }
+            else {
+                cnx <- colnames(x)[-ncx]
+            }
+            
             ocnx <- gtools::mixedorder(cnx)
             if(!(identical(cnx[ocnx], cnx))) {
                 message("Sorting gene column names alphabetically")
-                x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
+                
+                if(!is.null(frequencyDependentFitness)) {
+                    x <- cbind(x[, ocnx, drop = FALSE], Fitness = x[, (ncx)])
+                } else {
+                    x <- cbind(x[, ocnx, drop = FALSE], Birth = x[, (ncx)])
+                }
+                
             }
         }
 
         if(is.null(colnames(x))) {
-            ncx <- (ncol(x) - 1)
+            if(deathSpec) {
+                ncx <- (ncol(x) - 2)
+            }
+            else {
+                ncx <- (ncol(x) - 1)
+            }
+            
             message("No column names: assigning gene names from LETTERS")
             if(ncx > length(LETTERS))
                 stop("More genes than LETTERS; please give gene names",
                      " as you see fit.")
-            colnames(x) <- c(LETTERS[1:ncx], "Fitness")
+            if(deathSpec) {
+                colnames(x) <- c(LETTERS[1:ncx], "Birth", "Death")
+            }
+            
+            else {
+                
+                if (!is.null(frequencyDependentFitness)) {
+                    colnames(x) <- c(LETTERS[1:ncx], "Fitness")
+                } else {
+                    colnames(x) <- c(LETTERS[1:ncx], "Birth")
+                }
+                    
+            }
+            
         }
-        if(!all(as.matrix(x[, -ncol(x)]) %in% c(0, 1) ))
-            stop("First ncol - 1 entries not in {0, 1}.")
+        
+        if(deathSpec) {
+            if(!all(as.matrix(x[, -c((ncol(x)-1):ncol(x))]) %in% c(0, 1) ))
+                stop("First ncol - 2 entries not in {0, 1}.")
+        }
+        else {
+            if(!all(as.matrix(x[, -ncol(x)]) %in% c(0, 1) ))
+                stop("First ncol - 1 entries not in {0, 1}.")
+        }
 
     } else {
 
         if(!inherits(x, "data.frame"))
-            stop("genotFitness: if two-column must be data frame")
+            stop("genotFitness: if genotype is specified, it must be data frame")
         if(ncol(x) == 0){
             stop("You have an empty data.frame")
         }
         ## Make sure no factors
         if(is.factor(x[, 1])) {
-            warning("First column of genotype fitness is a factor. ",
+            warning("First column of genotype birth-death is a factor. ",
                     "Converting to character.")
             x[, 1] <- as.character(x[, 1])
         }
@@ -221,61 +345,147 @@ to_genotFitness_std <- function(x,
         if( emarker || ( (!omarker) && (!emarker) && (!nogoodepi)) ) {
             ## the second case above corresponds to passing just single letter genotypes
             ## as there is not a single marker
-            x <- x[, c(1, 2), drop = FALSE]
-            if(!all(colnames(x) == c("Genotype", "Fitness"))) {
-                message("Column names of object not Genotype and Fitness.",
-                        " Renaming them assuming that is what you wanted")
-                colnames(x) <- c("Genotype", "Fitness")
+            if(deathSpec) {
+                x <- x[, c(1, 2, 3), drop = FALSE]
+                if(!all(colnames(x) == c("Genotype", "Birth", "Death"))) {
+                    message("Column names of object not Genotype, Birth and Death.",
+                            " Renaming them assuming that is what you wanted")
+                    colnames(x) <- c("Genotype", "Birth", "Death")
+                }
             }
+            else {
+                x <- x[, c(1, 2), drop = FALSE]
+                if (!is.null(frequencyDependentFitness)) {
+                    if(!all(colnames(x) == c("Genotype", "Fitness"))) {
+                        message("Column names of object not Genotype and Birth",
+                                " Renaming them assuming that is what you wanted")
+                        colnames(x) <- c("Genotype", "Fitness")
+                    }
+                    
+                } else {
+                    if(!all(colnames(x) == c("Genotype", "Birth"))) {
+                        message("Column names of object not Genotype and Birth",
+                                " Renaming them assuming that is what you wanted")
+                        colnames(x) <- c("Genotype", "Birth")
+                    }
+                }
+                
+            }
+            
+            
             if((!omarker) && (!emarker) && (!nogoodepi)) {
                 message("All single-gene genotypes as input to to_genotFitness_std")
             }
             ## Yes, we need to do this to  scale the fitness and put the "-"
-            if(frequencyDependentFitness){
+            if(frequencyDependentBirth || frequencyDependentDeath){
                 anywt <- which(x[, 1] == "WT")
                 if (length(anywt) > 1){
-                    stop("WT should not appear more than once in fitness specification")
+                    stop("WT should not appear more than once in birth-death specification")
                 }
-                if(is.factor(x[, ncol(x)])) {
-                    warning("Second column of genotype fitness is a factor. ",
-                            "Converting to character.")
-                    x[, ncol(x)] <- as.character(x[, ncol(x)])
+                
+                if (frequencyDependentBirth) {
+                    if(is.factor(x[, 2])) {
+                        warning("Second column of genotype birth-death is a factor. ",
+                                "Converting to character.")
+                        x[, 2] <- as.character(x[, 2])
+                    }
                 }
+                if (frequencyDependentDeath) {
+                    if(is.factor(x[, 3])) {
+                        warning("Third column of genotype birth-death is a factor. ",
+                                "Converting to character.")
+                        x[, 3] <- as.character(x[, 3])
+                    }
+                }
+                
             }
 
-            x <- allGenotypes_to_matrix(x, frequencyDependentFitness)
+            x <- allGenotypes_to_matrix(x, frequencyDependentBirth,
+                                        frequencyDependentDeath, 
+                                        frequencyDependentFitness, deathSpec)
         }
     }
-    ## And, yes, scale all fitnesses by that of the WT
+    ## And, yes, scale all births and deaths by that of the WT
 
-    if (!frequencyDependentFitness){
-        whichroot <- which(rowSums(x[, -ncol(x), drop = FALSE]) == 0)
-        if(length(whichroot) == 0) {
-            warning("No wildtype in the fitness landscape!!! Adding it with fitness 1.")
-            x <- rbind(c(rep(0, ncol(x) - 1), 1), x)
-        } else if(x[whichroot, ncol(x)] != 1) {
-            warning("Fitness of wildtype != 1.",
-                    " Dividing all fitnesses by fitness of wildtype.")
-            vwt <- x[whichroot, ncol(x)]
-            x[, ncol(x)] <- x[, ncol(x)]/vwt
+    if (!frequencyDependentBirth && !frequencyDependentDeath){
+        if (deathSpec) {
+            whichroot <- which(rowSums(x[, -c((ncol(x)-1):ncol(x)), drop = FALSE]) == 0)
         }
+        else {
+            whichroot <- which(rowSums(x[, -ncol(x), drop = FALSE]) == 0)
+        }
+        
+        if(length(whichroot) == 0) {
+            if(deathSpec) {
+                warning("No wildtype in the fitness landscape!!! Adding it with birth and death 1.")
+                x <- rbind(c(rep(0, ncol(x) - 2), 1, 1), x)
+            }
+            else {
+                warning("No wildtype in the fitness landscape!!! Adding it with birth 1.")
+                x <- rbind(c(rep(0, ncol(x) - 1), 1), x)
+            }
+            
+        } else {
+            if(x[whichroot, ncol(x)] != 1) {
+                if(deathSpec) {
+                    warning("Death of wildtype != 1.",
+                            " Dividing all deaths by death of wildtype.")
+                }
+                else {
+                    warning("Birth of wildtype != 1.",
+                            " Dividing all births by birth of wildtype.")
+                }
+                
+                vwt <- x[whichroot, ncol(x)]
+                x[, ncol(x)] <- x[, ncol(x)]/vwt
+            }
+            
+            if (deathSpec && x[whichroot, ncol(x)-1] != 1) {
+                warning("Birth of wildtype != 1.",
+                        " Dividing all births by birth of wildtype.")
+                
+                vwt <- x[whichroot, ncol(x)-1]
+                x[, ncol(x)-1] <- x[, ncol(x)-1]/vwt
+            }
+        }
+        
+        if(!is.null(frequencyDependentFitness))
+            colnames(x)[which(colnames(x) == "Birth")] <- "Fitness"
     }
 
     if(any(is.na(x)))
         stop("NAs in fitness matrix")
-    if(!frequencyDependentFitness) {
+    
+    if(!frequencyDependentBirth && !frequencyDependentDeath) {
         if(is.data.frame(x)) 
             x <- as.matrix(x)
         stopifnot(inherits(x, "matrix"))
-
-        if(simplify) {
-            x <- x[x[, ncol(x)] > min_filter_fitness, , drop = FALSE]  
+    }
+    
+    if(simplify) {
+        if ((!frequencyDependentBirth && !deathSpec) || (!frequencyDependentDeath && deathSpec)) {
+            x <- x[x[, ncol(x)] > min_filter_birth_death, , drop = FALSE]
         }
-        class(x) <- c("matrix", "genotype_fitness_matrix")
-    } else { ## frequency-dependent fitness
+        
+        if (!frequencyDependentBirth && deathSpec) {
+            x <- x[x[, ncol(x)-1] > min_filter_birth_death, , drop = FALSE]
+        }
+        
+    }
+    
+    if (!frequencyDependentBirth && !frequencyDependentDeath)
+        class(x) <- c("matrix", "genotype_birth_death_matrix")
+    
+    if(frequencyDependentBirth) { ## frequency-dependent fitness
         
         if(frequencyType == "auto"){
-            ch <- paste(as.character(x[, ncol(x)]), collapse = "")
+            if (deathSpec) {
+                ch <- paste(as.character(x[, ncol(x)-1]), collapse = "")
+            }
+            else {
+                ch <- paste(as.character(x[, ncol(x)]), collapse = "")
+            }
+            
             if( grepl("f_", ch, fixed = TRUE) ){
                 frequencyType = "rel"
                 pattern <- stringr::regex("f_(\\d*_*)*")
@@ -291,18 +501,62 @@ to_genotFitness_std <- function(x,
         } else {
             pattern <- stringr::regex("f_(\\d*_*)*")
         }
-
-        regularExpressionVector <-
+        
+        if(deathSpec) {
+            regularExpressionVectorBirth <-
+                unique(unlist(lapply(x[, ncol(x)-1],
+                                     function(z) {stringr::str_extract_all(string = z,
+                                                                           pattern = pattern)})))
+            
+            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 2, frequencyType))) |
+               !(length(intersect(regularExpressionVectorBirth,
+                                  fVariablesN(ncol(x) - 2, frequencyType)) >= 1) )){
+                stop("There are some errors in birth column")
+            }
+        }
+        else {
+            regularExpressionVectorBirth <-
+                unique(unlist(lapply(x[, ncol(x)],
+                                     function(z) {stringr::str_extract_all(string = z,
+                                                                           pattern = pattern)})))
+            if((!all(regularExpressionVectorBirth %in% fVariablesN(ncol(x) - 1, frequencyType))) |
+               !(length(intersect(regularExpressionVectorBirth,
+                                  fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
+                stop("There are some errors in birth column")
+            }
+        }
+    }
+    
+    if(frequencyDependentDeath) { ## frequency-dependent fitness
+        
+        if(frequencyType == "auto"){
+            ch <- paste(as.character(x[, ncol(x)]), collapse = "")
+            
+            if( grepl("f_", ch, fixed = TRUE) ){
+                frequencyType = "rel"
+                pattern <- stringr::regex("f_(\\d*_*)*")
+                
+            } else if ( grepl("n_", ch, fixed = TRUE) ){
+                frequencyType = "abs"
+                pattern <- stringr::regex("n_(\\d*_*)*")
+                
+            } else { stop("No pattern found when frequencyTypeDeath set to 'auto'") }
+            
+        } else if(frequencyType == "abs"){
+            pattern <- stringr::regex("n_(\\d*_*)*")
+        } else {
+            pattern <- stringr::regex("f_(\\d*_*)*")
+        }
+        
+        regularExpressionVectorDeath <-
             unique(unlist(lapply(x[, ncol(x)],
                                  function(z) {stringr::str_extract_all(string = z,
                                                                        pattern = pattern)})))
-        
-        if((!all(regularExpressionVector %in% fVariablesN(ncol(x) - 1, frequencyType))) |
-           !(length(intersect(regularExpressionVector,
+        if((!all(regularExpressionVectorDeath %in% fVariablesN(ncol(x) - 1, frequencyType))) |
+           !(length(intersect(regularExpressionVectorDeath,
                               fVariablesN(ncol(x) - 1, frequencyType)) >= 1) )){
-            stop("There are some errors in fitness column")
+            stop("There are some errors in death column")
         }
-
     }
     return(x)
 }
@@ -373,28 +627,44 @@ genot_fitness_to_epistasis <- function(x) {
 
 
 allGenotypes_to_matrix <- function(x,
-                                   frequencyDependentFitness = FALSE) {
+                                   frequencyDependentBirth = FALSE,
+                                   frequencyDependentDeath = FALSE,
+                                   frequencyDependentFitness = NULL,
+                                   deathSpec = FALSE) {
     ## Makes no sense to allow passing order: the matrix would have
     ## repeated rows. A > B and B > A both have exactly A and B
 
     ## Take output of evalAllGenotypes or identical data frame and return
     ## a matrix with 0/1 in a column for each gene and a final column of
     ## Fitness
-
+    
+    if(!is.null(frequencyDependentFitness))
+        frequencyDependentBirth <- frequencyDependentFitness
+    
     if (is.factor(x[, 1])) {
         warning(
-            "First column of genotype fitness is a factor. ",
+            "First column of genotype birth-death is a factor. ",
             "Converting to character."
         )
         x[, 1] <- as.character(x[, 1])
     }
-    if (frequencyDependentFitness) {
-        if (is.factor(x[, ncol(x)])) {
+    if (frequencyDependentBirth) {
+        if (is.factor(x[, 2])) {
             warning(
-                "Second column of genotype fitness is a factor. ",
+                "Second column of genotype birth-death is a factor. ",
                 "Converting to character."
             )
-            x[, ncol(x)] <- as.character(x[, ncol(x)])
+            x[, 2] <- as.character(x[, 2])
+        }
+    }
+    
+    if (frequencyDependentDeath) {
+        if (is.factor(x[, 3])) {
+            warning(
+                "Third column of genotype birth-death is a factor. ",
+                "Converting to character."
+            )
+            x[, 3] <- as.character(x[, 3])
         }
     }
 
@@ -402,15 +672,30 @@ allGenotypes_to_matrix <- function(x,
     anywt <- which(x[, 1] == "WT")
     if (length(anywt) > 1) stop("More than 1 WT")
     if (length(anywt) == 1) {
-        fwt <- x[anywt, 2]
+        bwt <- x[anywt, 2]
+        if (deathSpec) {
+            dwt <- x[anywt, 3]
+        }
+        
         x <- x[-anywt, ]
         ## Trivial case of passing just a WT?
     } else {
-        if (!frequencyDependentFitness) {
-            warning("No WT genotype. Setting its fitness to 1.")
-            fwt <- 1
+        if (!frequencyDependentBirth && !frequencyDependentDeath) {
+            bwt <- 1
+            if(deathSpec) {
+                dwt <- 1
+                warning("No WT genotype. Setting its birth and death to 1.")
+            }
+            else {
+                warning("No WT genotype. Setting its birth to 1.")
+            }
+            
+            
         } else {
-            fwt <- NA
+            bwt <- NA
+            
+            if(deathSpec) 
+                dwt <- NA
             ##   message("No WT genotype in FDF: setting it to 0.")
         }
     }
@@ -436,23 +721,60 @@ allGenotypes_to_matrix <- function(x,
     for (i in 1:nrow(m)) {
         m[i, the_match[[i]]] <- 1
     }
-    m <- cbind(m, x[, 2])
-    colnames(m) <- c(all_genes, "Fitness")
-    if(!is.na(fwt))
-        m <- rbind(c(rep(0, length(all_genes)), fwt), m)
+    if(deathSpec) {
+        m <- cbind(m, x[, 2], x[, 3])
+        colnames(m) <- c(all_genes, "Birth", "Death")
+    }
+    else {
+        m <- cbind(m, x[, 2])
+        
+        if (!is.null(frequencyDependentFitness)) {
+            colnames(m) <- c(all_genes, "Fitness")
+        } else {
+            colnames(m) <- c(all_genes, "Birth")
+        }
+    }
+    
+    
+    if(!is.na(bwt))
+        if(deathSpec) {
+            m <- rbind(c(rep(0, length(all_genes)), bwt, dwt), m)
+        }
+        else{
+            m <- rbind(c(rep(0, length(all_genes)), bwt), m)
+        }
+        
 
-    if (frequencyDependentFitness) {
+    if (frequencyDependentBirth || frequencyDependentDeath) {
         m <- as.data.frame(m)
         m[, 1:length(all_genes)] <- apply(
             m[, 1:length(all_genes), drop = FALSE],
             2,
             as.numeric
         )
-        m[, ncol(m)] <- as.character(m[, ncol(m)])
+        if(frequencyDependentBirth) {
+            m[, length(all_genes)+1] <- as.character(m[, length(all_genes)+1])
+        }
+        else {
+            m[, length(all_genes)+1] <- as.numeric(m[, length(all_genes)+1])
+        }
+        
+        if(frequencyDependentDeath) {
+            m[, length(all_genes)+2] <- as.character(m[, length(all_genes)+2])
+        }
+        else if(deathSpec){
+            m[, length(all_genes)+2] <- as.numeric(m[, length(all_genes)+2])
+        }
+        
     }
     ## Ensure sorted
     ## m <- data.frame(m)
-    rs <- rowSums(m[, -ncol(m), drop = FALSE])
+    if(deathSpec) {
+        rs <- rowSums(m[, -c((ncol(m)-1):ncol(m)), drop = FALSE])
+    }
+    else {
+        rs <- rowSums(m[, -ncol(m), drop = FALSE])
+    }
     m <- m[order(rs), , drop = FALSE]
     ## m <- m[do.call(order, as.list(cbind(rs, m[, -ncol(m)]))), ]
     return(m)

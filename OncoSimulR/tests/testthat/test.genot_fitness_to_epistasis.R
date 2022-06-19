@@ -8,8 +8,8 @@ test_that("genot_fitness_to_epistasis works minimally", {
     m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
     fepi <- OncoSimulR:::genot_fitness_to_epistasis(m6)
     
-    fem6 <- allFitnessEffects(epistasis = fepi)
-    suppressWarnings(fem6b <- allFitnessEffects(genotFitness = m6))
+    suppressWarnings(fem6 <- allFitnessEffects(epistasis = fepi, frequencyDependentFitness = FALSE))
+    suppressWarnings(fem6b <- allFitnessEffects(genotFitness = m6, frequencyDependentFitness = FALSE))
 
     afe1 <- evalAllGenotypes(fem6, addwt = TRUE)
     afe2 <- evalAllGenotypes(fem6b, addwt = TRUE)

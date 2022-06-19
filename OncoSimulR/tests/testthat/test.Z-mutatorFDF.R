@@ -13,9 +13,9 @@ test_that("Mutator genes missing from fitness", {
   
   set.seed(1) ## for reproducibility
   
-  fe <- allFitnessEffects(genotFitness = r1, 
+  suppressWarnings(fe <- allFitnessEffects(genotFitness = r1, 
                           frequencyDependentFitness = TRUE, 
-                          frequencyType = "rel")
+                          frequencyType = "rel"))
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "C" = 10))
   
@@ -39,9 +39,9 @@ test_that("fit. mut. eff. values, long ex",  {
   
   set.seed(1) ## for reproducibility
   
-  fe <- allFitnessEffects(genotFitness = r1, 
+  suppressWarnings(fe <- allFitnessEffects(genotFitness = r1, 
                           frequencyDependentFitness = TRUE, 
-                          frequencyType = "rel")
+                          frequencyType = "rel"))
   
   mt <- allMutatorEffects(epistasis = c("A" = 1, "B" = 10))
   

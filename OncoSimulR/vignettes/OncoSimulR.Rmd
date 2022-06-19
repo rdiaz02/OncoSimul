@@ -3963,7 +3963,7 @@ also see what happens if we examine genotypes as ordered.
 ```{r}
 
 ai1 <- evalAllGenotypes(allFitnessEffects(
-    noIntGenes = c(0.05, -.2, .1)), order = FALSE)
+    noIntGenes = c(0.05, -.2, .1), frequencyDependentFitness = FALSE), order = FALSE)
 ``` 
 
 
@@ -12288,6 +12288,1189 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 \clearpage
 
+# Death and Birth specification
+
+With the new version of the package the user is allowed to specify arbitrary
+death rates in the same way fitness could be specified, instead of using the
+fixed death rate given by the chosen model. However, the introduction of
+explicit death rates makes the fitness nomenclature confusing and inconsistent.
+Because of this, fitness has been renamed to birth.
+
+## Changes in nomenclature
+
+The changes only concern the explicit mapping. The `Fitness` column in the
+mapping has been renamed to `Birth`. Also, the parameter
+`frequencyDependentFitness` in the function `allFitnessEffects` has been
+renamed to `frequencyDependentBirth`. The next example will illustrate the new
+nomentaclature.
+
+```{r exampleBirthNom}
+
+m4 <- data.frame(Genotype = c("WT", "A", "B", "A, B"), Birth = c(1, 2, 3, 4))
+
+fem4 <- allFitnessEffects(genotFitness = m4, frequencyDependentBirth = FALSE)
+
+evalAllGenotypes(fem4)
+
+```
+
+Note that the parameter `frequencyDependentBirth` has been specified in order
+to show the changes. However, it continues to default as FALSE.
+
+Despite this change, the old nomenclature continues to be valid and it will work
+in every function of the package. Users can use already created objects using
+the fitness nomenclature and can also create new objects with the old
+nomenclature.
+
+## Explicit mapping of genotypes to death rates
+
+The mapping is done analogously to the genotypes to birth rates. However, death
+rates cannot be mapped if birth rates are not being mapped as well. This is to
+make it compatible with the pre-existing behavior. Either we specify the death
+rates ourselves or the model we choose will determine the death rates. A new
+parameter has been introduced to indicate the `allFitnessEffects` function that
+death rates are being specified. This parameter is `deathSpec`.
+
+Also, the death rates can be frequency dependent or not. This is determined by the new
+parameter `frequencyDependentDeath` in the function `allFitnessEffects. The
+following example shows how to explicitly map genotypes to death rates.
+
+```{r exampleDeath}
+m4 <- data.frame(Genotype = c("WT", "A", "B", "A, B"),
+                 Birth = c(1, 2, 3, 4),
+                 Death = c(1, 2, 3, 4))
+
+fem4 <- allFitnessEffects(genotFitness = m4,
+                          frequencyDependentBirth = FALSE,
+                          frequencyDependentDeath = FALSE,
+                          deathSpec = TRUE)
+
+evalAllGenotypes(fem4)
+
+```
+
+In order to simulate using `oncoSimulIndiv`, we must specify a model. A new
+model has been introduced to indicate the simulation that the death rates are
+present in the mapping and that we do not use any of the already existing
+models. The new model is `Arb`. The next example will show a simulation using
+the `Arb` model.
+
+```{r exampleSimulDeath}
+G_fe_LVm <- function(r1, r2, K1, K2, a_12, a_21, gt = c("S1", "S2")) {
+    data.frame(Genotype = gt,
+               Birth = c(paste0(r1, "-", r1, "*(", a_12, "*n_", gt[2], ")/", K1), r2),
+               Death = c(paste0(r1, "*(n_", gt[1], ")/", K1),
+                         paste0(r2, "*(n_", gt[2], "+", a_21, "*n_", gt[1], ")/", K2)))
+}
+fe_pred_prey <- allFitnessEffects(
+		genotFitness = G_fe_LVm(1.4, 1.5, 4000, 10000, -0.5, 1.1, gt = c("Predator", "Prey")),
+		frequencyDependentBirth = TRUE, 
+		frequencyDependentDeath = TRUE,
+		deathSpec = TRUE)
+
+s_pred_preym <- oncoSimulIndiv(fe_pred_prey, model = "Arb",
+                                initMutant = c("Predator", "Prey"),
+                                initSize = c(1000, 1000), 
+                                onlyCancer = FALSE, 
+                                finalTime = 200, mu = 1e-3,
+                                keepPhylog = TRUE, seed = NULL,
+                                errorHitMaxTries = FALSE,
+                                errorHitWallTime = FALSE)
+
+plot(s_pred_preym, show="genotypes", type="line", log = "")
+
+```
+
+\clearpage
+
+# Simulating with constant total population size
+
+There are some models in which is necessary to maintain the total size of the
+population constant, such as Moran models @Moran. In order to allow this types
+of models to be simulated, the `Const` model must be used, as shown in the
+example below.
+
+``` {r exampleConst}
+H_D_fitness <- function(c, v, gt = c("H", "D")) {
+                  data.frame(Genotype = gt,
+                             Birth = c(
+                    			    paste0("max(1e-5, f_H *", (v-c)/2, "+ f_D *", v, ")"),
+                              paste0("f_D *", v/2)))
+}
+
+HD_eq <- allFitnessEffects(
+	             genotFitness = H_D_fitness(10, 4, gt = c("H", "D")),
+	             frequencyDependentBirth = TRUE,
+	              frequencyType = "rel")
+	
+osi_eq <- oncoSimulIndiv(HD_eq, model = "Const",
+                           onlyCancer = FALSE, finalTime = 50,
+                           mu = 1e-6, initSize = c(2000, 2000),
+						               initMutant = c("H", "D"), keepPhylog = TRUE,
+                           seed = NULL, errorHitMaxTries = FALSE,
+                           errorHitWallTime = FALSE)
+                           
+plot(osi_eq, show="genotypes", ylim=c(1, 5000))
+```
+When using this model, we can either specify the death rates or not. In the
+case that we specify them, the death rates will be corrected in order to
+maintain the desired size of population (which is the initial size of the
+population). On the other hand, if we do not specify the death rates they will
+be set to the required value.
+
+# Interventions
+
+(*Note that the examples below are not used because of their
+biological realism, but rather to show some key features of the
+software*)
+
+OncoSimulR also allows the user to specify interventions within the simulation. 
+Interventions will allow the user to manipulate different scenarios in the simulation,
+by reducing the population of a specific genotype or the total population. 
+In R-terms a intervention a list of lists, where each element of the list must have 
+the following attributes:
+
+* __ID__: This will be the identifier of the intervention. This attribute must be unique 
+in the list.
+* __Trigger__: A condition that "triggers" an action over the simulation. It is a boolean
+evaluation, meaning this will give a TRUE or FALSE result.
+* __WhatHappens__: The action that will affect the simulation.
+* __Repetitions__: How many times do we want the intervention to affect the population 
+(Trigger must be activated in order to execute a Repetition).
+* __Periodicity__: How much time must pass between to repeat the intervention. 
+
+Here we have an example of how the user can specify a list of interventions:
+
+```{r interventionListExample}
+interventions <- list(
+    list(ID           = "i2",
+        Trigger       = "(N > 1e6) & (T > 100)",
+        WhatHappens   = "N = 0.001 * N",
+        Repetitions   = 7,  
+        Periodicity    = Inf
+    ),
+    list(ID           = "i1",
+        Trigger       = "(T > 10)",
+        WhatHappens   = "N = 0.3 * N",
+        Periodicity   = 10,
+        Repetitions   = 0
+    ),
+    list(ID           = "i3", 
+        Trigger       = "(T > 1) & (T < 200)",
+        WhatHappens   = "n_A = n_A * 0,3 / n_C",
+        Repetitions   = Inf,  
+        Periodicity    = 10
+    ),
+    list(ID           = "i5",
+        Trigger       = "(N > 1e8) & (T> 1.2)",
+        WhatHappens   = "n_A_B = n_B * 0,3 / n_SRL",
+        Repetitions   = 0,   
+        Periodicity    = Inf
+    )
+)
+
+```
+
+(*Note: In a intervention, if Periodicity is specified as Inf, then the intervention
+will only execute once. An intervention that specifies will only execute if this 
+expression: __(T – (Last time executed) >= Periodicity__ turns out to be TRUE.*)
+
+As is seen in the example above, interventions can depend on the current time of 
+The simulation (T), the current total population (N) or some genotype population
+n_(genotype name), and can be combined as the user might want, depending on the 
+mean of the intervention. This is possible thanks to [Exprtk library] (http://www.partow.net/programming/exprtk/), this library allow complex expressions 
+to be specified. 
+
+In order to specify interventions, the user must call `createInterventions`
+function. This function will adapt the different attributes specified to something
+C++ will understand. But first, a `fitnessEffects` object must be defined, for example:
+
+```{r interventionEscenario1Example}
+fa1 <- data.frame(Genotype = c("WT", "A", "B"),
+                    Fitness = c("n_*0",
+                                "1.5",
+                                "1"))
+
+afd3 <- allFitnessEffects(genotFitness = fa1,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "abs")
+```
+
+Note that, for now, the fitness must have `frequencyDependentFitness` as TRUE and
+`frequencyType`as "abs" (it can be ). 
+
+Once this is specified, we call `createInterventions`: 
+
+```{r interventionsCreateInterventionExample}
+interventions <- createInterventions(interventions, afd3)
+```
+
+Where the first argument is the list of lists previously defined, and the second 
+argument is the `fitnessEffects` object.
+
+Finally, once the intervention is "created" by the `createInterventions` function,
+the object returned can be passed as an argument to the `oncoSimul*` function, 
+like this example below: 
+
+```{r interventionsOncoSimulIndivExample}
+ep2 <- oncoSimulIndiv(
+                    afd3, 
+                    model = "Exp",
+                    mu = 1e-4,
+                    sampleEvery = 0.001,
+                    initSize = c(20000, 20000),
+                    initMutant = c("A", "B"),
+                    finalTime = 5.2,
+                    onlyCancer = FALSE,
+		                interventions = interventions
+                    )
+```
+
+## A first example with interventions {#intssimpleexample}
+
+As is stated before, the examples provided will show that the software works. In 
+this example it will be shown how a simple intervention can affect the way the 
+simulation develops. First, we define (as usual) the dataframe that associates the 
+genotypes with their fitness. In this case in particular, we will define an scenario
+where the genotype B has a higher fitness than the other genotypes in the population:
+
+```{r interventionsSimpleExampleNoInts}
+df3x <- data.frame(Genotype = c("WT", "B", "A", "B, A", "C, A"),
+                       Fitness = c("0*n_",
+                                    "1.5",
+                                    "1.002",
+                                    "1.003",
+                                    "1.004"))
+
+afd3 <- allFitnessEffects(genotFitness = df3x,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "abs")
+
+ex1 <- oncoSimulIndiv(
+                    afd3, 
+                    model = "McFLD",
+                    mu = 1e-4,
+                    sampleEvery = 0.01,
+                    initSize = c(20000, 20000),
+                    initMutant = c("A", "B"),
+                    finalTime = 10,
+                    onlyCancer = FALSE
+                    )
+    
+plot(ex1, show="genotypes", type = "line")    
+```
+As expected, the B genotype dominates the population but ¿what if we periodically we
+start to decrement the dominant genotype? 
+
+First, we define that intervention, in this case, the intervention will decrement 
+the B population by 88% each 0.07 time units:
+
+```{r create_interventionsSimpleExample}
+interventions <- list(
+    list(ID           = "intOverB",
+        Trigger       = "(T >= 5)",
+        WhatHappens   = "n_B = n_B * 0.88",
+        Repetitions   = Inf,
+        Periodicity   = 0.07
+    ))
+
+interventions <- createInterventions(interventions, afd3)
+```
+
+Note that we specify as `Inf` the amount of repetitions that this interventions
+will execute. This means that, until `finalTime` is reached, the intervention will
+be executing each 0.5 time units. Another detail that is worth noticing is the 
+`Trigger` attribute, that defines in this case, that until the current time of the 
+simulation T reaches 5 time units, the intervention will not execute over the simulation.
+
+Then, we run the simulation again, but this time with the interventions specified:
+
+```{r interventionsSimpleExampleWithInts}
+
+ex1_with_ints <- oncoSimulIndiv(
+                    afd3, 
+                    model = "McFLD",
+                    mu = 1e-4,
+                    sampleEvery = 0.01,
+                    initSize = c(20000, 20000),
+                    initMutant = c("A", "B"),
+                    finalTime = 10,
+                    onlyCancer = FALSE,
+                    interventions = interventions)
+
+plot(ex1_with_ints, show="genotypes", type = "line")  
+```
+
+Where it is shown that, once we reach **T=5**, the population of B decreases, and, 
+as a result of that, since genotype A does not encounter any other competition, 
+starts to expanding the population.
+
+## Intervening over the total population {#fdfabswithints}
+
+In the previous example, the intervention is specified so only one genotype is 
+affected by it, but ¿can we define interventions that affect the total population?
+
+First, we define the scenario where the intervention will operate. In these case we
+take the example from the example @\ref(fdfabs), where genotype B has a birth rate 
+less than 1, unless genotype A exists in the population. Where create the scenario:
+
+```{r intex2}
+gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
+                    Fitness = c("1",
+                    "1 + 0.25 * (n_B > 0)",
+                    ".9 + 0.4 * (n_A > 0)"
+                    ))
+afd3 <- allFitnessEffects(genotFitness = gffd3,
+                            frequencyDependentFitness = TRUE,
+                            frequencyType = "abs")
+
+osi <- oncoSimulIndiv( afd3,
+                        model = "McFLD",
+                        onlyCancer = FALSE,
+                        finalTime = 200,
+                        mu = 1e-4,
+                        initSize = 5000,
+                        sampleEvery = 0.001)
+``` 
+Then, we plot the result:
+```{r plotintex2}
+plot(osi, show = "genotypes", type = "line")
+```
+
+Now, we want to intervene over the total population, so we define the following intervention:
+
+```{r intforintex2}
+intervention_tot_pop = list(
+        list(
+            ID            = "intOverTotPop",
+            Trigger       = "T > 40",
+            WhatHappens   = "N = N * 0.2",
+            Repetitions   = 2,   
+            Periodicity   = 20
+        )
+    )
+
+    intervention_tot_pop <- createInterventions(intervention_tot_pop, afd3)
+```
+
+Where the intervention will start at T > 40, reducing the total population to the 
+20% of the original value. This intervention will be executed with a maximum of 2 repetitions
+(3 in total if the conditions are given) with a periodicity of 20 time units. Now, we re-run 
+the simulation, but this time specifying the interventions:
+
+```{r simulationwithinterventionsintex2}
+osi_with_ints <- oncoSimulIndiv( afd3,
+                        model = "McFLD",
+                        onlyCancer = FALSE,
+                        finalTime = 200,
+                        mu = 1e-4,
+                        initSize = 5000,
+                        sampleEvery = 0.001,
+                        interventions = intervention_tot_pop)
+
+plot(osi_with_ints, show = "genotypes", type = "line")
+```
+
+(*Note that, this simulation will take long to run, since `sampleEvery` is quite small*.)
+
+As it can be seen, when T=40, T=60 and T=80, the total population decrements, but let's 
+take a closer look and see what `pops.by.time` in those instants:
+
+```{r popsbytimeintex2}
+osi_with_ints$pops.by.time[40002:40003, 1:4]
+```
+
+Here, the first column represents the time units, the second represents the population 
+of the wild-type (WT) genotype for a given time, the third column represents the population
+of genotype A for a given time and the forth column represents the population for the B genotype.
+As it can be seen, when the current time of the simulation is really close to 40, the intervention
+happens, reducing the population to the 20%. 
+
+```{r popsbytimeintex2_proof}
+pre_int_tot_pop = osi_with_ints$pops.by.time[40002:40002,1:1] + osi_with_ints$pops.by.time[40002:40002,2:2] + osi_with_ints$pops.by.time[40002:40002,3:3]+ osi_with_ints$pops.by.time[40002:40002,4:4]
+post_int_tot_pop = osi_with_ints$pops.by.time[40003:40003,1:1] + osi_with_ints$pops.by.time[40003:40003,2:2] + osi_with_ints$pops.by.time[40003:40003,3:3] + osi_with_ints$pops.by.time[40003:40003, 4:4]
+
+percentage_eliminated = (post_int_tot_pop/pre_int_tot_pop)*100
+
+paste0("The percentage of population has decreases in a ", percentage_eliminated, "%")
+```
+
+## Intervening in Rock-Paper-Scissors model in bacterial comunity {#rockscissorsints}
+
+This example is taken from the example @\ref(rockscissors) inspired by @kerr2002a. Here it is described the relationship between 3 strains of _Escherichia coli_ bacteria, that turns out 
+to be very similar to a rock-paper-scissors game. (It is strongly recommended to visit that 
+example before trying to understand this one.)
+
+We know that the equations that model the growth of the different strains are these: 
+
+\begin{align}
+  W\left(WT\right) = 1 + af_R - bf_C\\
+	W\left(C\right) = 1 + bf_{WT} - cf_R\\
+	W\left(R\right) = 1 + cf_C - af_{WT}\\
+\end{align}
+
+
+where $f_{WT}$, $f_C$ and $f_R$ are the frequencies of WT, C and R, 
+respectively. Being WT the wild-type, C the strain that produces colicin and R
+the strain that is resistant to the colicin.
+
+We create the equations and run the simulation: 
+
+```{r rpswithnoints}
+crs <- function (a, b, c){
+        data.frame(Genotype = c("WT", "C", "R"),
+        Fitness = c(paste0("1 + ", a, " * n_R/N - ", b, " * n_C/N"),
+        paste0("1 + ", b, " * n_/N - ", c, " * n_R/N"),
+        paste0("1 + ", c, " * n_C/N - ", a, " * n_/N")
+        ))
+    }
+
+afcrs1 <- allFitnessEffects(genotFitness = crs(1, 1, 1),
+frequencyDependentFitness = TRUE,
+frequencyType = "abs")
+    
+resultscrs1_noints <- oncoSimulIndiv(afcrs1,
+                            model = "McFL",
+                            finalTime = 100,
+                            mu = 1e-2,
+                            initSize = 4000,
+                            keepPhylog = TRUE,
+                            seed = NULL,
+                            errorHitMaxTries = FALSE,
+                            errorHitWallTime = FALSE)
+
+plot(resultscrs1_noints, show="genotypes", type = "line")
+
+``` 
+The WT genotype initially dominates the population, but, when the mutation starts, and the genotype
+C appears, it grows quite rapidly, since C produces the toxin (colicin) that WT is 
+sensible to. This causes to the genotype WT to decrease, allowing the resistant strain (R)
+to proliferate. Once populations of the genotypes C and R grow, C strain will lose to R strain, 
+since R resists to the toxin. Once R is dominating the total population, WT has an advantage 
+over R, since R loses some capacities by loosing the receptor to the toxin that makes it inmune,
+so the WT genotype will dominate (again the population), but ¿what happens if we decide to intervene over this loop?
+
+Let's say for example, that we do not want the R strain to proliferate, since the equations
+define that the R genotype needs the C genotype to exist and grow, if we cut the progression 
+of C, R will never dominate the population. First, we define the intervention: 
+
+```{r interventionforrps}
+int_over_C = list(
+        list(
+            ID = "Bothering R strain, by reducing C",
+            Trigger = "n_C >= 500",
+            WhatHappens = "n_C = n_C * 0.1",
+            Periodicity = 3,
+            Repetitions = Inf
+        )
+    )
+
+    final_int_over_C = createInterventions(interventions = int_over_C, genotFitness = afcrs1)
+```
+
+Where it is controled that, if the C genotype exceeds 500 individuals of population
+its population is reduced to the 1%. This will happen with a periodicity of 3 time units 
+and with no limit of repetitions. 
+
+Running the simulations again, but this time with the interventions specified: 
+
+```{r rpswithints}
+resultscrs1_noints <- oncoSimulIndiv(afcrs1,
+                            model = "McFL",
+                            finalTime = 100,
+                            mu = 1e-2,
+                            initSize = 4000,
+                            keepPhylog = TRUE,
+                            seed = NULL,
+                            errorHitMaxTries = FALSE,
+                            errorHitWallTime = FALSE,
+                            interventions = final_int_over_C)
+
+plot(resultscrs1_noints, show="genotypes", type = "line")
+
+``` 
+The peaks seen on the graphic representation of the population of strain C, are an effect of the intervention acting on strain C, reducing it to 10% of the initial population. As it is logical, since the WT strain continues to dominate the simulation, in the time interval that is created between intervention and intervention, the C strain invades the WT strain, in such a way that the population of the WT strain is reduced . Once the intervention happens, WT grows back, but not for long, as the growth of strain C reoccurs. On the other hand, the population of the R strain can never take off, because C cannot proliferate.
+
+It can be seen in the graph that, from the intervention on the population of C, the population of R decreases, but, on the other hand, when the population C grows, R also does, since the strain C is not allowed to proliferating at a frequency greater than 500 never dominates the simulation.
+
+As it can be seen, interventions are flexible, and as complex as the user wants them to be. 
+They can also be scheduled as the user wants. so they can be executed in key parts of the simulation when certain conditions are given. In conclusion, by using interventions the user can affect how the outcome of a simulation might be.
+
+\clearpage
+
+# User variables
+
+OncoSimulR grants the user the possibilty of defining some arbitrarily complex user variables that depend on the data of the simulation. This variables will be calculated durig the simulation according to the definition provided by the user, and can be then checked as a return from the program, or can be used in the definition of interventions, allowing to emulate adaptive therapy.
+Thsese user variables will be defined in a list with the following parameters:
+
+* __Name__: This will be name that will identify the variable. This attribute must be unique. 
+in the list.
+* __Value__: The value that the variable has in a given moment. When defining the variable, the user will set the initial valiue for the variable.
+
+Therefore, the user should define a list of user variables in the following way:
+
+```{r userVarsListExample}
+userVars <- list(
+    list(Name           = "user_var1",
+        Value       = 0
+    ),
+    list(Name           = "user_var2",
+        Value       = 3
+    ),
+    list(Name           = "user_var3",
+        Value       = 2.5
+    )
+)
+
+```
+
+The user can also define a list of rules that will determine when and how the user varsiables will be modified during the simulation. This is what makes the user variables be arbitrarily complex, and gives the user complete freedom when defining the variables.
+These rules must be defined using the following attributes:
+* __ID__: A parameter to identify the rule. Tis attribute must be unique.
+* __Condition__: The condition (must be true/false) that determines when the rule will be executed.
+* __Action__: The action that will take place when the rule executes, it defines what variables will be modified, and what will be their value.
+
+Similarly to the user variables, the user can define a list of rules:
+
+```{r ruleListExample}
+rules <- list(
+        list(ID = "rule_1",
+            Condition = "T > 20",
+            Action = "user_var_1 = 1"
+        ),list(ID = "rule_2",
+            Condition = "T > 30",
+            Action = "user_var_2 = 2; user_var3 = 2*N"
+        ),list(ID = "rule_3",
+            Condition = "T > 40",
+            Action = "user_var_3 = 3;user_var_2 = n_A*n_B"
+        )
+    )
+
+```
+
+As is seen in the example above, rules can depend on the current time of  the simulation (T), the current total population (N) or some genotype population n_(genotype name),
+they can also depend on birth, death or mutation rates of genotypes (b_<genotype_name>, d_<genotype_name> and m_<genotype_name> respectively) or even on some of the defined
+user variables; and can be combined as the user might want. This is possible thanks to [Exprtk library] (http://www.partow.net/programming/exprtk/), this library allow complex
+expressions to be specified. 
+
+In order to create the user variables and rules, the user must use `createUserVars` and `createRules` function, which will check that these are correctly specified and will adapt
+them so that they can be sucessfully transferred to C++. The correct way to do so is the following:
+
+```{r userVarsEscenario1Example}
+dfuv <- data.frame(Genotype = c("WT", "A", "B"),
+                    Fitness = c("1",
+                    "1 + 0.2 * (n_B > 0)",
+                    ".9 + 0.4 * (n_A > 0)"
+                    ))
+afuv <- allFitnessEffects(genotFitness = dfuv,
+                        frequencyDependentFitness = TRUE,
+                        frequencyType = "abs")
+```
+
+Note that, for now, the fitness must have `frequencyDependentFitness` as TRUE and
+`frequencyType`as "abs". 
+
+After tjis, we can call both `createUserVars ` and `createRules`: 
+
+```{r userVarsCreateUserVarsAndRulesExample}
+userVars <- createUserVars(userVars)
+rules <- createRules(rules, afuv)
+```
+
+In `createUserVars` the argument is the previously defined list of user variables.
+In `createRules`, the first argument is the previously defined list of rules, and the second one is the `fitnessEffects` object.
+
+Finally, once both objects are created, they can be passed as an argument to the `oncoSimul*` function:
+
+```{r userVarsOncoSimulIndivExample}
+uvex <- oncoSimulIndiv(
+                    afuv, 
+                    model = "McFLD",
+                    mu = 1e-4,
+                    sampleEvery = 0.001,
+                    initSize = c(20000, 20000),
+                    initMutant = c("A", "B"),
+                    finalTime = 5.2,
+                    onlyCancer = FALSE,
+		                userVars = userVars,
+                    rules = rules
+                    )
+```
+
+## Basic example with user variables {#uservarsbasicexample}
+
+The examples that will be provided in the following sections will show that the software works. In 
+this example it will be shown how a user variable vary during the simularion time, we will use a
+similar example to the one used to first illustrate the intervention funtionality, for this example
+we will make the user variable be the proportion of genotype B cells in the total population (n_B/N),
+and we will check its value every second (T%1 == 0):
+
+```{r userVarsBasicExample}
+dfuv2 <- data.frame(Genotype = c("WT", "B", "A", "B, A", "C, A"),
+                       Fitness = c("0*n_",
+                                    "1.5",
+                                    "1.002",
+                                    "1.003",
+                                    "1.004"))
+
+afuv2 <- allFitnessEffects(genotFitness = dfuv2,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "abs")
+
+userVars <- list(
+    list(Name           = "genAProp",
+        Value       = 0.5
+    ),list(Name           = "genBProp",
+        Value       = 0.5
+    ),list(Name           = "genABProp",
+        Value       = 0.0
+    ),list(Name           = "genACProp",
+        Value       = 0.0
+    )
+)
+
+userVars <- createUserVars(userVars)
+
+rules <- list(
+        list(ID = "rule_1",
+            Condition = "TRUE",
+            Action = "genBProp = n_B/N"
+        ),list(ID = "rule_2",
+            Condition = "TRUE",
+            Action = "genAProp = n_A/N"
+        ),list(ID = "rule_3",
+            Condition = "TRUE",
+            Action = "genABProp = n_A_B/N"
+        ),list(ID = "rule_4",
+            Condition = "TRUE",
+            Action = "genACProp = n_A_C/N"
+        )
+    )
+
+rules <- createRules(rules, afuv2)
+
+set.seed(1)
+uvex2 <- oncoSimulIndiv(
+                    afuv2, 
+                    model = "McFLD",
+                    mu = 1e-4,
+                    sampleEvery = 0.01,
+                    initSize = c(20000, 20000),
+                    initMutant = c("A", "B"),
+                    finalTime = 10,
+                    onlyCancer = FALSE,
+                    userVars = userVars,
+                    rules = rules
+                    )
+    
+plot(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE, FALSE)], xlab="Time", ylab="Proportion", ylim=c(0,1), type="l", col="purple")  
+lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE, FALSE)], type="l", col="#E6AB02") 
+lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE, FALSE)], type="l", col="#1B9E77") 
+lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE, FALSE)], type="l", col="#666666") 
+legend(0,1,legend=c("genABProp", "genACProp", "genAProp", "genBProp"), col=c("purple", "#E6AB02", "#1B9E77", "#666666"), lty= 1:2) 
+```
+We can see, just as we saw in the interventions example that genotype B dominates the population, but, as we used user variables that show us the proportions intead of directly the populatios, we can se the fraction of the total represented by each genotype.
+
+## User Variables Example 2 {#uservarsbasicexample2}
+
+In this example we will take a look at the difference between borth and death rates to better understand the evolution of the genotype populations.
+```{r userVarsBasicExample2}
+dfuv3 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("1",
+                               "1 + 0.2 * (n_B > 10)",
+                               ".9 + 0.4 * (n_A > 10)"
+                               ))
+afuv3 <- allFitnessEffects(genotFitness = dfuv3, 
+                         frequencyDependentFitness = TRUE)
+
+userVars <- list(
+    list(Name           = "genWTRateDiff",
+        Value       = 0.5
+    ),list(Name           = "genARateDiff",
+        Value       = 0.5
+    ),list(Name           = "genBRateDiff",
+        Value       = 0.0
+    )
+)
+
+userVars <- createUserVars(userVars)
+
+rules <- list(
+        list(ID = "rule_1",
+            Condition = "TRUE",
+            Action = "genWTRateDiff = b_-d_"
+        ),list(ID = "rule_2",
+            Condition = "TRUE",
+            Action = "genARateDiff = b_1-d_1"
+        ),list(ID = "rule_3",
+            Condition = "TRUE",
+            Action = "genBRateDiff = b_2-d_2"
+        )
+    )
+
+rules <- createRules(rules, afuv3)
+
+set.seed(1)
+
+uvex3 <- oncoSimulIndiv(afuv3,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 150,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE,
+                       userVars = userVars,
+                       rules = rules)
+
+plot(uvex3, show = "genotypes", type = "line")    
+```
+We now plot the difference between birth and death rate
+```{r userVarsBasicExamplePlotVars}
+plot(unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE)], xlab="Time", ylab="Rate Diff", xlim=c(0,150), ylim=c(-0.75,0.75), type="l", col="#1B9E77")  
+lines(unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(uvex3$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE)], type="l", col="#A6761D") 
+lines(unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(uvex3$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE)], type="l", col="#666666") 
+legend(0,0.75,legend=c("genWTRateDiff", "genARateDiff", "genBRateDiff"), col=c("#1B9E77", "#A6761D", "#666666"), lty= 1:2) 
+```
+As expected we see that the points in time when the population of some genotypes decline match the points where the difference between borth and death rate is negative.
+
+## Adaptive therapy. Interventions using user variables {#adaptiveTherapy}
+
+OncoSimulR can now emilate the effects of adaptive therapy during the simulations by using the implemented user variables when defining interventions. When doing so, we
+can create a set of interventions that vary according to the current state of the tumor in the simulation, as the user variables are constantly changing according to the
+simulaition parameters.
+
+In order to achieve this, we must first define the user variables and rules to calculate their value, as explained in the user variables section:
+
+```{r adaptiveTherapy1}
+
+dfat <- data.frame(Genotype = c("WT", "B", "A", "B, A", "C, A"),
+                       Fitness = c("0*n_",
+                                    "1.5",
+                                    "1.002",
+                                    "1.003",
+                                    "1.004"))
+
+adat <- allFitnessEffects(genotFitness = dfat,
+                          frequencyDependentFitness = TRUE,
+                          frequencyType = "abs")
+
+userVars <- list(
+    list(Name           = "user_var1",
+        Value       = 0
+    )
+)
+
+userVars <- createUserVars(userVars)
+
+rules <- list(
+        list(ID = "rule_1",
+            Condition = "n_B > n_A",
+            Action = "user_var1 = n_A-n_B"
+        ),list(ID = "rule_2",
+            Condition = "n_B > n_A",
+            Action = "user_var1 = n_B-n_A"
+        )
+    )
+
+rules <- createRules(rules, adat)
+
+```
+
+After this, we proceed to define the interventions as explained in the interventions section. When doing so, we can now use thedefined user variables in order to achieve the adaptive therapy.
+
+```{r AdaptiveTherapy2}
+interventions <- list(
+    list(ID           = "i1",
+        Trigger       = "N > 1000",
+        WhatHappens   = "N = user_var1*0.8",
+        Periodicity   = 1,
+        Repetitions   = 5
+    )
+)
+
+interventions <- createInterventions(interventions, adat)
+
+```
+
+We now proceed to the call to OncoSimulIndiv passing userVars, rules and interventions as arguments and we plot the result populations.
+```{r AdaptiveTherapy3}
+atex <- oncoSimulIndiv(
+                    adat, 
+                    model = "McFLD",
+                    mu = 1e-4,
+                    sampleEvery = 0.01,
+                    initSize = c(20000, 20000),
+                    initMutant = c("A", "B"),
+                    finalTime = 10,
+                    onlyCancer = FALSE,
+                    userVars = userVars,
+                    rules = rules,
+                    interventions = interventions
+                    )
+
+plot(atex, show = "genotypes", type = "line")    
+```
+
+# Adaptive therapy Example
+The provided example will further illustrate the functionality. 
+In this case we will set interventions that will reduce the most likely to grow genotype by checking the difference between its birth and death rates.
+
+```{r adaptiveTherapyExample1}
+dfat2 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("1",
+                               "1 + 0.2 * (n_B > 10)",
+                               ".9 + 0.4 * (n_A > 10)"
+                               ))
+afat2 <- allFitnessEffects(genotFitness = dfat2, 
+                         frequencyDependentFitness = TRUE)
+    
+
+userVars <- list(
+    list(Name           = "genADiff",
+        Value       = 0
+    ),list(Name           = "genBDiff",
+        Value       = 0
+    ),list(Name           = "genWTDiff",
+        Value       = 0
+    )
+)
+
+userVars <- createUserVars(userVars)
+
+rules <- list(
+        list(ID = "rule_1",
+            Condition = "TRUE",
+            Action = "genADiff = b_1-d_1"
+        ),list(ID = "rule_2",
+            Condition = "TRUE",
+            Action = "genBDiff = b_2-d_2"
+        ),list(ID = "rule_3",
+            Condition = "TRUE",
+            Action = "genWTDiff = b_-d_"
+        ),list(ID = "rule_4",
+            Condition = "n_A < 1000",
+            Action = "genADiff = -1"
+        ),list(ID = "rule_5",
+            Condition = "n_B < 1000",
+            Action = "genBDiff = -1"
+        ),list(ID = "rule_6",
+            Condition = "n_ < 1000",
+            Action = "genWTDiff = -1"
+        )
+    )
+
+rules <- createRules(rules, afat2)
+
+```
+
+After this, we proceed to define the interventions as explained in the interventions section. When doing so, we can now use thedefined user variables in order to achieve the adaptive therapy.
+
+```{r AdaptiveTherapyExample2}
+interventions <- list(
+    list(ID           = "i1",
+        Trigger       = "genADiff > genBDiff and genADiff > genWTDiff",
+        WhatHappens   = "n_A = n_A*0.5",
+        Periodicity   = 10,
+        Repetitions   = Inf
+    ),list(ID           = "i2",
+        Trigger       = "genBDiff > genADiff and genBDiff > genWTDiff",
+        WhatHappens   = "n_B = n_B*0.5",
+        Periodicity   = 10,
+        Repetitions   = Inf
+    ),list(ID           = "i3",
+        Trigger       = "genWTDiff > genADiff and genWTDiff > genBDiff",
+        WhatHappens   = "n_ = n_*0.5",
+        Periodicity   = 10,
+        Repetitions   = Inf
+    )
+)
+
+interventions <- createInterventions(interventions, afat2)
+
+```
+
+We now proceed to the call to OncoSimulIndiv passing userVars, rules and interventions as arguments and we plot the result populations.
+```{r AdaptiveTherapyExample3}
+
+set.seed(1) ## for reproducibility
+atex2 <- oncoSimulIndiv(afat2,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 200,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE,
+                       userVars = userVars,
+                       rules = rules,
+                       interventions = interventions)
+
+plot(atex2, show = "genotypes", type = "line")
+```
+```{r AdaptiveTherapyExample3Plots}
+plot(unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(atex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE)], xlab="Time", ylab="RateDiff", ylim=c(-0.75,0.75), type="l", col="#A6761D")  
+lines(unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(atex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE)], type="l", col="#666666") 
+lines(unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(atex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE)], type="l", col="#1B9E77") 
+legend(0,0.75,legend=c("genADiff", "genBDiff", "genWTDiff"), col=c("#A6761D", "#666666", "#1B9E77"), lty= 1:2) 
+```
+We can appreciate that the interventions always occur on the genotype B as this is the one with the highest birth and death rate difference (as we ignore WT because it has no mutations).
+
+# Another example of adaptive therapy {#adaptiveTherapyComplexExample}
+Finally we will try and examplify a more real scenario where we have a continuous specific treatment to keep the tumor at bay, if the mutated cells are enough to be detected, but if we detect a sudden increase in some mutated genotype we switch the treatment to focus that growth, also, if the tumor grows too big, we simulate a quirurgic intervention.
+
+```{r adaptiveTherapyComplexExample}
+dfat3 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("1",
+                               "0.8 + 0.2 * (n_B > 10) + 0.1 (n_A > 10)",
+                               "0.8 + 0.25 * (n_B > 10)"
+                               ))
+afat3 <- allFitnessEffects(genotFitness = dfat3, 
+                         frequencyDependentFitness = TRUE)
+    
+
+userVars <- list(
+    list(Name           = "lastMeasuredA",
+        Value       = 0
+    ),list(Name           = "lastMeasuredB",
+        Value       = 0
+    ),list(Name           = "previousA",
+        Value       = 0
+    ),list(Name           = "previousB",
+        Value       = 0
+    ),list(Name           = "lastTime",
+        Value       = 0
+    ),list(Name           = "measure",
+        Value       = 0
+    ),list(Name           = "treatment",
+        Value       = 0
+    )
+)
+
+userVars <- createUserVars(userVars)
+
+rules <- list(
+       list(ID = "rule_1",
+            Condition = "T - lastTime < 10",
+            Action = "measure = 0"
+        ),list(ID = "rule_2",
+            Condition = "T - lastTime >= 10",
+            Action = "measure = 1;lastTime = T"
+        ),list(ID = "rule_3",
+            Condition = "measure == 1",
+            Action = "previousA = lastMeasuredA;previousB = lastMeasuredB;lastMeasuredA = n_A;lastMeasuredB = n_B"
+        ), list(ID = "rule_4",
+            Condition = "TRUE",
+            Action = "treatment = 0"
+        ), list(ID = "rule_5",
+            Condition = "lastMeasuredA + lastMeasuredB > 100",
+            Action = "treatment = 1"
+        ), list(ID = "rule_6",
+            Condition = "lastMeasuredA - PreviousA > 500",
+            Action = "treatment = 2"
+        ),list(ID = "rule_7",
+            Condition = "lastMeasuredB - PreviousB > 500",
+            Action = "treatment = 3"
+        ), list(ID = "rule_8",
+            Condition = "lastMeasuredA - PreviousA > 500 and lastMeasuredB - PreviousB > 500",
+            Action = "treatment = 4"
+        )
+    )
+
+rules <- createRules(rules, afat3)
+
+
+interventions <- list(
+    list(ID           = "basicTreatment",
+        Trigger       = "treatment == 1",
+        WhatHappens   = "N = 0.8*N",
+        Periodicity   = 10,
+        Repetitions   = Inf
+    ),list(ID           = "treatmentOverA",
+        Trigger       = "treatment == 2 or treatment == 4",
+        WhatHappens   = "n_B = n_B*0.3",
+        Periodicity   = 20,
+        Repetitions   = Inf
+    ),list(ID           = "treatmentOverB",
+        Trigger       = "treatment == 3 or treatment == 4",
+        WhatHappens   = "n_B = n_B*0.3",
+        Periodicity   = 20,
+        Repetitions   = Inf
+    ),list(ID           = "intervention",
+        Trigger       = "lastMeasuredA+lastMeasuredB > 5000",
+        WhatHappens   = "N = 0.1*N",
+        Periodicity   = 70,
+        Repetitions   = Inf
+    )
+)
+
+interventions <- createInterventions(interventions, afat3)
+
+set.seed(1) ## for reproducibility
+atex2 <- oncoSimulIndiv(afat3,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 200,
+                       mu = 1e-4,
+                       initSize = 5000, 
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE,
+                       userVars = userVars,
+                       rules = rules,
+                       interventions = interventions)
+
+plot(atex2, show = "genotypes", type = "line")
+```
+We clearley see here how the therapy adapts to the circumstances cutting genotype B when it starts to grow rapidly, 
+and then making a major intervention once A grows so big that the total mutated cell exceed the set amount.
+
+# Adaptive therapy canonical example from Hansen papers
+We now simulate a canonical adaptive therapy example as those shown in Hansens papers.
+We start by creating the scenario with 2 types of cells, A will be treatment-resistant and slow growing whereas B will be faster growing but treatment susceptible.
+```{r HansenExample1}
+dfat4 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("n_/n_",
+                               "1.005",
+                               "1.1"
+                               ))
+afat4 <- allFitnessEffects(genotFitness = dfat4, 
+                         frequencyDependentFitness = TRUE)
+```
+
+We first execute this scenario without adaptive therapy to check what the outcome would be. We therefore set the standard treatment by defining the following intervention:
+```{r HansenExample2}
+interventions <- list(
+    list(ID           = "i1",
+        Trigger       = "T > 10",
+        WhatHappens   = "n_B = n_B*0.8",
+        Periodicity   = 1,
+        Repetitions   = Inf
+    )
+)
+
+interventions <- createInterventions(interventions, afat4)
+```
+
+We run the simulation and plot the results.
+
+```{r HansenExample3}
+
+set.seed(1) ## for reproducibility
+atex4 <- oncoSimulIndiv(afat4,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 2000,
+                       mu = 1e-4,
+                       initSize = c(10000, 50, 1000), 
+                       initMutant = c("WT", "A", "B"),
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE,
+                       interventions = interventions)
+
+plot(atex4, show = "genotypes", type = "line")
+```
+
+We now set the same initial scenario but this time we apply adaptive therapy.
+
+```{r HansenExampleAT1}
+dfat5 <- data.frame(Genotype = c("WT", "A", "B"), 
+                   Fitness = c("n_/n_",
+                               "1.005",
+                               "1.1"
+                               ))
+afat5 <- allFitnessEffects(genotFitness = dfat5, 
+                         frequencyDependentFitness = TRUE)
+```
+
+In order to apply adaptive therapy we set the following variables and rules
+
+```{r HansenExampleAT2}
+userVars <- list(
+    list(Name           = "measure",
+        Value       = 0
+    ),list(Name           = "lastTime",
+        Value       = 0
+    ),list(Name           = "treatment",
+        Value       = 0
+    ),list(Name           = "totalPopMeasured",
+        Value       = 0
+    )
+)
+
+userVars <- createUserVars(userVars)
+
+rules <- list(
+        list(ID = "rule_1",
+            Condition = "T - lastTime < 10",
+            Action = "measure = 0"
+        ),list(ID = "rule_2",
+            Condition = "T - lastTime >= 10",
+            Action = "measure = 1;lastTime = T"
+        ),list(ID = "rule_3",
+            Condition = "measure == 1",
+            Action = "totalPopMeasured = n_A + n_B"
+        ),list(ID = "rule_4",
+            Condition = "totalPopMeasured < 2000",
+            Action = "treatment = 0"
+        ),list(ID = "rule_5",
+            Condition = "totalPopMeasured >= 2000",
+            Action = "treatment = 1"
+        )
+    )
+
+rules <- createRules(rules, afat5)
+```
+
+We define the same intervention as before but we apply it only when the adaptive therapy determines so.
+
+```{r HansenExampleAT3}
+interventions <- list(
+    list(ID           = "i1",
+        Trigger       = "treatment == 1",
+        WhatHappens   = "n_B = n_B*0.8",
+        Periodicity   = 1,
+        Repetitions   = Inf
+    )
+)
+
+interventions <- createInterventions(interventions, afat5)
+```
+
+We run the simulation and plot the results.
+
+```{r HansenExampleAT4}
+
+set.seed(1) ## for reproducibility
+atex5 <- oncoSimulIndiv(afat5,
+                       model = "McFLD", 
+                       onlyCancer = FALSE, 
+                       finalTime = 2000,
+                       mu = 1e-4,
+                       initSize = c(10000, 50, 1000), 
+                       initMutant = c("WT", "A", "B"),
+                       keepPhylog = FALSE,
+                       seed = NULL, 
+                       errorHitMaxTries = FALSE, 
+                       errorHitWallTime = FALSE,
+                       userVars = userVars,
+                       rules = rules,
+                       interventions = interventions)
+
+plot(atex5, show = "genotypes", type = "line")
+```
+
+Comparing these results with the ones without adaptive therapy we see that by interrupting the treatment before the complete elimination of the susceptible treatment we achieve
+the desired effect, that is the control of the resistant genotype by maintaining certain degree of cellular competition between genotypes.
+
+\clearpage
 
 # Simulating therapeutic interventions that depend on time {#timefdf}
 

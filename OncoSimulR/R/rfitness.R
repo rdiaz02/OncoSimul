@@ -282,7 +282,7 @@ rfitness <- function(g, c= 0.5,
                                  min = 1e-10,
                                  max = 1e-9)
         }
-        m <- cbind(m, Fitness = fi)
+        m <- cbind(m, Birth = fi)
         if(!is_null_na(min_accessible_genotypes)) {
             ## num_accessible_genotypes <- count_accessible_g(m, accessible_th)
             ## Recall accessibleGenotypes includes the wt, if accessible.

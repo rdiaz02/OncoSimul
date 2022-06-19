@@ -51,9 +51,12 @@ struct genesWithoutInt {
 struct fitnessLandscape_struct {
   std::vector<int> NumID;
   std::vector<std::string> names;
-  std::map<std::string, double> flmap;
-  std::map<std::string, std::string> flFDFmap; //New line to define flFDFmap
-  std::map<std::string, std::string> flfVarsmap; //New line to define flfVarsmap
+  std::map<std::string, double> flbmap;
+  std::map<std::string, double> fldmap;
+  std::map<std::string, std::string> flFDBmap; //New line to define flFDBmap
+  std::map<std::string, std::string> flfVarsBmap; //New line to define flfVarsBmap
+  std::map<std::string, std::string> flFDDmap; //New line to define flFDDmap
+  std::map<std::string, std::string> flfVarsDmap; //New line to define flfVarsDmap
 };
 
 
@@ -110,8 +113,10 @@ struct fitnessEffectsAll {
   std::vector<int> drv; // Sorted.
   genesWithoutInt genesNoInt;
   // zz:
-  std::vector<std::string> fVars; //New line to store fVars
-  bool frequencyDependentFitness; //New line to discriminate true/false
+  std::vector<std::string> fVarsb; //New line to store fVars of birth
+  std::vector<std::string> fVarsd; //New line to store fVars of death
+  bool frequencyDependentBirth; //New line to discriminate true/false
+  bool frequencyDependentDeath; //New line to discriminate true/false
   std::string frequencyType; // New line to store the type of frequency
   fitnessLandscape_struct fitnessLandscape;
 };
@@ -129,8 +134,10 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.Gene_Module_tabl.resize(0);
   f.allGenes.resize(0);
   f.drv.resize(0);
-  f.fVars.resize(0);//new line to initialize fVars
-  f.frequencyDependentFitness = false;
+  f.fVarsb.resize(0);//new line to initialize fVarsb
+  f.fVarsd.resize(0);//new line to initialize fVarsd
+  f.frequencyDependentBirth = false;
+  f.frequencyDependentDeath = false;
   f.frequencyType.clear();
   f.genesNoInt.shift = -99L;
   f.genesNoInt.NumID.resize(0);
@@ -138,9 +145,12 @@ inline fitnessEffectsAll nullFitnessEffects() {
   f.genesNoInt.s.resize(0);
   f.fitnessLandscape.NumID.resize(0);
   f.fitnessLandscape.names.resize(0);
-  f.fitnessLandscape.flmap.clear();
-  f.fitnessLandscape.flFDFmap.clear();//new line to initialize flFDFmap
-  f.fitnessLandscape.flfVarsmap.clear();//new line to initialize flFDFmap
+  f.fitnessLandscape.flbmap.clear();
+  f.fitnessLandscape.flFDBmap.clear();//new line to initialize flFDBmap
+  f.fitnessLandscape.flfVarsBmap.clear();//new line to initialize flfVarsBmap
+  f.fitnessLandscape.fldmap.clear();
+  f.fitnessLandscape.flFDDmap.clear();//new line to initialize flFDDmap
+  f.fitnessLandscape.flfVarsDmap.clear();//new line to initialize flfVarsDmap
   return f;
 }
 
@@ -310,5 +320,21 @@ void addToPOM(POM& pom,
 
 void addToPOM(POM& pom,
 	      const std::string string);
+
+//Right now, I need these functions to be public
+std::map<std::string, double> evalFVars(const fitnessEffectsAll& F,
+	const std::vector<Genotype>& Genotypes,
+	const std::vector<spParamsP>& popParams,
+    bool birth);
+
+std::map<std::string, double> evalFVarsFitness(const fitnessEffectsAll& F,
+					const std::vector<Genotype>& Genotypes,
+					const std::vector<spParamsP>& popParams,
+          std::string value);
+
+std::vector<int> stringVectorToIntVector(const std::string str);
+
+int findPositionInGenotypes(const std::vector<Genotype>& Genotypes,
+	const std::vector<int> genotype);
 
 #endif
