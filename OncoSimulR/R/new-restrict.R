@@ -1084,7 +1084,6 @@ allFitnessORMutatorEffects <- function(rT = NULL,
       ## single canonical object used.
 
       rm(fitnessLandscape_df)
-      suppressWarnings(try(rm(fitnessLandscape), silent = TRUE))
       if(frequencyDependentBirth) {
         
         if (!is.null(frequencyDependentFitness)) {
