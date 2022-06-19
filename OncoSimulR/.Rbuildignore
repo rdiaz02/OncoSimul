@@ -20,3 +20,4 @@ src/TAGS
 src/.ccls-root
 ^doc$
 ^Meta$
+^.ccls-cache
