@@ -25,7 +25,7 @@ void parseAction(UserVarsInfo& uvif,
 
 UserVarsInfo addRule(UserVarsInfo uvif, Rule r){
 
-    for(int i=0; i<uvif.rules.size(); i++){
+    for(size_t i = 0; i<uvif.rules.size(); i++){
         if(compareRules(uvif.rules[i], r) == 0){
             Rcpp::Rcout << "There are two rules that are the same:";
             printRule(uvif.rules[i]);
@@ -128,7 +128,7 @@ int compareRules(Rule r1, Rule r2){
 
 UserVarsInfo destroyRule(UserVarsInfo uvif, Rule r){
     
-    for (int i=0; i<uvif.rules.size(); i++){
+    for (size_t i = 0; i<uvif.rules.size(); i++){
         if(compareRules(uvif.rules.at(i), r) == 0){
             uvif.rules.erase(uvif.rules.begin() + i);
             return uvif;

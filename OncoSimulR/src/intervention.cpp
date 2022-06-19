@@ -35,7 +35,7 @@ void reduceTotalPopulation(InterventionsInfo& iif,
 InterventionsInfo addIntervention(InterventionsInfo iif, Intervention i){
     //TODO: controlar que no exista ya una intervención con las mismas caracteristicas
 
-    for(int k=0; k<iif.interventions.size(); k++){
+    for(size_t k=0; k<iif.interventions.size(); k++){
         if(compareInterventions(iif.interventions[k], i) == 0){
             Rcpp::Rcout << "There are two interventions that are the same:";
             printIntervention(iif.interventions[k]);
@@ -142,7 +142,7 @@ int compareInterventions(Intervention i1, Intervention i2){
 
 InterventionsInfo destroyIntervention(InterventionsInfo iif, Intervention i){
     
-    for (int z=0; z<iif.interventions.size(); z++){
+    for (size_t z = 0; z < iif.interventions.size(); z++){
         if(compareInterventions(iif.interventions.at(z), i) == 0){
             iif.interventions.erase(iif.interventions.begin() + z);
             return iif;
