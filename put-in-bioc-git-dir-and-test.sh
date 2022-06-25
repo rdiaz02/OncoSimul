@@ -53,6 +53,8 @@ cp OncoSimulR/tests/testthat.R ../BioConductor-git/OncoSimulR/tests/.
 cp OncoSimulR/tests/testthat/*.R ../BioConductor-git/OncoSimulR/tests/testthat/.
 cp OncoSimulR/tests/manual/*.R ../BioConductor-git/OncoSimulR/tests/manual/.
 cp OncoSimulR/tests/manual/*.txt ../BioConductor-git/OncoSimulR/tests/manual/.
+cp OncoSimulR/tests/manual/user_vars/* ../BioConductor-git/OncoSimulR/tests/manual/user_vars/.
+
 cp OncoSimulR/tests/*.txt ../BioConductor-git/OncoSimulR/tests/.
 
 cp OncoSimulR/man/*.Rd ../BioConductor-git/OncoSimulR/man/.
