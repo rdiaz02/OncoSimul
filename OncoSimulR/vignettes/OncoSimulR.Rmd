@@ -12290,7 +12290,7 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 # Death and Birth specification
 
-With the changes introduced in mid 2021 by Alberto Gonzalez Klein, the user is allowed to specify arbitrary
+With the changes introduced in mid 2021 by Alberto González Klein, the user is allowed to specify arbitrary
 death rates in the same way fitness could be specified, instead of using the
 fixed death rate given by the chosen model. However, the introduction of
 explicit death rates makes the fitness nomenclature confusing and inconsistent.
