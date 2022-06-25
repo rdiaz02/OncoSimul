@@ -13,6 +13,14 @@ Authors@R: c(
               person("Mark", "Taylor", role = "ctb",
 	        email = "ningkiling@gmail.com",
 		comment = "plot.stream, plot.stacked"),
+	      person("Niklas", "Endres", role = "ctb",
+	             comment = "vignette examples, freq-dep-fitness time"),
+              person("Javier", "Mu~noz Haro", role = "aut",
+		comment = "interventions"),
+	      person("Alberto", "Gonzalez Klein", role = "aut",
+	        comment = "user-specified death rates"),
+	      person("Javier", "Lopez Cano", role = "aut",
+	        comment = "user-defined variables"),	
 	      person("Arash", "Partow", role = "ctb", comment = "ExprTk"),
 	      person("Sophie", "Brouillet", role = "ctb", comment = "MAGELLAN"),
 	      person("Sebastian", "Matuszewski", role = "ctb",
@@ -90,13 +98,15 @@ Authors@R: c(
 	      person("Rafael", "Barrero Rodriguez", role = "ctb",
 	             comment = "vignette examples"),
 	      person("Silvia", "Talavera Marcos", role = "ctb",
-	             comment = "vignette examples"),
-	      person("Niklas", "Endres", role = "ctb",
-	             comment = "vignette examples, freq-dep-fitness time")
+	             comment = "vignette examples")
 	      )  
 Author: Ramon Diaz-Uriarte [aut, cre],
 	Sergio Sanchez-Carrillo [aut],
 	Juan Antonio Miguel Gonzalez [aut],
+	Alberto Gonzalez Klein [aut],
+	Javier Mu\~noz Haro [aut],
+	Javier Lopez Cano [aut],
+	Niklas Endres [ctb],  
 	Mark Taylor [ctb],
 	Arash Partow [ctb],
 	Sophie Brouillet [ctb],
@@ -140,8 +150,7 @@ Author: Ramon Diaz-Uriarte [aut, cre],
 	Guillermo Garcia Hoyos [ctb],
 	Rosalia Palomino Cabrera [ctb],
 	Rafael Barrero Rodriguez [ctb],
-	Silvia Talavera Marcos [ctb],
-	Niklas Endres [ctb]  
+	Silvia Talavera Marcos [ctb]	
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in
     asexual populations, with special focus on cancer progression.
