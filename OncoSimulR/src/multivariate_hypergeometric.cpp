@@ -4,7 +4,7 @@
 // License: GPL-2
 // Downloaded on 2020-03-18
 
-#include "multivariant_hypergeometric.h"
+#include "multivariate_hypergeometric.h"
 
 double rng_unif() {
   double u;
