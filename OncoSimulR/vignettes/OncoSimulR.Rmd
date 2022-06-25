@@ -12418,8 +12418,9 @@ maintain the desired size of population (which is the initial size of the
 population). On the other hand, if we do not specify the death rates they will
 be set to the required value.
 
-# Interventions
+# Simulating therapeutic interventions and adaptive therapy, and using user-defined variables
 
+## Interventions
 (*Note that the examples below are not used because of their
 biological realism, but rather to show some key features of the
 software*)
@@ -12798,7 +12799,7 @@ They can also be scheduled as the user wants. so they can be executed in key par
 
 \clearpage
 
-# User variables
+## User variables
 
 OncoSimulR grants the user the possibilty of defining some arbitrarily complex user variables that depend on the data of the simulation. This variables will be calculated durig the simulation according to the definition provided by the user, and can be then checked as a return from the program, or can be used in the definition of interventions, allowing to emulate adaptive therapy.
 Thsese user variables will be defined in a list with the following parameters:
@@ -13114,7 +13115,7 @@ atex <- oncoSimulIndiv(
 plot(atex, show = "genotypes", type = "line")    
 ```
 
-# Adaptive therapy Example
+## Adaptive therapy Example
 The provided example will further illustrate the functionality. 
 In this case we will set interventions that will reduce the most likely to grow genotype by checking the difference between its birth and death rates.
 
@@ -13220,7 +13221,7 @@ legend(0,0.75,legend=c("genADiff", "genBDiff", "genWTDiff"), col=c("#A6761D", "#
 ```
 We can appreciate that the interventions always occur on the genotype B as this is the one with the highest birth and death rate difference (as we ignore WT because it has no mutations).
 
-# Another example of adaptive therapy {#adaptiveTherapyComplexExample}
+## Another example of adaptive therapy {#adaptiveTherapyComplexExample}
 Finally we will try and examplify a more real scenario where we have a continuous specific treatment to keep the tumor at bay, if the mutated cells are enough to be detected, but if we detect a sudden increase in some mutated genotype we switch the treatment to focus that growth, also, if the tumor grows too big, we simulate a quirurgic intervention.
 
 ```{r adaptiveTherapyComplexExample}
