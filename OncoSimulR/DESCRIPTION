@@ -152,24 +152,7 @@ Author: Ramon Diaz-Uriarte [aut, cre],
 	Rafael Barrero Rodriguez [ctb],
 	Silvia Talavera Marcos [ctb]	
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
-Description: Functions for forward population genetic simulation in
-    asexual populations, with special focus on cancer progression.
-    Fitness can be an arbitrary function of genetic interactions between
-    multiple genes or modules of genes, including epistasis, order
-    restrictions in mutation accumulation, and order effects.  Fitness can
-    also be a function of the relative and absolute frequencies of other
-    genotypes (i.e., frequency-dependent fitness). Mutation rates can
-    differ between genes, and we can include mutator/antimutator genes (to
-    model mutator phenotypes). Simulating multi-species scenarios and
-    therapeutic interventions is also possible. Simulations use
-    continuous-time models and can include driver and passenger genes and
-    modules.  Also included are functions for: simulating random DAGs of
-    the type found in Oncogenetic Trees, Conjunctive Bayesian Networks,
-    and other cancer progression models; plotting and sampling from single
-    or multiple realizations of the simulations, including single-cell
-    sampling; plotting the parent-child relationships of the clones;
-    generating random fitness landscapes (Rough Mount Fuji, House of
-    Cards, additive, NK, Ising, and Eggbox models) and plotting them.
+Description: Functions for forward population genetic simulation in asexual populations, with special focus on cancer progression. Fitness can be an arbitrary function of genetic interactions between multiple genes or modules of genes, including epistasis, order restrictions in mutation accumulation, and order effects. Fitness (including just birth, just death, or both and death) can also be a function of the relative and absolute frequencies of other genotypes (i.e., frequency-dependent fitness). Mutation rates can differ between genes, and we can include mutator/antimutator genes (to model mutator phenotypes). Simulating multi-species scenarios and therapeutic interventions, including adaptive therapy, is also possible. Simulations use continuous-time models and can include driver and passenger genes and modules. Also included are functions for: simulating random DAGs of the type found in Oncogenetic Trees, Conjunctive Bayesian Networks, and other cancer progression models; plotting and sampling from single or multiple realizations of the simulations, including single-cell sampling; plotting the parent-child relationships of the clones; generating random fitness landscapes (Rough Mount Fuji, House of Cards, additive, NK, Ising, and Eggbox models) and plotting them.
 biocViews: BiologicalQuestion, SomaticMutation
 License: GPL (>= 3)
 URL: https://github.com/rdiaz02/OncoSimul, https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/
