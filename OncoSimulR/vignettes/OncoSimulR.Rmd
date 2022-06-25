@@ -12290,7 +12290,7 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 # Death and Birth specification
 
-With the new version of the package the user is allowed to specify arbitrary
+With the changes introduced in mid 2021 by Alberto Gonzalez Klein, the user is allowed to specify arbitrary
 death rates in the same way fitness could be specified, instead of using the
 fixed death rate given by the chosen model. However, the introduction of
 explicit death rates makes the fitness nomenclature confusing and inconsistent.
@@ -12419,6 +12419,8 @@ population). On the other hand, if we do not specify the death rates they will
 be set to the required value.
 
 # Simulating therapeutic interventions and adaptive therapy, and using user-defined variables
+
+(Most of the code that implements this functionality has been added by Javier Muñoz Haro and Javier López Cano. Authors for specific examples are listed in the corresponding places.)
 
 ## Interventions
 (*Note that the examples below are not used because of their
