@@ -6,8 +6,6 @@
 
 # OncoSimul
 
-**This README contains comments specific to the frequency-dependent-fitness branch**
-
 Code for forward population genetic simulation in asexual populations,
 with special focus on cancer progression.  Fitness can be an arbitrary
 function of genetic interactions between multiple genes or modules of
@@ -26,8 +24,9 @@ including single-cell sampling; plotting the parent-child relationships of
 the clones; generating random fitness landscapes (Rough Mount Fuji, House
 of Cards, additive NK, Ising, and Eggbox models) and plotting them.
 
+There is also new functionality to allow for frequency-dependent fitness, interventions (including adaptive therapy), user specification of both birth and death rates, and user-defined variables that can be used for interventions.
 
-New functionality to allow for **frequency-dependent fitness has been added**.
+
 
 
 The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
