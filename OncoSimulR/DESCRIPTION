@@ -28,7 +28,7 @@ Authors@R: c(
 	      person("Harry", "Annoni", role = "ctb", comment = "MAGELLAN"),
 	      person("Luca", "Ferretti", role = "ctb", comment = "MAGELLAN"),	      
 	      person("Guillaume", "Achaz", role = "ctb", comment = "MAGELLAN"),
-	      person("Wolodzko", "Tymoteusz", role = "ctb", comment = "multivariate hypergeometric")
+	      person("Wolodzko", "Tymoteusz", role = "ctb", comment = "multivariate hypergeometric"),
 	      person("Guillermo", "Gorines Cordero", role = "ctb",
 	             comment = "rfitness"),
 	      person("Ivan", "Lorca Alonso", role = "ctb",
