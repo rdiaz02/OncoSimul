@@ -13038,7 +13038,7 @@ As expected we see that the points in time when the population of some genotypes
 
 ## Adaptive therapy. Interventions using user variables {#adaptiveTherapy}
 
-OncoSimulR can now emilate the effects of adaptive therapy during the simulations by using the implemented user variables when defining interventions. When doing so, we
+OncoSimulR can now emilate the effects of adaptive therapy (@hansen2020a; @hansen2020b) during the simulations by using the implemented user variables when defining interventions. When doing so, we
 can create a set of interventions that vary according to the current state of the tumor in the simulation, as the user variables are constantly changing according to the
 simulaition parameters.
 
@@ -13330,8 +13330,13 @@ plot(atex2, show = "genotypes", type = "line")
 We clearley see here how the therapy adapts to the circumstances cutting genotype B when it starts to grow rapidly, 
 and then making a major intervention once A grows so big that the total mutated cell exceed the set amount.
 
-# Adaptive therapy canonical example from Hansen papers
-We now simulate a canonical adaptive therapy example as those shown in Hansens papers.
+## Adaptive therapy: a  canonical example 
+We now simulate a canonical adaptive therapy example such as the one shown in examples b and c of Figure 1 in @hansen2020a.
+
+<!-- El paper de Hansen en el que me he fijado principalmente es el de "Modifying Adaptive Therapy to Enhance Competitive Suppression"  -->
+
+<!-- Concretamente he intentado replicar los ejemplos b y c de la figura 1, estableciendo un escenario inicial idéntico en ambos casos, y aplicando en una un tratamiento continuo (consiguiendo que, como en b, las células susceptibles se eliminen y las resistentes se dirparen) y en otra empleando terapia adaptativa manteniendo la población controlada y consiguiendo que las células resistentes no se disparen hasta mucho más adelante en la evolución del tumor (sería la simulación del caso c), y he comparado un poco los resultados para ilustrar bien el tema de terapia adaptativa.  -->
+
 We start by creating the scenario with 2 types of cells, A will be treatment-resistant and slow growing whereas B will be faster growing but treatment susceptible.
 ```{r HansenExample1}
 dfat4 <- data.frame(Genotype = c("WT", "A", "B"), 
