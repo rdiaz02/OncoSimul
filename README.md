@@ -298,13 +298,21 @@ version](https://repositorio.uam.es/bitstream/handle/10486/690422/simul_evol_epi
 If you use the package in publications **please cite the Bioinformatics paper**.
 
 
-The frequency-dependent fitness functionality is based on [Sergio
-Sanchez-Carrilo's Master's
-thesis](https://repositorio.uam.es/handle/10486/685417) (see also file
-['miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf'](miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf)
-for additional features that were not described in the original
-thesis). Additional functionality has been added by Juan Antonio Miguel
-González. 
+## Major contributors and main additions to the code
+
+The original implementation is by Ramon Diaz-Uriarte. 
+
+The frequency-dependent fitness functionality is based on [Sergio Sanchez-Carrilo's Master's thesis](https://repositorio.uam.es/handle/10486/685417) (see also file ['miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf'](miscell-files/Sergio_Sanchez-Carillo-improvements-post-TFM.pdf) for additional features that were not described in the original thesis) and additional functionality has been added by Juan Antonio Miguel González (2020). Ramon Diaz-Uriarte further simplified and generalized the specification of fitness under frequency-dependence.
+
+Work by Niklas Endres (late 2019 to early 2020) allows to use T (time) in fitness; fitness could already be made to depend on population sizes, and now, then, also on time. This allows for complex scenarios, as illustrated in the vignette (but adaptive therapy was not really possible as we cannot condition on previous states arbitrarily). 
+
+Work by Javier Muñoz Haro (spring 2021) makes interventions possible on population sizes; these can take place at arbitrary times, be repeated, etc. We can have extremely flexible intervention mechanisms, also as illustrated in the vignette (but adaptive therapy still not possible as we cannot use arbitrary user variables to condition on previous states of the population). 
+
+Work by Alberto González Klein (spring 2021) allows users to specify death rates. Before this work, death rates where not user-modifiable: they were 1 for the exponential model and a fixed function of population size in the McFarland model. Now, users can specify death rates and use frequency-dependent models that affect birth, or death, or both.
+
+Work by Javier López Cano (spring 2022) unifies the additions by Javier Muñoz Haro and Alberto González Klein and also makes user variables possible; now we can emulate adaptive therapy (see vignette). (Note, though, that two minor limitations remain: (a) we cannot change mutation rates; (b) it is unclear that we can modify fitness based on user-variables.)
+
+
 
 # Licenses and copyright
 
