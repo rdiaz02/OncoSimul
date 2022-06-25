@@ -2,11 +2,8 @@
 <!-- [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rdiaz02/OncoSimul?branch=master&svg=true)](https://ci.appveyor.com/project/rdiaz02/OncoSimul) -->
 <!-- [![codecov.io](https://codecov.io/github/rdiaz02/OncoSimul/coverage.svg?branch=master)](https://codecov.io/github/rdiaz02/OncoSimul?branch=master) -->
 
-# NOTE: development is taking place in the freq-dep-fitness branch
-All development has been taking place in the freq-dep-fitness branch for a
-while. That code is also making its way to BioConductor. So soon what is
-the freq-dep-fitness branch will become master.
-
+# NOTE: development is no longer taking place in this branch. 
+- Use master
 
 # OncoSimul
 
