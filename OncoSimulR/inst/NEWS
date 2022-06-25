@@ -1,3 +1,11 @@
+Changes in version 3.99.1 (2022-06-25):
+	- Users can specify birth and death rates as they want, including
+	  making both or just one frequency-dependent (thanks to Alberto
+	  González Klein).
+	- Interventions (thanks to Javier Muñoz Haro).
+	- User-defined variables and adaptive therapy (thanks to Javier López
+	  Cano).
+
 Changes in version 3.3.0 (2021-10-27):
 	- Bump version number for BioC
 		
