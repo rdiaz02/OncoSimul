@@ -136,7 +136,7 @@ genotypes, as in game theory and adaptive dynamics. This makes it
 possible to model predation and parasitism, cooperation and
 mutualism, and commensalism. It also allows to model therapeutic
 interventions (where fitness changes at specified time points or as
-a function of the total populations size).
+a function of the total populations size or as a function of arbitrary user-defined variables); in particular, it is possible to emulate adaptive therapy.
 
 Simulations can start from arbitrary initial population compositions
 and it is also possible to simulate multiple species. Thus, simulations
