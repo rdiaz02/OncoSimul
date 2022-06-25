@@ -15,7 +15,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # we load some functions that are needed to compile
-source("./R/new-restrict.R")
+# source("./R/new-restrict.R")
 
 # this function create the interventions, verifies its correct  specification and returns those interventions
 # so they can be processed correctly by C++

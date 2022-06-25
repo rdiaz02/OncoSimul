@@ -15,7 +15,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # we load some functions that are needed to compile
-source("./R/new-restrict.R")
+# source("./R/new-restrict.R")
 
 # this function create the user_vars, varifies they are correct and returns those user_vars
 # so they can be processed correctly by C++
