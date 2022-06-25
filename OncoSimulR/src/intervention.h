@@ -22,7 +22,7 @@
 #include "bnb_common.h"
 #include "new_restrict.h"
 #include "user_var.h"
-#include "multivariant_hypergeometric.h"
+#include "multivariate_hypergeometric.h"
 #include <cfloat>
 #include <limits>
 #include <Rcpp.h>
