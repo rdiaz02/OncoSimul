@@ -359,6 +359,8 @@ The file was originally named `exprtk.hpp`; to conform to R's
 requirements, it was renamed as `exprt.h`
 
 
+The code in `OncoSimulR/src/multivariate_hypergeometric.cpp` and `OncoSimulR/src/multivariate_hypergeometric.h` is from [extraDistr](https://github.com/twolodzko/extraDistr). This code is copyright Tymoteusz Wolodzko, and is licensed under the GNU GPL 2.
+
 
 The code in `miscell-files/randutils.h` is copyright Melissa E. O'Neill,
 and is licensed under "The MIT License (MIT)" in the terms explained in
