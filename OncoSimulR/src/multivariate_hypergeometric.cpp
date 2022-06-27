@@ -1,4 +1,5 @@
-// From several files from R package extraDistr
+// Code taken from several files from R package extraDistr
+// (shared.cpp, shared_inline.h, multivariate_hypergeometric.cpp)
 // https://github.com/twolodzko/extraDistr
 // Author: Tymoteusz Wolodzko
 // License: GPL-2
@@ -112,7 +113,8 @@ double finite_max_int(const Rcpp::NumericVector& x) {
   return max_x;
 }
 
-
+// Renaming of  cpp_rmvhyper in
+// https://github.com/twolodzko/extraDistr/blob/master/src/multivariate-hypergeometric-distribution.cpp
 Rcpp::NumericMatrix my_rmvhyper(
     const int nn,
     const Rcpp::NumericMatrix n,

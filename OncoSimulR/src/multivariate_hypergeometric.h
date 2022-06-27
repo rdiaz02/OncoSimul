@@ -1,3 +1,11 @@
+// Code from file shared.h in the R package extraDistr
+// https://github.com/twolodzko/extraDistr
+// https://github.com/twolodzko/extraDistr/blob/master/src/shared.h
+// Author: Tymoteusz Wolodzko
+// License: GPL-2
+// Downloaded on 2020-03-18
+
+
 #include <Rcpp.h>
 using namespace Rcpp ;
 using std::pow;
