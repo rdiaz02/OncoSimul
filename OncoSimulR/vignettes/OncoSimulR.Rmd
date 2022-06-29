@@ -2,7 +2,7 @@
 title: "OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression."
 author: "
 
-         Ramon Diaz-Uriarte, Sergio Sanchez-Carrillo, Juan Antonio Miguel-Gonzalez\\
+         Ramon Diaz-Uriarte, Sergio Sanchez-Carrillo, Juan Antonio Miguel-Gonzalez, Javier López Cano, Alberto González Klein, Javier Muñoz Haro\\
 
          Dept. Biochemistry, Universidad Autónoma de Madrid, Instituto de
          Investigaciones Biomédicas 'Alberto Sols' (UAM-CSIC), Madrid,
@@ -136,7 +136,7 @@ genotypes, as in game theory and adaptive dynamics. This makes it
 possible to model predation and parasitism, cooperation and
 mutualism, and commensalism. It also allows to model therapeutic
 interventions (where fitness changes at specified time points or as
-a function of the total populations size or as a function of arbitrary user-defined variables); in particular, it is possible to emulate adaptive therapy.
+a function of the total populations size or as a function of arbitrary user-defined variables); in particular, it is possible to emulate adaptive therapy (@hansen2020a; @hansen2020b).
 
 Simulations can start from arbitrary initial population compositions
 and it is also possible to simulate multiple species. Thus, simulations

@@ -1,3 +1,6 @@
+Changes in version 3.99.2 (2022-06-29):
+	- Vignette: author list and references.
+
 Changes in version 3.99.1 (2022-06-25):
 	- Users can specify birth and death rates as they want, including
 	  making both or just one frequency-dependent (thanks to Alberto
