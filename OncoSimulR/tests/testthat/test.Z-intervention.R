@@ -131,22 +131,23 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
             i <- i + 1
         }
         testthat::expect_equal(flag, FALSE)
-    }
+    
 
-    # then, between the time intervals, T >= 80 and T<=85
-    # we control that the B population
-    flag <- FALSE
-    i <- 80002
-    while(i <= 85000){
-        if(ep2$pops.by.time[i, 3:3] > 40){
-            flag <- TRUE
+        ## then, between the time intervals, T >= 80 and T<=85
+        ## we control that the B population
+        flag <- FALSE
+        i <- 80002
+        while(i <= 85000){
+            if(ep2$pops.by.time[i, 3:3] > 40){
+                flag <- TRUE
+            }
+            i <- i + 1
         }
-        i <- i + 1
-    }
 
-    testthat::expect_equal(flag, FALSE)
-    # we plot the simulation when no interventions are specified.
-    #plot(ep2, show = "genotypes", type = "line")
+        testthat::expect_equal(flag, FALSE)
+        ## we plot the simulation when no interventions are specified.
+        ## plot(ep2, show = "genotypes", type = "line")
+    }
 })
 
 cat(paste("\n Ending interventions tests", date(), "\n"))

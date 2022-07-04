@@ -1,3 +1,7 @@
+Changes in version 3.99.4 (2022-07-04):
+	- Failing a test in test.Z-intervention.R in Mac OS; did not fix
+	correctly previous time.
+
 Changes in version 3.99.3 (2022-06-30):
 	- Failing a test in test.Z-intervention.R in Mac OS
 	
