@@ -120,31 +120,31 @@ from sources, read on.
 You should install from github as follows: <!-- (and this might be newer
 than the BioC code) -->
 
+<!-- ```r -->
+<!-- if (!require("devtools")) -->
+<!--     install.packages("devtools") ## if you don't have it already -->
+<!-- library(devtools) -->
+<!-- install_github("rdiaz02/OncoSimul/OncoSimulR") -->
+<!-- ```  -->
+
+<!-- If you want to do development with the package, you might want to do, instead -->
+
 ```r
 if (!require("devtools"))
     install.packages("devtools") ## if you don't have it already
 library(devtools)
-install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness")
-``` 
-
-If you want to do development with the package, you might want to do, instead
-
-```r
-if (!require("devtools"))
-    install.packages("devtools") ## if you don't have it already
-library(devtools)
-install_github("rdiaz02/OncoSimul/OncoSimulR", ref = "freq-dep-fitness", 
+install_github("rdiaz02/OncoSimul/OncoSimulR", 
                dependencies = TRUE)
 ``` 
-so that "Suggests" are also installed.
+(setting `depèndencies = TRUE` ensures that "Suggests" are also installed).
 
 
 
 ### If you use Windows
 
-If you use Rtools40, the new toolchain starting R-4.0.0, April 2000
+If you use Rtools40, the new toolchain starting R-4.0.0, April 2000 (so a long time ago already)
 (https://cran.r-project.org/bin/windows/Rtools/), you can install
-OncoSimulR.
+OncoSimulR from sources. These are old notes.
 
 <!-- We have not uploaded the changes in the freq-dep-fitness branch to -->
 <!-- BioConductor because there are known problems compiling ExprTk with MinGW -->
@@ -195,16 +195,16 @@ OncoSimulR.
 How to do it: The standard installation procedure should work, but the
 following steps might help.
 
- 1. Install Rtools40 and R as explained in
-    https://cran.r-project.org/bin/windows/testing/rtools40.html.
- 2. (If you experience issues with igraph, install igraph following these notes:
-       https://github.com/r-windows/checks/issues/2
-	   )
- 3. Now, install OncoSimulR from BioConductor (to resolve all
+ 1. Install Rtools42 and R as explained in https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html
+
+ <!-- 2. (If you experience issues with igraph, install igraph following these notes: -->
+ <!--       https://github.com/r-windows/checks/issues/2 -->
+ <!-- 	   ) -->
+ 2. Now, install OncoSimulR from BioConductor (to resolve all
     dependencies in one go): https://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html
 	For a fresh R installation this can take more than one hour.
- 4. Clone the git repo and move to that directory.
- 5. Go to a MINGW shell console, and install. For example, if you have
+ 3. Clone the git repo and move to that directory.
+ 4. Go to a MINGW shell console, and install. For example, if you have
     installed R-testing under 'C:\R', you can do
 ```
 /c/R/R-testing/bin/x64/R CMD INSTALL --no-multiarch OncoSimulR
@@ -212,7 +212,7 @@ following steps might help.
 
    Alternatively, install from a local file, but you need to specify the
    tar.gz (the zip file will not work, of course, since the R-testing that
-   ships for/with Rtools40 will not install from zip files)
+   ships for/with Rtools will not install from zip files)
   
    Installing from source takes a while (more than 5 minutes). 
 
@@ -408,7 +408,7 @@ a discrete-time version of OncoSimulR.
 | R CMD check   | <a href="http://bioconductor.org/checkResults/release/bioc-LATEST/OncoSimulR/"><img border="0" src="http://bioconductor.org/shields/build/release/bioc/OncoSimulR.svg" alt="Build status"></a> (release)</br><a href="http://bioconductor.org/checkResults/devel/bioc-LATEST/OncoSimulR/"><img border="0" src="http://bioconductor.org/shields/build/devel/bioc/OncoSimulR.svg" alt="Build status"></a> (devel) | <a href="https://travis-ci.org/rdiaz02/OncoSimul"><img src="https://travis-ci.org/rdiaz02/OncoSimul.svg?branch=master" alt="Build status"></a> | <a href="https://ci.appveyor.com/project/rdiaz02/OncoSimul"><img src="https://ci.appveyor.com/api/projects/status/github/rdiaz02/OncoSimul?branch=master&svg=true" alt="Build status"></a> |
 | Test coverage |                     | <a href="https://codecov.io/github/rdiaz02/OncoSimul?branch=master"><img src="https://codecov.io/github/rdiaz02/OncoSimul/coverage.svg?branch=master" alt="Coverage Status"/></a>   |                  |
 
-(Note: Appveyor can fail for reasons that have nothing to do with the
+(Note: Appveyor and Travis can fail for reasons that have nothing to do with the
 package, such as R not being downloaded correctly, etc. Look at the
 details of each failure. Similarly, some of the errors in BioConductor,
 specially in the development branch, can be caused, specially in Windows,
