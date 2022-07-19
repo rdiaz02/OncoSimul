@@ -34,6 +34,7 @@ cp OncoSimulR/vignettes/gitHeadInfo.gin ../BioConductor-git/OncoSimulR/vignettes
 cp OncoSimulR/vignettes/hurlbut.png ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/hurlbut.pdf ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/Myeloma_interaction.png ../BioConductor-git/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/logo-micin-aei-uefeder.png ../BioConductor-git/OncoSimulR/vignettes/.
 
 
 
