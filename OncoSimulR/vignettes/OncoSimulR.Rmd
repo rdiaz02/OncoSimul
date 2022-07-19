@@ -14964,12 +14964,12 @@ paste("Sum times of chunks = ", sum(unlist(all_times))/60, " minutes")
 
 # Funding
 
-Supported by BFU2015-67302-R (MINECO/FEDER, EU) and
-PID2019-111256RB-I00/AEI/10.13039/501100011033 to
-RDU. S. Sanchez-Carrillo partially supported by a "Beca de
-Colaboración" from Universidad Autónoma de Madrid (2017-2018);
-J. Antonio Miguel supported by PEJ-2019-AI/BMD-13961 from Comunidad
-de Madrid.
+Supported by: grant BFU2015-67302-R (MINECO/FEDER, EU) funded by MCIN/AEI/10.13039/501100011033 and by ERDF A way of making Europe to R. Diaz-Uriarte; grant PID2019-111256RB-I00 funded by MCIN/AEI/10.13039/501100011033 to R. Diaz-Uriarte; "Beca de Colaboración" at the Universidad Autónoma de Madrid from Spanish Ministry of Education, 2017-18, to S. Sánchez Carrillo; Comunidad de Madrid's PEJ16/MED/AI-1709 and PEJ-2019-AI/BMD-13961 to R. Diaz-Uriarte. 
+
+
+```{r fundinglogo, eval=TRUE,echo=FALSE}
+knitr::include_graphics("logo-micin-aei-uefeder.png", dpi = 150)
+```
 
 
 ```{r, echo=FALSE, eval=TRUE}

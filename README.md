@@ -424,3 +424,11 @@ _"igraph". <!--            Finally, some failures in Travis can be caused by tim
 <!-- [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rdiaz02/OncoSimul?branch=master&svg=true)](https://ci.appveyor.com/project/rdiaz02/OncoSimul) -->
 <!-- [![codecov.io](https://codecov.io/github/rdiaz02/OncoSimul/coverage.svg?branch=master)](https://codecov.io/github/rdiaz02/OncoSimul?branch=master) -->
 
+# Funding
+Supported by: grant BFU2015-67302-R (MINECO/FEDER, EU) funded by MCIN/AEI/10.13039/501100011033 and by ERDF A way of making Europe to R. Diaz-Uriarte; grant PID2019-111256RB-I00 funded by MCIN/AEI/10.13039/501100011033 to R. Diaz-Uriarte; "Beca de Colaboración" at the Universidad Autónoma de Madrid from Spanish Ministry of Education, 2017-18, to S. Sánchez Carrillo; Comunidad de Madrid's
+PEJ16/MED/AI-1709 and PEJ-2019-AI/BMD-13961 to R. Diaz-Uriarte. 
+
+<p align="center">
+<img src="logo-micin-aei-uefeder.png" alt="micin-aei-uefeder logo" width="200"/>.
+</p>
+

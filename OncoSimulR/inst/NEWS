@@ -1,3 +1,6 @@
+Changes in version 3.99.5 (2022-07-19):
+	- Funding logo added to README.md and vignette.
+	
 Changes in version 3.99.4 (2022-07-04):
 	- Failing a test in test.Z-intervention.R in Mac OS; did not fix
 	correctly previous time.
