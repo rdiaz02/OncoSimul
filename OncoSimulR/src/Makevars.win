@@ -13,15 +13,16 @@ CXX_STD = CXX11
 ## on bioc-devel list on 2019-05-24
 
 ## zz1
+MYCXXFLAGS = -Wa,-mbig-obj
 ## MYCXXFLAGS = -Wa,-mbig-obj -O3
 ## MYCXXFLAGS = -O0
 
 ## zz1
-# %.o: %.cpp
-# 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
-
 %.o: %.cpp
-	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
+
+# %.o: %.cpp
+# 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
 
 
 ## Just in case, pass to the linker too. No effect?. See below.
