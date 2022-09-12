@@ -85,6 +85,22 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 
 
 
+## Install
+## /c/R/R-4.2.1/bin/R.exe CMD INSTALL OncoSimulR
+
+
+## Build
+## /c/R/R-4.2.1/bin/R.exe CMD build -keep-empty-dirs --no-resave-data OncoSimulR
+
+## Check
+## /c/R/R-4.2.1/bin/R.exe CMD check --no-multiarch --no-vignettes --timings OncoSimulR_3.4.0.tar.gz
+
+
+## Build bin
+## /c/R/R-4.2.1/bin/R.exe CMD INSTALL --build OncoSimulR_3.4.0.tar.gz
+
+
+
 ####### OncoSimulR and ExprTk, Rtools35 (current as of 2019-05-24)
 ##      gcc-4.9.3
 
