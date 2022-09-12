@@ -12,14 +12,21 @@ CXX_STD = CXX11
 ## as suggested by K. D. Hansen
 ## on bioc-devel list on 2019-05-24
 
-MYCXXFLAGS = -Wa,-mbig-obj -O3
+## zz1
+## MYCXXFLAGS = -Wa,-mbig-obj -O3
 ## MYCXXFLAGS = -O0
 
+## zz1
+# %.o: %.cpp
+# 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
+
 %.o: %.cpp
-	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c $< -o $@
+
 
 ## Just in case, pass to the linker too. No effect?. See below.
-PKG_LIBS = -Wa,-mbig-obj -O3
+## z1
+## PKG_LIBS = -Wa,-mbig-obj -O3
 ## PKG_LIBS = -O3
 
 #####################  MAGELLAN   ####################
@@ -84,7 +91,6 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 
 ## Open the msys2 shell and do (change path to R)
 ## export PATH=/x86_64-w64-mingw32.static.posix/bin:$PATH
-
 
 ## Install
 ## time /c/R/R-4.2.1/bin/R.exe CMD INSTALL OncoSimulR
@@ -304,4 +310,5 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 #####    Faster, shorter
 ##  /c/R/R-testing/bin/x64/R CMD build --keep-empty-dirs --no-resave-data --no-build-vignettes OncoSimulR
 ##  /c/R/R-testing/bin/x64/R CMD INSTALL --merge-multiarch --build --no-build-vignettes --no-manual OncoSimulR_xyz0.tar.gz
+
 
