@@ -82,22 +82,23 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 #########################################################
 #########################################################
 
-
+## Open the msys2 shell and do (change path to R)
+## export PATH=/x86_64-w64-mingw32.static.posix/bin:$PATH
 
 
 ## Install
-## /c/R/R-4.2.1/bin/R.exe CMD INSTALL OncoSimulR
+## time /c/R/R-4.2.1/bin/R.exe CMD INSTALL OncoSimulR
 
 
 ## Build
-## /c/R/R-4.2.1/bin/R.exe CMD build -keep-empty-dirs --no-resave-data OncoSimulR
+## time /c/R/R-4.2.1/bin/R.exe CMD build -keep-empty-dirs --no-resave-data OncoSimulR
 
 ## Check
-## /c/R/R-4.2.1/bin/R.exe CMD check --no-multiarch --no-vignettes --timings OncoSimulR_3.4.0.tar.gz
+## time /c/R/R-4.2.1/bin/R.exe CMD check --no-multiarch --no-vignettes --timings OncoSimulR_3.4.0.tar.gz
 
 
 ## Build bin
-## /c/R/R-4.2.1/bin/R.exe CMD INSTALL --build OncoSimulR_3.4.0.tar.gz
+## time /c/R/R-4.2.1/bin/R.exe CMD INSTALL --build OncoSimulR_3.4.0.tar.gz
 
 
 
