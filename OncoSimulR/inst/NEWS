@@ -1,3 +1,7 @@
+Changes in version 3.99.7 (2022-09-13):
+	- Use c++14 and, in windows, do not use -O3: try to minimize
+	  build time.
+	  
 Changes in version 3.99.6 (2022-09-12):
 	- Udpated exprtk.
 

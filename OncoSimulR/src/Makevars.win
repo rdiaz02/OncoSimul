@@ -3,7 +3,7 @@ CC=gcc$(VER)
 CXX=g++$(VER)
 CXX11=g++$(VER)
 
-CXX_STD = CXX17
+CXX_STD = CXX14
 ## PKG_CXXFLAGS += -I../inst/miscell
 
 ## We have issues under Windoze because of ExprTk, MINGW, etc.
@@ -13,7 +13,7 @@ CXX_STD = CXX17
 ## on bioc-devel list on 2019-05-24
 
 ## zz1
-MYCXXFLAGS = -Wa,-mbig-obj -O3
+MYCXXFLAGS = -Wa,-mbig-obj
 ## MYCXXFLAGS = -Wa,-mbig-obj -O3
 ## MYCXXFLAGS = -O0
 

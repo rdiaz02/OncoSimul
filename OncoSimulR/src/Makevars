@@ -4,7 +4,7 @@ CXX=g++$(VER)
 CXX11=g++$(VER)
 
 ## This is a C++11 package
-## But using C++14 leads to faster INSTALL
+## But using C++14 leads to faster INSTALL. In my machine:
 ## C++11: 6'30"
 ## C++14: 4'20"
 ## C++17: 5'08"
