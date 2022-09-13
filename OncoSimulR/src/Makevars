@@ -4,7 +4,11 @@ CXX=g++$(VER)
 CXX11=g++$(VER)
 
 ## This is a C++11 package
-CXX_STD = CXX11
+## But using C++14 leads to faster INSTALL
+## C++11: 6'30"
+## C++14: 4'20"
+## C++17: 5'08"
+CXX_STD = CXX14
 
 # This ain't needed
 # ONCOSIMUL_SRC = BNB_nr.cpp\
