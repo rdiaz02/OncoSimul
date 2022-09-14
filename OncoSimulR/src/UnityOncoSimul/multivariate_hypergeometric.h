@@ -5,6 +5,8 @@
 // License: GPL-2
 // Downloaded on 2020-03-18
 
+#ifndef _MULTIVAR_HYPERGEOM__
+#define _MULTIVAR_HYPERGEOM__
 
 #include <Rcpp.h>
 using namespace Rcpp ;
@@ -27,3 +29,5 @@ static const double MIN_DIFF_EPS = 1e-8;
 #define VALID_PROB(p)   ((p >= 0.0) && (p <= 1.0))
 
 Rcpp::NumericMatrix my_rmvhyper(const int nn, const Rcpp::NumericMatrix n, const NumericVector k);
+
+#endif
