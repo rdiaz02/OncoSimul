@@ -6,11 +6,10 @@ CXX11=g++$(VER)
 
 CXX_STD = CXX14
 
-MYCXXFLAGS = -Wa,-mbig-obj
+MYCXXFLAGS = -Wa,-mbig-obj -O0
+
 %.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@
-
-#####################  MAGELLAN   ####################
 
 all: liblandscape.a fl_statistics fl_generate $(SHLIB)
 

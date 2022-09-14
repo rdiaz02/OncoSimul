@@ -99,4 +99,25 @@ int compareInterventions(Intervention i1, Intervention i2);
 void printInterventionsInfo(InterventionsInfo iif);
 void printIntervention(Intervention i);
 
+
+
+//  These were the private functions
+bool isValidEquation(std::string equation);
+void parseWhatHappens(InterventionsInfo& iif, 
+                     UserVarsInfo& uvif,
+                     Intervention intervention,
+                     double &totPopSize, double currentTime);
+bool updatePopulations(InterventionsInfo& iif, 
+                       const fitnessEffectsAll& fitnessEffects, 
+                       const std::vector<Genotype>& Genotypes, 
+                       std::vector<spParamsP>& popParams);
+// functions for debugging
+//void printIntervention(Intervention i);
+//void printInterventionsInfo(InterventionsInfo iif);
+// function that applies hypergeometric progressions to the reduction of the population 
+void reduceTotalPopulation(InterventionsInfo& iif, 
+                           double target, 
+                           double totPopSize);
+
+
 #endif
