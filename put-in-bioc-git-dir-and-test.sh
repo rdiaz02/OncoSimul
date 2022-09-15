@@ -45,6 +45,8 @@ cp OncoSimulR/src/Makevars* ../BioConductor-git/OncoSimulR/src/.
 
 cp OncoSimulR/src/install.libs.R ../BioConductor-git/OncoSimulR/src/.
 
+cp OncoSimulR/src/UnityOncoSimul/* ../BioConductor-git/OncoSimulR/src/UnityOncoSimul/.
+
 cp OncoSimulR/src/FitnessLandscape/* ../BioConductor-git/OncoSimulR/src/FitnessLandscape/.
 cp OncoSimulR/src/FitnessLandscape/web/* ../BioConductor-git/OncoSimulR/src/FitnessLandscape/web/.
 
