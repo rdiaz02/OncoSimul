@@ -60,6 +60,7 @@ cp OncoSimulR/tests/*.txt ../BioConductor-git/OncoSimulR/tests/.
 
 cp OncoSimulR/man/*.Rd ../BioConductor-git/OncoSimulR/man/.
 
+cp OncoSimulR/inst/README_Unity_compilation.txt ../BioConductor-git/OncoSimulR/inst/.
 cp OncoSimulR/inst/NEWS ../BioConductor-git/OncoSimulR/inst/.
 cp OncoSimulR/inst/CITATION ../BioConductor-git/OncoSimulR/inst/.
 cp OncoSimulR/inst/miscell/example-binom-problems.cpp ../BioConductor-git/OncoSimulR/inst/miscell/.
