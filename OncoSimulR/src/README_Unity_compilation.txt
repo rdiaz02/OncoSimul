@@ -9,7 +9,7 @@ This branch contains the C++ code of oncosimul using what is sometimes called "U
 - https://buffered.io/posts/the-magic-of-unity-builds/
 
 
-In out case, the file unity_osimul.cpp includes the cpp files in the subdirectory UnityOncoSimul.
+In our case, the file unity_osimul.cpp includes the cpp files in the subdirectory UnityOncoSimul.
 
 
 Pros:
@@ -39,12 +39,14 @@ Further decreases in compilation time
 =====================================
 
 - Split the single cpp into two or four, and use MAKEFLAGS += -j2. Probably not worth it now.
+- Note that decreases in compilation are not the only thing that matters, if the optimizations we leave out could make execution much faster.
 
 
 Times (on my machine)
 =====================
 
 Using Windows 10 and Windows Server 2022 as virtual machines
+(windows server: 1 CPU, windows 10 uses 2)
 
 |           | Windows server | Windows 10 |
 |-----------+----------------+------------|
