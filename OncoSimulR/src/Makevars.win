@@ -64,7 +64,7 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 
 
 ## Build
-## time /c/R/R-4.2.1/bin/R.exe CMD build -keep-empty-dirs --no-resave-data OncoSimulR
+## time /c/R/R-4.2.1/bin/R.exe CMD build --keep-empty-dirs --no-resave-data OncoSimulR
 
 ## Check
 ## time /c/R/R-4.2.1/bin/R.exe CMD check --no-multiarch --no-vignettes --timings OncoSimulR_3.4.0.tar.gz
