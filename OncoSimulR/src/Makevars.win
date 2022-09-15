@@ -60,7 +60,7 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 ## export PATH=/x86_64-w64-mingw32.static.posix/bin:$PATH
 
 ## Install
-## time /c/R/R-4.2.1/bin/R.exe CMD INSTALL OncoSimulR
+## time /c/R/R-4.2.1/bin/R.exe CMD INSTALL --build OncoSimulR && time /c/R/R-4.2.1/bin/R.exe CMD INSTALL OncoSimulR_x.y.z.zip
 
 
 ## Build
@@ -74,13 +74,16 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 
 
 
-## Recall I need pandoc and git
+## Recall I need pandoc (and git ---this already installed and in path)
 ## Install pandoc at C:/pandoc
-## Git is at C:\Program Files
-## Add them to the path
-## export PATH=$PATH:/c/Pandoc:/c/Program\ Files/git/bin
-## ##now, pdflatex
+## Add it to the path
+## export PATH=$PATH:/c/Pandoc
+## ##now, pdflatex or tinytex
 ## export PATH=$PATH:/c/Users/ramon/AppData/Roaming/TinyTeX/bin/win32
+## And install rmarkdown and other suggests
+## install.packages(c("Oncotree", "rmarkdown", "bookdown", "pander","testthat", "knitr"))
+## BiocManager::install(version='devel')
+## BiocManager::install("BiocStyle")
 
 
 
