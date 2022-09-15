@@ -6,7 +6,7 @@ CXX11=g++$(VER)
 
 CXX_STD = CXX14
 
-MYCXXFLAGS = -Wa,-mbig-obj 
+MYCXXFLAGS = -Wa,-mbig-obj
 
 %.o: %.cpp
 	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(MYCXXFLAGS) -c $< -o $@

@@ -76,7 +76,7 @@ Using Windows 10 and Windows Server 2022 as virtual machines
 |           | 21'08"         | 20'46"     |
 |           | 19'05"         |            |
 |           |                |            |
-| -O3       |                |            |
+| -O3       | 20'29"         | 18'22"     |
 |           |                |            |
 |           |                |            |
 
