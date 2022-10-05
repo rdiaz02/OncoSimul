@@ -40,7 +40,7 @@ mtfd <- allMutatorEffects(epistasis = c("A" = 0.1,
 ##     s2fd
 ## }
 
-i <- runif(1, 1, 1e5)
+i <- round(runif(1, 1, 1e5))
 j <- 0
 
 for(i in 1:20000) {
