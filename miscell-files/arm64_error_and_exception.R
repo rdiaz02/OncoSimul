@@ -11,8 +11,8 @@ afe4 <- allFitnessEffects(genotFitness = r1fd,
                           frequencyDependentFitness = TRUE,
                           frequencyType = "rel")
 
-mtfd <- allMutatorEffects(epistasis = c("A" = 0.00001,
-                                        "B" = 10000))
+mtfd <- allMutatorEffects(epistasis = c("A" = 0.1,
+                                        "B" = 10))
 
 ## for(i in 1:1000) {
 ##     cat("\n ####################################### \n")
@@ -39,14 +39,18 @@ mtfd <- allMutatorEffects(epistasis = c("A" = 0.00001,
 ## }
 
 i <- runif(1, 1, 1e5)
+j <- 0
 
-for(i in 1:10000) {
+for(i in 1:20000) {
     cat("\n ####################################### \n")
-    i <- i + 1
+    j <- j + 1
+    i <- i + j
+    
     ## ma <- runif(1, 1e-3, 1)
     ## mb <- runif(1, ma, 1000 * ma)
     ma <- 0.1
     mb <- 10
+    cat("\n j, i.e., number of iterations = ", j)
     cat("\n i = ", i)
     cat("\n ma = ", ma)
     cat("\n mb = ", mb)
