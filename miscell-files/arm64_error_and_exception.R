@@ -69,7 +69,8 @@ for(iter in 1:20000) {
                            seed = NULL, 
                            errorHitMaxTries = FALSE, 
                            errorHitWallTime = FALSE)
-    s2fd
+    print(s2fd)
+    ## plot(s2fd)
 }
 
 
