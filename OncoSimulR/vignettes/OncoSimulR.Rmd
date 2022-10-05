@@ -9792,7 +9792,11 @@ afe4 <- allFitnessEffects(genotFitness = r1fd,
                          frequencyDependentFitness = TRUE,
                          frequencyType = "rel")
 
+mtfd <- allMutatorEffects(epistasis = c("A" = 0.1,
+                                        "B" = 10))
+```
 
+```{r fdfmutex1}
 set.seed(1)
 s1fd <- oncoSimulIndiv(afe4, 
                      model = "McFL", 
@@ -9805,10 +9809,10 @@ s1fd <- oncoSimulIndiv(afe4,
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
 plot(s1fd, show = "genotypes")
+```
 
 
-mtfd <- allMutatorEffects(epistasis = c("A" = 0.1,
-                                      "B" = 10))
+```{r fdfmutex2}
 set.seed(1)
 s2fd <- oncoSimulIndiv(afe4,
                      muEF = mtfd,

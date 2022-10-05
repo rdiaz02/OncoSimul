@@ -1,3 +1,7 @@
+Changes in version 3.99.9 (2022-09-30):
+	- Minor vignette split of code, to try to detect
+	  location of problem with ARM64 Mac build.
+	  
 Changes in version 3.99.8 (2022-09-15):
 	- Using "Unity builds" to decrease build (compilation) time;
 	  see file inst/miscell/README_Unity_compilation.
