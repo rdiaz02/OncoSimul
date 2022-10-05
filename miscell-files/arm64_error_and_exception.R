@@ -1,3 +1,5 @@
+library(OncoSimulR)
+packageVersion("OncoSimulR")
 ## Rethink how we deal with some exceptions. No object
 ## should be returned, probably.
 
