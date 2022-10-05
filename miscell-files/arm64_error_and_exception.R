@@ -40,12 +40,12 @@ mtfd <- allMutatorEffects(epistasis = c("A" = 0.1,
 ##     s2fd
 ## }
 
-seed <- round(runif(1, 1, 1e5))
+seed0 <- round(runif(1, 1, 1e5))
 
 
 for(iter in 1:20000) {
     cat("\n ####################################### \n")
-    seed <- seed + iter
+    seed <- seed0 + iter
     set.seed(seed)
     ## ma <- runif(1, 1e-3, 1)
     ## mb <- runif(1, ma, 1000 * ma)
