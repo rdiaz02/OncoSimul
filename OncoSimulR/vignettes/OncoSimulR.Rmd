@@ -1203,7 +1203,7 @@ packageVersion("OncoSimulR")
 Following \@ref(steps) we will run two very minimal examples. First a
 model with a few genes and **epistasis**:
 
-```{r, fig.width=6.5, fig.height=10}
+```{r f7b3v, fig.width=6.5, fig.height=10}
 ## 1. Fitness effects: here we specify an 
 ##    epistatic model with modules.
 sa <- 0.1
@@ -3614,13 +3614,13 @@ total of four genotypes, and you have a data frame with genotypes
 and fitness, where genoytpes are specified as character vectors,
 with mutated genes separated by commas:
 
-```{r}
+```{r n73}
 m4 <- data.frame(G = c("WT", "A", "B", "A, B"), F = c(1, 2, 3, 4))
 ``` 
 
 Now, let's give that to the `allFitnessEffects` function:
 
-```{r}
+```{r n74}
 fem4 <- allFitnessEffects(genotFitness = m4)
 ``` 
 (The message is just telling you what the program guessed you
@@ -3628,14 +3628,14 @@ wanted.)
 
 
 That's it. You can try to plot that fitnessEffects object
-```{r}
+```{r n75}
 try(plot(fem4))
 ``` 
 
 In this case, you probably want to plot the fitness landscape. 
 
 
-```{r, fig.width=6.5, fig.height = 6.5}
+```{r n76, fig.width=6.5, fig.height = 6.5}
 plotFitnessLandscape(evalAllGenotypes(fem4))
 ``` 
 
@@ -3643,14 +3643,14 @@ You can also check what OncoSimulR thinks the fitnesses are, with the
 `evalAllGenotypes` function that we will use repeatedly below
 (of course, here we should see the same fitnesses we entered):
 
-```{r}
+```{r n78}
 evalAllGenotypes(fem4, addwt = TRUE)
 ``` 
 
 
 And you can plot the fitness landscape:
 
-```{r}
+```{r n79}
 plotFitnessLandscape(evalAllGenotypes(fem4))
 ``` 
 
@@ -3662,14 +3662,14 @@ contains the fitness values. And you do not even need to specify all the
 genotypes: the missing genotypes are assigned a fitness 0 ---except
 for the WT genotype which, if missing, is assigned a fitness of 1:
 
-```{r}
+```{r n80}
 m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
 fem6 <- allFitnessEffects(genotFitness = m6)
 evalAllGenotypes(fem6, addwt = TRUE)
 ## plot(fem6)
 ```
 
-```{r, fig.width=6.5, fig.height = 6.5}
+```{r n81, fig.width=6.5, fig.height = 6.5}
 plotFitnessLandscape(evalAllGenotypes(fem6))
 ``` 
 
@@ -3960,7 +3960,7 @@ mutated. The $s_i$ can come from any distribution you want. As an example
 let's use three genes. We know there are no order effects, but we will
 also see what happens if we examine genotypes as ordered.
 
-```{r}
+```{r nx82}
 
 ai1 <- evalAllGenotypes(allFitnessEffects(
     noIntGenes = c(0.05, -.2, .1), frequencyDependentFitness = FALSE), order = FALSE)
@@ -3969,11 +3969,11 @@ ai1 <- evalAllGenotypes(allFitnessEffects(
 
 We can easily verify the first results:
 
-```{r}
+```{r nx83}
 ai1
 ``` 
 
-```{r}
+```{r nx84}
 all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
@@ -3985,7 +3985,7 @@ all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
 And we can see that considering the order of mutations (see section
 \@ref(oe)) makes no difference:
 
-```{r}
+```{r nx85}
 (ai2 <- evalAllGenotypes(allFitnessEffects(
     noIntGenes = c(0.05, -.2, .1)), order = TRUE,
     addwt = TRUE))
@@ -4019,7 +4019,7 @@ that illustrates the three basic different meanings of convergent arrows
 using two parental nodes. We will illustrate it here with three. Suppose
 we focus on node "g" in the following figure (we will create it shortly)
 
-```{r, fig.height=4}
+```{r nx091, fig.height=4}
 data(examplesFitnessEffects)
 plot(examplesFitnessEffects[["cbn1"]])
 ``` 
@@ -4103,7 +4103,7 @@ using DAGs.
 
 ### DAGs: A first conjunction (AND) example {#cbn1}
 
-```{r}
+```{r nx092}
 
 cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4120,12 +4120,12 @@ have any particular order.)
 
 
 We can get a graphical representation using the default "graphNEL"
-```{r, fig.height=3}
+```{r nx093, fig.height=3}
 plot(cbn1)
 ``` 
 
 or one using "igraph":
-```{r, fig.height=5}
+```{r nx094, fig.height=5}
 plot(cbn1, "igraph")
 ``` 
 
@@ -4134,7 +4134,7 @@ plot(cbn1, "igraph")
 Since we have a parent and children, the reingold.tilford layout is
 probably the best here, so you might want to use that:
 
-```{r, fig.height=5}
+```{r nx095, fig.height=5}
 library(igraph) ## to make the reingold.tilford layout available
 plot(cbn1, "igraph", layout = layout.reingold.tilford)
 ``` 
@@ -4143,7 +4143,7 @@ plot(cbn1, "igraph", layout = layout.reingold.tilford)
 
 And what is the fitness of all genotypes?
 
-```{r}
+```{r nx096}
 gfs <- evalAllGenotypes(cbn1, order = FALSE, addwt = TRUE)
 
 gfs[1:15, ]
@@ -4163,7 +4163,7 @@ genotype "a, c" has fitness $(1 + 0.1) (1 - 0.9) = 0.11$.
 
 Let's try a first attempt at a somewhat more complex example, where the
 fitness consequences of different genes differ.
-```{r}
+```{r nx097}
 
 c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4207,7 +4207,7 @@ are $> 0$ and, thus, is a way of modeling small deviations from the poset
 Note that for those nodes that depend only on "Root" the type of
 dependency is irrelevant.
 
-```{r}
+```{r nx098}
 c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
@@ -4230,7 +4230,7 @@ we got to "a, b, c". What matters is whether or not the genes on which
 each of "a", "b", and "c" depend are present or not (I only show the first
 10 genotypes)
 
-```{r}
+```{r nx099}
 gcbn2 <- evalAllGenotypes(cbn2, order = FALSE)
 gcbn2[1:10, ]
 ``` 
@@ -4239,7 +4239,7 @@ gcbn2[1:10, ]
 Of course, if we were to look at genotypes but taking into account order
 of occurrence of mutations, we would see no differences
 
-```{r}
+```{r nx0100}
 gcbn2o <- evalAllGenotypes(cbn2, order = TRUE, max = 1956)
 gcbn2o[1:10, ]
 ``` 
@@ -4249,7 +4249,7 @@ if they are more than 256, the default.)
 
 You can check the output and verify things are as they should. For instance:
 
-```{r}
+```{r nx0101}
 all.equal(
         gcbn2[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
         c(1.01, 1.02, 0.1, 1.03, 1.04, 0.05,
@@ -4270,7 +4270,7 @@ all.equal(
 A particular one that is important to understand is genotype with
 mutated genes "c, d, e, g":
 
-```{r}
+```{r nx0102}
 gcbn2[56, ] 
 all.equal(gcbn2[56, "Fitness"], 1.03 * 1.04 * 1.2 * 0.10)
 ``` 
@@ -4283,7 +4283,7 @@ satisfied (and that is why the term for "c" is 0.9).
 ### DAGs: A semimonotone or "OR" example {#mn1}
 
 We will reuse the above example, changing the type of relationship:
-```{r}
+```{r nx0103}
 
 s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4297,12 +4297,12 @@ smn1 <- allFitnessEffects(s1)
 
 It looks like this (where edges are shown in blue to denote the
 semimonotone relationship):
-```{r, fig.height=3}
+```{r nx0104, fig.height=3}
 plot(smn1)
 ``` 
 
 
-```{r}
+```{r nx0105}
 gsmn1 <- evalAllGenotypes(smn1, order = FALSE)
 
 ``` 
@@ -4310,7 +4310,7 @@ gsmn1 <- evalAllGenotypes(smn1, order = FALSE)
 Having just one parental dependency satisfied is now enough, in contrast
 to what happened before. For instance:
 
-```{r}
+```{r nx0106}
 gcbn2[c(8, 12, 22), ]
 gsmn1[c(8, 12, 22), ]
 
@@ -4323,7 +4323,7 @@ gsmn1[c(20:21, 28), ]
 
 Again, we reuse the example above, changing the type of relationship:
 
-```{r}
+```{r nx0107}
 
 x1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4337,11 +4337,11 @@ xor1 <- allFitnessEffects(x1)
 
 
 It looks like this (edges in red to denote the "XOR" relationship):
-```{r, fig.height=3}
+```{r nx0108, fig.height=3}
 plot(xor1)
 ``` 
 
-```{r}
+```{r nx0109}
 
 gxor1 <- evalAllGenotypes(xor1, order = FALSE)
 
@@ -4352,7 +4352,7 @@ Whenever "c" is present with both "a" and "b", the fitness component
 for "c" will be $(1 - 0.1)$. Similarly for "g" (if more than one of
 "d", "e", or "c" is present, it will show as $(1 - 0.05)$). For example:
 
-```{r}
+```{r nx0110}
 gxor1[c(22, 41), ] 
 c(1.01 * 1.02 * 0.1, 1.03 * 1.04 * 0.05)
 ``` 
@@ -4368,7 +4368,7 @@ epistatic effects (section
 
 We also see a very different pattern compared to CBN (section \@ref(cbn2))
 here:
-```{r}
+```{r nx0111}
 gxor1[28, ] 
 1.01 * 1.1 * 1.2
 ``` 
@@ -4376,7 +4376,7 @@ gxor1[28, ]
 as exactly one of the dependencies for both "c" and "g" are satisfied.
 
 But 
-```{r}
+```{r nx0112}
 gxor1[44, ] 
 1.01 * 1.02 * 0.1 * 1.2
 ``` 
@@ -4386,7 +4386,7 @@ one of its dependencies satisfied).
 
 ### Posets: the three types of relationships {#p3}
 
-```{r}
+```{r nx0113}
 
 p3 <- data.frame(
     parent = c(rep("Root", 4), "a", "b", "d", "e", "c", "f"),
@@ -4399,18 +4399,18 @@ fp3 <- allFitnessEffects(p3)
 ``` 
 
 This is how it looks like:
-```{r, fig.height=3}
+```{r nx0114, fig.height=3}
 plot(fp3)
 ``` 
 
 We can also use "igraph":
 
-```{r, fig.height=6}
+```{r nx0115, fig.height=6}
 plot(fp3, "igraph", layout.reingold.tilford)
 ``` 
 
 
-```{r}
+```{r nx0116}
 
 gfp3 <- evalAllGenotypes(fp3, order = FALSE)
 
@@ -4420,7 +4420,7 @@ gfp3 <- evalAllGenotypes(fp3, order = FALSE)
 
 Let's look at a few:
 
-```{r}
+```{r nx0117}
 gfp3[c(9, 24, 29, 59, 60, 66, 119, 120, 126, 127), ]
 
 c(1.01 * 1.1, 1.03 * .05, 1.01 * 1.02 * 0.1, 0.1 * 0.05 * 1.3,
@@ -4464,7 +4464,7 @@ there is a module, "A", made of genes "a1" and "a2", and a module
 additional fitness advantage compared to mutating only a single one of
 them.  We can specify this as:
 
-```{r}
+```{r ny0111}
 s <- 0.2
 sboth <- (1/(1 + s)) - 1
 m0 <- allFitnessEffects(data.frame(
@@ -4486,7 +4486,7 @@ single one of them"; see details in section \@ref(epi).
 
 Now, specify it using modules:
 
-```{r}
+```{r ny01112}
 s <- 0.2
 m1 <- allFitnessEffects(data.frame(
     parent = c("Root", "A"),
@@ -4538,7 +4538,7 @@ modules, one of them with two genes (see details in section
 \@ref(mod-no-epi)) we do not need to pass a "Root" as in
 
 
-```{r}
+```{r ny0113}
 fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2),
                           geneToModule = c("A" = "a1, a2",
@@ -4548,7 +4548,7 @@ evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
 
 but it is also OK to have a "Root" in the `geneToModule`:
 
-```{r}
+```{r ny0114}
 fnme2 <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2),
                           geneToModule = c(
@@ -4570,7 +4570,7 @@ modules (capital letters) from genes (lowercase with a number), but this
 is not needed.
 
 
-```{r}
+```{r ny0115}
 p4 <- data.frame(
     parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
     child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
@@ -4589,19 +4589,19 @@ fp4m <- allFitnessEffects(
 
 By default, plotting shows the modules:
 
-```{r, fig.height=3}
+```{r ny0116, fig.height=3}
 plot(fp4m)
 ``` 
 
 but we can show the gene names instead of the module names:
 
-```{r, fig.height=3}
+```{r ny0117, fig.height=3}
 plot(fp4m, expandModules = TRUE)
 ``` 
 
 or
 
-```{r, fig.height=6}
+```{r ny0118, fig.height=6}
 plot(fp4m, "igraph", layout = layout.reingold.tilford, 
      expandModules = TRUE)
 
@@ -4609,13 +4609,13 @@ plot(fp4m, "igraph", layout = layout.reingold.tilford,
 
 We obtain the fitness of all genotypes in the usual way:
 
-```{r}
+```{r ny0119}
 gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
 ``` 
 
 Let's look at a few of those:
 
-```{r}
+```{r ny0120}
 gfp4[c(12, 20, 21, 40, 41, 46, 50, 55, 64, 92,
        155, 157, 163, 372, 632, 828), ]
 
@@ -4658,7 +4658,7 @@ its usage (but just limit ourselves to using one gene per module here).
 Order effects are specified using a $x > y$, which means that that order
 effect is satisfied when module $x$ is mutated before module $y$.
 
-```{r}
+```{r ny0121}
 o3 <- allFitnessEffects(orderEffects = c(
                             "F > D > M" = -0.3,
                             "D > F > M" = 0.4,
@@ -4695,7 +4695,7 @@ M$. The 12th matches $F > D > M$ but also $D > M$. Etc.
 
 Consider the following case:
 
-```{r}
+```{r ny0123}
 
 ofe1 <- allFitnessEffects(
     orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
@@ -4712,7 +4712,7 @@ $D$ and each $f$ belongs to module $F$.
 
 What to expect for cases such as $d1 > f1$ or $f1 > d1$ is clear, as shown in
 
-```{r}
+```{r ny0124}
 ag[5:16,]
 ``` 
 
@@ -4723,14 +4723,14 @@ and module $F$ was mutated second. Similar for $d1 > f1 > f2$ or
 $f1 > d1 > d2$: those map to $D > F$ and $F > D$. We can see the fitness
 of those four case in:
 
-```{r}
+```{r ny0125}
 ag[c(17, 39, 19, 29), ]
 ``` 
 
 and they correspond to the values of those order effects, where $F > D =
 (1 - 0.3)$ and $D > F = (1 + 0.4)$:
 
-```{r}
+```{r ny0126}
 ag[c(17, 39, 19, 29), "Fitness"] == c(1.4, 0.7, 1.4, 0.7)
 ``` 
 
@@ -4740,14 +4740,14 @@ $D > F > D$. But since we are concerned with which one happened first and
 which happened second we should expect those two to correspond to the same
 fitness, that of pattern $D > F$, as is the case:
 
-```{r}
+```{r ny0127}
 ag[c(43, 44),]
 ag[c(43, 44), "Fitness"] == c(1.4, 1.4)
 ``` 
 More generally, that applies to all the patterns that start with one of
 the "d" genes:
 
-```{r}
+```{r ny0128}
 all(ag[41:52, "Fitness"] == 1.4)
 ``` 
 
@@ -4755,7 +4755,7 @@ Similar arguments apply to the opposite pattern, $F > D$, which apply to
 all the possible gene mutation orders that start with one of the "f"
 genes. For example:
 
-```{r}
+```{r ny0129}
 all(ag[53:64, "Fitness"] == 0.7)
 ``` 
 
@@ -4768,7 +4768,7 @@ the above, with five genes (there are 325 genotypes, and that is why we
 pass the "max" argument to `evalAllGenotypes`, to allow for
 more than the default 256).
 
-```{r}
+```{r ny0130}
 
 ofe2 <- allFitnessEffects(
     orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
@@ -4785,7 +4785,7 @@ combination that starts with an "f" gene and contains at least one "d"
 genes will have a fitness of $1 - 0.3$.  All other genotypes have a
 fitness of 1:
 
-```{r}
+```{r ny0131}
 all(ag2[grep("^d.*f.*", ag2[, 1]), "Fitness"] == 1.4)
 all(ag2[grep("^f.*d.*", ag2[, 1]), "Fitness"] == 0.7)
 oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
@@ -4801,7 +4801,7 @@ more interesting, we name genes so that the ordered names do split nicely
 between those with and those without order effects (this, thus, also
 serves as a test of messy orders of names).
 
-```{r}
+```{r ny0132}
 
 foi1 <- allFitnessEffects(
     orderEffects = c("D>B" = -0.2, "B > D" = 0.3),
@@ -4812,14 +4812,14 @@ foi1 <- allFitnessEffects(
 You can get a verbose view of what the gene names and modules are (and
 their automatically created numeric codes) by:
 
-```{r}
+```{r ny0133}
 foi1[c("geneModule", "long.geneNoInt")]
 ``` 
 
 We can get the fitness of all genotypes (we set $max = 325$ because that
 is the number of possible genotypes):
 
-```{r}
+```{r ny0134}
 agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
 head(agoi1)
 ``` 
@@ -4827,7 +4827,7 @@ head(agoi1)
 
 
 Now:
-```{r}
+```{r ny0135}
 rn <- 1:nrow(agoi1)
 names(rn) <- agoi1[, 1]
 
@@ -4840,7 +4840,7 @@ genotype with only two mutations, one of which is either "A", "C" "E" and
 the other is "B" or "D" will have the fitness corresponding to "A", "C" or
 "E", respectively:
 
-```{r}
+```{r ny0136}
 agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 1.05
 agoi1[grep("^C > [BD]$", names(rn)), "Fitness"] == 0.8
 agoi1[grep("^E > [BD]$", names(rn)), "Fitness"] == 1.1
@@ -4856,7 +4856,7 @@ which occupy rows 230 to 253; fitness should be equal (within numerical
 error, because of floating point arithmetic) to the order effect of "D"
 before "B" times the other effects $(1 - 0.3) * 1.05 * 0.8 * 1.1 = 0.7392$
 
-```{r}
+```{r ny0137}
 all.equal(agoi1[230:253, "Fitness"] ,
           rep((1 - 0.2) * 1.05 * 0.8 * 1.1, 24))
 ``` 
@@ -4890,7 +4890,7 @@ Suppose that the actual numerical values are $s_a = 0.2, s_b = 0.3, s_{ab}
 = 0.7$.
 
 We specify the above as follows: 
-```{r}
+```{r ny0138}
 sa <- 0.2
 sb <- 0.3
 sab <- 0.7
@@ -4915,7 +4915,7 @@ satisfies $(1 + s_{ab}) = (1 + s_a) (1 + s_b) (1 + s_2)$ so
 $(1 + s_2) = (1 + s_{ab})/((1 + s_a) (1 + s_b))$ and therefore specify as:
 
 
-```{r}
+```{r ny0139}
 s2 <- ((1 + sab)/((1 + sa) * (1 + sb))) - 1
 
 e3 <- allFitnessEffects(epistasis =
@@ -4965,7 +4965,7 @@ conciseness). Note that the mutant for exactly A and C has a fitness that
 is the product of the individual terms (so there is no epistasis in that case).
 
 
-```{r}
+```{r ny0140}
 sa <- 0.1
 sb <- 0.15
 sc <- 0.2
@@ -4996,7 +4996,7 @@ term was just the product. We can try to avoid using the "-", however
 specification:
 
 
-```{r}
+```{r ny0141}
 
 sa <- 0.1
 sb <- 0.15
@@ -5023,7 +5023,7 @@ evalAllGenotypes(E3B, order = FALSE, addwt = FALSE)
 
 The above two are, of course, identical:
 
-```{r}
+```{r ny0142}
 all(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE) == 
     evalAllGenotypes(E3B, order = FALSE, addwt = FALSE))
 ``` 
@@ -5069,7 +5069,7 @@ both options.
 ### Epistasis: modules {#epimod}
 There is nothing conceptually new, but we will show an example here:
 
-```{r}
+```{r ny0143}
 
 sa <- 0.2
 sb <- 0.3
@@ -5087,7 +5087,7 @@ evalAllGenotypes(em, order = FALSE, addwt = TRUE)
 
 Of course, we can do the same thing without using the "-", as in section \@ref(e2):
 
-```{r}
+```{r ny0144}
 s2 <- ((1 + sab)/((1 + sa) * (1 + sb))) - 1
 
 em2 <- allFitnessEffects(epistasis =
@@ -5122,7 +5122,7 @@ the modules in the `epistasis` component but have no term for ":"
 (the colon). Let's see an example:
 
 
-```{r}
+```{r ny0145}
 
 fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2),
@@ -5137,7 +5137,7 @@ In previous versions these was possible using the longer, still accepted
 way of specifying a `:` with a value of 0, but this is no longer
 needed:
 
-```{r}
+```{r ny0146}
 fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2,
                                         "A : B" = 0.0),
@@ -5185,7 +5185,7 @@ where "wt" denotes wild type and "M" denotes mutant.
 We can specify this (setting $s = 0.2$) as (I play around with spaces, to
 show there is a certain flexibility with them):
 
-```{r}
+```{r ny0147}
 s <- 0.2
 sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
                                       "A : -B" = -1,
@@ -5195,14 +5195,14 @@ sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
 Now, let's look at all the genotypes (we use "addwt" to also get the wt,
 which by decree has fitness of 1), and disregard order:
 
-```{r}
+```{r ny0148}
 (asv <- evalAllGenotypes(sv, order = FALSE, addwt = TRUE))
 ``` 
 
 Asking the program to consider the order of mutations of course makes no
 difference:
 
-```{r}
+```{r ny01149}
 evalAllGenotypes(sv, order = TRUE, addwt = TRUE)
 ``` 
 
@@ -5238,7 +5238,7 @@ where $s_a, s_b < 0$ but $s_{ab} > 0$.
 
 
 
-```{r}
+```{r ny0150}
 sa <- -0.1
 sb <- -0.2
 sab <- 0.25
