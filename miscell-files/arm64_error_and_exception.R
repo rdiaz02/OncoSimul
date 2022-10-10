@@ -78,3 +78,39 @@ for(iter in 1:20000) {
 
 
 ## plot(s2fd, show = "genotypes")
+
+
+## this gives an exception; from test.Z-oncoSimulIndivFDF.R
+
+r <- data.frame(rfitness(2))
+
+colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
+
+r[, "Fitness"] <- c("10*f_", 
+                    "10*f_1", 
+                    "50*f_2", 
+                    "200*(f_1 + f_2) + 50*f_1_2")
+
+
+suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
+                                          frequencyDependentFitness = TRUE, 
+                                          frequencyType = "rel"))
+
+set.seed(1)
+osi <- oncoSimulIndiv(afe, 
+                      model = "Bozic", 
+                      onlyCancer = FALSE, 
+                      finalTime = 5000, 
+                      verbosity = 0, 
+                      mu = 1e-6,
+                      initSize = 500, 
+                      keepPhylog = FALSE,
+                      seed = NULL, 
+                      errorHitMaxTries = TRUE, 
+                      errorHitWallTime = TRUE)
+
+
+## So we can add code to plot and summary. If uncoreverable exception,
+## which is stored in $UnrecoverExcept, then
+## - do not plot
+## - give error message from summary
