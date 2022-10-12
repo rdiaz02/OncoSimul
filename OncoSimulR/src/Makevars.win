@@ -56,7 +56,7 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 
 ## Doing this in Windows
 
-## Open the msys2 shell and do (change path to R, as needed)
+## Open the msys2 shell and do (change path to OncoSimulR, as needed)
 ## export PATH=/x86_64-w64-mingw32.static.posix/bin:$PATH
 
 ## Install
@@ -75,9 +75,10 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 
 
 ## Recall I need pandoc (and git ---this already installed and in path)
-## Install pandoc at C:/pandoc
+## Install pandoc at C:/pandoc or Program Files
 ## Add it to the path
 ## export PATH=$PATH:/c/Pandoc
+## export PATH=$PATH:/c/progra~1/Pandoc
 ## ##now, pdflatex or tinytex
 ## export PATH=$PATH:/c/Users/ramon/AppData/Roaming/TinyTeX/bin/win32
 ## And install rmarkdown and other suggests
