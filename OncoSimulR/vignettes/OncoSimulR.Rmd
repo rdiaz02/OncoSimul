@@ -8889,13 +8889,10 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                      keepPhylog = FALSE,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
-                     errorHitWallTime = FALSE)
-## plot(s_3_a, show = "genotypes",
-##      xlim = c(40, 200),
-##      col = c("black", "green", "red", "blue"))
+                     errorHitWallTime = FALSE,
+                     keepEvery = 1)
 plot(s_3_a, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"),
-     thinData = TRUE)
+     col = c("black", "green", "red", "blue"))
 ```
 
 
@@ -8911,18 +8908,19 @@ set.seed(2)
 s_3_b <- oncoSimulIndiv(afe_3_b,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 100, ## 160,
+                     finalTime = 100, 
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = FALSE, 
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
-                     errorHitWallTime = FALSE)
-## plot(s_3_b, show = "genotypes", 
-##      col = c("black", "green", "red", "blue"))
+                     errorHitWallTime = FALSE,
+                     keepEvery = 1)
+
 plot(s_3_b, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"),
-     thinData = TRUE) ## thin for faster plotting
+     col = c("black", "green", "red", "blue"))
+## we are using keepEvery. O.w. we could have used
+## thinData = TRUE for faster plotting
 ```
 
 Of course, if we assume that the mutations leading to the different
@@ -8930,7 +8928,7 @@ cell types are different, the results can change:
 
 ```{r hurl3b2}
 ## Figure 3b. Now with WT -> P; P -> A,P; P -> C,P
-## For speed, we set finalTiem = 100
+## For speed, we set finalTime = 100
 afe_3_b_2 <- allFitnessEffects(
                   genotFitness =
                       create_fe2(0.02, 0.04, 0.08, 0.1,
@@ -8941,16 +8939,16 @@ set.seed(2)
 s_3_b_2 <- oncoSimulIndiv(afe_3_b_2,
                    model = "McFL", 
                    onlyCancer = FALSE, 
-                   finalTime = 100, ## 300
+                   finalTime = 100, 
                    mu = 1e-4,
                    initSize = 5000, 
                    keepPhylog = FALSE,
                    seed = NULL, 
                    errorHitMaxTries = FALSE, 
-                   errorHitWallTime = FALSE)
+                   errorHitWallTime = FALSE,
+				   keepEvery = 1)
 plot(s_3_b_2, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"),
-     thinData = TRUE)
+     col = c("black", "green", "red", "blue")
 
 ```
 
@@ -12392,10 +12390,11 @@ s_pred_preym <- oncoSimulIndiv(fe_pred_prey, model = "Arb",
                                 initMutant = c("Predator", "Prey"),
                                 initSize = c(1000, 1000), 
                                 onlyCancer = FALSE, 
-                                finalTime = 200, mu = 1e-3,
+                                finalTime = 75, mu = 1e-3,
                                keepPhylog = FALSE, seed = NULL,
                                errorHitMaxTries = FALSE,
-                                errorHitWallTime = FALSE)
+                                errorHitWallTime = FALSE,
+								keepEvery = 1)
 
 plot(s_pred_preym, show="genotypes", type="line", log = "")
 
@@ -12653,7 +12652,8 @@ osi <- oncoSimulIndiv( afd3,
                         finalTime = 200,
                         mu = 1e-4,
                         initSize = 5000,
-                        sampleEvery = 0.001)
+                        sampleEvery = 0.001,
+						keepEvery = 1)
 ``` 
 Then, we plot the result:
 ```{r plotintex2}
@@ -12689,6 +12689,7 @@ osi_with_ints <- oncoSimulIndiv( afd3,
                         mu = 1e-4,
                         initSize = 5000,
                         sampleEvery = 0.001,
+						keepEvery = 1,
                         interventions = intervention_tot_pop)
 
 plot(osi_with_ints, show = "genotypes", type = "line")
@@ -12983,7 +12984,8 @@ uvex2 <- oncoSimulIndiv(
                     finalTime = 10,
                     onlyCancer = FALSE,
                     userVars = userVars,
-                    rules = rules
+                    rules = rules,
+					keepEvery = 0.1
                     )
     
 plot(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE, FALSE)], xlab="Time", ylab="Proportion", ylim=c(0,1), type="l", col="purple")  
@@ -13231,7 +13233,8 @@ atex2 <- oncoSimulIndiv(afat2,
                        errorHitWallTime = FALSE,
                        userVars = userVars,
                        rules = rules,
-                       interventions = interventions)
+                       interventions = interventions,
+					   keepEvery = 1)
 
 plot(atex2, show = "genotypes", type = "line")
 ```
@@ -13346,7 +13349,8 @@ atex2 <- oncoSimulIndiv(afat3,
                        errorHitWallTime = FALSE,
                        userVars = userVars,
                        rules = rules,
-                       interventions = interventions)
+                       interventions = interventions,
+					   keepEvery = 1)
 
 plot(atex2, show = "genotypes", type = "line")
 ```
@@ -13401,7 +13405,8 @@ atex4 <- oncoSimulIndiv(afat4,
                        seed = NULL, 
                        errorHitMaxTries = FALSE, 
                        errorHitWallTime = FALSE,
-                       interventions = interventions)
+                       interventions = interventions,
+                       keepEvery = 1)
 
 plot(atex4, show = "genotypes", type = "line")
 ```
