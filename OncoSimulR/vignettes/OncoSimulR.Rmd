@@ -485,6 +485,7 @@ g1 <- simOGraph(4, out = "rT")
 
 ## Simulate 10 evolutionary trajectories
 s1 <- oncoSimulPop(10, allFitnessEffects(g1, drvNames = 1:4),
+                   onlyCancer = TRUE,
                    mc.cores = 2, ## adapt to your hardware
                    seed = NULL) ## for reproducibility of vignette
 
@@ -658,6 +659,7 @@ Magellan_stats(rl) ## (Commented out here to avoid writing files)
 ## Simulate evolution in that landscape many times (here just 10)
 simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),
                         keepPhylog = TRUE, keepEvery = 1,
+                        onlyCancer = TRUE,
                         initSize = 4000,
                         seed = NULL, ## for reproducibility
                         mc.cores = 2) ## adapt to your hardware
@@ -1558,10 +1560,11 @@ Nindiv <- 100 ## Number of simulations run.
 
 ## keepEvery = 1
 t_exp1 <- system.time(
-    exp1 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = "default", 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+    exp1 <- oncoSimulPop(Nindiv, pancr,
+                         onlyCancer = TRUE,
+                         detectionProb = "default", 
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = 1,
                             model = "Exp", 
@@ -1569,10 +1572,11 @@ t_exp1 <- system.time(
 
 
 t_mc1 <- system.time(
-    mc1 <- oncoSimulPop(Nindiv, pancr, 
-                           detectionProb = "default", 
-                           detectionSize = NA,
-                           detectionDrivers = NA,
+    mc1 <- oncoSimulPop(Nindiv, pancr,
+                        onlyCancer = TRUE,
+                        detectionProb = "default", 
+                        detectionSize = NA,
+                        detectionDrivers = NA,
                            finalTime = NA,
                            keepEvery = 1,                                  
                            model = "McFL", 
@@ -1580,9 +1584,10 @@ t_mc1 <- system.time(
 
 ## keepEvery = NA
 t_exp2 <- system.time(
-    exp2 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = "default", 
-                            detectionSize = NA,
+    exp2 <- oncoSimulPop(Nindiv, pancr,
+                         onlyCancer = TRUE,
+                         detectionProb = "default", 
+                         detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = NA, 
@@ -1591,9 +1596,10 @@ t_exp2 <- system.time(
 
 
 t_mc2 <- system.time(
-    mc2 <- oncoSimulPop(Nindiv, pancr, 
-                           detectionProb = "default", 
-                           detectionSize = NA,
+    mc2 <- oncoSimulPop(Nindiv, pancr,
+                        onlyCancer = TRUE,
+                        detectionProb = "default", 
+                        detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA,
                            keepEvery = NA,
@@ -1705,11 +1711,12 @@ running time and space consumption.
 ```{r timing2, eval = FALSE}
 t_exp3 <- system.time(
     exp3 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e4,
-                                              p2 = 0.1, n2 = 5e5,
-                                              checkSizePEvery = 20), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e4,
+                                           p2 = 0.1, n2 = 5e5,
+                                           checkSizePEvery = 20),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = 1, 
                             model = "Exp", 
@@ -1717,11 +1724,12 @@ t_exp3 <- system.time(
 
 t_exp4 <- system.time(
     exp4 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e4,
-                                              p2 = 0.1, n2 = 5e5,
-                                              checkSizePEvery = 20), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e4,
+                                           p2 = 0.1, n2 = 5e5,
+                                           checkSizePEvery = 20),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = NA, 
                             model = "Exp", 
@@ -1731,10 +1739,11 @@ t_exp4 <- system.time(
 
 t_exp5 <- system.time(
     exp5 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e5,
-                                              p2 = 0.1, n2 = 5e7), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e5,
+                                           p2 = 0.1, n2 = 5e7),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = 1, 
                             model = "Exp", 
@@ -1742,10 +1751,11 @@ t_exp5 <- system.time(
 
 t_exp6 <- system.time(
     exp6 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e5,
-                                              p2 = 0.1, n2 = 5e7), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e5,
+                                           p2 = 0.1, n2 = 5e7),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = NA, 
                             model = "Exp", 
@@ -5364,7 +5374,7 @@ i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Bozic")
 				 
-i1_b <- oncoSimulIndiv(i1, model = "Bozic")
+i1_b <- oncoSimulIndiv(i1, model = "Bozic", onlyCancer = TRUE)
 
 ``` 
 
@@ -5374,7 +5384,7 @@ Of course, there is no problem in using the above with other models:
 ```{r ny0158}
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Exp")
-i1_e <- oncoSimulIndiv(i1, model = "Exp")
+i1_e <- oncoSimulIndiv(i1, model = "Exp", onlyCancer = TRUE)
 summary(i1_e)
 ``` 
 
@@ -6763,6 +6773,7 @@ s5 <- oncoSimulPop(200,
                    oi2,
                    model = "McFL",
                    initSize = 1000,
+                   onlyCancer = TRUE,
                    detectionProb = c(p2 = 0.1, 
                                      n2 = 2000, 
                                      PDBaseline = 1000,
@@ -7892,6 +7903,7 @@ simulations and in the last line we sample from them:
 ```{r pancrpopcreate}
 
 pancrPop <- oncoSimulPop(4, pancr,
+                         onlyCancer = TRUE,
                          detectionSize = 1e7,
                          keepEvery = 10,
                          mc.cores = 2)
@@ -7924,6 +7936,7 @@ if(.Platform$OS.type == "windows") {
 }
 
 p2 <- mclapply(1:4, function(x) oncoSimulIndiv(pancr,
+                                               onlyCancer = TRUE,
                                                detectionSize = 1e7,
                                                keepEvery = 10),
                                                mc.cores = mc.cores)
@@ -7945,6 +7958,7 @@ have done instead (note the argument `keepEvery = NA`)
 
 ```{r nyv0133}
 pancrPopNH <- oncoSimulPop(4, pancr,
+                           onlyCancer = TRUE,
                            detectionSize = 1e7,
                            keepEvery = NA,
                            mc.cores = 2)
@@ -7961,7 +7975,7 @@ pancrPopNH[[1]]$pops.by.time
 Or we could have used `oncoSimulSample`:
 
 ```{r nyv0135}
-pancrSamp <- oncoSimulSample(4, pancr)
+pancrSamp <- oncoSimulSample(4, pancr, onlyCancer = TRUE)
 pancrSamp$popSamp
 
 ``` 
@@ -8254,11 +8268,11 @@ oi <- allFitnessEffects(orderEffects =
                           geneToModule =
                               c("F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-oiI1 <- oncoSimulIndiv(oi, model = "Exp")
+oiI1 <- oncoSimulIndiv(oi, model = "Exp", onlyCancer = TRUE)
 oiP1 <- oncoSimulPop(4, oi,
                      keepEvery = 10,
                      mc.cores = 2,
-                     keepPhylog = TRUE)
+                     keepPhylog = TRUE, onlyCancer = TRUE)
 
 ``` 
 
@@ -8349,7 +8363,8 @@ rfitness(3)
 
 r1 <- rfitness(5, reference = rep(1, 5), sd = 0.6)
 plot(r1)
-oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
+oncoSimulIndiv(allFitnessEffects(genotFitness = r1),
+               onlyCancer = TRUE)
 ``` 
 
 
@@ -8363,7 +8378,8 @@ MAGELLAN [@brouillet_magellan:_2015].
 ```{r nkex1}
 rnk <- rfitness(5, K = 3, model = "NK")
 plot(rnk)
-oncoSimulIndiv(allFitnessEffects(genotFitness = rnk))
+oncoSimulIndiv(allFitnessEffects(genotFitness = rnk),
+               onlyCancer = TRUE)
 ```
 
 
@@ -12521,16 +12537,16 @@ like this example below:
 
 ```{r interventionsOncoSimulIndivExample}
 ep2 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "Exp",
-                    mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 5.2,
-                    onlyCancer = FALSE,
-		                interventions = interventions
-                    )
+    afd3, 
+    model = "Exp",
+    mu = 1e-4,
+    sampleEvery = 0.001,
+    initSize = c(20000, 20000),
+    initMutant = c("A", "B"),
+    finalTime = 5.2,
+    onlyCancer = FALSE,
+    interventions = interventions
+)
 ```
 
 ## A first example with interventions {#intssimpleexample}
@@ -12738,13 +12754,12 @@ frequencyType = "abs")
     
 resultscrs1_noints <- oncoSimulIndiv(afcrs1,
                             model = "McFL",
-                            finalTime = 100,
+                            finalTime = 25,
                             mu = 1e-2,
                             initSize = 4000,
-                            keepPhylog = TRUE,
-                            seed = NULL,
-                            errorHitMaxTries = FALSE,
-                            errorHitWallTime = FALSE)
+                            onlyCancer = FALSE,
+                            keepPhylog = FALSE,
+                            seed = NULL)
 
 plot(resultscrs1_noints, show="genotypes", type = "line")
 
@@ -12762,17 +12777,19 @@ define that the R genotype needs the C genotype to exist and grow, if we cut the
 of C, R will never dominate the population. First, we define the intervention: 
 
 ```{r interventionforrps}
-int_over_C = list(
-        list(
-            ID = "Bothering R strain, by reducing C",
-            Trigger = "n_C >= 500",
-            WhatHappens = "n_C = n_C * 0.1",
-            Periodicity = 3,
-            Repetitions = Inf
-        )
+int_over_C <- list(
+    list(
+        ID = "Bothering R strain, by reducing C",
+        Trigger = "n_C >= 500",
+        WhatHappens = "n_C = n_C * 0.1",
+        Periodicity = 3,
+        Repetitions = Inf
+    )
     )
 
-    final_int_over_C = createInterventions(interventions = int_over_C, genotFitness = afcrs1)
+final_int_over_C <-
+    createInterventions(interventions = int_over_C,
+                        genotFitness = afcrs1)
 ```
 
 Where it is controled that, if the C genotype exceeds 500 individuals of population
@@ -12784,13 +12801,12 @@ Running the simulations again, but this time with the interventions specified:
 ```{r rpswithints}
 resultscrs1_noints <- oncoSimulIndiv(afcrs1,
                             model = "McFL",
-                            finalTime = 100,
+                            finalTime = 25,
                             mu = 1e-2,
                             initSize = 4000,
-                            keepPhylog = TRUE,
+                            onlyCancer = FALSE,
+                            keepPhylog = FALSE,
                             seed = NULL,
-                            errorHitMaxTries = FALSE,
-                            errorHitWallTime = FALSE,
                             interventions = final_int_over_C)
 
 plot(resultscrs1_noints, show="genotypes", type = "line")
@@ -12891,17 +12907,17 @@ Finally, once both objects are created, they can be passed as an argument to the
 
 ```{r userVarsOncoSimulIndivExample}
 uvex <- oncoSimulIndiv(
-                    afuv, 
-                    model = "McFLD",
-                    mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 5.2,
-                    onlyCancer = FALSE,
-		                userVars = userVars,
-                    rules = rules
-                    )
+    afuv, 
+    model = "McFLD",
+    mu = 1e-4,
+    sampleEvery = 0.001,
+    initSize = c(20000, 20000),
+    initMutant = c("A", "B"),
+    finalTime = 5.2,
+    onlyCancer = FALSE,
+    userVars = userVars,
+    rules = rules
+)
 ```
 
 ## Basic example with user variables {#uservarsbasicexample}
@@ -14166,7 +14182,8 @@ pancr <- allFitnessEffects(
                          rep("PXDN", 3), rep("TGFBR2", 2)),
                s = 0.05, sh = -0.3, typeDep = "MN"))
 
-pancr16 <- oncoSimulPop(16, pancr, model = "Exp",
+pancr16 <- oncoSimulPop(16, pancr,
+                        model = "Exp",                          onlyCancer = TRUE,
                         mc.cores = 2)
 
 ## Look a the first POM 
@@ -14433,9 +14450,10 @@ directly. For example:
 ## This code will only be evaluated under Windows
 if(.Platform$OS.type == "windows")
     try(pancrError <- oncoSimulPop(10, pancr,
-                               initSize = 1e-5,
-                               detectionSize = 1e7,
-                               keepEvery = 10,
+                                   initSize = 1e-5,
+                                   onlyCancer = TRUE,
+                                   detectionSize = 1e7,
+                                   keepEvery = 10,
                                mc.cores = 2))
 ``` 
 
@@ -14449,6 +14467,7 @@ Under POSIX operating systems (e.g., GNU/Linux or Mac OSX)
 if(.Platform$OS.type != "windows")
     pancrError <- oncoSimulPop(10, pancr,
                                initSize = 1e-5,
+                               onlyCancer = TRUE,
                                detectionSize = 1e7,
                                keepEvery = 10,
                                mc.cores = 2)
