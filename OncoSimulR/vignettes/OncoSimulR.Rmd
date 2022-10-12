@@ -10959,8 +10959,8 @@ simulScen3 <- oncoSimulIndiv(scen3,
                               finalTime = 50,
                               mu = 1e-4,
                               initSize = 4000,
-                              keepPhylog = FALSE,
-                              seed = NULL,
+                             keepPhylog = FALSE,
+                             seed = NULL,
                               errorHitMaxTries = FALSE,
                               errorHitWallTime = FALSE)
 op <- par(mfrow = c(1, 2))
@@ -11005,8 +11005,8 @@ simulScen4 <- oncoSimulIndiv(scen4,
                               finalTime = 40,
                               mu = 1e-4,
                               initSize = 4000,
-                              keepPhylog = FALSE,
-                              seed = NULL,
+                             keepPhylog = FALSE,
+                             seed = NULL,
                               errorHitMaxTries = FALSE,
                               errorHitWallTime = FALSE)
 op <- par(mfrow = c(1, 2))
@@ -12393,8 +12393,8 @@ s_pred_preym <- oncoSimulIndiv(fe_pred_prey, model = "Arb",
                                 initSize = c(1000, 1000), 
                                 onlyCancer = FALSE, 
                                 finalTime = 200, mu = 1e-3,
-                                keepPhylog = FALSE, seed = NULL,
-                                errorHitMaxTries = FALSE,
+                               keepPhylog = FALSE, seed = NULL,
+                               errorHitMaxTries = FALSE,
                                 errorHitWallTime = FALSE)
 
 plot(s_pred_preym, show="genotypes", type="line", log = "")
@@ -12426,8 +12426,8 @@ HD_eq <- allFitnessEffects(
 osi_eq <- oncoSimulIndiv(HD_eq, model = "Const",
                            onlyCancer = FALSE, finalTime = 50,
                            mu = 1e-6, initSize = c(2000, 2000),
-						               initMutant = c("H", "D"), keepPhylog = FALSE,
-                           seed = NULL, errorHitMaxTries = FALSE,
+                         initMutant = c("H", "D"), keepPhylog = FALSE,
+                         seed = NULL, errorHitMaxTries = FALSE,
                            errorHitWallTime = FALSE)
                            
 plot(osi_eq, show="genotypes", ylim=c(1, 5000))
@@ -13480,7 +13480,7 @@ set.seed(1) ## for reproducibility
 atex5 <- oncoSimulIndiv(afat5,
                        model = "McFLD", 
                        onlyCancer = FALSE, 
-                       finalTime = 2000,
+                       finalTime = 1500,
                        mu = 1e-4,
                        initSize = c(10000, 50, 1000), 
                        initMutant = c("WT", "A", "B"),
