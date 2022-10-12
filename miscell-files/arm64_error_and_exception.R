@@ -114,3 +114,5 @@ osi <- oncoSimulIndiv(afe,
 ## which is stored in $UnrecoverExcept, then
 ## - do not plot
 ## - give error message from summary
+
+## I can also get crashes in line 12644 of vignette, plotintex2
