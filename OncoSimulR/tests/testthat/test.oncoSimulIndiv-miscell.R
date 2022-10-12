@@ -101,7 +101,7 @@ test_that("samplePop with oncoSimulIndiv object", {
                                      sampleEvery = 0.03,
                                      keepEvery = 5,
                                      model = "Exp")
-              expect_message(out <- samplePop(oiI1),
+              expect_message(out <- suppressWarnings(samplePop(oiI1)),
                              "Subjects by Genes matrix of 1 subjects and 10 genes.",
                              fixed = TRUE)
               expect_true(ncol(out) == 10)
@@ -858,8 +858,10 @@ test_that("samplePop deals with failures in simuls", {
 
     null <- capture.output({
     fe <- allFitnessEffects(noIntGenes = c(-0.1, -0.2, -0.3))
-    uu <- oncoSimulIndiv(fe, max.wall.time = 0.2, max.num.tries = 5)
+    uu <- oncoSimulIndiv(fe, max.wall.time = 0.2, max.num.tries = 5,
+                         onlyCancer = TRUE)
     uup <- oncoSimulPop(4, fe, max.wall.time = 0.2, max.num.tries = 5,
+                        onlyCancer = TRUE,
                         mc.cores = 2)
     })
     expect_warning(uus <- samplePop(uu),
@@ -871,7 +873,7 @@ test_that("samplePop deals with failures in simuls", {
     ## And it works when only some fail
     
     fe2 <- allFitnessEffects(noIntGenes = c(0.1, 0.2, 0.3))
-    uu2 <- oncoSimulIndiv(fe2)
+    uu2 <- oncoSimulIndiv(fe2, onlyCancer = TRUE)
     u3 <- list(uu, uu2)
     class(u3) <- "oncosimulpop"
     expect_warning(uu3ps <- samplePop(u3),
@@ -885,17 +887,21 @@ test_that("summary.oncosimulepop deals with failures in simuls", {
     
     fe <- allFitnessEffects(noIntGenes = c(-0.1, -0.2, -0.3))
      null <- capture.output({
-         uup <- oncoSimulPop(4, fe, max.wall.time = 0.2, max.num.tries = 5, mc.cores = 2)
-         })
+         uup <- oncoSimulPop(4, fe,
+                             onlyCancer = TRUE,
+                             max.wall.time = 0.2, max.num.tries = 5, mc.cores = 2)
+     })
     expect_warning(uus <- summary(uup),
                    "All simulations failed",
                    fixed = TRUE)
     ## And it works when only some fail
     fe2 <- allFitnessEffects(noIntGenes = c(0.1, 0.2, 0.3))
      null <- capture.output({
-    uu2 <- oncoSimulPop(2, fe2, mc.cores = 2)
-    uu <- oncoSimulPop(2, fe, max.wall.time = 0.2, max.num.tries = 5, mc.cores = 2)
-    })
+         uu2 <- oncoSimulPop(2, fe2, onlyCancer = TRUE,
+                             mc.cores = 2)
+         uu <- oncoSimulPop(2, fe, onlyCancer = TRUE,
+                            max.wall.time = 0.2, max.num.tries = 5, mc.cores = 2)
+     })
     u3 <- c(uu, uu2)
     class(u3) <- "oncosimulpop"
     expect_warning(uu3ps <- summary(u3),
@@ -909,12 +915,14 @@ test_that("AND_DrvProbExit warnings and errors work" , {
                         drvNames = c("A", "B", "C"))
 
     expect_warning(u <- oncoSimulIndiv(fe, detectionDrivers = 1,
-                        detectionProb = "default",
+                                       onlyCancer = TRUE,
+                                       detectionProb = "default",
                         AND_DrvProbExit = TRUE),
                    "With AND_DrvProbExit = TRUE, detectionSize is ignored",
                    fixed = TRUE)
 
     expect_error(u <- oncoSimulIndiv(fe, detectionDrivers = NA,
+                                     onlyCancer = TRUE,
                                      detectionProb = "default",
                                      AND_DrvProbExit = TRUE),
                  "AND_DrvProbExit is TRUE: both of detectionProb",
@@ -940,19 +948,19 @@ test_that("AND_DrvProbExit exercising and test it works" , {
     fe <- allFitnessEffects(noIntGenes = c("A" = 0.1, "B" = 0.2, "C" = 0.3),
                         drvNames = c("A", "B"))
     ## set.seed(1)
-    u0 <- oncoSimulIndiv(fe, detectionDrivers = 1,
-                        detectionProb = "default",
+    u0 <- oncoSimulIndiv(fe, onlyCancer = TRUE, detectionDrivers = 1,
+                         detectionProb = "default",
                         AND_DrvProbExit = FALSE,
                         detectionSize = NA)
     ## set.seed(1)
-    u <- oncoSimulIndiv(fe, detectionDrivers = 1,
+    u <- oncoSimulIndiv(fe, onlyCancer = TRUE, detectionDrivers = 1,
                         detectionProb = "default",
                         AND_DrvProbExit = TRUE,
                         detectionSize = NA)
     expect_true(u$TotalPresentDrivers >= 1)
     ## set.seed(1)
-    u2 <- oncoSimulIndiv(fe, detectionDrivers = 1,
-                        detectionProb = "default",
+    u2 <- oncoSimulIndiv(fe, onlyCancer = TRUE, detectionDrivers = 1,
+                         detectionProb = "default",
                         AND_DrvProbExit = TRUE,
                         minDetectDrvCloneSz = 500,
                         detectionSize = NA)
@@ -960,20 +968,23 @@ test_that("AND_DrvProbExit exercising and test it works" , {
     ## set.seed(2)
 
     ## set.seed(2)
-    ## m00 <- oncoSimulIndiv(fe, detectionDrivers = NA, model = "McFL",
+    ## m00 <- oncoSimulIndiv(fe, onlyCancer = TRUE,
+    ##                       detectionDrivers = NA, model = "McFL",
     ##                     detectionProb = "default",
     ##                     AND_DrvProbExit = FALSE,
     ##                     detectionSize = NA,
     ##                     initMutant = "C")
     ## set.seed(2)
-    m <- oncoSimulIndiv(fe, detectionDrivers = 1, model = "McFL",
+    m <- oncoSimulIndiv(fe, onlyCancer = TRUE,
+                        detectionDrivers = 1, model = "McFL",
                         detectionProb = "default",
                         AND_DrvProbExit = TRUE,
                         detectionSize = NA)
     expect_true(m$TotalPresentDrivers >= 1)
     ## set.seed(2)
-    m1 <- oncoSimulIndiv(fe, detectionDrivers = 1, model = "McFL",
-                        detectionProb = "default",
+    m1 <- oncoSimulIndiv(fe, onlyCancer = TRUE,
+                         detectionDrivers = 1, model = "McFL",
+                         detectionProb = "default",
                         AND_DrvProbExit = TRUE,
                         minDetectDrvCloneSz = 10,
                         detectionSize = NA)
@@ -981,8 +992,9 @@ test_that("AND_DrvProbExit exercising and test it works" , {
     m1p <- m1$pops.by.time[, -c(1, 2), drop = FALSE]
     expect_true(sum(m1p[nrow(m1p), , drop = FALSE]) >= 10)
     ## set.seed(2)
-    m2 <- oncoSimulIndiv(fe, detectionDrivers = 1, model = "McFL",
-                        detectionProb = "default",
+    m2 <- oncoSimulIndiv(fe,onlyCancer = TRUE,
+                         detectionDrivers = 1, model = "McFL",
+                         detectionProb = "default",
                         AND_DrvProbExit = TRUE,
                         minDetectDrvCloneSz = 100,
                         detectionSize = NA)
@@ -996,7 +1008,8 @@ test_that("AND_DrvProbExit exercising and test it works" , {
     ##                     AND_DrvProbExit = TRUE,
     ##                     minDetectDrvCloneSz = 1200,
     ##                     detectionSize = NA)
-    m3 <- oncoSimulIndiv(fe, detectionDrivers = 1, model = "McFL",
+    m3 <- oncoSimulIndiv(fe, onlyCancer = TRUE,
+                         detectionDrivers = 1, model = "McFL",
                          detectionProb = "default",
                          extraTime = 3,
                          AND_DrvProbExit = TRUE,
@@ -1005,7 +1018,8 @@ test_that("AND_DrvProbExit exercising and test it works" , {
     expect_true(m3$TotalPresentDrivers >= 1)
     m3p <- m3$pops.by.time[, -c(1, 2), drop = FALSE]
     expect_true(sum(m3p[nrow(m3p), , drop = FALSE]) >= 100)
-    m3 <- oncoSimulIndiv(fe, detectionDrivers = 1, model = "McFL",
+    m3 <- oncoSimulIndiv(fe, onlyCancer = TRUE,
+                         detectionDrivers = 1, model = "McFL",
                          detectionProb = "default",
                          extraTime = 10,
                          AND_DrvProbExit = TRUE,
@@ -1022,7 +1036,8 @@ test_that("AND_DrvProbExit exercising and test it works" , {
 
 test_that("exercising oncoSimulIndiv, max size warning", {
     p1 <- allFitnessEffects(noIntGenes = rep(.1, 10))
-    expect_output(oncoSimulIndiv(p1, initSize = 1.5e15, verbosity = 1,
+    expect_output(oncoSimulIndiv(p1, 
+                                 initSize = 1.5e15, verbosity = 1,
                                  onlyCancer = FALSE, mu= 1e-7))
     ## data(examplePosets)
     ## p701 <- examplePosets[["p701"]]

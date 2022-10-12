@@ -11,10 +11,11 @@ test_that("Exercise LOD and POM code", {
                                       sh = -0.3,
                                       typeDep = "MN"))
     null <- capture.output({
-    pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE)
-    pancr8 <- oncoSimulPop(6, pancr, model = "Exp", keepPhylog = TRUE,
-                           detectionSize = 1e5,
-                           mc.cores = 2)
+        pancr1 <- oncoSimulIndiv(pancr, model = "Exp", keepPhylog = TRUE,
+                                 onlyCancer = TRUE)
+        pancr8 <- oncoSimulPop(6, pancr, model = "Exp", keepPhylog = TRUE,
+                               detectionSize = 1e5, onlyCancer = TRUE,
+                               mc.cores = 2)
     })
     lop8 <- LOD(pancr8)
     null <- OncoSimulR:::LOD_as_path(lop8)
@@ -34,8 +35,9 @@ test_that("Exercise LOD and POM code", {
     expect_error(diversityLOD(LOD(pancr1)),
                  "Object must be a list", fixed = TRUE)
     null <- capture.output(
-    pancr88 <- oncoSimulPop(8, pancr, model = "McFL",
-                           keepPhylog = TRUE,
+        pancr88 <- oncoSimulPop(8, pancr, model = "McFL",
+                                onlyCancer = TRUE,
+                                keepPhylog = TRUE,
                            finalTime = 0.01,
                            max.num.tries = 1,
                            mc.cores = 2,
@@ -86,12 +88,14 @@ test_that("Warnings when no descendants",  {
     ## cannot move from wt with this fitness landscape
     m1 <- cbind(A = c(0, 1), B = c(0, 1), Fitness = c(1, 1e-8))
     null <- capture.output({
-    s1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
-                         mu = 1e-14, detectionSize = 1, initSize = 100,
+        s1 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
+                             onlyCancer = TRUE,
+                             mu = 1e-14, detectionSize = 1, initSize = 100,
                          keepPhylog = TRUE)
-    s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
-                         mu = 1e-14, detectionSize = 1, initSize = 100,
-                         keepPhylog = FALSE)
+        s2 <- oncoSimulIndiv(allFitnessEffects(genotFitness = m1),
+                             onlyCancer = TRUE,
+                             mu = 1e-14, detectionSize = 1, initSize = 100,
+                             keepPhylog = FALSE)
     })
     expect_warning(LOD(s1),
                    "LOD structure has 0 rows:",
@@ -176,12 +180,14 @@ test_that("LOD, strict, same as would be obtained from full structure, seed", {
         ## rxx[sample(2:(ng + 1)), ng + 1] <- 1.5 ## make sure we get going
         set.seed(si + i)
         s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                             onlyCancer = TRUE,
                              initSize = 10, detectionSize = 1e5,
                              keepPhylog = FALSE, mu = 5e-3)
         set.seed(si + i)
         s7b <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
-                             initSize = 10, detectionSize = 1e5,
-                             keepPhylog = TRUE, mu = 5e-3)
+                              onlyCancer = TRUE,
+                              initSize = 10, detectionSize = 1e5,
+                              keepPhylog = TRUE, mu = 5e-3)
         lods <- LOD(s7)
         null <- capture.output(print(lods))
         loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7b, strict = FALSE)
@@ -214,11 +220,13 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
         rxx[4, ncol(rxx)] <- 1.5
         set.seed(2 * si + i)
         s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                             onlyCancer = TRUE,
                              initSize = 100, detectionSize = 1e5,
                              keepPhylog = FALSE, mu = 5e-3,
                              initMutant = c("C"))
         set.seed(2 * si + i)
         s7b <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                              onlyCancer = TRUE,
                               initSize = 100, detectionSize = 1e5,
                               keepPhylog = TRUE, mu = 5e-3,
                               initMutant = c("C"))
@@ -272,9 +280,10 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
         rxx <- rfitness(ng)
         rxx[sample(2:(ng + 1)), ng + 1] <- 1.5 ## make sure we get going
         null <- capture.output(
-        s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
-                             initSize = 1000, detectionSize = 1e6,
-                             mu = 1e-3))
+            s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                                 onlyCancer = TRUE,
+                                 initSize = 1000, detectionSize = 1e6,
+                                 mu = 1e-3))
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
         if(!is.null(s7$pops.by.time) &&
            !any(apply(s7$pops.by.time[, -1], 1, function(x) length(which(x == max(x))) > 1)))
@@ -285,9 +294,10 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
         rxx <- rfitness(6)
         rxx[3, 7] <- 1.5
         null <- capture.output(
-        s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
-                             initSize = 1000, detectionSize = 1e6,
-                             mu = 1e-3,
+            s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                                 onlyCancer = TRUE,
+                                 initSize = 1000, detectionSize = 1e6,
+                                 mu = 1e-3,
                              initMutant = c("B")))
         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
         ## if(!is.null(s7$pops.by.time)) {
@@ -301,9 +311,10 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
         rxx <- rfitness(6)
         rxx[3, 7] <- 1e-8
         null <- capture.output(
-        s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
-                             initSize = 10, detectionSize = 1e6,
-                             mu = 1e-3,
+            s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
+                                 onlyCancer = TRUE,
+                                 initSize = 10, detectionSize = 1e6,
+                                 mu = 1e-3,
                              max.num.tries = 3,
                              errorHitMaxTries = FALSE,
                              initMutant = c("B")))
