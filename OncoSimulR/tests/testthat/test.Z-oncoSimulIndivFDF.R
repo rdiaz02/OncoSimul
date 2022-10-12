@@ -156,7 +156,33 @@ test_that("testing Bozic failure", {
                                              errorHitWallTime = TRUE)))
   expect_true(st[22] == " Unrecoverable exception: Algo 2: retval not finite. Aborting. ")
 
+  ## And test that plot gives an error
+  expect_error(plot(osi), "An unrecoverable exception happened")
+  
 })
+
+## This test is more a plotting test, but since we fix the seed
+## and test plot, much as the last case above, we leave it here
+test_that("We produce an error when plotting timed out runs", {
+    set.seed(1)
+    data(examplesFitnessEffects)
+    suppressMessages(tmp <-  oncoSimulIndiv(examplesFitnessEffects[["cbn2"]],
+                                            model = "McFL", 
+                                            mu = 5e-6,
+                                            detectionSize = 1e8, 
+                                            detectionDrivers = 3,
+                                            sampleEvery = 0.03, 
+                                            max.num.tries = 10,
+                                            keepEvery = 15,
+                                            initSize = 20,
+                                            finalTime = 1e5,
+                                            max.wall.time = 0.01,
+                                            onlyCancer = FALSE,
+                                            keepPhylog = TRUE))
+    expect_error(plot(tmp), "The simulation hit max wall time or max tries.")
+})
+
+
 
 
 set.seed(NULL)
