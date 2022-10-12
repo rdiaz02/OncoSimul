@@ -7176,7 +7176,7 @@ in section \@ref(phylog) could be of help).
 
 ### McFarland model with 5000 passengers and 70 drivers {#mcf5070}
 
-```{r rzx0, fig.width=6}
+```{r rzx0000, fig.width=6}
 
 set.seed(678)
 nd <- 70  
