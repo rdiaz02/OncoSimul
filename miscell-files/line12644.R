@@ -7,7 +7,7 @@ for(iter in 1:20000) {
     seed <- seed0 + iter
     set.seed(seed)
     cat("\n iter, i.e., number of iterations = ", iter)
-    cat("\n seed = ", seed)
+    cat("\n seed = ", seed, "\n")
 
     ## eh??!!! with set.seed(1) this takes forever!
     
@@ -30,5 +30,5 @@ for(iter in 1:20000) {
                                                  sampleEvery = 0.001))[1]
 
     cat("\n Time it took was ", timerun, "\n")
-    plot(osi, show = "genotypes", type = "line")
+    ## plot(osi, show = "genotypes", type = "line")
 }
