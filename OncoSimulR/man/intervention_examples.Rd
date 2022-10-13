@@ -37,7 +37,7 @@ data(userVarsBasicExample2)
 
 
 \examples{
-data(AdaptiveTherapyComplexExample)
+data(adaptiveTherapyComplexExample)
 plot(atex2b)
 }
 
