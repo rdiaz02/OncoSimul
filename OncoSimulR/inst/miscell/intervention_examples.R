@@ -1,3 +1,6 @@
+### Precompute some examples for the vignette
+
+rm(list = ls())
 library(OncoSimulR)
 
 
@@ -22,7 +25,9 @@ local({
                           sampleEvery = 0.001,
                           keepEvery = 1)
     osi$other$userVarValues <- NULL
-    save(file = "osi_intex2.RData", osi)
+    osi$PerSampleStats <- NULL
+    osi$interventionTimes <- NULL
+    save(file = "../../data/osi_intex2.RData", osi)
 
     
     intervention_tot_pop = list(
@@ -49,7 +54,9 @@ local({
                                     keepEvery = 1)
     
     osi_with_ints$other$userVarValues <- NULL
-    save(file = "osi_with_ints.RData", osi_with_ints)
+    ## osi_with_ints$PerSampleStats <- NULL
+    osi_with_ints$other$interventionTimes <- NULL
+    save(file = "../../data/osi_with_ints.RData", osi_with_ints)
 })
 
 ## HansenExample3
@@ -85,10 +92,12 @@ local({
                             errorHitMaxTries = FALSE, 
                             errorHitWallTime = FALSE,
                             interventions = interventions,
-                            keepEvery = 1)
+                            keepEvery = 2)
 
     atex4$other$userVarValues <- NULL
-    save(file = "HansenExample3.RData", atex4)
+    atex4$PerSampleStats <- NULL
+    atex4$other$interventionTimes <- NULL
+    save(file = "../../data/HansenExample3.RData", atex4)
 
 })
 
@@ -172,112 +181,115 @@ local({
                             userVars = userVars,
                             rules = rules,
                             interventions = interventions,
-                            keepEvery = 1)
+                            keepEvery = 2)
     ## Not needed for the plot
     atex5$other$userVarValues <- NULL
-    save(file = "HansenExampleAT4.RData", atex5)
+    atex5$PerSampleStats <- NULL
+    atex5$other$interventionTimes <- NULL
+    save(file = "../../data/HansenExampleAT4.RData", atex5)
 })
 
 
 
 
 
-## AdaptiveTherapyExample3
+## ## AdaptiveTherapyExample3
 
-local({
-    dfat2 <- data.frame(Genotype = c("WT", "A", "B"), 
-                        Fitness = c("1",
-                                    "1 + 0.2 * (n_B > 10)",
-                                    ".9 + 0.4 * (n_A > 10)"
-                                    ))
-    afat2 <- allFitnessEffects(genotFitness = dfat2, 
-                               frequencyDependentFitness = TRUE)
-    
+## local({
+##     dfat2 <- data.frame(Genotype = c("WT", "A", "B"), 
+##                         Fitness = c("1",
+##                                     "1 + 0.2 * (n_B > 10)",
+##                                     ".9 + 0.4 * (n_A > 10)"
+##                                     ))
+##     afat2 <- allFitnessEffects(genotFitness = dfat2, 
+##                                frequencyDependentFitness = TRUE)
 
-    userVars <- list(
-        list(Name           = "genADiff",
-             Value       = 0
-             ),
-        list(Name           = "genBDiff",
-             Value       = 0
-             ),
-        list(Name           = "genWTDiff",
-             Value       = 0
-             )
-    )
 
-    userVars <- createUserVars(userVars)
+##     userVars <- list(
+##         list(Name           = "genADiff",
+##              Value       = 0
+##              ),
+##         list(Name           = "genBDiff",
+##              Value       = 0
+##              ),
+##         list(Name           = "genWTDiff",
+##              Value       = 0
+##              )
+##     )
 
-    rules <- list(
-        list(ID = "rule_1",
-             Condition = "TRUE",
-             Action = "genADiff = b_1-d_1"
-             ),
-        list(ID = "rule_2",
-             Condition = "TRUE",
-             Action = "genBDiff = b_2-d_2"
-             ),
-        list(ID = "rule_3",
-             Condition = "TRUE",
-             Action = "genWTDiff = b_-d_"
-             ),
-        list(ID = "rule_4",
-             Condition = "n_A < 1000",
-             Action = "genADiff = -1"
-             ),
-        list(ID = "rule_5",
-             Condition = "n_B < 1000",
-             Action = "genBDiff = -1"
-             ),
-        list(ID = "rule_6",
-             Condition = "n_ < 1000",
-             Action = "genWTDiff = -1"
-             )
-    )
+##     userVars <- createUserVars(userVars)
 
-    rules <- createRules(rules, afat2)
+##     rules <- list(
+##         list(ID = "rule_1",
+##              Condition = "TRUE",
+##              Action = "genADiff = b_1-d_1"
+##              ),
+##         list(ID = "rule_2",
+##              Condition = "TRUE",
+##              Action = "genBDiff = b_2-d_2"
+##              ),
+##         list(ID = "rule_3",
+##              Condition = "TRUE",
+##              Action = "genWTDiff = b_-d_"
+##              ),
+##         list(ID = "rule_4",
+##              Condition = "n_A < 1000",
+##              Action = "genADiff = -1"
+##              ),
+##         list(ID = "rule_5",
+##              Condition = "n_B < 1000",
+##              Action = "genBDiff = -1"
+##              ),
+##         list(ID = "rule_6",
+##              Condition = "n_ < 1000",
+##              Action = "genWTDiff = -1"
+##              )
+##     )
 
-    interventions <- list(
-        list(ID           = "i1",
-             Trigger       = "genADiff > genBDiff and genADiff > genWTDiff",
-             WhatHappens   = "n_A = n_A*0.5",
-             Periodicity   = 10,
-             Repetitions   = Inf
-             ),
-        list(ID           = "i2",
-             Trigger       = "genBDiff > genADiff and genBDiff > genWTDiff",
-             WhatHappens   = "n_B = n_B*0.5",
-             Periodicity   = 10,
-             Repetitions   = Inf
-             ),
-        list(ID           = "i3",
-             Trigger       = "genWTDiff > genADiff and genWTDiff > genBDiff",
-             WhatHappens   = "n_ = n_*0.5",
-             Periodicity   = 10,
-             Repetitions   = Inf
-             )
-    )
+##     rules <- createRules(rules, afat2)
 
-    interventions <- createInterventions(interventions, afat2)
-    set.seed(1) ## for reproducibility
-    atex2 <- oncoSimulIndiv(afat2,
-                            model = "McFLD", 
-                            onlyCancer = FALSE, 
-                            finalTime = 200,
-                            mu = 1e-4,
-                            initSize = 5000, 
-                            keepPhylog = FALSE,
-                            seed = NULL, 
-                            errorHitMaxTries = FALSE, 
-                            errorHitWallTime = FALSE,
-                            userVars = userVars,
-                            rules = rules,
-                            interventions = interventions,
-                            keepEvery = 1)
+##     interventions <- list(
+##         list(ID           = "i1",
+##              Trigger       = "genADiff > genBDiff and genADiff > genWTDiff",
+##              WhatHappens   = "n_A = n_A*0.5",
+##              Periodicity   = 10,
+##              Repetitions   = Inf
+##              ),
+##         list(ID           = "i2",
+##              Trigger       = "genBDiff > genADiff and genBDiff > genWTDiff",
+##              WhatHappens   = "n_B = n_B*0.5",
+##              Periodicity   = 10,
+##              Repetitions   = Inf
+##              ),
+##         list(ID           = "i3",
+##              Trigger       = "genWTDiff > genADiff and genWTDiff > genBDiff",
+##              WhatHappens   = "n_ = n_*0.5",
+##              Periodicity   = 10,
+##              Repetitions   = Inf
+##              )
+##     )
 
-    atex2$other$userVarValues <- NULL
-    save(file = "AdaptiveTherapyExample3.RData", atex2)
-})
+##     interventions <- createInterventions(interventions, afat2)
+##     set.seed(1) ## for reproducibility
+##     atex2 <- oncoSimulIndiv(afat2,
+##                             model = "McFLD", 
+##                             onlyCancer = FALSE, 
+##                             finalTime = 200,
+##                             mu = 1e-4,
+##                             initSize = 5000, 
+##                             keepPhylog = FALSE,
+##                             seed = NULL, 
+##                             errorHitMaxTries = FALSE, 
+##                             errorHitWallTime = FALSE,
+##                             userVars = userVars,
+##                             rules = rules,
+##                             interventions = interventions,
+##                             keepEvery = 1)
+
+##     atex2$PerSampleStats <- NULL
+##     atex2$other$interventionTimes <- NULL
+##     save(file = "../../data/AdaptiveTherapyExample3.RData", atex2)
+## })
 
 
 
@@ -387,8 +399,8 @@ local({
     interventions <- createInterventions(interventions, afat3)
 
     set.seed(1) ## for reproducibility
-    atex2 <- oncoSimulIndiv(afat3,
-                            model = "McFLD", 
+    atex2b <- oncoSimulIndiv(afat3,
+                             model = "McFLD", 
                             onlyCancer = FALSE, 
                             finalTime = 200,
                             mu = 1e-4,
@@ -402,8 +414,10 @@ local({
                             interventions = interventions,
                             keepEvery = 1)
 
-    atex2$other$userVarValues <- NULL
-    save(file = "AdaptiveTherapyComplexExample.RData", atex2)
+    atex2b$other$userVarValues <- NULL
+    atex2b$PerSampleStats <- NULL
+    atex2b$other$interventionTimes <- NULL
+    save(file = "../../data/AdaptiveTherapyComplexExample.RData", atex2b)
 })
 
 ## ## userVarsBasicExample
@@ -472,7 +486,7 @@ local({
 ##         keepEvery = 0.1
 ##     )
 ##     uvex2$other$userVarValues <- NULL
-##     save(file = "usersVarsBasicExample.RData", uvex2)
+##     save(file = "../../data/usersVarsBasicExample.RData", uvex2)
 
 ## })
 
@@ -523,7 +537,7 @@ local({
     uvex3 <- oncoSimulIndiv(afuv3,
                             model = "McFLD", 
                             onlyCancer = FALSE, 
-                            finalTime = 150,
+                            finalTime = 105,
                             mu = 1e-4,
                             initSize = 5000, 
                             keepPhylog = FALSE,
@@ -534,8 +548,9 @@ local({
                             rules = rules,
                             keepEvery = 1)
 
-    uvex3$other$userVarValues <- NULL
-    save(file = "usersVarsBasicExample2.RData", uvex3)
+    uvex3$PerSampleStats <- NULL
+    uvex3$other$interventionTimes <- NULL
+    save(file = "../../data/usersVarsBasicExample2.RData", uvex3)
 
 })
 
@@ -569,7 +584,9 @@ local({
     )
 
     uvex$other$userVarValues <- NULL
-    save(file = "usersVarsOncoSimulIndivExample.RData", uvex)
+    uvex$PerSampleStats <- NULL
+    uvex$other$interventionTimes <- NULL
+    save(file = "../../data/usersVarsOncoSimulIndivExample.RData", uvex)
 })
 
 
@@ -599,5 +616,11 @@ local({
     )
 
     ep2$other$userVarValues <- NULL
-    save(file = "interventionsOncoSimulIndivExample.RData", ep2)
+    ep2$PerSampleStats <- NULL
+    ep2$other$interventionTimes <- NULL
+    save(file = "../../data/interventionsOncoSimulIndivExample.RData", ep2)
 })
+
+
+
+
