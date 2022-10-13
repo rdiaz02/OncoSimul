@@ -1,6 +1,12 @@
 inittime <- Sys.time()
 cat(paste("\n Starting interventions tests", date(), "\n"))
 
+## FIXME
+## These two tests are extremely computationally intensive,
+## and I think could be better tested otherwise.
+## And this test has many non-idiomatic R constructs
+## and it could probably run in a 1/10 of the time
+
 test_that("1. Drastically reducing a high-fitness genotype population (McFL) | Trigger depends on T and n_*", {
     set.seed(1)
     df3x <- data.frame(Genotype = c("WT", "B", "R"),
@@ -12,6 +18,7 @@ test_that("1. Drastically reducing a high-fitness genotype population (McFL) | T
                           frequencyDependentFitness = TRUE,
                           frequencyType = "abs")
 
+    ## FIXME: why such periodicity?
     interventions <- list(
         list(
             ID          = "intOverBAffectsR",
@@ -31,17 +38,24 @@ test_that("1. Drastically reducing a high-fitness genotype population (McFL) | T
 
     interventions <- createInterventions(interventions, afd3)
 
+
     ep2 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "McFLD",
-                    mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(5000, 10, 300),
-                    initMutant = c("WT", "B", "R"),
-                    finalTime = 100,
-                    onlyCancer = FALSE,
-                    interventions = interventions
-                    )
+        afd3,
+        model = "McFLD",
+        mu = 1e-4,
+        sampleEvery = 0.001,
+        initSize = c(5000, 10, 300),
+        initMutant = c("WT", "B", "R"),
+        finalTime = 100,
+        onlyCancer = FALSE,
+        interventions = interventions,
+        ## FIXME: this test occasionally fails
+        ## as it goes > 200 s in Windows.
+        ## This should not be needed
+        max.wall.time = 600
+    )
+
+    ## Why the thresholds? 210 here and 40 below.
 
     flag <- FALSE
     i <- 20002
@@ -58,6 +72,9 @@ test_that("1. Drastically reducing a high-fitness genotype population (McFL) | T
     # we control that the B population
     flag <- FALSE
     i <- 80002
+
+    ## FIXME: why simulate to 100 time units if we only look up
+    ## to row 85000?
     while(i <= 85000){
         if(ep2$pops.by.time[i, 3:3] > 40){
             flag <- TRUE
@@ -106,22 +123,26 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
     interventions <- createInterventions(interventions, afd3)
 
     ep2 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "Exp",
-                    mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(5000, 10, 300),
-                    initMutant = c("WT", "B", "R"),
-                    finalTime = 100,
-                    onlyCancer = FALSE,
-                    interventions = interventions)
+        afd3,
+        model = "Exp",
+        mu = 1e-4,
+        sampleEvery = 0.001,
+        initSize = c(5000, 10, 300),
+        initMutant = c("WT", "B", "R"),
+        finalTime = 100,
+        onlyCancer = FALSE,
+        interventions = interventions,
+        ## FIXME: This huge wall time should not be necessary.
+        ## See above; this is slow as hell in Windows.
+        max.wall.time = 600)
 
     ## In Macs,
     ##   if (ep2$pops.by.time[i, 3:3] >= 210) {
     ##     flag <- TRUE
     ## }`: argument is of length zero
     ## So only run if not on a Mac
-    if (Sys.info()["sysname"] != "Darwin") {
+    ## FIXME: this is because the above fails hitting wall time
+##    if (Sys.info()["sysname"] != "Darwin") {
         flag <- FALSE
         i <- 20002
         while(i <= 70001){
@@ -131,7 +152,7 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
             i <- i + 1
         }
         testthat::expect_equal(flag, FALSE)
-    
+
 
         ## then, between the time intervals, T >= 80 and T<=85
         ## we control that the B population
@@ -147,7 +168,7 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
         testthat::expect_equal(flag, FALSE)
         ## we plot the simulation when no interventions are specified.
         ## plot(ep2, show = "genotypes", type = "line")
-    }
+##    }
 })
 
 cat(paste("\n Ending interventions tests", date(), "\n"))
