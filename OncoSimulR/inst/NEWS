@@ -1,3 +1,7 @@
+Changes in version 3.99.11 (2022-10-13):
+	- Increase max.wall.time of two tests, as in very slow Windoze machines
+	  they can hit max wall time.
+
 Changes in version 3.99.10 (2022-10-13):
 	- onlyCancer = FALSE by default in all calls to oncoSimul*.
 	  This is a possible BRAEKING CHANGE.
