@@ -265,14 +265,14 @@ test_that("7. Intervening over total population (McFL) | Trigger depends on T", 
 
     interventions <- createInterventions(interventions, afd3)
 
-    sfd3 <- oncoSimulIndiv( afd3,
-                            model = "McFLD",
-                            onlyCancer = FALSE,
-                            finalTime = 100,
-                            mu = 1e-4,
-                            initSize = 5000,
-                            sampleEvery = 0.001,
-                            interventions = interventions)
+    sfd3 <- oncoSimulIndiv(afd3,
+                           model = "McFLD",
+                           onlyCancer = FALSE,
+                           finalTime = 100,
+                           mu = 1e-4,
+                           initSize = 5000,
+                           sampleEvery = 0.001,
+                           interventions = interventions)
 
     # we can check genotype by genotype that when an intervention ocurs, their population lowers
 
@@ -284,9 +284,9 @@ test_that("7. Intervening over total population (McFL) | Trigger depends on T", 
 
     # For each intervention time (T = 40, 60, 80)
     for(index in indexes){
-        line <- sfd3$pops.by.time[index,]
-        prev_line <- sfd3$pops.by.time[index-1,]
-            #Total
+        line <- sfd3$pops.by.time[index, ]
+        prev_line <- sfd3$pops.by.time[index-1, ]
+                                        #Total
         total <- line[2] + line[3] + line[4]
         prev_total <- prev_line[2] + prev_line[3] + prev_line[4]
         testthat::expect_gt(total, prev_total*0.6 - 0.2*prev_total)
@@ -351,9 +351,9 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
 
     # For each intervention time (T = 10, 20, 30)
     for(index in indexes){
-        line <- sfd3$pops.by.time[index,]
-        prev_line <- sfd3$pops.by.time[index-1,]
-            #Total
+        line <- sfd3$pops.by.time[index, ]
+        prev_line <- sfd3$pops.by.time[index-1, ]
+                                        #Total
         total <- line[2] + line[3] + line[4]
         prev_total <- prev_line[2] + prev_line[3] + prev_line[4]
         testthat::expect_gt(total, prev_total*0.8 - 0.2*prev_total)
@@ -440,30 +440,30 @@ test_that("11. Intervening over 4 genotypes both over specific genotype and tota
     }
 
     # when T = 1.2 population of genotype A is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[1],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[1]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[1], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[1]-1, ]
     if((prev_line[2] > 0) & (line[2] > 0)){
         testthat::expect_gt(line[2], prev_line[2]*0.5 - 0.2*prev_line[2])
         testthat::expect_lt(line[2], prev_line[2]*0.5 + 0.2*prev_line[2])
     }
 
     # when T = 2.2 population of genotype B is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[2],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[2]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[2], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[2]-1, ]
     if((prev_line[3] > 0) & (line[3] > 0)){
         testthat::expect_gt(line[3], prev_line[3]*0.5 - 0.2*prev_line[3])
         testthat::expect_lt(line[3], prev_line[3]*0.5 + 0.2*prev_line[3])
     }
     # when T = 3.2 population of genotype C is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[3],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[3]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[3], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[3]-1, ]
     if((prev_line[4] > 0) & (line[4] > 0)){
         testthat::expect_gt(line[4], prev_line[4]*0.5 - 0.2*prev_line[4])
         testthat::expect_lt(line[4], prev_line[4]*0.5 + 0.2*prev_line[4])
     }
     # when T = 4.2 population of genotype D is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[4],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[4]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[4], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[4]-1, ]
     if((prev_line[5] > 0) & (line[5] > 0)){
         testthat::expect_gt(line[5], prev_line[5]*0.5 - 0.2*prev_line[5])
         testthat::expect_lt(line[5], prev_line[5]*0.5 + 0.2*prev_line[5])
@@ -540,30 +540,30 @@ test_that("12. Intervening over 4 genotypes both over specific and total populat
     }
 
     # when T = 1.2 population of genotype A is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[1],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[1]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[1], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[1]-1, ]
     if((prev_line[2] > 0) & (line[2] > 0)){
         testthat::expect_gt(line[2], prev_line[2]*0.5 - 0.2*prev_line[2])
         testthat::expect_lt(line[2], prev_line[2]*0.5 + 0.2*prev_line[2])
     }
 
     # when T = 2.2 population of genotype B is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[2],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[2]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[2], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[2]-1, ]
     if((prev_line[3] > 0) & (line[3] > 0)){
         testthat::expect_gt(line[3], prev_line[3]*0.5 - 0.2*prev_line[3])
         testthat::expect_lt(line[3], prev_line[3]*0.5 + 0.2*prev_line[3])
     }
     # when T = 3.2 population of genotype C is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[3],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[3]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[3], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[3]-1, ]
     if((prev_line[4] > 0) & (line[4] > 0)){
         testthat::expect_gt(line[4], prev_line[4]*0.5 - 0.2*prev_line[4])
         testthat::expect_lt(line[4], prev_line[4]*0.5 + 0.2*prev_line[4])
     }
     # when T = 4.2 population of genotype D is intervened
-    line <- sfd3_with_ints$pops.by.time[indexes[4],]
-    prev_line <- sfd3_with_ints$pops.by.time[indexes[4]-1,]
+    line <- sfd3_with_ints$pops.by.time[indexes[4], ]
+    prev_line <- sfd3_with_ints$pops.by.time[indexes[4]-1, ]
     if((prev_line[5] > 0) & (line[5] > 0)){
         testthat::expect_gt(line[5], prev_line[5]*0.5 - 0.2*prev_line[5])
         testthat::expect_lt(line[5], prev_line[5]*0.5 + 0.2*prev_line[5])
@@ -700,9 +700,9 @@ test_that("14. Intervening over total population (Exp) | Trigger depends on user
 
     # For each intervention time (T = 10, 20, 30)
     for(index in indexes){
-        line <- sfd3$pops.by.time[index,]
-        prev_line <- sfd3$pops.by.time[index-1,]
-            #Total
+        line <- sfd3$pops.by.time[index, ]
+        prev_line <- sfd3$pops.by.time[index-1, ]
+                                        #Total
         total <- line[2] + line[3] + line[4]
         prev_total <- prev_line[2] + prev_line[3] + prev_line[4]
         testthat::expect_gt(total, prev_total*0.8 - 0.2*prev_total)
@@ -797,9 +797,9 @@ test_that("15. Intervening over total population (Exp) | WhatHappens uses user v
     # For each intervention time (T = 15, 25, 35)
     for(i in 1:length(indexes)){
         index <- indexes[i]
-        line <- sfd3$pops.by.time[index,]
-        prev_line <- sfd3$pops.by.time[index-1,]
-            #Total
+        line <- sfd3$pops.by.time[index, ]
+        prev_line <- sfd3$pops.by.time[index-1, ]
+                                        #Total
         total <- line[2] + line[3] + line[4]
         prev_total <- prev_line[2] + prev_line[3] + prev_line[4]
         # T = 15
