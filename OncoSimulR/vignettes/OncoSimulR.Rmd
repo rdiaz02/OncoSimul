@@ -8951,7 +8951,7 @@ s_3_b_2 <- oncoSimulIndiv(afe_3_b_2,
                    errorHitWallTime = FALSE,
 				   keepEvery = 1)
 plot(s_3_b_2, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue")
+     col = c("black", "green", "red", "blue"))
 
 ```
 
