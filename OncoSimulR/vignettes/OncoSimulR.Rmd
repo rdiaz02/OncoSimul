@@ -14233,7 +14233,7 @@ afeT2 <- allFitnessEffects(genotFitness = dfT2,
 
 data(simT2)
 
-if (FALSE)
+if (FALSE) {
 set.seed(1)
 simT2 <- oncoSimulIndiv(afeT2,
                         model = "McFL",
