@@ -1285,6 +1285,8 @@ plot(pancr)
 
 set.seed(1) ## Fix the seed, so we can repeat it
 ## We set a small finalTime to speed up the vignette
+
+
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      mu = 1e-6,
                      sampleEvery = 0.02,
@@ -1293,6 +1295,7 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      finalTime = 20000,
                      detectionDrivers = 3,
                      onlyCancer = FALSE)
+
 ``` 
 
 
@@ -12532,9 +12535,9 @@ argument is the `fitnessEffects` object.
 
 Finally, once the intervention is "created" by the `createInterventions` function,
 the object returned can be passed as an argument to the `oncoSimul*` function, 
-like this example below: 
+like this example below. More detailed examples are shown next (and, for speed creating the vignette, we do not execute the next code chunk).
 
-```{r interventionsOncoSimulIndivExample}
+```{r interventionsOncoSimulIndivExample, eval=FALSE}
 ep2 <- oncoSimulIndiv(
     afd3, 
     model = "Exp",
@@ -12646,6 +12649,14 @@ afd3 <- allFitnessEffects(genotFitness = gffd3,
                             frequencyDependentFitness = TRUE,
                             frequencyType = "abs")
 
+```
+
+```{r intex2load}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(osi_intex2)
+
+if (FALSE) {
 osi <- oncoSimulIndiv( afd3,
                         model = "McFLD",
                         onlyCancer = FALSE,
@@ -12654,7 +12665,11 @@ osi <- oncoSimulIndiv( afd3,
                         initSize = 5000,
                         sampleEvery = 0.001,
 						keepEvery = 1)
+}
+						
 ``` 
+
+
 Then, we plot the result:
 ```{r plotintex2}
 plot(osi, show = "genotypes", type = "line")
@@ -12682,6 +12697,11 @@ Where the intervention will start at T > 40, reducing the total population to th
 the simulation, but this time specifying the interventions:
 
 ```{r simulationwithinterventionsintex2}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+load(osi_with_ints)
+
+if(FALSE) {
 osi_with_ints <- oncoSimulIndiv( afd3,
                         model = "McFLD",
                         onlyCancer = FALSE,
@@ -12690,6 +12710,7 @@ osi_with_ints <- oncoSimulIndiv( afd3,
                         initSize = 5000,
                         sampleEvery = 0.001,
                         interventions = intervention_tot_pop)
+}
 
 plot(osi_with_ints, show = "genotypes", type = "line")
 ```
@@ -12906,9 +12927,10 @@ rules <- createRules(rules, afuv)
 In `createUserVars` the argument is the previously defined list of user variables.
 In `createRules`, the first argument is the previously defined list of rules, and the second one is the `fitnessEffects` object.
 
-Finally, once both objects are created, they can be passed as an argument to the `oncoSimul*` function:
+Finally, once both objects are created, they can be passed as an argument to the `oncoSimul*` function (for speed, we do not run the example below, as we have more detailed examples next).
 
-```{r userVarsOncoSimulIndivExample}
+```{r userVarsOncoSimulIndivExample, eval=FALSE}
+
 uvex <- oncoSimulIndiv(
     afuv, 
     model = "McFLD",
@@ -12921,6 +12943,7 @@ uvex <- oncoSimulIndiv(
     userVars = userVars,
     rules = rules
 )
+
 ```
 
 ## Basic example with user variables {#uservarsbasicexample}
@@ -12946,11 +12969,14 @@ afuv2 <- allFitnessEffects(genotFitness = dfuv2,
 userVars <- list(
     list(Name           = "genAProp",
         Value       = 0.5
-    ),list(Name           = "genBProp",
+    ),
+	list(Name           = "genBProp",
         Value       = 0.5
-    ),list(Name           = "genABProp",
+    ),
+	list(Name           = "genABProp",
         Value       = 0.0
-    ),list(Name           = "genACProp",
+    ),
+	list(Name           = "genACProp",
         Value       = 0.0
     )
 )
@@ -12961,13 +12987,16 @@ rules <- list(
         list(ID = "rule_1",
             Condition = "TRUE",
             Action = "genBProp = n_B/N"
-        ),list(ID = "rule_2",
+        ),
+		list(ID = "rule_2",
             Condition = "TRUE",
             Action = "genAProp = n_A/N"
-        ),list(ID = "rule_3",
+        ),
+		list(ID = "rule_3",
             Condition = "TRUE",
             Action = "genABProp = n_A_B/N"
-        ),list(ID = "rule_4",
+        ),
+		list(ID = "rule_4",
             Condition = "TRUE",
             Action = "genACProp = n_A_C/N"
         )
@@ -12987,14 +13016,29 @@ uvex2 <- oncoSimulIndiv(
                     onlyCancer = FALSE,
                     userVars = userVars,
                     rules = rules,
-					keepEvery = 0.1
+                    keepEvery = 0.1
                     )
-    
-plot(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE, FALSE)], xlab="Time", ylab="Proportion", ylim=c(0,1), type="l", col="purple")  
-lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE, FALSE)], type="l", col="#E6AB02") 
-lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE, FALSE)], type="l", col="#1B9E77") 
-lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE, FALSE)], type="l", col="#666666") 
-legend(0,1,legend=c("genABProp", "genACProp", "genAProp", "genBProp"), col=c("purple", "#E6AB02", "#1B9E77", "#666666"), lty= 1:2) 
+
+                    
+plot(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE, FALSE)],
+    xlab="Time", ylab="Proportion", ylim=c(0,1), type="l", col="purple")  
+
+lines(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE, FALSE)], type="l", col="#E6AB02") 
+
+lines(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE, FALSE)], type="l", col="#1B9E77") 
+
+lines(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE, FALSE)], type="l", col="#666666") 
+
+legend(0,1,
+       legend=c("genABProp", "genACProp", "genAProp", "genBProp"), col=c("purple", "#E6AB02", "#1B9E77", "#666666"), lty= 1:2) 
 ```
 We can see, just as we saw in the interventions example that genotype B dominates the population, but, as we used user variables that show us the proportions intead of directly the populatios, we can se the fraction of the total represented by each genotype.
 
@@ -13037,6 +13081,13 @@ rules <- list(
 
 rules <- createRules(rules, afuv3)
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+load(userVarsBasicExample2)
+
+if(FALSE) {
 set.seed(1)
 
 uvex3 <- oncoSimulIndiv(afuv3,
@@ -13052,6 +13103,7 @@ uvex3 <- oncoSimulIndiv(afuv3,
                        userVars = userVars,
                        rules = rules,
                        keepEvery = 1)
+}
 
 plot(uvex3, show = "genotypes", type = "line")    
 ```
@@ -13368,6 +13420,14 @@ interventions <- list(
 
 interventions <- createInterventions(interventions, afat3)
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+load(adaptiveTherapyComplexExample)
+
+if (FALSE) {
+
 set.seed(1) ## for reproducibility
 atex2b <- oncoSimulIndiv(afat3,
                          model = "McFLD", 
@@ -13383,6 +13443,7 @@ atex2b <- oncoSimulIndiv(afat3,
                        rules = rules,
                        interventions = interventions,
 					   keepEvery = 1)
+}
 
 plot(atex2b, show = "genotypes", type = "line")
 ```
@@ -13424,7 +13485,12 @@ interventions <- createInterventions(interventions, afat4)
 We run the simulation and plot the results.
 
 ```{r HansenExample3}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
 
+load(HansenExample3)
+
+if(FALSE) {
 set.seed(1) ## for reproducibility
 atex4 <- oncoSimulIndiv(afat4,
                        model = "McFLD", 
@@ -13439,6 +13505,7 @@ atex4 <- oncoSimulIndiv(afat4,
                        errorHitWallTime = FALSE,
                        interventions = interventions,
                        keepEvery = 1)
+}
 
 plot(atex4, show = "genotypes", type = "line")
 ```
@@ -13512,7 +13579,12 @@ interventions <- createInterventions(interventions, afat5)
 We run the simulation and plot the results.
 
 ```{r HansenExampleAT4}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
 
+load(HansenExampleAT4)
+
+if(FALSE) {
 set.seed(1) ## for reproducibility
 atex5 <- oncoSimulIndiv(afat5,
                        model = "McFLD", 
@@ -13528,6 +13600,7 @@ atex5 <- oncoSimulIndiv(afat5,
                        userVars = userVars,
                        rules = rules,
                        interventions = interventions)
+}
 
 plot(atex5, show = "genotypes", type = "line")
 ```

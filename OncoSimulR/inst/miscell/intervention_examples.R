@@ -550,76 +550,132 @@ local({
 
     uvex3$PerSampleStats <- NULL
     uvex3$other$interventionTimes <- NULL
-    save(file = "../../data/usersVarsBasicExample2.RData", uvex3)
+    save(file = "../../data/userVarsBasicExample2.RData", uvex3)
 
 })
 
 
 
-## userVarsOncoSimulIndivExample
-local({
-    dfuv <- data.frame(Genotype = c("WT", "A", "B"),
-                       Fitness = c("1",
-                                   "1 + 0.2 * (n_B > 0)",
-                                   ".9 + 0.4 * (n_A > 0)"
-                                   ))
-    afuv <- allFitnessEffects(genotFitness = dfuv,
-                              frequencyDependentFitness = TRUE,
-                              frequencyType = "abs")
+## ## userVarsOncoSimulIndivExample
+## local({
 
-    userVars <- createUserVars(userVars)
-    rules <- createRules(rules, afuv)
+##     userVars <- list(
+##         list(Name           = "user_var1",
+##              Value       = 0
+##              ),
+##         list(Name           = "user_var2",
+##              Value       = 3
+##              ),
+##         list(Name           = "user_var3",
+##              Value       = 2.5
+##              )
+##     )
 
-    uvex <- oncoSimulIndiv(
-        afuv, 
-        model = "McFLD",
-        mu = 1e-4,
-        sampleEvery = 0.001,
-        initSize = c(20000, 20000),
-        initMutant = c("A", "B"),
-        finalTime = 5.2,
-        onlyCancer = FALSE,
-        userVars = userVars,
-        rules = rules
-    )
+##     rules <- list(
+##         list(ID = "rule_1",
+##              Condition = "T > 20",
+##              Action = "user_var_1 = 1"
+##              ),
+##         list(ID = "rule_2",
+##              Condition = "T > 30",
+##              Action = "user_var_2 = 2; user_var3 = 2*N"
+##              ),
+##         list(ID = "rule_3",
+##              Condition = "T > 40",
+##              Action = "user_var_3 = 3;user_var_2 = n_A*n_B"
+##              )
+##     )
+##     dfuv <- data.frame(Genotype = c("WT", "A", "B"),
+##                        Fitness = c("1",
+##                                    "1 + 0.2 * (n_B > 0)",
+##                                    ".9 + 0.4 * (n_A > 0)"
+##                                    ))
+##     afuv <- allFitnessEffects(genotFitness = dfuv,
+##                               frequencyDependentFitness = TRUE,
+##                               frequencyType = "abs")
 
-    uvex$other$userVarValues <- NULL
-    uvex$PerSampleStats <- NULL
-    uvex$other$interventionTimes <- NULL
-    save(file = "../../data/usersVarsOncoSimulIndivExample.RData", uvex)
-})
+##     userVars <- createUserVars(userVars)
+##     rules <- createRules(rules, afuv)
+
+##     uvex <- oncoSimulIndiv(
+##         afuv, 
+##         model = "McFLD",
+##         mu = 1e-4,
+##         sampleEvery = 0.001,
+##         initSize = c(20000, 20000),
+##         initMutant = c("A", "B"),
+##         finalTime = 5.2,
+##         onlyCancer = FALSE,
+##         userVars = userVars,
+##         rules = rules
+##     )
+
+##     uvex$other$userVarValues <- NULL
+##     uvex$PerSampleStats <- NULL
+##     uvex$other$interventionTimes <- NULL
+##     save(file = "../../data/userVarsOncoSimulIndivExample.RData", uvex)
+## })
 
 
-## interventionsOncoSimulIndivExample
+## ## interventionsOncoSimulIndivExample
 
-local({
-    fa1 <- data.frame(Genotype = c("WT", "A", "B"),
-                      Fitness = c("n_*0",
-                                  "1.5",
-                                  "1"))
+## local({
 
-    afd3 <- allFitnessEffects(genotFitness = fa1,
-                              frequencyDependentFitness = TRUE,
-                              frequencyType = "abs")
+##     interventions <- list(
+##         list(ID           = "i2",
+##              Trigger       = "(N > 1e6) & (T > 100)",
+##              WhatHappens   = "N = 0.001 * N",
+##              Repetitions   = 7,  
+##              Periodicity    = Inf
+##              ),
+##         list(ID           = "i1",
+##              Trigger       = "(T > 10)",
+##              WhatHappens   = "N = 0.3 * N",
+##              Periodicity   = 10,
+##              Repetitions   = 0
+##              ),
+##         list(ID           = "i3", 
+##              Trigger       = "(T > 1) & (T < 200)",
+##              WhatHappens   = "n_A = n_A * 0,3 / n_C",
+##              Repetitions   = Inf,  
+##              Periodicity    = 10
+##              ),
+##         list(ID           = "i5",
+##              Trigger       = "(N > 1e8) & (T> 1.2)",
+##              WhatHappens   = "n_A_B = n_B * 0,3 / n_SRL",
+##              Repetitions   = 0,   
+##              Periodicity    = Inf
+##              )
+##     )
 
-    interventions <- createInterventions(interventions, afd3)
-    ep2 <- oncoSimulIndiv(
-        afd3, 
-        model = "Exp",
-        mu = 1e-4,
-        sampleEvery = 0.001,
-        initSize = c(20000, 20000),
-        initMutant = c("A", "B"),
-        finalTime = 5.2,
-        onlyCancer = FALSE,
-        interventions = interventions
-    )
 
-    ep2$other$userVarValues <- NULL
-    ep2$PerSampleStats <- NULL
-    ep2$other$interventionTimes <- NULL
-    save(file = "../../data/interventionsOncoSimulIndivExample.RData", ep2)
-})
+##     fa1 <- data.frame(Genotype = c("WT", "A", "B"),
+##                       Fitness = c("n_*0",
+##                                   "1.5",
+##                                   "1"))
+
+##     afd3 <- allFitnessEffects(genotFitness = fa1,
+##                               frequencyDependentFitness = TRUE,
+##                               frequencyType = "abs")
+
+##     interventions <- createInterventions(interventions, afd3)
+##     ep2 <- oncoSimulIndiv(
+##         afd3, 
+##         model = "Exp",
+##         mu = 1e-4,
+##         sampleEvery = 0.001,
+##         initSize = c(20000, 20000),
+##         initMutant = c("A", "B"),
+##         finalTime = 5.2,
+##         onlyCancer = FALSE,
+##         interventions = interventions
+##     )
+
+##     ep2$other$userVarValues <- NULL
+##     ep2$PerSampleStats <- NULL
+##     ep2$other$interventionTimes <- NULL
+##     save(file = "../../data/interventionsOncoSimulIndivExample.RData", ep2)
+## })
 
 
 

@@ -1,8 +1,10 @@
 \name{intervention-examples}
-\alias{benchmark_1}
-\alias{benchmark_1_0.05}
-\alias{benchmark_2}
-\alias{benchmark_3}
+\alias{osi_intex2}
+\alias{osi_with_ints}
+\alias{HansenExample3}
+\alias{HansenExampleAT4}
+\alias{AdaptiveTherapyComplexExample}
+\alias{userVarsBasicExample2}
 
 \docType{data}
 \title{
@@ -20,10 +22,12 @@ seconds, we have pre-run them, and stored the results.
 }
 
 \usage{
-data(benchmark_1)
-data(benchmark_1_0.05)
-data(benchmark_2)
-data(benchmark_3)
+data(osi_intex2)
+data(osi_with_ints)
+data(HansenExample3)
+data(HansenExampleAT4)
+data(AdaptiveTherapyComplexExample)
+data(userVarsBasicExample2)
 }
 
 \format{
