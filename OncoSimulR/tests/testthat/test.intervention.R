@@ -58,8 +58,9 @@ test_that("3. The attribute WhatHappens is correctly specified (check_what_happe
         )
     )
 
-    testthat::expect_error(createInterventions(interventions, afd3), "The specification of WhatHappens is wrong.\n It should be:
-        <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
+    testthat::expect_error(createInterventions(interventions, afd3),
+                           "The specification of WhatHappens is wrong.\n It should be:")
+    ## <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
 
     interventions <- list(
         list(ID           = "intOverA",
@@ -70,8 +71,9 @@ test_that("3. The attribute WhatHappens is correctly specified (check_what_happe
         )
     )
 
-    testthat::expect_error(createInterventions(interventions, afd3), "The specification of WhatHappens is wrong.\n It should be:
-        <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
+    testthat::expect_error(createInterventions(interventions, afd3),
+                           "The specification of WhatHappens is wrong.\n It should be:")
+    ##    <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
 
     interventions <- list(
         list(ID           = "intOverA",
@@ -82,8 +84,9 @@ test_that("3. The attribute WhatHappens is correctly specified (check_what_happe
         )
     )
 
-    testthat::expect_error(createInterventions(interventions, afd3), "The specification of WhatHappens is wrong.\n It should be:
-        <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
+    testthat::expect_error(createInterventions(interventions, afd3),
+                           "The specification of WhatHappens is wrong.\n It should be:")
+    ## <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
 })
 
 test_that("4. The user cannot create population in an intervention",{
