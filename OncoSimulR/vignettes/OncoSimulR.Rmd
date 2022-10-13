@@ -12309,7 +12309,7 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 \clearpage
 
-# Death and Birth specification
+# Death and Birth specification {#birthdeathfitspec}
 
 With the changes introduced in mid 2021 by Alberto González Klein, the user is allowed to specify arbitrary
 death rates in the same way fitness could be specified, instead of using the
@@ -12699,7 +12699,7 @@ the simulation, but this time specifying the interventions:
 ```{r simulationwithinterventionsintex2}
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
-load(osi_with_ints)
+data(osi_with_ints)
 
 if(FALSE) {
 osi_with_ints <- oncoSimulIndiv( afd3,
@@ -13085,7 +13085,7 @@ rules <- createRules(rules, afuv3)
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-load(userVarsBasicExample2)
+data(userVarsBasicExample2)
 
 if(FALSE) {
 set.seed(1)
@@ -13424,7 +13424,7 @@ interventions <- createInterventions(interventions, afat3)
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-load(adaptiveTherapyComplexExample)
+data(adaptiveTherapyComplexExample)
 
 if (FALSE) {
 
@@ -13488,7 +13488,7 @@ We run the simulation and plot the results.
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-load(HansenExample3)
+data(HansenExample3)
 
 if(FALSE) {
 set.seed(1) ## for reproducibility
@@ -13582,7 +13582,7 @@ We run the simulation and plot the results.
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-load(HansenExampleAT4)
+data(HansenExampleAT4)
 
 if(FALSE) {
 set.seed(1) ## for reproducibility
@@ -14800,6 +14800,11 @@ There is  an example in Mather et al, p. 1234, section 3.1.1
      growing species also mutate faster)".
 	 
 Of course, this only makes sense in models where birth rate changes.	 
+
+## Messages about 'Using old version of fitnessEffects' and 'v2 functionality detected. Adapting to v3 functionality.'
+
+New functionality has been added that allows us to specify birth and death separately, including making each frequency dependent. See, for example, \@ref(birthdeathfitspec). We still allow the old specification where "fitness" actually meant birth rates, and death was fixed for each model (and the other way around for the Bozic model). You can continue using the old specification. And we continue to do so in most of this vignette (the plan is to  eventually update all examples).
+
 
 
 <!-- FIXME: give references here -->

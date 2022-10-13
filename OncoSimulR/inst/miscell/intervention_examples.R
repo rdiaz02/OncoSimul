@@ -56,7 +56,8 @@ local({
     osi_with_ints$other$userVarValues <- NULL
     ## osi_with_ints$PerSampleStats <- NULL
     osi_with_ints$other$interventionTimes <- NULL
-    save(file = "../../data/osi_with_ints.RData", osi_with_ints)
+    save(file = "../../data/osi_with_ints.RData",
+         osi_with_ints)
 })
 
 ## HansenExample3
