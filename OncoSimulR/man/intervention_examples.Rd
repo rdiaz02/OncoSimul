@@ -6,11 +6,6 @@
 \alias{atex2b}
 \alias{uvex3}
 
-%% \alias{adaptiveTherapyComplexExample}
-%% \alias{userVarsBasicExample2}
-%% \alias{HansenExampleAT4}
-%% \alias{HansenExample3}
-%% \alias{osi_intex2}
 
 \docType{data}
 \title{
