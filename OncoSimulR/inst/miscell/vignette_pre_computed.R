@@ -1,7 +1,358 @@
 ### Precompute some examples for the vignette
 
+
 rm(list = ls())
 library(OncoSimulR)
+
+local({
+    f_cells <- function(c1, c2, c3, r11, r12, r13, 
+                        r21, r22, r23, r31, r32, r33, M, awt = 1e-4,
+                        gt = c("WT", "OC", "OB", "MM")) {
+        data.frame(Genotype = gt,
+                   Fitness = c(
+                       paste0("max(0.1, 1 - ", awt, " * (f_OC + f_OB+f_MM)*N)"),
+                       paste0("1", "+(((f_OC * (", M, "-1)+1)*", c1, ")/", M, ")*",r11,
+                              "+((((1-f_MM) * (", M, "-1)-f_OC*(", M, "-1)-1)*", c2, ")/", M, ")*", r12,
+                              "+(((", M, "-(1-f_MM)*(", M, "-1))*", c3, ")/", M, ")*", r13,
+                              "-", c1
+                              ),
+                       paste0("1", "+(((f_OB*(", M, "-1)+1)*", c2, ")/", M, ")*", r22,
+                              "+((((1-f_OC)*(", M, "-1)-f_OB*(", M, "-1)-1)*", c3, ")/", M, ")*", r23,
+                              "+(((", M, "-(1-f_OC)*(", M, "-1))*", c1, ")/", M, ")*", r21,
+                              "-", c2
+                              ),
+                       paste0("1", "+(((f_MM*(", M, "-1)+1)*", c3, ")/", M, ")*", r33,
+                              "+((((1-f_OB)*(", M, "-1)-f_MM*(", M, "-1)-1)*", c1, ")/", M, ")*", r31,
+                              "+(((", M, "-(1-f_OB)*(", M, "-1))*", c2, ")/", M, ")*", r32,
+                              "-", c3
+                              )
+                   )
+                  ,stringsAsFactors = FALSE
+                   )
+    }
+
+
+    
+    N <- 40000
+    M <- 10
+    c1 <- 1
+    c2 <- 1.2
+    c3 <- 1.4
+    r11 <- 0
+    r12 <- 1
+    r13 <- 2.5
+    r21 <- 1
+    r22 <- 0
+    r23 <- -0.3
+    r31 <- 2.5
+    r32 <- 0
+    r33 <- 0
+
+    fe_cells <-
+        allFitnessEffects(
+            genotFitness =
+                f_cells(c1, c2, c3, r11, r12, r13, 
+                        r21, r22, r23, r31, r32, r33, M,
+                        gt = c("WT", "OC", "OB", "MM")),
+            frequencyDependentFitness = TRUE,
+            frequencyType = "rel")
+
+    ## Simulated trajectories
+
+    data(smyelo3v57)
+
+    set.seed(2)
+    smyelo3v57 <- oncoSimulIndiv(fe_cells,
+                                 model = "McFL",
+                                 onlyCancer = FALSE,
+                                 finalTime = 20, 
+                                 mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4),
+                                 initSize = N,
+                                 keepPhylog = FALSE,
+                                 seed = NULL,
+                                 errorHitMaxTries = FALSE,
+                                 errorHitWallTime = FALSE,
+                                 keepEvery = 0.1)
+
+    smyelo3v57$other$userVarValues <- NULL
+    smyelo3v57$PerSampleStats <- NULL
+    smyelo3v57$interventionTimes <- NULL
+    save(file = "../../data/smyelo3v57.RData", smyelo3v57)  
+})
+
+
+local({
+    create_fe <- function(a, b, c, d, e, f, g,
+                          gt = c("WT", "A", "P", "C")) {
+        data.frame(Genotype = gt,
+                   Fitness = c(
+                       paste0("1 + ",
+                              d, " * f_A ",
+                              "- ", c, " * f_C"),
+                       paste0("1 - ", a, 
+                              " + ", d, " + ",
+                              f, " * f_A ",
+                              "- ", c, " * f_C"),
+                       paste0("1 + ", g, " + ",
+                              d, " * f_A ",
+                              "- ", c, " * (1 + ",
+                              g, ") * f_C"),
+                       paste0("1 - ", b, " + ",
+                              e, " * f_ + ",
+                              "(", d, " + ", 
+                              e, ") * f_A + ",
+                              e , " * f_P")))
+    }
+
+    afe_3_b <- allFitnessEffects(
+        genotFitness =
+            create_fe(0.02, 0.04, 0.08, 0.1,
+                      0.15, 0.1, 0.05),
+        frequencyDependentFitness = TRUE)
+    set.seed(2)
+    ## Use a short finalTime, for speed of vignette execution
+    s_3_b <- oncoSimulIndiv(afe_3_b,
+                            model = "McFL", 
+                            onlyCancer = FALSE, 
+                            finalTime = 100, 
+                            mu = 1e-4,
+                            initSize = 5000, 
+                            keepPhylog = FALSE, 
+                            seed = NULL, 
+                            errorHitMaxTries = FALSE, 
+                            errorHitWallTime = FALSE,
+                            keepEvery = 1)
+
+    s_3_b$other$userVarValues <- NULL
+    s_3_b$PerSampleStats <- NULL
+    s_3_b$interventionTimes <- NULL
+    save(file = "../../data/s_3_b.RData", s_3_b)  
+})
+
+
+## userVarsBasicExample
+local({
+    dfuv2 <- data.frame(Genotype = c("WT", "B", "A", "B, A", "C, A"),
+                        Fitness = c("0*n_",
+                                    "1.5",
+                                    "1.002",
+                                    "1.003",
+                                    "1.004"))
+
+    afuv2 <- allFitnessEffects(genotFitness = dfuv2,
+                               frequencyDependentFitness = TRUE,
+                               frequencyType = "abs")
+
+    userVars <- list(
+        list(Name           = "genAProp",
+             Value       = 0.5
+             ),
+        list(Name           = "genBProp",
+             Value       = 0.5
+             ),
+        list(Name           = "genABProp",
+             Value       = 0.0
+             ),
+        list(Name           = "genACProp",
+             Value       = 0.0
+             )
+    )
+
+    userVars <- createUserVars(userVars)
+
+    rules <- list(
+        list(ID = "rule_1",
+             Condition = "TRUE",
+             Action = "genBProp = n_B/N"
+             ),
+        list(ID = "rule_2",
+             Condition = "TRUE",
+             Action = "genAProp = n_A/N"
+             ),
+        list(ID = "rule_3",
+             Condition = "TRUE",
+             Action = "genABProp = n_A_B/N"
+             ),
+        list(ID = "rule_4",
+             Condition = "TRUE",
+             Action = "genACProp = n_A_C/N"
+             )
+    )
+
+    rules <- createRules(rules, afuv2)
+
+    set.seed(1)
+    uvex2 <- oncoSimulIndiv(
+        afuv2, 
+        model = "McFLD",
+        mu = 1e-4,
+        sampleEvery = 0.01,
+        initSize = c(20000, 20000),
+        initMutant = c("A", "B"),
+        finalTime = 10,
+        onlyCancer = FALSE,
+        userVars = userVars,
+        rules = rules,
+        keepEvery = 0.1
+    )
+    uvex2$PerSampleStats <- NULL
+    uvex2$interventionTimes <- NULL
+    ## uvex2$other$userVarValues <- NULL
+    save(file = "../../data/uvex2.RData", uvex2)
+
+})
+
+
+
+local({
+    dfT2 <- data.frame(Genotype = c("WT", "A", "B"),
+                       Fitness = c(
+                           "1",
+                           "if (T>0 and T<50) 0; else if (T>100 and T<150) 0.05; else 1.2 + 0.35*f_;",
+                           "0.8 + 0.45*(f_)"
+                       ),
+                       stringsAsFactors = FALSE)
+    
+    afeT2 <- allFitnessEffects(genotFitness = dfT2,
+                               frequencyDependentFitness = TRUE,
+                               frequencyType = "rel")
+    
+    set.seed(1)
+    simT2 <- oncoSimulIndiv(afeT2,
+                            model = "McFL",
+                            mu = 1e-5,
+                            initSize = 10000,
+                            finalTime = 225,
+                            onlyCancer = FALSE,
+                            keepEvery = 1,
+                            seed = NULL)
+
+    simT2$other$userVarValues <- NULL
+    simT2$PerSampleStats <- NULL
+    simT2$interventionTimes <- NULL
+    save(file = "../../data/simT2.RData", simT2)
+})
+
+
+local({
+
+    ## Healthy     Sensitive   Resistant
+    a <- 1;       b <- 0.5;   c <- 0.5    # Healthy
+    d <- 1;       e <- 1.25;  f <- 0.7    # Sensitive
+    g <- 0.975;   h <- -0.5;  i <- 0.75   # Resistant
+
+    drug_eff <- 0.01
+
+    wt_fitness <- paste0(a, "*f_+", b, "*f_S+", c, "*f_S_R")
+    sens_fitness <- paste0(d, "*f_+", e, "*f_S+", f, "*f_S_R")
+    res_fitness <- paste0(g, "*f_+", h, "*f_S+", i, "*f_S_R")
+
+    players_1 <- data.frame(Genotype = c("WT", "S", "R", "S, R"),
+                            Fitness = c(wt_fitness,                                               #WT
+                                        paste0("if (T>50) ", drug_eff, "*(",sens_fitness, ")",";  
+                                           else ", sens_fitness, ";"),                        #S
+                                        "0",                                                      #R
+                                        res_fitness),                                             #S,R
+                            stringsAsFactors = FALSE)
+
+    period_1 <- allFitnessEffects(genotFitness = players_1,
+                                  frequencyDependentFitness = TRUE,
+                                  frequencyType = "rel")
+
+    set.seed(2)
+
+    final_time <- 170 ## for speed
+    simul_period_1 <- oncoSimulIndiv(period_1,
+                                     model = "McFL",
+                                     onlyCancer = FALSE,
+                                     finalTime = final_time,
+                                     mu = 0.01,
+                                     initSize = 5000,
+                                     keepPhylog = FALSE,
+                                     seed = NULL,
+                                     keepEvery = .2)
+
+    simul_period_1$other$userVarValues <- NULL
+    simul_period_1$PerSampleStats <- NULL
+    simul_period_1$interventionTimes <- NULL
+    save(file = "../../data/simul_period_1.RData", simul_period_1)
+
+})
+
+
+
+local({
+    dfT3 <- data.frame(Genotype = c("WT", "A", "B"),
+                       Fitness = c(
+                           "1",
+                           "1 + 0.2 * (n_2 > 10)",
+                           "if (T>50 and T<80) 0.80; else 0.9 + 0.4 * (n_1 > 10)"),
+                       stringsAsFactors = FALSE)
+
+    afeT3 <- allFitnessEffects(genotFitness = dfT3,
+                               frequencyDependentFitness = TRUE,
+                               frequencyType = "abs")
+    set.seed(2)
+    simT3 <- oncoSimulIndiv(afeT3,
+                            model = "McFLD",
+                            mu = 1e-4,
+                            initSize = 5000,
+                            finalTime = 500,
+                            onlyCancer = FALSE,
+                            seed = NULL,
+                            errorHitWallTime = FALSE,
+                            errorHitMaxTries = FALSE,
+                            keepEvery = 1)
+    
+    simT3$other$userVarValues <- NULL
+    simT3$PerSampleStats <- NULL
+    simT3$interventionTimes <- NULL
+    save(file = "../../data/simT3.RData", simT3)
+})
+
+local({
+    create_fe <- function(a, b, c, d, e, f, g,
+                          gt = c("WT", "A", "P", "C")) {
+        data.frame(Genotype = gt,
+                   Fitness = c(
+                       paste0("1 + ",
+                              d, " * f_A ",
+                              "- ", c, " * f_C"),
+                       paste0("1 - ", a, 
+                              " + ", d, " + ",
+                              f, " * f_A ",
+                              "- ", c, " * f_C"),
+                       paste0("1 + ", g, " + ",
+                              d, " * f_A ",
+                              "- ", c, " * (1 + ",
+                              g, ") * f_C"),
+                       paste0("1 - ", b, " + ",
+                              e, " * f_ + ",
+                              "(", d, " + ", 
+                              e, ") * f_A + ",
+                              e , " * f_P")))
+    }
+    afe_3_a <- allFitnessEffects(
+        genotFitness =
+            create_fe(0.02, 0.04, 0.08, 0.06,
+                      0.15, 0.1, 0.06),
+        frequencyDependentFitness = TRUE)
+    s_3_a <- oncoSimulIndiv(afe_3_a,
+                            model = "McFL", 
+                            onlyCancer = FALSE, 
+                            finalTime = 160,
+                            mu = 1e-4,
+                            initSize = 5000, 
+                            keepPhylog = FALSE,
+                            seed = NULL, 
+                            errorHitMaxTries = FALSE, 
+                            errorHitWallTime = FALSE,
+                            keepEvery = 1)
+    s_3_a$other$userVarValues <- NULL
+    s_3_a$PerSampleStats <- NULL
+    s_3_a$interventionTimes <- NULL
+    save(file = "../../data/s_3_a.RData", s_3_a)
+})
 
 
 ## intex2 and  simulationwithinterventionsintex2
@@ -420,76 +771,6 @@ local({
     atex2b$other$interventionTimes <- NULL
     save(file = "../../data/atex2b.RData", atex2b)
 })
-
-## ## userVarsBasicExample
-## local({
-##     dfuv2 <- data.frame(Genotype = c("WT", "B", "A", "B, A", "C, A"),
-##                         Fitness = c("0*n_",
-##                                     "1.5",
-##                                     "1.002",
-##                                     "1.003",
-##                                     "1.004"))
-
-##     afuv2 <- allFitnessEffects(genotFitness = dfuv2,
-##                                frequencyDependentFitness = TRUE,
-##                                frequencyType = "abs")
-
-##     userVars <- list(
-##         list(Name           = "genAProp",
-##              Value       = 0.5
-##              ),
-##         list(Name           = "genBProp",
-##              Value       = 0.5
-##              ),
-##         list(Name           = "genABProp",
-##              Value       = 0.0
-##              ),
-##         list(Name           = "genACProp",
-##              Value       = 0.0
-##              )
-##     )
-
-##     userVars <- createUserVars(userVars)
-
-##     rules <- list(
-##         list(ID = "rule_1",
-##              Condition = "TRUE",
-##              Action = "genBProp = n_B/N"
-##              ),
-##         list(ID = "rule_2",
-##              Condition = "TRUE",
-##              Action = "genAProp = n_A/N"
-##              ),
-##         list(ID = "rule_3",
-##              Condition = "TRUE",
-##              Action = "genABProp = n_A_B/N"
-##              ),
-##         list(ID = "rule_4",
-##              Condition = "TRUE",
-##              Action = "genACProp = n_A_C/N"
-##              )
-##     )
-
-##     rules <- createRules(rules, afuv2)
-
-##     set.seed(1)
-##     uvex2 <- oncoSimulIndiv(
-##         afuv2, 
-##         model = "McFLD",
-##         mu = 1e-4,
-##         sampleEvery = 0.01,
-##         initSize = c(20000, 20000),
-##         initMutant = c("A", "B"),
-##         finalTime = 10,
-##         onlyCancer = FALSE,
-##         userVars = userVars,
-##         rules = rules,
-##         keepEvery = 0.1
-##     )
-##     uvex2$other$userVarValues <- NULL
-##     save(file = "../../data/usersVarsBasicExample.RData", uvex2)
-
-## })
 
 
 ## userVarsBasicExample2

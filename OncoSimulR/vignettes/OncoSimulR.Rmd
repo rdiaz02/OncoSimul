@@ -8882,6 +8882,13 @@ afe_3_a <- allFitnessEffects(
                        create_fe(0.02, 0.04, 0.08, 0.06,
                                  0.15, 0.1, 0.06),
                 frequencyDependentFitness = TRUE)
+
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(s_3_a)
+if (FALSE) {
 set.seed(2)
 s_3_a <- oncoSimulIndiv(afe_3_a,
                      model = "McFL", 
@@ -8894,6 +8901,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE,
                      keepEvery = 1)
+}
 plot(s_3_a, show = "genotypes", type = "line",
      col = c("black", "green", "red", "blue"))
 ```
@@ -8906,6 +8914,12 @@ afe_3_b <- allFitnessEffects(
                        create_fe(0.02, 0.04, 0.08, 0.1,
                                  0.15, 0.1, 0.05),
                 frequencyDependentFitness = TRUE)
+				
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(s_3_b)
+
+if (FALSE) {				
 set.seed(2)
 ## Use a short finalTime, for speed of vignette execution
 s_3_b <- oncoSimulIndiv(afe_3_b,
@@ -8919,7 +8933,7 @@ s_3_b <- oncoSimulIndiv(afe_3_b,
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE,
                      keepEvery = 1)
-
+}
 plot(s_3_b, show = "genotypes", type = "line",
      col = c("black", "green", "red", "blue"))
 ## we are using keepEvery. O.w. we could have used
@@ -11252,23 +11266,28 @@ fe_cells <-
         frequencyType = "rel")
 
 ## Simulated trajectories
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(smyelo3v57)
+
+if (FALSE) {
 set.seed(2)
-simulation <- oncoSimulIndiv(fe_cells,
+smyelo3v57 <- oncoSimulIndiv(fe_cells,
                            model = "McFL",
                            onlyCancer = FALSE,
-                           finalTime = 20, ## 30
+                           finalTime = 20, 
                            mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4),
                            initSize = N,
                            keepPhylog = FALSE,
                            seed = NULL,
                            errorHitMaxTries = FALSE,
-                           errorHitWallTime = FALSE)
-
+                           errorHitWallTime = FALSE,
+						   keepEvery = 0.1)
+}
 ## Plot trajectories
-## op <- par(mfrow = c(1, 2))
-## plot(simulation, show = "genotypes", type = "line")
-plot(simulation, show = "genotypes", thinData = TRUE)
-## par(op)
+plot(smyelo3v57, show = "genotypes")
+
 
 ```
 
@@ -13004,6 +13023,11 @@ rules <- list(
 
 rules <- createRules(rules, afuv2)
 
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(uvex2)
+
+if(FALSE) {
 set.seed(1)
 uvex2 <- oncoSimulIndiv(
                     afuv2, 
@@ -13018,7 +13042,7 @@ uvex2 <- oncoSimulIndiv(
                     rules = rules,
                     keepEvery = 0.1
                     )
-
+}
                     
 plot(
     unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
@@ -13827,6 +13851,13 @@ period_1 <- allFitnessEffects(genotFitness = players_1,
                               frequencyDependentFitness = TRUE,
                               frequencyType = "rel")
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(simul_period_1)
+
+if (FALSE) {
 set.seed(2)
 
 final_time <- 170 ## for speed
@@ -13838,7 +13869,7 @@ simul_period_1 <- oncoSimulIndiv(period_1,
                                  initSize = 5000,
                                  keepPhylog = FALSE,
                                  seed = NULL)
-
+}
 # ylim has been adapted to number of cells
 plot(simul_period_1, show = "genotypes", type = "line",
      col = c("black", "green", "red"), ylim = c(20, 300000),
@@ -14196,6 +14227,13 @@ afeT2 <- allFitnessEffects(genotFitness = dfT2,
                              frequencyDependentFitness = TRUE,
                              frequencyType = "rel")
   
+  
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(simT2)
+
+if (FALSE)
 set.seed(1)
 simT2 <- oncoSimulIndiv(afeT2,
                         model = "McFL",
@@ -14203,8 +14241,12 @@ simT2 <- oncoSimulIndiv(afeT2,
                         initSize = 10000,
                         finalTime = 225,
                         onlyCancer = FALSE,
-                        seed = NULL)
-plot(simT2, show = "genotypes", thinData = TRUE)
+                        seed = NULL,
+						keepEvery = 1)
+}
+## Had we not used keepEvery, we'd probably have used
+## plot(simT2, show = "genotypes", thinData = TRUE)
+plot(simT2, show = "genotypes")
 
 ```
 
@@ -14242,6 +14284,13 @@ afeT3 <- allFitnessEffects(genotFitness = dfT3,
                            frequencyDependentFitness = TRUE,
                            frequencyType = "abs")
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(simT3)
+
+if (FALSE) {
 set.seed(2)
 simT3 <- oncoSimulIndiv(afeT3,
                       model = "McFLD",
@@ -14251,7 +14300,9 @@ simT3 <- oncoSimulIndiv(afeT3,
                       onlyCancer = FALSE,
                       seed = NULL,
                       errorHitWallTime = FALSE,
-                      errorHitMaxTries = FALSE)
+                      errorHitMaxTries = FALSE,
+					  keepEvery = 1)
+}
 
 plot(simT3, show = "genotypes", type = "line")
 ```

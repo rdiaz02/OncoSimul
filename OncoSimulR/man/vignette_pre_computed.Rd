@@ -1,16 +1,23 @@
-\name{intervention-examples}
+\name{vignette_pre_computed}
 \alias{osi}
 \alias{osi_with_ints}
 \alias{atex4}
 \alias{atex5}
 \alias{atex2b}
 \alias{uvex3}
+\alias{smyelo3v57}
+\alias{s_3_b}
+\alias{uvex2}
+\alias{simT2}
+\alias{simul_period_1}
+\alias{simT3}
+\alias{s_3_a}
 
 
 \docType{data}
 \title{
 Runs from simulations of interventions examples shown in the
-vignette. 
+vignette. Most, but not all, are from intervention examples.
 }
 
 \description{
@@ -29,6 +36,13 @@ data(atex4)
 data(atex5)
 data(atex2b)
 data(uvex3)
+data(smyelo3v57)
+data(s_3_b)
+data(uvex2)
+data(simT2)
+data(simul_period_1)
+data(simT3)
+data(s_3_a)
 }
 
 \format{
