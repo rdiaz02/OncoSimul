@@ -550,6 +550,8 @@ test_that("exercising phylogClone", {
     expect_true(2 == 2)
 })
 
+
+
 cat(paste("\n Ending exercise-plotting-code at", date(), "\n"))
 
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))

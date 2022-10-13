@@ -470,7 +470,7 @@ A possible way to examine that question would involve:
  - comparing the inferred DAG with the original, true, one.
 
 
-```{r, echo=FALSE}
+```{r rzx0, echo=FALSE}
 set.seed(2)
 RNGkind("L'Ecuyer-CMRG")
 ```
@@ -485,6 +485,7 @@ g1 <- simOGraph(4, out = "rT")
 
 ## Simulate 10 evolutionary trajectories
 s1 <- oncoSimulPop(10, allFitnessEffects(g1, drvNames = 1:4),
+                   onlyCancer = TRUE,
                    mc.cores = 2, ## adapt to your hardware
                    seed = NULL) ## for reproducibility of vignette
 
@@ -658,6 +659,7 @@ Magellan_stats(rl) ## (Commented out here to avoid writing files)
 ## Simulate evolution in that landscape many times (here just 10)
 simulrl <- oncoSimulPop(10, allFitnessEffects(genotFitness = rl),
                         keepPhylog = TRUE, keepEvery = 1,
+                        onlyCancer = TRUE,
                         initSize = 4000,
                         seed = NULL, ## for reproducibility
                         mc.cores = 2) ## adapt to your hardware
@@ -1180,14 +1182,14 @@ loaded. We also explicitly load `r Biocpkg("graph")` and
 for your usual interactive work). And I set the default color for
 vertices in igraph.
 
-```{r, results="hide",message=FALSE, echo=TRUE, include=TRUE}
+```{r rzx011, results="hide",message=FALSE, echo=TRUE, include=TRUE}
 library(OncoSimulR)
 library(graph)
 library(igraph)
 igraph_options(vertex.color = "SkyBlue2")
 ``` 
 
-```{r, echo=FALSE, results='hide'}
+```{r rzx02, echo=FALSE, results='hide'}
 options(width = 68)
 ``` 
 
@@ -1203,7 +1205,7 @@ packageVersion("OncoSimulR")
 Following \@ref(steps) we will run two very minimal examples. First a
 model with a few genes and **epistasis**:
 
-```{r, fig.width=6.5, fig.height=10}
+```{r f7b3v, fig.width=6.5, fig.height=10}
 ## 1. Fitness effects: here we specify an 
 ##    epistatic model with modules.
 sa <- 0.1
@@ -1283,6 +1285,8 @@ plot(pancr)
 
 set.seed(1) ## Fix the seed, so we can repeat it
 ## We set a small finalTime to speed up the vignette
+
+
 ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      mu = 1e-6,
                      sampleEvery = 0.02,
@@ -1291,6 +1295,7 @@ ep2 <- oncoSimulIndiv(pancr, model = "McFL",
                      finalTime = 20000,
                      detectionDrivers = 3,
                      onlyCancer = FALSE)
+
 ``` 
 
 
@@ -1558,10 +1563,11 @@ Nindiv <- 100 ## Number of simulations run.
 
 ## keepEvery = 1
 t_exp1 <- system.time(
-    exp1 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = "default", 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+    exp1 <- oncoSimulPop(Nindiv, pancr,
+                         onlyCancer = TRUE,
+                         detectionProb = "default", 
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = 1,
                             model = "Exp", 
@@ -1569,10 +1575,11 @@ t_exp1 <- system.time(
 
 
 t_mc1 <- system.time(
-    mc1 <- oncoSimulPop(Nindiv, pancr, 
-                           detectionProb = "default", 
-                           detectionSize = NA,
-                           detectionDrivers = NA,
+    mc1 <- oncoSimulPop(Nindiv, pancr,
+                        onlyCancer = TRUE,
+                        detectionProb = "default", 
+                        detectionSize = NA,
+                        detectionDrivers = NA,
                            finalTime = NA,
                            keepEvery = 1,                                  
                            model = "McFL", 
@@ -1580,9 +1587,10 @@ t_mc1 <- system.time(
 
 ## keepEvery = NA
 t_exp2 <- system.time(
-    exp2 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = "default", 
-                            detectionSize = NA,
+    exp2 <- oncoSimulPop(Nindiv, pancr,
+                         onlyCancer = TRUE,
+                         detectionProb = "default", 
+                         detectionSize = NA,
                             detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = NA, 
@@ -1591,9 +1599,10 @@ t_exp2 <- system.time(
 
 
 t_mc2 <- system.time(
-    mc2 <- oncoSimulPop(Nindiv, pancr, 
-                           detectionProb = "default", 
-                           detectionSize = NA,
+    mc2 <- oncoSimulPop(Nindiv, pancr,
+                        onlyCancer = TRUE,
+                        detectionProb = "default", 
+                        detectionSize = NA,
                            detectionDrivers = NA,
                            finalTime = NA,
                            keepEvery = NA,
@@ -1705,11 +1714,12 @@ running time and space consumption.
 ```{r timing2, eval = FALSE}
 t_exp3 <- system.time(
     exp3 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e4,
-                                              p2 = 0.1, n2 = 5e5,
-                                              checkSizePEvery = 20), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e4,
+                                           p2 = 0.1, n2 = 5e5,
+                                           checkSizePEvery = 20),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = 1, 
                             model = "Exp", 
@@ -1717,11 +1727,12 @@ t_exp3 <- system.time(
 
 t_exp4 <- system.time(
     exp4 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e4,
-                                              p2 = 0.1, n2 = 5e5,
-                                              checkSizePEvery = 20), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e4,
+                                           p2 = 0.1, n2 = 5e5,
+                                           checkSizePEvery = 20),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = NA, 
                             model = "Exp", 
@@ -1731,10 +1742,11 @@ t_exp4 <- system.time(
 
 t_exp5 <- system.time(
     exp5 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e5,
-                                              p2 = 0.1, n2 = 5e7), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e5,
+                                           p2 = 0.1, n2 = 5e7),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = 1, 
                             model = "Exp", 
@@ -1742,10 +1754,11 @@ t_exp5 <- system.time(
 
 t_exp6 <- system.time(
     exp6 <- oncoSimulPop(Nindiv, pancr, 
-                            detectionProb = c(PDBaseline = 5e5,
-                                              p2 = 0.1, n2 = 5e7), 
-                            detectionSize = NA,
-                            detectionDrivers = NA,
+                         onlyCancer = TRUE,
+                         detectionProb = c(PDBaseline = 5e5,
+                                           p2 = 0.1, n2 = 5e7),
+                         detectionSize = NA,
+                         detectionDrivers = NA,
                             finalTime = NA,
                             keepEvery = NA, 
                             model = "Exp", 
@@ -3614,13 +3627,13 @@ total of four genotypes, and you have a data frame with genotypes
 and fitness, where genoytpes are specified as character vectors,
 with mutated genes separated by commas:
 
-```{r}
+```{r n73}
 m4 <- data.frame(G = c("WT", "A", "B", "A, B"), F = c(1, 2, 3, 4))
 ``` 
 
 Now, let's give that to the `allFitnessEffects` function:
 
-```{r}
+```{r n74}
 fem4 <- allFitnessEffects(genotFitness = m4)
 ``` 
 (The message is just telling you what the program guessed you
@@ -3628,14 +3641,14 @@ wanted.)
 
 
 That's it. You can try to plot that fitnessEffects object
-```{r}
+```{r n75}
 try(plot(fem4))
 ``` 
 
 In this case, you probably want to plot the fitness landscape. 
 
 
-```{r, fig.width=6.5, fig.height = 6.5}
+```{r n76, fig.width=6.5, fig.height = 6.5}
 plotFitnessLandscape(evalAllGenotypes(fem4))
 ``` 
 
@@ -3643,14 +3656,14 @@ You can also check what OncoSimulR thinks the fitnesses are, with the
 `evalAllGenotypes` function that we will use repeatedly below
 (of course, here we should see the same fitnesses we entered):
 
-```{r}
+```{r n78}
 evalAllGenotypes(fem4, addwt = TRUE)
 ``` 
 
 
 And you can plot the fitness landscape:
 
-```{r}
+```{r n79}
 plotFitnessLandscape(evalAllGenotypes(fem4))
 ``` 
 
@@ -3662,14 +3675,14 @@ contains the fitness values. And you do not even need to specify all the
 genotypes: the missing genotypes are assigned a fitness 0 ---except
 for the WT genotype which, if missing, is assigned a fitness of 1:
 
-```{r}
+```{r n80}
 m6 <- cbind(c(1, 1), c(1, 0), c(2, 3))
 fem6 <- allFitnessEffects(genotFitness = m6)
 evalAllGenotypes(fem6, addwt = TRUE)
 ## plot(fem6)
 ```
 
-```{r, fig.width=6.5, fig.height = 6.5}
+```{r n81, fig.width=6.5, fig.height = 6.5}
 plotFitnessLandscape(evalAllGenotypes(fem6))
 ``` 
 
@@ -3960,7 +3973,7 @@ mutated. The $s_i$ can come from any distribution you want. As an example
 let's use three genes. We know there are no order effects, but we will
 also see what happens if we examine genotypes as ordered.
 
-```{r}
+```{r nx82}
 
 ai1 <- evalAllGenotypes(allFitnessEffects(
     noIntGenes = c(0.05, -.2, .1), frequencyDependentFitness = FALSE), order = FALSE)
@@ -3969,11 +3982,11 @@ ai1 <- evalAllGenotypes(allFitnessEffects(
 
 We can easily verify the first results:
 
-```{r}
+```{r nx83}
 ai1
 ``` 
 
-```{r}
+```{r nx84}
 all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
        (1 + .05) * (1 - .2),
        (1 + .05) * (1 + .1),
@@ -3985,7 +3998,7 @@ all(ai1[, "Fitness"]  == c( (1 + .05), (1 - .2), (1 + .1),
 And we can see that considering the order of mutations (see section
 \@ref(oe)) makes no difference:
 
-```{r}
+```{r nx85}
 (ai2 <- evalAllGenotypes(allFitnessEffects(
     noIntGenes = c(0.05, -.2, .1)), order = TRUE,
     addwt = TRUE))
@@ -4019,7 +4032,7 @@ that illustrates the three basic different meanings of convergent arrows
 using two parental nodes. We will illustrate it here with three. Suppose
 we focus on node "g" in the following figure (we will create it shortly)
 
-```{r, fig.height=4}
+```{r nx091, fig.height=4}
 data(examplesFitnessEffects)
 plot(examplesFitnessEffects[["cbn1"]])
 ``` 
@@ -4103,7 +4116,7 @@ using DAGs.
 
 ### DAGs: A first conjunction (AND) example {#cbn1}
 
-```{r}
+```{r nx092}
 
 cs <-  data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4120,12 +4133,12 @@ have any particular order.)
 
 
 We can get a graphical representation using the default "graphNEL"
-```{r, fig.height=3}
+```{r nx093, fig.height=3}
 plot(cbn1)
 ``` 
 
 or one using "igraph":
-```{r, fig.height=5}
+```{r nx094, fig.height=5}
 plot(cbn1, "igraph")
 ``` 
 
@@ -4134,7 +4147,7 @@ plot(cbn1, "igraph")
 Since we have a parent and children, the reingold.tilford layout is
 probably the best here, so you might want to use that:
 
-```{r, fig.height=5}
+```{r nx095, fig.height=5}
 library(igraph) ## to make the reingold.tilford layout available
 plot(cbn1, "igraph", layout = layout.reingold.tilford)
 ``` 
@@ -4143,7 +4156,7 @@ plot(cbn1, "igraph", layout = layout.reingold.tilford)
 
 And what is the fitness of all genotypes?
 
-```{r}
+```{r nx096}
 gfs <- evalAllGenotypes(cbn1, order = FALSE, addwt = TRUE)
 
 gfs[1:15, ]
@@ -4163,7 +4176,7 @@ genotype "a, c" has fitness $(1 + 0.1) (1 - 0.9) = 0.11$.
 
 Let's try a first attempt at a somewhat more complex example, where the
 fitness consequences of different genes differ.
-```{r}
+```{r nx097}
 
 c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4207,7 +4220,7 @@ are $> 0$ and, thus, is a way of modeling small deviations from the poset
 Note that for those nodes that depend only on "Root" the type of
 dependency is irrelevant.
 
-```{r}
+```{r nx098}
 c1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, rep(0.2, 3)),
@@ -4230,7 +4243,7 @@ we got to "a, b, c". What matters is whether or not the genes on which
 each of "a", "b", and "c" depend are present or not (I only show the first
 10 genotypes)
 
-```{r}
+```{r nx099}
 gcbn2 <- evalAllGenotypes(cbn2, order = FALSE)
 gcbn2[1:10, ]
 ``` 
@@ -4239,7 +4252,7 @@ gcbn2[1:10, ]
 Of course, if we were to look at genotypes but taking into account order
 of occurrence of mutations, we would see no differences
 
-```{r}
+```{r nx0100}
 gcbn2o <- evalAllGenotypes(cbn2, order = TRUE, max = 1956)
 gcbn2o[1:10, ]
 ``` 
@@ -4249,7 +4262,7 @@ if they are more than 256, the default.)
 
 You can check the output and verify things are as they should. For instance:
 
-```{r}
+```{r nx0101}
 all.equal(
         gcbn2[c(1:21, 22, 28, 41, 44, 56, 63 ) , "Fitness"],
         c(1.01, 1.02, 0.1, 1.03, 1.04, 0.05,
@@ -4270,7 +4283,7 @@ all.equal(
 A particular one that is important to understand is genotype with
 mutated genes "c, d, e, g":
 
-```{r}
+```{r nx0102}
 gcbn2[56, ] 
 all.equal(gcbn2[56, "Fitness"], 1.03 * 1.04 * 1.2 * 0.10)
 ``` 
@@ -4283,7 +4296,7 @@ satisfied (and that is why the term for "c" is 0.9).
 ### DAGs: A semimonotone or "OR" example {#mn1}
 
 We will reuse the above example, changing the type of relationship:
-```{r}
+```{r nx0103}
 
 s1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4297,12 +4310,12 @@ smn1 <- allFitnessEffects(s1)
 
 It looks like this (where edges are shown in blue to denote the
 semimonotone relationship):
-```{r, fig.height=3}
+```{r nx0104, fig.height=3}
 plot(smn1)
 ``` 
 
 
-```{r}
+```{r nx0105}
 gsmn1 <- evalAllGenotypes(smn1, order = FALSE)
 
 ``` 
@@ -4310,7 +4323,7 @@ gsmn1 <- evalAllGenotypes(smn1, order = FALSE)
 Having just one parental dependency satisfied is now enough, in contrast
 to what happened before. For instance:
 
-```{r}
+```{r nx0106}
 gcbn2[c(8, 12, 22), ]
 gsmn1[c(8, 12, 22), ]
 
@@ -4323,7 +4336,7 @@ gsmn1[c(20:21, 28), ]
 
 Again, we reuse the example above, changing the type of relationship:
 
-```{r}
+```{r nx0107}
 
 x1 <- data.frame(parent = c(rep("Root", 4), "a", "b", "d", "e", "c"),
                  child = c("a", "b", "d", "e", "c", "c", rep("g", 3)),
@@ -4337,11 +4350,11 @@ xor1 <- allFitnessEffects(x1)
 
 
 It looks like this (edges in red to denote the "XOR" relationship):
-```{r, fig.height=3}
+```{r nx0108, fig.height=3}
 plot(xor1)
 ``` 
 
-```{r}
+```{r nx0109}
 
 gxor1 <- evalAllGenotypes(xor1, order = FALSE)
 
@@ -4352,7 +4365,7 @@ Whenever "c" is present with both "a" and "b", the fitness component
 for "c" will be $(1 - 0.1)$. Similarly for "g" (if more than one of
 "d", "e", or "c" is present, it will show as $(1 - 0.05)$). For example:
 
-```{r}
+```{r nx0110}
 gxor1[c(22, 41), ] 
 c(1.01 * 1.02 * 0.1, 1.03 * 1.04 * 0.05)
 ``` 
@@ -4368,7 +4381,7 @@ epistatic effects (section
 
 We also see a very different pattern compared to CBN (section \@ref(cbn2))
 here:
-```{r}
+```{r nx0111}
 gxor1[28, ] 
 1.01 * 1.1 * 1.2
 ``` 
@@ -4376,7 +4389,7 @@ gxor1[28, ]
 as exactly one of the dependencies for both "c" and "g" are satisfied.
 
 But 
-```{r}
+```{r nx0112}
 gxor1[44, ] 
 1.01 * 1.02 * 0.1 * 1.2
 ``` 
@@ -4386,7 +4399,7 @@ one of its dependencies satisfied).
 
 ### Posets: the three types of relationships {#p3}
 
-```{r}
+```{r nx0113}
 
 p3 <- data.frame(
     parent = c(rep("Root", 4), "a", "b", "d", "e", "c", "f"),
@@ -4399,18 +4412,18 @@ fp3 <- allFitnessEffects(p3)
 ``` 
 
 This is how it looks like:
-```{r, fig.height=3}
+```{r nx0114, fig.height=3}
 plot(fp3)
 ``` 
 
 We can also use "igraph":
 
-```{r, fig.height=6}
+```{r nx0115, fig.height=6}
 plot(fp3, "igraph", layout.reingold.tilford)
 ``` 
 
 
-```{r}
+```{r nx0116}
 
 gfp3 <- evalAllGenotypes(fp3, order = FALSE)
 
@@ -4420,7 +4433,7 @@ gfp3 <- evalAllGenotypes(fp3, order = FALSE)
 
 Let's look at a few:
 
-```{r}
+```{r nx0117}
 gfp3[c(9, 24, 29, 59, 60, 66, 119, 120, 126, 127), ]
 
 c(1.01 * 1.1, 1.03 * .05, 1.01 * 1.02 * 0.1, 0.1 * 0.05 * 1.3,
@@ -4464,7 +4477,7 @@ there is a module, "A", made of genes "a1" and "a2", and a module
 additional fitness advantage compared to mutating only a single one of
 them.  We can specify this as:
 
-```{r}
+```{r ny0111}
 s <- 0.2
 sboth <- (1/(1 + s)) - 1
 m0 <- allFitnessEffects(data.frame(
@@ -4486,7 +4499,7 @@ single one of them"; see details in section \@ref(epi).
 
 Now, specify it using modules:
 
-```{r}
+```{r ny01112}
 s <- 0.2
 m1 <- allFitnessEffects(data.frame(
     parent = c("Root", "A"),
@@ -4538,7 +4551,7 @@ modules, one of them with two genes (see details in section
 \@ref(mod-no-epi)) we do not need to pass a "Root" as in
 
 
-```{r}
+```{r ny0113}
 fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2),
                           geneToModule = c("A" = "a1, a2",
@@ -4548,7 +4561,7 @@ evalAllGenotypes(fnme, order = FALSE, addwt = TRUE)
 
 but it is also OK to have a "Root" in the `geneToModule`:
 
-```{r}
+```{r ny0114}
 fnme2 <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2),
                           geneToModule = c(
@@ -4570,7 +4583,7 @@ modules (capital letters) from genes (lowercase with a number), but this
 is not needed.
 
 
-```{r}
+```{r ny0115}
 p4 <- data.frame(
     parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
     child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
@@ -4589,19 +4602,19 @@ fp4m <- allFitnessEffects(
 
 By default, plotting shows the modules:
 
-```{r, fig.height=3}
+```{r ny0116, fig.height=3}
 plot(fp4m)
 ``` 
 
 but we can show the gene names instead of the module names:
 
-```{r, fig.height=3}
+```{r ny0117, fig.height=3}
 plot(fp4m, expandModules = TRUE)
 ``` 
 
 or
 
-```{r, fig.height=6}
+```{r ny0118, fig.height=6}
 plot(fp4m, "igraph", layout = layout.reingold.tilford, 
      expandModules = TRUE)
 
@@ -4609,13 +4622,13 @@ plot(fp4m, "igraph", layout = layout.reingold.tilford,
 
 We obtain the fitness of all genotypes in the usual way:
 
-```{r}
+```{r ny0119}
 gfp4 <- evalAllGenotypes(fp4m, order = FALSE, max = 1024)
 ``` 
 
 Let's look at a few of those:
 
-```{r}
+```{r ny0120}
 gfp4[c(12, 20, 21, 40, 41, 46, 50, 55, 64, 92,
        155, 157, 163, 372, 632, 828), ]
 
@@ -4658,7 +4671,7 @@ its usage (but just limit ourselves to using one gene per module here).
 Order effects are specified using a $x > y$, which means that that order
 effect is satisfied when module $x$ is mutated before module $y$.
 
-```{r}
+```{r ny0121}
 o3 <- allFitnessEffects(orderEffects = c(
                             "F > D > M" = -0.3,
                             "D > F > M" = 0.4,
@@ -4695,7 +4708,7 @@ M$. The 12th matches $F > D > M$ but also $D > M$. Etc.
 
 Consider the following case:
 
-```{r}
+```{r ny0123}
 
 ofe1 <- allFitnessEffects(
     orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
@@ -4712,7 +4725,7 @@ $D$ and each $f$ belongs to module $F$.
 
 What to expect for cases such as $d1 > f1$ or $f1 > d1$ is clear, as shown in
 
-```{r}
+```{r ny0124}
 ag[5:16,]
 ``` 
 
@@ -4723,14 +4736,14 @@ and module $F$ was mutated second. Similar for $d1 > f1 > f2$ or
 $f1 > d1 > d2$: those map to $D > F$ and $F > D$. We can see the fitness
 of those four case in:
 
-```{r}
+```{r ny0125}
 ag[c(17, 39, 19, 29), ]
 ``` 
 
 and they correspond to the values of those order effects, where $F > D =
 (1 - 0.3)$ and $D > F = (1 + 0.4)$:
 
-```{r}
+```{r ny0126}
 ag[c(17, 39, 19, 29), "Fitness"] == c(1.4, 0.7, 1.4, 0.7)
 ``` 
 
@@ -4740,14 +4753,14 @@ $D > F > D$. But since we are concerned with which one happened first and
 which happened second we should expect those two to correspond to the same
 fitness, that of pattern $D > F$, as is the case:
 
-```{r}
+```{r ny0127}
 ag[c(43, 44),]
 ag[c(43, 44), "Fitness"] == c(1.4, 1.4)
 ``` 
 More generally, that applies to all the patterns that start with one of
 the "d" genes:
 
-```{r}
+```{r ny0128}
 all(ag[41:52, "Fitness"] == 1.4)
 ``` 
 
@@ -4755,7 +4768,7 @@ Similar arguments apply to the opposite pattern, $F > D$, which apply to
 all the possible gene mutation orders that start with one of the "f"
 genes. For example:
 
-```{r}
+```{r ny0129}
 all(ag[53:64, "Fitness"] == 0.7)
 ``` 
 
@@ -4768,7 +4781,7 @@ the above, with five genes (there are 325 genotypes, and that is why we
 pass the "max" argument to `evalAllGenotypes`, to allow for
 more than the default 256).
 
-```{r}
+```{r ny0130}
 
 ofe2 <- allFitnessEffects(
     orderEffects = c("F > D" = -0.3, "D > F" = 0.4),
@@ -4785,7 +4798,7 @@ combination that starts with an "f" gene and contains at least one "d"
 genes will have a fitness of $1 - 0.3$.  All other genotypes have a
 fitness of 1:
 
-```{r}
+```{r ny0131}
 all(ag2[grep("^d.*f.*", ag2[, 1]), "Fitness"] == 1.4)
 all(ag2[grep("^f.*d.*", ag2[, 1]), "Fitness"] == 0.7)
 oe <- c(grep("^f.*d.*", ag2[, 1]), grep("^d.*f.*", ag2[, 1]))
@@ -4801,7 +4814,7 @@ more interesting, we name genes so that the ordered names do split nicely
 between those with and those without order effects (this, thus, also
 serves as a test of messy orders of names).
 
-```{r}
+```{r ny0132}
 
 foi1 <- allFitnessEffects(
     orderEffects = c("D>B" = -0.2, "B > D" = 0.3),
@@ -4812,14 +4825,14 @@ foi1 <- allFitnessEffects(
 You can get a verbose view of what the gene names and modules are (and
 their automatically created numeric codes) by:
 
-```{r}
+```{r ny0133}
 foi1[c("geneModule", "long.geneNoInt")]
 ``` 
 
 We can get the fitness of all genotypes (we set $max = 325$ because that
 is the number of possible genotypes):
 
-```{r}
+```{r ny0134}
 agoi1 <- evalAllGenotypes(foi1,  max = 325, order = TRUE)
 head(agoi1)
 ``` 
@@ -4827,7 +4840,7 @@ head(agoi1)
 
 
 Now:
-```{r}
+```{r ny0135}
 rn <- 1:nrow(agoi1)
 names(rn) <- agoi1[, 1]
 
@@ -4840,7 +4853,7 @@ genotype with only two mutations, one of which is either "A", "C" "E" and
 the other is "B" or "D" will have the fitness corresponding to "A", "C" or
 "E", respectively:
 
-```{r}
+```{r ny0136}
 agoi1[grep("^A > [BD]$", names(rn)), "Fitness"] == 1.05
 agoi1[grep("^C > [BD]$", names(rn)), "Fitness"] == 0.8
 agoi1[grep("^E > [BD]$", names(rn)), "Fitness"] == 1.1
@@ -4856,7 +4869,7 @@ which occupy rows 230 to 253; fitness should be equal (within numerical
 error, because of floating point arithmetic) to the order effect of "D"
 before "B" times the other effects $(1 - 0.3) * 1.05 * 0.8 * 1.1 = 0.7392$
 
-```{r}
+```{r ny0137}
 all.equal(agoi1[230:253, "Fitness"] ,
           rep((1 - 0.2) * 1.05 * 0.8 * 1.1, 24))
 ``` 
@@ -4890,7 +4903,7 @@ Suppose that the actual numerical values are $s_a = 0.2, s_b = 0.3, s_{ab}
 = 0.7$.
 
 We specify the above as follows: 
-```{r}
+```{r ny0138}
 sa <- 0.2
 sb <- 0.3
 sab <- 0.7
@@ -4915,7 +4928,7 @@ satisfies $(1 + s_{ab}) = (1 + s_a) (1 + s_b) (1 + s_2)$ so
 $(1 + s_2) = (1 + s_{ab})/((1 + s_a) (1 + s_b))$ and therefore specify as:
 
 
-```{r}
+```{r ny0139}
 s2 <- ((1 + sab)/((1 + sa) * (1 + sb))) - 1
 
 e3 <- allFitnessEffects(epistasis =
@@ -4965,7 +4978,7 @@ conciseness). Note that the mutant for exactly A and C has a fitness that
 is the product of the individual terms (so there is no epistasis in that case).
 
 
-```{r}
+```{r ny0140}
 sa <- 0.1
 sb <- 0.15
 sc <- 0.2
@@ -4996,7 +5009,7 @@ term was just the product. We can try to avoid using the "-", however
 specification:
 
 
-```{r}
+```{r ny0141}
 
 sa <- 0.1
 sb <- 0.15
@@ -5023,7 +5036,7 @@ evalAllGenotypes(E3B, order = FALSE, addwt = FALSE)
 
 The above two are, of course, identical:
 
-```{r}
+```{r ny0142}
 all(evalAllGenotypes(E3A, order = FALSE, addwt = FALSE) == 
     evalAllGenotypes(E3B, order = FALSE, addwt = FALSE))
 ``` 
@@ -5069,7 +5082,7 @@ both options.
 ### Epistasis: modules {#epimod}
 There is nothing conceptually new, but we will show an example here:
 
-```{r}
+```{r ny0143}
 
 sa <- 0.2
 sb <- 0.3
@@ -5087,7 +5100,7 @@ evalAllGenotypes(em, order = FALSE, addwt = TRUE)
 
 Of course, we can do the same thing without using the "-", as in section \@ref(e2):
 
-```{r}
+```{r ny0144}
 s2 <- ((1 + sab)/((1 + sa) * (1 + sb))) - 1
 
 em2 <- allFitnessEffects(epistasis =
@@ -5122,7 +5135,7 @@ the modules in the `epistasis` component but have no term for ":"
 (the colon). Let's see an example:
 
 
-```{r}
+```{r ny0145}
 
 fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2),
@@ -5137,7 +5150,7 @@ In previous versions these was possible using the longer, still accepted
 way of specifying a `:` with a value of 0, but this is no longer
 needed:
 
-```{r}
+```{r ny0146}
 fnme <- allFitnessEffects(epistasis = c("A" = 0.1,
                                         "B" = 0.2,
                                         "A : B" = 0.0),
@@ -5185,7 +5198,7 @@ where "wt" denotes wild type and "M" denotes mutant.
 We can specify this (setting $s = 0.2$) as (I play around with spaces, to
 show there is a certain flexibility with them):
 
-```{r}
+```{r ny0147}
 s <- 0.2
 sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
                                       "A : -B" = -1,
@@ -5195,14 +5208,14 @@ sv <- allFitnessEffects(epistasis = c("-A : B" = -1,
 Now, let's look at all the genotypes (we use "addwt" to also get the wt,
 which by decree has fitness of 1), and disregard order:
 
-```{r}
+```{r ny0148}
 (asv <- evalAllGenotypes(sv, order = FALSE, addwt = TRUE))
 ``` 
 
 Asking the program to consider the order of mutations of course makes no
 difference:
 
-```{r}
+```{r ny01149}
 evalAllGenotypes(sv, order = TRUE, addwt = TRUE)
 ``` 
 
@@ -5238,7 +5251,7 @@ where $s_a, s_b < 0$ but $s_{ab} > 0$.
 
 
 
-```{r}
+```{r ny0150}
 sa <- -0.1
 sb <- -0.2
 sab <- 0.25
@@ -5253,7 +5266,7 @@ evalAllGenotypes(sv2, order = FALSE, addwt = TRUE)
 
 And if we look at order, of course it makes no difference:
 
-```{r}
+```{r ny0151}
 evalAllGenotypes(sv2, order = TRUE, addwt = TRUE)
 ``` 
 
@@ -5278,7 +5291,7 @@ where $s_a, s_b > 0$ but $s_{ab} < 0$.
 
 
 
-```{r}
+```{r ny0152}
 sa <- 0.1
 sb <- 0.2
 sab <- -0.8
@@ -5291,7 +5304,7 @@ evalAllGenotypes(sm1, order = FALSE, addwt = TRUE)
 
 And if we look at order, of course it makes no difference:
 
-```{r}
+```{r ny0153}
 evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)
 ``` 
 
@@ -5302,7 +5315,7 @@ evalAllGenotypes(sm1, order = TRUE, addwt = TRUE)
 If we were to use the above specification with Bozic's models, we might
 not get what we think we should get:
 
-```{r}
+```{r ny0154}
 evalAllGenotypes(sv, order = FALSE, addwt = TRUE, model = "Bozic")
 ```
 
@@ -5314,7 +5327,7 @@ no clone viability, when we used birth rates ---section \@ref(noviab)).
 
 Let us say so explicitly:
 
-```{r}
+```{r ny0155}
 s <- 0.2
 svB <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
                                       "A : -B" = -Inf,
@@ -5329,7 +5342,7 @@ Likewise, values of $s$ larger than one have no effect beyond setting $s =
 cannot allow negative death rates negative values are set to 0):
 
 
-```{r}
+```{r ny0156}
 
 s <- 1
 svB1 <- allFitnessEffects(epistasis = c("-A : B" = -Inf,
@@ -5359,22 +5372,22 @@ As we mentioned above (section \@ref(fit-neg-pos)) death rates of 0 can
 lead to trouble when using Bozic's model:
 
 
-```{r}
+```{r ny0157}
 i1 <- allFitnessEffects(noIntGenes = c(1, 0.5))
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Bozic")
 				 
-i1_b <- oncoSimulIndiv(i1, model = "Bozic")
+i1_b <- oncoSimulIndiv(i1, model = "Bozic", onlyCancer = TRUE)
 
 ``` 
 
 
 Of course, there is no problem in using the above with other models:
 
-```{r}
+```{r ny0158}
 evalAllGenotypes(i1, order = FALSE, addwt = TRUE, 
                  model = "Exp")
-i1_e <- oncoSimulIndiv(i1, model = "Exp")
+i1_e <- oncoSimulIndiv(i1, model = "Exp", onlyCancer = TRUE)
 summary(i1_e)
 ``` 
 
@@ -5409,7 +5422,7 @@ section \@ref(pm3) but will also add:
 As we are specifying many different things, we will start by writing each
 set of effects separately:
 
-```{r}
+```{r ny0159}
 p4 <- data.frame(
     parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
     child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
@@ -5443,24 +5456,24 @@ fea <- allFitnessEffects(rT = p4, epistasis = epist,
 
 How does it look?
 
-```{r, fig.height=5.5}
+```{r ny0160, fig.height=5.5}
 plot(fea)
 ``` 
 
 or
 
-```{r, fig.height=5.5}
+```{r ny0161, fig.height=5.5}
 plot(fea, "igraph")
 ``` 
 
 
 We can, if we want, expand the modules using a "graphNEL" graph
-```{r, fig.height=5.5}
+```{r ny0162, fig.height=5.5}
 plot(fea, expandModules = TRUE)
 ``` 
 
 or an "igraph" one
-```{r, fig.height=6.5}
+```{r ny0163, fig.height=6.5}
 plot(fea, "igraph", expandModules = TRUE)
 ``` 
 
@@ -5469,7 +5482,7 @@ We will not evaluate the fitness of all genotypes, since the number of all
 ordered genotypes is $> 7*10^{22}$. We will look at some specific genotypes:
 
 
-```{r}
+```{r nyv0100}
 
 evalGenotype("k1 > i1 > h2", fea) ## 0.5
 evalGenotype("k1 > h1 > i1", fea) ## 0.5 * 1.12
@@ -5483,7 +5496,7 @@ evalGenotype("k2 > m1 > h1 > i1 > c1 > n3 > f2", fea)
 
 Finally, let's generate some ordered genotypes randomly:
 
-```{r}
+```{r nyv0101}
 
 randomGenotype <- function(fe, ns = NULL) {
     gn <- setdiff(c(fe$geneModule$Gene,
@@ -5595,7 +5608,7 @@ the old v. 1 format, though; yet another reason to stop using that
 format). This is a simple example (many more are available in the tests,
 see file `./tests/testthat/test.per-gene-mutation-rates.R`).
 
-```{r}
+```{r nyv0102}
 
 muvar2 <- c("U" = 1e-6, "z" = 5e-5, "e" = 5e-4, "m" = 5e-3,
             "D" = 1e-4)
@@ -5632,7 +5645,7 @@ This first is a very simple example with simple fitness effects and
 modules for mutators. We will specify the fitness and mutator effects and
 evaluate the fitness and mutator effects:
 
-```{r}
+```{r nyv0103}
 fe2 <- allFitnessEffects(noIntGenes =
                          c(a1 = 0.1, a2 = 0.2,
                            b1 = 0.01, b2 = 0.3, b3 = 0.2,
@@ -5658,7 +5671,7 @@ evalGenotypeFitAndMut("a1, c2", fe2, fm2, verbose = TRUE)
 You can also use the `evalAll` functions. We do not show the output
 here to avoid cluttering the vignette:
 
-```{r, eval=FALSE}
+```{r rzx033, eval=FALSE}
 ## Show only all the fitness effects
 evalAllGenotypes(fe2, order = FALSE)
 
@@ -5675,7 +5688,7 @@ no interaction genes that affect fitness, and a small set of genes that
 affect the mutation rate (but have no fitness effects).
 
 
-```{r}
+```{r nyv0105}
 
 set.seed(1) ## for reproducibility
 ## 17 genes, 7 with no direct fitness effects
@@ -5696,7 +5709,7 @@ fm3 <- allMutatorEffects(epistasis = c("A" = 5,
 
 Let us check what the effects are of a few genotypes:
 
-```{r}
+```{r nyv0106}
 ## These only affect mutation, not fitness
 evalGenotypeFitAndMut("a1, a2", fe3, fm3, verbose = TRUE)
 evalGenotypeFitAndMut("a1, b3", fe3, fm3, verbose = TRUE)
@@ -5712,7 +5725,7 @@ evalGenotypeFitAndMut("g3, g9, a2, b3", fe3, fm3, verbose = TRUE)
 
 Finally, we will do a simulation with those data
 
-```{r}
+```{r nyv0107}
 set.seed(1) ## so that it is easy to reproduce
 mue1 <- oncoSimulIndiv(fe3, muEF = fm3, 
                        mu = 1e-6,
@@ -5723,7 +5736,7 @@ mue1 <- oncoSimulIndiv(fe3, muEF = fm3,
                        onlyCancer = FALSE)
 ``` 
 
-```{r, eval=FALSE}
+```{r rzx0321, eval=FALSE}
 ## We do not show this in the vignette to avoid cluttering it
 ## with output
 mue1
@@ -5748,7 +5761,7 @@ and is not executed here, but you can run it to get an idea of the
 increase in the number of clones and their relationships (the usage
 of `plotClonePhylog` is explained in section \@ref(phylog)).
 
-```{r, eval=FALSE}
+```{r rzx0111, eval=FALSE}
 
 set.seed(1) ## for reproducibility
 ## 17 genes, 7 with no direct fitness effects
@@ -5808,7 +5821,7 @@ provided here).
 As an example, let us show the example of Weissman et al. we saw in
 \@ref(weissmanex):
 
-```{r}
+```{r nyv0108}
 
 d1 <- -0.05 ## single mutant fitness 0.95
 d2 <- -0.08 ## double mutant fitness 0.92
@@ -5829,7 +5842,7 @@ wb <- allFitnessEffects(
 
 
 
-```{r, fig.width=6.5, fig.height=5}
+```{r rzx0112, fig.width=6.5, fig.height=5}
 plotFitnessLandscape(wb, use_ggrepel = TRUE) 
 ``` 
 
@@ -5842,7 +5855,7 @@ We have set `use_ggrepel = TRUE` to avoid overlap of labels.
 For some types of objects, directly invoking `plot` will give
 you the fitness landscape plot:
 
-```{r, fig.width=6.5, fig.height=5}
+```{r rzx0113, fig.width=6.5, fig.height=5}
 (ewb <- evalAllGenotypes(wb, order = FALSE))
 plot(ewb, use_ggrepel = TRUE) 
 
@@ -5902,7 +5915,7 @@ legend of their Figure 3 for $s_p, S_D^+, S_D^-, S_{DP}$ and obtaining
 that negative value for the dependency of the driver on root we can do:
 
 
-```{r}
+```{r nyv0109}
 K <- 4
 sp <- 1e-5
 sdp <- 0.015
@@ -5928,7 +5941,7 @@ Note that what we specify as "typeDep" is irrelevant (MN, SMN, or XMPN
 make no difference).
 
 This is the DAG:
-```{r, fig.height=3}
+```{r rzx0114, fig.height=3}
 plot(fbauer)
 ``` 
 
@@ -5937,7 +5950,7 @@ And if you compare the tabular output of `evalAllGenotypes` you can
 see that the values of fitness reproduces the fitness landscape that they
 show in their Figure 1. We can also use our plot for fitness landscapes:
 
-```{r, fig.width=6, fig.height=6}
+```{r rzx0115, fig.width=6, fig.height=6}
 plot(b1, use_ggrepel = TRUE)
 ``` 
 
@@ -5955,7 +5968,7 @@ expression; finally, we will call this function on the data frame of
 genotypes, and pass this data frame to `allFitnessEffects`.
 
 
-```{r}
+```{r nyv0110}
 m1 <- expand.grid(D = c(1, 0), s1 = c(1, 0), s2 = c(1, 0),
                   s3 = c(1, 0), s4 = c(1, 0))
 
@@ -5983,7 +5996,7 @@ bauer2 <- allFitnessEffects(genotFitness = m1)
 
 Now, show the fitness of all genotypes:
 
-```{r}
+```{r nyv0111}
 evalAllGenotypes(bauer2, order = FALSE, addwt = TRUE)
 ``` 
 
@@ -6002,7 +6015,7 @@ are different types of epistasis.
 
 
 ### Example 1.a {#misra1a}
-```{r, echo=FALSE, fig.height=4, fig.width=4}
+```{r rzx0116, echo=FALSE, fig.height=4, fig.width=4}
 
 df1 <- data.frame(x = c(1, 1.2, 1.4), f = c(1, 1.2, 1.2),
                  names = c("wt", "A", "B"))
@@ -6023,7 +6036,7 @@ are the same. There are two different models depending on whether "AB"
 is just the product of both, or there is epistasis. In the first case
 probably the simplest is:
 
-```{r}
+```{r nyv0112}
 s <- 0.1 ## or whatever number
 m1a1 <- allFitnessEffects(data.frame(parent = c("Root", "Root"),
                                      child = c("A", "B"),
@@ -6037,7 +6050,7 @@ evalAllGenotypes(m1a1, order = FALSE, addwt = TRUE)
 If the double mutant shows epistasis, as we saw before (section \@ref(e2))
 we have a range of options. For example:
 
-```{r}
+```{r nyv0113}
 s <- 0.1
 sab <- 0.3
 m1a2 <- allFitnessEffects(epistasis = c("A:-B" = s,
@@ -6051,7 +6064,7 @@ change the value of the coefficient, since that is what multiplies each of
 the terms for "A" and "B": $(1 + s_{AB}) = (1 + s)^2(1 + s_{AB3})$
 
 
-```{r}
+```{r nyv0114}
 sab3 <- ((1 + sab)/((1 + s)^2)) - 1
 m1a3 <- allFitnessEffects(data.frame(parent = c("Root", "Root"),
                                      child = c("A", "B"),
@@ -6063,7 +6076,7 @@ evalAllGenotypes(m1a3, order = FALSE, addwt = TRUE)
 ``` 
 
 And, obviously
-```{r}
+```{r nyv0115}
 all.equal(evalAllGenotypes(m1a2, order = FALSE, addwt = TRUE),
           evalAllGenotypes(m1a3, order = FALSE, addwt = TRUE))
 ``` 
@@ -6073,7 +6086,7 @@ all.equal(evalAllGenotypes(m1a2, order = FALSE, addwt = TRUE),
 
 This is a specific case of synthetic viability (see also section \@ref(sv)):
 
-```{r, echo=FALSE, fig.width=4, fig.height=4}
+```{r rzx0117, echo=FALSE, fig.width=4, fig.height=4}
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 0.4, 0.3, 1.3),
                  names = c("wt", "A", "B", "AB"))
@@ -6095,7 +6108,7 @@ S_B) > 1$.
 
 As before, we can specify this in several different ways. The simplest is
 to specify all genotypes:
-```{r}
+```{r nyv0116}
 sa <- -0.6
 sb <- -0.7
 sab <- 0.3
@@ -6118,7 +6131,7 @@ other is beneficial, and the double mutation has fitness larger than any
 of the other two.
 
 
-```{r, echo=FALSE, fig.width=4, fig.height=4}
+```{r rzx0118, echo=FALSE, fig.width=4, fig.height=4}
 
 df1 <- data.frame(x = c(1, 1.2, 1.2, 1.4), f = c(1, 1.2, 0.7, 1.5),
                  names = c("wt", "A", "B", "AB"))
@@ -6141,7 +6154,7 @@ s_B) > (1 + s_{AB})$ so $s_{AB} > \frac{-s_B}{1 + s_B}$
 
 As before, we can specify this in several different ways. The simplest is
 to specify all genotypes:
-```{r}
+```{r nyv0117}
 sa <- 0.2
 sb <- -0.3
 sab <- 0.5
@@ -6162,7 +6175,7 @@ In @Ochs2015 the authors present a model shown graphically as (the
 actual numerical values are arbitrarily set by me):
 
 
-```{r, echo=FALSE, fig.width=4.5, fig.height=3.5}
+```{r rzx0119, echo=FALSE, fig.width=4.5, fig.height=3.5}
 
 df1 <- data.frame(x = c(1, 2, 3, 4), f = c(1.1, 1, 0.95, 1.2),
                  names = c("u", "wt", "i", "v"))
@@ -6184,7 +6197,7 @@ fitness is 0, or $-\infty$, so $s_{ui} = s_{uv} = -1$ (or $-\infty$).
 
 We can specify this combining a graph and epistasis specifications:
 
-```{r}
+```{r nyv0118}
 su <- 0.1
 si <- -0.05
 fvi <- 1.2 ## the fitness of the vi mutant
@@ -6202,12 +6215,12 @@ od <- allFitnessEffects(
 ``` 
 
 A figure showing that model is
-```{r, fig.width=3, fig.height=3}
+```{r rzx0120, fig.width=3, fig.height=3}
 plot(od)
 ``` 
 
 And the fitness of all genotype is
-```{r}
+```{r nyv0119}
 evalAllGenotypes(od, order = FALSE, addwt = TRUE)
 ``` 
 
@@ -6219,7 +6232,7 @@ effects. Let us use the second approach:
 %% this was wrong
 %% u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
 
-```{r}
+```{r nyv0120}
 u <- 0.1; i <- -0.05; vi <- (1.2/0.95) - 1; ui <- uv <- -Inf
 od2 <- allFitnessEffects(
     epistasis = c("u" = u,  "u:i" = ui,
@@ -6241,7 +6254,7 @@ In their figure 1a, @Weissman2009 present this model
 
 ### Figure 1.a {#weiss1a}
 
-```{r, echo=FALSE, fig.width=4, fig.height=3}
+```{r rzx0121, echo=FALSE, fig.width=4, fig.height=3}
 
 df1 <- data.frame(x = c(1, 2, 3), f = c(1, 0.95, 1.2),
                  names = c("wt", "1", "2"))
@@ -6270,7 +6283,7 @@ S_{AB})(1 + \delta_1)^2 > 1$.
 
 In their figure 1b they show
 
-```{r, echo=FALSE, fig.width=4, fig.height=3}
+```{r rzx0122, echo=FALSE, fig.width=4, fig.height=3}
 
 df1 <- data.frame(x = c(1, 2, 3, 4), f = c(1, 0.95, 0.92, 1.2),
                  names = c("wt", "1", "2", "3"))
@@ -6296,7 +6309,7 @@ $(1 + \delta_3) = (1 + \delta_1)^3 (1 + s_2)^3 (1 + s_3)$.
 
 We can specify this combining a graph with epistasis:
 
-```{r}
+```{r nyv0122}
 
 d1 <- -0.05 ## single mutant fitness 0.95
 d2 <- -0.08 ## double mutant fitness 0.92
@@ -6319,13 +6332,13 @@ w <- allFitnessEffects(
 ``` 
 
 The model can be shown graphically as:
-```{r, fig.width=4, fig.height=4}
+```{r rzx0123, fig.width=4, fig.height=4}
 plot(w)
 ``` 
 
 And fitness of all genotypes is:
 
-```{r}
+```{r nyv0123}
 evalAllGenotypes(w, order = FALSE, addwt = TRUE)
 ``` 
 
@@ -6335,7 +6348,7 @@ Alternatively, we can directly specify what each genotype adds to the
 fitness, given the included genotype. This is basically replacing the
 graph by giving each of "A", "B", and "C" directly:
 
-```{r}
+```{r nyv0124}
 wb <- allFitnessEffects(
     epistasis = c(
         "A" = d1,
@@ -6352,7 +6365,7 @@ evalAllGenotypes(wb, order = FALSE, addwt = TRUE)
 The plot, of course, is not very revealing and we cannot show that there
 is a three-way interaction (only all three two-way interactions):
 
-```{r, , fig.width=3, fig.height=3}
+```{r rzx0124, , fig.width=3, fig.height=3}
 plot(wb)
 ``` 
 
@@ -6360,7 +6373,7 @@ As we have seen several times already (sections \@ref(e2), \@ref(e3),
 \@ref(theminus)) we can also give the genotypes directly and, consequently,
 the fitness of each genotype (not the added contribution):
 
-```{r}
+```{r nyv0125}
 wc <- allFitnessEffects(
     epistasis = c(
         "A:-B:-C" = d1,
@@ -6382,7 +6395,7 @@ pancreatic cancer poset in @Gerstung2011 (their
 figure 2B, left). We use directly the names of the genes, since that is
 immediately supported by the new version.
 
-```{r, fig.width=4}
+```{r rzx0125, fig.width=4}
 
 pancr <- allFitnessEffects(
     data.frame(parent = c("Root", rep("KRAS", 4), 
@@ -6409,7 +6422,7 @@ in terms of modules. We can code the extended poset for the colorectal
 cancer model in their Figure 4.a is (s and sh are arbitrary):
 
 
-```{r, fig.height = 4}
+```{r rzx0126, fig.height = 4}
 rv1 <- allFitnessEffects(data.frame(parent = c("Root", "A", "KRAS"),
                                     child = c("A", "KRAS", "FBXW7"),
                                     s = 0.1,
@@ -6431,7 +6444,7 @@ need to specify all the modules.
 
 Their Figure 5b is
 
-```{r, fig.height=6}
+```{r rzx0127, fig.height=6}
 rv2 <- allFitnessEffects(
     data.frame(parent = c("Root", "1", "2", "3", "4"),
                child = c("1", "2", "3", "4", "ELF3"),
@@ -6763,6 +6776,7 @@ s5 <- oncoSimulPop(200,
                    oi2,
                    model = "McFL",
                    initSize = 1000,
+                   onlyCancer = TRUE,
                    detectionProb = c(p2 = 0.1, 
                                      n2 = 2000, 
                                      PDBaseline = 1000,
@@ -6829,7 +6843,7 @@ as `McFL` are more appropriate.
 
 We return here to the example from section \@ref(ochsdesai). 
 
-```{r}
+```{r nyv0126}
 u <- 0.2; i <- -0.02; vi <- 0.6; ui <- uv <- -Inf
 od2 <- allFitnessEffects(
     epistasis = c("u" = u,  "u:i" = ui,
@@ -7176,7 +7190,7 @@ in section \@ref(phylog) could be of help).
 
 ### McFarland model with 5000 passengers and 70 drivers {#mcf5070}
 
-```{r, fig.width=6}
+```{r rzx0000, fig.width=6}
 
 set.seed(678)
 nd <- 70  
@@ -7226,7 +7240,7 @@ The next is too slow (takes a couple of minutes in an i5 laptop) and too
 big to run in a vignette, because we keep track of over 4000 different
 clones (which leads to a result object of over 800 MB):
 
-```{r, eval=FALSE}
+```{r rzx0300, eval=FALSE}
 
 set.seed(123)
 nd <- 70  
@@ -7251,7 +7265,7 @@ mcfLs <-  oncoSimulIndiv(mcfL,
 But you can access the pre-stored results and plot them (beware: this
 object has been trimmed by removing empty passenger rows in the Genotype matrix)
 
-```{r, mcflsx2,fig.width=6}
+```{r rzx0301, mcflsx2,fig.width=6}
 data(mcfLs)
 plot(mcfLs, addtot = TRUE, lwdClone = 0.9, log = "",
      thinData = TRUE, thinData.keep = 0.3,
@@ -7263,7 +7277,7 @@ The argument `plotDiversity = TRUE` asks to show a small plot on top
 with Shannon's diversity index.
 
 
-```{r}
+```{r nyv0127}
 summary(mcfLs)
 ## number of passengers per clone
 summary(colSums(mcfLs$Genotypes[-(1:70), ]))
@@ -7312,7 +7326,7 @@ We will use several of the previous examples. Most of them are in file
 `examplesFitnessEffects`, where they are stored inside a list,
 with named components (names the same as in the examples above):
 
-```{r}
+```{r nyv0128}
 data(examplesFitnessEffects)
 names(examplesFitnessEffects)
 ``` 
@@ -7409,7 +7423,7 @@ log-transformed y-axis, even if there are other clones/genotypes present.
 runs quickly.)
 
 
-```{r, fig.width=6}
+```{r rzx0302, fig.width=6}
 
 set.seed(4321)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -7450,7 +7464,7 @@ statistics about number of drivers says little of value, as fitness
 is very different for genotypes with the same number of mutations,
 and does not increase in a simple way with drivers:
 
-```{r}
+```{r nyv0129}
 evalAllGenotypes(examplesFitnessEffects[["o3"]], addwt = TRUE,
                  order = TRUE)
 ``` 
@@ -7476,7 +7490,7 @@ population with clones with zero drivers to a population made of clones
 with two or three drivers:
 
 
-```{r}
+```{r nyv0130}
 set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
                        model = "McFL", 
@@ -7570,7 +7584,7 @@ As an example, we will use the data we generated above for section
 \@ref(bauer2).
 
 
-```{r, eval=FALSE}
+```{r rzx0303, eval=FALSE}
 ## Convert the data
 lb1 <- OncoSimulWide2Long(b1)
 
@@ -7892,6 +7906,7 @@ simulations and in the last line we sample from them:
 ```{r pancrpopcreate}
 
 pancrPop <- oncoSimulPop(4, pancr,
+                         onlyCancer = TRUE,
                          detectionSize = 1e7,
                          keepEvery = 10,
                          mc.cores = 2)
@@ -7914,7 +7929,7 @@ this with `oncoSimulPop` because the code inside
 `oncoSimulPop` already takes care of setting `mc.cores`
 to 1 in Windows).
 
-```{r}
+```{r nyv0131}
 library(parallel)
 
 if(.Platform$OS.type == "windows") {
@@ -7924,6 +7939,7 @@ if(.Platform$OS.type == "windows") {
 }
 
 p2 <- mclapply(1:4, function(x) oncoSimulIndiv(pancr,
+                                               onlyCancer = TRUE,
                                                detectionSize = 1e7,
                                                keepEvery = 10),
                                                mc.cores = mc.cores)
@@ -7935,7 +7951,7 @@ samplePop(p2)
 Above, we have kept the complete history of the simulations as you can
 check by doing, for instance
 
-```{r}
+```{r nyv0132}
 tail(pancrPop[[1]]$pops.by.time)
 ``` 
 
@@ -7943,8 +7959,9 @@ tail(pancrPop[[1]]$pops.by.time)
 If we were not interested in the complete history of simulations we could
 have done instead (note the argument `keepEvery = NA`)
 
-```{r}
+```{r nyv0133}
 pancrPopNH <- oncoSimulPop(4, pancr,
+                           onlyCancer = TRUE,
                            detectionSize = 1e7,
                            keepEvery = NA,
                            mc.cores = 2)
@@ -7954,14 +7971,14 @@ samplePop(pancrPopNH)
 ``` 
 
 which only keeps the very last sample:
-```{r}
+```{r nyv0134}
 pancrPopNH[[1]]$pops.by.time
 ``` 
 
 Or we could have used `oncoSimulSample`:
 
-```{r}
-pancrSamp <- oncoSimulSample(4, pancr)
+```{r nyv0135}
+pancrSamp <- oncoSimulSample(4, pancr, onlyCancer = TRUE)
 pancrSamp$popSamp
 
 ``` 
@@ -8085,7 +8102,7 @@ parent-child relationships between clones. (This is disabled by default).
 
 Let us re-run a previous example:
 
-```{r}
+```{r nyv0136}
 
 set.seed(15)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
@@ -8112,7 +8129,7 @@ We can plot the parent-child relationships^[There are several
   uncertainty about when events occurred.] of every clone ever created
 (with fitness larger than 0 ---clones without viability are never shown):
 
-```{r}
+```{r nyv0137}
 plotClonePhylog(tmp, N = 0)
 ``` 
 
@@ -8121,7 +8138,7 @@ cells $>0$) at a certain time (while of course showing all of their
 ancestors, even if those are now extinct ---i.e., regardless of their
 current numbers).
 
-```{r}
+```{r nyv0138}
 plotClonePhylog(tmp, N = 1)
 ``` 
 
@@ -8137,13 +8154,13 @@ And we can show the plot so that the vertical axis is proportional to time
 (though you might see overlap of nodes if a child node appeared shortly
 after the parent):
 
-```{r}
+```{r nyv0139}
 plotClonePhylog(tmp, N = 1, timeEvents = TRUE)
 ``` 
 
 We can obtain the adjacency matrix doing
 
-```{r, fig.keep="none"}
+```{r rzx0304, fig.keep="none"}
 get.adjacency(plotClonePhylog(tmp, N = 1, returnGraph = TRUE))
 
 ``` 
@@ -8151,7 +8168,7 @@ get.adjacency(plotClonePhylog(tmp, N = 1, returnGraph = TRUE))
 
 We can see another example here:
 
-```{r}
+```{r nyv0140}
 
 set.seed(456)
 mcf1s <-  oncoSimulIndiv(mcf1,
@@ -8171,7 +8188,7 @@ mcf1s <-  oncoSimulIndiv(mcf1,
 Showing only clones that exist at the end of the simulation (and all their
 parents):
 
-```{r}
+```{r nyv0141}
 plotClonePhylog(mcf1s, N = 1)
 ``` 
 
@@ -8182,20 +8199,20 @@ mutated, just as before.
 Similar, but with vertical axis proportional to time:
 
 
-```{r}
+```{r nyv0142}
 par(cex = 0.7)
 plotClonePhylog(mcf1s, N = 1, timeEvents = TRUE)
 ``` 
 
 What about those that existed in the last 200 time units?
-```{r}
+```{r nyv0143}
 par(cex = 0.7)
 plotClonePhylog(mcf1s, N = 1, t = c(800, 1000))
 ``` 
 
 And try now to show also when the clones appeared (we restrict the time
 to between 900 and 1000, to avoid too much clutter):
-```{r}
+```{r nyv0144}
 par(cex = 0.7)
 plotClonePhylog(mcf1s, N = 1, t = c(900, 1000), timeEvents = TRUE)
 ``` 
@@ -8214,7 +8231,7 @@ g1 <- plotClonePhylog(mcf1s, N = 1, t = c(900, 1000),
                       returnGraph = TRUE)
 ``` 
 
-```{r}
+```{r nyv0145}
 plot(g1)
 ``` 
 
@@ -8227,7 +8244,7 @@ the parent-child relationships will form a network, not a tree, as the
 same child node can have multiple parents. You can play with this example,
 modified from one we saw before (section \@ref(mn1)):
 
-```{r, eval=FALSE}
+```{r rzx0305, eval=FALSE}
 op <- par(ask = TRUE)
 while(TRUE) {
     tmp <- oncoSimulIndiv(smn1, model = "McFL",
@@ -8246,7 +8263,7 @@ par(op)
 If you use `oncoSimulPop` you can store and plot the
 "phylogenies" of the different runs:
 
-```{r}
+```{r nyv0146}
 
 oi <- allFitnessEffects(orderEffects =
                c("F > D" = -0.3, "D > F" = 0.4),
@@ -8254,16 +8271,16 @@ oi <- allFitnessEffects(orderEffects =
                           geneToModule =
                               c("F" = "f1, f2, f3",
                                 "D" = "d1, d2") )
-oiI1 <- oncoSimulIndiv(oi, model = "Exp")
+oiI1 <- oncoSimulIndiv(oi, model = "Exp", onlyCancer = TRUE)
 oiP1 <- oncoSimulPop(4, oi,
                      keepEvery = 10,
                      mc.cores = 2,
-                     keepPhylog = TRUE)
+                     keepPhylog = TRUE, onlyCancer = TRUE)
 
 ``` 
 
 We will plot the first two:
-```{r, fig.height=9}
+```{r rzx0306, fig.height=9}
 
 op <- par(mar = rep(0, 4), mfrow = c(2, 1))
 plotClonePhylog(oiP1[[1]])
@@ -8338,7 +8355,7 @@ functions, or you could export them (`to_Magellan`) and plot them externally
 @brouillet_magellan:_2015).
 
 
-```{r}
+```{r nyv0147}
 ## A small example
 rfitness(3)
 
@@ -8349,7 +8366,8 @@ rfitness(3)
 
 r1 <- rfitness(5, reference = rep(1, 5), sd = 0.6)
 plot(r1)
-oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
+oncoSimulIndiv(allFitnessEffects(genotFitness = r1),
+               onlyCancer = TRUE)
 ``` 
 
 
@@ -8363,7 +8381,8 @@ MAGELLAN [@brouillet_magellan:_2015].
 ```{r nkex1}
 rnk <- rfitness(5, K = 3, model = "NK")
 plot(rnk)
-oncoSimulIndiv(allFitnessEffects(genotFitness = rnk))
+oncoSimulIndiv(allFitnessEffects(genotFitness = rnk),
+               onlyCancer = TRUE)
 ```
 
 
@@ -8863,6 +8882,13 @@ afe_3_a <- allFitnessEffects(
                        create_fe(0.02, 0.04, 0.08, 0.06,
                                  0.15, 0.1, 0.06),
                 frequencyDependentFitness = TRUE)
+
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(s_3_a)
+if (FALSE) {
 set.seed(2)
 s_3_a <- oncoSimulIndiv(afe_3_a,
                      model = "McFL", 
@@ -8873,13 +8899,11 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                      keepPhylog = FALSE,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
-                     errorHitWallTime = FALSE)
-## plot(s_3_a, show = "genotypes",
-##      xlim = c(40, 200),
-##      col = c("black", "green", "red", "blue"))
+                     errorHitWallTime = FALSE,
+                     keepEvery = 1)
+}
 plot(s_3_a, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"),
-     thinData = TRUE)
+     col = c("black", "green", "red", "blue"))
 ```
 
 
@@ -8890,23 +8914,30 @@ afe_3_b <- allFitnessEffects(
                        create_fe(0.02, 0.04, 0.08, 0.1,
                                  0.15, 0.1, 0.05),
                 frequencyDependentFitness = TRUE)
+				
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(s_3_b)
+
+if (FALSE) {				
 set.seed(2)
 ## Use a short finalTime, for speed of vignette execution
 s_3_b <- oncoSimulIndiv(afe_3_b,
                      model = "McFL", 
                      onlyCancer = FALSE, 
-                     finalTime = 100, ## 160,
+                     finalTime = 100, 
                      mu = 1e-4,
                      initSize = 5000, 
                      keepPhylog = FALSE, 
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
-                     errorHitWallTime = FALSE)
-## plot(s_3_b, show = "genotypes", 
-##      col = c("black", "green", "red", "blue"))
+                     errorHitWallTime = FALSE,
+                     keepEvery = 1)
+}
 plot(s_3_b, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"),
-     thinData = TRUE) ## thin for faster plotting
+     col = c("black", "green", "red", "blue"))
+## we are using keepEvery. O.w. we could have used
+## thinData = TRUE for faster plotting
 ```
 
 Of course, if we assume that the mutations leading to the different
@@ -8914,7 +8945,7 @@ cell types are different, the results can change:
 
 ```{r hurl3b2}
 ## Figure 3b. Now with WT -> P; P -> A,P; P -> C,P
-## For speed, we set finalTiem = 100
+## For speed, we set finalTime = 100
 afe_3_b_2 <- allFitnessEffects(
                   genotFitness =
                       create_fe2(0.02, 0.04, 0.08, 0.1,
@@ -8925,16 +8956,16 @@ set.seed(2)
 s_3_b_2 <- oncoSimulIndiv(afe_3_b_2,
                    model = "McFL", 
                    onlyCancer = FALSE, 
-                   finalTime = 100, ## 300
+                   finalTime = 100, 
                    mu = 1e-4,
                    initSize = 5000, 
                    keepPhylog = FALSE,
                    seed = NULL, 
                    errorHitMaxTries = FALSE, 
-                   errorHitWallTime = FALSE)
+                   errorHitWallTime = FALSE,
+				   keepEvery = 1)
 plot(s_3_b_2, show = "genotypes", type = "line",
-     col = c("black", "green", "red", "blue"),
-     thinData = TRUE)
+     col = c("black", "green", "red", "blue"))
 
 ```
 
@@ -9043,7 +9074,7 @@ sfd4 <- oncoSimulIndiv(afd3,
                        errorHitWallTime = FALSE)
 ```					 
 
-```{r, echo=FALSE}
+```{r rzx0307, echo=FALSE}
 op <- par(mfrow = c(1, 2))
 ```					 
 
@@ -9053,7 +9084,7 @@ plot(sfd4, show = "genotypes")
 sfd4
 ```
 
-```{r, echo=FALSE}
+```{r rzx0308, echo=FALSE}
 par(op)
 ```
 
@@ -9186,7 +9217,7 @@ see how we have $a\_12 > 0$ and $a\_21 > 0$.
 
 
 
-```{r, echo = FALSE}
+```{r rzx0309, echo = FALSE}
 set.seed(1)
 ```
 ```{r complv1, message=FALSE}
@@ -9204,7 +9235,7 @@ competition <- oncoSimulIndiv(fe_competition,
                             finalTime = 100,
                             mu = 1e-4,
                             initSize = 40000, 
-                            keepPhylog = TRUE,
+                            keepPhylog = FALSE,
                             seed = NULL, 
                             errorHitMaxTries = FALSE, 
                             errorHitWallTime = FALSE)
@@ -9218,7 +9249,7 @@ plot(competition, show = "genotypes")
 but we can avoid that by showing the plot after the WT are long
 gone:
 
-```{r, echo=FALSE}
+```{r rzx0310, echo=FALSE}
 op <- par(mfrow = c(1, 2))
 ```
 
@@ -9229,7 +9260,7 @@ plot(competition, show = "genotypes", type = "line",
      xlim = c(80, 100), ylim = c(1500, 12000))
 ```
 
-```{r, echo=FALSE}
+```{r rzx0311, echo=FALSE}
 par(op)	 
 ```
 
@@ -9260,7 +9291,7 @@ G_fe_LVm <- function(r1, r2, K1, K2, a_12, a_21, awt = 1e-4,
 G_fe_LVm("r1", "r2", "K1", "K2", "a_12", "a_21", "awt")
 
 ``` 
-```{r, echo = FALSE}
+```{r rzx0312, echo = FALSE}
 set.seed(1)
 ```
 ```{r complv1multi, message=FALSE}
@@ -9280,7 +9311,7 @@ competitionm <- oncoSimulIndiv(fe_competitionm,
                               onlyCancer = FALSE, 
                               finalTime = 100,
                               mu = 1e-4,
-                              keepPhylog = TRUE,
+                              keepPhylog = FALSE,
                               seed = NULL, 
                               errorHitMaxTries = FALSE, 
                               errorHitWallTime = FALSE)
@@ -9484,7 +9515,7 @@ evalAllGenotypes(fe_pred_preym3, spPopSizes = c(300, 1000))
 ```
 
 
-```{r, echo=FALSE}
+```{r rzx0313, echo=FALSE}
 set.seed(1)
 ```
 
@@ -9496,7 +9527,7 @@ s_pred_preym2 <- oncoSimulIndiv(fe_pred_preym2,
                                 onlyCancer = FALSE, 
                                 finalTime = 200,
                                 mu = 1e-3,
-                                keepPhylog = TRUE,
+                                keepPhylog = FALSE,
                                 seed = NULL, 
                                 errorHitMaxTries = FALSE, 
                                 errorHitWallTime = FALSE)
@@ -9623,7 +9654,7 @@ pred_prey2 <- oncoSimulIndiv(fe_pred_prey2,
                              mu = 1e-3,
                              onlyCancer = FALSE, 
                              finalTime = 100,
-                             keepPhylog = TRUE,
+                             keepPhylog = FALSE,
                              seed = NULL, 
                              errorHitMaxTries = FALSE, 
                              errorHitWallTime = FALSE)
@@ -9670,8 +9701,8 @@ commens <- oncoSimulIndiv(fe_commens,
                             finalTime = 100,
                             mu = 1e-4,
                             initSize = 40000, 
-                            keepPhylog = TRUE,
-                            seed = NULL, 
+                          keepPhylog = FALSE,
+                          seed = NULL, 
                             errorHitMaxTries = FALSE, 
                             errorHitWallTime = FALSE)
 
@@ -9955,7 +9986,7 @@ immediately.
 <!-- passing a `genoFitnes` as we can see bellow (see \@ref(explicitmap) for more details). -->
 
 
-<!-- ```{r} -->
+<!-- ```{r nyv0148b} -->
 <!-- r <- data.frame(Genotype = c("WT", "A", "B", "A, B"),  -->
 <!--                  Fitness = c("1 + 1.5*f_", -->
 <!--                              "5 + 3*(f_A + f_B + f_A_B)", -->
@@ -10128,7 +10159,7 @@ resultscrs1 <- oncoSimulIndiv(afcrs1,
                              finalTime = 100, 
                              mu = 1e-2,
                              initSize = 4000, 
-                             keepPhylog = TRUE,
+                             keepPhylog = FALSE,
                              seed = NULL,
                              errorHitMaxTries = FALSE,
                              errorHitWallTime = FALSE)
@@ -10173,7 +10204,7 @@ resultscrs2 <- oncoSimulPop(10,
                              finalTime = 100,
                              mu = 1e-2,
                              initSize = 4000,
-                             keepPhylog = TRUE,
+                             keepPhylog = FALSE,
                              seed = NULL,
                              errorHitMaxTries = FALSE,
                              errorHitWallTime = FALSE)
@@ -10203,7 +10234,7 @@ resultscrs2a <- oncoSimulIndiv(afcrs2,
                              finalTime = 100, 
                              mu = 1e-2,
                              initSize = 4000, 
-                             keepPhylog = TRUE,
+                             keepPhylog = FALSE,
                              seed = NULL,
                              errorHitMaxTries = FALSE,
                              errorHitWallTime = FALSE)
@@ -10227,7 +10258,7 @@ resultscrs2b <- oncoSimulIndiv(afcrs2,
                              finalTime = 60, 
                              mu = 1e-2,
                              initSize = 4000, 
-                             keepPhylog = TRUE,
+                             keepPhylog = FALSE,
                              seed = NULL,
                              errorHitMaxTries = FALSE,
                              errorHitWallTime = FALSE)
@@ -10251,7 +10282,7 @@ resultscrs3 <- oncoSimulIndiv(afcrs3,
                              finalTime = 60, 
                              mu = 1e-2,
                              initSize = 4000, 
-                             keepPhylog = TRUE,
+                             keepPhylog = FALSE,
                              seed = NULL,
                              errorHitMaxTries = FALSE,
                              errorHitWallTime = FALSE)
@@ -10358,7 +10389,7 @@ simulation <- oncoSimulPop(2,
                            finalTime = 50,
                            mu = 1e-2, # Quick emergence of D and H
                            initSize = 4000,
-                           keepPhylog = TRUE,
+                           keepPhylog = FALSE,
                            seed = NULL,
                            errorHitMaxTries = FALSE,
                            errorHitWallTime = FALSE)
@@ -10519,7 +10550,7 @@ simulation <- oncoSimulIndiv(afavc,
                            finalTime = 15,
                            mu = 1e-3,
                            initSize = 4000,
-                           keepPhylog = TRUE,
+                           keepPhylog = FALSE,
                            seed = NULL,
                            errorHitMaxTries = FALSE,
                            errorHitWallTime = FALSE)
@@ -10536,7 +10567,7 @@ plot(simulation, show = "genotypes", type = "line",
 
 ```
 
-<!--  ```{r, message=FALSE} --->
+<!--  ```{r rzx0314, message=FALSE} --->
 
 <!--  #\ Representation of a boxplot considering all the simulations. --->
 <!--  compositionPop2(simulation, ylab = "Number of individuals", --->
@@ -10577,7 +10608,7 @@ simulation <- oncoSimulIndiv(afavc,
                            finalTime = 15,
                            mu = 1e-4,
                            initSize = 4000,
-                           keepPhylog = TRUE,
+                           keepPhylog = FALSE,
                            seed = NULL,
                            errorHitMaxTries = FALSE,
                            errorHitWallTime = FALSE)
@@ -10593,7 +10624,7 @@ plot(simulation, show = "genotypes", type = "line",
 
 ```
 
-<!--  ```{r, message=FALSE} --->
+<!--  ```{r rzx0315, message=FALSE} --->
 
 <!--  #\ Representation of a boxplot considering all the simulations. --->
 <!--  compositionPop2(simulation, ylab = "Number of individuals", --->
@@ -10637,7 +10668,7 @@ simulation <- oncoSimulIndiv(afavc,
                            finalTime = 25,
                            mu = 1e-4,
                            initSize = 4000,
-                           keepPhylog = TRUE,
+                           keepPhylog = FALSE,
                            seed = NULL,
                            errorHitMaxTries = FALSE,
                            errorHitWallTime = FALSE)
@@ -10823,7 +10854,7 @@ simulScen1 <- oncoSimulIndiv(scen1,
                               finalTime = 70,
                               mu = 1e-4,
                               initSize = 5000,
-                              keepPhylog = TRUE,
+                              keepPhylog = FALSE,
                               seed = NULL,
                               errorHitMaxTries = FALSE,
                               errorHitWallTime = FALSE)
@@ -10852,7 +10883,7 @@ be sensitive to the initial population size and the mutation rate.
 <!--                               finalTime = 150, --->
 <!--                               mu = 1e-3, --->
 <!--                               initSize = 4000, --->
-<!--                               keepPhylog = TRUE, --->
+<!--                               keepPhylog = FALSE, --->
 <!--                               seed = NULL, --->
 <!--                               errorHitMaxTries = FALSE, --->
 <!--                               errorHitWallTime = FALSE) --->
@@ -10895,7 +10926,7 @@ simulScen2 <- oncoSimulIndiv(scen2,
                               finalTime = 70,
                               mu = 1e-4,
                               initSize = 4000,
-                              keepPhylog = TRUE,
+                              keepPhylog = FALSE,
                               seed = NULL,
                               errorHitMaxTries = FALSE,
                               errorHitWallTime = FALSE)
@@ -10943,8 +10974,8 @@ simulScen3 <- oncoSimulIndiv(scen3,
                               finalTime = 50,
                               mu = 1e-4,
                               initSize = 4000,
-                              keepPhylog = TRUE,
-                              seed = NULL,
+                             keepPhylog = FALSE,
+                             seed = NULL,
                               errorHitMaxTries = FALSE,
                               errorHitWallTime = FALSE)
 op <- par(mfrow = c(1, 2))
@@ -10989,8 +11020,8 @@ simulScen4 <- oncoSimulIndiv(scen4,
                               finalTime = 40,
                               mu = 1e-4,
                               initSize = 4000,
-                              keepPhylog = TRUE,
-                              seed = NULL,
+                             keepPhylog = FALSE,
+                             seed = NULL,
                               errorHitMaxTries = FALSE,
                               errorHitWallTime = FALSE)
 op <- par(mfrow = c(1, 2))
@@ -11235,23 +11266,28 @@ fe_cells <-
         frequencyType = "rel")
 
 ## Simulated trajectories
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(smyelo3v57)
+
+if (FALSE) {
 set.seed(2)
-simulation <- oncoSimulIndiv(fe_cells,
+smyelo3v57 <- oncoSimulIndiv(fe_cells,
                            model = "McFL",
                            onlyCancer = FALSE,
-                           finalTime = 20, ## 30
+                           finalTime = 20, 
                            mu = c("OC"=1e-1, "OB"=1e-1, "MM"=1e-4),
                            initSize = N,
                            keepPhylog = FALSE,
                            seed = NULL,
                            errorHitMaxTries = FALSE,
-                           errorHitWallTime = FALSE)
-
+                           errorHitWallTime = FALSE,
+						   keepEvery = 0.1)
+}
 ## Plot trajectories
-## op <- par(mfrow = c(1, 2))
-## plot(simulation, show = "genotypes", type = "line")
-plot(simulation, show = "genotypes", thinData = TRUE)
-## par(op)
+plot(smyelo3v57, show = "genotypes")
+
 
 ```
 
@@ -11321,7 +11357,7 @@ the number of MM cells.
 <!--  in the initial population (it depends on random mutations of the wild type) we --->
 <!--  will pay special attention to the box plot. --->
 
-<!--  ```{r} --->
+<!--  ```{r nyv0149b} --->
 <!--  N <- 40000 --->
 <!--  M <- 50 --->
 <!--  c1 <- 1 --->
@@ -11758,7 +11794,7 @@ wiAntibS <- oncoSimulIndiv(wiAntib,
                         finalTime = 100,
                         mu = 1e-4,
                         initSize = 1000, 
-                        keepPhylog = TRUE,
+                        keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = FALSE, 
                         errorHitWallTime = FALSE)
@@ -11927,7 +11963,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                         finalTime = 50,
                         mu = 1e-4,
                         initSize = 10000, 
-                        keepPhylog = TRUE,
+                        keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = FALSE, 
                         errorHitWallTime = FALSE)
@@ -11964,7 +12000,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                         finalTime = 50,
                         mu = 1e-4,
                         initSize = 10000, 
-                        keepPhylog = TRUE,
+                        keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = FALSE, 
                         errorHitWallTime = FALSE)
@@ -12004,7 +12040,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                         finalTime = 50,
                         mu = 1e-4,
                         initSize = 10000, 
-                        keepPhylog = TRUE,
+                        keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = FALSE, 
                         errorHitWallTime = FALSE)
@@ -12188,7 +12224,7 @@ s_3_a <- oncoSimulIndiv(afe_3_a,
                         finalTime = 20,
                         mu = muvar2,
                         initSize = 10000, 
-                        keepPhylog = TRUE,
+                        keepPhylog = FALSE,
                         seed = NULL, 
                         errorHitMaxTries = FALSE, 
                         errorHitWallTime = FALSE)
@@ -12292,7 +12328,7 @@ plot(s_3_a, show = "genotypes", type = "line",
 
 \clearpage
 
-# Death and Birth specification
+# Death and Birth specification {#birthdeathfitspec}
 
 With the changes introduced in mid 2021 by Alberto González Klein, the user is allowed to specify arbitrary
 death rates in the same way fitness could be specified, instead of using the
@@ -12376,10 +12412,11 @@ s_pred_preym <- oncoSimulIndiv(fe_pred_prey, model = "Arb",
                                 initMutant = c("Predator", "Prey"),
                                 initSize = c(1000, 1000), 
                                 onlyCancer = FALSE, 
-                                finalTime = 200, mu = 1e-3,
-                                keepPhylog = TRUE, seed = NULL,
-                                errorHitMaxTries = FALSE,
-                                errorHitWallTime = FALSE)
+                                finalTime = 75, mu = 1e-3,
+                               keepPhylog = FALSE, seed = NULL,
+                               errorHitMaxTries = FALSE,
+                                errorHitWallTime = FALSE,
+								keepEvery = 1)
 
 plot(s_pred_preym, show="genotypes", type="line", log = "")
 
@@ -12410,8 +12447,8 @@ HD_eq <- allFitnessEffects(
 osi_eq <- oncoSimulIndiv(HD_eq, model = "Const",
                            onlyCancer = FALSE, finalTime = 50,
                            mu = 1e-6, initSize = c(2000, 2000),
-						               initMutant = c("H", "D"), keepPhylog = TRUE,
-                           seed = NULL, errorHitMaxTries = FALSE,
+                         initMutant = c("H", "D"), keepPhylog = FALSE,
+                         seed = NULL, errorHitMaxTries = FALSE,
                            errorHitWallTime = FALSE)
                            
 plot(osi_eq, show="genotypes", ylim=c(1, 5000))
@@ -12517,20 +12554,20 @@ argument is the `fitnessEffects` object.
 
 Finally, once the intervention is "created" by the `createInterventions` function,
 the object returned can be passed as an argument to the `oncoSimul*` function, 
-like this example below: 
+like this example below. More detailed examples are shown next (and, for speed creating the vignette, we do not execute the next code chunk).
 
-```{r interventionsOncoSimulIndivExample}
+```{r interventionsOncoSimulIndivExample, eval=FALSE}
 ep2 <- oncoSimulIndiv(
-                    afd3, 
-                    model = "Exp",
-                    mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 5.2,
-                    onlyCancer = FALSE,
-		                interventions = interventions
-                    )
+    afd3, 
+    model = "Exp",
+    mu = 1e-4,
+    sampleEvery = 0.001,
+    initSize = c(20000, 20000),
+    initMutant = c("A", "B"),
+    finalTime = 5.2,
+    onlyCancer = FALSE,
+    interventions = interventions
+)
 ```
 
 ## A first example with interventions {#intssimpleexample}
@@ -12631,14 +12668,27 @@ afd3 <- allFitnessEffects(genotFitness = gffd3,
                             frequencyDependentFitness = TRUE,
                             frequencyType = "abs")
 
+```
+
+```{r intex2load}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(osi)
+
+if (FALSE) {
 osi <- oncoSimulIndiv( afd3,
                         model = "McFLD",
                         onlyCancer = FALSE,
                         finalTime = 200,
                         mu = 1e-4,
                         initSize = 5000,
-                        sampleEvery = 0.001)
+                        sampleEvery = 0.001,
+						keepEvery = 1)
+}
+						
 ``` 
+
+
 Then, we plot the result:
 ```{r plotintex2}
 plot(osi, show = "genotypes", type = "line")
@@ -12666,6 +12716,11 @@ Where the intervention will start at T > 40, reducing the total population to th
 the simulation, but this time specifying the interventions:
 
 ```{r simulationwithinterventionsintex2}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(osi_with_ints)
+
+if(FALSE) {
 osi_with_ints <- oncoSimulIndiv( afd3,
                         model = "McFLD",
                         onlyCancer = FALSE,
@@ -12674,6 +12729,7 @@ osi_with_ints <- oncoSimulIndiv( afd3,
                         initSize = 5000,
                         sampleEvery = 0.001,
                         interventions = intervention_tot_pop)
+}
 
 plot(osi_with_ints, show = "genotypes", type = "line")
 ```
@@ -12684,7 +12740,7 @@ As it can be seen, when T=40, T=60 and T=80, the total population decrements, bu
 take a closer look and see what `pops.by.time` in those instants:
 
 ```{r popsbytimeintex2}
-osi_with_ints$pops.by.time[40002:40003, 1:4]
+osi_with_ints$pops.by.time[39:42, ]
 ```
 
 Here, the first column represents the time units, the second represents the population 
@@ -12694,12 +12750,15 @@ As it can be seen, when the current time of the simulation is really close to 40
 happens, reducing the population to the 20%. 
 
 ```{r popsbytimeintex2_proof}
-pre_int_tot_pop = osi_with_ints$pops.by.time[40002:40002,1:1] + osi_with_ints$pops.by.time[40002:40002,2:2] + osi_with_ints$pops.by.time[40002:40002,3:3]+ osi_with_ints$pops.by.time[40002:40002,4:4]
-post_int_tot_pop = osi_with_ints$pops.by.time[40003:40003,1:1] + osi_with_ints$pops.by.time[40003:40003,2:2] + osi_with_ints$pops.by.time[40003:40003,3:3] + osi_with_ints$pops.by.time[40003:40003, 4:4]
+pre_int_tot_pop = osi_with_ints$PerSampleStats[40, 1]
+post_int_tot_pop = osi_with_ints$PerSampleStats[41, 1]
 
+## If you did not remember about PerSampleStats
+## you could add all except the first column of pops.by.time
+## to get the total population sizes.
 percentage_eliminated = (post_int_tot_pop/pre_int_tot_pop)*100
 
-paste0("The percentage of population has decreases in a ", percentage_eliminated, "%")
+paste0("The percentage of population has decreased by ", percentage_eliminated, "%")
 ```
 
 ## Intervening in Rock-Paper-Scissors model in bacterial comunity {#rockscissorsints}
@@ -12738,13 +12797,12 @@ frequencyType = "abs")
     
 resultscrs1_noints <- oncoSimulIndiv(afcrs1,
                             model = "McFL",
-                            finalTime = 100,
+                            finalTime = 25,
                             mu = 1e-2,
                             initSize = 4000,
-                            keepPhylog = TRUE,
-                            seed = NULL,
-                            errorHitMaxTries = FALSE,
-                            errorHitWallTime = FALSE)
+                            onlyCancer = FALSE,
+                            keepPhylog = FALSE,
+                            seed = NULL)
 
 plot(resultscrs1_noints, show="genotypes", type = "line")
 
@@ -12762,17 +12820,19 @@ define that the R genotype needs the C genotype to exist and grow, if we cut the
 of C, R will never dominate the population. First, we define the intervention: 
 
 ```{r interventionforrps}
-int_over_C = list(
-        list(
-            ID = "Bothering R strain, by reducing C",
-            Trigger = "n_C >= 500",
-            WhatHappens = "n_C = n_C * 0.1",
-            Periodicity = 3,
-            Repetitions = Inf
-        )
+int_over_C <- list(
+    list(
+        ID = "Bothering R strain, by reducing C",
+        Trigger = "n_C >= 500",
+        WhatHappens = "n_C = n_C * 0.1",
+        Periodicity = 3,
+        Repetitions = Inf
+    )
     )
 
-    final_int_over_C = createInterventions(interventions = int_over_C, genotFitness = afcrs1)
+final_int_over_C <-
+    createInterventions(interventions = int_over_C,
+                        genotFitness = afcrs1)
 ```
 
 Where it is controled that, if the C genotype exceeds 500 individuals of population
@@ -12784,13 +12844,12 @@ Running the simulations again, but this time with the interventions specified:
 ```{r rpswithints}
 resultscrs1_noints <- oncoSimulIndiv(afcrs1,
                             model = "McFL",
-                            finalTime = 100,
+                            finalTime = 25,
                             mu = 1e-2,
                             initSize = 4000,
-                            keepPhylog = TRUE,
+                            onlyCancer = FALSE,
+                            keepPhylog = FALSE,
                             seed = NULL,
-                            errorHitMaxTries = FALSE,
-                            errorHitWallTime = FALSE,
                             interventions = final_int_over_C)
 
 plot(resultscrs1_noints, show="genotypes", type = "line")
@@ -12887,21 +12946,23 @@ rules <- createRules(rules, afuv)
 In `createUserVars` the argument is the previously defined list of user variables.
 In `createRules`, the first argument is the previously defined list of rules, and the second one is the `fitnessEffects` object.
 
-Finally, once both objects are created, they can be passed as an argument to the `oncoSimul*` function:
+Finally, once both objects are created, they can be passed as an argument to the `oncoSimul*` function (for speed, we do not run the example below, as we have more detailed examples next).
 
-```{r userVarsOncoSimulIndivExample}
+```{r userVarsOncoSimulIndivExample, eval=FALSE}
+
 uvex <- oncoSimulIndiv(
-                    afuv, 
-                    model = "McFLD",
-                    mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 5.2,
-                    onlyCancer = FALSE,
-		                userVars = userVars,
-                    rules = rules
-                    )
+    afuv, 
+    model = "McFLD",
+    mu = 1e-4,
+    sampleEvery = 0.001,
+    initSize = c(20000, 20000),
+    initMutant = c("A", "B"),
+    finalTime = 5.2,
+    onlyCancer = FALSE,
+    userVars = userVars,
+    rules = rules
+)
+
 ```
 
 ## Basic example with user variables {#uservarsbasicexample}
@@ -12927,11 +12988,14 @@ afuv2 <- allFitnessEffects(genotFitness = dfuv2,
 userVars <- list(
     list(Name           = "genAProp",
         Value       = 0.5
-    ),list(Name           = "genBProp",
+    ),
+	list(Name           = "genBProp",
         Value       = 0.5
-    ),list(Name           = "genABProp",
+    ),
+	list(Name           = "genABProp",
         Value       = 0.0
-    ),list(Name           = "genACProp",
+    ),
+	list(Name           = "genACProp",
         Value       = 0.0
     )
 )
@@ -12942,13 +13006,16 @@ rules <- list(
         list(ID = "rule_1",
             Condition = "TRUE",
             Action = "genBProp = n_B/N"
-        ),list(ID = "rule_2",
+        ),
+		list(ID = "rule_2",
             Condition = "TRUE",
             Action = "genAProp = n_A/N"
-        ),list(ID = "rule_3",
+        ),
+		list(ID = "rule_3",
             Condition = "TRUE",
             Action = "genABProp = n_A_B/N"
-        ),list(ID = "rule_4",
+        ),
+		list(ID = "rule_4",
             Condition = "TRUE",
             Action = "genACProp = n_A_C/N"
         )
@@ -12956,6 +13023,11 @@ rules <- list(
 
 rules <- createRules(rules, afuv2)
 
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+data(uvex2)
+
+if(FALSE) {
 set.seed(1)
 uvex2 <- oncoSimulIndiv(
                     afuv2, 
@@ -12967,14 +13039,30 @@ uvex2 <- oncoSimulIndiv(
                     finalTime = 10,
                     onlyCancer = FALSE,
                     userVars = userVars,
-                    rules = rules
+                    rules = rules,
+                    keepEvery = 0.1
                     )
-    
-plot(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE, FALSE)], xlab="Time", ylab="Proportion", ylim=c(0,1), type="l", col="purple")  
-lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE, FALSE)], type="l", col="#E6AB02") 
-lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE, FALSE)], type="l", col="#1B9E77") 
-lines(unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)], unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE, FALSE)], type="l", col="#666666") 
-legend(0,1,legend=c("genABProp", "genACProp", "genAProp", "genBProp"), col=c("purple", "#E6AB02", "#1B9E77", "#666666"), lty= 1:2) 
+}
+                    
+plot(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE, FALSE)],
+    xlab="Time", ylab="Proportion", ylim=c(0,1), type="l", col="purple")  
+
+lines(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE, FALSE)], type="l", col="#E6AB02") 
+
+lines(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE, FALSE)], type="l", col="#1B9E77") 
+
+lines(
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE, FALSE)], type="l", col="#666666") 
+
+legend(0,1,
+       legend=c("genABProp", "genACProp", "genAProp", "genBProp"), col=c("purple", "#E6AB02", "#1B9E77", "#666666"), lty= 1:2) 
 ```
 We can see, just as we saw in the interventions example that genotype B dominates the population, but, as we used user variables that show us the proportions intead of directly the populatios, we can se the fraction of the total represented by each genotype.
 
@@ -13017,12 +13105,19 @@ rules <- list(
 
 rules <- createRules(rules, afuv3)
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(uvex3)
+
+if(FALSE) {
 set.seed(1)
 
 uvex3 <- oncoSimulIndiv(afuv3,
                        model = "McFLD", 
                        onlyCancer = FALSE, 
-                       finalTime = 150,
+                       finalTime = 105,
                        mu = 1e-4,
                        initSize = 5000, 
                        keepPhylog = FALSE,
@@ -13030,18 +13125,32 @@ uvex3 <- oncoSimulIndiv(afuv3,
                        errorHitMaxTries = FALSE, 
                        errorHitWallTime = FALSE,
                        userVars = userVars,
-                       rules = rules)
+                       rules = rules,
+                       keepEvery = 1)
+}
 
 plot(uvex3, show = "genotypes", type = "line")    
 ```
 We now plot the difference between birth and death rate
 ```{r userVarsBasicExamplePlotVars}
-plot(unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE)], xlab="Time", ylab="Rate Diff", xlim=c(0,150), ylim=c(-0.75,0.75), type="l", col="#1B9E77")  
-lines(unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(uvex3$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE)], type="l", col="#A6761D") 
-lines(unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(uvex3$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE)], type="l", col="#666666") 
-legend(0,0.75,legend=c("genWTRateDiff", "genARateDiff", "genBRateDiff"), col=c("#1B9E77", "#A6761D", "#666666"), lty= 1:2) 
+plot(
+    unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE)], xlab="Time", ylab="Rate Diff",
+    xlim=c(0, 105),
+    ylim=c(-0.75,0.75), type="l", col="#1B9E77")  
+
+lines(
+    unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex3$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE)], type="l", col="#A6761D") 
+
+lines(
+    unlist(uvex3$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)],
+    unlist(uvex3$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE)], type="l", col="#666666")
+
+legend(0, 0.75,
+       legend=c("genWTRateDiff", "genARateDiff", "genBRateDiff"), col=c("#1B9E77", "#A6761D", "#666666"), lty= 1:2) 
 ```
-As expected we see that the points in time when the population of some genotypes decline match the points where the difference between borth and death rate is negative.
+As expected we see that the points in time when the population of some genotypes decline match the points where the difference between birth and death rate is negative.
 
 ## Adaptive therapy. Interventions using user variables {#adaptiveTherapy}
 
@@ -13121,111 +13230,129 @@ atex <- oncoSimulIndiv(
 plot(atex, show = "genotypes", type = "line")    
 ```
 
-## Adaptive therapy Example
-The provided example will further illustrate the functionality. 
-In this case we will set interventions that will reduce the most likely to grow genotype by checking the difference between its birth and death rates.
+<!-- FIXME -->
+<!-- When we use keepEvery, this shows nothing. And even without -->
+<!-- I think most of this example is also in others. -->
+<!-- Remove this? -->
 
-```{r adaptiveTherapyExample1}
-dfat2 <- data.frame(Genotype = c("WT", "A", "B"), 
-                   Fitness = c("1",
-                               "1 + 0.2 * (n_B > 10)",
-                               ".9 + 0.4 * (n_A > 10)"
-                               ))
-afat2 <- allFitnessEffects(genotFitness = dfat2, 
-                         frequencyDependentFitness = TRUE)
+<!-- ## Adaptive therapy Example -->
+<!-- The provided example will further illustrate the functionality.  -->
+<!-- In this case we will set interventions that will reduce the most likely to grow genotype by checking the difference between its birth and death rates. -->
+
+<!-- ```{r adaptiveTherapyExample1} -->
+<!-- dfat2 <- data.frame(Genotype = c("WT", "A", "B"),  -->
+<!--                    Fitness = c("1", -->
+<!--                                "1 + 0.2 * (n_B > 10)", -->
+<!--                                ".9 + 0.4 * (n_A > 10)" -->
+<!--                                )) -->
+<!-- afat2 <- allFitnessEffects(genotFitness = dfat2,  -->
+<!--                          frequencyDependentFitness = TRUE) -->
     
 
-userVars <- list(
-    list(Name           = "genADiff",
-        Value       = 0
-    ),list(Name           = "genBDiff",
-        Value       = 0
-    ),list(Name           = "genWTDiff",
-        Value       = 0
-    )
-)
+<!-- userVars <- list( -->
+<!--     list(Name           = "genADiff", -->
+<!--         Value       = 0 -->
+<!--     ),list(Name           = "genBDiff", -->
+<!--         Value       = 0 -->
+<!--     ),list(Name           = "genWTDiff", -->
+<!--         Value       = 0 -->
+<!--     ) -->
+<!-- ) -->
 
-userVars <- createUserVars(userVars)
+<!-- userVars <- createUserVars(userVars) -->
 
-rules <- list(
-        list(ID = "rule_1",
-            Condition = "TRUE",
-            Action = "genADiff = b_1-d_1"
-        ),list(ID = "rule_2",
-            Condition = "TRUE",
-            Action = "genBDiff = b_2-d_2"
-        ),list(ID = "rule_3",
-            Condition = "TRUE",
-            Action = "genWTDiff = b_-d_"
-        ),list(ID = "rule_4",
-            Condition = "n_A < 1000",
-            Action = "genADiff = -1"
-        ),list(ID = "rule_5",
-            Condition = "n_B < 1000",
-            Action = "genBDiff = -1"
-        ),list(ID = "rule_6",
-            Condition = "n_ < 1000",
-            Action = "genWTDiff = -1"
-        )
-    )
+<!-- rules <- list( -->
+<!--         list(ID = "rule_1", -->
+<!--             Condition = "TRUE", -->
+<!--             Action = "genADiff = b_1-d_1" -->
+<!--         ),list(ID = "rule_2", -->
+<!--             Condition = "TRUE", -->
+<!--             Action = "genBDiff = b_2-d_2" -->
+<!--         ),list(ID = "rule_3", -->
+<!--             Condition = "TRUE", -->
+<!--             Action = "genWTDiff = b_-d_" -->
+<!--         ),list(ID = "rule_4", -->
+<!--             Condition = "n_A < 1000", -->
+<!--             Action = "genADiff = -1" -->
+<!--         ),list(ID = "rule_5", -->
+<!--             Condition = "n_B < 1000", -->
+<!--             Action = "genBDiff = -1" -->
+<!--         ),list(ID = "rule_6", -->
+<!--             Condition = "n_ < 1000", -->
+<!--             Action = "genWTDiff = -1" -->
+<!--         ) -->
+<!--     ) -->
 
-rules <- createRules(rules, afat2)
+<!-- rules <- createRules(rules, afat2) -->
 
-```
+<!-- ``` -->
 
-After this, we proceed to define the interventions as explained in the interventions section. When doing so, we can now use thedefined user variables in order to achieve the adaptive therapy.
+<!-- After this, we proceed to define the interventions as explained in the interventions section. When doing so, we can now use thedefined user variables in order to achieve the adaptive therapy. -->
 
-```{r AdaptiveTherapyExample2}
-interventions <- list(
-    list(ID           = "i1",
-        Trigger       = "genADiff > genBDiff and genADiff > genWTDiff",
-        WhatHappens   = "n_A = n_A*0.5",
-        Periodicity   = 10,
-        Repetitions   = Inf
-    ),list(ID           = "i2",
-        Trigger       = "genBDiff > genADiff and genBDiff > genWTDiff",
-        WhatHappens   = "n_B = n_B*0.5",
-        Periodicity   = 10,
-        Repetitions   = Inf
-    ),list(ID           = "i3",
-        Trigger       = "genWTDiff > genADiff and genWTDiff > genBDiff",
-        WhatHappens   = "n_ = n_*0.5",
-        Periodicity   = 10,
-        Repetitions   = Inf
-    )
-)
+<!-- ```{r AdaptiveTherapyExample2} -->
+<!-- interventions <- list( -->
+<!--     list(ID           = "i1", -->
+<!--         Trigger       = "genADiff > genBDiff and genADiff > genWTDiff", -->
+<!--         WhatHappens   = "n_A = n_A*0.5", -->
+<!--         Periodicity   = 10, -->
+<!--         Repetitions   = Inf -->
+<!--     ),list(ID           = "i2", -->
+<!--         Trigger       = "genBDiff > genADiff and genBDiff > genWTDiff", -->
+<!--         WhatHappens   = "n_B = n_B*0.5", -->
+<!--         Periodicity   = 10, -->
+<!--         Repetitions   = Inf -->
+<!--     ),list(ID           = "i3", -->
+<!--         Trigger       = "genWTDiff > genADiff and genWTDiff > genBDiff", -->
+<!--         WhatHappens   = "n_ = n_*0.5", -->
+<!--         Periodicity   = 10, -->
+<!--         Repetitions   = Inf -->
+<!--     ) -->
+<!-- ) -->
 
-interventions <- createInterventions(interventions, afat2)
+<!-- interventions <- createInterventions(interventions, afat2) -->
 
-```
+<!-- ``` -->
 
-We now proceed to the call to OncoSimulIndiv passing userVars, rules and interventions as arguments and we plot the result populations.
-```{r AdaptiveTherapyExample3}
+<!-- We now proceed to the call to OncoSimulIndiv passing userVars, rules and interventions as arguments and we plot the result populations. -->
+<!-- ```{r AdaptiveTherapyExample3} -->
 
-set.seed(1) ## for reproducibility
-atex2 <- oncoSimulIndiv(afat2,
-                       model = "McFLD", 
-                       onlyCancer = FALSE, 
-                       finalTime = 200,
-                       mu = 1e-4,
-                       initSize = 5000, 
-                       keepPhylog = FALSE,
-                       seed = NULL, 
-                       errorHitMaxTries = FALSE, 
-                       errorHitWallTime = FALSE,
-                       userVars = userVars,
-                       rules = rules,
-                       interventions = interventions)
+<!-- set.seed(1) ## for reproducibility -->
+<!-- atex2 <- oncoSimulIndiv(afat2, -->
+<!--                        model = "McFLD",  -->
+<!--                        onlyCancer = FALSE,  -->
+<!--                        finalTime = 200, -->
+<!--                        mu = 1e-4, -->
+<!--                        initSize = 5000,  -->
+<!--                        keepPhylog = FALSE, -->
+<!--                        seed = NULL,  -->
+<!--                        errorHitMaxTries = FALSE,  -->
+<!--                        errorHitWallTime = FALSE, -->
+<!--                        userVars = userVars, -->
+<!--                        rules = rules, -->
+<!--                        interventions = interventions, -->
+<!-- 					   keepEvery = 1) -->
 
-plot(atex2, show = "genotypes", type = "line")
-```
-```{r AdaptiveTherapyExample3Plots}
-plot(unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(atex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE)], xlab="Time", ylab="RateDiff", ylim=c(-0.75,0.75), type="l", col="#A6761D")  
-lines(unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(atex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE)], type="l", col="#666666") 
-lines(unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], unlist(atex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE)], type="l", col="#1B9E77") 
-legend(0,0.75,legend=c("genADiff", "genBDiff", "genWTDiff"), col=c("#A6761D", "#666666", "#1B9E77"), lty= 1:2) 
-```
-We can appreciate that the interventions always occur on the genotype B as this is the one with the highest birth and death rate difference (as we ignore WT because it has no mutations).
+<!-- plot(atex2, show = "genotypes", type = "line") -->
+<!-- ``` -->
+<!-- ```{r AdaptiveTherapyExample3Plots} -->
+<!-- plot( -->
+<!--     unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], -->
+<!--     unlist(atex2$other$userVarValues) [c(TRUE, FALSE, FALSE, FALSE)], xlab="Time", ylab="RateDiff", ylim=c(-0.75,0.75), type="l", col="#A6761D") -->
+
+<!-- lines( -->
+<!--     unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], -->
+<!--     unlist(atex2$other$userVarValues) [c(FALSE, TRUE, FALSE, FALSE)], type="l", col="#666666") -->
+
+<!-- lines( -->
+<!--     unlist(atex2$other$userVarValues) [c(FALSE, FALSE, FALSE, TRUE)], -->
+<!--     unlist(atex2$other$userVarValues) [c(FALSE, FALSE, TRUE, FALSE)], type="l", col="#1B9E77") -->
+
+<!-- legend(0,0.75, -->
+<!--        legend=c("genADiff", "genBDiff", "genWTDiff"), col=c("#A6761D", "#666666", "#1B9E77"), lty= 1:2)  -->
+<!-- ``` -->
+<!-- We can appreciate that the interventions always occur on the genotype B as this is the one with the highest birth and death rate difference (as we ignore WT because it has no mutations). -->
+
+
 
 ## Another example of adaptive therapy {#adaptiveTherapyComplexExample}
 Finally we will try and examplify a more real scenario where we have a continuous specific treatment to keep the tumor at bay, if the mutated cells are enough to be detected, but if we detect a sudden increase in some mutated genotype we switch the treatment to focus that growth, also, if the tumor grows too big, we simulate a quirurgic intervention.
@@ -13243,17 +13370,23 @@ afat3 <- allFitnessEffects(genotFitness = dfat3,
 userVars <- list(
     list(Name           = "lastMeasuredA",
         Value       = 0
-    ),list(Name           = "lastMeasuredB",
+    ),
+	list(Name           = "lastMeasuredB",
         Value       = 0
-    ),list(Name           = "previousA",
+    ),
+	list(Name           = "previousA",
         Value       = 0
-    ),list(Name           = "previousB",
+    ),
+	list(Name           = "previousB",
         Value       = 0
-    ),list(Name           = "lastTime",
+    ),
+	list(Name           = "lastTime",
         Value       = 0
-    ),list(Name           = "measure",
+    ),
+	list(Name           = "measure",
         Value       = 0
-    ),list(Name           = "treatment",
+    ),
+	list(Name           = "treatment",
         Value       = 0
     )
 )
@@ -13264,25 +13397,32 @@ rules <- list(
        list(ID = "rule_1",
             Condition = "T - lastTime < 10",
             Action = "measure = 0"
-        ),list(ID = "rule_2",
+        ),
+		list(ID = "rule_2",
             Condition = "T - lastTime >= 10",
             Action = "measure = 1;lastTime = T"
-        ),list(ID = "rule_3",
+        ),
+		list(ID = "rule_3",
             Condition = "measure == 1",
             Action = "previousA = lastMeasuredA;previousB = lastMeasuredB;lastMeasuredA = n_A;lastMeasuredB = n_B"
-        ), list(ID = "rule_4",
+        ), 
+		list(ID = "rule_4",
             Condition = "TRUE",
             Action = "treatment = 0"
-        ), list(ID = "rule_5",
+        ), 
+		list(ID = "rule_5",
             Condition = "lastMeasuredA + lastMeasuredB > 100",
             Action = "treatment = 1"
-        ), list(ID = "rule_6",
+        ), 
+		list(ID = "rule_6",
             Condition = "lastMeasuredA - PreviousA > 500",
             Action = "treatment = 2"
-        ),list(ID = "rule_7",
+        ),
+		list(ID = "rule_7",
             Condition = "lastMeasuredB - PreviousB > 500",
             Action = "treatment = 3"
-        ), list(ID = "rule_8",
+        ), 
+		list(ID = "rule_8",
             Condition = "lastMeasuredA - PreviousA > 500 and lastMeasuredB - PreviousB > 500",
             Action = "treatment = 4"
         )
@@ -13297,17 +13437,20 @@ interventions <- list(
         WhatHappens   = "N = 0.8*N",
         Periodicity   = 10,
         Repetitions   = Inf
-    ),list(ID           = "treatmentOverA",
+    ),
+	list(ID           = "treatmentOverA",
         Trigger       = "treatment == 2 or treatment == 4",
         WhatHappens   = "n_B = n_B*0.3",
         Periodicity   = 20,
         Repetitions   = Inf
-    ),list(ID           = "treatmentOverB",
+    ),
+	list(ID           = "treatmentOverB",
         Trigger       = "treatment == 3 or treatment == 4",
         WhatHappens   = "n_B = n_B*0.3",
         Periodicity   = 20,
         Repetitions   = Inf
-    ),list(ID           = "intervention",
+    ),
+	list(ID           = "intervention",
         Trigger       = "lastMeasuredA+lastMeasuredB > 5000",
         WhatHappens   = "N = 0.1*N",
         Periodicity   = 70,
@@ -13317,9 +13460,17 @@ interventions <- list(
 
 interventions <- createInterventions(interventions, afat3)
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(atex2b)
+
+if (FALSE) {
+
 set.seed(1) ## for reproducibility
-atex2 <- oncoSimulIndiv(afat3,
-                       model = "McFLD", 
+atex2b <- oncoSimulIndiv(afat3,
+                         model = "McFLD", 
                        onlyCancer = FALSE, 
                        finalTime = 200,
                        mu = 1e-4,
@@ -13330,9 +13481,11 @@ atex2 <- oncoSimulIndiv(afat3,
                        errorHitWallTime = FALSE,
                        userVars = userVars,
                        rules = rules,
-                       interventions = interventions)
+                       interventions = interventions,
+					   keepEvery = 1)
+}
 
-plot(atex2, show = "genotypes", type = "line")
+plot(atex2b, show = "genotypes", type = "line")
 ```
 We clearley see here how the therapy adapts to the circumstances cutting genotype B when it starts to grow rapidly, 
 and then making a major intervention once A grows so big that the total mutated cell exceed the set amount.
@@ -13372,7 +13525,12 @@ interventions <- createInterventions(interventions, afat4)
 We run the simulation and plot the results.
 
 ```{r HansenExample3}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
 
+data(atex4)
+
+if(FALSE) {
 set.seed(1) ## for reproducibility
 atex4 <- oncoSimulIndiv(afat4,
                        model = "McFLD", 
@@ -13385,7 +13543,9 @@ atex4 <- oncoSimulIndiv(afat4,
                        seed = NULL, 
                        errorHitMaxTries = FALSE, 
                        errorHitWallTime = FALSE,
-                       interventions = interventions)
+                       interventions = interventions,
+                       keepEvery = 1)
+}
 
 plot(atex4, show = "genotypes", type = "line")
 ```
@@ -13459,12 +13619,17 @@ interventions <- createInterventions(interventions, afat5)
 We run the simulation and plot the results.
 
 ```{r HansenExampleAT4}
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
 
+data(atex5)
+
+if(FALSE) {
 set.seed(1) ## for reproducibility
 atex5 <- oncoSimulIndiv(afat5,
                        model = "McFLD", 
                        onlyCancer = FALSE, 
-                       finalTime = 2000,
+                       finalTime = 1500,
                        mu = 1e-4,
                        initSize = c(10000, 50, 1000), 
                        initMutant = c("WT", "A", "B"),
@@ -13475,6 +13640,7 @@ atex5 <- oncoSimulIndiv(afat5,
                        userVars = userVars,
                        rules = rules,
                        interventions = interventions)
+}
 
 plot(atex5, show = "genotypes", type = "line")
 ```
@@ -13685,6 +13851,13 @@ period_1 <- allFitnessEffects(genotFitness = players_1,
                               frequencyDependentFitness = TRUE,
                               frequencyType = "rel")
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(simul_period_1)
+
+if (FALSE) {
 set.seed(2)
 
 final_time <- 170 ## for speed
@@ -13696,7 +13869,7 @@ simul_period_1 <- oncoSimulIndiv(period_1,
                                  initSize = 5000,
                                  keepPhylog = FALSE,
                                  seed = NULL)
-
+}
 # ylim has been adapted to number of cells
 plot(simul_period_1, show = "genotypes", type = "line",
      col = c("black", "green", "red"), ylim = c(20, 300000),
@@ -14054,6 +14227,13 @@ afeT2 <- allFitnessEffects(genotFitness = dfT2,
                              frequencyDependentFitness = TRUE,
                              frequencyType = "rel")
   
+  
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(simT2)
+
+if (FALSE)
 set.seed(1)
 simT2 <- oncoSimulIndiv(afeT2,
                         model = "McFL",
@@ -14061,8 +14241,12 @@ simT2 <- oncoSimulIndiv(afeT2,
                         initSize = 10000,
                         finalTime = 225,
                         onlyCancer = FALSE,
-                        seed = NULL)
-plot(simT2, show = "genotypes", thinData = TRUE)
+                        seed = NULL,
+						keepEvery = 1)
+}
+## Had we not used keepEvery, we'd probably have used
+## plot(simT2, show = "genotypes", thinData = TRUE)
+plot(simT2, show = "genotypes")
 
 ```
 
@@ -14100,6 +14284,13 @@ afeT3 <- allFitnessEffects(genotFitness = dfT3,
                            frequencyDependentFitness = TRUE,
                            frequencyType = "abs")
 
+
+## For speed creating the vignette, we load
+## precomputed simulation data. Otherwise, run code below
+
+data(simT3)
+
+if (FALSE) {
 set.seed(2)
 simT3 <- oncoSimulIndiv(afeT3,
                       model = "McFLD",
@@ -14109,7 +14300,9 @@ simT3 <- oncoSimulIndiv(afeT3,
                       onlyCancer = FALSE,
                       seed = NULL,
                       errorHitWallTime = FALSE,
-                      errorHitMaxTries = FALSE)
+                      errorHitMaxTries = FALSE,
+					  keepEvery = 1)
+}
 
 plot(simT3, show = "genotypes", type = "line")
 ```
@@ -14166,7 +14359,8 @@ pancr <- allFitnessEffects(
                          rep("PXDN", 3), rep("TGFBR2", 2)),
                s = 0.05, sh = -0.3, typeDep = "MN"))
 
-pancr16 <- oncoSimulPop(16, pancr, model = "Exp",
+pancr16 <- oncoSimulPop(16, pancr,
+                        model = "Exp",                          onlyCancer = TRUE,
                         mc.cores = 2)
 
 ## Look a the first POM 
@@ -14199,7 +14393,7 @@ You might want to randomly generate DAGs like those often found in the
 literature on Oncogenetic trees et al. Function `simOGraph`
 might help here. 
 
-```{r}
+```{r nyv0150}
 ## No seed fixed, so reruns will give different DAGs.
 (a1 <- simOGraph(10))
 library(graph) ## for simple plotting
@@ -14429,13 +14623,14 @@ When running OncoSimulR under Windows `mclapply` does not use
 multiple cores, and errors from `oncoSimulPop` are reported
 directly. For example:
 
-```{r}
+```{r nyv0161}
 ## This code will only be evaluated under Windows
 if(.Platform$OS.type == "windows")
     try(pancrError <- oncoSimulPop(10, pancr,
-                               initSize = 1e-5,
-                               detectionSize = 1e7,
-                               keepEvery = 10,
+                                   initSize = 1e-5,
+                                   onlyCancer = TRUE,
+                                   detectionSize = 1e7,
+                                   keepEvery = 10,
                                mc.cores = 2))
 ``` 
 
@@ -14444,11 +14639,12 @@ Under POSIX operating systems (e.g., GNU/Linux or Mac OSX)
 `oncoSimulPop` can ran parallelized by calling
 `mclapply`. Now, suppose you did something like
 
-```{r}
+```{r nyv0162}
 ## Do not run under Windows
 if(.Platform$OS.type != "windows")
     pancrError <- oncoSimulPop(10, pancr,
                                initSize = 1e-5,
+                               onlyCancer = TRUE,
                                detectionSize = 1e7,
                                keepEvery = 10,
                                mc.cores = 2)
@@ -14459,13 +14655,13 @@ called by `mclapply`. If you check the help for
 `mclpapply` you'll see that it returns a try-error object, so we
 can inspect it. For instance, we could do:
 
-```{r, eval=FALSE}
+```{r rzx0316, eval=FALSE}
 pancrError[[1]]
 ``` 
 
 But the output of this call might be easier to read:
 
-```{r, eval=FALSE}
+```{r rzx0317, eval=FALSE}
 pancrError[[1]][1]
 ``` 
  
@@ -14672,6 +14868,11 @@ There is  an example in Mather et al, p. 1234, section 3.1.1
 	 
 Of course, this only makes sense in models where birth rate changes.	 
 
+## Messages about 'Using old version of fitnessEffects' and 'v2 functionality detected. Adapting to v3 functionality.'
+
+New functionality has been added that allows us to specify birth and death separately, including making each frequency dependent. See, for example, \@ref(birthdeathfitspec). We still allow the old specification where "fitness" actually meant birth rates, and death was fixed for each model (and the other way around for the Bozic model). You can continue using the old specification. And we continue to do so in most of this vignette (the plan is to  eventually update all examples).
+
+
 
 <!-- FIXME: give references here -->
 
@@ -14706,13 +14907,13 @@ Of course, this only makes sense in models where birth rate changes.
 <!-- after a number so that the numbers are integers, not doubles; we could -->
 <!-- alternatively have modified `storage.mode`). -->
 
-<!-- ```{r, fig.height=3} -->
+<!-- ```{r rzx0318, fig.height=3} -->
 <!-- ## Node 2 and 3 depend on 1, and 4 depends on no one -->
 <!-- p1 <- cbind(c(1L, 1L, 0L), c(2L, 3L, 4L)) -->
 <!-- plotPoset(p1, addroot = TRUE) -->
 <!-- ```  -->
 
-<!-- ```{r, fig.height=3} -->
+<!-- ```{r rzx0319, fig.height=3} -->
 <!-- ## A simple way to create a poset where no gene (in a set of 15) -->
 <!-- ## depends on any other. -->
 <!-- p4 <- cbind(0L, 15L) -->
@@ -14727,7 +14928,7 @@ Of course, this only makes sense in models where birth rate changes.
 <!-- numbers, but for nicer plotting we will use names (KRAS is 1, SMAD4 is 2, -->
 <!-- etc). This example is also in the help for `poset`: -->
 
-<!-- ```{r, fig.height=3} -->
+<!-- ```{r rzx0320, fig.height=3} -->
 <!-- pancreaticCancerPoset <- cbind(c(1, 1, 1, 1, 2, 3, 4, 4, 5), -->
 <!--                                c(2, 3, 4, 5, 6, 6, 6, 7, 7)) -->
 <!-- storage.mode(pancreaticCancerPoset) <- "integer" -->
@@ -14743,11 +14944,11 @@ Of course, this only makes sense in models where birth rate changes.
 <!-- very similar to the one in the help: -->
 
 
-<!-- ```{r, echo=FALSE,results='hide',error=FALSE} -->
+<!-- ```{r rzx0321, echo=FALSE,results='hide',error=FALSE} -->
 <!-- options(width=60) -->
 <!-- ```  -->
 
-<!-- ```{r} -->
+<!-- ```{r nyv0163} -->
 <!-- ## use poset p1101 -->
 <!-- data(examplePosets) -->
 <!-- p1101 <- examplePosets[["p1101"]] -->
@@ -14789,10 +14990,10 @@ Of course, this only makes sense in models where birth rate changes.
 <!-- role. Note also how we pass the poset: it is the same as before, but now -->
 <!-- we directly access the poset in the list of posets. -->
 
-<!-- ```{r, echo=FALSE,eval=TRUE} -->
+<!-- ```{r rzx0322, echo=FALSE,eval=TRUE} -->
 <!-- set.seed(1) ## for reproducibility. Once I saw it not reach cancer. -->
 <!-- ```  -->
-<!-- ```{r} -->
+<!-- ```{r nyv0167} -->
 
 <!-- m2 <- oncoSimulIndiv(examplePosets[["p1101"]], model = "McFL",  -->
 <!--                      numPassengers = 0, detectionDrivers = 8,  -->
@@ -14823,7 +15024,7 @@ Of course, this only makes sense in models where birth rate changes.
 <!-- very small `initSize`. Likewise, most of the Bozic runs do not -->
 <!-- reach cancer. Lets try a few: -->
 
-<!-- ```{r} -->
+<!-- ```{r nyv0168} -->
 <!-- b3 <- oncoSimulIndiv(p1101, onlyCancer = FALSE) -->
 <!-- summary(b3) -->
 
@@ -14877,7 +15078,7 @@ Of course, this only makes sense in models where birth rate changes.
 <!-- subjects by genes): -->
 
 
-<!-- ```{r} -->
+<!-- ```{r nyv015679} -->
 
 <!-- m1 <- oncoSimulPop(100, examplePosets[["p1101"]],  -->
 <!--                    numPassengers = 0, mc.cores = 2) -->
@@ -14887,7 +15088,7 @@ Of course, this only makes sense in models where birth rate changes.
 <!-- The function `samplePop` samples that object, and also gives you -->
 <!-- some information about the output: -->
 
-<!-- ```{r} -->
+<!-- ```{r nyv0171} -->
 <!-- genotypes <- samplePop(m1) -->
 <!-- ```  -->
 
@@ -14933,7 +15134,7 @@ Of course, this only makes sense in models where birth rate changes.
 # Session info and packages used
 
 This is the information about the version of R and packages used:
-```{r}
+```{r nyv01880}
 sessionInfo()
 ``` 
 
@@ -14976,7 +15177,7 @@ knitr::include_graphics("logo-micin-aei-uefeder.png", dpi = 150)
 ```
 
 
-```{r, echo=FALSE, eval=TRUE}
+```{r rzx0323, echo=FALSE, eval=TRUE}
 ## reinitialize the seed
 set.seed(NULL)
 ``` 

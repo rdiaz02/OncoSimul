@@ -1,3 +1,11 @@
+Changes in version 3.99.10 (2022-10-13):
+	- onlyCancer = FALSE by default in all calls to oncoSimul*.
+	  This is a possible BRAEKING CHANGE.
+	- Plot fails with a meaningful error if simulations
+	  had unrecoverable exception or hit max wall time
+	  or max num tries.
+	- Faster vignette.
+
 Changes in version 3.99.9 (2022-09-30):
 	- Minor vignette split of code, to try to detect
 	  location of problem with ARM64 Mac build.

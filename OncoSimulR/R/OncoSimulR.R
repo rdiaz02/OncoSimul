@@ -50,7 +50,7 @@ oncoSimulSample <- function(Nindiv,
                             minDetectDrvCloneSz = "auto",
                             extraTime = 0,
                             finalTime = 0.25 * 25 * 365,
-                            onlyCancer = TRUE,
+                            onlyCancer = FALSE,
                             keepPhylog = FALSE,
                             mutationPropGrowth = ifelse(model == "Bozic",
                                                         FALSE, TRUE),
@@ -375,7 +375,7 @@ oncoSimulPop <- function(Nindiv,
                          ## ifelse(model \%in\% c("Bozic", "Exp"), -9,
                          ##                       5 * sampleEvery),
                          finalTime = 0.25 * 25 * 365,
-                         onlyCancer = TRUE,
+                         onlyCancer = FALSE,
                          keepPhylog = FALSE,
                          mutationPropGrowth = ifelse(model == "Bozic",
                                                      FALSE, TRUE),
@@ -468,7 +468,7 @@ oncoSimulIndiv <- function(fp,
                            minDetectDrvCloneSz = "auto",
                            extraTime = 0,
                            finalTime = 0.25 * 25 * 365,
-                           onlyCancer = TRUE,
+                           onlyCancer = FALSE,
                            keepPhylog = FALSE,
                            mutationPropGrowth = ifelse(model == "Bozic",
                                                        FALSE, TRUE),
@@ -710,9 +710,12 @@ summary.oncosimul <- function(object, ...) {
     ## if those are not regarded as errors
     pbp <- ("pops.by.time" %in% names(object) )
     
-    if(object$other$UnrecoverExcept) { ## yes, when bailing out from
-                                     ## except. can have just minimal
-                                     ## content
+    if(object$other$UnrecoverExcept) {
+        ## yes, when bailing out from
+        ## except. can have just minimal
+        ## content
+        message("An unrecoverable exception happened in ",
+                "the simulation of the input object.")
         return(NA)
     } else if( !pbp & (object$HittedWallTime || object$HittedMaxTries) ) {
         return(NA)
@@ -928,7 +931,20 @@ plot.oncosimul <- function(x,
                            ...
                            ) {
 
-
+    if (x$other$UnrecoverExcept) {
+        stop("An unrecoverable exception happened in ",
+             "the simulation of the input object.",
+             "Empty object with nothing to plot.") 
+    } else {
+        pbp <- ("pops.by.time" %in% names(x) )
+        if ( !pbp & (x$HittedWallTime || x$HittedMaxTries) ) {
+            stop("The simulation hit max wall time or max tries. ",
+                 "Empty object with nothing to plot.")
+        }  else if ( !pbp & !(x$HittedWallTime || x$HittedMaxTries) ) {
+            stop("Eh? No pops.by.time but did not hit wall time or max tries? BUG!")
+        }
+    }
+    
     if(!(type %in% c("stacked", "stream", "line")))
         stop("Type of plot unknown: it must be one of",
              "stacked, stream or line")

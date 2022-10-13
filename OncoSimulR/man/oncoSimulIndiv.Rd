@@ -31,7 +31,7 @@
                 K = sum(initSize)/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
-                finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
+                finalTime = 0.25 * 25 * 365, onlyCancer = FALSE,
                 keepPhylog = FALSE,
                 mutationPropGrowth = ifelse(model == "Bozic",
                                                        FALSE, TRUE),
@@ -59,7 +59,7 @@ oncoSimulPop(Nindiv, fp, model = "Exp", numPassengers = 0, mu = 1e-6,
                 K = sum(initSize)/(exp(1) - 1), keepEvery = sampleEvery,
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
-                finalTime = 0.25 * 25 * 365, onlyCancer = TRUE,
+                finalTime = 0.25 * 25 * 365, onlyCancer = FALSE,
                 keepPhylog = FALSE,
                 mutationPropGrowth = ifelse(model == "Bozic",
                                                        FALSE, TRUE),
@@ -111,7 +111,7 @@ oncoSimulSample(Nindiv,
                 minDetectDrvCloneSz = "auto",
                 extraTime = 0,
                 finalTime = 0.25 * 25 * 365,
-                onlyCancer = TRUE, keepPhylog = FALSE,
+                onlyCancer = FALSE, keepPhylog = FALSE,
                 mutationPropGrowth = ifelse(model == "Bozic",
                                                        FALSE, TRUE),
                 max.memory = 2000,
@@ -422,9 +422,15 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   detected stochastically under \code{detectionProb} is
   obtained.
 
+  
   If \code{onlyCancer = FALSE} the simulation is returned regardless of
   final population size or number of drivers in any clone and this
   includes simulations where the population goes extinct.
+
+  The default used to be \code{onlyCancer = TRUE}; on version 3.99.10
+  it was changed to \code{onlyCancer = FALSE} as this is the natural
+  setting for simulating general scenarios.   \code{onlyCancer = TRUE},
+  by design, leads to selection bias in the   simulations returned: we only see those that "reach cancer".
 
 }
 
