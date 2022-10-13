@@ -12654,7 +12654,7 @@ afd3 <- allFitnessEffects(genotFitness = gffd3,
 ```{r intex2load}
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
-data(osi_intex2)
+data(osi)
 
 if (FALSE) {
 osi <- oncoSimulIndiv( afd3,
@@ -13085,7 +13085,7 @@ rules <- createRules(rules, afuv3)
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-data(userVarsBasicExample2)
+data(uvex3)
 
 if(FALSE) {
 set.seed(1)
@@ -13440,7 +13440,7 @@ interventions <- createInterventions(interventions, afat3)
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-data(adaptiveTherapyComplexExample)
+data(atex2b)
 
 if (FALSE) {
 
@@ -13504,7 +13504,7 @@ We run the simulation and plot the results.
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-data(HansenExample3)
+data(atex4)
 
 if(FALSE) {
 set.seed(1) ## for reproducibility
@@ -13598,7 +13598,7 @@ We run the simulation and plot the results.
 ## For speed creating the vignette, we load
 ## precomputed simulation data. Otherwise, run code below
 
-data(HansenExampleAT4)
+data(atex5)
 
 if(FALSE) {
 set.seed(1) ## for reproducibility

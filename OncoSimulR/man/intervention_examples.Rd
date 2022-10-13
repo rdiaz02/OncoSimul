@@ -1,10 +1,16 @@
 \name{intervention-examples}
-\alias{osi_intex2}
+\alias{osi}
 \alias{osi_with_ints}
-\alias{HansenExample3}
-\alias{HansenExampleAT4}
-\alias{AdaptiveTherapyComplexExample}
-\alias{userVarsBasicExample2}
+\alias{atex4}
+\alias{atex5}
+\alias{atex2b}
+\alias{uvex3}
+
+%% \alias{adaptiveTherapyComplexExample}
+%% \alias{userVarsBasicExample2}
+%% \alias{HansenExampleAT4}
+%% \alias{HansenExample3}
+%% \alias{osi_intex2}
 
 \docType{data}
 \title{
@@ -22,12 +28,12 @@ seconds, we have pre-run them, and stored the results.
 }
 
 \usage{
-data(osi_intex2)
+data(osi)
 data(osi_with_ints)
-data(HansenExample3)
-data(HansenExampleAT4)
-data(AdaptiveTherapyComplexExample)
-data(userVarsBasicExample2)
+data(atex4)
+data(atex5)
+data(atex2b)
+data(uvex3)
 }
 
 \format{
@@ -37,7 +43,7 @@ data(userVarsBasicExample2)
 
 
 \examples{
-data(adaptiveTherapyComplexExample)
+data(atex2b)
 plot(atex2b)
 }
 

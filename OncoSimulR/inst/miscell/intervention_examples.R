@@ -27,7 +27,7 @@ local({
     osi$other$userVarValues <- NULL
     osi$PerSampleStats <- NULL
     osi$interventionTimes <- NULL
-    save(file = "../../data/osi_intex2.RData", osi)
+    save(file = "../../data/osi.RData", osi)
 
     
     intervention_tot_pop = list(
@@ -98,7 +98,7 @@ local({
     atex4$other$userVarValues <- NULL
     atex4$PerSampleStats <- NULL
     atex4$other$interventionTimes <- NULL
-    save(file = "../../data/HansenExample3.RData", atex4)
+    save(file = "../../data/atex4.RData", atex4)
 
 })
 
@@ -187,7 +187,7 @@ local({
     atex5$other$userVarValues <- NULL
     atex5$PerSampleStats <- NULL
     atex5$other$interventionTimes <- NULL
-    save(file = "../../data/HansenExampleAT4.RData", atex5)
+    save(file = "../../data/atex5.RData", atex5)
 })
 
 
@@ -418,7 +418,7 @@ local({
     atex2b$other$userVarValues <- NULL
     atex2b$PerSampleStats <- NULL
     atex2b$other$interventionTimes <- NULL
-    save(file = "../../data/adaptiveTherapyComplexExample.RData", atex2b)
+    save(file = "../../data/atex2b.RData", atex2b)
 })
 
 ## ## userVarsBasicExample
@@ -551,7 +551,7 @@ local({
 
     uvex3$PerSampleStats <- NULL
     uvex3$other$interventionTimes <- NULL
-    save(file = "../../data/userVarsBasicExample2.RData", uvex3)
+    save(file = "../../data/uvex3.RData", uvex3)
 
 })
 
