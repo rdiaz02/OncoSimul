@@ -418,7 +418,7 @@ local({
     atex2b$other$userVarValues <- NULL
     atex2b$PerSampleStats <- NULL
     atex2b$other$interventionTimes <- NULL
-    save(file = "../../data/AdaptiveTherapyComplexExample.RData", atex2b)
+    save(file = "../../data/adaptiveTherapyComplexExample.RData", atex2b)
 })
 
 ## ## userVarsBasicExample

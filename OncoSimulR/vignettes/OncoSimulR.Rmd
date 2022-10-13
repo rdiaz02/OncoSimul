@@ -13346,17 +13346,23 @@ afat3 <- allFitnessEffects(genotFitness = dfat3,
 userVars <- list(
     list(Name           = "lastMeasuredA",
         Value       = 0
-    ),list(Name           = "lastMeasuredB",
+    ),
+	list(Name           = "lastMeasuredB",
         Value       = 0
-    ),list(Name           = "previousA",
+    ),
+	list(Name           = "previousA",
         Value       = 0
-    ),list(Name           = "previousB",
+    ),
+	list(Name           = "previousB",
         Value       = 0
-    ),list(Name           = "lastTime",
+    ),
+	list(Name           = "lastTime",
         Value       = 0
-    ),list(Name           = "measure",
+    ),
+	list(Name           = "measure",
         Value       = 0
-    ),list(Name           = "treatment",
+    ),
+	list(Name           = "treatment",
         Value       = 0
     )
 )
@@ -13367,25 +13373,32 @@ rules <- list(
        list(ID = "rule_1",
             Condition = "T - lastTime < 10",
             Action = "measure = 0"
-        ),list(ID = "rule_2",
+        ),
+		list(ID = "rule_2",
             Condition = "T - lastTime >= 10",
             Action = "measure = 1;lastTime = T"
-        ),list(ID = "rule_3",
+        ),
+		list(ID = "rule_3",
             Condition = "measure == 1",
             Action = "previousA = lastMeasuredA;previousB = lastMeasuredB;lastMeasuredA = n_A;lastMeasuredB = n_B"
-        ), list(ID = "rule_4",
+        ), 
+		list(ID = "rule_4",
             Condition = "TRUE",
             Action = "treatment = 0"
-        ), list(ID = "rule_5",
+        ), 
+		list(ID = "rule_5",
             Condition = "lastMeasuredA + lastMeasuredB > 100",
             Action = "treatment = 1"
-        ), list(ID = "rule_6",
+        ), 
+		list(ID = "rule_6",
             Condition = "lastMeasuredA - PreviousA > 500",
             Action = "treatment = 2"
-        ),list(ID = "rule_7",
+        ),
+		list(ID = "rule_7",
             Condition = "lastMeasuredB - PreviousB > 500",
             Action = "treatment = 3"
-        ), list(ID = "rule_8",
+        ), 
+		list(ID = "rule_8",
             Condition = "lastMeasuredA - PreviousA > 500 and lastMeasuredB - PreviousB > 500",
             Action = "treatment = 4"
         )
@@ -13400,17 +13413,20 @@ interventions <- list(
         WhatHappens   = "N = 0.8*N",
         Periodicity   = 10,
         Repetitions   = Inf
-    ),list(ID           = "treatmentOverA",
+    ),
+	list(ID           = "treatmentOverA",
         Trigger       = "treatment == 2 or treatment == 4",
         WhatHappens   = "n_B = n_B*0.3",
         Periodicity   = 20,
         Repetitions   = Inf
-    ),list(ID           = "treatmentOverB",
+    ),
+	list(ID           = "treatmentOverB",
         Trigger       = "treatment == 3 or treatment == 4",
         WhatHappens   = "n_B = n_B*0.3",
         Periodicity   = 20,
         Repetitions   = Inf
-    ),list(ID           = "intervention",
+    ),
+	list(ID           = "intervention",
         Trigger       = "lastMeasuredA+lastMeasuredB > 5000",
         WhatHappens   = "N = 0.1*N",
         Periodicity   = 70,
