@@ -59,6 +59,8 @@ fl_generate: FitnessLandscape/main_fl_generate.c  $(MAGELLAN_LIBS)
 ## Open the msys2 shell and do (change path to OncoSimulR, as needed)
 ## export PATH=/x86_64-w64-mingw32.static.posix/bin:$PATH
 
+## Might want to temporarily disable ccache:  export CCACHE_DISABLE=1
+
 ## Install
 ## time /c/R/R-4.2.1/bin/R.exe CMD INSTALL --build OncoSimulR && time /c/R/R-4.2.1/bin/R.exe CMD INSTALL OncoSimulR_x.y.z.zip
 
