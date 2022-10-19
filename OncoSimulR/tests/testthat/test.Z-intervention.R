@@ -96,12 +96,12 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
     set.seed(1)
     df3x <- data.frame(Genotype = c("WT", "B", "R"),
                        Fitness = c("1 + (n_ * 0)",
-                                    "1.5",
-                                    "1.003 + 0.002 * (n_B > 120)"))
+                                   "1.5",
+                                   "1.003 + 0.002 * (n_B > 120)"))
 
     afd3 <- allFitnessEffects(genotFitness = df3x,
-                          frequencyDependentFitness = TRUE,
-                          frequencyType = "abs")
+                              frequencyDependentFitness = TRUE,
+                              frequencyType = "abs")
 
     interventions <- list(
         list(
@@ -142,33 +142,31 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
     ## }`: argument is of length zero
     ## So only run if not on a Mac
     ## FIXME: this is because the above fails hitting wall time
-##    if (Sys.info()["sysname"] != "Darwin") {
-        flag <- FALSE
-        i <- 20002
-        while(i <= 70001){
-            if(ep2$pops.by.time[i, 3:3] >= 210){
-                flag <- TRUE
-            }
-            i <- i + 1
+    ##    if (Sys.info()["sysname"] != "Darwin") {
+    flag <- FALSE
+    i <- 20002
+    while(i <= 70001) {
+        if(ep2$pops.by.time[i, 3:3] >= 210) {
+            flag <- TRUE
         }
-        testthat::expect_equal(flag, FALSE)
+        i <- i + 1
+    }
+    testthat::expect_equal(flag, FALSE)
 
 
-        ## then, between the time intervals, T >= 80 and T<=85
-        ## we control that the B population
-        flag <- FALSE
-        i <- 80002
-        while(i <= 85000){
-            if(ep2$pops.by.time[i, 3:3] > 40){
-                flag <- TRUE
-            }
-            i <- i + 1
+    ## then, between the time intervals, T >= 80 and T<=85
+    ## we control that the B population
+    flag <- FALSE
+    i <- 80002
+    while(i <= 85000) {
+        if(ep2$pops.by.time[i, 3:3] > 40){
+            flag <- TRUE
         }
+        i <- i + 1
+    }
 
-        testthat::expect_equal(flag, FALSE)
-        ## we plot the simulation when no interventions are specified.
-        ## plot(ep2, show = "genotypes", type = "line")
-##    }
+    testthat::expect_equal(flag, FALSE)
+    ##    }
 })
 
 cat(paste("\n Ending interventions tests", date(), "\n"))
