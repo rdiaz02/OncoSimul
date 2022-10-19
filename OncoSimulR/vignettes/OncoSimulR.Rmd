@@ -23,7 +23,8 @@ classoption: a4paper
 geometry: margin=3cm
 fontsize: 12pt
 bibliography: OncoSimulR.bib
-biblio-style: "apalike"
+biblio-style: apa
+csl: apa.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression.}
@@ -1365,7 +1366,11 @@ starting from BioConductor 3.2 (and, of course, available too from
 development versions of BioC).  So, if you are using the current stable or
 development version of BioConductor, or you grab the sources from GitHub
 (<https://github.com/rdiaz02/OncoSimul>) you are using what we call
-version 2. **The functionality of version has been removed.**
+version 2. **The functionality of version 1 has been removed.**
+
+Version 3 (for BioConductor 3.13) made frequency dependent fitness available in the stable version. 
+
+Version 4 (BioConductor 3.16) introduces interventions and the possibility to specify, separately, birth and death (including frequency dependence).
 
 
 
@@ -3484,7 +3489,7 @@ Exp and Bozic models, or depends on the population size). This is
 also shown in Table \@ref(tab:osrfeatures), in the rows for "Fitness
 components", under "Evolutionary Features".
 
-In the case of frequency-dependent fitness simulations (\@ref(fdf)), the
+In the case of frequency-dependent fitness simulations (see section \@ref(fdf)), the
 fitness effects must be reevaluated frequently so that birth rate, death
 rate, or both, depending the model used, are updated. To do this it is
 necessary to use a short step to reevaluate fitness; this is done using a
@@ -3565,7 +3570,7 @@ as possible. Thus, there are two main ways of specifying fitness effects:
   
 * Explicitly passing to OncoSimulR a mapping of genotypes to
   fitness. Here you specify the fitness of each genotype. We will refer to
-  this as the **explicit mapping of genotypes to fitness**.
+  this as the **explicit mapping of genotypes to fitness**. This includes frequency-dependent fitness (section \@ref(fdf)).
 
 
 
