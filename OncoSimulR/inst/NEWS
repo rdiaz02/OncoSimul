@@ -1,3 +1,17 @@
+Changes in version 4.0 (for BioC 3.16):
+	- MAJOR change: users can simulate interventions and adaptive therapy,
+	  as well as define, track, and use in fitness-dependent specifications
+	  user-defined variables.
+	- MAJOR change: users can specify birth and death rates as they want,
+	  including making both or just one frequency-dependent.
+	- onlyCancer = FALSE by default in all calls to oncoSimul*.
+	  This is a possible BRAEKING CHANGE.
+	- Plot fails with a meaningful error if simulations
+	  had unrecoverable exception or hit max wall time
+	  or max num tries.	  
+	- Improvements in vignette speed.
+	- Improvements in compilation speed.
+
 Changes in version 3.99.12 (2022-10-19):
 	- Try to allow vignette to build successfully in the ARM64 Mac build:
 	  use a try(plot) in chunk fdfmutex2.
