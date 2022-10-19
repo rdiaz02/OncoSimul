@@ -1,3 +1,7 @@
+Changes in version 3.99.12 (2022-10-19):
+	- Try to allow vignette to build successfully in the ARM64 Mac build:
+	  use a try(plot) in chunk fdfmutex2.
+
 Changes in version 3.99.11 (2022-10-13):
 	- Increase max.wall.time of two tests, as in very slow Windoze machines
 	  they can hit max wall time.

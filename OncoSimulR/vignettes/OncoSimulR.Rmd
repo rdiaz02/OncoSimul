@@ -9856,7 +9856,13 @@ s2fd <- oncoSimulIndiv(afe4,
                      seed = NULL, 
                      errorHitMaxTries = FALSE, 
                      errorHitWallTime = FALSE)
-plot(s2fd, show = "genotypes")
+
+## In the Mac ARM64 architecture, the above
+## run leads to an exception, which is really odd.
+## While that is debugged, use try to prevent
+## failure of the plot to abort vignette building.
+
+try(plot(s2fd, show = "genotypes"))
 ```
 
 ```{r echo=FALSE}
