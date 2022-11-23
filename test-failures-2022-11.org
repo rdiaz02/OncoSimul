@@ -1,0 +1,23 @@
+
+* Very rarely on linux
+
+══ Failed tests ════════════════════════════════════════════════════════════════
+  ── Failure ('test.intervention.R:370'): 8. Intervening over total population (Exp) | Trigger depends on T ──
+  prev_line[3] is not more than line[3]. Difference: -1
+
+  
+* On Mac
+
+- macOS 10.14.6 Mojave
+- Timeout
+- The two intervention tests take a long time
+
+
+
+| Test           | Linux | Mac 12 | Mac 10 |
+|----------------+-------+--------+--------|
+| intervention   |   192 |    290 |    709 |
+|                |       |        |        |
+| intervention Z |   510 |    332 |    911 |
+|                |       |        |        |
+

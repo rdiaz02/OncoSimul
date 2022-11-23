@@ -1,8 +1,5 @@
 inittime <- Sys.time()
 cat(paste("\n Starting interventions tests", date(), "\n"))
-############################################################################################################################
-############################################################################################################################
-############################################################################################################################
 
 test_that("1. A intervention is created correctly",{
     fa1 <- data.frame(Genotype = c("A", "B"),
@@ -365,7 +362,8 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
         if((prev_line[2] > 0) & (line[2] > 0)){
             testthat::expect_gte(prev_line[2], line[2])
         }
-            #Genotype A
+                                        #Genotype A
+        ## FIXME this failed once in Linux
         if((prev_line[3] > 0) & (line[3] > 0)){
             testthat::expect_gte(prev_line[3], line[3])
         }

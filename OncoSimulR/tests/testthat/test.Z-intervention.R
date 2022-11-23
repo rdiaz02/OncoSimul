@@ -1,5 +1,5 @@
 inittime <- Sys.time()
-cat(paste("\n Starting interventions tests", date(), "\n"))
+cat(paste("\n Starting Z-interventions tests", date(), "\n"))
 
 ## FIXME
 ## These two tests are extremely computationally intensive,
@@ -136,13 +136,7 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
         ## See above; this is slow as hell in Windows.
         max.wall.time = 600)
 
-    ## In Macs,
-    ##   if (ep2$pops.by.time[i, 3:3] >= 210) {
-    ##     flag <- TRUE
-    ## }`: argument is of length zero
-    ## So only run if not on a Mac
-    ## FIXME: this is because the above fails hitting wall time
-    ##    if (Sys.info()["sysname"] != "Darwin") {
+
     flag <- FALSE
     i <- 20002
     while(i <= 70001) {
@@ -166,10 +160,9 @@ test_that("2. Drastically reducing a high-fitness genotype population (Exp) | Tr
     }
 
     testthat::expect_equal(flag, FALSE)
-    ##    }
 })
 
-cat(paste("\n Ending interventions tests", date(), "\n"))
+cat(paste("\n Ending Z-interventions tests", date(), "\n"))
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
 
