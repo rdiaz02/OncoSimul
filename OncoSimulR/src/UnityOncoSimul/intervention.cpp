@@ -89,7 +89,7 @@ InterventionsInfo createInterventionsInfo(Rcpp::List interventions,
         iif = addIntervention(iif, iv);
     }
 
-    // mapping for the genes and their population
+    // mapping for the genotypes and their population
     iif.mapGenoToPop = evalFVars(fitnessEffects, Genotypes, popParams, true);
 
     return iif;

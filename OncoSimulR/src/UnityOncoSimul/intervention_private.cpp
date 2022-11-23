@@ -50,7 +50,9 @@ void parseWhatHappens(InterventionsInfo& iif,
     } 
     // now we see if the operation affects total population or genotype popolation
     std::string leftMostWhatHappens = tokens[0];
-    leftMostWhatHappens.erase(std::remove(leftMostWhatHappens.begin(), leftMostWhatHappens.end(), ' '), leftMostWhatHappens.end());
+    leftMostWhatHappens.erase(std::remove(leftMostWhatHappens.begin(),
+					  leftMostWhatHappens.end(), ' '),
+			      leftMostWhatHappens.end());
     if(leftMostWhatHappens.compare("N") == 0)
         totalPopFlag = true;
 
@@ -75,39 +77,46 @@ void parseWhatHappens(InterventionsInfo& iif,
         std::string errorMessage = "The expression was imposible to parse.";
         throw std::invalid_argument(errorMessage);
     } else{
-        // value cant have decimals (can't exist a half-cell)
-        double res = floor(expression.value());
+      double the_expression_value = expression.value();
+      DP2(the_expression_value);
+      double res = floor(the_expression_value);
+      // value cant have decimals (you can't have a half-cell)
+      // double res = floor(expression.value());
+      DP1("line 82");
+      DP2(res);
+      // once the value is calculated, we must assure if the operation is for the total population
+      // or for some specific-genotype
+      if (totalPopFlag && (res > N)) {
+	// TODO: Throw exception of some kind, this CANNOT happen by any means
+	throw std::runtime_error("You have specified an intervention that is not allowed.");
+      } 
 
-        // once the value is calculated, we must assure if the operation is for the total population
-        // or for some specific-genotype
-        if (totalPopFlag && (res > N)) {
-            // TODO: Throw exception of some kind, this CANNOT happen by any means
-            throw std::runtime_error("You have specified an intervention that is not allowed.");
-        } 
+      // check that user does not create a WhatHappens that creates population: n_A = n_A * 2
+      if(!totalPopFlag){
+	try { //check with the left part of the equation finding the value for the n_*
+	  const double& value = iif.mapGenoToPop.at(leftMostWhatHappens);
+	  if(res > value){
+	    Rcpp::Rcerr << "In intervention:" << intervention.id <<
+	      " with WhatHappens: " << intervention.what_happens <<
+	      ". You cannot intervene to generate more population.";
+	    throw std::runtime_error("You have specified an intervention that is not allowed.");
+	  }
+	}
+	catch (const std::out_of_range&) {
+	  Rcpp::Rcout << "Key \"" << leftMostWhatHappens.c_str() << "\" not found" << std::endl;
+	}
+      }
 
-        // check that user does not create a WhatHappens that creates population: n_A = n_A * 2
-        if(!totalPopFlag){
-            try { //check with the left part of the equation finding the value for the n_*
-                const double& value = iif.mapGenoToPop.at(leftMostWhatHappens);
-                if(res > value){
-                    Rcpp::Rcerr << "In intervention:" << intervention.id << " with WhatHappens: " << intervention.what_happens << ". You cannot intervene to generate more population.";
-                    throw std::runtime_error("You have specified an intervention that is not allowed.");
-                }
-            }
-            catch (const std::out_of_range&) {
-                Rcpp::Rcout << "Key \"" << leftMostWhatHappens.c_str() << "\" not found" << std::endl;
-            }
-        }
-
-        if(totalPopFlag && res == N){ // this case is absurd, but it might happen, we just return.
-            return;
-        } else if(totalPopFlag && (res < N)){// reduce total amount of population using hipergeometric distribution
-            reduceTotalPopulation(iif, res, totPopSize);
-        } else { // update new value for genotype
-            std::map<std::string, double>::iterator it = iif.mapGenoToPop.find(leftMostWhatHappens); 
-            if(it != iif.mapGenoToPop.end()){
-                it->second = res; 
-            }
-        }
+      if(totalPopFlag && res == N){ // this case is absurd, but it might happen, we just return.
+	return;
+      } else if(totalPopFlag && (res < N)){// reduce total amount of population using hipergeometric distribution
+	reduceTotalPopulation(iif, res, totPopSize);
+      } else { // update new value for genotype
+	std::map<std::string, double>::iterator it = iif.mapGenoToPop.find(leftMostWhatHappens); 
+	if(it != iif.mapGenoToPop.end()) {
+	  DP2(res);
+	  it->second = res; 
+	}
+      }
     }
 }
