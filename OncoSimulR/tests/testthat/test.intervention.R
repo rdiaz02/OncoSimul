@@ -188,15 +188,18 @@ test_that("5. Drastically reducing A-genotype population (McFL) | Trigger depend
 
 test_that("6. Drastically reducing A population (Exp) | Trigger dependending on T", {
 
+    
     fa1 <- data.frame(Genotype = c("WT", "A", "B"),
-                    Fitness = c("n_*0",
-                                "1.5",
-                                "1"))
+                      Fitness = c("0 * n_", ## we need an expression
+                                  "1.5",
+                                  "1"))
 
     afd3 <- allFitnessEffects(genotFitness = fa1,
-                          frequencyDependentFitness = TRUE,
-                          frequencyType = "abs")
+                              frequencyDependentFitness = TRUE,
+                              frequencyType = "abs")
 
+    afd3
+    
     ep1 <- oncoSimulIndiv(
         afd3,
         model = "Exp",
@@ -212,7 +215,7 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
     interventions <- list(
         list(ID           = "intOverA",
             Trigger       = "(T >= 5)",
-            WhatHappens   = "n_A = n_A * 0.01",
+            WhatHappens   = "n_A = n_A * 0.1",
             Repetitions   = 0,
             Periodicity   = Inf
         )
@@ -221,9 +224,9 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
     interventions <- createInterventions(interventions, afd3)
 
     ep2 <- oncoSimulIndiv(
-                    afd3,
-                    model = "Exp",
-                    mu = 1e-4,
+        afd3,
+        model = "Exp",
+        mu = 1e-4,
         sampleEvery = 1, # 0.001,
         initSize = c(20000, 20000),
         initMutant = c("A", "B"),
@@ -232,20 +235,83 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
         interventions = interventions
     )
 
-    ## when we do not intervene population of A will be bigger than B, since it has better fitness
-    testthat::expect_gt(ep1$pops.by.time[11, 2],
-                        ep1$pops.by.time[11, 3])
+    ep2$pops.by.time
+    
+    index <- which(ep2$pops.by.time[,1] %in% ep2$other$interventionTimes)
+    last <- nrow(ep1$pops.by.time)
+    ## when we do not intervene population of A will be bigger than B,
+    ## since it has better fitness
+    testthat::expect_gt(ep1$pops.by.time[last, 2],
+                        ep1$pops.by.time[last, 3])
 
-    ## once we intervene we test that the value of the population of A is quite lower once the intervention is made
-    testthat::expect_gt(ep2$pops.by.time[4, 2],
-                        ep2$pops.by.time[5, 2])
+    ## once we intervene we test that the value of the population of A
+    ## is quite lower once the intervention is made
+    testthat::expect_gt(ep2$pops.by.time[index - 1, 2],
+                        ep2$pops.by.time[index, 2])
 
+    ep2$pops.by.time[index, 2]/ep2$pops.by.time[index - 1, 2]
+    
     ## since in the first simulation we do not intervene,
     ## the population should be greater that
     ## when we intervene
-    testthat::expect_lt(ep2$pops.by.time[5, 2],
-                        ep1$pops.by.time[5, 2])
+    testthat::expect_lt(ep2$pops.by.time[index, 2],
+                        ep1$pops.by.time[index, 2])
 })
+
+## Comparison of 6 with 6B shows that there is pop growth allowed
+## when we intervene on a single population.
+## When a single pop is intervened upon, its value is set, but
+## it seems to 
+
+
+test_that("6B. Drastically reducing total population with Trigger dependending on T", {
+
+    fa1 <- data.frame(Genotype = c("WT", "A", "B"),
+                      Fitness = c(0, ## "n_*0",
+                                  1.5,
+                                  1))
+
+    afd3 <- allFitnessEffects(genotFitness = fa1,
+                              frequencyDependentFitness = TRUE,
+                              frequencyType = "abs")
+
+    interventions <- list(
+        list(ID           = "intOverA",
+             Trigger       = "(T >= 5)",
+             WhatHappens   = "N = N * 0.2",
+             Repetitions   = 0,
+             Periodicity   = Inf
+             )
+    )
+
+    interventions <- createInterventions(interventions, afd3)
+
+    ep2 <- oncoSimulIndiv(
+        afd3,
+        model = "Exp",
+        mu = 1e-4,
+        sampleEvery = 1, # 0.001,
+        initSize = c(20000, 20000),
+        initMutant = c("A", "B"),
+        finalTime = 10, # 5.2,
+        onlyCancer = FALSE,
+        interventions = interventions
+    )
+
+    index <- which(ep2$pops.by.time[,1] %in% ep2$other$interventionTimes)
+    last <- nrow(ep1$pops.by.time)
+
+    total_before <- sum(ep2$pops.by.time[index - 1, -1])
+    total_after <-  sum(ep2$pops.by.time[index, -1])
+    reduction <- round(total_after/total_before, 1)
+})
+
+
+
+
+
+
+
 
 
 test_that("7. Intervening over total population (McFL) | Trigger depends on T", {
@@ -319,8 +385,8 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
                     "1 + 0.2 * (n_B > 0)",
                     ".9 + 0.4 * (n_A > 0)"
                     ))
-    afd3 <- allFitnessEffects(genotFitness = gffd3,
-                            frequencyDependentFitness = TRUE,
+    aafd3 <- allFitnessEffects(genotFitness = gffd3,
+                               frequencyDependentFitness = TRUE,
                             frequencyType = "abs")
 
     interventions = list(
@@ -333,16 +399,18 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
         )
     )
 
-    interventions <- createInterventions(interventions, afd3)
+    interventions <- createInterventions(interventions, aafd3)
     
-    sfd3 <- oncoSimulIndiv(afd3,
+    sfd3 <- oncoSimulIndiv(aafd3,
                            model = "Exp",
                            onlyCancer = FALSE,
                            finalTime = 32,
                            mu = 1e-4,
-                           initSize = 5000,
+                           initSize = 2e5, ## 20000,
                            sampleEvery = 1, ## 0.001,
-                           interventions = interventions)
+                           interventions = interventions,
+                           detectionSize = NA
+                           )
 
     ## it may happen that, in some simulations, the population collapses, in that case,
     ## pops by time is null, and cannot be checked
@@ -352,8 +420,44 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
         total_before <- rowSums(sfd3$pops.by.time[indexes - 1, -1])
         total_after <-  rowSums(sfd3$pops.by.time[indexes, -1])
         reduction <- round(total_after/total_before, 1)
+        print(reduction)
         expect_equal(reduction, rep(0.8, 3))
     }
+
+
+    ## interventions2 = list(
+    ##     list(
+    ##         ID            = "intOverTotPop",
+    ##         Trigger       = "T > 10",
+    ##         WhatHappens   = "n_A = n_A * 0.8",
+    ##         Repetitions   = 2,
+    ##         Periodicity   = 10
+    ##     )
+    ## )
+
+    ## interventions2 <- createInterventions(interventions2, aafd3)
+    
+    ## sfd32 <- oncoSimulIndiv(aafd3,
+    ##                         model = "Exp",
+    ##                        onlyCancer = FALSE,
+    ##                        finalTime = 32,
+    ##                        mu = 1e-4,
+    ##                        initSize = 20000,
+    ##                        sampleEvery = 1, ## 0.001,
+    ##                        interventions = interventions2)
+
+    ## ## it may happen that, in some simulations, the population collapses, in that case,
+    ## ## pops by time is null, and cannot be checked
+
+    ## if (!is.null(sfd32$pops.by.time)) {
+    ##     indexes <- which(sfd32$pops.by.time[,1] %in% sfd32$other$interventionTimes)
+    ##     total_before <- rowSums(sfd32$pops.by.time[indexes - 1, -1])
+    ##     total_after <-  rowSums(sfd32$pops.by.time[indexes, -1])
+    ##     reduction <- round(total_after/total_before, 1)
+    ##     print(reduction)
+    ##     expect_equal(reduction, rep(0.8, 3))
+    ## }
+    
 })
 
 ## test 9 and 10 found in test.Z-intervention.R
