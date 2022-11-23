@@ -1,4 +1,10 @@
-i <- 5000
+
+
+library(OncoSimulR)
+library(testthat)
+
+i <- round(runif(1, 1, 1e9))
+
 
 while (TRUE) {
     i <- i + 1
