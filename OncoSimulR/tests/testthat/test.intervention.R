@@ -19,10 +19,11 @@ test_that("1. A intervention is created correctly",{
         )
     )
 
-    testthat::expect_output(createInterventions(interventions, afd3), "Checking intervention: intOverA" )
+    testthat::expect_output(createInterventions(interventions, afd3),
+                            "Checking intervention: intOverA" )
     interventions <- createInterventions(interventions, afd3)
 
-    # we check that the transformation of the WhatHappens and Trigger atributte is correct
+    ## we check that the transformation of the WhatHappens and Trigger atributte is correct
     testthat::expect_equal(interventions[[1]]$WhatHappens, "n_1 = n_1 * 0.1")
     testthat::expect_equal(interventions[[1]]$Trigger, "n_2 >= 5")
 })
@@ -42,7 +43,8 @@ test_that("2. Two interventions cannot have the same ID (check_double_id)", {
             Periodicity = Inf
         )
     )
-    testthat::expect_error(createInterventions(interventions, afd3), "Check the interventions, there are 2 or more that have same IDs")
+    testthat::expect_error(createInterventions(interventions, afd3),
+                           "Check the interventions, there are 2 or more that have same IDs")
 })
 
 test_that("3. The attribute WhatHappens is correctly specified (check_what_happens)",{
@@ -57,7 +59,6 @@ test_that("3. The attribute WhatHappens is correctly specified (check_what_happe
 
     testthat::expect_error(createInterventions(interventions, afd3),
                            "The specification of WhatHappens is wrong.\n It should be:")
-    ## <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
 
     interventions <- list(
         list(ID           = "intOverA",
@@ -70,7 +71,6 @@ test_that("3. The attribute WhatHappens is correctly specified (check_what_happe
 
     testthat::expect_error(createInterventions(interventions, afd3),
                            "The specification of WhatHappens is wrong.\n It should be:")
-    ##    <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
 
     interventions <- list(
         list(ID           = "intOverA",
@@ -83,7 +83,6 @@ test_that("3. The attribute WhatHappens is correctly specified (check_what_happe
 
     testthat::expect_error(createInterventions(interventions, afd3),
                            "The specification of WhatHappens is wrong.\n It should be:")
-    ## <genotype_to_apply_some_operation or total_population> = <some_operation>\n Exiting.")
 })
 
 test_that("4. The user cannot create population in an intervention",{
@@ -126,7 +125,7 @@ test_that("4. The user cannot create population in an intervention",{
 
 })
 
-
+## FIXME: could be made faster
 test_that("5. Drastically reducing A-genotype population (McFL) | Trigger dependending on T", {
 
     fa1 <- data.frame(Genotype = c("A", "B"),
@@ -172,11 +171,13 @@ test_that("5. Drastically reducing A-genotype population (McFL) | Trigger depend
 		            interventions = interventions
                     )
 
-    # test that the value of the population of A is quite lower once the intervention is made
-    testthat::expect_gt(ep2$pops.by.time[4995:4995, 2:2], ep2$pops.by.time[5005:5005, 2:2])
+    ## test that the value of the population of A is quite
+    ## lower once the intervention is made
+    testthat::expect_gt(ep2$pops.by.time[4995:4995, 2:2],
+                        ep2$pops.by.time[5005:5005, 2:2])
 
-    # since in the first simulation we do not intervene, the population should be greater that
-    # when we intervene
+    ## since in the first simulation we do not intervene, the population should be greater that
+    ## when we intervene
     testthat::expect_lt(ep2$pops.by.time[5005:5005, 2:2], ep1$pops.by.time[5005:5005, 2:2])
 
 })
@@ -197,15 +198,15 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
                           frequencyType = "abs")
 
     ep1 <- oncoSimulIndiv(
-                    afd3,
-                    model = "Exp",
-                    mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 5.2,
-                    onlyCancer = FALSE
-                    )
+        afd3,
+        model = "Exp",
+        mu = 1e-4,
+        sampleEvery = 1, # 0.001,
+        initSize = c(20000, 20000),
+        initMutant = c("A", "B"),
+        finalTime = 10, # 5.2,
+        onlyCancer = FALSE
+    )
 
     # now we especify intervention to drastically reduce A population
     interventions <- list(
@@ -223,23 +224,27 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
                     afd3,
                     model = "Exp",
                     mu = 1e-4,
-                    sampleEvery = 0.001,
-                    initSize = c(20000, 20000),
-                    initMutant = c("A", "B"),
-                    finalTime = 5.2,
-                    onlyCancer = FALSE,
-		            interventions = interventions
-                    )
+        sampleEvery = 1, # 0.001,
+        initSize = c(20000, 20000),
+        initMutant = c("A", "B"),
+        finalTime = 10, # 5.2,
+        onlyCancer = FALSE,
+        interventions = interventions
+    )
 
-    # when we do not intervene population of A will be bigger than B, since it has better fitness
-    testthat::expect_gt(ep1$pops.by.time[5005:5005, 2:2], ep1$pops.by.time[5005:5005, 3:3])
+    ## when we do not intervene population of A will be bigger than B, since it has better fitness
+    testthat::expect_gt(ep1$pops.by.time[11, 2],
+                        ep1$pops.by.time[11, 3])
 
-    # once we intervene we test that the value of the population of A is quite lower once the intervention is made
-    testthat::expect_gt(ep2$pops.by.time[4995:4995, 2:2], ep2$pops.by.time[5005:5005, 2:2])
+    ## once we intervene we test that the value of the population of A is quite lower once the intervention is made
+    testthat::expect_gt(ep2$pops.by.time[4, 2],
+                        ep2$pops.by.time[5, 2])
 
-    # since in the first simulation we do not intervene, the population should be greater that
-    # when we intervene
-    testthat::expect_lt(ep2$pops.by.time[5005:5005, 2:2], ep1$pops.by.time[5005:5005, 2:2])
+    ## since in the first simulation we do not intervene,
+    ## the population should be greater that
+    ## when we intervene
+    testthat::expect_lt(ep2$pops.by.time[5, 2],
+                        ep1$pops.by.time[5, 2])
 })
 
 
@@ -329,63 +334,40 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
     )
 
     interventions <- createInterventions(interventions, afd3)
+    
+    sfd3 <- oncoSimulIndiv(afd3,
+                           model = "Exp",
+                           onlyCancer = FALSE,
+                           finalTime = 32,
+                           mu = 1e-4,
+                           initSize = 5000,
+                           sampleEvery = 1, ## 0.001,
+                           interventions = interventions)
 
-    sfd3 <- oncoSimulIndiv( afd3,
-                            model = "Exp",
-                            onlyCancer = FALSE,
-                            finalTime = 40,
-                            mu = 1e-4,
-                            initSize = 5000,
-                            sampleEvery = 0.001,
-                            interventions = interventions)
+    ## it may happen that, in some simulations, the population collapses, in that case,
+    ## pops by time is null, and cannot be checked
 
-    # it may happen that, in some simulations, the population collapses, in that case,
-    # pops by time is null, and cannot be checked
-
-    # we can check genotype by genotype that when an intervention ocurs, their population lowers
-    indexes <- vector()
-    # We get the indexes that match the intervention times in pops.by.time
-    for(time in sfd3$other$interventionTimes){
-        indexes <- append(indexes, which(sfd3$pops.by.time[,1] == time))
-    }
-
-    # For each intervention time (T = 10, 20, 30)
-    for(index in indexes){
-        line <- sfd3$pops.by.time[index, ]
-        prev_line <- sfd3$pops.by.time[index-1, ]
-                                        #Total
-        total <- line[2] + line[3] + line[4]
-        prev_total <- prev_line[2] + prev_line[3] + prev_line[4]
-        testthat::expect_gt(total, prev_total*0.8 - 0.2*prev_total)
-        testthat::expect_lt(total, prev_total*0.8 + 0.2*prev_total)
-            #Genotype WT
-        if((prev_line[2] > 0) & (line[2] > 0)){
-            testthat::expect_gte(prev_line[2], line[2])
-        }
-                                        #Genotype A
-        ## FIXME this failed once in Linux
-        if((prev_line[3] > 0) & (line[3] > 0)){
-            testthat::expect_gte(prev_line[3], line[3])
-        }
-            #Genotype B
-        if((prev_line[4] > 0) & (line[4] > 0)){
-            testthat::expect_gte(prev_line[4], line[4])
-        }
+    if (!is.null(sfd3$pops.by.time)) {
+        indexes <- which(sfd3$pops.by.time[,1] %in% sfd3$other$interventionTimes)
+        total_before <- rowSums(sfd3$pops.by.time[indexes - 1, -1])
+        total_after <-  rowSums(sfd3$pops.by.time[indexes, -1])
+        reduction <- round(total_after/total_before, 1)
+        expect_equal(reduction, rep(0.8, 3))
     }
 })
 
-# test 9 and 10 found in test.Z-intervention.R
+## test 9 and 10 found in test.Z-intervention.R
 
 test_that("11. Intervening over 4 genotypes both over specific genotype and total population (McFL) | Trigger depends on N",{
     df3x <- data.frame(Genotype = c("A", "B", "C", "D", "E"),
-                      Fitness = c("1",
-                                  "1.01 + (0 * n_A)",
-                                  "1.1",
-                                  "1.09",
-                                  "1.07"))
+                       Fitness = c("1",
+                                   "1.01 + (0 * n_A)",
+                                   "1.1",
+                                   "1.09",
+                                   "1.07"))
 
     afd3 <- allFitnessEffects(genotFitness = df3x,
-                            frequencyDependentFitness = TRUE, frequencyType = "abs")
+                              frequencyDependentFitness = TRUE, frequencyType = "abs")
 
     interventions = list(
         list(

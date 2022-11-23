@@ -4,7 +4,7 @@
 ══ Failed tests ════════════════════════════════════════════════════════════════
   ── Failure ('test.intervention.R:370'): 8. Intervening over total population (Exp) | Trigger depends on T ──
   prev_line[3] is not more than line[3]. Difference: -1
-
+- seed 93 gives failure
   
 * On Mac
 
