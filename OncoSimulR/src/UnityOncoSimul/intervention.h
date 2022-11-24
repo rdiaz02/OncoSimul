@@ -115,9 +115,7 @@ bool updatePopulations(InterventionsInfo& iif,
 //void printIntervention(Intervention i);
 //void printInterventionsInfo(InterventionsInfo iif);
 // function that applies hypergeometric progressions to the reduction of the population 
-void reduceTotalPopulation(InterventionsInfo& iif, 
-                           double target, 
-                           double totPopSize);
+void reduceTotalPopulation(InterventionsInfo& iif, double target);
 
 
 #endif

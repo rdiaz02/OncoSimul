@@ -105,7 +105,7 @@ void parseWhatHappens(InterventionsInfo& iif,
 	return;
       } else if(totalPopFlag && (res < N)){
 	// reduce total amount of population using multivar. hipergeometric distribution
-	reduceTotalPopulation(iif, res, totPopSize);
+	reduceTotalPopulation(iif, res);
       } else { // update new value for genotype
 	std::map<std::string, double>::iterator it = iif.mapGenoToPop.find(leftMostWhatHappens); 
 	if(it != iif.mapGenoToPop.end()) {
