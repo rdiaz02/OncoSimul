@@ -77,17 +77,11 @@ void parseWhatHappens(InterventionsInfo& iif,
         std::string errorMessage = "The expression was imposible to parse.";
         throw std::invalid_argument(errorMessage);
     } else{
-      double the_expression_value = expression.value();
-      DP2(the_expression_value);
-      double res = floor(the_expression_value);
       // value cant have decimals (you can't have a half-cell)
-      // double res = floor(expression.value());
-      DP1("line 82");
-      DP2(res);
+      double res = floor(expression.value());
       // once the value is calculated, we must assure if the operation is for the total population
       // or for some specific-genotype
       if (totalPopFlag && (res > N)) {
-	// TODO: Throw exception of some kind, this CANNOT happen by any means
 	throw std::runtime_error("You have specified an intervention that is not allowed.");
       } 
 
@@ -109,12 +103,12 @@ void parseWhatHappens(InterventionsInfo& iif,
 
       if(totalPopFlag && res == N){ // this case is absurd, but it might happen, we just return.
 	return;
-      } else if(totalPopFlag && (res < N)){// reduce total amount of population using hipergeometric distribution
+      } else if(totalPopFlag && (res < N)){
+	// reduce total amount of population using multivar. hipergeometric distribution
 	reduceTotalPopulation(iif, res, totPopSize);
       } else { // update new value for genotype
 	std::map<std::string, double>::iterator it = iif.mapGenoToPop.find(leftMostWhatHappens); 
 	if(it != iif.mapGenoToPop.end()) {
-	  DP2(res);
 	  it->second = res; 
 	}
       }
