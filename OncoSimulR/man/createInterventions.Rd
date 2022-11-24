@@ -50,7 +50,8 @@
 }
 
 \details{
-    N/A
+  See the vignette for details about differences between intervening on
+  the total population or over specific genotypes and when do each occur.
 }
 
 \value{

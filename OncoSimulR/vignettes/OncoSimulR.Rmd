@@ -12772,6 +12772,39 @@ percentage_eliminated = (post_int_tot_pop/pre_int_tot_pop)*100
 paste0("The percentage of population has decreased by ", percentage_eliminated, "%")
 ```
 
+
+
+
+### Differences between intervening on the total population or over specific genotypes: when do each occur? {#diff_timing_interv} 
+
+Suppose an intervention that happens at time unit 10 (and, for the sake of simplicity, suppose we have set `sampleEvery = 1`). When, in the "What Happens" you specify something like 
+
+```{r idif1, eval = FALSE}
+
+N = 0.2 * N
+
+```
+
+the total population size at time unit 10 is 0.2 times the population you had at the immediately previous sampling period; in this case, total population size at time 10 will be 0.2 the total population size at time 9. You can easily check this looking at the `pops.by.time` object (beware if you are not keeping all the sampling period; in case of doubt, and if you want to check this, make sure `keepEvery` is set to `sampleEvery`). 
+
+
+If you do, instead, 
+
+```{r idif2, eval = FALSE}
+
+n_A = 0.2 * n_A
+
+```
+
+you will not see that `n_A` at time 10 is 0.2 `n_A` at time 9. The way the code works is: after we have done all the updates, etc, we change the `n_A` by the requested one. Thus, `n_A` at time 10 is not 0.2 the `n_A` at time 9, but 0.2 the `n_A` that you would have seen at time 10 had you not done an intervention.
+
+
+
+
+
+
+
+
 ## Intervening in Rock-Paper-Scissors model in bacterial comunity {#rockscissorsints}
 
 This example is taken from the example @\ref(rockscissors) inspired by @kerr2002a. Here it is described the relationship between 3 strains of _Escherichia coli_ bacteria, that turns out 

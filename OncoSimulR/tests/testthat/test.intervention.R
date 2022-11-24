@@ -271,19 +271,12 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
 })
 
 
-
-
-
-
-
-
-
 test_that("7. Intervening over total population (McFL) | Trigger depends on T", {
     gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
-                    Fitness = c("1",
-                    "1 + 0.2 * (n_B > 0)",
-                    ".9 + 0.4 * (n_A > 0)"
-                    ))
+                        Fitness = c("1",
+                                    "1 + 0.2 * (n_B > 0)",
+                                    ".9 + 0.4 * (n_A > 0)"
+                                    ))
     aafd3 <- allFitnessEffects(genotFitness = gffd3,
                                frequencyDependentFitness = TRUE,
                                frequencyType = "abs")
@@ -428,19 +421,6 @@ test_that("11. Intervening over 4 genotypes both over specific genotype and tota
     sfd3_with_ints <- oncoSimulIndiv( afd3,
                                      model = "Exp",
                                      onlyCancer = FALSE,
-                            finalTime = 5,
-                            mu = 1e-4,
-                            sampleEvery = 1,
-                            keepPhylog = FALSE,
-                            errorHitMaxTries = FALSE,
-                            errorHitWallTime = FALSE,
-                            initMutant = c("A", "B", "C", "D", "E"),
-                            initSize = c(20000, 20000, 3000, 10000, 200),
-                            interventions = interventions)
-    set.seed(seed)
-    sfd3_without_ints <- oncoSimulIndiv( afd3,
-                                        model = "Exp",
-                                        onlyCancer = FALSE,
                                      finalTime = 5,
                                      mu = 1e-4,
                                      sampleEvery = 1,
@@ -448,7 +428,20 @@ test_that("11. Intervening over 4 genotypes both over specific genotype and tota
                                      errorHitMaxTries = FALSE,
                                      errorHitWallTime = FALSE,
                                      initMutant = c("A", "B", "C", "D", "E"),
-                                     initSize = c(20000, 20000, 3000, 10000, 200))
+                                     initSize = c(20000, 20000, 3000, 10000, 200),
+                                     interventions = interventions)
+    set.seed(seed)
+    sfd3_without_ints <- oncoSimulIndiv( afd3,
+                                        model = "Exp",
+                                        onlyCancer = FALSE,
+                                        finalTime = 5,
+                                        mu = 1e-4,
+                                        sampleEvery = 1,
+                                        keepPhylog = FALSE,
+                                        errorHitMaxTries = FALSE,
+                                        errorHitWallTime = FALSE,
+                                        initMutant = c("A", "B", "C", "D", "E"),
+                                        initSize = c(20000, 20000, 3000, 10000, 200))
     
     indexes <- which(sfd3_with_ints$pops.by.time[,1] %in%
                      sfd3_with_ints$other$interventionTimes)
@@ -613,33 +606,33 @@ test_that("12. Intervening over 4 genotypes both over specific genotype and tota
 
 test_that("14. Intervening over total population (Exp) | Trigger depends on user variables", {
     gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
-                    Fitness = c("1",
-                    "1 + 0.2 * (n_B > 0)",
-                    ".9 + 0.4 * (n_A > 0)"
-                    ))
+                        Fitness = c("1",
+                                    "1 + 0.2 * (n_B > 0)",
+                                    ".9 + 0.4 * (n_A > 0)"
+                                    ))
     afd3 <- allFitnessEffects(genotFitness = gffd3,
-                            frequencyDependentFitness = TRUE,
-                            frequencyType = "abs")
+                              frequencyDependentFitness = TRUE,
+                              frequencyType = "abs")
 
     userVars <- list(
         list(Name = "user_var_1",
-            Value = 0
-        )
+             Value = 0
+             )
     )
 
     userVars <- createUserVars(userVars)
 
     rules <- list(
         list(ID = "rule_1",
-            Condition = "T >= 10",
-            Action = "user_var_1 = 1"
-        ),list(ID = "rule_2",
-            Condition = "T >= 20",
-            Action = "user_var_1 = 2"
-        ),list(ID = "rule_3",
-            Condition = "T >= 30",
-            Action = "user_var_1 = 3"
-        )
+             Condition = "T >= 10",
+             Action = "user_var_1 = 1"
+             ),list(ID = "rule_2",
+                    Condition = "T >= 20",
+                    Action = "user_var_1 = 2"
+                    ),list(ID = "rule_3",
+                           Condition = "T >= 30",
+                           Action = "user_var_1 = 3"
+                           )
     )
 
     rules <- createRules(rules, afd3)
@@ -651,18 +644,18 @@ test_that("14. Intervening over total population (Exp) | Trigger depends on user
             Repetitions   = 0,
             Periodicity   = Inf
         ),list(
-            ID            = "intOverTotPop2",
-            Trigger       = "user_var_1 = 2",
-            WhatHappens   = "N = N * 0.2",
-            Repetitions   = 0,
-            Periodicity   = Inf
-        ),list(
-            ID            = "intOverTotPop3",
-            Trigger       = "user_var_1 = 3",
-            WhatHappens   = "N = N * 0.5",
-            Repetitions   = 0,
-            Periodicity   = Inf
-        )
+              ID            = "intOverTotPop2",
+              Trigger       = "user_var_1 = 2",
+              WhatHappens   = "N = N * 0.2",
+              Repetitions   = 0,
+              Periodicity   = Inf
+          ),list(
+                ID            = "intOverTotPop3",
+                Trigger       = "user_var_1 = 3",
+                WhatHappens   = "N = N * 0.5",
+                Repetitions   = 0,
+                Periodicity   = Inf
+            )
     )
 
     interventions <- createInterventions(interventions, afd3)
@@ -703,28 +696,28 @@ test_that("15. Intervening over total population (Exp) | WhatHappens uses user v
                                     "1.45 + 0 * (n_A > 0)"
                                     ))
     afd3 <- allFitnessEffects(genotFitness = gffd3,
-                            frequencyDependentFitness = TRUE,
-                            frequencyType = "abs")
+                              frequencyDependentFitness = TRUE,
+                              frequencyType = "abs")
 
     userVars <- list(
         list(Name = "user_var_1",
-            Value = 0
-        )
+             Value = 0
+             )
     )
 
     userVars <- createUserVars(userVars)
 
     rules <- list(
         list(ID = "rule_1",
-            Condition = "T >= 10",
-            Action = "user_var_1 = 0.5"
-        ),list(ID = "rule_2",
-            Condition = "T >= 20",
-            Action = "user_var_1 = 0.8"
-        ),list(ID = "rule_3",
-            Condition = "T >= 30",
-            Action = "user_var_1 = 0.7"
-        )
+             Condition = "T >= 10",
+             Action = "user_var_1 = 0.5"
+             ),list(ID = "rule_2",
+                    Condition = "T >= 20",
+                    Action = "user_var_1 = 0.8"
+                    ),list(ID = "rule_3",
+                           Condition = "T >= 30",
+                           Action = "user_var_1 = 0.7"
+                           )
     )
 
     rules <- createRules(rules, afd3)
@@ -764,6 +757,48 @@ test_that("15. Intervening over total population (Exp) | WhatHappens uses user v
     }
     
 })
+
+
+
+
+## FIXME: write tests like this
+## test_that("x1. Total pop intervention cannot increase population size", {
+
+##     gffd3 <- data.frame(Genotype = c("WT", "A", "B"),
+##                         Fitness = c("1",
+##                                     "1.1 + 0 * (n_B > 0)",
+##                                     "1.3 + 0 * (n_A > 0)"
+##                                     ))
+##     aafd3 <- allFitnessEffects(genotFitness = gffd3,
+##                                frequencyDependentFitness = TRUE,
+##                                frequencyType = "abs")
+
+
+##     interventions = list(
+##         list(
+##             ID            = "intOverTotPop",
+##             Trigger       = "T > 5",
+##             WhatHappens   = "N = N * 2",
+##             Repetitions   = 2,
+##             Periodicity   = 5
+##         )
+##     )
+##     interventions <- createInterventions(interventions, aafd3)
+##     oncoSimulIndiv(aafd3,
+##                    model = "Exp",
+##                    onlyCancer = FALSE,
+##                    finalTime = 16,
+##                    mu = 1e-4,
+##                    initSize = 2e4, 
+##                    sampleEvery = 0.025, 
+##                    interventions = interventions,
+##                    detectionSize = NA
+##                    )
+        
+        
+## })
+
+
 
 
 ## FIXME: additional checks
@@ -977,33 +1012,33 @@ rm(inittime)
 
 
 ##     flag <- FALSE
-##     i <- 20002
-##     while(i <= 70001) {
-##         if(ep2$pops.by.time[i, 3:3] >= 210) {
-##             flag <- TRUE
-##         }
-##         i <- i + 1
-##     }
-##     testthat::expect_equal(flag, FALSE)
+    ##     i <- 20002
+    ##     while(i <= 70001) {
+    ##         if(ep2$pops.by.time[i, 3:3] >= 210) {
+    ##             flag <- TRUE
+    ##         }
+    ##         i <- i + 1
+    ##     }
+    ##     testthat::expect_equal(flag, FALSE)
 
 
-##     ## then, between the time intervals, T >= 80 and T<=85
-##     ## we control that the B population
-##     flag <- FALSE
-##     i <- 80002
-##     while(i <= 85000) {
-##         if(ep2$pops.by.time[i, 3:3] > 40){
-##             flag <- TRUE
-##         }
-##         i <- i + 1
-##     }
+    ##     ## then, between the time intervals, T >= 80 and T<=85
+    ##     ## we control that the B population
+    ##     flag <- FALSE
+    ##     i <- 80002
+    ##     while(i <= 85000) {
+    ##         if(ep2$pops.by.time[i, 3:3] > 40){
+    ##             flag <- TRUE
+    ##         }
+    ##         i <- i + 1
+    ##     }
 
-##     testthat::expect_equal(flag, FALSE)
-## })
+    ##     testthat::expect_equal(flag, FALSE)
+    ## })
 
-## cat(paste("\n Ending Z-interventions tests", date(), "\n"))
-## cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
-## rm(inittime)
+    ## cat(paste("\n Ending Z-interventions tests", date(), "\n"))
+    ## cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
+    ## rm(inittime)
 
 
 

@@ -669,9 +669,13 @@ of the individual done, and the number of attempts and time used.}
   * ID: The identifier of the intervention, must be unique.
   * Trigger: The situation in the simulation that triggers/activates 
              the intervention.
-  * What Happens: "What happens" in the simulation. Basically, once the trigger 
-                  is satisfied, this defines how the population is affected by 
-                  the intervention.
+
+  * What Happens: "What happens" in the simulation. Basically, once the
+               trigger is satisfied, this defines how the population is
+               affected by  the intervention. Please see the vignette
+               for details about the differences between when
+               interventions that affect a single genotype and those that affect the complete        population occur.
+  
   * Periodicity: Defines the periodicity of the intervention.
   * Repetitions: Defines the maximum repetitions of each intervention in the simulation.
 }
@@ -809,6 +813,8 @@ of the individual done, and the number of attempts and time used.}
   %% : we assess probability of exiting at every sampling time that (the
   %% closest possible to) a multiple of \code{checkSizePEvery}.
 
+
+  
 }
 \value{
   
