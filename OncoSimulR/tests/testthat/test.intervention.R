@@ -188,18 +188,18 @@ test_that("5. Drastically reducing A-genotype population (McFL) | Trigger depend
 
 test_that("6. Drastically reducing A population (Exp) | Trigger dependending on T", {
 
-    
+    seed <- round(runif(1, 1, 1e9))
+
     fa1 <- data.frame(Genotype = c("WT", "A", "B"),
                       Fitness = c("0 * n_", ## we need an expression
-                                  "1.5",
-                                  "1"))
+                                  "1.7",
+                                  "1.1"))
 
     afd3 <- allFitnessEffects(genotFitness = fa1,
                               frequencyDependentFitness = TRUE,
                               frequencyType = "abs")
 
-    afd3
-    
+    set.seed(seed)
     ep1 <- oncoSimulIndiv(
         afd3,
         model = "Exp",
@@ -211,18 +211,21 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
         onlyCancer = FALSE
     )
 
-    # now we especify intervention to drastically reduce A population
+
+    ## now we especify intervention to drastically reduce A population
+    interv_fract <- runif(1, 0.01, 0.31)
     interventions <- list(
         list(ID           = "intOverA",
-            Trigger       = "(T >= 5)",
-            WhatHappens   = "n_A = n_A * 0.1",
-            Repetitions   = 0,
-            Periodicity   = Inf
-        )
+             Trigger       = "(T >= 5)",
+             WhatHappens   = paste0("n_A = n_A * ", interv_fract) , ## 0.1
+             Repetitions   = 0,
+             Periodicity   = Inf
+             )
     )
 
     interventions <- createInterventions(interventions, afd3)
 
+    set.seed(seed)
     ep2 <- oncoSimulIndiv(
         afd3,
         model = "Exp",
@@ -235,9 +238,9 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
         interventions = interventions
     )
 
-    ep2$pops.by.time
-    
     index <- which(ep2$pops.by.time[,1] %in% ep2$other$interventionTimes)
+
+    
     last <- nrow(ep1$pops.by.time)
     ## when we do not intervene population of A will be bigger than B,
     ## since it has better fitness
@@ -249,64 +252,20 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
     testthat::expect_gt(ep2$pops.by.time[index - 1, 2],
                         ep2$pops.by.time[index, 2])
 
-    ep2$pops.by.time[index, 2]/ep2$pops.by.time[index - 1, 2]
-    
     ## since in the first simulation we do not intervene,
     ## the population should be greater that
     ## when we intervene
     testthat::expect_lt(ep2$pops.by.time[index, 2],
                         ep1$pops.by.time[index, 2])
+
+    ## And this is a much stronger test: the population
+    ## of the intervened is exactly the intervention fraction
+    ## of the non-intervened
+
+    expect_equal(ep2$pops.by.time[index, 2],
+                 floor(interv_fract * ep1$pops.by.time[index, 2]))
+
 })
-
-## Comparison of 6 with 6B shows that there is pop growth allowed
-## when we intervene on a single population.
-## When a single pop is intervened upon, its value is set, but
-## it seems to 
-
-
-test_that("6B. Drastically reducing total population with Trigger dependending on T", {
-
-    fa1 <- data.frame(Genotype = c("WT", "A", "B"),
-                      Fitness = c(0, ## "n_*0",
-                                  1.5,
-                                  1))
-
-    afd3 <- allFitnessEffects(genotFitness = fa1,
-                              frequencyDependentFitness = TRUE,
-                              frequencyType = "abs")
-
-    interventions <- list(
-        list(ID           = "intOverA",
-             Trigger       = "(T >= 5)",
-             WhatHappens   = "N = N * 0.2",
-             Repetitions   = 0,
-             Periodicity   = Inf
-             )
-    )
-
-    interventions <- createInterventions(interventions, afd3)
-
-    ep2 <- oncoSimulIndiv(
-        afd3,
-        model = "Exp",
-        mu = 1e-4,
-        sampleEvery = 1, # 0.001,
-        initSize = c(20000, 20000),
-        initMutant = c("A", "B"),
-        finalTime = 10, # 5.2,
-        onlyCancer = FALSE,
-        interventions = interventions
-    )
-
-    index <- which(ep2$pops.by.time[,1] %in% ep2$other$interventionTimes)
-    last <- nrow(ep1$pops.by.time)
-
-    total_before <- sum(ep2$pops.by.time[index - 1, -1])
-    total_after <-  sum(ep2$pops.by.time[index, -1])
-    reduction <- round(total_after/total_before, 1)
-})
-
-
 
 
 
