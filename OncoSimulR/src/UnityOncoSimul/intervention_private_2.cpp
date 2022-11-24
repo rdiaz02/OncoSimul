@@ -19,6 +19,12 @@ void reduceTotalPopulation(InterventionsInfo& iif, double target){
     totalPop += map.second;
     populations.push_back(map.second);
   }
+
+  // // this is never triggered as caught before calling this
+  // if (totalPop >= target) {
+  //   throw std::runtime_error("Intervention: target population size must be strictly less than existing one");
+  // }
+  
   // we convert the vector to something R can understand
   rcpp_populations = Rcpp::wrap(populations);
   rcpp_populations.attr("dim") = Dimension(1, populations.size());

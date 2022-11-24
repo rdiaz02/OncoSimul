@@ -82,7 +82,7 @@ void parseWhatHappens(InterventionsInfo& iif,
       // once the value is calculated, we must assure if the operation is for the total population
       // or for some specific-genotype
       if (totalPopFlag && (res > N)) {
-	throw std::runtime_error("You have specified an intervention that is not allowed.");
+	throw std::runtime_error("You have specified an intervention that is not allowed: setting the target population size larger than the current value.");
       } 
 
       // check that user does not create a WhatHappens that creates population: n_A = n_A * 2
@@ -93,7 +93,7 @@ void parseWhatHappens(InterventionsInfo& iif,
 	    Rcpp::Rcerr << "In intervention:" << intervention.id <<
 	      " with WhatHappens: " << intervention.what_happens <<
 	      ". You cannot intervene to generate more population.";
-	    throw std::runtime_error("You have specified an intervention that is not allowed.");
+	    throw std::runtime_error("You have specified an intervention that is not allowed: setting the target population size larger than the current value.");
 	  }
 	}
 	catch (const std::out_of_range&) {
