@@ -1,3 +1,6 @@
+Changes in version 4.1 (2022-11-24):
+	- Faster, cleaner, and better tests of interventions.
+
 Changes in version 4.0 (for BioC 3.16):
 	- MAJOR change: users can simulate interventions and adaptive therapy,
 	  as well as define, track, and use in fitness-dependent specifications
