@@ -1767,3 +1767,5 @@ is_null_na <- function(x) {
 ##     p <- p[p > 0]
 ##     return(sum(p^2)))
 ## }
+
+#PruebaJavi
