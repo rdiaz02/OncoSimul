@@ -1,9 +1,9 @@
-
-dfat <- data.frame(Genotype = c("WT", "B", "A", "B, A"),
+#SE TIENEN 4 POBLACIONES WT, A, B, C 
+dfat <- data.frame(Genotype = c("WT","A", "B", "C"),
                    Fitness = c("0*n_+1.9",
-                               "1.77",
-                               "1.7",
-                               "1.5"))
+                               "1.8",
+                               "1.8",
+                               "1.8"))
 
 afe2 <- allFitnessEffects(genotFitness = dfat,
                           frequencyDependentFitness = TRUE,
@@ -14,75 +14,76 @@ evalAllGenotypes(afe2,spPopSizes = c(900,33,33,33))
 
 intervenciones <- list(
   list(ID="ANTIBIOTICO SOBRE WT",
-       Trigger       = "TRUE",
-       WhatHappens   = "n_ = n_ -x*n_ -y*n_ ",
+       Trigger       = "T>1",
+       WhatHappens   = "n_ = n_ -x*n_*a0 -y*n_*b0+d0*a1*b1+e*x*y ",
        Periodicity   = 1,
        Repetitions   = Inf),
- list(ID="ANTIBIOTICO SOBRE A",
-      Trigger       = "TRUE",
-      WhatHappens   = "n_A = n_A -x*n_A*a-y*n_A",
-      Periodicity   = 1,
-      Repetitions   = Inf),
- list(ID="ANTIBIOTICO SOBRE B",
-      Trigger       = "TRUE",
-      WhatHappens   = "n_B = n_B - x*n_B-y*n_B*b",
-      Periodicity   = 1,
-      Repetitions   = Inf),
- list(ID="ANTIBIOTICO SOBRE A,B",
-      Trigger       = "TRUE",
-      WhatHappens   = "n_A_B = n_A_B - x*n_A_B*a-y*n_A_B*b",
-      Periodicity   = 1,
-      Repetitions   = Inf))
+  list(ID="ANTIBIOTICO SOBRE A",
+       Trigger       = "T>1",
+       WhatHappens   = "n_A = n_A-x*n_A*a1-y*n_A*b1+d1*a1*b1+e*x*y",
+       Periodicity   = 1,
+       Repetitions   = Inf),
+  list(ID="ANTIBIOTICO SOBRE B",
+       Trigger       = "T>1",
+       WhatHappens   = "n_B = n_B-x*n_B*a1-y*n_B*b1+d0*a1*b1+e*x*y",
+       Periodicity   = 1,
+       Repetitions   = Inf),
+  list(ID="ANTIBIOTICO SOBRE A,B",
+       Trigger       = "T>1",
+       WhatHappens   = "n_C = n_C-x*n_C*a1-y*n_C*b1+d2*a1*b1+e*x*y",
+       Periodicity   = 1,
+       Repetitions   = Inf))
 
 
 
 variables_modelo <- list(
-  list(Name = "a",
-       Value = 0.4
+  list(Name = "a0",
+       Value = 1
   ),
-  list(Name = "b",
-       Value       = 0.5
+  list(Name = "a1",
+       Value = 0.6
+  ),
+  list(Name = "b0",
+       Value  = 1
+  ),
+  list(Name = "b1",
+       Value = 0.5
   ),
   list(Name = "x",
-       Value = 0.2
+       Value = 0.5
   ),
   list(Name = "y",
-       Value = 0.3),
-  list(Name = "Ma",
-       Value = 1),
-  list(Name = "nWT"
-       Value= 9100),
-  list(Name = "nA"
-       Value= 300),
-  list(Name = "nB"
-       Value= 300),
-  list(Name = "nAB"
-       Value= 300),
-  list(Name = "gWT"
-       Value= 0),
-  list(Name = "gA"
-       Value= 0),
-  list(Name = "gB"
-       Value= 0),
-  list(Name = "gAB"
-       Value= 0))
-
-rules <- list(
-  list(ID="Calcular media de alfa Ma",
-       Condition= "TRUE",
-       Action= ),
+       Value = 0.5
+  ),
+  list(Name= "d0",
+       Value= 0
+  ),
+  list(Name= "d1",
+       Value= 1
+  ),
+  list(Name= "d2",
+       Value= -1
+  ),
+  list(Name= "e",
+       Value= 0
   )
+)
+
+
+
+
 v_Model <- createUserVars(variables_modelo)  
-                        
+
 inter2 <- createInterventions(intervenciones,afe2)
 
 simu2 <- oncoSimulIndiv(afe2,
-               initMutant = c("WT", "B", "A", "B, A"),
-               initSize = c(9100,300,300,300),
-               finalTime = 20,
-               interventions = inter2,
-               userVars = v_Model,
-               keepEvery = 1)
+                        initMutant = c("WT", "B", "A", "C"),
+                        initSize = c(970,10,10,10),
+                        finalTime = 40,
+                        mu=0.0000000001,
+                        interventions = inter2,
+                        userVars = v_Model,
+                        keepEvery = 1)
 plot(simu2,show="genotypes")
 
 pobs <- unlist(simu2$pops.by.time)[,2:5]
@@ -96,5 +97,5 @@ lines(time,freqs[,2],type="l",col="#666666")
 lines(time,freqs[,3],type="l",col="#1B9E89")
 lines(time,freqs[,4],type="l",col="red")
 
-unlist(simu2$other)
+
 
