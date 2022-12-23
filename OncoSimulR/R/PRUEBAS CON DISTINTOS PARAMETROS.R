@@ -65,6 +65,7 @@ intervenciones <- list(
 
 inter2 <- createInterventions(intervenciones,afe2)
 t <- 30 # TIEMPO DE SIMULACIÓN
+
 simu2 <- oncoSimulIndiv(afe2,
                         initMutant = c("WT", "B", "A"),
                         initSize = c(970,10,10),
@@ -79,6 +80,7 @@ totalpob <- rowSums(unlist(simu2$pops.by.time)[,2:4])
 freqs <- pobs/totalpob
 time <- unlist(simu2$pops.by.time)[,1]
 max <- totalpob/totalpob
+par(mfrow = c(1, 2))
 plot(max~time,
      main=paste("SEED",i),
      type="n",
@@ -104,6 +106,7 @@ beta0= (pobs[,1]*b0)/totalpob
 beta1= (pobs[,2]*b1)/totalpob
 beta2= (pobs[,3]*b2)/totalpob
 beta_medios= (beta0+beta1+beta2)
-lines(time,beta_medios,type="l",col="blue")}
+lines(time,beta_medios,type="l",col="blue")
+}
 
 
