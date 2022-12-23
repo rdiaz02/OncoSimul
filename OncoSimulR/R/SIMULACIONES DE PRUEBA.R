@@ -1,9 +1,9 @@
 #SE TIENEN 4 POBLACIONES WT, A, B, C 
 dfat <- data.frame(Genotype = c("WT","A", "B", "C"),
-                   Fitness = c("0*n_+1.9",
-                               "1.8",
-                               "1.8",
-                               "1.8"))
+                   Fitness = c("0*n_+2.2",
+                               "2",
+                               "2",
+                               "2"))
 
 afe2 <- allFitnessEffects(genotFitness = dfat,
                           frequencyDependentFitness = TRUE,
@@ -47,7 +47,7 @@ variables_modelo <- list(
        Value  = 1
   ),
   list(Name = "b1",
-       Value = 0.5
+       Value = 0.4
   ),
   list(Name = "x",
        Value = 0.5
@@ -62,10 +62,10 @@ variables_modelo <- list(
        Value= 1
   ),
   list(Name= "d2",
-       Value= -1
+       Value= -0.1
   ),
   list(Name= "e",
-       Value= 0
+       Value= -0.1
   )
 )
 
