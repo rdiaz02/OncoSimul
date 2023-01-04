@@ -1,5 +1,5 @@
 # Create an allFitnesEffects object with a WT and a resistant population.
-
+library(OncoSimulR)
 genotFitness <- data.frame("genotype"= c("WT","R","NS"),
                            "fitness"= c("1.1", "1.05", "0*n_"),
                            stringsAsFactors = FALSE)
@@ -29,7 +29,7 @@ intervenciones <- list(
        Periodicity   = 1,
        Repetitions   = Inf))
 
-a <- 0.3; b <- 0.3; d <-d_int; e <- it; x <- 0.05; y <- 0.05; tiempo <- 1000
+a <- 0.3; b <- 0.3; d <-d_int; e <- it; x <- 0.05; y <- 0.05; tiempo <- 1100
 -x*a-y*b+d*a*b+e*x*y
 stopifnot((-x*a-y*b+d*a*b+e*x*y)<0)
 variables <- list(
@@ -69,7 +69,7 @@ sim<- oncoSimulIndiv(afe,
   
 # PLOTS
 
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
 
 plot(sim, show="genotypes")
 
@@ -79,34 +79,63 @@ grow_rate <- totalpob
 time <- unlist(sim$pops.by.time)[,1]
 init_pob <- 10000
 
+alfa0= (pobs[,1]*1)/totalpob
+alfa1= (pobs[,2]*a)/totalpob
+alfa_medios= (alfa0+alfa1)
+beta0= (pobs[,1]*1)/totalpob
+beta1= (pobs[,2]*a)/totalpob
+beta_medios=beta0+beta1
+
 for (i in 1:length(totalpob)){
 actual_pob <- totalpob[i]
 grow_rate[i] <- actual_pob /init_pob
 init_pob <- actual_pob} 
 
 plot(grow_rate~time,lty=3)
+
+plot(beta_medios~time)
+plot(alfa_medios~time)
+
 if (grow_rate[length(totalpob)]>1){
-GR <- rbind(GR,c(grow_rate[length(totalpob)],it,d_int))
-print(paste(it,d_int))}
-
+GR <- rbind(GR,c(grow_rate[length(totalpob)],it,d_int))}
 
 }
 }
 }
+
+par(mfrow=c(2,2))
+GR0 <- GR[2:length(GR[,1]),]
+
+colnames(GR0) <- c("TASA_CRECIMIENTO","INTERACCIÓN","EFECTO_MUTACIÓN")
+rownames(GR0) <- c(1:length(GR0[,1]))
+plot(aov(TASA_CRECIMIENTO~INTERACCIÓN+EFECTO_MUTACIÓN, data=GR0))
+
+library(HH)
+
+GR1 <- GR0[-c(519,172,454),]
+
+colnames(GR1) <- c("GR","E","D")
+
+interaction2wt(GR~E+D,
+               data=GR1)
+
+Aov2 <- aov(GR~E+D, data=GR1)
+plot(Aov2)
+unique(round(Aov2$fitted.values,4))
+
 
 par(mfrow=c(3,1))
-GR <- GR[2:length(GR[,1]),]
-colnames(GR) <- c("TASA_CRECIMIENTO","INTERACCIÓN","EFECTO_MUTACIÓN")
+colnames(GR1) <- c("TASA_CRECIMIENTO","INTERACCIÓN","EFECTO_MUTACIÓN")
 boxplot(TASA_CRECIMIENTO~INTERACCIÓN,
-        data=GR[GR[,3]==-0.1,],
+        data=GR1[GR1[,3]==-0.1,],
         main="SENSIBILIDAD CRUZADA (d = -0.1)")
 
 boxplot(TASA_CRECIMIENTO~INTERACCIÓN,
-        data=GR[GR[,3]==0,],
+        data=GR1[GR1[,3]==0,],
         main="EFECTO ADITIVO (d = 0)")
 
 boxplot(TASA_CRECIMIENTO~INTERACCIÓN,
-        data=GR[GR[,3]==0.1,],
+        data=GR1[GR1[,3]==0.1,],
         main="RESISTENCIA CRUZADA (d = 0.1)")
 
 
