@@ -9,10 +9,12 @@ afe <- allFitnessEffects(genotFitness = genotFitness,
                          frequencyType = "abs")
 
 # INTERVENCIONES Y VARIABLES EN EL MODELO, EFECTO DEL ANTIBIÓTICO 
-par(mfrow=c(3,3),main="LOG POPULATION PLOTS")
+par(mfrow=c(3,3))
 vd <- c(-0.1,0,0.1)
+ve <- c(-2,0,2)
+for (tipo_grafico in 1:3){
 for (d_int in vd){
-  ve <- c(2,0,-2)
+  
     for (it in ve){
       intervenciones <- list(
         list(ID="ANTIBIOTICO SOBRE WT",
@@ -70,8 +72,8 @@ for (d_int in vd){
       # PLOTS
       
       
+      if (tipo_grafico==1)plot(sim, show="genotypes")
       
-      #plot(sim, show="genotypes",log="y", type="line",legend.ncols = 2)
       
       pobs <-  unlist(sim$pops.by.time)[,2:3]
       totalpob <- rowSums(pobs)
@@ -79,30 +81,34 @@ for (d_int in vd){
       TIEMPO <- unlist(sim$pops.by.time)[,1]
       init_pob <- 10000
       FRECUENCIA<- pobs/totalpob
+      
+      if (tipo_grafico==2){
       plot(TIEMPO,
-           ylim=c(0,max(log(pobs))),
+           ylim=c(0,max(pobs)),
            type="n",
            ylab="FRECUENCIA",
            xlab="TIEMPO",
            xlim=c(0,tiempo))
-      pendienteR <- round((log(pobs[length(pobs[,1]),2],10)-log(pobs[100,2],10))/(length(pobs[,1])-100),4)
       
-      lines(TIEMPO,log(pobs[,1],10),col="BLUE")
-      lines(TIEMPO,log(pobs[,2],10),col="RED")
-      
-      text(x=200,y=12,labels=paste("p=",pendienteR),
-           col="black",cex=0.8)
-      
-      
+      lines(TIEMPO,pobs[,1],col="red")
+      lines(TIEMPO,pobs[,2],col="blue")
+      legend("topleft",
+             legend = c("WT","R"),
+             col= c("red", "blue" ),lwd=1, lty=c(1,1),
+            title="Genotypes" )
+      }
+      par(cex=1)
+      if (tipo_grafico==3){
       for (i in 1:length(totalpob)){
         actual_pob <- totalpob[i]
         TASA_CRECIMIENTO[i] <- actual_pob /init_pob
         init_pob <- actual_pob} 
-      #plot(totalpob~TIEMPO,xlim=c(0,1000))
+      plot(totalpob~TIEMPO,xlim=c(0,1500))}
       
       #plot(TASA_CRECIMIENTO~TIEMPO,xlim=c(0,1000))
     }
   }
+}
+
   
-  
-  
+
