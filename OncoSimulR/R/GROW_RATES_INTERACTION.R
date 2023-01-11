@@ -4,12 +4,12 @@ library(OncoSimulR)
 library(HH)
 
 # DEFINIR EL NUMERO DE ITERACIONES PARA CADA CASO Y SI MOSTRAR O NO LOS PLOTS
-iteraciones=2
-plot_while_runing=TRUE
+iteraciones=30
+plot_while_runing=FALSE
 
 # DEFINIR VALORES PARA LOS TIPOS DE INTERACCIÓN SOBRE LOS QUE ITERAR
-vd <- c(-0.1,0,0.1)
-ve <- c(2,0,-2)
+vd <- c(0.1,0.05,0,-0.05,-0.1)
+ve <- c(2,1,0,-1,-2)
 
 # INICIALIZAR UN DATAFRAME DONDE SE ALMACENAN LOS RESULTADOS
 
@@ -164,7 +164,7 @@ rownames(GR0) <- c(1:length(GR0[,1]))
 # ENCONTRAR OUTGROUPS Y ELIMINARLOS MANUALMENTE
 plot(aov(TASA_CRECIMIENTO~INTERACCIÓN+EFECTO_MUTACIÓN, data=GR0))
 
-GR1 <- GR0[-c(40),]
+GR1 <- GR0[-c(724,742),]
 
 plot(aov(TASA_CRECIMIENTO~INTERACCIÓN+EFECTO_MUTACIÓN, data=GR1))
 
@@ -172,14 +172,14 @@ plot(aov(TASA_CRECIMIENTO~INTERACCIÓN+EFECTO_MUTACIÓN, data=GR1))
 
 # RESUMEN DE LA VARIACIÓN DE LOS DATOS EN FUNCIÓN DE e Y d
 
-colnames(GR1) <- c("GR","E","D")
-interaction2wt(GR~E+D,
-               data=GR1)
+colnames(GR1) <- c("TC","e","d")
+interaction2wt(TC~e+d,
+               data=GR1,main = "RESUMEN TASA DE CRECIMIENTO")
 
 
 
 # MOSTRAR COMPARACIONES EN BOXPLOT
-par(mfrow=c(3,1))
+par(mfrow=c(1,3))
 colnames(GR1) <- c("TASA_CRECIMIENTO",
                    "INTERACCIÓN_ANTIBIÓTICO",
                    "EFECTO_MUTACIÓN")
@@ -189,7 +189,7 @@ boxplot(TASA_CRECIMIENTO~INTERACCIÓN_ANTIBIÓTICO,
 
 boxplot(TASA_CRECIMIENTO~INTERACCIÓN_ANTIBIÓTICO,
         data=GR1[GR1[,3]==0,],
-        main="MUTACIONES INDEPENDIENTES (d = 0)")
+        main="SIN CORRELACIÓN (d = 0)")
 
 boxplot(TASA_CRECIMIENTO~INTERACCIÓN_ANTIBIÓTICO,
         data=GR1[GR1[,3]==0.1,],
