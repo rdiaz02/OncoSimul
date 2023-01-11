@@ -1,5 +1,6 @@
 # Create an allFitnesEffects object with a WT and a resistant population.
-
+library(OncoSimulR)
+par(mfrow=c(3,3),cex.axis=0.8)
 genotFitness <- data.frame("genotype"= c("WT","R","NS"),
                            "fitness"= c("1.1", "1.05", "0*n_"),
                            stringsAsFactors = FALSE)
@@ -7,12 +8,12 @@ genotFitness <- data.frame("genotype"= c("WT","R","NS"),
 afe <- allFitnessEffects(genotFitness = genotFitness, 
                          frequencyDependentFitness = TRUE,
                          frequencyType = "abs")
+plotFitnessLandscape(evalAllGenotypes(afe,spPopSizes = c(1,1,1)))
 
 # INTERVENCIONES Y VARIABLES EN EL MODELO, EFECTO DEL ANTIBIÓTICO 
-par(mfrow=c(3,3))
-vd <- c(-0.1,0,0.1)
-ve <- c(-2,0,2)
-for (tipo_grafico in 1:3){
+vd <- c(0.1,0,-0.1)
+ve <- c(2,0,-2)
+for (tipo_grafico in 4){
 for (d_int in vd){
   
     for (it in ve){
@@ -28,7 +29,7 @@ for (d_int in vd){
              Periodicity   = 1,
              Repetitions   = Inf))
       
-      a <- 0.3; b <- 0.3; d <-d_int; e <- it
+      a <- 0.35; b <- 0.25; d <-d_int; e <- it
       x <- 0.05; y <- 0.05; tiempo <- 1500
       
       # Comprobar que el efecto del anribiótico no aumenta la población
@@ -72,43 +73,72 @@ for (d_int in vd){
       # PLOTS
       
       
-      if (tipo_grafico==1)plot(sim, show="genotypes")
-      
-      
       pobs <-  unlist(sim$pops.by.time)[,2:3]
       totalpob <- rowSums(pobs)
       TASA_CRECIMIENTO <- totalpob
       TIEMPO <- unlist(sim$pops.by.time)[,1]
       init_pob <- 10000
       FRECUENCIA<- pobs/totalpob
+    
       
-      if (tipo_grafico==2){
+      if (tipo_grafico==1){
       plot(TIEMPO,
            ylim=c(0,max(pobs)),
            type="n",
-           ylab="FRECUENCIA",
-           xlab="TIEMPO",
+           ylab="Frecuencia",
+           xlab="Tiempo",
            xlim=c(0,tiempo))
       
       lines(TIEMPO,pobs[,1],col="red")
       lines(TIEMPO,pobs[,2],col="blue")
-      legend("topleft",
-             legend = c("WT","R"),
-             col= c("red", "blue" ),lwd=1, lty=c(1,1),
-            title="Genotypes" )
-      }
-      par(cex=1)
-      if (tipo_grafico==3){
-      for (i in 1:length(totalpob)){
-        actual_pob <- totalpob[i]
-        TASA_CRECIMIENTO[i] <- actual_pob /init_pob
-        init_pob <- actual_pob} 
-      plot(totalpob~TIEMPO,xlim=c(0,1500))}
       
-      #plot(TASA_CRECIMIENTO~TIEMPO,xlim=c(0,1000))
+      }
+      
+      if (tipo_grafico==2){
+      
+      plot(totalpob~TIEMPO,xlim=c(0,1500),
+           ylab ="Población total",
+           xlab = "Tiempo")}
+      
+      if (tipo_grafico==3){
+        
+        tasa_crecimiento <- rep(1,(length(totalpob)-length(totalpob)%%5)/5)
+        time <-  rep(1,(length(TIEMPO)-length(TIEMPO)%%5)/5)
+        length(tiempo1)
+        totalpob1 <- totalpob[1:(length(totalpob)-(length(totalpob)%%5))]
+        tiempo1 <-  TIEMPO[1:(length(TIEMPO)-(length(TIEMPO)%%5))]
+        last_pob<-10000
+        
+        for (z in seq(from=1,to=length(totalpob1),by=5)){
+        actual_pob <- mean(totalpob1[z:(5+z)])
+        tasa_crecimiento[z] <-actual_pob/last_pob 
+        time[z] <- mean(tiempo1[z:(z+5)])
+        last_pob <- actual_pob}
+        
+        plot(tasa_crecimiento~time,xlim=c(0,1500), 
+             xlab="Tiempo", ylab="Tasa crecimiento")
+        
+      }
+      
+      if (tipo_grafico==4){
+        alfa0= (pobs[,1]*1)/totalpob
+        alfa1= (pobs[,2]*a)/totalpob
+        alfa_medios= (alfa0+alfa1)
+        beta0= (pobs[,1]*1)/totalpob
+      beta1= (pobs[,2]*b)/totalpob
+      beta_medios=beta0+beta1
+      plot(TIEMPO,alfa_medios,col="orange",type="l",
+           ylab="Alfa y Beta",
+           xlab="Tiempo",
+           xlim=c(0,tiempo),
+           ylim=c(0,1))
+      lines(TIEMPO,beta_medios,col="green",lty=3)
+        
+      }
+      
+      
     }
   }
 }
 
   
-
