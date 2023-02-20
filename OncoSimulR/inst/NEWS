@@ -1,3 +1,7 @@
+Changes in version 4.1.3 (2023-02-20):
+	- no need to specify CXX_STD = CXX14 (the default since
+	  R-4.1.0).
+
 Changes in version 4.1.2 (2023-02-20):
         - NAMESPACE: do not import .rbind.data.table (no longer exported
           from data.table 1.14.8, and not needed with R >= 4.0.0).
