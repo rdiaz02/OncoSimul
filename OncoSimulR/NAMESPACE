@@ -48,7 +48,7 @@ import(ggplot2)
 importFrom("ggrepel", geom_text_repel, geom_label_repel)
 importFrom("utils", "read.table", "write.table")
 importFrom("stats", "rnorm")
-importFrom("data.table", rbindlist, .rbind.data.table) 
+importFrom("data.table", rbindlist)
 importFrom(Rcpp, evalCpp)
 importFrom("igraph", igraph.to.graphNEL, graph.data.frame, V, E,
            "V<-", "E<-", plot.igraph, layout.reingold.tilford,

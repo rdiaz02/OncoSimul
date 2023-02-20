@@ -1,3 +1,7 @@
+Changes in version 4.1.1 (2023-02-20):
+        - NAMESPACE: do not import .rbind.data.table (no longer exported
+          from data.table 1.14.8, and not needed with R >= 4.0.0).
+
 Changes in version 4.1 (2022-11-24):
 	- Faster, cleaner, and better tests of interventions.
 
