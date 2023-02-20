@@ -323,7 +323,7 @@ double Algo2_st(const spParamsP& spP,
   //   pb = pB_f_st(pe, spP);
   // }
 
-  double rnb; // holder for neg. bino. So we can check.
+  double rnb = -99.9999; // holder for neg. bino. So we can check.
   double retval; //So we can check
 
   if( (1.0 - pe/pm) > 1.0) {
