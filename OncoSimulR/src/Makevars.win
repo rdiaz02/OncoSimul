@@ -4,7 +4,8 @@ CC=gcc$(VER)
 CXX=g++$(VER)
 CXX11=g++$(VER)
 
-CXX_STD = CXX14
+
+## CXX_STD = CXX14
 
 MYCXXFLAGS = -Wa,-mbig-obj
 

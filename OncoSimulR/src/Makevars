@@ -6,10 +6,11 @@ CXX11=g++$(VER)
 
 ## This is a C++11 package
 ## but using C++14 leads to faster INSTALL. In my machine:
+## C++14 is default starting from R-4.1.0
 ## C++11: 6'30"
 ## C++14: 4'20"
 ## C++17: 5'08"
-CXX_STD = CXX14
+## CXX_STD = CXX14
 
 
 all: liblandscape.a fl_statistics fl_generate $(SHLIB)
