@@ -1,3 +1,8 @@
+Changes in version 4.1.4 (2023-03-08):
+	- Updated exprTk (thanks to pull request from Arash
+	  Partow).
+
+
 Changes in version 4.1.3 (2023-02-20):
 	- no need to specify CXX_STD = CXX14 (the default since
 	  R-4.1.0).
