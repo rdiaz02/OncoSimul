@@ -17,7 +17,8 @@ rfitness(g, c = 0.5, sd = 1, mu = 1, reference = "random", scale = NULL,
          accessible_th = 0, truncate_at_0 = TRUE,
          K = 1, r = TRUE, i = 0, I = -1, circular = FALSE, e = 0, E = -1,
          H = -1, s = 0.1, S = -1, d = 0, o = 0, O = -1, p = 0, P = -1, 
-         model = c("RMF", "Additive", "NK", "Ising", "Eggbox", "Full"))
+         model = c("RMF", "Additive", "NK", "Ising", "Eggbox", "Full"),
+         seed_magellan = -1)
 }
 
 
@@ -216,6 +217,15 @@ Optimum model component.}
 \item{model}{One of "RMF" (default) for Rough Mount Fuji, "Additive" for
  Additive model, "NK", for Kauffman's NK model, "Ising" for Ising model,
  "Eggbox" for Eggbox model or "Full" for Full models.}
+
+\item{seed_magellan}{The seed for the random number generator in models
+generated from MAGELLAN. If -1, the clock is used by MAGELLAN to
+generate a seed (this might not be a good idea if you launch multiple
+process, even if somewhat separated in time). The seed is read as a C
+long, so you should be able to use integers going from at least
+−2,147,483,647 to +2,147,483,647, in 32-bits,  but probably a much
+larger range (-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807)
+in 64-bits. Note, though, that some values can crash MAGELLAN (for example -9223372036854775806 or -2147483647).}
 } 
 
 
