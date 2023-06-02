@@ -142,6 +142,7 @@ rfitness <- function(g, c= 0.5,
                              ifelse(r, " -r ", " "),
                              g, " 2")
             fl1 <- system2(fl_generate_binary(), args = argsnk, stdout = TRUE)[-1]
+            fl1_A <<- fl1 ## zzdebug
         } else if (model == "Ising") {
             argsIsing <- paste0("-i ", i, " -I ", I ,
                                 ifelse(circular, " -c ", " "),
@@ -168,6 +169,10 @@ rfitness <- function(g, c= 0.5,
             m1 <- fl1[, 1:g]
             fi <- fl1[, g + 1]
 
+            fl1_B <<- fl1 ## zzdebug
+            m1_A <<- m1
+            fi_A <<- fi
+            
             ## For scaling, etc, all that matters, if anything, is the wildtype
 
             ## We could order by doing this
@@ -185,6 +190,7 @@ rfitness <- function(g, c= 0.5,
             gtstring2 <- apply(m1, 1, function(x) paste0(x, collapse = ""))
             oo <- match(gtstring, gtstring2)
             fi <- fi[oo]
+            fi_A2 <<- fi
             ## make sure no left overs
             rm(gtstring, gtstring2, oo, fl1, m1)
 
@@ -254,6 +260,7 @@ rfitness <- function(g, c= 0.5,
             new_fi[1] <- scale[3]
             fi <- new_fi
             rm(new_fi)
+            fi_B <<- fi ## zzdebug
         }
         
         if(log) {
@@ -278,6 +285,7 @@ rfitness <- function(g, c= 0.5,
         
         if(truncate_at_0) {
             ## yes, truncate but add noise to prevent identical
+            if(any(is.na(fi))) browser() ## zz debug
             fi[fi <= 0] <- runif(sum(fi <= 0),
                                  min = 1e-10,
                                  max = 1e-9)
