@@ -1,7 +1,12 @@
+Changes in version 4.3.1 (2023-06-03):
+	- Allow passing a seed to MAGELLAN's random fitness landscapes
+	  in rfitness function.
+	- Fixed bug in rfitness when using a 3-element vector for scaling,
+	  and one or more fitness values had the same value as WT.
+
 Changes in version 4.1.4 (2023-03-08):
 	- Updated exprTk (thanks to pull request from Arash
 	  Partow).
-
 
 Changes in version 4.1.3 (2023-02-20):
 	- no need to specify CXX_STD = CXX14 (the default since
