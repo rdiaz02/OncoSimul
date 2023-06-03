@@ -1,4 +1,4 @@
-Changes in version 4.3.1 (2023-06-03):
+Changes in version 4.3.2 (2023-06-03):
 	- Allow passing a seed to MAGELLAN's random fitness landscapes
 	  in rfitness function.
 	- Fixed bug in rfitness when using a 3-element vector for scaling,

@@ -1,8 +1,8 @@
 Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
-Version: 4.3.1
-Date: 2023-03-08
+Version: 4.3.2
+Date: 2023-06-03
 Authors@R: c(
 	      person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
  	   		     email = "rdiaz02@gmail.com"),
