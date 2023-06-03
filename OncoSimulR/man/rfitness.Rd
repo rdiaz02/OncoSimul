@@ -223,7 +223,7 @@ generated from MAGELLAN. If -1, the clock is used by MAGELLAN to
 generate a seed (this might not be a good idea if you launch multiple
 process, even if somewhat separated in time). The seed is read as a C
 long, so you should be able to use integers going from at least
-−2,147,483,647 to +2,147,483,647, in 32-bits,  but probably a much
+-2,147,483,647 to +2,147,483,647, in 32-bits,  but probably a much
 larger range (-9,223,372,036,854,775,808 to 9,223,372,036,854,775,807)
 in 64-bits. Note, though, that some values can crash MAGELLAN (for example -9223372036854775806 or -2147483647).}
 } 
