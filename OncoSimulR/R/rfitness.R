@@ -88,9 +88,10 @@ rfitness <- function(g, c= 0.5,
                      O = -1, # sd optimum
                      p = 0, # mean production for non 0 allele (optimum)
                      P = -1, # sd for p
-                     
                      model = c("RMF", "Additive", 
-                               "NK", "Ising", "Eggbox", "Full")) {
+                               "NK", "Ising", "Eggbox", "Full"),
+                     seed_magellan = -1
+                     ) {
     ## Like Franke et al., 2011 and others of Krug. Very similar to Greene
     ## and Crona, 2014. And this allows moving from HoC to purely additive
     ## changing c and sd.
@@ -140,15 +141,18 @@ rfitness <- function(g, c= 0.5,
             if(K >= g) stop("It makes no sense to have K >= g")
             argsnk <- paste0("-K ", K,
                              ifelse(r, " -r ", " "),
+                             "-x ", seed_magellan, " ",
                              g, " 2")
             fl1 <- system2(fl_generate_binary(), args = argsnk, stdout = TRUE)[-1]
         } else if (model == "Ising") {
             argsIsing <- paste0("-i ", i, " -I ", I ,
                                 ifelse(circular, " -c ", " "),
+                                "-x ", seed_magellan, " ",
                                 g, " 2")
             fl1 <- system2(fl_generate_binary(), args = argsIsing, stdout = TRUE)[-1]
         } else if (model == "Eggbox") {
-            argsEgg <- paste0("-e ", e, " -E ", E," ", g, " 2")
+            argsEgg <- paste0("-e ", e, " -E ", E," ", "-x ", seed_magellan, " ",
+                              g, " 2")
             fl1 <- system2(fl_generate_binary(), args = argsEgg, stdout = TRUE)[-1]
         } else if (model == "Full") {
             if(K >= g) stop("It makes no sense to have K >= g")
@@ -158,6 +162,7 @@ rfitness <- function(g, c= 0.5,
                                "-H ", H, " ",
                                "-s ", s, " -S ", S, " -d ", d, " ",
                                "-o ", o, " -O ", O, " -p ", p, " -P ", P, " ",
+                               "-x ", seed_magellan, " ",
                                g, " 2")
             fl1 <- system2(fl_generate_binary(), args = argsFull, stdout = TRUE)[-1]
         }
@@ -167,7 +172,7 @@ rfitness <- function(g, c= 0.5,
                 ncol = g + 1, byrow = TRUE)
             m1 <- fl1[, 1:g]
             fi <- fl1[, g + 1]
-
+            
             ## For scaling, etc, all that matters, if anything, is the wildtype
 
             ## We could order by doing this
@@ -187,20 +192,6 @@ rfitness <- function(g, c= 0.5,
             fi <- fi[oo]
             ## make sure no left overs
             rm(gtstring, gtstring2, oo, fl1, m1)
-
-            ## Had we not ordered, do this!!!
-            ## Which one is WT?
-            ## muts <- rowSums(m1)
-            ## w_wt <- which(muts == 0)
-            ## if(w_wt != 1) {
-            ##     f_a <- fi[1]
-            ##     fi[1] <- fi[w_wt]
-            ##     fi[w_wt] <- f_a
-            ##     rm(f_a)
-            ## }
-            ## m[] <- m1
-            ## rm(m1)
-            ## rm(fl1)
         }
         if(!(length(scale) == 3)) {
             if(!is.null(scale)) {
@@ -248,7 +239,7 @@ rfitness <- function(g, c= 0.5,
             }
             if(min(fi) < fiwt) {
                 prod_below <- (scale[3] - scale[2]) / (fiwt - min(fi))
-                fi_below <- which(fi < fiwt)
+                fi_below <- which(fi <= fiwt)
                 new_fi[fi_below] <- ((fi[fi_below] - fiwt) * prod_below) + scale[3]
             }
             new_fi[1] <- scale[3]
