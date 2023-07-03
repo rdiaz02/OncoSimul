@@ -27,12 +27,40 @@ of Cards, additive NK, Ising, and Eggbox models) and plotting them.
 There is also new functionality to allow for frequency-dependent fitness, interventions (including adaptive therapy), user specification of both birth and death rates, and user-defined variables that can be used for interventions.
 
 
+## Funding
+
+Supported by: grant BFU2015-67302-R (MINECO/FEDER, EU) funded by MCIN/AEI/10.13039/501100011033 and by ERDF A way of making Europe to R. Diaz-Uriarte; grant PID2019-111256RB-I00 funded by MCIN/AEI/10.13039/501100011033 to R. Diaz-Uriarte; "Beca de Colaboración" at the Universidad Autónoma de Madrid from Spanish Ministry of Education, 2017-18, to S. Sánchez Carrillo; Comunidad de Madrid's
+PEJ16/MED/AI-1709 and PEJ-2019-AI/BMD-13961 to R. Diaz-Uriarte. 
+
+<p align="center">
+<img src="logo-micin-aei-uefeder.png" alt="micin-aei-uefeder logo" width="200"/>.
+</p>
+<p align="center">
+<img src="logo-micin-aei.png" alt="micin-aei logo" width="200"/>.
+</p>
 
 
-The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
-[OncoSimulR](http://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html). The
-/miscell-files directory contains additional files so far only related to
-the above.
+
+## Citation, references, and further documentation
+
+The canonical reference for OncoSimulR is this: Diaz-Uriarte, R. 2017. OncoSimulR: genetic simulation with arbitrary epistasis and mutator genes in asexual populations. _Bioinformatics_, 33 (12): 1898-1899, published.  [https://doi.org/10.1093/bioinformatics/btx077](https://doi.org/10.1093/bioinformatics/btx077). This paper gives a
+quick overview of OncoSimulR. If you use the package in publications **please cite the Bioinformatics paper**.
+
+<!--  (a former version is available as a [bioRxiv -->
+<!-- preprint](http://biorxiv.org/content/early/2016/08/14/069500)).  -->
+
+You can
+also take a look at this [poster presented at ECCB
+2016](http://dx.doi.org/10.7490/f1000research.1112860.1). 
+
+The chapter titled
+<a href="https://link.springer.com/protocol/10.1007/978-1-0716-0947-7_9">
+Simulating evolution in asexual populations with epistasis"</a> in K.-C. Wong (ed.), Epistasis: Methods and Protocols. Methods in
+Molecular Biology emphasizes the use of OncoSimulR for simulations with epistasis.
+
+<!-- , later during 2020; here is a [preprint -->
+<!-- version](https://repositorio.uam.es/bitstream/handle/10486/690422/simul_evol_epist_preprint_v3_with_figures.pdf). -->
+
 
 
 A former version of this code has been used in the paper "Identifying
@@ -50,8 +78,6 @@ Computational Biology paper
 models"](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007246).
 
 
-
-
 You can also find
 [OncoSimulR](https://popmodels.cancercontrol.cancer.gov/gsr/packages/oncosimulr/)
 on the [Genetic Simulation Resources
@@ -59,16 +85,15 @@ catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 <!-- <a href="http://popmodels.cancercontrol.cancer.gov/gsr/"><img src="http://popmodels.cancercontrol.cancer.gov/gsr/static/img/gsr_tile.jpg" alt="Catalogued on GSR" width="180" height="60" /></a> -->
 
 
-## Funding
-Supported by: grant BFU2015-67302-R (MINECO/FEDER, EU) funded by MCIN/AEI/10.13039/501100011033 and by ERDF A way of making Europe to R. Diaz-Uriarte; grant PID2019-111256RB-I00 funded by MCIN/AEI/10.13039/501100011033 to R. Diaz-Uriarte; "Beca de Colaboración" at the Universidad Autónoma de Madrid from Spanish Ministry of Education, 2017-18, to S. Sánchez Carrillo; Comunidad de Madrid's
-PEJ16/MED/AI-1709 and PEJ-2019-AI/BMD-13961 to R. Diaz-Uriarte. 
+## Directory organization
 
-<p align="center">
-<img src="logo-micin-aei-uefeder.png" alt="micin-aei-uefeder logo" width="200"/>.
-</p>
-<p align="center">
-<img src="logo-micin-aei.png" alt="micin-aei logo" width="200"/>.
-</p>
+The /OncoSimulR directory contains the code for the [BioConductor](http://www.bioconductor.org) package
+[OncoSimulR](http://www.bioconductor.org/packages/devel/bioc/html/OncoSimulR.html). The
+/miscell-files directory contains additional files so far only related to
+the above.
+
+
+
 
 
 ---
@@ -296,21 +321,21 @@ package). Beware that the might have figures and R code that
 do not fit on the page, etc.
 
 
-## Further documentation
+<!-- ## Further documentation -->
 
-This [paper published in
-Bioinformatics](https://doi.org/10.1093/bioinformatics/btx077) gives a
-quick overview of OncoSimulR (a former version is available as a [bioRxiv
-preprint](http://biorxiv.org/content/early/2016/08/14/069500)). You can
-also take a look at this [poster presented at ECCB
-2016](http://dx.doi.org/10.7490/f1000research.1112860.1). A chapter titled
-"Simulating evolution in asexual populations with epistasis" will appear
-in K.-C. Wong (ed.), Epistasis: Methods and Protocols. Methods in
-Molecular Biology, later during 2020; here is a [preprint
-version](https://repositorio.uam.es/bitstream/handle/10486/690422/simul_evol_epist_preprint_v3_with_figures.pdf).
+<!-- This [paper published in -->
+<!-- Bioinformatics](https://doi.org/10.1093/bioinformatics/btx077) gives a -->
+<!-- quick overview of OncoSimulR (a former version is available as a [bioRxiv -->
+<!-- preprint](http://biorxiv.org/content/early/2016/08/14/069500)). You can -->
+<!-- also take a look at this [poster presented at ECCB -->
+<!-- 2016](http://dx.doi.org/10.7490/f1000research.1112860.1). A chapter titled -->
+<!-- "Simulating evolution in asexual populations with epistasis" will appear -->
+<!-- in K.-C. Wong (ed.), Epistasis: Methods and Protocols. Methods in -->
+<!-- Molecular Biology, later during 2020; here is a [preprint -->
+<!-- version](https://repositorio.uam.es/bitstream/handle/10486/690422/simul_evol_epist_preprint_v3_with_figures.pdf). -->
 
 
-If you use the package in publications **please cite the Bioinformatics paper**.
+<!-- If you use the package in publications **please cite the Bioinformatics paper**. -->
 
 
 ## Major contributors and main additions to the code
