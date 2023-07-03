@@ -58,6 +58,21 @@ on the [Genetic Simulation Resources
 catalogue](https://popmodels.cancercontrol.cancer.gov/gsr/).
 <!-- <a href="http://popmodels.cancercontrol.cancer.gov/gsr/"><img src="http://popmodels.cancercontrol.cancer.gov/gsr/static/img/gsr_tile.jpg" alt="Catalogued on GSR" width="180" height="60" /></a> -->
 
+
+## Funding
+Supported by: grant BFU2015-67302-R (MINECO/FEDER, EU) funded by MCIN/AEI/10.13039/501100011033 and by ERDF A way of making Europe to R. Diaz-Uriarte; grant PID2019-111256RB-I00 funded by MCIN/AEI/10.13039/501100011033 to R. Diaz-Uriarte; "Beca de Colaboración" at the Universidad Autónoma de Madrid from Spanish Ministry of Education, 2017-18, to S. Sánchez Carrillo; Comunidad de Madrid's
+PEJ16/MED/AI-1709 and PEJ-2019-AI/BMD-13961 to R. Diaz-Uriarte. 
+
+<p align="center">
+<img src="logo-micin-aei-uefeder.png" alt="micin-aei-uefeder logo" width="200"/>.
+</p>
+<p align="center">
+<img src="logo-micin-aei.png" alt="micin-aei logo" width="200"/>.
+</p>
+
+
+---
+
 # Installation 
 
 The frequency-dependent fitness functionality became available in BioConductor
@@ -430,5 +445,8 @@ PEJ16/MED/AI-1709 and PEJ-2019-AI/BMD-13961 to R. Diaz-Uriarte.
 
 <p align="center">
 <img src="logo-micin-aei-uefeder.png" alt="micin-aei-uefeder logo" width="200"/>.
+</p>
+<p align="center">
+<img src="logo-micin-aei.png" alt="micin-aei logo" width="200"/>.
 </p>
 
