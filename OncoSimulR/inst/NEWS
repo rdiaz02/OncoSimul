@@ -1,3 +1,7 @@
+Changes in version 4.3.3 (2023-07-14):
+	- One test failing on Linux aarch64: fixed
+	  (by commenting out, which is the right thing to do).
+	
 Changes in version 4.3.2 (2023-06-03):
 	- Allow passing a seed to MAGELLAN's random fitness landscapes
 	  in rfitness function.

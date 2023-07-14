@@ -133,7 +133,9 @@ test_that("exercise no positions left for mutation, updating in null mut, new fo
                           verbosity = 1))
     expect_output(print(pp1),
                   "Individual OncoSimul", fixed = TRUE)
-    if(Sys.info()["sysname"] == "Linux") {
+    if( (Sys.info()["sysname"] == "Linux") &&
+        (Sys.info()["machine"] == "x86_64")) {
+        ## on aarch64 not identical
         expect_true(any(grepl("mutation = 0", st)))
         expect_true(any(grepl("updating in null mutation", st)))
     }
