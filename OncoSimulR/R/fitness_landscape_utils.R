@@ -324,7 +324,7 @@ faster_accessible_genotypes_R <- function(x, th) {
 
 }
 
-
+## FIXME: this is doable with expand.grid. Why am I doing it this way?
 generate_matrix_genotypes <- function(g) {
     ## FIXME future: do this for order too? Only if rfitness for order.
     ## Given a number of genes, generate all possible genotypes.
