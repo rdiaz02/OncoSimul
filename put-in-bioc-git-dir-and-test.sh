@@ -35,6 +35,7 @@ cp OncoSimulR/vignettes/hurlbut.png ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/hurlbut.pdf ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/Myeloma_interaction.png ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/logo-micin-aei-uefeder.png ../BioConductor-git/OncoSimulR/vignettes/.
+cp OncoSimulR/vignettes/logo-micin-aei.png ../BioConductor-git/OncoSimulR/vignettes/.
 cp OncoSimulR/vignettes/apa.csl ../BioConductor-git/OncoSimulR/vignettes/.
 
 
@@ -78,7 +79,7 @@ cp OncoSimulR/DESCRIPTION ../BioConductor-git/OncoSimulR/.
 
 
 ## We always do this, though it should not be necessary
-sed -i 's/^};$/}/' ../BioConductor-git/OncoSimulR/src/FitnessLandscape/generalized_chain.c 
+sed -i 's/^};$/}/' ../BioConductor-git/OncoSimulR/src/FitnessLandscape/generalized_chain.c
 
 
 
@@ -89,7 +90,7 @@ if [[ $# == 1 ]]; then
     cd ~/Proyectos/BioConductor-git
     V_P=$(cat ./OncoSimulR/DESCRIPTION | grep Version | cut -d' ' -f2)
     rm OncoSimulR_$V_P.tar.gz
-  
+
     ## As shown in build report from BioC
     echo " ***************************************** "
     echo " *********  R CMD build vanilla  ************** "
@@ -108,7 +109,7 @@ if [[ $# == 1 ]]; then
     echo " "
     ## time as explained in https://www.bioconductor.org/developers/package-guidelines/#correctness
     echo " ************************************ "
-    
+
 fi
 
 
@@ -116,4 +117,3 @@ fi
 cd ~/Proyectos/BioConductor-git/OncoSimulR
 
 git status | less
-
