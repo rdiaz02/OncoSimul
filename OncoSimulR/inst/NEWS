@@ -1,7 +1,15 @@
+Changes in version 4.7.1 (2024-07-23):
+	- Try to work around (and ask for help) for a vignette example
+	  that fails in the BioC kjohnson3 machine (maOS 13.6.5, arm64).
+	- Miscell minor: incorporate 361ccdc to 1bc3cbd (in main github
+	  repo) to the BioC version.
+	- Fixed Note "Lost braces in \itemize; meant \describe ?"
+	- Updated vignette address to IIBM new name.
+
 Changes in version 4.3.3 (2023-07-17):
 	- One test failing on Linux aarch64: fixed
 	  (by commenting out, which is the right thing to do).
-	
+
 Changes in version 4.3.2 (2023-06-03):
 	- Allow passing a seed to MAGELLAN's random fitness landscapes
 	  in rfitness function.
@@ -33,7 +41,7 @@ Changes in version 4.0 (for BioC 3.16):
 	  This is a possible BRAEKING CHANGE.
 	- Plot fails with a meaningful error if simulations
 	  had unrecoverable exception or hit max wall time
-	  or max num tries.	  
+	  or max num tries.
 	- Improvements in vignette speed.
 	- Improvements in compilation speed.
 
@@ -58,7 +66,7 @@ Changes in version 3.99.10 (2022-10-13):
 Changes in version 3.99.9 (2022-09-30):
 	- Minor vignette split of code, to try to detect
 	  location of problem with ARM64 Mac build.
-	  
+
 Changes in version 3.99.8 (2022-09-15):
 	- Using "Unity builds" to decrease build (compilation) time;
 	  see file inst/miscell/README_Unity_compilation.
@@ -67,20 +75,20 @@ Changes in version 3.99.8 (2022-09-15):
 Changes in version 3.99.7 (2022-09-13):
 	- Use c++14 and, in windows, do not use -O3: try to minimize
 	  build time.
-	  
+
 Changes in version 3.99.6 (2022-09-12):
 	- Udpated exprtk.
 
 Changes in version 3.99.5 (2022-07-19):
 	- Funding logo added to README.md and vignette.
-	
+
 Changes in version 3.99.4 (2022-07-04):
 	- Failing a test in test.Z-intervention.R in Mac OS; did not fix
 	correctly previous time.
 
 Changes in version 3.99.3 (2022-06-30):
 	- Failing a test in test.Z-intervention.R in Mac OS
-	
+
 Changes in version 3.99.2 (2022-06-29):
 	- Vignette: author list and references.
 
@@ -94,10 +102,10 @@ Changes in version 3.99.1 (2022-06-25):
 
 Changes in version 3.3.0 (2021-10-27):
 	- Bump version number for BioC
-		
+
 Changes in version 3.1.2 (2021-10-06):
 	- Better test of poset transformation
-	
+
 Changes in version 3.1.1 (2021-10-06):
 	- XOR, AND, OR dependencies: plots of DAGs honor all possible values.
 	- Few miscell minor changes.
@@ -111,7 +119,7 @@ Changes in version 3.0 (for BioC 3.13):
 Changes in version 2.99.93 (2021-04-30):
 	- Fixed bugs and improved testing of rfitness with
 	three-element scale vector.
-	
+
 Changes in version 2.99.92 (2021-04-27):
 	- rfitness: scale can take a three-element vector.
 	- Vignette: examples (not run) for deviations from SSWM.
@@ -120,7 +128,7 @@ Changes in version 2.99.9 (2021-04-22):
 	- Fixed date typo in one citation.
 	- We were inconsistent, allowing some examples of one gene.
 	- Readme: nem.
-	
+
 Changes in version 2.99.8 (2021-01-01):
 	- Removing unused code.
 	- Long tests: no longer using v.1.
@@ -137,26 +145,26 @@ Changes in version 2.99.5 (2020-12-18):
 	seed in vignette.
 
 Changes in version 2.99.4 (2020-12-17):
-	- Clean up of C++ code.	
+	- Clean up of C++ code.
 
 Changes in version 2.99.3 (2020-12-13):
 	- Remove unnecessary (and cluttering) output and irrelevant
 	warnings when running tests.
 	- Decrease execution time of longer running examples in man (Rd) files.
 	- Decrease time of vignette.
-	
+
 Changes in version 2.99.2 (2020-12-11):
 	- Failed on test on Mac.
 
 Changes in version 2.99.1 (2020-12-10):
 	- Bump version number for BioC, so it will become version 3.0.0 in
           next release.
-	- Latest version of exprtk.  
-	
+	- Latest version of exprtk.
+
 Changes in version 2.21.995 (2020-12-09):
 	- Vignette: rewrote most FDF examples using names (not numbers)
 	for fitness specification.
-	
+
 Changes in version 2.21.994 (2020-12-08):
 	- Can start simulation from arbitrary configuration: multiple init
 	mutants (and multispecies functionality).
@@ -196,17 +204,17 @@ Changes in version 2.17.997 (2020-04-27):
 	- Cherry picked from master, as of 2020-03-17:
 	  - [6645512] : OK
 	  - [a273ac2] : OK
-	  - [307dc97] : already added [5436d80]      
+	  - [307dc97] : already added [5436d80]
 	  - [bcb8543] : not needed (just version date/number)
-	  - [5f42713] : already added [3b488a0] 
-	  - [eb2766b] : already added [3aba92d]   
+	  - [5f42713] : already added [3b488a0]
+	  - [eb2766b] : already added [3aba92d]
 
 Changes in version 2.17.996 (2020-01-28):
 	- More freq-dep-fitness examples.
 
 Changes in version 2.17.995 (2020-01-25):
 	- Reverted modifications to plot (see committ d182fbb)
-	
+
 Changes in version 2.17.994 (2020-01-25):
 	- plot: allow legend to be outside
 
@@ -254,11 +262,11 @@ Changes in version 2.17.991 (2019-12-18):
   	      [though nothing needed to merge here]
 
 	    - [2dbc895]
-	      - link to Magellan_stats help 
+	      - link to Magellan_stats help
 
 	    - [73854e0]
   	      - fno-common
-  
+
 	    - [92b7f4b]
   	      - renamed verbose [in one of MAGELLAN's C files]
 
@@ -269,7 +277,7 @@ Changes in version 2.17.991 (2019-12-18):
   	      - Fixed error "length(x) = 5 > 1' in coercion to 'logical(1)'"
 
 	    - [8a06478]
-  	      - Ochs and Desai: fixed typo 
+  	      - Ochs and Desai: fixed typo
 
 	    - [94c9df7]
   	      - do not default to log when using Magellan_stats
@@ -282,7 +290,7 @@ Changes in version 2.17.991 (2019-12-18):
   	      - Magellan_stats: really return a vector.
 
 	    - [3e67e80]
-  	      - Trying to prevent fscanf warning in FitnessLandscape/input.c 
+  	      - Trying to prevent fscanf warning in FitnessLandscape/input.c
 
 	    - [b89a135]
   	      - appveyor file
@@ -296,7 +304,7 @@ Changes in version 2.15.995 (2019-06-12):
 Changes in version 2.15.994 (2019-05-25):
 	- Windoze: giving up on current Rtools35, but working with Rtools40
 	  (see Makevars.win)
-	- Cleaned up a few compiler warnings.  
+	- Cleaned up a few compiler warnings.
 
 Changes in version 2.15.99 (2019-05-14):
 	- Bumped version to match current Biocdevel.
@@ -309,16 +317,16 @@ Changes in version 2.13.2 (2019-03-18):
 	- changes in behavior of sample
 	  (see NEWS and https://bugs.r-project.org/bugzilla/show_bug.cgi?id=17494) were
 	  leading to failures of some tests. Using RNGversion in some tests.
-	  
+
 Changes in version 2.13.1 (2019-02-07):
 	- bumped to one over the BioC-3.9 version
 
 Changes in version 2.11.2 (2018-09-24):
 	- works with STRICT_R_HEADERS
-	
+
 Changes in version 2.11.1:
 	- robustify test.fixation.R, Local max, tolerance
-	
+
 Changes in version 2.10.0 (for BioC 3.7):
 	- probDetect mechanism changed. This could be a BREAKING CHANGE.
 	  The expression divides by the baseline. For fixed initSize, this
@@ -334,7 +342,7 @@ Changes in version 2.10.0 (for BioC 3.7):
 Changes in version 2.9.10 (2018-04-19):
 	- test.Z-fixation: some tests only on Linux because rng is done in
 	C++.
-	
+
 Changes in version 2.9.9 (2018-04-10):
 	- probDetect mechanism changed. This could be a BREAKING CHANGE.
 	  The expression divides by the baseline. For fixed initSize, this
@@ -347,7 +355,7 @@ Changes in version 2.9.8 (2018-03-26):
 Changes in version 2.9.7 (2018-02-20):
 	- fixed crash in some conditions when run with
 	stringsAsFactors = FALSE as global option
-	
+
 Changes in version 2.9.6 (2017-12-27):
 	- Updated citation.
 	- An example (in miscell-files) about using and stopping with
@@ -363,11 +371,11 @@ Changes in version 2.9.4 (2017-11-30):
 
 Changes in version 2.9.3 (2017-11-27):
 	- Make clang happy (do not use flandscape as DataFrame)
-	
+
 Changes in version 2.9.2 (2017-11-24):
 	- LOD: using only the strict Szendro et al. meaning.
 	- POM: computed in C++.
-	
+
 Changes in version 2.9.1 (2017-11-10):
 	- Using fitness landscape directly when given as input (no
           conversion to epistasis)
@@ -396,7 +404,7 @@ Changes in version 2.6.0 (for BioC 3.5):
 	- accessible genotypes now done in C++.
 	- Handling of trivial cases in genotFitness.
 	- Clarified McFarland parameterization.
-	- Better (and better explained) estimates of simulation error for McFL.	
+	- Better (and better explained) estimates of simulation error for McFL.
 	- AND of detectedSizeP and lastMaxDr.
 	- sampledGenotypes in user code.
 	- clonePhylog et al: deal with never any descendant.
@@ -421,7 +429,7 @@ Changes in version 2.5.11 (2017-01-27):
 
 Changes in version 2.5.10 (2017-01-27):
 	- Transitive reduction: calling nem in simOGraph
-	
+
 Changes in version 2.5.9 (2017-01-09):
 	- Added code coverage comments to vignette.
 
@@ -436,14 +444,14 @@ Changes in version 2.5.6 (2016-12-14):
 
 Changes in version 2.5.5 (2016-12-14):
 	- Vignette: miscell changes (typos, etc)
-	
+
 Changes in version 2.5.4 (2016-12-12):
 	- Vignette: miscell changes (order of examples, typos, etc)
 
 Changes in version 2.5.3 (2016-12-12):
 	- Vignette uses pander in tables.
 	- Typos fixed and other enhancements in vignette.
-	
+
 Changes in version 2.5.2 (2016-12-10):
         - Lots and lots of addition to vignette including benchmarks.
         - Diversity of sampled genotypes.
@@ -468,29 +476,29 @@ Changes in version 2.5.1 (2016-11-12):
 
 Changes in version 2.4.0 (for BioC 3.4):
 	- Mutator phenotype and gene-specific mutation rates.
-	- End simulations stochastically as a function of size.	
-	- Specify fitness by giving genotype-> fitness mapping.	
+	- End simulations stochastically as a function of size.
+	- Specify fitness by giving genotype-> fitness mapping.
 	- Random fitness landscape generation.
 	- Plots of fitness landscapes.
 	- Vignette: using Rmd.
 	- Several improvements in help and vignette.
 	- Improved test coverage.
-	- samplePop: sample at arbitrary sizes.	
+	- samplePop: sample at arbitrary sizes.
 	- evalAllGenotypes: order = FALSE by default.
-	
+
 Changes in version 2.3.17 (2017-09-22):
 	- random2 for rfitness.
 	- Vignette: decrease size and running time.
-	
+
 Changes in version 2.3.16 (2017-09-19):
 	- Help was not accurate for some probSize args
-	
+
 Changes in version 2.3.15 (2017-09-14):
 	- Typo in name (progresion)
-	
+
 Changes in version 2.3.14 (2017-08-26):
 	- Documentation improvements.
-	
+
 Changes in version 2.3.13 (2017-08-19):
 	- bioRxiv citation.
 	- Using Rmd for vignette.
@@ -502,16 +510,16 @@ Changes in version 2.3.12 (2017-08-10):
 Changes in version 2.3.11 (2017-08-10):
 	- evalAllGenotypes: order = FALSE by default.
 	- Clarified difference plotFitnessEffects and plotFitnessLandscape.
-	
+
 Changes in version 2.3.10 (2017-07-14):
 	- The windows check failure with mc.cores.
-	
+
 Changes in version 2.3.9 (2017-07-09):
 	- Accessible genotypes in rfitness and plotFitnessLandscape
 
 Changes in version 2.3.8 (2017-07-08):
 	- PDBasline default is now 1.2.
-	
+
 Changes in version 2.3.7 (2016-07-05):
 	- Unused C++ code reorganiz.
 	- Added tests
@@ -520,13 +528,13 @@ Changes in version 2.3.7 (2016-07-05):
 
 Changes in version 2.3.6 (2016-06-25):
 	- Improved test coverage
-	
+
 Changes in version 2.3.5 (2016-06-25):
 	- to_Magellan.
 
 Changes in version 2.3.4 (2016-06-24):
 	- Failing some tests in Win 32-bits
-	
+
 Changes in version 2.3.3 (2016-06-23):
 	- Vignette improvements and typo fixes.
 	- rfitness: generate fitness landscapes.
@@ -628,7 +636,7 @@ Changes in version 1.99.01 (2015-06-17):
 
 Changes in version 1.99.00 (2015-04-23):
 	- Accumulated changes of former 99.1.2 to 99.1.14:
-	
+
 	- changes in intermediate version 1.99.1.14 (2015-04-23):
 		- Now are things OK (I messed up the repos)
 
@@ -681,7 +689,7 @@ Changes in version 0.99.2 (2014-07-14)
 	- Consistently using indentation in .Rd files.
 
 Changes in version 0.99.1 (2014-07-14)
-	- Minor changes for BioConductor submission: 
+	- Minor changes for BioConductor submission:
 	    - extended description
 	    - minor changes to vignette
 	    - improved documentation of posets
@@ -696,7 +704,7 @@ Changes prior to the first BioC version.
 
 preBioC_1.0.4   2013-03-21
         - Versions K, M, O, P working.
-        - Versions O and P with u_1 and u_2 so as to provide comparable 
+        - Versions O and P with u_1 and u_2 so as to provide comparable
           results to K and M.
         - Sometimes problems with ti==0.
 
@@ -718,15 +726,15 @@ preBioC_1.0.8   2013-04-02
 
 preBioC_1.0.9   2013-04-02
 	- Some code in R moved to C++.
-	- Minimize increases in RAM in R related to 
+	- Minimize increases in RAM in R related to
 	  handling of temporaries.
 	- Moved out of main R function the creation of rarely used objects.
 
 preBioC_1.0.10  2013-04-04
-	- Info on actual drivers returned from C++	
+	- Info on actual drivers returned from C++
 
 preBioC_1.0.11	2013-04-04
-	- Added time limit to main C++ loop execution and changed exploration 
+	- Added time limit to main C++ loop execution and changed exploration
 	  files  accordingly.
 
 preBioC_1.0.12	2013-04-15
@@ -754,7 +762,7 @@ preBioC_1.0.16	2013-05-01
 preBioC_1.0.17	2013-05-20
 	- Added McFarland et al. 2013 fitness.
 	- Some code cleaning.
-	- Fewer arguments in R function have default values 
+	- Fewer arguments in R function have default values
 	(force user to be explicit).
 
 preBioC_1.0.18	2013-07-25
@@ -762,7 +770,7 @@ preBioC_1.0.18	2013-07-25
 	- Tried to use Youn and Simon's method. Calling code added.
 	- Tried to use Sakoparnig and Beerenwinkel's Bayesian CBN. Calling
 	code added.
-	- Fixed non-working code in metrics due to changes in functions in graph. 
+	- Fixed non-working code in metrics due to changes in functions in graph.
 	- Added simple code for temporal order.
 	- Added old code for clonal ordering (not finished).
 	- Robustified other functions and start up (cbn, metrics,
@@ -770,7 +778,7 @@ preBioC_1.0.18	2013-07-25
 	- No dependencies on libgmp (multiprecission arith.) now; removed
 	from Makevars.
 	- Warning in R code if endTimeEvery is not negative in simulation models
-	where it should probably be negative. 
+	where it should probably be negative.
 
 preBioC_1.0.19	2014-xxx
 	- Changes and addition to plotting functions.

@@ -1,14 +1,14 @@
 Package: OncoSimulR
 Type: Package
-Title: Forward Genetic Simulation of Cancer Progression with Epistasis 
-Version: 4.3.3
-Date: 2023-07-17
+Title: Forward Genetic Simulation of Cancer Progression with Epistasis
+Version: 4.7.1
+Date: 2024-07-23
 Authors@R: c(
-	      person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),	
+	      person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
  	   		     email = "rdiaz02@gmail.com"),
-              person("Sergio", "Sanchez-Carrillo", role = "aut", 
+              person("Sergio", "Sanchez-Carrillo", role = "aut",
 	        email = "sergiosanchezcarrillo@gmail.com"),
-              person("Juan Antonio", "Miguel Gonzalez", role = "aut", 
+              person("Juan Antonio", "Miguel Gonzalez", role = "aut",
 	        email = "juanantonio.miguel792@gmail.com"),
               person("Mark", "Taylor", role = "ctb",
 	        email = "ningkiling@gmail.com",
@@ -20,13 +20,13 @@ Authors@R: c(
 	      person("Alberto", "Gonzalez Klein", role = "aut",
 	        comment = "user-specified death rates"),
 	      person("Javier", "Lopez Cano", role = "aut",
-	        comment = "user-defined variables"),	
+	        comment = "user-defined variables"),
 	      person("Arash", "Partow", role = "ctb", comment = "ExprTk"),
 	      person("Sophie", "Brouillet", role = "ctb", comment = "MAGELLAN"),
 	      person("Sebastian", "Matuszewski", role = "ctb",
-	             comment = "MAGELLAN"),  
+	             comment = "MAGELLAN"),
 	      person("Harry", "Annoni", role = "ctb", comment = "MAGELLAN"),
-	      person("Luca", "Ferretti", role = "ctb", comment = "MAGELLAN"),	      
+	      person("Luca", "Ferretti", role = "ctb", comment = "MAGELLAN"),
 	      person("Guillaume", "Achaz", role = "ctb", comment = "MAGELLAN"),
 	      person("Wolodzko", "Tymoteusz", role = "ctb", comment = "multivariate hypergeometric"),
 	      person("Guillermo", "Gorines Cordero", role = "ctb",
@@ -91,7 +91,7 @@ Authors@R: c(
 	      person("Ana", "del Ramo Galian", role = "ctb",
 	             comment = "vignette examples"),
 	      person("Alejandro", "de los Reyes Benitez", role = "ctb",
-	             comment = "vignette examples"), 
+	             comment = "vignette examples"),
 	      person("Guillermo", "Garcia Hoyos", role = "ctb",
 	             comment = "vignette examples"),
 	      person("Rosalia", "Palomino Cabrera", role = "ctb",
@@ -100,14 +100,14 @@ Authors@R: c(
 	             comment = "vignette examples"),
 	      person("Silvia", "Talavera Marcos", role = "ctb",
 	             comment = "vignette examples")
-	      )  
+	      )
 Author: Ramon Diaz-Uriarte [aut, cre],
 	Sergio Sanchez-Carrillo [aut],
 	Juan Antonio Miguel Gonzalez [aut],
 	Alberto Gonzalez Klein [aut],
 	Javier Mu\~noz Haro [aut],
 	Javier Lopez Cano [aut],
-	Niklas Endres [ctb],  
+	Niklas Endres [ctb],
 	Mark Taylor [ctb],
 	Arash Partow [ctb],
 	Sophie Brouillet [ctb],
@@ -148,11 +148,11 @@ Author: Ramon Diaz-Uriarte [aut, cre],
 	Alberto Manuel Parra Perez [ctb],
 	Jorge Garcia Calleja [ctb],
 	Ana del Ramo Galian [ctb],
-	Alejandro de los Reyes Benitez [ctb], 
+	Alejandro de los Reyes Benitez [ctb],
 	Guillermo Garcia Hoyos [ctb],
 	Rosalia Palomino Cabrera [ctb],
 	Rafael Barrero Rodriguez [ctb],
-	Silvia Talavera Marcos [ctb]	
+	Silvia Talavera Marcos [ctb]
 Maintainer: Ramon Diaz-Uriarte <rdiaz02@gmail.com>
 Description: Functions for forward population genetic simulation in asexual populations, with special focus on cancer progression. Fitness can be an arbitrary function of genetic interactions between multiple genes or modules of genes, including epistasis, order restrictions in mutation accumulation, and order effects. Fitness (including just birth, just death, or both birth and death) can also be a function of the relative and absolute frequencies of other genotypes (i.e., frequency-dependent fitness). Mutation rates can differ between genes, and we can include mutator/antimutator genes (to model mutator phenotypes). Simulating multi-species scenarios and therapeutic interventions, including adaptive therapy, is also possible. Simulations use continuous-time models and can include driver and passenger genes and modules. Also included are functions for: simulating random DAGs of the type found in Oncogenetic Trees, Conjunctive Bayesian Networks, and other cancer progression models; plotting and sampling from single or multiple realizations of the simulations, including single-cell sampling; plotting the parent-child relationships of the clones; generating random fitness landscapes (Rough Mount Fuji, House of Cards, additive, NK, Ising, and Eggbox models) and plotting them.
 biocViews: BiologicalQuestion, SomaticMutation
@@ -164,4 +164,3 @@ Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igrap
 Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0), rmarkdown, bookdown, pander
 LinkingTo: Rcpp
 VignetteBuilder: knitr
-
