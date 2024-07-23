@@ -21,7 +21,7 @@
   al., 2012.
 }
 \usage{
- oncoSimulIndiv(fp, model = "Exp", 
+ oncoSimulIndiv(fp, model = "Exp",
                 numPassengers = 0, mu = 1e-6, muEF = NULL,
                 detectionSize = 1e8, detectionDrivers = 4,
                 detectionProb = NA,
@@ -143,7 +143,7 @@ oncoSimulSample(Nindiv,
     \code{\link{poset}} if you want to use the specification as in
     v.1. Otherwise, a fitnessEffects object (see
     \code{\link{allFitnessEffects}}). You must always use a fitnessEffects object
-    when you are in a frequency dependent fitness simulation; of course in this case 
+    when you are in a frequency dependent fitness simulation; of course in this case
     fp$frequencyDependentFitness must be TRUE.
 
     Other arguments below (s, sh, numPassengers) make sense only if you
@@ -159,7 +159,7 @@ oncoSimulSample(Nindiv,
   using "McFLD", death rate = \eqn{\max(1, \log(1 + N/K))}, so that death
   rate never goes below 1.). If "Arb" (arbitrary) model is specified, death
   must be present in \code{\link{allFitnessEffects}}, and vice versa.
-  
+
 
 }
 
@@ -168,11 +168,11 @@ oncoSimulSample(Nindiv,
   This has no effect if you use the \code{\link{allFitnessEffects}}
   specification. This happens always when you are in a simulation that use
   frequency dependent fitness.
-  
+
   If you use the specification of v.1., the number of passenger
   genes. Note that using v.1 the total number of genes (drivers plus
   passengers) must be smaller than 64.
-  
+
   All driver genes should be included in the poset (even if they depend
   on no one and no one depends on them), and will be numbered from 1 to
   the total number of driver genes. Thus, passenger genes will be
@@ -189,7 +189,7 @@ oncoSimulSample(Nindiv,
   the genes in the fitness specification. Passing a vector is only
   available when using fitnessEffects objects for fitness specification.
   Mutation rates \code{<10^-20} are not accepted.
-  See also \code{mutationPropGrowth}. 
+  See also \code{mutationPropGrowth}.
 
 }
 
@@ -201,13 +201,13 @@ oncoSimulSample(Nindiv,
   this allows you to specify mutator phenotypes: models where mutation
   of one (or more) gene(s) leads to an increase in the mutation
   rate. This is only available for version 2 (and above) specifications.
-  
-  
+
+
   All the genes specified in \code{muEF} MUST be included in
   \code{fp}. If you want to have genes that have no direct effect on
   fitness, but that affect mutation rate, you MUST specify them in
   \code{fp}, for instance as \code{noIntGenes} with an effect of 0.
-  
+
   If you use mutator effects you must also use fitnessEffects in
   \code{fp}.
 
@@ -222,7 +222,7 @@ to be detected.  For \code{oncoSimulSample} this can be a vector.
 If set to NA, \code{detectionSize} plays no role in stopping the
 simulations.
 
-} 
+}
 
 \item{detectionDrivers}{ The minimal number of drivers (not modules,
 drivers, whether or not they are from the same module) present in any
@@ -250,33 +250,22 @@ simulations.
   is not used. If \sQuote{default}, the vector will be populated with
   default values.  Otherwise, a named vector with some of the following
   named elements (see \sQuote{Details}):
+
   \itemize{
 
-    \item{PDBaseline:}{ Baseline size subtracted to total population size
-    to compute the probability of detection. If not given explicitly,
-    the default is \code{1.2 * initSize} (or \code{1.2 * sum(initSize)}
-    when multiple \code{initMutant}s).
-    }
+    \item \code{PDBaseline}: Baseline size subtracted to total population  size to compute the probability of detection. If not given explicitly,  the default is \code{1.2 * initSize} (or \code{1.2 * sum(initSize)}  when multiple \code{initMutant}s).
 
-    \item{p2:}{ The probability of detection at population size
-    \code{n2}. If you specificy \code{p2} you must also specify
-    \code{n2} and you must not specify \code{cPDetect}. The fault is 0.1.}
+    \item \code{p2}: The probability of detection at population size \code{n2}. If you specificy \code{p2} you must also specify \code{n2} and you must not specify \code{cPDetect}. The fault is 0.1.
 
-    \item{n2:}{ The population size at which probability of detection is
-      \code{p2}. The default is \code{2 * initSize}.}
+    \item \code{n2}: The population size at which probability of detection is \code{p2}. The default is \code{2 * initSize}.
 
-    \item{cPDetect:}{ The change in probability of detection with size. If
-      you specify it, you should not specify either of \code{p2} or
-      \code{n2}. See \sQuote{Details}.  }
+    \item \code{cPDetect}: The change in probability of detection with size. If you specify it, you should not specify either of \code{p2} or \code{n2}. See \sQuote{Details}.
 
-    \item{checkSizePEvery:}{ Time between successive checks for the
-    probability of exiting as a function of population size. If not
-    given explicitly, the default is 20. See \sQuote{Details}.}
+    \item \code{checkSizePEvery}: Time between successive checks for the probability of exiting as a function of population size. If not given explicitly, the default is 20. See \sQuote{Details}.
 
-}
-If you only provide some of the elements (except for the pair \code{p2},
-\code{n2}, where you must provide both if you provide any), the rest
-will be filled with default values.
+  }
+
+If you only provide some of the elements (except for the pair \code{p2}, \code{n2}, where you must provide both if you provide any), the rest will be filled with default values.
 
 This option can not be used with v.1 objects.
 
@@ -303,7 +292,7 @@ This option can not be used with v.1 objects.
 %%   depends on size, time between successive checks. See \sQuote{Details}.  }
 
 \item{sampleEvery}{
-  
+
   How often the whole population is sampled. This is not the same as the
   interval between successive samples that are kept or stored (for that,
   see \code{keepEvery}).
@@ -399,7 +388,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   exiting at a time when one clone is increasing its size quickly (see
   \code{minDetectDrvCloneSz}). By setting an \code{extraTime} larger than 0,
   we can sample at points when we are at the plateau.
-  
+
 
 }
 
@@ -422,7 +411,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
   detected stochastically under \code{detectionProb} is
   obtained.
 
-  
+
   If \code{onlyCancer = FALSE} the simulation is returned regardless of
   final population size or number of drivers in any clone and this
   includes simulations where the population goes extinct.
@@ -436,7 +425,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
 
 \item{keepPhylog}{
   If TRUE, keep track of when and from which clone each clone is
-  created. See also \code{\link{plotClonePhylog}}. 
+  created. See also \code{\link{plotClonePhylog}}.
 }
 
 
@@ -556,7 +545,7 @@ of \code{sampleEvery} that is larger than or equal to \code{keepEvery}.
     on thresholdWhole: a gene is considered mutated if it is altered in at
     least thresholdWhole proportion of the cells in that individual. See \code{\link{samplePop}}.
   }
-  
+
 
 \item{mc.cores}{Number of cores to use when simulating more than one
   individual (i.e., when calling oncoSimulPop).}
@@ -584,7 +573,7 @@ of the individual done, and the number of attempts and time used.}
   with those gene combinations. In contrast, \code{fixation = c("_,A",
   "_,B, C" )} specifies stopping only on gentoypes "A" or "B, C". See
   the vignette for further examples.
-  
+
 
   In addition to the gene combinations or genotypes themeselves, you can
   add to the list or vector the named elements
@@ -613,7 +602,7 @@ of the individual done, and the number of attempts and time used.}
   old v.1 specification.}
 
 \item{s}{
-  Selection coefficient for drivers. 
+  Selection coefficient for drivers.
     Only relevant if using a poset as this is included in the
   fitnessEffects object. This will eventually be deprecated.
 }
@@ -653,21 +642,21 @@ of the individual done, and the number of attempts and time used.}
 
 \item{interventions}{
 
-  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
-  \code{allFitnessEffects} function. Also, you must use \code{createInterventions} 
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in
+  \code{allFitnessEffects} function. Also, you must use \code{createInterventions}
   function to create the correct type of parameter for the function \code{oncoSimulPop} ,
   \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly.
 
-  Use this argument in case you want to intervene in the simulation. With interventions, 
+  Use this argument in case you want to intervene in the simulation. With interventions,
   you can affect the total population size, or just some genotype-specific
-  population. You can complicate it as much as you want, or keep it simple, 
+  population. You can complicate it as much as you want, or keep it simple,
   it is really up to you.
 
-  Formally, interventions must be a list of lists, where each 
+  Formally, interventions must be a list of lists, where each
   "sub-list" must have the following fields:
 
   * ID: The identifier of the intervention, must be unique.
-  * Trigger: The situation in the simulation that triggers/activates 
+  * Trigger: The situation in the simulation that triggers/activates
              the intervention.
 
   * What Happens: "What happens" in the simulation. Basically, once the
@@ -675,23 +664,23 @@ of the individual done, and the number of attempts and time used.}
                affected by  the intervention. Please see the vignette
                for details about the differences between when
                interventions that affect a single genotype and those that affect the complete        population occur.
-  
+
   * Periodicity: Defines the periodicity of the intervention.
   * Repetitions: Defines the maximum repetitions of each intervention in the simulation.
 }
 
 \item{userVars}{
 
-  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
-  \code{allFitnessEffects} function. Also, you must use \code{createuserVars} 
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in
+  \code{allFitnessEffects} function. Also, you must use \code{createuserVars}
   function to create the correct type of parameter for the function \code{oncoSimulPop} ,
   \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly.
 
-  Use this argument in case you want to define arbitrary variables that depend on other simulation values. 
+  Use this argument in case you want to define arbitrary variables that depend on other simulation values.
   With the yser Variables you can simulate Adaptive therapy by using this defined variables in the intervention's
   whatHappens definition, or simply get more detailed insight by defining some interesting values you desire as an output.
 
-  Formally, userVars must be a list of lists, where each 
+  Formally, userVars must be a list of lists, where each
   "sub-list" must have the following fields:
 
   * Name: The name that identifies the new variable, must be unique.
@@ -702,8 +691,8 @@ of the individual done, and the number of attempts and time used.}
 
 \item{rules}{
 
-  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in 
-  \code{allFitnessEffects} function. Also, you must use \code{createRules} 
+  This has no effect if you do not specify \code{frequencyDependentFitness = TRUE} in
+  \code{allFitnessEffects} function. Also, you must use \code{createRules}
   function to create the correct type of parameter for the function \code{oncoSimulPop} ,
   \code{oncoSimulIndiv} , \code{oncoSimulSample} to process it correctly. This also requires you to use
   \code{userVars} as these rules operate on them and will not have any effect if thses do not exist.
@@ -712,13 +701,13 @@ of the individual done, and the number of attempts and time used.}
   You can use any arbitrarily complex expression depending on other simulation parameters such as T, N, Genotype
   populations or genotype rates.
 
-  Formally, rules must be a list of lists, where each 
+  Formally, rules must be a list of lists, where each
   "sub-list" must have the following fields:
 
   * ID: The identifier of the rule, must be unique.
-  * Condition: The situation in the simulation that triggers/activates 
+  * Condition: The situation in the simulation that triggers/activates
              the user variable modification.
-  * Action:  The action that will take place once the condition is true. This defines wich user variables will be 
+  * Action:  The action that will take place once the condition is true. This defines wich user variables will be
     modified and the expression that defines the new values for them.
 }
 
@@ -790,7 +779,7 @@ of the individual done, and the number of attempts and time used.}
   (comparing the probability of detection for that size with a random
   uniform number). Probability of detection changes with population size
   according to the function
-  
+
   \deqn{ 1 - e^{-cPDetect ( (populationsize - PDBaseline)/PDBaseline )}}.
 
   You can pass \code{cPDetect} manually (you will need to set \code{n2}
@@ -814,17 +803,17 @@ of the individual done, and the number of attempts and time used.}
   %% closest possible to) a multiple of \code{checkSizePEvery}.
 
 
-  
+
 }
 \value{
-  
+
   For \code{oncoSimulIndiv} a list, of class "oncosimul", with the
   following components:
-  
+
     \item{pops.by.time }{A matrix of the population sizes of the clones,
     with clones in columns and time in row. Not all clones are shown here,
     only those that were present in at least on of the keepEvery samples.}
-  
+
   \item{NumClones   }{Total number of clones in the above matrix. This
   is not the total number of distinct clones that have appeared over all
   simulations (which is likely to be larger or much larger).}
@@ -835,7 +824,7 @@ of the individual done, and the number of attempts and time used.}
     pops.by.time matrix, its genotype, with a 0 if the gene is not
     mutated and a 1 if it is mutated.}
 
-  
+
   \item{MaxNumDrivers}{The largest number of mutated driver genes ever
     seen in the simulation in any clone.}
 
@@ -872,7 +861,7 @@ of the individual done, and the number of attempts and time used.}
     largest clone, the ratio of the two, the largest number of drivers in
     any clone, and the number of drivers in the clone with the largest
     population size.}
-  
+
   \item{other}{A list that contains statistics for an estimate of the
     simulation error when using the McFarland model as well as other
     statistics. For the McFarland model, the relevant value is errorMF,
@@ -881,7 +870,7 @@ of the individual done, and the number of attempts and time used.}
     minDMratio and minBMratio are the smallest ratio, over all
     simulations, of death rate to mutation rate and birth rate to mutation
     rate, respectively. The BNB algorithm thrives when those are large.}
-  
+
 
   For \code{oncoSimulPop} a list of length \code{Nindiv}, and of class
   \code{"oncosimulpop"}, where each element of the list is itself a
@@ -901,8 +890,8 @@ of the individual done, and the number of attempts and time used.}
   5, 6 for which other interactions exist, any mutations in 1, 2, 7 are
   shown first, and in the order they occurred, before showing the rest
   of the mutations.  See details.}
-  
- 
+
+
 
 
   \item{GenotypesLabels}{The genotypes, as character vectors with the
@@ -925,7 +914,7 @@ of the individual done, and the number of attempts and time used.}
   mutations during tumor progression. \emph{ Proceedings of the National
   Academy of Sciences of the United States of America\/}, \bold{107},
   18545--18550.
-  
+
   Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
   accumulation of mutations during tumor progression: effects of
   passengers, evolutionary models, and sampling
@@ -933,7 +922,7 @@ of the individual done, and the number of attempts and time used.}
 
   Gerstung et al., 2011. The Temporal Order of Genetic and Pathway
   Alterations in Tumorigenesis. \emph{PLoS ONE}, 6.
-  
+
   McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National
   Academy of Sciences of the United States of America\/}, \bold{110}(8),
@@ -943,7 +932,7 @@ of the individual done, and the number of attempts and time used.}
   algorithm for simulating evolutionary population dynamics.
   \emph{Bioinformatics (Oxford, England)\/}, \bold{28}(9), 1230--1238.
 
-  
+
 
 }
 
@@ -958,9 +947,9 @@ of the individual done, and the number of attempts and time used.}
 
 
 \seealso{
-  \code{\link{plot.oncosimul}}, 
+  \code{\link{plot.oncosimul}},
   \code{\link{samplePop}}, \code{\link{allFitnessEffects}}
-  
+
 
 }
 \examples{
@@ -1135,7 +1124,7 @@ genofit <- data.frame(A = c(0, 1, 0, 1),
                                   "5 + 6*(f_1 + f_2 + f_1_2)"))
 
 afe <- allFitnessEffects(genotFitness = genofit,
-                         frequencyDependentBirth = TRUE, 
+                         frequencyDependentBirth = TRUE,
                          frequencyType = "rel")
 
 osi <- oncoSimulIndiv(afe,
