@@ -7,7 +7,6 @@
 
 ## Yes, works under eshell.
 
-
 ## I need to clean up first, because otherwise when I remove files in the
 ## master git repo, they are not necessarily removed in the svn repo
 
