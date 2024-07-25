@@ -1,3 +1,8 @@
+Changes in version 4.7.2 (2024-07-25):
+	- Try to work around (and ask for help) for a vignette example
+	  that fails in the BioC kjohnson3 machine (maOS 13.6.5, arm64).
+	  (Yes, a second place where it fails).
+
 Changes in version 4.7.1 (2024-07-23):
 	- Try to work around (and ask for help) for a vignette example
 	  that fails in the BioC kjohnson3 machine (maOS 13.6.5, arm64).

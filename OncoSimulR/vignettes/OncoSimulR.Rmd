@@ -12674,8 +12674,15 @@ ex1_with_ints <- oncoSimulIndiv(
                     onlyCancer = FALSE,
                     interventions = interventions)
 
-plot(ex1_with_ints, show="genotypes", type = "line")
+## This try should not be necessary, except
+## the code above seems to produce an empty object
+## in the BioC kjohnson3 (maOS 13.6.5, arm64) machine.
+## See below, "Help debugging"
+try(plot(ex1_with_ints, show="genotypes", type = "line"))
 ```
+
+(Help debugging: If you are running this in a macOS 13.6.5 with arm64 or, more generally, if you see the above plot produce nothing, I'd appreciate if you can let me know. Email me with the output of the run, specially what `print(ex1_with_ints)` and `summary(ex1_with_ints)` yield. And try running the code again, to see if this happens consistently regardless of the seed.)
+
 
 Where it is shown that, once we reach **T=5**, the population of B decreases, and,
 as a result of that, since genotype A does not encounter any other competition,
