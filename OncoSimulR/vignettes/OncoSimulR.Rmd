@@ -13296,11 +13296,18 @@ atex <- oncoSimulIndiv(
                     onlyCancer = FALSE,
                     userVars = userVars,
                     rules = rules,
-                    interventions = interventions
-                    )
+                    interventions = interventions)
 
-plot(atex, show = "genotypes", type = "line")
+## This try should not be necessary, except
+## the code above seems to produce an empty object
+## in the BioC kjohnson3 (maOS 13.6.5, arm64) machine.
+## See below, "Help debugging"
+
+try(plot(atex, show = "genotypes", type = "line"))
 ```
+
+(Help debugging: If you are running this in a macOS 13.6.5 with arm64 or, more generally, if you see the above plot produce nothing, I'd appreciate if you can let me know. Email me with the output of the run, specially what `print(atex)` and `summary(atex)` yield. And try running the code again, to see if this happens consistently regardless of the seed.)
+
 
 <!-- FIXME -->
 <!-- When we use keepEvery, this shows nothing. And even without -->
