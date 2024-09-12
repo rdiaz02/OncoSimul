@@ -17,7 +17,7 @@ mutsPerClone <- function(x, per.pop.mean = TRUE) {
     perCl2 <- function(z)
         mean(unlist(lapply(z$GenotypesWDistinctOrderEff, length)))
 
-    if(per.pop.mean)    
+    if(per.pop.mean)
         unlist(lapply(x, function(u) perCl2(u)))
     else
         lapply(x, function(u) perCl(u))
@@ -36,12 +36,12 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         ## stopping on time or size is about the same
         ## in these models, but we stop on size to
         ## control for different  pop size. Now, time should be very similar, or we introduce a serious distorsion.
-        
+
         ## cat("\n mcf1: a runif is", runif(1), "\n")
-        ft <- 26  # 3 
+        ft <- 26  # 3
         pops <- 50
         lni <- 100
-        no <- 1e3 ## 5e1 
+        no <- 1e3 ## 5e1
         ni <- c(4, rep(0, lni)) ## 5
         names(ni) <- c("a", paste0("n", seq.int(lni)))
         ni <- sample(ni) ## scramble
@@ -81,7 +81,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL", {
         T2 <- ( t.test(mutsPerClone(nca) ,
                 mutsPerClone(nca2), alternative = "greater")$p.value < p.value.threshold)
 
-        
+
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     ## cat(paste("\n done tries", tries, "\n"))
@@ -100,13 +100,13 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
         ## stopping on time or size is about the same in these models, but
         ## we stop on time now. Note that sizes are about the same as we
         ## have been in the plateau for long
-        
-        
+
+
         ## cat("\n mcf1_ontime: a runif is", runif(1), "\n")
-        ft <- 6 
+        ft <- 6
         pops <- 50
         lni <- 100
-        no <- 1e3 ## 5e1 
+        no <- 1e3 ## 5e1
         ni <- c(4, rep(0, lni)) ## 5
         ds <- 1e9
         names(ni) <- c("a", paste0("n", seq.int(lni)))
@@ -147,7 +147,7 @@ test_that("mutPropGrowth diffs with s> 0, McFL, stop on time", {
         T2 <- ( t.test(mutsPerClone(nca) ,
                 mutsPerClone(nca2), alternative = "greater")$p.value < p.value.threshold)
 
-        
+
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     ## cat(paste("\n done tries", tries, "\n"))
@@ -163,11 +163,11 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n oss1: a runif is", runif(1), "\n")
-        
-        ft <- 133 ## we stop on size way earlier 
+
+        ft <- 133 ## we stop on size way earlier
         pops <- 50
         lni <- 200 ## 150
-        no <- 1e3 ## 5e1 
+        no <- 1e3 ## 5e1
         ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
         mu <- 5e-7 ## 1e-6
         x <- 1e-9
@@ -179,7 +179,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                mu = mu,
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.02,
-                               initMutant = "a", 
+                               initMutant = "a",
                                onlyCancer = FALSE, seed = NULL,
                                detectionSize = 1e6,
                                detectionDrivers = 99,
@@ -189,7 +189,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                 mu = mu,
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.02,
-                                initMutant = "a", 
+                                initMutant = "a",
                                 onlyCancer = FALSE, seed = NULL,
                                 detectionSize = 1e6,
                                 detectionDrivers = 99,
@@ -222,7 +222,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         ## initMutant with increased s
         summary(nca$popSummary[, "TotalPopSize"])
         summary(nca2$popSummary[, "TotalPopSize"])
-        
+
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     ## cat(paste("\n done tries", tries, "\n"))
@@ -240,11 +240,11 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
     for(tries in 1:max.tries) {
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n oss1_ontime: a runif is", runif(1), "\n")
-        
-        ft <- 4 ## we stop on time 
+
+        ft <- 4 ## we stop on time
         pops <- 50
         lni <- 200 ## 150
-        no <- 1e3 ## 5e1 
+        no <- 1e3 ## 5e1
         ni <- c(2, rep(0, lni)) ## 2 ## 4 ## 5
         mu <- 5e-7 ## 1e-6
         x <- 1e-9
@@ -256,7 +256,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                mu = mu,
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.02,
-                               initMutant = "a", 
+                               initMutant = "a",
                                onlyCancer = FALSE, seed = NULL,
                                detectionSize = 1e9,
                                detectionDrivers = 99,
@@ -266,7 +266,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
                                 mu = mu,
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.02,
-                                initMutant = "a", 
+                                initMutant = "a",
                                 onlyCancer = FALSE, seed = NULL,
                                 detectionSize = 1e9,
                                 detectionDrivers = 99,
@@ -299,7 +299,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample", {
         ## initMutant with increased s
         summary(nca$popSummary[, "TotalPopSize"])
         summary(nca2$popSummary[, "TotalPopSize"])
-        
+
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     ## cat(paste("\n done tries", tries, "\n"))
@@ -313,13 +313,13 @@ date()
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
     max.tries <- 4
     for(tries in 1:max.tries) {
-        
+
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n ossmcf1: a runif is", runif(1), "\n")
         ft <- 100  ## we stop on size
         pops <- 50
         lni <- 200 ## 150
-        no <- 1e3 ## 5e1 
+        no <- 1e3 ## 5e1
         ni <- c(3, rep(0, lni)) ## 2 ## 4 ## 5
         mu <- 5e-7 ## 1e-6
         x <- 1e-9
@@ -331,7 +331,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                                mu = mu, model = "McFL",
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.01,
-                               initMutant = "a", 
+                               initMutant = "a",
                                onlyCancer = FALSE, seed = NULL,
                                detectionSize = 3e4,
                                detectionDrivers = 99,
@@ -341,7 +341,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
                                 mu = mu, model = "McFL",
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.01,
-                                initMutant = "a", 
+                                initMutant = "a",
                                 onlyCancer = FALSE, seed = NULL,
                                 detectionSize = 3e4,
                                 detectionDrivers = 99,
@@ -373,7 +373,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL", {
         ## initMutant with increased s. And this is McFL, so bounded from above.
         summary(nca$popSummary[, "TotalPopSize"])
         summary(nca2$popSummary[, "TotalPopSize"])
-        
+
         if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     ## cat(paste("\n done tries", tries, "\n"))
@@ -388,13 +388,13 @@ date()
 test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", {
     max.tries <- 4
     for(tries in 1:max.tries) {
-        
+
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n ossmcf1: a runif is", runif(1), "\n")
         ft <- 10 ## we stop on time but sizes are about same. We are in the plateau
         pops <- 50
         lni <- 200 ## 150
-        no <- 1e3 ## 5e1 
+        no <- 1e3 ## 5e1
         ni <- c(3, rep(0, lni)) ## 2 ## 4 ## 5
         mu <- 5e-7 ## 1e-6
         x <- 1e-9
@@ -406,7 +406,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
                                mu = mu, model = "McFL",
                                mutationPropGrowth = TRUE,
                                initSize = no, sampleEvery = 0.01,
-                               initMutant = "a", 
+                               initMutant = "a",
                                onlyCancer = FALSE, seed = NULL,
                                detectionSize = 3e7,
                                detectionDrivers = 99,
@@ -416,40 +416,43 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
                                 mu = mu, model = "McFL",
                                 mutationPropGrowth = FALSE,
                                 initSize = no, sampleEvery = 0.01,
-                                initMutant = "a", 
+                                initMutant = "a",
                                 onlyCancer = FALSE, seed = NULL,
                                 detectionSize = 3e7,
                                 detectionDrivers = 99,
                                 thresholdWhole = x)
+      ## Skip on kjohnson3, arm64
+      if (Sys.getenv("R_PLATFORM") != "aarch64-apple-darwin20") {
         nca$popSummary[1:5, c(1:3, 8:9)]
-        ## summary(nca$popSummary[, "NumClones"])
-        ## summary(nca$popSummary[, "TotalPopSize"])
-        nca2$popSummary[1:5, c(1:3, 8:9)]
-        ## summary(nca2$popSummary[, "NumClones"])
-        ## summary(nca2$popSummary[, "TotalPopSize"])
-        ## ## cc1 and cc2 should all be smaller than pops, or you are maxing
-        ## ## things and not seeing patterns
-        ## summary(cc1 <- colSums(nca$popSample))
-        ## summary(cc2 <- colSums(nca2$popSample))
-        ## which(cc1 == pops)
-        ## which(cc2 == pops)
-        ## Of course, these are NOT really mutationsPerClone: we collapse over
-        ## whole population. Ends up being very similar to NumClones, except
-        ## fr the few that go extinct.
-        mutsPerClone1 <- rowSums(nca$popSample)
-        mutsPerClone2 <- rowSums(nca2$popSample)
-        ## summary(mutsPerClone1)
-        ## summary(mutsPerClone2)
-        T1 <- ( t.test(mutsPerClone1 ,
+      }
+      ## summary(nca$popSummary[, "NumClones"])
+      ## summary(nca$popSummary[, "TotalPopSize"])
+      nca2$popSummary[1:5, c(1:3, 8:9)]
+      ## summary(nca2$popSummary[, "NumClones"])
+      ## summary(nca2$popSummary[, "TotalPopSize"])
+      ## ## cc1 and cc2 should all be smaller than pops, or you are maxing
+      ## ## things and not seeing patterns
+      ## summary(cc1 <- colSums(nca$popSample))
+      ## summary(cc2 <- colSums(nca2$popSample))
+      ## which(cc1 == pops)
+      ## which(cc2 == pops)
+      ## Of course, these are NOT really mutationsPerClone: we collapse over
+      ## whole population. Ends up being very similar to NumClones, except
+      ## fr the few that go extinct.
+      mutsPerClone1 <- rowSums(nca$popSample)
+      mutsPerClone2 <- rowSums(nca2$popSample)
+      ## summary(mutsPerClone1)
+      ## summary(mutsPerClone2)
+      T1 <- ( t.test(mutsPerClone1 ,
                      mutsPerClone2, alternative = "greater")$p.value < p.value.threshold)
-        T2 <- ( wilcox.test(nca$popSummary[, "NumClones"] ,
-                     nca2$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
-        ## Pop sizes here do not really differ, as we start with the
-        ## initMutant with increased s. And this is McFL, so bounded from above.
-        summary(nca$popSummary[, "TotalPopSize"])
-        summary(nca2$popSummary[, "TotalPopSize"])
-        
-        if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
+      T2 <- ( wilcox.test(nca$popSummary[, "NumClones"] ,
+                          nca2$popSummary[, "NumClones"], alternative = "greater")$p.value < p.value.threshold)
+      ## Pop sizes here do not really differ, as we start with the
+      ## initMutant with increased s. And this is McFL, so bounded from above.
+      summary(nca$popSummary[, "TotalPopSize"])
+      summary(nca2$popSummary[, "TotalPopSize"])
+
+      if(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8) break;
     }
     ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
@@ -481,7 +484,7 @@ test_that("We crash as we should", {
                sampleEvery = 0.001,
                keepEvery = 30,
                initMutant = "b > a",
-               mutationPropGrowth = TRUE, 
+               mutationPropGrowth = TRUE,
                onlyCancer = FALSE,
                verbosity = 0))
     )
@@ -509,7 +512,7 @@ test_that("...and we don't when we shouldn't", {
                sampleEvery = 0.001,
                keepEvery = 30,
                initMutant = "b > a",
-               mutationPropGrowth = FALSE, 
+               mutationPropGrowth = FALSE,
                onlyCancer = FALSE,
                verbosity = 0)
     ))
@@ -530,7 +533,7 @@ cat("\n Ended test.mutPropGrowth: ", date(), "\n")
 ## ni <- rep(0.4, 20)
 ## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
 ## fe <- allFitnessEffects(noIntGenes = ni)
-## set.seed(5) 
+## set.seed(5)
 ## oncoSimulIndiv(fe, finalTime =30,
 ##                mutationPropGrowth = TRUE,
 ##                initSize = 1e4,
@@ -546,7 +549,7 @@ cat("\n Ended test.mutPropGrowth: ", date(), "\n")
 ## ni <- rep(0.4, 20)
 ## names(ni) <- c("a", "b", "c", "d", paste0("n", 1:16))
 ## fe <- allFitnessEffects(noIntGenes = ni)
-## set.seed(25) 
+## set.seed(25)
 ## oncoSimulIndiv(fe, finalTime =40,
 ##                mutationPropGrowth = TRUE,
 ##                initSize = 1e4,

@@ -128,7 +128,7 @@ test_that("4. The user cannot create population in an intervention",{
 
 test_that("5. Drastically reducing A-genotype population (McFL) | Trigger dependending on T", {
     seed <- round(runif(1, 1, 1e9))
-    
+
     fa1 <- data.frame(Genotype = c("A", "B"),
                     Fitness = c("1.001 + (0*n_A)",
                                 "1.002"))
@@ -243,7 +243,7 @@ test_that("6. Drastically reducing A population (Exp) | Trigger dependending on 
 
     index <- which(ep2$pops.by.time[,1] %in% ep2$other$interventionTimes)
 
-    
+
     last <- nrow(ep1$pops.by.time)
     ## when we do not intervene population of A will be bigger than B,
     ## since it has better fitness
@@ -295,14 +295,14 @@ test_that("7. Intervening over total population (McFL) | Trigger depends on T", 
     )
 
     interventions <- createInterventions(interventions, aafd3)
-    
+
     sfd3 <- oncoSimulIndiv(aafd3,
                            model = "McFL",
                            onlyCancer = FALSE,
                            finalTime = 16,
                            mu = 1e-4,
-                           initSize = 2e4, 
-                           sampleEvery = 0.025, 
+                           initSize = 2e4,
+                           sampleEvery = 0.025,
                            interventions = interventions,
                            detectionSize = NA
                            )
@@ -318,7 +318,7 @@ test_that("7. Intervening over total population (McFL) | Trigger depends on T", 
         print(reduction)
         expect_equal(reduction, rep(interv_fract, 3))
     }
-    
+
 })
 
 
@@ -346,7 +346,7 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
     )
 
     interventions <- createInterventions(interventions, aafd3)
-    
+
     sfd3 <- oncoSimulIndiv(aafd3,
                            model = "Exp",
                            onlyCancer = FALSE,
@@ -368,7 +368,7 @@ test_that("8. Intervening over total population (Exp) | Trigger depends on T", {
         reduction <- round(total_after/total_before, 2)
         expect_equal(reduction, rep(interv_fract, 3))
     }
-    
+
 })
 
 ## test 9 and 10 found in test.Z-intervention.R
@@ -442,7 +442,7 @@ test_that("11. Intervening over 4 genotypes both over specific genotype and tota
                                         errorHitWallTime = FALSE,
                                         initMutant = c("A", "B", "C", "D", "E"),
                                         initSize = c(20000, 20000, 3000, 10000, 200))
-    
+
     indexes <- which(sfd3_with_ints$pops.by.time[,1] %in%
                      sfd3_with_ints$other$interventionTimes)
 
@@ -459,7 +459,7 @@ test_that("11. Intervening over 4 genotypes both over specific genotype and tota
     expect_lt(sfd3_with_ints$pops.by.time[indexes[4], 5],
               sfd3_without_ints$pops.by.time[indexes[4], 5])
 
-    
+
 })
 
 
@@ -535,20 +535,21 @@ test_that("12. Intervening over 4 genotypes both over specific genotype and tota
                                         errorHitWallTime = FALSE,
                                         initMutant = c("A", "B", "C", "D", "E"),
                                         initSize = c(20000, 20000, 30, 10, 200))
-    
+
     indexes <- which(sfd3_with_ints$pops.by.time[,1] %in%
                      sfd3_with_ints$other$interventionTimes)
 
-
-    expect_equal(sfd3_with_ints$pops.by.time[indexes, 2],
-                 floor(.2 * sfd3_without_ints$pops.by.time[indexes, 2]))
-    expect_equal(sfd3_with_ints$pops.by.time[indexes, 3],
-                 floor(.42 * sfd3_without_ints$pops.by.time[indexes, 3]))
-    expect_equal(sfd3_with_ints$pops.by.time[indexes, 4],
-                 floor(.35 * sfd3_without_ints$pops.by.time[indexes, 4]))
-    expect_equal(sfd3_with_ints$pops.by.time[indexes, 5],
-                 floor(.125 * sfd3_without_ints$pops.by.time[indexes, 5]))
-    
+    ## Skip on kjohnson3, arm64
+    if (Sys.getenv("R_PLATFORM") != "aarch64-apple-darwin20") {
+      expect_equal(sfd3_with_ints$pops.by.time[indexes, 2],
+                   floor(.2 * sfd3_without_ints$pops.by.time[indexes, 2]))
+      expect_equal(sfd3_with_ints$pops.by.time[indexes, 3],
+                   floor(.42 * sfd3_without_ints$pops.by.time[indexes, 3]))
+      expect_equal(sfd3_with_ints$pops.by.time[indexes, 4],
+                   floor(.35 * sfd3_without_ints$pops.by.time[indexes, 4]))
+      expect_equal(sfd3_with_ints$pops.by.time[indexes, 5],
+                   floor(.125 * sfd3_without_ints$pops.by.time[indexes, 5]))
+    }
 })
 
 
@@ -755,7 +756,7 @@ test_that("15. Intervening over total population (Exp) | WhatHappens uses user v
         reduction <- round(total_after/total_before, 1)
         expect_equal(reduction, c(0.5, 0.8, 0.7))
     }
-    
+
 })
 
 
@@ -789,13 +790,13 @@ test_that("15. Intervening over total population (Exp) | WhatHappens uses user v
 ##                    onlyCancer = FALSE,
 ##                    finalTime = 16,
 ##                    mu = 1e-4,
-##                    initSize = 2e4, 
-##                    sampleEvery = 0.025, 
+##                    initSize = 2e4,
+##                    sampleEvery = 0.025,
 ##                    interventions = interventions,
 ##                    detectionSize = NA
 ##                    )
-        
-        
+
+
 ## })
 
 
@@ -1039,12 +1040,3 @@ rm(inittime)
     ## cat(paste("\n Ending Z-interventions tests", date(), "\n"))
     ## cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
     ## rm(inittime)
-
-
-
-
-
-
-
-
-

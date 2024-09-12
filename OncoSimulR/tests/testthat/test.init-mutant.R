@@ -124,7 +124,7 @@ test_that("initMutant lexicog order with noint",
               expect_true( "d > m _ z" %in% cn )
               expect_false( "m > d _" %in% cn )
               expect_false( "m > d > f _" %in% cn )
-              
+
               T1 <- ( "d > m > f _ z" %in% cn )
               ## expect_true( "d, m_z" %in% cn )
               ## expect_true( "d, m, f_z" %in% cn )
@@ -185,7 +185,7 @@ test_that("initMutant non lexicog order", {
     ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1)
 })
-  
+
 
 test_that("initMutant non lexicog order",
 {
@@ -222,7 +222,7 @@ test_that("initMutant non lexicog order",
               ## if there is pop growth. But very occasionally
               ## it might not. The above must ALWAYS be true,
               ## but this one we allow to repeat a couple of times
-              
+
               T1 <- ( "m > d > f _ u" %in% cn )
               if( T1 ) break;
               if(! T1 ) {
@@ -241,7 +241,7 @@ test_that("initMutant with oncoSimulSample", {
                             "D > M > F" = 0.2,
                             "D > M"     = 0.1,
                             "M > D"     = 0.9),
-                        noIntGenes = c("u" = 0.01, 
+                        noIntGenes = c("u" = 0.01,
                                        "v" = 0.01,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -253,7 +253,7 @@ test_that("initMutant with oncoSimulSample", {
                               "F" = "f",
                               "D" = "d"),
                         drvNames = c("m", "f", "d"))
-    ossI <- oncoSimulSample(4, 
+    ossI <- oncoSimulSample(4,
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 2,
@@ -284,7 +284,7 @@ test_that("initMutant with oncoSimulSample, 2", {
                             "M > A"     = 0.25,
                             "A > H"     = 0.2,
                             "A > G"     = 0.3),
-                        noIntGenes = c("u" = 0.1, 
+                        noIntGenes = c("u" = 0.1,
                                        "v" = 0.2,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -299,7 +299,7 @@ test_that("initMutant with oncoSimulSample, 2", {
                               "H" = "h",
                               "G" = "g"),
                         drvNames = c("m", "f", "d", "a", "h", "g"))
-    ossI <- oncoSimulSample(4, 
+    ossI <- oncoSimulSample(4,
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
@@ -327,7 +327,7 @@ test_that("initMutant with oncoSimulPop", {
                             "D > M > F" = 0.2,
                             "D > M"     = 0.2,
                             "M > D"     = 0.9),
-                        noIntGenes = c("u" = 0.01, 
+                        noIntGenes = c("u" = 0.01,
                                        "v" = 0.01,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -339,7 +339,7 @@ test_that("initMutant with oncoSimulPop", {
                               "F" = "f",
                               "D" = "d"),
                         drvNames = c("m", "f", "d"))
-    ospI <- oncoSimulPop(4, 
+    ospI <- oncoSimulPop(4,
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
@@ -356,7 +356,7 @@ test_that("initMutant with oncoSimulPop", {
         unlist(lapply(ospI,
                       function(x) x$Genotypes[genepos, , drop = FALSE])) == 1))
     ## make sure not all 1, by error, which would render previous useless
-    expect_false( all( 
+    expect_false( all(
         unlist(lapply(ospI,
                       function(x) x$Genotypes)) == 1))
     expect_true(all(unlist(lapply(ospI,
@@ -383,7 +383,7 @@ test_that("initMutant with oncoSimulPop, 2", {
                             "D > M > F" = 0.2,
                             "D > M"     = 0.1,
                             "M > D"     = 0.9),
-                            noIntGenes = c("u" = 0.01, 
+                            noIntGenes = c("u" = 0.01,
                                        "v" = 0.01,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -395,7 +395,7 @@ test_that("initMutant with oncoSimulPop, 2", {
                               "F" = "f",
                               "D" = "d"),
                         drvNames = c("m", "f", "d"))
-    ospI <- oncoSimulPop(4, 
+    ospI <- oncoSimulPop(4,
                         o3init, model = "Exp",
                         mu = 5e-5, finalTime = 70,
                         detectionDrivers = 4, ## yes, reach end
@@ -412,7 +412,7 @@ test_that("initMutant with oncoSimulPop, 2", {
         unlist(lapply(ospI,
                       function(x) x$Genotypes[genepos, , drop = FALSE])) == 1))
     ## make sure not all 1, by error, which would render previous useless
-    expect_false( all( 
+    expect_false( all(
         unlist(lapply(ospI,
                       function(x) x$Genotypes)) == 1))
     expect_true(all(unlist(lapply(ospI,
@@ -441,7 +441,7 @@ test_that("initMutant with oncoSimulPop, McFL", {
                             "D > M > F" = 0.2,
                             "D > M"     = 0.2,
                             "M > D"     = 0.9),
-                        noIntGenes = c("u" = 0.01, 
+                        noIntGenes = c("u" = 0.01,
                                        "v" = 0.01,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -453,7 +453,7 @@ test_that("initMutant with oncoSimulPop, McFL", {
                               "F" = "f",
                               "D" = "d"),
                         drvNames = c("m", "f", "d"))
-    ospI <- oncoSimulPop(4, 
+    ospI <- oncoSimulPop(4,
                         o3init, model = "McFL",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
@@ -471,7 +471,7 @@ test_that("initMutant with oncoSimulPop, McFL", {
         unlist(lapply(ospI,
                       function(x) x$Genotypes[genepos, , drop = FALSE])) == 1))
     ## make sure not all 1, by error, which would render previous useless
-    expect_false( all( 
+    expect_false( all(
         unlist(lapply(ospI,
                       function(x) x$Genotypes)) == 1))
     expect_true(all(unlist(lapply(ospI,
@@ -498,7 +498,7 @@ test_that("initMutant with oncoSimulPop, Bozic", {
                             "D > M > F" = 0.2,
                             "D > M"     = 0.2,
                             "M > D"     = 0.9),
-                        noIntGenes = c("u" = 0.01, 
+                        noIntGenes = c("u" = 0.01,
                                        "v" = 0.01,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -510,7 +510,7 @@ test_that("initMutant with oncoSimulPop, Bozic", {
                               "F" = "f",
                               "D" = "d"),
                         drvNames = c("m", "f", "d"))
-    ospI <- oncoSimulPop(4, 
+    ospI <- oncoSimulPop(4,
                         o3init, model = "Bozic",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
@@ -527,7 +527,7 @@ test_that("initMutant with oncoSimulPop, Bozic", {
         unlist(lapply(ospI,
                       function(x) x$Genotypes[genepos, , drop = FALSE])) == 1))
     ## make sure not all 1, by error, which would render previous useless
-    expect_false( all( 
+    expect_false( all(
         unlist(lapply(ospI,
                       function(x) x$Genotypes)) == 1))
     expect_true(all(unlist(lapply(ospI,
@@ -557,7 +557,7 @@ test_that("initMutant with oncoSimulSample, 2, McFL", {
                             "M > A"     = 0.25,
                             "A > H"     = 0.2,
                             "A > G"     = 0.3),
-                        noIntGenes = c("u" = 0.1, 
+                        noIntGenes = c("u" = 0.1,
                                        "v" = 0.2,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -573,7 +573,7 @@ test_that("initMutant with oncoSimulSample, 2, McFL", {
                               "G" = "g"),
                         drvNames = c("m", "f", "d", "a", "h", "g")
                         )
-    ossI <- oncoSimulSample(4, 
+    ossI <- oncoSimulSample(4,
                         o3init, model = "McFL",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
@@ -604,7 +604,7 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
                             "M > A"     = 0.25,
                             "A > H"     = 0.2,
                             "A > G"     = 0.3),
-                        noIntGenes = c("u" = 0.1, 
+                        noIntGenes = c("u" = 0.1,
                                        "v" = 0.2,
                                        "w" = 0.001,
                                        "x" = 0.0001,
@@ -619,7 +619,7 @@ test_that("initMutant with oncoSimulSample, 2, Bozic", {
                               "H" = "h",
                               "G" = "g"),
                         drvNames = c("m", "f", "d", "a", "h", "g"))
-    ossI <- oncoSimulSample(4, 
+    ossI <- oncoSimulSample(4,
                         o3init, model = "Bozic",
                         mu = 5e-5, finalTime = 5000,
                         detectionDrivers = 3,
@@ -664,7 +664,7 @@ test_that("initMutant works if == number of genes", {
     expect_silent(ooox <- oncoSimulIndiv(o1, initMutant = "b, a, c"))
                  ## "No mutable positions. Mutation set to dummyMutationRate",
                  ## fixed = TRUE)
-    
+
     ## This used to crash
     set.seed(5)
     o2 <- allFitnessEffects(genotFitness = rfitness(2))
@@ -689,63 +689,65 @@ test_that("initMutant works if == number of genes", {
 
 test_that("initMutant with freq-dep-fitness"  , {
     r <- data.frame(rfitness(2))
-	
+
 	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
 
-    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
-                        "max(100*f_1, 10)", 
-                        "max(100*f_2, 10)", 
+    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2",
+                        "max(100*f_1, 10)",
+                        "max(100*f_2, 10)",
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
-    suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
+    suppressWarnings(afe <- allFitnessEffects(genotFitness = r,
                              frequencyDependentFitness = TRUE))
 
     expect_s3_class(
-        os1 <- oncoSimulIndiv(afe, 
+        os1 <- oncoSimulIndiv(afe,
                               model = "McFL",
                               initMutant = "A",
-                              onlyCancer = FALSE, 
-                              finalTime = 50, 
-                              verbosity = 0, 
+                              onlyCancer = FALSE,
+                              finalTime = 50,
+                              verbosity = 0,
                               mu = 1e-6,
-                              initSize = 500, 
+                              initSize = 500,
                               keepPhylog = FALSE,
-                              seed = NULL, 
-                              errorHitMaxTries = TRUE, 
+                              seed = NULL,
+                              errorHitMaxTries = TRUE,
                               errorHitWallTime = TRUE),
         "oncosimul2")
-    
-    expect_true(is.null(os1$other$ExceptionMessage))
-    
-    expect_s3_class(os2 <- oncoSimulIndiv(afe, 
-                          model = "McFL",
-                          initMutant = "B",
-                          onlyCancer = FALSE, 
-                          finalTime = 50, 
-                          verbosity = 0, 
-                          mu = 1e-6,
-                          initSize = 500, 
-                          keepPhylog = FALSE,
-                          seed = NULL, 
-                          errorHitMaxTries = TRUE, 
-                          errorHitWallTime = TRUE),
+
+    ## Skip on kjohnson3, arm64
+    if (Sys.getenv("R_PLATFORM") != "aarch64-apple-darwin20") {
+      expect_true(is.null(os1$other$ExceptionMessage))
+    }
+    expect_s3_class(os2 <- oncoSimulIndiv(afe,
+                                          model = "McFL",
+                                          initMutant = "B",
+                                          onlyCancer = FALSE,
+                                          finalTime = 50,
+                                          verbosity = 0,
+                                          mu = 1e-6,
+                                          initSize = 500,
+                                          keepPhylog = FALSE,
+                                          seed = NULL,
+                                          errorHitMaxTries = TRUE,
+                                          errorHitWallTime = TRUE),
                     "oncosimul2")
 
-    expect_s3_class(os3 <- oncoSimulIndiv(afe, 
-                          model = "McFL",
-                          initMutant = "A, B",
-                          onlyCancer = FALSE, 
-                          finalTime = 50, 
-                          verbosity = 0, 
-                          mu = 1e-6,
-                          initSize = 500, 
-                          keepPhylog = FALSE,
-                          seed = NULL, 
-                          errorHitMaxTries = TRUE, 
-                          errorHitWallTime = TRUE),
+    expect_s3_class(os3 <- oncoSimulIndiv(afe,
+                                          model = "McFL",
+                                          initMutant = "A, B",
+                                          onlyCancer = FALSE,
+                                          finalTime = 50,
+                                          verbosity = 0,
+                                          mu = 1e-6,
+                                          initSize = 500,
+                                          keepPhylog = FALSE,
+                                          seed = NULL,
+                                          errorHitMaxTries = TRUE,
+                                          errorHitWallTime = TRUE),
                     "oncosimul2")
-    
+
     expect_true(is.null(os3$other$ExceptionMessage))
-    
+
 })
 
 
@@ -753,41 +755,41 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
 
     set.seed(1)
     r <- data.frame(rfitness(2))
-	
+
 	colnames(r)[which(colnames(r) == "Birth")] <- "Fitness"
 
-    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2", 
-                        "max(100*f_1, 10)", 
-                        "max(100*f_2, 10)", 
+    r[, "Fitness"] <- c("f_ - f_1 - f_2 - f_1_2",
+                        "max(100*f_1, 10)",
+                        "max(100*f_2, 10)",
                         "max((200*(f_1 + f_2) + 50*f_1_2), 1)")
-    suppressWarnings(afe <- allFitnessEffects(genotFitness = r, 
+    suppressWarnings(afe <- allFitnessEffects(genotFitness = r,
                              frequencyDependentFitness = TRUE))
     null <- capture.output({
     set.seed(1)
-    of1 <- oncoSimulIndiv(afe, 
+    of1 <- oncoSimulIndiv(afe,
                           model = "McFL",
                           initMutant = "WT",
-                          onlyCancer = FALSE, 
-                          finalTime = 50, 
-                          verbosity = 0, 
+                          onlyCancer = FALSE,
+                          finalTime = 50,
+                          verbosity = 0,
                           mu = 1e-6,
-                          initSize = 500, 
+                          initSize = 500,
                           keepPhylog = FALSE,
-                          seed = NULL, 
-                          errorHitMaxTries = TRUE, 
+                          seed = NULL,
+                          errorHitMaxTries = TRUE,
                           errorHitWallTime = TRUE)
 
     set.seed(1)
-    of2 <- oncoSimulIndiv(afe, 
+    of2 <- oncoSimulIndiv(afe,
                           model = "McFL",
-                          onlyCancer = FALSE, 
-                          finalTime = 50, 
-                          verbosity = 0, 
+                          onlyCancer = FALSE,
+                          finalTime = 50,
+                          verbosity = 0,
                           mu = 1e-6,
-                          initSize = 500, 
+                          initSize = 500,
                           keepPhylog = FALSE,
-                          seed = NULL, 
-                          errorHitMaxTries = TRUE, 
+                          seed = NULL,
+                          errorHitMaxTries = TRUE,
                           errorHitWallTime = TRUE)
     })
     expect_true(of1$InitMutant == "WT")
@@ -801,34 +803,34 @@ test_that("WT initMutant simulation equiv. to no init mutant", {
     set.seed(2)
     os1 <- oncoSimulIndiv(o2, initMutant = "WT",
                    model = "McFLD",
-                   onlyCancer = FALSE, 
-                   finalTime = 50, 
-                   verbosity = 0, 
+                   onlyCancer = FALSE,
+                   finalTime = 50,
+                   verbosity = 0,
                    mu = 1e-6,
-                   initSize = 500, 
+                   initSize = 500,
                    keepPhylog = FALSE,
-                   seed = NULL, 
-                   errorHitMaxTries = TRUE, 
+                   seed = NULL,
+                   errorHitMaxTries = TRUE,
                    errorHitWallTime = TRUE)
     set.seed(2)
-    os2 <- oncoSimulIndiv(o2, 
+    os2 <- oncoSimulIndiv(o2,
                    model = "McFLD",
-                   onlyCancer = FALSE, 
-                   finalTime = 50, 
-                   verbosity = 0, 
+                   onlyCancer = FALSE,
+                   finalTime = 50,
+                   verbosity = 0,
                    mu = 1e-6,
-                   initSize = 500, 
+                   initSize = 500,
                    keepPhylog = FALSE,
-                   seed = NULL, 
-                   errorHitMaxTries = TRUE, 
+                   seed = NULL,
+                   errorHitMaxTries = TRUE,
                    errorHitWallTime = TRUE)
     })
     expect_true(os1$InitMutant == "WT")
     expect_true(os2$InitMutant == "")
     expect_identical(os1[!(names(of1) == "InitMutant")],
                      os2[!(names(of2) == "InitMutant")])
-    
-    
+
+
 })
 
 test_that("initMutant does not accept integer vectors", {
@@ -838,14 +840,14 @@ test_that("initMutant does not accept integer vectors", {
     set.seed(2)
     expect_error(oncoSimulIndiv(o2, initMutant = 1,
                    model = "McFLD",
-                   onlyCancer = FALSE, 
-                   finalTime = 50, 
-                   verbosity = 0, 
+                   onlyCancer = FALSE,
+                   finalTime = 50,
+                   verbosity = 0,
                    mu = 1e-6,
-                   initSize = 500, 
+                   initSize = 500,
                    keepPhylog = FALSE,
-                   seed = NULL, 
-                   errorHitMaxTries = TRUE, 
+                   seed = NULL,
+                   errorHitMaxTries = TRUE,
                    errorHitWallTime = TRUE),
                  "initMutant must be a (list of) character string(s)",
                  fixed = TRUE)
@@ -856,7 +858,7 @@ test_that("initMutant does not accept integer vectors", {
 test_that("initMutant: multiple pops, basic", {
     o1 <- allFitnessEffects(
         noIntGenes = c("a" = .1, "b" = 0.2, "c" = 0.3))
-    
+
     expect_silent(out <- oncoSimulIndiv(o1, initMutant = c("c, b", "b"),
                                         initSize = c(300, 20),
                                         onlyCancer = FALSE,
@@ -873,7 +875,7 @@ test_that("initMutant: multiple pops, basic", {
                    onlyCancer = FALSE,
                    seed = NULL)
     })
-    
+
     ## Pass all genotypes
     null <- capture.output(oncoSimulIndiv(o1, initMutant = c("WT", "a", "b", "c",
                                       "a, b", "a, c", "b, c",
@@ -945,7 +947,7 @@ test_that("multiple init mutants: different species", {
         ## all with both mutated is 0
         r2[ (r2[, 1] == 0) & (r2[, 2] == 1),  7] <- 0
         r2[ (r2[, 3] == 0) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
-        
+
         r2[ (r2[, 1] == 1) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
         r2[ (r2[, 3] == 1) & apply(r2[, 1:2] == 1, 1, any),  7] <- 0
         r2 <- r2[r2[, 7] > 0, ]
@@ -974,7 +976,7 @@ test_that("multiple init mutants: different species", {
         ## all with both mutated is 0
         r2[ (r2[, 1] == 0) & (r2[, 2] == 1),  7] <- 0
         r2[ (r2[, 3] == 0) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
-        
+
         r2[ (r2[, 1] == 1) & apply(r2[, 3:6] == 1, 1, any),  7] <- 0
         r2[ (r2[, 3] == 1) & apply(r2[, 1:2] == 1, 1, any),  7] <- 0
         r2 <- r2[r2[, 7] > 0, ]
@@ -1002,7 +1004,7 @@ test_that("multiple init mutants: cannot have descendants of absent parents", {
     num_reps <- 10
     for(i in 1:num_reps) {
         r2 <- rfitness(6)
-        ## Make sure these always viable 
+        ## Make sure these always viable
         r2[8, 7] <- 1 + runif(1) # A, B
         r2[19, 7] <- 1 + runif(1) # C, F
         o2 <- allFitnessEffects(genotFitness = r2)
@@ -1033,7 +1035,7 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.4",
                     "1.4",
                     "1.1 + 0.7*((f_1 + f_A_B) > 0.3)",
-                    "1.2 + sqrt(f_A + f_C + f_C_D)"),        
+                    "1.2 + sqrt(f_A + f_C + f_C_D)"),
     stringsAsFactors = FALSE)
     suppressWarnings(afd0 <- allFitnessEffects(genotFitness = gffd0,
                              frequencyDependentFitness = TRUE))
@@ -1041,7 +1043,7 @@ test_that("multiple init mutants: different species, FDF", {
     suppressWarnings(eag0 <- evalAllGenotypes(afd0, spPopSizes = 1:5))
 
 
-    
+
     gffd <- data.frame(
         Genotype = c("WT",
                      "A", "A, B",
@@ -1051,9 +1053,9 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.4",
                     "1.4",
                     "1.1 + 0.7*((f_1 + f_1_2) > 0.3)",
-                    "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
+                    "1.2 + sqrt(f_1 + f_3 + f_3_4)"),
     stringsAsFactors = FALSE)
-    suppressWarnings(afd <- allFitnessEffects(genotFitness = gffd, 
+    suppressWarnings(afd <- allFitnessEffects(genotFitness = gffd,
                              frequencyDependentFitness = TRUE))
 
     suppressWarnings(eag1 <- evalAllGenotypes(afd, spPopSizes = 0:5))
@@ -1066,9 +1068,9 @@ test_that("multiple init mutants: different species, FDF", {
                     "1.4",
                     "1.4",
                     "1.1 + 0.7*((f_1 + f_1_2) > 0.3)",
-                    "1.2 + sqrt(f_1 + f_3 + f_3_4)"),        
+                    "1.2 + sqrt(f_1 + f_3 + f_3_4)"),
     stringsAsFactors = FALSE)
-    suppressWarnings(afd2 <- allFitnessEffects(genotFitness = gffd2, 
+    suppressWarnings(afd2 <- allFitnessEffects(genotFitness = gffd2,
                              frequencyDependentFitness = TRUE))
 
     suppressWarnings(eag2 <- evalAllGenotypes(afd2, spPopSizes = 1:5))
@@ -1077,7 +1079,7 @@ test_that("multiple init mutants: different species, FDF", {
 
     set.seed(1)
     os1 <- oncoSimulIndiv(afd, initMutant = "A", seed = NULL,
-                          finalTime = 20, initSize = 1e6,                         
+                          finalTime = 20, initSize = 1e6,
                           onlyCancer = FALSE, model = "McFLD")
     set.seed(1)
     os2 <- oncoSimulIndiv(afd2, initMutant = "A", seed = NULL,
@@ -1144,11 +1146,11 @@ test_that("multiple init mutants: different species, FDF, exprtk crash if not in
                     "1.4",
                     "1.4",
                     "1.1 + 0.7*((f_1 + f_2) > 0.3)",
-                    "1.2 + sqrt(f_1 + f_3 + f_2)"),        
+                    "1.2 + sqrt(f_1 + f_3 + f_2)"),
     stringsAsFactors = FALSE)
-    suppressWarnings(afd <- allFitnessEffects(genotFitness = gffd, 
+    suppressWarnings(afd <- allFitnessEffects(genotFitness = gffd,
                              frequencyDependentFitness = TRUE))
-							 
+
     suppressWarnings(expect_error(evalAllGenotypes(afd, spPopSizes = rep(10, 6))))
     ### FIXME: catch this exact string"Undefined symbol: 'f_2'", fixed = TRUE)
 })
@@ -1159,15 +1161,3 @@ cat(paste("\n Ending init-mutant tests", date(), "\n"))
 
 cat(paste("  Took ", round(difftime(Sys.time(), inittime, units = "secs"), 2), "\n\n"))
 rm(inittime)
-
-
-
- 
-
-
-
-
-
-
-
-

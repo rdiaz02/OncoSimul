@@ -1,3 +1,7 @@
+Changes in version 4.7.5 (2024-09-12):
+	- Try to work around (and ask for help) for tests that fail
+	  in the BioC kjohnson3 machine (maOS 13.6.5, arm64).
+
 Changes in version 4.7.4 (2024-07-30):
 	- Try to work around (and ask for help) for a vignette example
 	  that fails in the BioC kjohnson3 machine (maOS 13.6.5, arm64).
