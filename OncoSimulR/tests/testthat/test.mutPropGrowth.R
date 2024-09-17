@@ -385,10 +385,11 @@ date()
 
 
 date()
-test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", {
+## Skip on kjohnson3, arm64
+if (Sys.getenv("R_PLATFORM") != "aarch64-apple-darwin20") {
+  test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", {
     max.tries <- 4
     for(tries in 1:max.tries) {
-
         T1 <- T2 <- T3 <- T4 <- T5 <- T6 <- T7 <- T8 <- TRUE
         ## cat("\n ossmcf1: a runif is", runif(1), "\n")
         ft <- 10 ## we stop on time but sizes are about same. We are in the plateau
@@ -421,10 +422,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
                                 detectionSize = 3e7,
                                 detectionDrivers = 99,
                                 thresholdWhole = x)
-      ## Skip on kjohnson3, arm64
-      if (Sys.getenv("R_PLATFORM") != "aarch64-apple-darwin20") {
-        nca$popSummary[1:5, c(1:3, 8:9)]
-      }
+      nca$popSummary[1:5, c(1:3, 8:9)]
       ## summary(nca$popSummary[, "NumClones"])
       ## summary(nca$popSummary[, "TotalPopSize"])
       nca2$popSummary[1:5, c(1:3, 8:9)]
@@ -457,6 +455,7 @@ test_that("mutPropGrowth diffs with s> 0, oncoSimulSample, McFL, stop on time", 
     ## cat(paste("\n done tries", tries, "\n"))
     expect_true(T1 && T2 && T3 && T4 && T5 && T6 && T7 && T8)
 })
+}
 date()
 
 
