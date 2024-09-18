@@ -1,3 +1,8 @@
+Changes in version 4.7.7 (2024-09-18):
+	- Try to work around (and ask for help) for tests that fail
+	  in the BioC kjohnson3 machine (maOS 13.6.5, arm64). Yes,
+	  more of this.
+
 Changes in version 4.7.6 (2024-09-16):
 	- Try to work around (and ask for help) for tests that fail
 	  in the BioC kjohnson3 machine (maOS 13.6.5, arm64). Yes,
