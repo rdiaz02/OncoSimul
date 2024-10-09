@@ -75,6 +75,7 @@ cp OncoSimulR/data/*.RData ../BioConductor-git/OncoSimulR/data/.
 cp OncoSimulR/NAMESPACE ../BioConductor-git/OncoSimulR/.
 
 cp OncoSimulR/DESCRIPTION ../BioConductor-git/OncoSimulR/.
+cp OncoSimulR/.BBSoptions ../BioConductor-git/OncoSimulR/.
 
 
 ## We always do this, though it should not be necessary
