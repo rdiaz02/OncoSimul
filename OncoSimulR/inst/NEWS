@@ -1,3 +1,7 @@
+Changes in version 4.7.8 (2024-10-09):
+	- Remove support for maOS with arm64 (i.e., kjohnson3
+	  and kjohnson1 machines).
+
 Changes in version 4.7.7 (2024-09-18):
 	- Try to work around (and ask for help) for tests that fail
 	  in the BioC kjohnson3 machine (maOS 13.6.5, arm64). Yes,
