@@ -95,7 +95,8 @@ plotFitnessLandscape(x, show_labels = TRUE,
   \item{lty}{A three-element vector that  gives the line types to use for
     increase, decreases and no changes in fitness, respectively.}
 
-  \item{use_ggrepel}{If TRUE, use the \code{ggrepel} package to avoid
+  \item{use_ggrepel}{If TRUE, use \code{\link[ggrepel]{geom_label_repel}}
+    in the \code{ggrepel} package to avoid
     overlap of labels.}
 
   \item{log}{Log-scale the y axis.}
