@@ -56,7 +56,7 @@ plotFitnessLandscape(x, show_labels = TRUE,
 }
 
 \arguments{
-  
+
   \item{x}{ One of the following:
     \itemize{
 
@@ -70,32 +70,32 @@ plotFitnessLandscape(x, show_labels = TRUE,
       the first column are genotypes, given as a character vector. For
       instance, a row "A, B" would mean the genotype with both A and B
       mutated.
-      
+
       \item The output from a call to
       \code{\link{evalAllGenotypes}}. Make sure you use \code{order =
 	FALSE} in that call.
-      
+
       \item The output from a call to
       \code{\link{evalAllGenotypesMut}}. Make sure you use \code{order =
 	FALSE}.
-      
+
       \item The output from a call to \code{\link{allFitnessEffects}}.
-      
+
     }
-    
+
     The first two are the same as the format for the \code{genotFitness}
     component in \code{\link{allFitnessEffects}}.  }
-  
+
   \item{show_labels}{If TRUE, show the genotype labels.}
 
   \item{col}{A three-element vector that  gives the colors to use for
     increase, decreases and no changes in fitness, respectively. The first
     two colours are also used for peaks and sinks.}
-  
+
   \item{lty}{A three-element vector that  gives the line types to use for
     increase, decreases and no changes in fitness, respectively.}
 
-  \item{use_ggrepel}{If TRUE, use the \link{ggrepel} package to avoid
+  \item{use_ggrepel}{If TRUE, use the \code{ggrepel} package to avoid
     overlap of labels.}
 
   \item{log}{Log-scale the y axis.}
@@ -153,7 +153,7 @@ Ramon Diaz-Uriarte
   showing genotype labels (i.e., annotated by gene names), which can be
   helpful if the different genotypes mean something to you.
 
-  
+
   In addition to the above differences, another difference between this
   plot and those of MAGELLAN is \bold{how sinks/peaks of more than one
   genotype are dealt with}. This plot will show as sinks or peaks sets
@@ -175,7 +175,7 @@ Ramon Diaz-Uriarte
   possibility of peaks/sinks made of more than one genotype actually
   makes code much simpler.
 
-  
+
   Sometimes not showing the any links that involve a decrease in fitness
   can help see non-accessible pathways (in strong selection, no multiple
   mutations, etc); do this by passing, for instance, an NA for the
@@ -186,7 +186,7 @@ Ramon Diaz-Uriarte
   of a total of 5000 genotypes you'll have to wait a while for the plot
   to finish.
 
-  
+
 
 }
 
@@ -226,4 +226,3 @@ plotFitnessLandscape(evalAllGenotypes(fe, order = FALSE))
 }
 
 \keyword{ hplot }
-

@@ -8,7 +8,7 @@
 
   Plot a parent-child relationship of the clones, controlling which
   clones are displayed, and whether to shown number of times of
-  appearance, and time of first appearance of a clone. 
+  appearance, and time of first appearance of a clone.
 
 
 }
@@ -54,9 +54,9 @@ plotClonePhylog(x, N = 1, t ="last", timeEvents = FALSE,
 
 \item{returnGraph}{If TRUE, the igraph object is returned. You can use
   this to plot the object however you want or obtain the adjacency matrix.}
-  
+
 \item{\dots}{ Additional arguments. Currently not used.}.
-  
+
 }
 
 \note{
@@ -67,11 +67,12 @@ plotClonePhylog(x, N = 1, t ="last", timeEvents = FALSE,
   context. But you could draw proper phylogenies with the information
   provided.
 
-  
-  
+
+
   If you want to obtain the adjacency matrix, this is trivial: just
-  set \code{returnGraph = TRUE} and use \code{\link{get.adjacency}}. See
-  an example below.  
+  set \code{returnGraph = TRUE} and use
+  \code{\link[igraph]{as_adjacency_matrix}} (formerly \code{\link[igraph]{get.adjacency}}). See
+  an example below.
 }
 \value{
   A plot is produced. If \code{returnGraph} the igraph object is returned.
@@ -88,9 +89,9 @@ plotClonePhylog(x, N = 1, t ="last", timeEvents = FALSE,
 
 data(examplesFitnessEffects)
 tmp <-  oncoSimulIndiv(examplesFitnessEffects[["o3"]],
-                       model = "McFL", 
+                       model = "McFL",
                        mu = 5e-5,
-                       detectionSize = 1e8, 
+                       detectionSize = 1e8,
                        detectionDrivers = 3,
                        sampleEvery = 0.025,
                        max.num.tries = 10,
@@ -121,9 +122,8 @@ plotClonePhylog(tmp, N = 10, keepEvents = TRUE)
 
 ## Adjacency matrix
 require(igraph)
-get.adjacency(plotClonePhylog(tmp, N = 10, returnGraph = TRUE))
+as_adjacency_matrix(plotClonePhylog(tmp, N = 10, returnGraph = TRUE))
 
 }
 
 \keyword{ hplot }
-

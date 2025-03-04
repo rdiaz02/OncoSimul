@@ -17,13 +17,13 @@
   colours. Plots can alternatively display genotypes instead of drivers.
 
   Plots available are line plots, stacked area, and stream plots.
-  
+
 }
 
 \usage{
 
 \method{plot}{oncosimul}(x,
-                           show = "drivers", 
+                           show = "drivers",
                            type = ifelse(show == "genotypes",
                                          "stacked", "line"),
                            col = "auto",
@@ -57,7 +57,7 @@
 
 \method{plot}{oncosimulpop}(x,
                               ask = TRUE,
-                              show = "drivers", 
+                              show = "drivers",
                               type = ifelse(show == "genotypes",
                                             "stacked", "line"),
                               col = "auto",
@@ -95,10 +95,10 @@
 
   \item{x}{
     An object of class \code{oncosimul} (for \code{plot.oncosimul}) or
-    \code{oncosimulpop} (for \code{plot.oncosimulpop}). 
+    \code{oncosimulpop} (for \code{plot.oncosimulpop}).
   }
-  
-  \item{ask}{Same meaning as in \code{\link{par}}.    
+
+  \item{ask}{Same meaning as in \code{\link{par}}.
   }
 
   \item{show}{
@@ -122,17 +122,17 @@
 
     The default is to use "line" for \code{show = "drivers"} and
     "stacked" for \code{show = "genotypes"}.
-    
+
   }
-  
-  
+
+
   \item{col}{ Colour of the lines/areas. For \code{show = "drivers"}
     each type of clone (where type is defined by number of drivers) has
     a different color. For \code{show = "genotypes"} color refers to
     genotypes. The vector is recycled as needed.
 
     The default is "auto". If you have \code{show == "genotypes"} we
-    start from the "Dark2" palette from \code{\link{brewer.pal}} in the
+    start from the "Dark2" palette from \code{\link[RColorBrewer]{brewer.pal}} in the
     \code{RColorBrewer} package and extend the palette via
     \code{\link{colorRampPalette}}.  For \code{show == "drivers"} and
     \code{type == "line"} we use a vector of eight colors (that are,
@@ -158,71 +158,71 @@
     logarithmic y axis (since those depend on the additivity of areas
     but \code{log(a + b) != log(a) + log(b)}).
   }
-  
+
   \item{ltyClone}{
-    
+
     Line type for each clone. Recycled as needed. You probably do not
     want to use lty=1 for any clone, to differentiate from the clone
     type, unless you change the setting for \code{ltyDrivers}.
-    
+
   }
-  
+
   \item{lwdClone}{
     Line width for clones.
-    
+
   }
   \item{ltyDrivers}{
     Line type for the driver type.
-    
+
   }
   \item{lwdDrivers}{
     Line width for the driver type.
   }
   \item{xlab}{
     Same as \code{xlab} in \code{\link{plot.default}}.
-    
+
   }
   \item{ylab}{
     Same as \code{ylab} in \code{\link{plot.default}}.
-    
+
   }
   \item{plotClones}{
     Should clones be plotted?
-    
+
   }
   \item{plotDrivers}{
     Should clone types (which are defined by number of drivers), be
   plotted? (Only applies when using \code{show = "drivers"}).
-    
+
   }
   \item{addtot}{
     If TRUE, add a line with the total populatino size.
-    
+
   }
   \item{addtotlwd}{
     Line width for total population size.
-    
+
   }
   \item{ylim}{
     If non NULL, limits of the y axis. Same as in
     \code{\link{plot.default}}. If NULL, the limits are calculated
     automatically.
-    
+
   }
   \item{xlim}{
     If non NULL, limits of the x axis. Same as in
     \code{\link{plot.default}}. If NULL, the limits are calculated
     automatically. Using a non-NULL range smaller than the range of observed
   values of time can also lead to speed ups of large figures (since we
-  trim the data).    
+  trim the data).
   }
-  
+
   \item{thinData}{
     If TRUE, the data plotted is a subset of the original data. The
     original data are "thinned" in such a way that the origin of each
     clone is not among the non-shown data (i.e., so that we can see when
     each clone/driver originates).
-    
+
     Thinning is done to reduce the plot size and to speed up plotting.
 
     Note that thinning is carried out before dealing with the plot axis,
@@ -230,19 +230,19 @@
     you reduce the x-axis considerably) than those returned from the
     thinning. (In extreme cases this could lead to crashes when trying
     to use stream plots if, say, you end up plotting only three values).
-    
+
   }
   \item{thinData.keep}{
     The fraction of the data to keep (actually, a lower bound on the
     fraction of data to keep).
-    
-    
+
+
   }
   \item{thinData.min}{
     Any time point for which a clone has a population size > thinData.min
     will be kept (i.e., will not be removed from) in the data.
-    
-    
+
+
   }
 
   \item{plotDiversity}{If TRUE, we also show, on top of the main figure,
@@ -307,15 +307,15 @@
 }
 
 
- 
+
   \item{\dots}{
     Other arguments passed to \code{plots}. For instance, \code{main}.
-    
+
   }
 }
 \author{
   Ramon Diaz-Uriarte. Marc Taylor for stacked and stream plots.
-  
+
 }
 
 
@@ -327,7 +327,7 @@
 
 ## Show individual genotypes and drivers for an
 ## epistasis case with at most eight genotypes
-set.seed(1) 
+set.seed(1)
 
 sa <- 0.1
 sb <- -0.2
@@ -375,5 +375,3 @@ plot(e1, show = "genotypes", type = "line")
 
 
 \keyword{hplot}
-
-

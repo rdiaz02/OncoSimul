@@ -1,3 +1,6 @@
+Changes in version 4.9.1 (2025-03-04):
+	- Fix three Notes in Rmd files.
+
 Changes in version 4.7.8 (2024-10-09):
 	- Remove support for maOS with arm64 (i.e., kjohnson3
 	  and kjohnson1 machines).
