@@ -13732,26 +13732,31 @@ the desired effect, that is the control of the resistant genotype by maintaining
 
 ## Interventions: how to specify WT {#wtinint}
 
-As explained in section \@ref(fdfex1), by using `n_` or `f_`. We have already seen uses of `n_` and `f_` above, for example in fitness specifications; this silly example shows how to use (here, `n_`) for interventions:
+As explained in section \@ref(fdfex1), by using `n_` or `f_`. We have already seen uses of `n_` and `f_` above, for example in fitness specifications; this silly example shows how make interventions depend on, and affect, the WT population  (here, using `n_`):
 
 ```{r WTinIntervention}
 dfwtx <- data.frame(Genotype = c("WT", "B", "A"),
                     Fitness = c("4",
-                               "2.0",
-                               "2.1 + 0 * n_"))
+                                "3.7",
+                                "3.8 + 0 * n_"))
 afdwtx <- allFitnessEffects(genotFitness = dfwtx,
                             frequencyDependentFitness = TRUE,
-                          frequencyType = "abs")
+                            frequencyType = "abs")
+## Warning in allFitnessEffects(genotFitness = dfwtx,
+## frequencyDependentFitness = TRUE, : v2 functionality detected.
+## Adapting to v3 functionality.
+## All single-gene genotypes as input to to_genotFitness_std
 
 interventionsWT <- list(
     list(ID           = "intWT",
          Trigger       = "n_ >= 400 ",
-         WhatHappens   = "n_ = 0",
+         WhatHappens   = "n_ = 100",
          Repetitions   = Inf,
          Periodicity   = 0.07
          ))
 
 interventionsWT <- createInterventions(interventionsWT, afdwtx)
+## [1] "Checking intervention: intWT"
 
 ex1_with_ints <- oncoSimulIndiv(
     afdwtx,
@@ -13760,11 +13765,18 @@ ex1_with_ints <- oncoSimulIndiv(
     sampleEvery = 0.01,
     initMutant = c("WT", "A", "B"),
     initSize = c(100, 10, 20),
-    finalTime = 3,
+    finalTime = 20,
     onlyCancer = FALSE,
     interventions = interventionsWT)
+## Using old version of fitnessEffects. Transforming fitnessEffects
+##             to last version.
+## Using old version of fitnessEffects. Transforming fitnessEffects
+##             to last version.
 
 plot(ex1_with_ints, show="genotypes", type = "stacked")
+
+plot(ex1_with_ints, show="genotypes", type = "stacked",
+     xlim = c(0, 10), ylim = c(0, 400))
 ```
 
 # Simulating therapeutic interventions that depend on time {#timefdf}
