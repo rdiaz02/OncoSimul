@@ -8602,9 +8602,9 @@ some genotypes as a function of the relative frequencies of other
 genotypes; we use `f_1` to denote the relative frequency of the
 genotype with the first gene mutated, `f_1_2` to denote the relative
 frequency of the genotype with the first and second genes mutated,
-etc, and `f_` to denote the frequency of the WT genotype ---below,
+etc, and `f_` to denote the frequency of the WT genotype (and `n_` to denote the absolute numbers of the WT genotype ---see an example in section \@ref(wtinint)). Below,
 in sections \@ref(fdfabs), \@ref(fdfrelabs), and \@ref(predprey), we
-will use absolute number of cells instead of relative frequencies).
+will use absolute number of cells instead of relative frequencies.
 (As we have discussed already, instead of `f_1` you can, and
 probably should for any example except trivial ones, use `f_A` or
 `f_genotype expressed as combination of gene names`).
@@ -13728,6 +13728,44 @@ Comparing these results with the ones without adaptive therapy we see that by in
 the desired effect, that is the control of the resistant genotype by maintaining certain degree of cellular competition between genotypes.
 
 \clearpage
+
+
+## Interventions: how to specify WT {#wtinint}
+
+As explained in section \@ref(fdfex1), by using `n_` or `f_`. We have already seen uses of `n_` and `f_` above, for example in fitness specifications; this silly example shows how to use (here, `n_`) for interventions:
+
+```{r WTinIntervention}
+dfwtx <- data.frame(Genotype = c("WT", "B", "A"),
+                    Fitness = c("4",
+                               "2.0",
+                               "2.1 + 0 * n_"))
+afdwtx <- allFitnessEffects(genotFitness = dfwtx,
+                            frequencyDependentFitness = TRUE,
+                          frequencyType = "abs")
+
+interventionsWT <- list(
+    list(ID           = "intWT",
+         Trigger       = "n_ >= 400 ",
+         WhatHappens   = "n_ = 0",
+         Repetitions   = Inf,
+         Periodicity   = 0.07
+         ))
+
+interventionsWT <- createInterventions(interventionsWT, afdwtx)
+
+ex1_with_ints <- oncoSimulIndiv(
+    afdwtx,
+    model = "McFLD",
+    mu = 1e-4,
+    sampleEvery = 0.01,
+    initMutant = c("WT", "A", "B"),
+    initSize = c(100, 10, 20),
+    finalTime = 3,
+    onlyCancer = FALSE,
+    interventions = interventionsWT)
+
+plot(ex1_with_ints, show="genotypes", type = "stacked")
+```
 
 # Simulating therapeutic interventions that depend on time {#timefdf}
 
