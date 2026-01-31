@@ -9,8 +9,8 @@
 \title{ Plot a fitness landscape.  }
 
 \description{ Show a plot of a fitness landscape. The plot is modeled
-  after (actually, mostly a blatant copy of) that of MAGELLAN,
-  \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}.
+  after (actually, mostly a blatant copy of) that of MAGELLAN.
+
 
   Note: this is not a plot of the fitnessEffects object; for that, see
   \code{\link{plot.fitnessEffects}}.
@@ -135,9 +135,9 @@ Ramon Diaz-Uriarte
 }
 
 \references{
-  MAGELLAN web site: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}
+  MAGELLAN web site: (it seems this site is no longer available)
 
-  Brouillet, S. et al. (2015). MAGELLAN: a tool to explore small fitness landscapes. \emph{bioRxiv}, \bold{31583}. \url{http://doi.org/10.1101/031583}
+  Brouillet, S. et al. (2015). MAGELLAN: a tool to explore small fitness landscapes. \emph{bioRxiv}, \bold{31583}. \doi{10.1101/031583}
 
 }
 
@@ -145,7 +145,7 @@ Ramon Diaz-Uriarte
 \note{
 
   I have copied most of the ideas (and colors, and labels) of this plot
-  from MAGELLAN (\url{http://wwwabi.snv.jussieu.fr/public/Magellan/})
+  from MAGELLAN
   but MAGELLAN has other functionality that is not provided here such as
   epistasis stats for the landscape, and several visual manipulation
   options.

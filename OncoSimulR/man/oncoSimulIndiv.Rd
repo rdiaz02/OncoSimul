@@ -918,7 +918,7 @@ of the individual done, and the number of attempts and time used.}
   Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
   accumulation of mutations during tumor progression: effects of
   passengers, evolutionary models, and sampling
-  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
+ \doi{10.1186/s12859-015-0466-7}.
 
   Gerstung et al., 2011. The Temporal Order of Genetic and Pathway
   Alterations in Tumorigenesis. \emph{PLoS ONE}, 6.

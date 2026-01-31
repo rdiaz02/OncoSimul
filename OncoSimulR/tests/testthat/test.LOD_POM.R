@@ -119,7 +119,7 @@ test_that("Warnings when no descendants",  {
 ##                              initSize = 1000, detectionSize = 1e6,
 ##                              keepPhylog = TRUE, mu = 1e-3)
 ##         lods <- LOD(s7)
-##         loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
+##         loda <- OncoSimulR:::LOD_oncosimul2_pre_2_9_2(s7, strict = FALSE)
 ##         ## lods should be among the loda
 ##         if(!is.null(s7$pops.by.time)) {
 ##             expect_true(any(
@@ -150,7 +150,7 @@ test_that("Warnings when no descendants",  {
 ##                              keepPhylog = TRUE, mu = 1e-3,
 ##                              initMutant = c("B"))
 ##         lods <- LOD(s7)
-##         loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7, strict = FALSE)
+##         loda <- OncoSimulR:::LOD_oncosimul2_pre_2_9_2(s7, strict = FALSE)
 ##         ## lods should be among the loda
 ##         expect_true(any(
 ##             unlist(lapply(loda$all_paths,
@@ -190,7 +190,7 @@ test_that("LOD, strict, same as would be obtained from full structure, seed", {
                               keepPhylog = TRUE, mu = 5e-3)
         lods <- LOD(s7)
         null <- capture.output(print(lods))
-        loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7b, strict = FALSE)
+        loda <- OncoSimulR:::LOD_oncosimul2_pre_2_9_2(s7b, strict = FALSE)
         ## lods should be among the loda
         if(!is.null(s7$pops.by.time)) {
             expect_true(any(
@@ -233,7 +233,7 @@ test_that("LOD, strict, same as would be obtained from full structure, with init
         lods <- LOD(s7)
         null <- capture.output(print(lods))
         attributes(lods) <- NULL
-        loda <- OncoSimulR:::LOD.oncosimul2_pre_2.9.2(s7b, strict = FALSE)
+        loda <- OncoSimulR:::LOD_oncosimul2_pre_2_9_2(s7b, strict = FALSE)
         ## we need this because o.w. the old output it ain't an igraph
         ## object with names
         if(!any(grepl("_is_end", lods)) && !any(grepl("No_descendants", lods))) {
@@ -284,7 +284,7 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
                                  onlyCancer = TRUE,
                                  initSize = 1000, detectionSize = 1e6,
                                  mu = 1e-3))
-        pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+        pom <- OncoSimulR:::POM_pre_2_9_2(s7)
         if(!is.null(s7$pops.by.time) &&
            !any(apply(s7$pops.by.time[, -1], 1, function(x) length(which(x == max(x))) > 1)))
             expect_true(identical(s7$other$POM, pom))
@@ -299,7 +299,7 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
                                  initSize = 1000, detectionSize = 1e6,
                                  mu = 1e-3,
                              initMutant = c("B")))
-        pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+        pom <- OncoSimulR:::POM_pre_2_9_2(s7)
         ## if(!is.null(s7$pops.by.time)) {
         if(!is.null(s7$pops.by.time) &&
            !any(apply(s7$pops.by.time[, -1, drop = FALSE], 1,
@@ -318,7 +318,7 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
                              max.num.tries = 3,
                              errorHitMaxTries = FALSE,
                              initMutant = c("B")))
-        pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+        pom <- OncoSimulR:::POM_pre_2_9_2(s7)
         if(!is.null(s7$pops.by.time) &&
            !any(apply(s7$pops.by.time[, -1, drop = FALSE], 1,
                       function(x) length(which(x == max(x))) > 1))) {
@@ -347,7 +347,7 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
 ##         s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
 ##                              initSize = 1000, detectionSize = 1e4,
 ##                              mu = 1e-3, model = "McFL")
-##         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+##         pom <- OncoSimulR:::POM_pre_2_9_2(s7)
 ##         if(!is.null(s7$pops.by.time) &&
 ##            !any(apply(s7$pops.by.time[, -1], 1, function(x) length(which(x == max(x))) > 1)))
 ##             expect_true(identical(s7$other$POM, pom))
@@ -360,7 +360,7 @@ test_that("POM from C++ is the same as from the pops.by.time object", {
 ##                              initSize = 1000, detectionSize = 1e4,
 ##                              mu = 1e-3, model = "McFL",
 ##                              initMutant = c("B"))
-##         pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+##         pom <- OncoSimulR:::POM_pre_2_9_2(s7)
 ##         ## if(!is.null(s7$pops.by.time)) {
 ##         if(!is.null(s7$pops.by.time) &&
 ##            !any(apply(s7$pops.by.time[, -1], 1, function(x) length(which(x == max(x))) > 1)))
@@ -475,7 +475,7 @@ cat(paste("\n Ending LOD_POM at", date(), "\n"))
 ##     s7 <- oncoSimulIndiv(allFitnessEffects(genotFitness = rxx),
 ##                          initSize = 1000, detectionSize = 1e6,
 ##                          mu = 1e-3)
-##     pom <- OncoSimulR:::POM_pre_2.9.2(s7)
+##     pom <- OncoSimulR:::POM_pre_2_9_2(s7)
 ##     if(!is.null(s7$pops.by.time))
 ##         expect_true(identical(s7$other$POM, pom))
 ## }

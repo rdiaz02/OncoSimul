@@ -4,10 +4,10 @@
 \alias{print.sampledGenotypes}
 \title{
   Obtain a sample from a population of simulations.
-  
+
 }
 \description{
-  
+
   Obtain a sample (a matrix of individuals/samples by genes or, equivalently, a
   vector of "genotypes") from an oncosimulpop object (i.e., a simulation
   of multiple individuals) or a single oncosimul object. Sampling
@@ -15,11 +15,11 @@
   the end of the tumor progression or during the progression of the
   disease.
 
-  
+
   \code{sampledGenotypes} shows the genotype frequencies from that
   sample; Shannon's diversity ---entropy--- of the genotypes is also
   returned.  Order effects are ignored.
-  
+
 }
 
 \usage{
@@ -36,7 +36,7 @@ sampledGenotypes(y, genes = NULL)
   single simulation).}
 
   \item{y}{The output from a call to \code{samplePop}.}
-  
+
   \item{timeSample}{
     "last" means to sample each individual in the very last time period
     of the simulation. "unif" (or "uniform") means sampling each
@@ -56,8 +56,8 @@ sampledGenotypes(y, genes = NULL)
   mutant but at time 3 there were none (maybe they went extinct); the
   set of times to consider for sampling are 2, 4, 5, and time 3 is not
   considered. This might not always be what you want.
-  } 
-  
+  }
+
   \item{typeSample}{
     "singleCell" (or "single") for single cell sampling, where the
     probability of sampling a cell (a clone) is directly proportional to
@@ -66,7 +66,7 @@ sampledGenotypes(y, genes = NULL)
     "singleCell-noWT" or "single-nowt" is single cell sampling, but
     excluding the wild type.
   }
-  
+
   \item{thresholdWhole}{
     In whole tumor sampling, whether a gene is detected as mutated depends
     on thresholdWhole: a gene is considered mutated if it is altered in at
@@ -90,7 +90,7 @@ sampledGenotypes(y, genes = NULL)
     entries in the sampled matrix will be flipped (i.e., 0s turned
     to 1s and 1s turned to 0s).}
 
-  
+
   \item{genes}{If non-NULL, use only the genes in \code{genes} to create
   the table of genotypes. This can be useful if you only care about the
   genotypes with respect to a subset of genes (say, X), and want to
@@ -159,8 +159,7 @@ sampledGenotypes(y, genes = NULL)
 \references{
   Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
   accumulation of mutations during tumor progression: effects of
-  passengers, evolutionary models, and sampling
-  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}
+  passengers, evolutionary models, and sampling \doi{10.1186/s12859-015-0466-7}
 
 }
 
@@ -170,7 +169,7 @@ sampledGenotypes(y, genes = NULL)
 
 \seealso{
   \code{\link{oncoSimulPop}}, \code{\link{oncoSimulSample}}
-  
+
 }
 
 \examples{
@@ -216,12 +215,3 @@ sampledGenotypes(samplePop(r1, typeSample = "single"))
 }
 
 \keyword{manip}
-
-
-
-
-
-
-
-
-

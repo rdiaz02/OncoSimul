@@ -5828,8 +5828,8 @@ actually plot that, allowing us to quickly identify local minima and
 maxima and get an idea of how the fitness landscape looks.
 
 In `plotFitnessLandscape` I have blatantly and shamelessly copied most
-of the looks of the plots of MAGELLAN [@brouillet_magellan:_2015] (see
-also <http://wwwabi.snv.jussieu.fr/public/Magellan/>), a very nice
+of the looks of the plots of MAGELLAN [@brouillet_magellan:_2015]
+, a very nice
 web-based tool for fitness landscape plotting and analysis (MAGELLAN
 provides some other extra functionality and epistasis statistics not
 provided here).
@@ -8367,7 +8367,7 @@ above is also very similar to the one on @greene_changing_2014 if you use
 What can you do with these genotype to fitness mappings? You could plot
 them, you could use them as input for `oncoSimulIndiv` and related
 functions, or you could export them (`to_Magellan`) and plot them externally
-(e.g., in MAGELLAN: <http://wwwabi.snv.jussieu.fr/public/Magellan/>,
+(e.g., in MAGELLAN,
 @brouillet_magellan:_2015).
 
 
@@ -8484,8 +8484,7 @@ default parameters, neither of Ising, Eggbox or Optimum contribute to
 fitness lanadcape generation as all `i`, `e`, `o` and `p` all `== 0`.
 Also, as all parameters refering to standard deviations have value `==
 -1`, those are also have no effect unless changed. Further details can be
-found in MAGELLAN's webpage
-<http://wwwabi.snv.jussieu.fr/public/Magellan/> and
+found in MAGELLAN's webpage (note: this site is no longer available; used to be at wwwabi.snv.jussieu.fr/public/Magellan/) and
 [@brouillet_magellan:_2015].
 
 ```{r fullex1}

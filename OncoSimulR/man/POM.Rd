@@ -14,14 +14,14 @@
 }
 
 \description{
-  
+
   Compute Lines of Descent (LOD) and Path of the Maximum (POM) for a
   single simulation or a set of simulations (from \code{oncoSimulPop}).
 
   \code{diversityPOM} and \code{diversityLOD} return the Shannon's
   diversity (entropy) of the POM and LOD, respectively, of a set of
   simulations (it makes no sense to compute those from a single simulation).
-  
+
 }
 
 \usage{
@@ -66,7 +66,7 @@ diversityLOD(llod)
   these only keep the very last sample.
 
 
-  For LOD, %% when using \code{strict = TRUE}, 
+  For LOD, %% when using \code{strict = TRUE},
   a single LOD per simulation
   is returned, with the same meaning as that in p. 572 of Szendro et
   al. (2013). "A given genotype may undergo several episodes of colonization and extinction that are stored by the algorithm, and the last episode before the colonization of the final state is used to construct the step.",
@@ -96,7 +96,7 @@ diversityLOD(llod)
   Note \emph{breaking changes}: for LOD we used to return all lines of
   descent in a given simulation. In v. 2.9.1 we also returned the LOD
   as explained above. Now we only return the LOD as defined above.
-  
+
   Beware, however, that if you use multiple initial mutants the LOD
 function will probably not do what you want. It is not even clear that
 the LOD is well defined in this case. We are working on this.
@@ -129,7 +129,7 @@ the LOD is well defined in this case. We are working on this.
   %% All the lists
   %% contain objects of class "igraph.vs" (an igraph vertex sequence: see
   %% \code{\link[igraph]{vertex_attr}}).
- 
+
   For \code{diversityLOD} and \code{diversityPOM} a single element
   vector with the Shannon's diversity (entropy) of the LODs (for
   \code{diversityLOD}) or of the POMs (for \code{diversityPOM}).
@@ -141,7 +141,7 @@ the LOD is well defined in this case. We are working on this.
   Szendro, I. G., Franke, J., Visser, J. A. G. M. de, & Krug,
   J. (2013). Predictability of evolution depends nonmonotonically on
   population size. \emph{Proceedings of the National Academy of Sciences},
-  110(2), 571-576. \url{https://doi.org/10.1073/pnas.1213613110}
+  110(2), 571-576. \doi{10.1073/pnas.1213613110}
 
 }
 
@@ -151,7 +151,7 @@ the LOD is well defined in this case. We are working on this.
 
 \seealso{
   \code{\link{oncoSimulPop}}, \code{\link{oncoSimulIndiv}}
-  
+
 }
 
 \examples{
@@ -160,9 +160,9 @@ the LOD is well defined in this case. We are working on this.
 ###      (s and sh are made up for the example; only the structure
 ###       and names come from Gerstung et al.)
 
-pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A", 
+pancr <- allFitnessEffects(data.frame(parent = c("Root", rep("KRAS", 4), "SMAD4", "CDNK2A",
                                           "TP53", "TP53", "MLL3"),
-                                      child = c("KRAS","SMAD4", "CDNK2A", 
+                                      child = c("KRAS","SMAD4", "CDNK2A",
                                           "TP53", "MLL3",
                                           rep("PXDN", 3), rep("TGFBR2", 2)),
                                       s = 0.05,
@@ -195,12 +195,3 @@ diversityLOD(LOD(pancr8))
 
 \keyword{manip}
 \keyword{univar}
-
-
-
-
-
-
-
-
-

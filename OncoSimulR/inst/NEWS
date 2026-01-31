@@ -1,3 +1,6 @@
+Changes in version 4.13.1 (2026-01-31):
+	- Fixed NOTES in "R CMD check --as-cran"
+
 Changes in version 4.11.1 (2025-06-09):
 	- Example using WT in interventions.
 

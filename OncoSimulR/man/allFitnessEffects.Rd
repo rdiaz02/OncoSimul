@@ -15,7 +15,7 @@
   interactions and genes without interactions, as well as, optionally, a
   mapping of genes to modules, return the complete specification of how
   mutations affect the mutation rate.
-  
+
   This function can be used also to produce the fitness specification
   needed to run simulations in a frequency dependent fitness way. In that
   situation we presume that the effects must be considered as fitness effects
@@ -42,7 +42,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 
 
 \arguments{
-  \item{rT}{A restriction table that is an extended version of a poset 
+  \item{rT}{A restriction table that is an extended version of a poset
     (see \code{\link{poset}} ).
     A restriction table is a data frame where each row shows one edge
     between a parent and a child. A restriction table contains exactly these
@@ -108,16 +108,16 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 }
 
 \item{geneToModule}{
-      
+
   A named character vector that allows to match genes and modules. The
   names are the modules, and each of the values is a character vector
   with the gene names, separated by a comma, that correspond to a
   module. Note that modules cannot share genes. There is no need for
   modules to contain more than one gene.  If you specify a geneToModule
-  argument, and you used a restriction table, the \code{geneToModule} 
+  argument, and you used a restriction table, the \code{geneToModule}
   must necessarily contain, in the first position, "Root" (since the
   restriction table contains a node named "Root"). See examples below.
-    
+
   This paramenter is not used if  \code{frequencyDependentBirth} is TRUE.
 }
 
@@ -136,15 +136,15 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 }
 
 \item{genotFitness}{A matrix or data frame that contains explicitly the
-  mapping of genotypes to birth and optionally death. For now, we only 
+  mapping of genotypes to birth and optionally death. For now, we only
   allow epistasis-like relations between genes (so you cannot code
   order effects this way).
 
   Genotypes can be specified in two ways:
   \itemize{
-    
+
     \item As a matrix (or data frame) with g + 1 columns or g + 2 columns,
-	depending if death is specified or not(where g > 1). Each of the first 
+	depending if death is specified or not(where g > 1). Each of the first
 	g columns contains a 1 or a 0 indicating that
     the gene of that column is mutated or not. Column g+ 1 contains the
     birth values. This is, for instance, the output you will get from
@@ -154,14 +154,14 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
     be numeric, except when \code{frequencyDependentBirth} is TRUE.
     In this case, last column must be character and contains birth
     equations.
-    
+
     \item As a two column data frame. The second column is birth, and
     the first column are genotypes, given as a character vector. For
     instance, a row "A, B" would mean the genotype with both A and B
-    mutated. If \code{frequencyDependentBirth} is TRUE both columns 
+    mutated. If \code{frequencyDependentBirth} is TRUE both columns
     must be character vectors.
   }
-  
+
   When \code{frequencyDependentBirth = FALSE}, fitness must be
   \code{>= 0}. If any possible genotype is missing, its fitness is
   assumed to be 0, except for WT (if WT is missing, its fitness is
@@ -207,24 +207,24 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   that fitness specifications are fixed, except death rate in case of
   McFarland model (see \code{\link{oncoSimulIndiv}} for more details). If
   TRUE, you are in a frequency dependent fitness situation, where fitness
-  specification ecuations must be passed as characters at 
+  specification ecuations must be passed as characters at
   \code{genotFitness}.}
-  
+
   \item{frequencyDependentDeath}{
   If FALSE, the default value, all downstream work will be realised in a
   way not related to frequency depedent fitness situations. That implies
   that fitness specifications are fixed, except death rate in case of
   McFarland model (see \code{\link{oncoSimulIndiv}} for more details). If
   TRUE, you are in a frequency dependent fitness situation, where fitness
-  specification ecuations must be passed as characters at 
+  specification ecuations must be passed as characters at
   \code{genotFitness}.}
 
   \item{frequencyDependentFitness}{NA.}
 
 
-  %% \item{frequencyType}{frequencyType is a character that specify wether 
+  %% \item{frequencyType}{frequencyType is a character that specify wether
   %%   we are using absolute or relatives frequecies and can take tree values
-  %%   depending on \code{frequencyDependentFitness}. When FALSE is 
+  %%   depending on \code{frequencyDependentFitness}. When FALSE is
   %%   "unemployed" and for TRUE we can use "abs", for absolute frequencies,
   %%   or "rel", for relative ones. Remember that you must to use "f" for
   %% relative frequency and "n" for absolute in \code{genoFitness}.
@@ -234,7 +234,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   frequencies, or "rel", for relative ones. Remember that you must to
   use "f" for relative frequency and "n" for absolute in
   \code{genoFitness}. Set to NA for non-frequency-dependent fitness. }
-  
+
   \item{deathSpec}{
   If FALSE, the default value, all downstream work will be realised in a
   way in which we assume that death is not specified by the user in \code{genotFitness}.
@@ -279,20 +279,20 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 
 
   If you use \code{genotFitness} note that we force the WT (wildtype) to
-  always be 1 so birth rates (death rates) are rescaled in case of 
+  always be 1 so birth rates (death rates) are rescaled in case of
   \code{frequencyDependentBirth = FALSE} (\code{frequencyDependentDeath = FALSE}).
   In contrast, when \code{frequencyDependentBirth = TRUE} (\code{frequencyDependentDeath = TRUE})
   you are free to determine the birth rate (death rate) as a function of the frequencies of the
   genotypes (see \code{genotFitness} and the vignette).
 
 
-  When using \code{genotFitness}, any genotype with a fitness <= 1e-9 is removed from the table of genotypes, thus 
-    making it a non-viable genotype during simulations. 
+  When using \code{genotFitness}, any genotype with a fitness <= 1e-9 is removed from the table of genotypes, thus
+    making it a non-viable genotype during simulations.
 }
 
 
 \value{
-  
+
   An object of class "fitnessEffects" or "mutatorEffects". This is just
   a list, but it is not intended for human consumption.  The components
   are:
@@ -310,7 +310,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 
   \item{graph}{An \code{igraph} object that shows the restrictions,
     epistasis and order effects, and is useful for plotting.}
-  
+
   \item{drv}{The numeric identifiers of the drivers. The numbers
     correspond to the internal numeric coding of the genes.}
 
@@ -323,7 +323,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   \item{orderEffects}{If \code{keepInput} is TRUE, the original order
   effects vector.}
 
-  \item{noIntGenes}{If \code{keepInput} is TRUE, the original 
+  \item{noIntGenes}{If \code{keepInput} is TRUE, the original
     noIntGenes.}
 
   \item{fitnessLandscape}{A data.frame that contains number of genes + 1 columns,
@@ -347,22 +347,22 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
   \item{frequencyDependentBirth}{TRUE or FALSE as we have explained
   before.
   }
-  
+
   \item{frequencyDependentDeath}{TRUE or FALSE as we have explained
   before.
   }
-  
+
   \item{frequencyDependentFitness}{DEPRECATED. Use instead of \code{frequencyDependentFitness} for
   old nomenclature.
   }
-  
+
   \item{frequencyType}{A character string "abs" or "rel" (or NULL).
   }
-	
+
   \item{deathSpec}{TRUE or FALSE as we have explained
   before.
   }
-  
+
    \item{full_FDF_spec}{For frequency-dependent birth (death), a complete
   data frame showing the genotypes (as matrix, letters, and "fvars") and the
   birth (death) specification, in terms of the original specification
@@ -378,8 +378,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 \references{
     Diaz-Uriarte, R. (2015). Identifying restrictions in the order of
   accumulation of mutations during tumor progression: effects of
-  passengers, evolutionary models, and sampling
-  \url{http://www.biomedcentral.com/1471-2105/16/41/abstract}.
+  passengers, evolutionary models, and sampling \doi{10.1186/s12859-015-0466-7}.
 
     McFarland, C.~D. et al. (2013). Impact of deleterious passenger
   mutations on cancer progression.  \emph{Proceedings of the National
@@ -423,7 +422,7 @@ allMutatorEffects(epistasis = NULL, noIntGenes = NULL,
 }
 
 \seealso{
-  
+
   \code{\link{evalGenotype}},
   \code{\link{evalAllGenotypes}},
   \code{\link{oncoSimulIndiv}},
@@ -453,7 +452,7 @@ p4 <- data.frame(parent = c(rep("Root", 4), "A", "B", "D", "E", "C", "F"),
                  child = c("A", "B", "D", "E", "C", "C", "F", "F", "G", "G"),
                  s = c(0.01, 0.02, 0.03, 0.04, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3),
                  sh = c(rep(0, 4), c(-.9, -.9), c(-.95, -.95), c(-.99, -.99)),
-                 typeDep = c(rep("--", 4), 
+                 typeDep = c(rep("--", 4),
                      "XMPN", "XMPN", "MN", "MN", "SM", "SM"))
 
 oe <- c("C > F" = -0.1, "H > I" = 0.12)
@@ -539,7 +538,7 @@ m5 <- cbind(c(0, 1, 0, 1), c(0, 0, 1, 1), c(1, 2, 3, 5.5))
 fem5 <- allFitnessEffects(genotFitness = m5)
 
 ## Verify it interprets what it should: m5 is the same as the evaluation
-## of the fitness effects 
+## of the fitness effects
 evalAllGenotypes(fem5, addwt = TRUE, order = FALSE)
 
 
@@ -575,7 +574,7 @@ plotFitnessLandscape(fe2)
 evalAllGenotypes(allFitnessEffects(genotFitness = m8),
                  addwt = TRUE)
 
-## As a matrix 
+## As a matrix
 (m9 <- rbind(c(0, 1, 0, 1, 4), c(1, 0, 1, 0, 1.5)))
 evalAllGenotypes(allFitnessEffects(genotFitness = m9),
                  addwt = TRUE)
@@ -593,7 +592,7 @@ genofit <- data.frame(A = c(0, 1, 0, 1),
 afe <- allFitnessEffects(genotFitness = genofit,
                          frequencyDependentBirth = TRUE,
                          frequencyType = "rel")
-                         
+
 ##Ploting fitness landscape in case of spPopSizes = c(5000, 2500, 3000, 7500)
 plotFitnessLandscape(evalAllGenotypes(afe, spPopSizes = c(5000, 2500, 3000, 7500)))
 

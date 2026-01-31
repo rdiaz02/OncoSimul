@@ -51,7 +51,7 @@ phcl_from_lod <- function(df, x) {
     ## no longer necessary
     ## ## the !keepEvents. Which I move here to speed things up.
     ## df <- df[!duplicated(df[, c(1, 2)]), , drop = FALSE]
-    
+
     tG <- unique(c(as.character(df[, 1]), as.character(df[, 2])))
 
     if (nrow(df) == 0) {
@@ -59,7 +59,7 @@ phcl_from_lod <- function(df, x) {
         return(NA)
     }
     g <- igraph::graph.data.frame(df[, c(1, 2)])
-    nodesInP <- unique(unlist(igraph::neighborhood(g, order = 1e+09, 
+    nodesInP <- unique(unlist(igraph::neighborhood(g, order = 1e+09,
                                                    nodes = tG, mode = "in")))
     allLabels <- unique(as.character(unlist(df[, c(1, 2)])))
     nodesRm <- setdiff(allLabels, V(g)$name[nodesInP])
@@ -69,13 +69,13 @@ phcl_from_lod <- function(df, x) {
     return(tmp)
 }
 
-LOD.internal <- function(x) {
+LOD_internal <- function(x) {
     if(is.null(x$pops.by.time)) {
         warning("Missing needed components. This might be a failed simulation.",
                 " Returning NA.")
         return(list(all_paths = NA, lod_single = NA))
     }
-    if (!inherits(x, "oncosimul2")) 
+    if (!inherits(x, "oncosimul2"))
         stop("LOD information is only stored with v >= 2")
     ## y <- filter_phylog_df_LOD(x$other$LOD_DF)
     y <- x$other$LOD_DF
@@ -92,10 +92,10 @@ LOD.internal <- function(x) {
             attributes(lod)$initMutant <- initMutant
         return(lod)
     }
-    
+
     pcg <- pc$graph
     end <- genot_max(x)
-    
+
     if(end == initMutant) {
         if(initMutant == "") {
             stinitm <- "WT"
@@ -116,7 +116,7 @@ LOD.internal <- function(x) {
 }
 
 
-POM.internal <- function(x) {
+POM_internal <- function(x) {
     if(is.null(x$pops.by.time)) {
         warning("Missing needed components. This might be a failed simulation.",
                 " Returning NA.")
@@ -157,13 +157,13 @@ LOD_as_path <- function(llod) {
             ## the_names <- names(u)
             the_names <- u
             the_names_wt <- which(the_names == "")
-            
+
             if(length(the_names_wt)) {
                 if(length(the_names_wt) > 1) stop("more than 1 WT?!")
                 if(the_names_wt > 1) stop("WT in position not 1?!")
                 the_names[the_names_wt] <- "WT"
             }
-            return(paste(the_names, collapse = " -> ")) 
+            return(paste(the_names, collapse = " -> "))
         }
     }
     if(!is.list(llod))
@@ -195,16 +195,16 @@ LOD <- function(x) {
     UseMethod("LOD", x)
 }
 
-POM.oncosimul2 <- function(x) return(POM.internal(x))
-LOD.oncosimul2 <- function(x) return(LOD.internal(x))
+POM.oncosimul2 <- function(x) return(POM_internal(x))
+LOD.oncosimul2 <- function(x) return(LOD_internal(x))
 
-POM.oncosimulpop <- function(x) return(lapply(x, POM.internal))
-LOD.oncosimulpop <- function(x) return(lapply(x, LOD.internal))
-
-
+POM.oncosimulpop <- function(x) return(lapply(x, POM_internal))
+LOD.oncosimulpop <- function(x) return(lapply(x, LOD_internal))
 
 
-POM_pre_2.9.2 <- function(x) {
+
+
+POM_pre_2_9_2 <- function(x) {
     if(is.null(x$pops.by.time)) {
         warning("Missing needed components. This might be a failed simulation.",
                 " Returning NA.")
@@ -216,9 +216,9 @@ POM_pre_2.9.2 <- function(x) {
 
 
 
-LOD.internal_pre_2.9.2 <- function(x, strict) {
+LOD_internal_pre_2_9_2 <- function(x, strict) {
     ## Not identical to LOD of Szendro because:
-    
+
     ##  a) I think we want all paths, not just their single LOD, which I
     ##  think they might use out of convenience.
 
@@ -235,7 +235,7 @@ LOD.internal_pre_2.9.2 <- function(x, strict) {
         return(list(all_paths = NA, lod_single = NA))
     }
     if(strict) {
-        if (!inherits(x, "oncosimul2")) 
+        if (!inherits(x, "oncosimul2"))
             stop("LOD information is only stored with v >= 2")
         y <- filter_phylog_df_LOD(x$other$LOD_DF)
         pc <- phcl_from_lod(y)
@@ -244,7 +244,7 @@ LOD.internal_pre_2.9.2 <- function(x, strict) {
     }
     ## need eval for oncoSimulPop calls and for LOD_as_path
     initMutant <- x$InitMutant
-    
+
     if((length(pc) == 1) && (is.na(pc))) {
         lodlist <- list(all_paths = NA,
                         lod_single = "No_descendants")
@@ -253,10 +253,10 @@ LOD.internal_pre_2.9.2 <- function(x, strict) {
             attributes(lodlist)$initMutant <- initMutant
         return(lodlist)
     }
-    
+
     pcg <- pc$graph
     end <- genot_max(x)
-    
+
     ## if(!is.null(eval(attributes(x)$call$initMutant))) {
     ##     initMutant <- eval(attributes(s7)$call$initMutant)
     ## } else {
@@ -274,14 +274,14 @@ LOD.internal_pre_2.9.2 <- function(x, strict) {
     } else {
         all_paths <- igraph::all_simple_paths(pcg, from = initMutant, to = end,
                                               mode = "out")
-       
+
         if(!strict) {
             ## the next is partially redundant
             ## graph_to_end <- igraph::make_ego_graph(pcg, order = 1e9, nodes = end,
             ##                                        mode = "in")
             ## if(length(graph_to_end) != 1) stop("length(graph_to_end) > 1")
             ## I am not sure if I should keep the last one. Redundant
-            
+
             ## This gives a single path and it is the first entry into each
             ## destination. But we do not check there is no extinction afterwards.
             ## The closest to the single Szendro LOD
@@ -314,11 +314,11 @@ LOD.internal_pre_2.9.2 <- function(x, strict) {
 
 
 
-LOD.oncosimul2_pre_2.9.2 <- function(x, strict = TRUE)
-    return(LOD.internal_pre_2.9.2(x, strict))
+LOD_oncosimul2_pre_2_9_2 <- function(x, strict = TRUE)
+    return(LOD_internal_pre_2_9_2(x, strict))
 
-## LOD.oncosimulpop_pre_2.9.2 <- function(x, strict = TRUE)
-##     return(lapply(x, LOD.internal_pre_2.9.2, strict))
+## LOD.oncosimulpop_pre_2_9_2 <- function(x, strict = TRUE)
+##     return(lapply(x, LOD_internal_pre_2_9_2, strict))
 
 
 

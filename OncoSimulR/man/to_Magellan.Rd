@@ -5,7 +5,7 @@
 \title{ Create output for MAGELLAN and obtain MAGELLAN statistics.  }
 
 \description{ Export a fitness landscape in a format that is understood
-  by MAGELLAN \url{http://wwwabi.snv.jussieu.fr/public/Magellan/} and
+  by MAGELLAN  and
   obtain fitness landscape statistics from MAGELLAN. 
 
 }
@@ -97,9 +97,9 @@ Ramon Diaz-Uriarte
 }
 
 \references{
-  MAGELLAN web site: \url{http://wwwabi.snv.jussieu.fr/public/Magellan/}
+  MAGELLAN web site: (it seems no longer available)
 
-  Brouillet, S. et al. (2015). MAGELLAN: a tool to explore small fitness landscapes. \emph{bioRxiv}, \bold{31583}. \url{http://doi.org/10.1101/031583}
+  Brouillet, S. et al. (2015). MAGELLAN: a tool to explore small fitness landscapes. \emph{bioRxiv}, \bold{31583}. \doi{10.1101/031583}
 
 }
 

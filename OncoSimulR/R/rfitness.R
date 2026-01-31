@@ -48,7 +48,7 @@ get_magellan_binaries <-
 ## pkg.env <- new.env()
 ## ## The next will not install with error
 ## ## ERROR: hard-coded installation path:
-## please report to the package maintainer and use ‘--no-staged-install’
+## please report to the package maintainer and use '--no-staged-install'
 ## pkg.env <- c(pkg.env, get_magellan_binaries())
 
 
@@ -88,7 +88,7 @@ rfitness <- function(g, c= 0.5,
                      O = -1, # sd optimum
                      p = 0, # mean production for non 0 allele (optimum)
                      P = -1, # sd for p
-                     model = c("RMF", "Additive", 
+                     model = c("RMF", "Additive",
                                "NK", "Ising", "Eggbox", "Full"),
                      seed_magellan = -1
                      ) {
@@ -128,9 +128,9 @@ rfitness <- function(g, c= 0.5,
             mutants <-rep(1,g)
             ## FIXME: Why not just?
             ## f_single_mut <- rnorm(g, mean = mu, sd = sd)
-            f_single_mut <- sapply(mutants, FUN = function(x) 
+            f_single_mut <- sapply(mutants, FUN = function(x)
                 rnorm(x, mean = mu, sd = sd))
-            ## find which gene is mutated 
+            ## find which gene is mutated
             m2 <- m == 1
             ## Sum the fitness effect of that mutation to generate a vector fi with
             ## the fitness for each mutant condition
@@ -172,7 +172,7 @@ rfitness <- function(g, c= 0.5,
                 ncol = g + 1, byrow = TRUE)
             m1 <- fl1[, 1:g]
             fi <- fl1[, g + 1]
-            
+
             ## For scaling, etc, all that matters, if anything, is the wildtype
 
             ## We could order by doing this
@@ -246,7 +246,7 @@ rfitness <- function(g, c= 0.5,
             fi <- new_fi
             rm(new_fi)
         }
-        
+
         if(log) {
             if(length(scale == 3)) {
                 wt_is_1 <- "no"
@@ -266,7 +266,7 @@ rfitness <- function(g, c= 0.5,
             ## former expression, but it was more confusing
             ## fi <- log(fi/fi[1]) + 1
         }
-        
+
         if(truncate_at_0) {
             ## yes, truncate but add noise to prevent identical
             fi[fi <= 0] <- runif(sum(fi <= 0),
@@ -296,9 +296,3 @@ rfitness <- function(g, c= 0.5,
     class(m) <- c(class(m), "genotype_fitness_matrix")
     return(m)
 }
-
-
-
-
-
-
