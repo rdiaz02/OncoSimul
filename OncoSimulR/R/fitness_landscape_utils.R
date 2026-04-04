@@ -524,3 +524,25 @@ peak_valley <- function(x) {
 ## ## after done with first loop, 
 ## ## return the matrix adm[accessible > 0, accessible >0]
 ## ## only need care with row/colnames
+
+
+## Given a genotype_fitness_matrix (0/1 gene columns + Fitness column)
+## that may be missing some genotypes, return a complete landscape
+## with all 2^g genotypes, filling absent ones with `fill` (default 0).
+## Input x must be a genotype_fitness_matrix (0/1 gene cols + Fitness col)
+## — it won't work on the two-column Genotype/Fitness data frame format
+complete_fitness_landscape <- function(x, fill = 0) {
+  g <- ncol(x) - 1
+  gene_cols <- colnames(x)[seq_len(g)]
+  fc <- ifelse("Fitness" %in% colnames(x), "Fitness", "Birth")
+  all_genots <- generate_matrix_genotypes(g)
+  colnames(all_genots) <- gene_cols
+  key_all <- apply(all_genots, 1, paste, collapse = "_")
+  key_x   <- apply(as.matrix(x[, gene_cols, drop = FALSE]), 1, paste, collapse = "_")
+  fitness_vals <- rep(fill, nrow(all_genots))
+  fitness_vals[match(key_x, key_all)] <- x[, fc]
+  m <- cbind(all_genots, fitness_vals)
+  colnames(m)[ncol(m)] <- fc
+  class(m) <- c(class(m), "genotype_fitness_matrix")
+  return(m)
+}
