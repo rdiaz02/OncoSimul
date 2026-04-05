@@ -89,9 +89,10 @@ test_that("test.complete_fitness_landscape works as expected", {
     r2_trunc <- r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE]
     r2_recons <- complete_fitness_landscape(r2_trunc, fill = replace_val)
     expect_equal(r2[, -ncol(r2), drop = FALSE], r2_recons[, -ncol(r2), drop = FALSE])
-    expect_equal(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE],
-                 r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])
-    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Fitness", drop = FALSE] == replace_val)))
+    ## colnames change: Fitness <-> Birth
+    expect_true(isTRUE(all(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE] ==
+                             r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])))
+    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Birth", drop = FALSE] == replace_val)))
 
     ## Removal
     r2 <- rfitness(7, min_accessible_genotypes = 1)
@@ -99,9 +100,9 @@ test_that("test.complete_fitness_landscape works as expected", {
     r2_trunc <- r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE]
     r2_recons <- complete_fitness_landscape(r2_trunc, fill = replace_val)
     expect_equal(r2[, -ncol(r2), drop = FALSE], r2_recons[, -ncol(r2), drop = FALSE])
-    expect_equal(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE],
-                 r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])
-    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Fitness", drop = FALSE] == replace_val)))
+    expect_true(isTRUE(all(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE] ==
+                             r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])))
+    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Birth", drop = FALSE] == replace_val)))
 
 
 
@@ -110,9 +111,9 @@ test_that("test.complete_fitness_landscape works as expected", {
     r2_trunc <- r2_trunc[sample(1:nrow(r2_trunc)), , drop = FALSE]
     r2_recons <- complete_fitness_landscape(r2_trunc, fill = replace_val)
     expect_equal(r2[, -ncol(r2), drop = FALSE], r2_recons[, -ncol(r2), drop = FALSE])
-    expect_equal(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE],
-                 r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])
-    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Fitness", drop = FALSE] == replace_val)))
+    expect_true(isTRUE(all(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE] ==
+                             r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])))
+    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Birth", drop = FALSE] == replace_val)))
 
 
     ## Single row input
@@ -124,9 +125,9 @@ test_that("test.complete_fitness_landscape works as expected", {
     r2_trunc <- r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE]
     r2_recons <- complete_fitness_landscape(r2_trunc, fill = replace_val)
     expect_equal(r2[, -ncol(r2), drop = FALSE], r2_recons[, -ncol(r2), drop = FALSE])
-    expect_equal(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE],
-                 r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])
-    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Fitness", drop = FALSE] == replace_val)))
+    expect_true(isTRUE(all(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE] ==
+                             r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])))
+    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Birth", drop = FALSE] == replace_val)))
 
     ## Single row input
     r2 <- rfitness(7, min_accessible_genotypes = 1)
@@ -136,11 +137,9 @@ test_that("test.complete_fitness_landscape works as expected", {
     r2_trunc <- r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE]
     r2_recons <- complete_fitness_landscape(r2_trunc, fill = replace_val)
     expect_equal(r2[, -ncol(r2), drop = FALSE], r2_recons[, -ncol(r2), drop = FALSE])
-    expect_equal(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE],
-                 r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])
-    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Fitness", drop = FALSE] == replace_val)))
-
-
+    expect_true(isTRUE(all(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE] ==
+                             r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])))
+    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Birth", drop = FALSE] == replace_val)))
 
     ## Now, none accessible
     r2 <- rfitness(7)
@@ -149,9 +148,9 @@ test_that("test.complete_fitness_landscape works as expected", {
     r2_trunc <- r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE]
     r2_recons <- complete_fitness_landscape(r2_trunc, fill = replace_val)
     expect_equal(r2[, -ncol(r2), drop = FALSE], r2_recons[, -ncol(r2), drop = FALSE])
-    expect_equal(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE],
-                 r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])
-    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Fitness", drop = FALSE] == replace_val)))
+    expect_true(isTRUE(all(r2[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE] ==
+                             r2_recons[r2[, "Fitness", drop = FALSE] >= 1, , drop = FALSE])))
+    expect_true(isTRUE(all(r2_recons[r2[, "Fitness", drop = FALSE] < 1, "Birth", drop = FALSE] == replace_val)))
   }
 
 })
