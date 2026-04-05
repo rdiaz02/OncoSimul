@@ -107,6 +107,11 @@ test_that("genotFitness not combined with others", {
 })
 
 test_that("Missing genotypes defaults: WT 1, others 0", {
+    ## And where are missing genotypes set to 0?
+    ## I think in the cpp code:
+    ## new_restrict.cpp
+    ## Line 56–58: prodFitness definition
+    ## Line 1381: the s.push_back(-1.0) for a genotype not found in flbmap
     (m8 <- data.frame(G = c("A, B, C", "B"), F = c(3, 2)))
     exp_m8 <- data.frame(
         Genotype = c("WT", "A", "B", "C", "A, B", "A, C",
