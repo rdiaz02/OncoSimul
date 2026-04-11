@@ -29,7 +29,6 @@ vignette: >
   %\VignetteIndexEntry{OncoSimulR: forward genetic simulation in asexual populations with arbitrary epistatic interactions and a focus on modeling tumor progression.}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignettePackage{OncoSimulR}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
   %\VignetteKeywords{OncoSimulR simulation cancer oncogenetic trees}
   %\VignetteDepends{OncoSimulR}
