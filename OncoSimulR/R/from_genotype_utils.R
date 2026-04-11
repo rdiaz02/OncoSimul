@@ -426,7 +426,7 @@ to_genotFitness_std <- function(x,
             }
             
         } else {
-            if(x[whichroot, ncol(x)] != 1) {
+            if(!isTRUE(all.equal(x[whichroot, ncol(x)], 1))) {
                 if(deathSpec) {
                     warning("Death of wildtype != 1.",
                             " Dividing all deaths by death of wildtype.")
@@ -440,7 +440,7 @@ to_genotFitness_std <- function(x,
                 x[, ncol(x)] <- x[, ncol(x)]/vwt
             }
             
-            if (deathSpec && x[whichroot, ncol(x)-1] != 1) {
+            if (deathSpec && !isTRUE(all.equal(x[whichroot, ncol(x)-1], 1))) {
                 warning("Birth of wildtype != 1.",
                         " Dividing all births by birth of wildtype.")
                 
