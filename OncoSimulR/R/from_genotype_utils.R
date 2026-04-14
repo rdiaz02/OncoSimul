@@ -598,7 +598,7 @@ genot_fitness_to_epistasis <- function(x) {
     if(length(wt) == 1)
         fwt <- f[wt]
     ## No longer being used when we pass fitness landscapse: flfast
-    if(!isTRUE(all.equal(fwt, 1))) {
+  if(!isTRUE(all.equal(fwt, 1, check.attributes = FALSE))) {
         message("Fitness of wildtype != 1. ",
                 "Dividing all fitnesses by fitness of wildtype.")
         f <- f/fwt
