@@ -164,6 +164,7 @@ test_that("testing Bozic failure", {
 ## This test is more a plotting test, but since we fix the seed
 ## and test plot, much as the last case above, we leave it here
 ## Skip on kjohnson3, arm64
+
 if (Sys.getenv("R_PLATFORM") != "aarch64-apple-darwin20") {
   test_that("We produce an error when plotting timed out runs", {
     set.seed(1)
@@ -178,7 +179,7 @@ if (Sys.getenv("R_PLATFORM") != "aarch64-apple-darwin20") {
                                             keepEvery = 15,
                                             initSize = 20,
                                             finalTime = 1e5,
-                                            max.wall.time = 0.01,
+                                            max.wall.time = 0.0001,
                                             onlyCancer = FALSE,
                                             keepPhylog = TRUE))
     expect_error(plot(tmp), "The simulation hit max wall time or max tries.")
