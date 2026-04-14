@@ -1,7 +1,7 @@
 Package: OncoSimulR
 Type: Package
 Title: Forward Genetic Simulation of Cancer Progression with Epistasis
-Version: 4.13.2
+Version: 4.13.3
 Date: 2026-04-14
 Authors@R: c(
 	      person("Ramon", "Diaz-Uriarte", role = c("aut", "cre"),
@@ -112,3 +112,4 @@ Imports: Rcpp (>= 0.12.4), parallel, data.table, graph, Rgraphviz, gtools, igrap
 Suggests: BiocStyle, knitr, Oncotree, testthat (>= 1.0.0), rmarkdown, bookdown, pander
 LinkingTo: Rcpp
 VignetteBuilder: knitr
+Config/Bioconductor/UnsupportedPlatforms: macosx-arm64

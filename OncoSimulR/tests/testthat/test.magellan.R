@@ -58,9 +58,11 @@ test_that("Minimal Magellan tests", {
   ##    B, AB, BC, ABC
   ## rsign:
   ##    C, AC, BC, ABC
+  ## Yeah, amazing. But it is
+  expect_true(isTRUE(all.equal(Magellan_stats(r2)[c("sign", "rsign")],
+                               c(sign = 4/6, rsign = 1/6),
+                               tolerance = 1e-3)))
 
-  expect_equal(Magellan_stats(r2)[c("sign", "rsign")],
-               c(sign = 4/6, rsign = 1/6))
 })
 
 

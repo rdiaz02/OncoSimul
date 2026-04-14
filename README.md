@@ -391,8 +391,8 @@ is copyright Arash Partow, and is licensed under "The MIT License (MIT)"
 (http://www.opensource.org/licenses/MIT) and is compatible with GPL
 (http://directory.fsf.org/wiki/License:Expat). The file was originally
 downloaded from http://www.partow.net/programming/exprtk/index.html on
-2017-05-15. The most recent version was downloaded again on 2022-09-12,
-from the [exprTk repo](https://github.com/ArashPartow/exprtk).<!-- at
+2017-05-15. The most recent version was downloaded on 2026-04-14,
+from the [exprTk repo](https://github.com/ArashPartow/exprtk), corresponding to commit [cebb369](https://github.com/ArashPartow/exprtk/commit/cebb3698b1639769e2ae0829d61531770c974809) from 2025-01-01.<!-- at
 commit --> <!--
 https://github.com/ArashPartow/exprtk/commit/9fad72832c70348725c073e369a3321781001766). -->
 The file was originally named `exprtk.hpp`; to conform to R's
@@ -474,4 +474,3 @@ PEJ16/MED/AI-1709 and PEJ-2019-AI/BMD-13961 to R. Diaz-Uriarte.
 <p align="center">
 <img src="logo-micin-aei.png" alt="micin-aei logo" width="200"/>.
 </p>
-
