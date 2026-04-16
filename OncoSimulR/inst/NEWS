@@ -1,3 +1,7 @@
+Changes in version 4.13.4 (2026-04-16):
+	- Fixed miscell minor notes and warnings from
+	  r-universe.
+
 Changes in version 4.13.3 (2026-04-14):
 	- Upgraded exprtk to version from 2025-01-01,
 	  commit cebb369.

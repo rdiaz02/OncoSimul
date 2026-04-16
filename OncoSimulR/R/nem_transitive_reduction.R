@@ -12,8 +12,8 @@
 ## License: GPL (>= 2)
 
 nem_transitive.reduction <- function(g){
-    if (!any(class(g)%in%c("matrix","graphNEL"))) stop("Input must be an adjacency matrix or graphNEL object")
-    if(any(class(g) == "graphNEL")){
+    if (!is(g, "matrix") && !is(g, "graphNEL")) stop("Input must be an adjacency matrix or graphNEL object")
+    if (is(g, "graphNEL")) {
         g = as(g, "matrix")		
     }
 
@@ -38,7 +38,7 @@ nem_transitive.reduction <- function(g){
 
 nem_transitive.closure <- function(g,mat=FALSE,loops=TRUE){
 
-    if (!any(class(g)%in%c("graphNEL","matrix"))) stop("Input must be either graphNEL object or adjacency matrix")
+    if (!is(g, "graphNEL") && !is(g, "matrix")) stop("Input must be either graphNEL object or adjacency matrix")
     g <- as(g, "matrix")
     
                                         #-- adjacency matrix

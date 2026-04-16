@@ -1205,7 +1205,7 @@ options(width = 68)
 ```
 
 To be explicit, what version are we running?
-```{r}
+```{r package-version}
 packageVersion("OncoSimulR")
 ```
 
@@ -1327,7 +1327,7 @@ much more detail.
 ## Citing OncoSimulR and other documentation {#citing}
 
 In R, you can do
-```{r}
+```{r citation}
 citation("OncoSimulR")
 ```
 which will tell you how to cite the package. Please, do cite the

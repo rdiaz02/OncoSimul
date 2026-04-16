@@ -47,6 +47,11 @@
   supported. This function is left here only for historical purposes.
 }
 
+\value{
+  A two-column integer matrix where each row specifies an
+  ancestor-descendant relationship (see Details).
+}
+
 \references{
   Posets and similar structures appear in several places. The following
   two papers use them extensively.

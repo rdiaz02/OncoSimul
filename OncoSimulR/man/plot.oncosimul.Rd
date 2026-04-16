@@ -212,9 +212,7 @@
   \item{xlim}{
     If non NULL, limits of the x axis. Same as in
     \code{\link{plot.default}}. If NULL, the limits are calculated
-    automatically. Using a non-NULL range smaller than the range of observed
-  values of time can also lead to speed ups of large figures (since we
-  trim the data).
+    automatically. Using a non-NULL range smaller than the range of observed  values of time can also lead to speed ups of large figures (since we  trim the data).
   }
 
   \item{thinData}{
@@ -313,6 +311,10 @@
 
   }
 }
+\value{
+  Called for its side effects (plotting). Returns \code{NULL} invisibly.
+}
+
 \author{
   Ramon Diaz-Uriarte. Marc Taylor for stacked and stream plots.
 

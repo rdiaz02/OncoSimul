@@ -1408,7 +1408,7 @@ plotPoset <- function(x, names = NULL, addroot = FALSE,
 
 which_N_at_T <- function(x, N = 1, t = "last") {
     if((length(t) == 1) && (t == "last"))
-        T <- nrow(x$pops.by.time)
+      Times <- nrow(x$pops.by.time)
     else if(length(t) == 2) {
         if(t[1] < 0)
             warning("smallest t must be >= 0; setting to 0")
@@ -1416,13 +1416,13 @@ which_N_at_T <- function(x, N = 1, t = "last") {
             stop("t[1] must be <= t[2]")
         if(t[2] > max(x$pops.by.time[, 1]))
             message("t[2] > largest time; setting it to the max")
-        T <- which(
+    Times <- which(
             (x$pops.by.time[, 1] >= t[1]) &
                 (x$pops.by.time[, 1] <= t[2]))
     }
     else
         stop("t must be either 'last' or a vector of length 2")
-    z <- which(x$pops.by.time[T, -1, drop = FALSE] >= N, arr.ind = TRUE)[, 2]
+    z <- which(x$pops.by.time[Times, -1, drop = FALSE] >= N, arr.ind = TRUE)[, 2]
     z <- unique(z) ## recall we removed first column but we index from first.
     return(z)
 }
